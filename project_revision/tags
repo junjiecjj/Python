@@ -1,0 +1,889 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A	batch_generator_feed.py	/^A = np.arange(10*3*2).reshape(10,3,2)$/;"	v
+A	choice.py	/^A  = np.array(pd.read_csv('\/home\/jack\/数据筛选\/last7.csv'))$/;"	v
+A	dataprecheck.py	/^A = Dist.a[:,:10]$/;"	v
+A	draw_LSTM_1s.py	/^A = np.array(pd.read_csv(infopath+'last5.csv'))   $/;"	v
+A	draw_LSTM_MLP.py	/^A           = np.array(pd.read_csv(infopath+'last7.csv'))$/;"	v
+A	draw_MLP_1s.py	/^A = np.array(pd.read_csv(infopath+'last5.csv'))   $/;"	v
+A	fig2.py	/^A  = np.array(pd.read_csv('\/home\/jack\/数据筛选\/last7.csv'))$/;"	v
+A	oneshut.py	/^A = np.array(pd.read_csv('\/home\/jack\/数据筛选\/last5.csv'))$/;"	v
+A	read_save_plot.py	/^A = np.array(pd.read_csv('\/home\/jack\/数据筛选\/last7.csv'))$/;"	v
+A	selectdata.py	/^A  = np.array(pd.read_csv('\/home\/jack\/数据筛选\/last5.csv'))$/;"	v
+A	可变不可变.py	/^A = np.arange(12).reshape(2,6)$/;"	v
+A	画出ne_ngw.py	/^A = np.array(pd.read_csv("\/home\/jack\/数据筛选\/last5.csv"))$/;"	v
+Aminor	oneshut.py	/^    Aminor = np.zeros((2,len(t3)))$/;"	v
+Aminor	oneshut.py	/^    Aminor = resample(t3,aminor)$/;"	v
+B	dataprecheck.py	/^               Dist.I[:,5].reshape(-1,1)])$/;"	v
+Betap	oneshut.py	/^Betap = np.zeros((2,len(t12)))$/;"	v
+C	prove.py	/^C = {}$/;"	v
+CC	prove.py	/^CC = np.load('.\/test.npz')['C'][()]$/;"	v
+D	可变不可变.py	/^D = {1:'a',2:'b',3:'c'}$/;"	v
+DIS_PRED	D_clust19.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	D_clust20.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	D_clust21.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTM.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTM11f_m2m.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTM11f_m2o.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTM1ff_m2m.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTM1ff_m2o.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTMfff_m2m.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_LSTMfff_m2o.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_MLP.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_MLP11f.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_MLP1ff.py	/^class DIS_PRED(object):$/;"	c
+DIS_PRED	Density_MLPfff.py	/^class DIS_PRED(object):$/;"	c
+Dfsdev	oneshut.py	/^Dfsdev = np.zeros((2,len(t2)))$/;"	v
+Draw	draw_LSTM_MLP.py	/^def Draw(shot,name,way='yes',time_step=100):$/;"	f
+Draw1	draw_LSTM_1s.py	/^def Draw1(shut):$/;"	f
+Draw1	draw_MLP_1s.py	/^def Draw1(shut):$/;"	f
+Draw_hybrid	draw_LSTM_MLP.py	/^def Draw_hybrid(shot,way,time_step=100):$/;"	f
+History	结果配置.py	/^                            callbacks=callback_list)$/;"	v
+Ic	oneshut.py	/^Ic = np.zeros((2,len(t14)))$/;"	v
+Ip	敏感度.py	/^Ip = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%9).mean()$/;"	v
+Kmp13t	oneshut.py	/^Kmp13t = np.zeros((2,len(t8)))$/;"	v
+Li	oneshut.py	/^Li = np.zeros((2,len(t11)))$/;"	v
+Lmsz	oneshut.py	/^Lmsz = np.zeros((2,len(t13)))$/;"	v
+Pbrem10	oneshut.py	/^Pbrem10 = np.zeros((2,len(t9)))$/;"	v
+Pcrl01	oneshut.py	/^Pcrl01 = np.zeros((2,len(t1)))$/;"	v
+Pxuv18	oneshut.py	/^Pxuv18 = np.zeros((2,len(t7)))$/;"	v
+Pxuv30	oneshut.py	/^Pxuv30 = np.zeros((2,len(t6)))$/;"	v
+Q95	oneshut.py	/^Q95 = np.zeros((2,len(t10)))$/;"	v
+R	敏感度.py	/^R = R.drop(['Unnamed: 0'])$/;"	v
+R	敏感度.py	/^R = pd.concat([Ip,ne,vp,sxr,pxuv30,pxuv18,kmp13t,pbrem10,lmsz,betap,li,q95,ic],axis=1)$/;"	v
+RES	画出ne_ngw.py	/^RES = []$/;"	v
+Range	结果配置.py	/^        Range = (self.min_max[:,1]-self.min_max[:,0]).reshape(-1,1)$/;"	v
+Result	画出ne_ngw.py	/^Result = np.array(RES)$/;"	v
+S_d1	draw_LSTM_MLP.py	/^S_d1 = s_d1.copy()$/;"	v
+S_d2	draw_LSTM_MLP.py	/^S_d2 = s_d2.copy()$/;"	v
+Sxr23d	oneshut.py	/^Sxr23d = np.zeros((2,len(t5)))$/;"	v
+Transform	Density_LSTM11f_m2m.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_LSTM11f_m2o.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_LSTM1ff_m2m.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_LSTM1ff_m2o.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_LSTMfff_m2m.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_LSTMfff_m2o.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_MLP11f.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_MLP1ff.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+Transform	Density_MLPfff.py	/^    def Transform(self, arr, name):$/;"	m	class:DIS_PRED
+ViewData	analy.py	/^class ViewData(object):$/;"	c
+ViewData	fig1.py	/^class ViewData(object):$/;"	c
+ViewData	画出本地一炮.py	/^class ViewData(object):$/;"	c
+Vp1	oneshut.py	/^Vp1 = np.zeros((2,len(t4)))$/;"	v
+X	lstm_stateful_many2one.py	/^X = X \/ float(len(alphabet))$/;"	v
+X	lstm_stateful_many2one.py	/^X = numpy.reshape(dataX, (len(dataX), seq_length, 1))$/;"	v
+X	lstms_tateful_many2many.py	/^X = X \/ float(len(alphabet))$/;"	v
+X	lstms_tateful_many2many.py	/^X = numpy.reshape(dataX, (len(dataX), seq_length, 1))$/;"	v
+X	sigmoid.py	/^X=np.arange(fl,td+sp,sp)$/;"	v
+X	target.py	/^X=np.arange(fl,td+sp,sp)$/;"	v
+Y	sigmoid.py	/^Y=1\/(1+np.exp(-(X-(td-(td-fl)\/3))*25))$/;"	v
+Y	target.py	/^Y=1\/(1+np.exp(-(X-(td-(td-fl)\/3))*25))$/;"	v
+__init__	D_clust19.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	D_clust20.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	D_clust21.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTM.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTM11f_m2m.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTM11f_m2o.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTM1ff_m2m.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTM1ff_m2o.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTMfff_m2m.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_LSTMfff_m2o.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_MLP.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_MLP11f.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_MLP1ff.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	Density_MLPfff.py	/^    def __init__(self,Resample_rate,Exp_range):$/;"	m	class:DIS_PRED
+__init__	analy.py	/^    def __init__(self):$/;"	m	class:ViewData
+__init__	fig1.py	/^    def __init__(self):$/;"	m	class:ViewData
+__init__	画出本地一炮.py	/^    def __init__(self):$/;"	m	class:ViewData
+a	oneshut.py	/^        a = np.where(t3 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t1 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t10 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t11 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t13 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t14 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t2 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t4 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t5 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t6 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t7 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t8 >= 0)[0][0]$/;"	v
+a	oneshut.py	/^    a = np.where(t9 >= 0)[0][0]$/;"	v
+a	prove.py	/^a = np.arange(1024).reshape(4,256)$/;"	v
+a	test.py	/^a = 111111111$/;"	v
+all_selfc	draw_LSTM_1s.py	/^all_selfc = np.load(resultpath +'selfc_all.npz')['selfc']$/;"	v
+all_selfc1	draw_LSTM_MLP.py	/^all_selfc1 = np.load(resultpath1 + 'pred_allY_time_selfc.npz')['selfc']$/;"	v
+all_selfc1	draw_MLP_1s.py	/^all_selfc1 = np.load(resultpath +'selfc_all.npz')['selfc']$/;"	v
+all_selfc2	draw_LSTM_MLP.py	/^all_selfc2 = np.load(resultpath2 +'pred_allY_time_selfc.npz')['selfc']$/;"	v
+alphabet	lstm_stateful_many2one.py	/^alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"$/;"	v
+alphabet	lstms_tateful_many2many.py	/^alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"$/;"	v
+aminor	oneshut.py	/^        aminor = aminor[a:]$/;"	v
+aminor	oneshut.py	/^    aminor = np.array([0.45]*len(t3))$/;"	v
+aminor	oneshut.py	/^    aminor = np.array(coon.get(r'\\AMINOR'))   # read data$/;"	v
+analy_loss	draw_LSTM_1s.py	/^def analy_loss():$/;"	f
+analy_loss	draw_LSTM_MLP.py	/^def analy_loss(name):$/;"	f
+analy_loss	draw_MLP_1s.py	/^def analy_loss():$/;"	f
+analy_res_rate	draw_LSTM_1s.py	/^def analy_res_rate():$/;"	f
+analy_res_rate	draw_LSTM_MLP.py	/^def analy_res_rate(name):$/;"	f
+analy_res_rate	draw_MLP_1s.py	/^def analy_res_rate():$/;"	f
+arrowprops	target.py	/^       arrowprops=dict(facecolor='black',$/;"	v
+arrowprops	各种图.py	/^            arrowprops=dict(arrowstyle = '->',connectionstyle = 'arc3'),fontproperties = font)$/;"	v
+autopct	yuanbing.py	/^                      autopct=lambda pct: func(pct, data), #数值保留固定小数位$/;"	v
+b	batch_generator_feed.py	/^b  =np.array([1,2,3,4,5,6,7,8,9,10])$/;"	v
+b	prove.py	/^b = np.arange(6).reshape(3,2)*1.1$/;"	v
+batch_size	lstm_stateful_many2one.py	/^batch_size = 1$/;"	v
+batch_size	lstms_tateful_many2many.py	/^batch_size = 1$/;"	v
+betap	oneshut.py	/^    betap = betap[a:]$/;"	v
+betap	oneshut.py	/^    betap = np.array(coon.get(r'\\BETAP'))   # read data$/;"	v
+betap	敏感度.py	/^betap = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%18).mean()$/;"	v
+build_model	D_clust19.py	/^    def build_model(self,optimizer='rmsprop',init='random_normal'):$/;"	m	class:DIS_PRED
+build_model	D_clust20.py	/^    def build_model(self,optimizer='rmsprop'):$/;"	m	class:DIS_PRED
+build_model	D_clust21.py	/^    def build_model(self,optimizer='rmsprop',init='random_normal'):$/;"	m	class:DIS_PRED
+build_model	Density_LSTM.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_LSTM11f_m2m.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_LSTM11f_m2o.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_LSTM1ff_m2m.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_LSTM1ff_m2o.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_LSTMfff_m2m.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_LSTMfff_m2o.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_MLP.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_MLP11f.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_MLP1ff.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	Density_MLPfff.py	/^    def build_model(self):$/;"	m	class:DIS_PRED
+build_model	结果配置.py	/^    def build_model(self,optimizer='rmsprop'):$/;"	f
+build_model	结果配置.py	/^    def build_model(self,optimizer='rmsprop',init='random_normal'):$/;"	f
+c	prove.py	/^c=np.arange(24).reshape(4,6)$/;"	v
+cal_Num	D_clust19.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	D_clust20.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	D_clust21.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTM.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTM11f_m2m.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTM11f_m2o.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTM1ff_m2m.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTM1ff_m2o.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTMfff_m2m.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_LSTMfff_m2o.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_MLP.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_MLP11f.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_MLP1ff.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_Num	Density_MLPfff.py	/^    def cal_Num(self,name):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTM.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTM11f_m2m.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTM11f_m2o.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTM1ff_m2m.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTM1ff_m2o.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTMfff_m2m.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_LSTMfff_m2o.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_MLP.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_MLP11f.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_MLP1ff.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_aver	Density_MLPfff.py	/^    def cal_aver(self):$/;"	m	class:DIS_PRED
+cal_num	draw_MLP_1s.py	/^def cal_num(name,a,b,c,d):$/;"	f
+callback_list	结果配置.py	/^                         TensorBoard(log_dir=filepath+'\/my_logs',histogram_freq=1)]$/;"	v
+callback_list	结果配置.py	/^                         TensorBoard(log_dir=filepath+'\/my_logs',histogram_freq=1)]a$/;"	v
+callback_list	结果配置.py	/^                         TensorBoard(log_dir=filepath2+'\/my_logs\/',histogram_freq=1)]$/;"	v
+callback_list	结果配置.py	/^                TensorBoard(log_dir=filepath+'\/my_logs',histogram_freq=1)]$/;"	v
+cc	prove.py	/^cc = np.load('.\/test.npz')['c']$/;"	v
+change_arr	可变不可变.py	/^def change_arr(arr):$/;"	f
+change_dict	可变不可变.py	/^def change_dict(dic):$/;"	f
+change_selfc	D_clust19.py	/^    def change_selfc(self,name,thresh,time,pred_result):$/;"	m	class:DIS_PRED
+change_selfc	D_clust20.py	/^    def change_selfc(self,name,thresh,time,pred_result):$/;"	m	class:DIS_PRED
+change_selfc	D_clust21.py	/^    def change_selfc(self,name,thresh,time,pred_result):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTM.py	/^    def change_selfc(self,name,thresh,time,pred_result):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTM11f_m2m.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTM11f_m2o.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTM1ff_m2m.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTM1ff_m2o.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTMfff_m2m.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_LSTMfff_m2o.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_MLP.py	/^    def change_selfc(self,name,thresh,time,pred_result):$/;"	m	class:DIS_PRED
+change_selfc	Density_MLP11f.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_MLP1ff.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc	Density_MLPfff.py	/^    def change_selfc(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_LSTM11f_m2m.py	/^    def change_selfc_cal(self, name, thresh, time_all, pred_result):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_LSTM11f_m2o.py	/^    def change_selfc_cal(self, name, thresh, time_all, pred_result):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_LSTM1ff_m2m.py	/^    def change_selfc_cal(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_LSTM1ff_m2o.py	/^    def change_selfc_cal(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_LSTMfff_m2m.py	/^    def change_selfc_cal(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_LSTMfff_m2o.py	/^    def change_selfc_cal(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_MLP11f.py	/^    def change_selfc_cal(self, name, thresh, time_all, pred_result):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_MLP1ff.py	/^    def change_selfc_cal(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+change_selfc_cal	Density_MLPfff.py	/^    def change_selfc_cal(self, name, thresh, time_dict, pred_result_dict):$/;"	m	class:DIS_PRED
+char_to_int	lstm_stateful_many2one.py	/^char_to_int = dict((c, i) for i, c in enumerate(alphabet))$/;"	v
+char_to_int	lstms_tateful_many2many.py	/^char_to_int = dict((c, i) for i, c in enumerate(alphabet))$/;"	v
+check	choice.py	/^def check(shot):$/;"	f
+check	fig2.py	/^def check(shot):$/;"	f
+check	selectdata.py	/^def check(shot):$/;"	f
+chzhi	draw_LSTM_1s.py	/^chzhi = draw_chazhi()$/;"	v
+chzhi	draw_MLP_1s.py	/^chzhi = draw_chazhi()$/;"	v
+colors	yuanbing.py	/^                      colors=colors,$/;"	v
+colors	yuanbing.py	/^colors = ['lightskyblue','yellowgreen','red','yellow'] #每块颜色定义$/;"	v
+column	oneshut.py	/^column = 4$/;"	v
+column	read_save_plot.py	/^column = 4$/;"	v
+coon	oneshut.py	/^coon  = Connection('202.127.204.12')   # connect the MDSplus$/;"	v
+coon	read_save_plot.py	/^coon  = Connection('202.127.204.12')   # connect the MDSplus$/;"	v
+count	batch_generator_feed.py	/^count =1$/;"	v
+d	prove.py	/^d = [1,2,3,4,5.5,6,7.7,8,9.12]$/;"	v
+data	yuanbing.py	/^data = [float(x.split()[0]) for x in recipe]$/;"	v
+dataX	lstm_stateful_many2one.py	/^dataX = []$/;"	v
+dataX	lstms_tateful_many2many.py	/^dataX = []$/;"	v
+dataY	lstm_stateful_many2one.py	/^dataY = []$/;"	v
+dataY	lstms_tateful_many2many.py	/^dataY = []$/;"	v
+data_info	D_clust19.py	/^    def data_info():$/;"	m	class:DIS_PRED
+data_info	D_clust20.py	/^    def data_info():$/;"	m	class:DIS_PRED
+data_info	D_clust21.py	/^    def data_info():$/;"	m	class:DIS_PRED
+datapath	Density_LSTM.py	/^datapath = home+'\/density\/'$/;"	v
+datapath	Density_LSTM11f_m2m.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_LSTM11f_m2o.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_LSTM1ff_m2m.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_LSTM1ff_m2o.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_LSTMfff_m2m.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_LSTMfff_m2o.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_MLP.py	/^datapath = home+'\/density\/'$/;"	v
+datapath	Density_MLP11f.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_MLP1ff.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	Density_MLPfff.py	/^datapath = home+'\/Density\/'$/;"	v
+datapath	analy.py	/^datapath = home + '\/density\/'$/;"	v
+datapath	draw_LSTM_MLP.py	/^datapath    = home + '\/Density\/'$/;"	v
+datapath	fig1.py	/^datapath = home + '\/Density\/'$/;"	v
+datapath	画出ne_ngw.py	/^datapath = "\/home\/jack\/density\/"$/;"	v
+datapath	画出本地一炮.py	/^datapath = home + '\/Density\/'$/;"	v
+dd	prove.py	/^dd = np.load('.\/test.npz')['d']$/;"	v
+density	choice.py	/^density = np.array(density_shot)$/;"	v
+density	draw_LSTM_1s.py	/^density = np.load(resultpath +'all_xy.npz')['data'][:,-1000:,1]$/;"	v
+density	fig2.py	/^density = np.array(density_shot)$/;"	v
+density	yuanbing.py	/^density = density4.shape[0]+density5.shape[0]+density6.shape[0]+density7.shape[0]+density8.shape[0]$/;"	v
+density1	draw_MLP_1s.py	/^density1 = np.load(resultpath +'all_xy.npz')['data'][:,:,1]$/;"	v
+density4	yuanbing.py	/^density4=np.load(file+'BRealdensity4.npz')['Realdensity']$/;"	v
+density5	yuanbing.py	/^density5 = np.load(file+'BRealdensity4.npz')['Realdensity']$/;"	v
+density6	yuanbing.py	/^density6 = np.load(file+'BRealdensity6.npz')['Realdensity']$/;"	v
+density7	yuanbing.py	/^density7 = np.load(file+'BRealdensity7.npz')['Realdensity']$/;"	v
+density8	yuanbing.py	/^density8 = np.load(file+'BRealdensity8.npz')['Realdensity']$/;"	v
+density_shot	choice.py	/^density_shot = []#破裂炮中超过GW极限的$/;"	v
+density_shot	fig2.py	/^density_shot = []#破裂炮中超过GW极限的$/;"	v
+density_shot	selectdata.py	/^density_shot = []#破裂炮中超过GW极限的$/;"	v
+dfsdev	oneshut.py	/^    dfsdev = dfsdev[a:]$/;"	v
+dfsdev	oneshut.py	/^    dfsdev = np.array(coon.get(r'\\DFSDEV'))   # read data$/;"	v
+dis_shot	choice.py	/^dis_shot = []#所有的破裂炮$/;"	v
+dis_shot	fig2.py	/^dis_shot = []#所有的破裂炮$/;"	v
+dis_shot	selectdata.py	/^dis_shot = []#所有的破裂炮$/;"	v
+disru_num	draw_LSTM_1s.py	/^disru_num = len(np.where(A[:,4]==1)[0])$/;"	v
+disru_num	draw_LSTM_MLP.py	/^disru_num = len(np.where(A[:,4]==1)[0])$/;"	v
+disru_num	draw_MLP_1s.py	/^disru_num = len(np.where(A[:,4]==1)[0])$/;"	v
+disru_num	画出ne_ngw.py	/^disru_num = len(np.where(A[:,4]==1)[0])$/;"	v
+disrupt	choice.py	/^disrupt = np.array(dis_shot)$/;"	v
+disrupt	fig2.py	/^disrupt = np.array(dis_shot)$/;"	v
+disrupt	yuanbing.py	/^disrupt = disrupt4.shape[0]+disrupt5.shape[0]+disrupt6.shape[0]+disrupt7.shape[0]+disrupt8.shape[0]-density$/;"	v
+disrupt4	yuanbing.py	/^disrupt4=np.load(file+'Bdisrup4.npz')['disruption']$/;"	v
+disrupt5	yuanbing.py	/^disrupt5 =np.load(file+'Bdisrup5.npz')['disruption']$/;"	v
+disrupt6	yuanbing.py	/^disrupt6 =np.load(file+'Bdisrup6.npz')['disruption']$/;"	v
+disrupt7	yuanbing.py	/^disrupt7 =np.load(file+'Bdisrup7.npz')['disruption']$/;"	v
+disrupt8	yuanbing.py	/^disrupt8 =np.load(file+'Bdisrup8.npz')['disruption']$/;"	v
+draw_chazhi	draw_LSTM_1s.py	/^def draw_chazhi():$/;"	f
+draw_chazhi	draw_LSTM_MLP.py	/^def draw_chazhi(name):$/;"	f
+draw_chazhi	draw_MLP_1s.py	/^def draw_chazhi():$/;"	f
+draw_ngw	画出ne_ngw.py	/^def draw_ngw(array):$/;"	f
+draw_zhifang	画出ne_ngw.py	/^def draw_zhifang(arry):$/;"	f
+e	sigmoid.py	/^e=np.arange(fl,td+sp,sp)$/;"	v
+epoch	结果配置.py	/^epoch=51结束$/;"	v
+explode	yuanbing.py	/^                      explode=explode,$/;"	v
+explode	yuanbing.py	/^explode = (0.01,0.01,0.1,0.01) #将某一块分割出来，值越大分割出的间隙越大$/;"	v
+f	sigmoid.py	/^f=1\/(1+np.exp(-(e-(td-(td-fl)\/2))*25))$/;"	v
+f_d	draw_LSTM_MLP.py	/^f_d = list(sorted(set(f_d1).intersection(set(f_d2))))$/;"	v
+f_nd	draw_LSTM_MLP.py	/^f_nd = list(sorted(set(f_nd1).intersection(set(f_nd2))))$/;"	v
+figpath	oneshut.py	/^figpath = '\/home\/jack\/Picture\/'$/;"	v
+figpath	read_save_plot.py	/^figpath = '\/home\/jack\/Picture\/'$/;"	v
+figpath	画出ne_ngw.py	/^figpath = '\/home\/jack\/result\/'$/;"	v
+file	yuanbing.py	/^file = '\/home\/jack\/数据筛选\/'$/;"	v
+filepath	D_clust19.py	/^filepath = '\/gpfs\/home\/junjie\/音乐\/data\/data19\/data19_%d\/'%numb$/;"	v
+filepath	D_clust20.py	/^filepath = '\/gpfs\/home\/junjie\/音乐\/data\/data20\/data20_%d\/'%numb$/;"	v
+filepath	D_clust21.py	/^filepath = '\/gpfs\/home\/junjie\/音乐\/data\/data21\/data21_%d\/'%numb$/;"	v
+filepath	oneshut.py	/^filepath  = '\/home\/jack\/Density1\/'$/;"	v
+filepath	read_save_plot.py	/^filepath  = '\/home\/jack\/Density\/'$/;"	v
+filepath2	D_clust19.py	/^filepath2 = '\/gpfs\/home\/junjie\/电影\/data19_%d\/'%numb$/;"	v
+filepath2	D_clust20.py	/^filepath2 = '\/gpfs\/home\/junjie\/电影\/data20_%d\/'%numb$/;"	v
+filepath2	D_clust21.py	/^filepath2 = '\/gpfs\/home\/junjie\/电影\/data21_%d\/'%numb$/;"	v
+filepath2	各种图.py	/^filepath2 = '\/home\/jack\/snap\/'$/;"	v
+find_Dis_tm	D_clust19.py	/^    def find_Dis_tm(self,A,pcr,dfsdev,lmsz,kmp,ic,sxr,pxu30,pxu18,vp,betap,li,q,i):$/;"	m	class:DIS_PRED
+find_Dis_tm	D_clust20.py	/^    def find_Dis_tm(self,A,pcr,dfsdev,lmsz,kmp,ic,sxr,pxu30,pxu18,vp,betap,li,q,i):$/;"	m	class:DIS_PRED
+find_Dis_tm	D_clust21.py	/^    def find_Dis_tm(self,A,pcr,dfsdev,lmsz,kmp,ic,sxr,pxu30,pxu18,vp,betap,li,q,i):$/;"	m	class:DIS_PRED
+find_aminor	choice.py	/^def find_aminor(x,y,t_s,t_e):$/;"	f
+find_aminor	fig2.py	/^def find_aminor(x,y,t_s,t_e):$/;"	f
+find_aminor	selectdata.py	/^def find_aminor(x,y,t_s,t_e):$/;"	f
+find_best_thresh	D_clust19.py	/^    def find_best_thresh(self,all_test_shut,time,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	D_clust20.py	/^    def find_best_thresh(self,all_test_shut,time,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	D_clust21.py	/^    def find_best_thresh(self,all_test_shut,time,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTM.py	/^    def find_best_thresh(self,val_shot,time,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTM11f_m2m.py	/^    def find_best_thresh(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTM11f_m2o.py	/^    def find_best_thresh(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTM1ff_m2m.py	/^    def find_best_thresh(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTM1ff_m2o.py	/^    def find_best_thresh(self, rtime, pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTMfff_m2m.py	/^    def find_best_thresh(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_LSTMfff_m2o.py	/^    def find_best_thresh(self, rtime, pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_MLP.py	/^    def find_best_thresh(self,val_shot,time,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_MLP11f.py	/^    def find_best_thresh(self, rtime, pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_MLP1ff.py	/^    def find_best_thresh(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh	Density_MLPfff.py	/^    def find_best_thresh(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_LSTM11f_m2m.py	/^    def find_best_thresh1(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_LSTM11f_m2o.py	/^    def find_best_thresh1(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_LSTM1ff_m2m.py	/^    def find_best_thresh1(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_LSTM1ff_m2o.py	/^    def find_best_thresh1(self, rtime, pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_LSTMfff_m2m.py	/^    def find_best_thresh1(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_LSTMfff_m2o.py	/^    def find_best_thresh1(self, rtime, pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_MLP1ff.py	/^    def find_best_thresh1(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_best_thresh1	Density_MLPfff.py	/^    def find_best_thresh1(self,rtime,pred_result):$/;"	m	class:DIS_PRED
+find_jiaoji	draw_LSTM_1s.py	/^def find_jiaoji(name):$/;"	f
+find_jiaoji	draw_LSTM_MLP.py	/^def find_jiaoji(name1,name2):$/;"	f
+find_jiaoji	draw_MLP_1s.py	/^def find_jiaoji(name):$/;"	f
+find_pred_Dm	D_clust19.py	/^    def find_pred_Dm(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	D_clust20.py	/^    def find_pred_Dm(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	D_clust21.py	/^    def find_pred_Dm(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTM.py	/^    def find_pred_Dm(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTM11f_m2m.py	/^    def find_pred_Dm(self, way, thresh, rtime, pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTM11f_m2o.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTM1ff_m2m.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTM1ff_m2o.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTMfff_m2m.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_LSTMfff_m2o.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_MLP.py	/^    def find_pred_Dm(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_MLP11f.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_MLP1ff.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm	Density_MLPfff.py	/^    def find_pred_Dm(self, way, thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_LSTM.py	/^    def find_pred_Dm1(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_LSTM11f_m2m.py	/^    def find_pred_Dm1(self, thresh, rtime, pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_LSTM1ff_m2m.py	/^    def find_pred_Dm1(self,thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_LSTMfff_m2m.py	/^    def find_pred_Dm1(self,thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_MLP.py	/^    def find_pred_Dm1(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_MLP11f.py	/^    def find_pred_Dm1(self,thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_MLP1ff.py	/^    def find_pred_Dm1(self,thresh,time,pred_signal):$/;"	m	class:DIS_PRED
+find_pred_Dm1	Density_MLPfff.py	/^    def find_pred_Dm1(self,thresh,rtime,pred_signal):$/;"	m	class:DIS_PRED
+fit_and_predict	D_clust19.py	/^    def fit_and_predict(self,all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	D_clust20.py	/^    def fit_and_predict(self,all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	D_clust21.py	/^    def fit_and_predict(self,all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTM.py	/^    def fit_and_predict(self,all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTM11f_m2m.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTM11f_m2o.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTM1ff_m2m.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTM1ff_m2o.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTMfff_m2m.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_LSTMfff_m2o.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_MLP.py	/^    def fit_and_predict(self,all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_MLP11f.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_MLP1ff.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fit_and_predict	Density_MLPfff.py	/^    def fit_and_predict(self, train_data, all_data):$/;"	m	class:DIS_PRED
+fl	sigmoid.py	/^fl = 7$/;"	v
+fl	target.py	/^fl = 7$/;"	v
+fl	tmp.py	/^fl = 7$/;"	v
+flat_short	choice.py	/^flat_short = []#平顶端短于1s的$/;"	v
+flat_short	fig2.py	/^flat_short = []#平顶端短于1s的$/;"	v
+flat_short	selectdata.py	/^flat_short = []#平顶端短于1s的$/;"	v
+font	analy.py	/^font = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 12)#fname =  "\/usr\/share\/fonts\/truetype\/arphic\/SimSun.ttf",$/;"	v
+font	choice.py	/^FontProperties(fname=fontpath+"Times_New_Roman.ttf",size=12,weight='bold')$/;"	v
+font	draw_LSTM_1s.py	/^font = FontProperties(fname = fontpath+"Times_New_Roman.ttf", size = 14)$/;"	v
+font	draw_LSTM_MLP.py	/^font     = FontProperties(fname = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/times.ttf", size=11,weight='bold')$/;"	v
+font	draw_MLP_1s.py	/^font = FontProperties(fname = fontpath+"Times_New_Roman.ttf", size = 14)$/;"	v
+font	fig1.py	/^font = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 10)#fname =  "\/usr\/share\/fonts\/truetype\/arphic\/SimSun.ttf",$/;"	v
+font	fig2.py	/^FontProperties(fname=fontpath+"Times_New_Roman.ttf",size=12,weight='bold')$/;"	v
+font	oneshut.py	/^font = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 14)$/;"	v
+font	read_save_plot.py	/^font = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 14)$/;"	v
+font	selectdata.py	/^font = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 14)$/;"	v
+font	yuanbing.py	/^FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 12)$/;"	v
+font	各种图.py	/^font = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 14)  $/;"	v
+font	画出ne_ngw.py	/^font = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 18)  $/;"	v
+font	画出本地一炮.py	/^font = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 10)#fname =  "\/usr\/share\/fonts\/truetype\/arphic\/SimSun.ttf",$/;"	v
+font1	analy.py	/^font1 = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 16)$/;"	v
+font1	choice.py	/^FontProperties(fname=fontpath+"Times_New_Roman.ttf",size=14,weight='bold')   $/;"	v
+font1	draw_LSTM_1s.py	/^font1 = FontProperties(fname = fontpath+"Times_New_Roman.ttf", size = 14) #fname = "\/usr\/share\/fonts\/truetype\/arphic\/SimSun.ttf", $/;"	v
+font1	draw_LSTM_MLP.py	/^font1    = FontProperties(fname = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/times.ttf", size=14,weight='bold')$/;"	v
+font1	draw_MLP_1s.py	/^font1 = FontProperties(fname = fontpath+"Times_New_Roman.ttf", size = 14) #fname = "\/usr\/share\/fonts\/truetype\/arphic\/SimSun.ttf", $/;"	v
+font1	fig1.py	/^font1 = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 14)$/;"	v
+font1	fig2.py	/^FontProperties(fname=fontpath+"Times_New_Roman.ttf",size=16,weight='bold')$/;"	v
+font1	oneshut.py	/^font1 = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 12)$/;"	v
+font1	read_save_plot.py	/^font1 = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 12)$/;"	v
+font1	selectdata.py	/^font1 = FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 12)   $/;"	v
+font1	target.py	/^font1    = FontProperties(fname = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/times.ttf", size=24,weight='bold')$/;"	v
+font1	yuanbing.py	/^FontProperties(fname="\/usr\/share\/fonts\/truetype\/msttcorefonts\/Times_New_Roman.ttf", size = 10)$/;"	v
+font1	画出ne_ngw.py	/^font1 = FontProperties(fname=fontpath+"Times_New_Roman.ttf",size = 12)$/;"	v
+font1	画出本地一炮.py	/^font1 = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 14)$/;"	v
+font2	choice.py	/^FontProperties(fname=fontpath+"Times_New_Roman.ttf",size=12,weight='bold')   $/;"	v
+font2	draw_LSTM_1s.py	/^font2 = FontProperties(fname = fontpath+"Times_New_Roman.ttf", size = 11)$/;"	v
+font2	draw_LSTM_MLP.py	/^font2    = FontProperties(fname = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/times.ttf", size=14,weight='bold')$/;"	v
+font2	draw_MLP_1s.py	/^font2 = FontProperties(fname = fontpath+"Times_New_Roman.ttf", size = 11)$/;"	v
+font2	fig1.py	/^font2 = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 18)$/;"	v
+font2	fig2.py	/^FontProperties(fname=fontpath+"Times_New_Roman.ttf",size=12,weight='bold')$/;"	v
+font2	画出本地一炮.py	/^font2 = FontProperties(fname=fontpath+"Times_New_Roman.ttf", size = 18)$/;"	v
+font3	draw_LSTM_MLP.py	/^font3    = FontProperties(fname = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/times.ttf", size=16,weight='bold')$/;"	v
+fontpath	analy.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	choice.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	draw_LSTM_1s.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	draw_LSTM_MLP.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	draw_MLP_1s.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	fig1.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	fig2.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	target.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	画出ne_ngw.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontpath	画出本地一炮.py	/^fontpath = "\/usr\/share\/fonts\/truetype\/msttcorefonts\/"$/;"	v
+fontt	draw_LSTM_MLP.py	/^fontt  = {'family':'Times New Roman','style':'normal','size':15}$/;"	v
+fontt	fig1.py	/^fontt = {'family':'Times New Roman','style':'normal','size':12}$/;"	v
+fontt	fig2.py	/^fontt = {'family':'Times New Roman','style':'normal','size':14}$/;"	v
+fontt	target.py	/^fontt  = {'family':'Times New Roman','style':'normal','size':24,'weight':'bold'}$/;"	v
+fontt1	draw_LSTM_MLP.py	/^fontt1 = {'style':'normal','size':16 }$/;"	v
+fontt1	fig1.py	/^fontt1 = {'style':'normal','weight':'bold','size':16}$/;"	v
+fontt1	fig2.py	/^fontt1 = {'style':'normal','weight':'bold','size':16}$/;"	v
+fontt1	target.py	/^fontt1 = {'style':'normal','size':24}$/;"	v
+fontt2	draw_LSTM_MLP.py	/^fontt2 = {'style':'normal','size':16,'weight':'bold'}$/;"	v
+fontt2	fig1.py	/^fontt2 = {'style':'normal','size':16}$/;"	v
+fontt2	fig2.py	/^fontt2 = {'style':'normal','size':16}$/;"	v
+fontt2	target.py	/^fontt2 = {'style':'normal','size':30}$/;"	v
+fontt2	敏感度.py	/^fontt2 = {'style':'normal','weight':'bold','size':32}$/;"	v
+fontt3	draw_LSTM_MLP.py	/^fontt3 = {'style':'normal','size':18,'weight':'bold'}$/;"	v
+fontt3	fig1.py	/^fontt3 = {'style':'normal','weight':'bold','size':18}$/;"	v
+frame	target.py	/^frame = legend.get_frame() $/;"	v
+frame1	target.py	/^frame1 = legend1.get_frame() $/;"	v
+func	yuanbing.py	/^def func(pct, allvals):$/;"	f
+generate_arrays_from_file	batch_generator_feed.py	/^def generate_arrays_from_file(path,batch_size):$/;"	f
+generate_data	D_clust21.py	/^    def generate_data(self,data,shut_list,name):$/;"	m	class:DIS_PRED
+generate_data	Density_LSTM.py	/^    def generate_data(self,data,shot_list,name):$/;"	m	class:DIS_PRED
+generate_data	Density_LSTM11f_m2o.py	/^    def generate_data(self, data, name):$/;"	m	class:DIS_PRED
+generate_data	Density_LSTM1ff_m2o.py	/^    def generate_data(self, data, name):$/;"	m	class:DIS_PRED
+generate_data	结果配置.py	/^    def generate_data(self,data,shut_list,name):$/;"	f
+get_and_resample	D_clust19.py	/^    def get_and_resample(self,A,i,Signal):$/;"	m	class:DIS_PRED
+get_and_resample	D_clust20.py	/^    def get_and_resample(self,A,i,Signal):$/;"	m	class:DIS_PRED
+get_and_resample	D_clust21.py	/^    def get_and_resample(self,A,i,Signal):$/;"	m	class:DIS_PRED
+get_dictdata	Density_LSTM11f_m2o.py	/^    def get_dictdata(self, name, Arr):$/;"	m	class:DIS_PRED
+get_dictdata	Density_LSTM1ff_m2o.py	/^    def get_dictdata(self, name, Arr):$/;"	m	class:DIS_PRED
+get_dictdata	Density_LSTMfff_m2o.py	/^    def get_dictdata(self, name, Arr):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTM.py	/^    def get_one_shot(self,i):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTM11f_m2m.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTM11f_m2o.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTM1ff_m2m.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTM1ff_m2o.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTMfff_m2m.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_LSTMfff_m2o.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_MLP.py	/^    def get_one_shot(self,i):$/;"	m	class:DIS_PRED
+get_one_shot	Density_MLP11f.py	/^    def get_one_shot(self,i,name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_MLP1ff.py	/^    def get_one_shot(self,i,name):$/;"	m	class:DIS_PRED
+get_one_shot	Density_MLPfff.py	/^    def get_one_shot(self, i, name):$/;"	m	class:DIS_PRED
+get_one_shut	D_clust19.py	/^    def get_one_shut(self,i):$/;"	m	class:DIS_PRED
+get_one_shut	D_clust20.py	/^    def get_one_shut(self,i):$/;"	m	class:DIS_PRED
+get_one_shut	D_clust21.py	/^    def get_one_shut(self,i):$/;"	m	class:DIS_PRED
+get_sta	画出ne_ngw.py	/^def get_sta(i):$/;"	f
+get_testData	D_clust19.py	/^    def get_testData(self,shut_list,name):$/;"	m	class:DIS_PRED
+get_testData	D_clust20.py	/^    def get_testData(self,shut_list,name):$/;"	m	class:DIS_PRED
+get_testData	D_clust21.py	/^    def get_testData(self,shut_list,name):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTM.py	/^    def get_testData(self,shot_list,name):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTM11f_m2m.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTM11f_m2o.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTM1ff_m2m.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTM1ff_m2o.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTMfff_m2m.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_LSTMfff_m2o.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_MLP.py	/^    def get_testData(self,shot_list,name):$/;"	m	class:DIS_PRED
+get_testData	Density_MLP11f.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_testData	Density_MLP1ff.py	/^    def get_testData(self,shot_list,name):$/;"	m	class:DIS_PRED
+get_testData	Density_MLPfff.py	/^    def get_testData(self):$/;"	m	class:DIS_PRED
+get_trainData	D_clust19.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	D_clust20.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	D_clust21.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTM.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTM11f_m2m.py	/^    def get_trainData(self,way):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTM11f_m2o.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTM1ff_m2m.py	/^    def get_trainData(self,way):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTM1ff_m2o.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTMfff_m2m.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_LSTMfff_m2o.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_MLP.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_MLP11f.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_MLP1ff.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_trainData	Density_MLPfff.py	/^    def get_trainData(self):$/;"	m	class:DIS_PRED
+get_valData	Density_LSTM11f_m2m.py	/^    def get_valData(self,way):$/;"	m	class:DIS_PRED
+get_valData	Density_LSTM11f_m2o.py	/^    def get_valData(self):$/;"	m	class:DIS_PRED
+get_valData	Density_MLP11f.py	/^    def get_valData(self):$/;"	m	class:DIS_PRED
+get_valdata	Density_LSTM11f_m2o.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+get_valdata	Density_LSTM1ff_m2m.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+get_valdata	Density_LSTM1ff_m2o.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+get_valdata	Density_LSTMfff_m2m.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+get_valdata	Density_LSTMfff_m2o.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+get_valdata	Density_MLP1ff.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+get_valdata	Density_MLPfff.py	/^    def get_valdata(self,Arr):$/;"	m	class:DIS_PRED
+green_shot	choice.py	/^green_shot = []#超过GW极限的,包括安全炮$/;"	v
+green_shot	fig2.py	/^green_shot = []#超过GW极限的,包括安全炮$/;"	v
+green_shot	selectdata.py	/^green_shot = []#超过GW极限的,包括安全炮$/;"	v
+group_labels	sigmoid.py	/^group_labels = ('a', 'b')$/;"	v
+hist	draw_LSTM_1s.py	/^hist = pd.read_csv(resultpath +'history_dict.csv')$/;"	v
+hist1	draw_LSTM_MLP.py	/^hist1      = pd.read_csv(resultpath1 + 'history_dict.csv')$/;"	v
+hist1	draw_MLP_1s.py	/^hist1 = pd.read_csv(resultpath +'history_dict.csv')$/;"	v
+hist2	draw_LSTM_MLP.py	/^hist2      = pd.read_csv(resultpath2 +'history_dict.csv')$/;"	v
+home	Density_LSTM.py	/^home = os.environ['HOME']$/;"	v
+home	Density_LSTM11f_m2m.py	/^home = os.environ['HOME']$/;"	v
+home	Density_LSTM11f_m2o.py	/^home = os.environ['HOME']$/;"	v
+home	Density_LSTM1ff_m2m.py	/^home = os.environ['HOME']$/;"	v
+home	Density_LSTM1ff_m2o.py	/^home = os.environ['HOME']$/;"	v
+home	Density_LSTMfff_m2m.py	/^home = os.environ['HOME']$/;"	v
+home	Density_LSTMfff_m2o.py	/^home = os.environ['HOME']$/;"	v
+home	Density_MLP.py	/^home = os.environ['HOME']$/;"	v
+home	Density_MLP11f.py	/^home = os.environ['HOME']$/;"	v
+home	Density_MLP1ff.py	/^home = os.environ['HOME']$/;"	v
+home	Density_MLPfff.py	/^home = os.environ['HOME']$/;"	v
+home	analy.py	/^home = os.environ['HOME']$/;"	v
+home	draw_LSTM_1s.py	/^home = os.environ['HOME']$/;"	v
+home	draw_LSTM_MLP.py	/^home        = os.environ['HOME']$/;"	v
+home	draw_MLP_1s.py	/^home = os.environ['HOME']$/;"	v
+home	fig1.py	/^home = os.environ['HOME']$/;"	v
+home	target.py	/^home        = os.environ['HOME']$/;"	v
+home	敏感度.py	/^home = os.environ['HOME']$/;"	v
+home	画出本地一炮.py	/^home = os.environ['HOME']$/;"	v
+ic	oneshut.py	/^    ic = ic[a:]$/;"	v
+ic	oneshut.py	/^    ic = np.array(coon.get(r'\\IC1'))   # read data$/;"	v
+ic	敏感度.py	/^ic = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%21).mean()$/;"	v
+index	oneshut.py	/^index = np.where(A[:,0]==shot)[0][0]$/;"	v
+infopath	Density_LSTM.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_LSTM11f_m2m.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_LSTM11f_m2o.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_LSTM1ff_m2m.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_LSTM1ff_m2o.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_LSTMfff_m2m.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_LSTMfff_m2o.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_MLP.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_MLP11f.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_MLP1ff.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	Density_MLPfff.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	analy.py	/^infopath = home + '\/数据筛选\/'$/;"	v
+infopath	draw_LSTM_1s.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	draw_LSTM_MLP.py	/^infopath    = home+'\/数据筛选\/'$/;"	v
+infopath	draw_MLP_1s.py	/^infopath = home+'\/数据筛选\/'$/;"	v
+infopath	fig1.py	/^infopath = home + '\/数据筛选\/'$/;"	v
+infopath	画出本地一炮.py	/^infopath = home + '\/数据筛选\/'$/;"	v
+ingredients	yuanbing.py	/^ingredients = [x.split()[-1] for x in recipe]$/;"	v
+int_to_char	lstm_stateful_many2one.py	/^int_to_char = dict((i, c) for i, c in enumerate(alphabet))$/;"	v
+int_to_char	lstms_tateful_many2many.py	/^int_to_char = dict((i, c) for i, c in enumerate(alphabet))$/;"	v
+kill_nan	read_save_plot.py	/^def kill_nan(arr):$/;"	f
+killanbormal	read_save_plot.py	/^def killanbormal(arr):$/;"	f
+kmp13t	oneshut.py	/^    kmp13t = kmp13t[a:]$/;"	v
+kmp13t	oneshut.py	/^    kmp13t = np.array(coon.get(r'\\KMP13T'))   # read data$/;"	v
+kmp13t	敏感度.py	/^kmp13t = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%15).mean()$/;"	v
+l	oneshut.py	/^        l = len(t3)$/;"	v
+l_d	draw_LSTM_MLP.py	/^l_d = list(sorted(set(l_d1).intersection(set(l_d2))))$/;"	v
+labeldistance	yuanbing.py	/^                      labeldistance = 1.1,#图例距圆心半径倍距离$/;"	v
+labels	target.py	/^labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()$/;"	v
+labels	target.py	/^labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()$/;"	v
+labels	yuanbing.py	/^                      labels=labels,$/;"	v
+labels	yuanbing.py	/^labels = [r'non-disruptive',r'other disruption',r'density limit',r'other'] #定义标签$/;"	v
+labels	各种图.py	/^labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()$/;"	v
+labels	各种图.py	/^labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()$/;"	v
+labels	各种图.py	/^labels = axs[2].get_xticklabels() + axs[2].get_yticklabels()$/;"	v
+legend	target.py	/^legend = axs[0].legend(loc='best',prop=fontt2,edgecolor='black')#shadow=True$/;"	v
+legend1	target.py	/^legend1 = axs[1].legend(loc='upper left',prop=fontt2,edgecolor='black')$/;"	v
+li	oneshut.py	/^    li = li[a:]$/;"	v
+li	oneshut.py	/^    li = np.array(coon.get(r'\\li'))   # read data$/;"	v
+li	敏感度.py	/^li = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%19).mean()$/;"	v
+lmsz	oneshut.py	/^    lmsz = lmsz[a:]$/;"	v
+lmsz	oneshut.py	/^    lmsz = np.array(coon.get(r'\\LMSZ'))   # read data$/;"	v
+lmsz	敏感度.py	/^lmsz = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%17).mean()$/;"	v
+main	D_clust19.py	/^def main():$/;"	f
+main	D_clust20.py	/^def main():$/;"	f
+main	D_clust21.py	/^def main():$/;"	f
+main	Density_LSTM.py	/^def main():$/;"	f
+main	Density_LSTM11f_m2m.py	/^def main():$/;"	f
+main	Density_LSTM11f_m2o.py	/^def main():$/;"	f
+main	Density_LSTM1ff_m2m.py	/^def main():$/;"	f
+main	Density_LSTM1ff_m2o.py	/^def main():$/;"	f
+main	Density_LSTMfff_m2m.py	/^def main():$/;"	f
+main	Density_LSTMfff_m2o.py	/^def main():$/;"	f
+main	Density_MLP.py	/^def main():$/;"	f
+main	Density_MLP11f.py	/^def main():$/;"	f
+main	Density_MLP1ff.py	/^def main():$/;"	f
+main	Density_MLPfff.py	/^def main():$/;"	f
+main	analy.py	/^def main():$/;"	f
+main	fig1.py	/^def main():$/;"	f
+main	画出本地一炮.py	/^def main():$/;"	f
+metrics	batch_generator_feed.py	/^              metrics=['mae'])$/;"	v
+mingan	敏感度.py	/^def mingan(R,way):$/;"	f
+miss_shot	oneshut.py	/^miss_shot = []#记录缺少任何一个信号的炮号$/;"	v
+miss_shot	read_save_plot.py	/^miss_shot = []#记录缺少任何一个信号的炮号$/;"	v
+model	batch_generator_feed.py	/^model = Sequential()$/;"	v
+model	lstm_stateful_many2one.py	/^model = Sequential()$/;"	v
+model	lstms_tateful_many2many.py	/^model = Sequential()$/;"	v
+ne	敏感度.py	/^ne = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%10).mean()$/;"	v
+num	draw_LSTM_1s.py	/^num = 3$/;"	v
+num	draw_MLP_1s.py	/^num = 50$/;"	v
+num1	draw_LSTM_MLP.py	/^num1 = 4$/;"	v
+num2	draw_LSTM_MLP.py	/^num2 = 12$/;"	v
+num2	draw_LSTM_MLP.py	/^num2 = 6$/;"	v
+numb	D_clust19.py	/^numb = 2$/;"	v
+numb	D_clust20.py	/^numb = 21$/;"	v
+numb	D_clust21.py	/^numb = 3$/;"	v
+numb	Density_LSTM.py	/^numb = 9$/;"	v
+numb	Density_LSTM11f_m2m.py	/^numb = 3$/;"	v
+numb	Density_LSTM11f_m2o.py	/^numb = 3$/;"	v
+numb	Density_LSTM1ff_m2m.py	/^numb = 2$/;"	v
+numb	Density_LSTM1ff_m2o.py	/^numb = 2$/;"	v
+numb	Density_LSTMfff_m2m.py	/^numb = 9$/;"	v
+numb	Density_LSTMfff_m2o.py	/^numb = 1$/;"	v
+numb	Density_MLP.py	/^numb = 54$/;"	v
+numb	Density_MLP11f.py	/^numb = 6$/;"	v
+numb	Density_MLP1ff.py	/^numb = 3$/;"	v
+numb	Density_MLPfff.py	/^numb = 20$/;"	v
+optimizer	batch_generator_feed.py	/^              optimizer='sgd',$/;"	v
+other	yuanbing.py	/^other = 88299-40000 - safe - disrupt - density$/;"	v
+out_fig	target.py	/^out_fig=plt.gcf()$/;"	v
+out_fig	yuanbing.py	/^out_fig = plt.gcf()$/;"	v
+out_fig	各种图.py	/^out_fig = plt.gcf()$/;"	v
+pGreenW	choice.py	/^pGreenW = np.array(green_shot)$/;"	v
+pGreenW	fig2.py	/^pGreenW = np.array(green_shot)$/;"	v
+p_d	draw_LSTM_MLP.py	/^p_d = list(sorted(set(p_d1).intersection(set(p_d2))))$/;"	v
+pbrem10	oneshut.py	/^    pbrem10 = np.array(coon.get(r'\\VBM10'))   # read data$/;"	v
+pbrem10	oneshut.py	/^    pbrem10 = pbrem10[a:]$/;"	v
+pbrem10	敏感度.py	/^pbrem10 = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%16).mean()$/;"	v
+pcrl01	oneshut.py	/^    pcrl01 = np.array(coon.get(r'\\PCRL01'))   # read data$/;"	v
+pcrl01	oneshut.py	/^    pcrl01 = pcrl01[a:]$/;"	v
+pctdistance	yuanbing.py	/^                      pctdistance = 0.6, #数值距圆心半径倍数距离$/;"	v
+pd_data	dataprecheck.py	/^                                    'R_flat_top','R_disrT','flat_len'])$/;"	v
+picfile	choice.py	/^picfile = '\/home\/jack\/Result\/'$/;"	v
+picfile	fig2.py	/^picfile = '\/home\/jack\/Resultpicture\/'$/;"	v
+picfile	yuanbing.py	/^picfile = '\/home\/jack\/result\/'$/;"	v
+picture	draw_LSTM_1s.py	/^picture = home+'\/resultpicture\/LSTM\/result_%d\/'%num$/;"	v
+picture	draw_MLP_1s.py	/^picture = home+'\/resultpicture\/result_%d\/'%num$/;"	v
+picture	敏感度.py	/^picture = home+'\/Resultpicture\/'$/;"	v
+picture1	draw_LSTM_MLP.py	/^picture1    = home+'\/Resultpicture\/MLP\/result_%d\/'%num1$/;"	v
+picture2	draw_LSTM_MLP.py	/^picture2    = home+'\/Resultpicture\/LSTM_m2m\/result_%d\/'%num2$/;"	v
+picturepath	draw_LSTM_MLP.py	/^picturepath = home+'\/Resultpicture\/'$/;"	v
+picturepath	target.py	/^picturepath = home+'\/Resultpicture\/'$/;"	v
+pred_rate	draw_LSTM_1s.py	/^pred_rate = np.load(resultpath +'pred_rate_res_fB.npz')['pred_rate']$/;"	v
+pred_rate1	draw_LSTM_MLP.py	/^pred_rate1 = np.load(resultpath1 + 'pred_rate_res_fB.npz')['pred_rate']$/;"	v
+pred_rate1	draw_MLP_1s.py	/^pred_rate1 = np.load(resultpath +'pred_rate_res_fB.npz')['pred_rate']$/;"	v
+pred_rate2	draw_LSTM_MLP.py	/^pred_rate2 = np.load(resultpath2 +'pred_rate_res_fB.npz')['pred_rate']$/;"	v
+pred_res	draw_LSTM_1s.py	/^pred_res = np.load(resultpath +'pred_rate_res_fB.npz')['pred_res']$/;"	v
+pred_res1	draw_LSTM_MLP.py	/^pred_res1  = np.load(resultpath1 + 'pred_rate_res_fB.npz')['pred_res']$/;"	v
+pred_res1	draw_MLP_1s.py	/^pred_res1 = np.load(resultpath +'pred_rate_res_fB.npz')['pred_res']$/;"	v
+pred_res2	draw_LSTM_MLP.py	/^pred_res2  = np.load(resultpath2 +'pred_rate_res_fB.npz')['pred_res']$/;"	v
+pred_resu	draw_LSTM_1s.py	/^pred_resu = np.load(resultpath +'pred_all_result.npz')['pred_result3']$/;"	v
+pred_resu1	draw_LSTM_MLP.py	/^pred_resu1 = np.load(resultpath1 + 'pred_allY_time_selfc.npz')['pred_result3'][()]$/;"	v
+pred_resu1	draw_MLP_1s.py	/^pred_resu1 = np.load(resultpath +'pred_all_result.npz')['pred_result3']$/;"	v
+pred_resu2	draw_LSTM_MLP.py	/^pred_resu2 = np.load(resultpath2 +'pred_allY_time_selfc.npz')['pred_result3'][()]$/;"	v
+pxuv18	oneshut.py	/^    pxuv18 = np.array(coon.get(r'\\PXUV18'))   # read data$/;"	v
+pxuv18	oneshut.py	/^    pxuv18 = pxuv18[a:]$/;"	v
+pxuv18	敏感度.py	/^pxuv18 = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%14).mean()$/;"	v
+pxuv30	oneshut.py	/^    pxuv30 = np.array(coon.get(r'\\PXUV30'))   # read data$/;"	v
+pxuv30	oneshut.py	/^    pxuv30 = pxuv30[a:]$/;"	v
+pxuv30	敏感度.py	/^pxuv30 = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%13).mean()$/;"	v
+q95	oneshut.py	/^    q95 = np.array(coon.get(r'\\q95'))   # read data$/;"	v
+q95	oneshut.py	/^    q95 = q95[a:]$/;"	v
+q95	敏感度.py	/^q95 = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%20).mean()$/;"	v
+read_save_plot	read_save_plot.py	/^def read_save_plot(shot):$/;"	f
+readd	analy.py	/^    def readd(self,I,signal):$/;"	m	class:ViewData
+readd	fig1.py	/^    def readd(self,I,signal):$/;"	m	class:ViewData
+readd	画出本地一炮.py	/^    def readd(self,I,signal):$/;"	m	class:ViewData
+real_lab	draw_LSTM_1s.py	/^real_lab = np.load(resultpath +'all_xy.npz')['data'][:,-1000:,-2]$/;"	v
+real_lab1	draw_LSTM_MLP.py	/^real_lab1  = np.load(resultpath1 + 'pred_allY_time_selfc.npz')['allY'][()]$/;"	v
+real_lab1	draw_MLP_1s.py	/^real_lab1 = np.load(resultpath +'all_xy.npz')['data'][:,:,-2]$/;"	v
+real_lab2	draw_LSTM_MLP.py	/^real_lab2  = np.load(resultpath2 +'pred_allY_time_selfc.npz')['allY'][()]$/;"	v
+recipe	yuanbing.py	/^recipe = [str(safe)+" nondisruptive",$/;"	v
+res	lstm_stateful_many2one.py	/^res = model.predict(X,batch_size=batch_size,verbose=0)$/;"	v
+res	lstms_tateful_many2many.py	/^res = model.predict(X,batch_size=batch_size,verbose=0)$/;"	v
+resample	choice.py	/^def resample(x,y,t_s,t_e):$/;"	f
+resample	fig2.py	/^def resample(x,y,t_s,t_e):$/;"	f
+resample	oneshut.py	/^def resample(x,y):$/;"	f
+resample	read_save_plot.py	/^def resample(x,y):$/;"	f
+resample	selectdata.py	/^def resample(x,y,t_s,t_e):$/;"	f
+result0	结果配置.py	/^        result0 = model.predict(X_test,batch_size=32,verbose=1)$/;"	v
+result2	结果配置.py	/^        result2 = model.predict(X,batch_size=32,verbose=1)$/;"	v
+resultpath	Density_LSTM.py	/^resultpath =home+'\/result\/result_LSTM\/result_%d\/'%numb$/;"	v
+resultpath	Density_LSTM11f_m2m.py	/^resultpath =home+'\/Result\/result_LSTM_m2m\/result_%d\/'%numb$/;"	v
+resultpath	Density_LSTM11f_m2o.py	/^resultpath =home+'\/Result\/result_LSTM_m2o\/result_%d\/'%numb$/;"	v
+resultpath	Density_LSTM1ff_m2m.py	/^resultpath =home+'\/Result\/result_LSTM_m2m\/result_%d\/'%numb$/;"	v
+resultpath	Density_LSTM1ff_m2o.py	/^resultpath =home+'\/Result\/result_LSTM_m2o\/result_%d\/'%numb$/;"	v
+resultpath	Density_LSTMfff_m2m.py	/^resultpath =home+'\/Result\/result_LSTM_m2m\/result_%d\/'%numb$/;"	v
+resultpath	Density_LSTMfff_m2o.py	/^resultpath =home+'\/Result\/result_LSTM_m2o\/result_%d\/'%numb$/;"	v
+resultpath	Density_MLP.py	/^resultpath =home+'\/result\/result_MLP\/result_%d\/'%numb$/;"	v
+resultpath	Density_MLP11f.py	/^resultpath =home+'\/Result\/result_MLP\/result_%d\/'%numb$/;"	v
+resultpath	Density_MLP1ff.py	/^resultpath =home+'\/Result\/result_MLP\/result_%d\/'%numb$/;"	v
+resultpath	Density_MLPfff.py	/^resultpath = home+'\/Result\/result_MLP\/result_%d\/'%numb$/;"	v
+resultpath	analy.py	/^resultpath = home + '\/result\/'$/;"	v
+resultpath	draw_LSTM_1s.py	/^resultpath =home+'\/result\/result_LSTM\/result_%d\/'%num$/;"	v
+resultpath	draw_MLP_1s.py	/^resultpath =home+'\/result\/result_MLP\/result_%d\/'%num$/;"	v
+resultpath	fig1.py	/^resultpath = home + '\/Resultpicture\/'$/;"	v
+resultpath	敏感度.py	/^resultpath =home+'\/Result\/result_MLP\/'$/;"	v
+resultpath	画出本地一炮.py	/^resultpath = home + '\/Result\/'$/;"	v
+resultpath1	draw_LSTM_MLP.py	/^resultpath1 = home+'\/Result\/result_MLP\/result_%d\/'%num1$/;"	v
+resultpath2	draw_LSTM_MLP.py	/^resultpath2 = home+'\/Result\/result_LSTM_m2m\/result_%d\/'%num2$/;"	v
+roc_AUC	draw_LSTM_1s.py	/^roc_AUC = np.load(resultpath +'pred_rate_res_fB.npz')['AUC']$/;"	v
+roc_AUC1	draw_LSTM_MLP.py	/^roc_AUC1   = pred_res1[:,-1]$/;"	v
+roc_AUC1	draw_MLP_1s.py	/^roc_AUC1 = np.load(resultpath +'pred_rate_res_fB.npz')['AUC']$/;"	v
+roc_AUC2	draw_LSTM_MLP.py	/^roc_AUC2   = pred_res2[:,-1]$/;"	v
+s1	各种图.py	/^s1=np.sin(2*np.pi*t)$/;"	v
+s2	各种图.py	/^s2=np.cos(2*np.pi*t)$/;"	v
+s3	各种图.py	/^s3=np.tan(2*np.pi*t)$/;"	v
+s4	各种图.py	/^s4 = np.arcsin(t1)$/;"	v
+s_d	draw_LSTM_MLP.py	/^s_d = list(sorted(set(s_d1).intersection(set(s_d2))))$/;"	v
+s_nd	draw_LSTM_MLP.py	/^s_nd = list(sorted(set(s_nd1).intersection(set(s_nd2))))$/;"	v
+safe	choice.py	/^safe = np.array(safe_shot)$/;"	v
+safe	fig2.py	/^safe = np.array(safe_shot)$/;"	v
+safe	yuanbing.py	/^safe = safe4.shape[0]+safe5.shape[0]+safe6.shape[0]+safe7.shape[0]+safe8.shape[0]$/;"	v
+safe4	yuanbing.py	/^safe4 = np.load(file+'Bsafe4.npz')['safe']$/;"	v
+safe5	yuanbing.py	/^safe5 = np.load(file+'Bsafe5.npz')['safe']$/;"	v
+safe6	yuanbing.py	/^safe6 = np.load(file+'Bsafe6.npz')['safe']$/;"	v
+safe7	yuanbing.py	/^safe7 = np.load(file+'Bsafe7.npz')['safe']$/;"	v
+safe8	yuanbing.py	/^safe8 = np.load(file+'Bsafe8.npz')['safe']$/;"	v
+safe_shot	choice.py	/^safe_shot = []#所有的安全炮$/;"	v
+safe_shot	fig2.py	/^safe_shot = []#所有的安全炮$/;"	v
+safe_shot	selectdata.py	/^safe_shot = []#所有的安全炮$/;"	v
+sample_rate	choice.py	/^sample_rate = 0.001$/;"	v
+sample_rate	fig2.py	/^sample_rate = 0.001$/;"	v
+sample_rate	oneshut.py	/^sample_rate = 0.001$/;"	v
+sample_rate	read_save_plot.py	/^sample_rate = 0.001$/;"	v
+sample_rate	selectdata.py	/^sample_rate = 0.001$/;"	v
+sample_rate	画出ne_ngw.py	/^sample_rate = 0.001$/;"	v
+scores	lstm_stateful_many2one.py	/^scores = model.evaluate(X, y, batch_size=batch_size, verbose=0)$/;"	v
+see	analy.py	/^    def see(self,i):$/;"	m	class:ViewData
+see	fig1.py	/^    def see(self,i):$/;"	m	class:ViewData
+see	画出本地一炮.py	/^    def see(self,i):$/;"	m	class:ViewData
+selfb1	draw_LSTM_MLP.py	/^selfb1     = np.load(resultpath1 + 'selfb.npz')['selfb']$/;"	v
+selfb2	draw_LSTM_MLP.py	/^selfb2     = np.load(resultpath2 +'selfb.npz')['selfb']$/;"	v
+seq_in	lstm_stateful_many2one.py	/^	seq_in = alphabet[i:i + seq_length]$/;"	v
+seq_in	lstms_tateful_many2many.py	/^	seq_in = alphabet[i:i + seq_length]$/;"	v
+seq_length	lstm_stateful_many2one.py	/^seq_length = 3$/;"	v
+seq_length	lstms_tateful_many2many.py	/^seq_length = 3$/;"	v
+seq_out	lstm_stateful_many2one.py	/^	seq_out = alphabet[i + seq_length]$/;"	v
+seq_out	lstms_tateful_many2many.py	/^	seq_out = alphabet[i + seq_length:i + seq_length*2]$/;"	v
+shadow	yuanbing.py	/^                      shadow = True, #无阴影设置$/;"	v
+short	choice.py	/^short = np.array(flat_short)$/;"	v
+short	fig2.py	/^short = np.array(flat_short)$/;"	v
+shot	oneshut.py	/^shot = 57194$/;"	v
+shut_index	draw_LSTM_1s.py	/^def shut_index():$/;"	f
+shut_index	draw_LSTM_MLP.py	/^def shut_index(name):$/;"	f
+shut_index	draw_MLP_1s.py	/^def shut_index():$/;"	f
+signal_Range	D_clust19.py	/^    def signal_Range(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	D_clust20.py	/^    def signal_Range(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	D_clust21.py	/^    def signal_Range(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTM.py	/^    def signal_Range(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTM11f_m2m.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTM11f_m2o.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTM1ff_m2m.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTM1ff_m2o.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTMfff_m2m.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_LSTMfff_m2o.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_MLP.py	/^    def signal_Range(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_MLP11f.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_MLP1ff.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range	Density_MLPfff.py	/^    def signal_Range(self,signal,flat_top,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range1	Density_MLP11f.py	/^    def signal_Range1(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+signal_Range1	Density_MLP1ff.py	/^    def signal_Range1(self,signal,disr_time,i):$/;"	m	class:DIS_PRED
+sizes	yuanbing.py	/^sizes = [safe,disrupt-density,density,other] #每块值$/;"	v
+smooth	analy.py	/^    def smooth(self,amino):$/;"	m	class:ViewData
+smooth	draw_LSTM_MLP.py	/^def smooth(aminor):$/;"	f
+smooth	fig1.py	/^    def smooth(self,amino):$/;"	m	class:ViewData
+smooth	画出ne_ngw.py	/^def smooth(aminor):$/;"	f
+smooth	画出本地一炮.py	/^    def smooth(self,amino):$/;"	m	class:ViewData
+smooth_res	Density_LSTMfff_m2m.py	/^    def smooth_res(self, arr, shot):$/;"	m	class:DIS_PRED
+smooth_res	draw_LSTM_MLP.py	/^def smooth_res(arr,time_step):$/;"	f
+sp	sigmoid.py	/^sp = 0.001$/;"	v
+sp	target.py	/^sp = 0.001$/;"	v
+sp	tmp.py	/^sp = 0.001$/;"	v
+split_shot	Density_LSTM.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_LSTM11f_m2m.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_LSTM11f_m2o.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_LSTM1ff_m2m.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_LSTM1ff_m2o.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_LSTMfff_m2m.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_LSTMfff_m2o.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_MLP.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_MLP11f.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_MLP1ff.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shot	Density_MLPfff.py	/^    def split_shot(self):$/;"	m	class:DIS_PRED
+split_shut	D_clust19.py	/^    def split_shut(self):$/;"	m	class:DIS_PRED
+split_shut	D_clust20.py	/^    def split_shut(self):$/;"	m	class:DIS_PRED
+split_shut	D_clust21.py	/^    def split_shut(self):$/;"	m	class:DIS_PRED
+split_shut	draw_LSTM_1s.py	/^def split_shut():$/;"	f
+split_shut	draw_LSTM_MLP.py	/^def split_shut():$/;"	f
+split_shut	draw_MLP_1s.py	/^def split_shut():$/;"	f
+split_shut1	D_clust19.py	/^    def split_shut1(self):$/;"	m	class:DIS_PRED
+split_shut1	D_clust20.py	/^    def split_shut1(self):$/;"	m	class:DIS_PRED
+split_shut1	D_clust21.py	/^    def split_shut1(self):$/;"	m	class:DIS_PRED
+spx	target.py	/^spx = td-(td-fl)\/3$/;"	v
+spy	target.py	/^spy = 0.5$/;"	v
+startangle	yuanbing.py	/^                      startangle =90, #逆时针起始角度设置$/;"	v
+sxr	敏感度.py	/^sxr = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%12).mean()$/;"	v
+sxr23d	oneshut.py	/^    sxr23d = np.array(coon.get(r'\\SXR23D'))   # read data$/;"	v
+sxr23d	oneshut.py	/^    sxr23d = sxr23d[a:]$/;"	v
+t	各种图.py	/^t=np.arange(0,2,0.1)$/;"	v
+t1	oneshut.py	/^    t1 = np.array(coon.get('dim_of(\\PCRL01)')) # read time data$/;"	v
+t1	oneshut.py	/^    t1 = t1[a:]$/;"	v
+t1	各种图.py	/^t1 = np.arange(-1,1.1,0.1)$/;"	v
+t1	各种画图.py	/^t1 = np.arange(0.0, 2.0, 0.1)$/;"	v
+t1	结果配置.py	/^        t1 = dfsdev[0,:][np.where(dfsdev[1,:]==dfsdev[1,:].min())][0]$/;"	v
+t10	oneshut.py	/^    t10 = np.array(coon.get('dim_of(\\q95)')) # read time data$/;"	v
+t10	oneshut.py	/^    t10 = t10[a:]$/;"	v
+t11	oneshut.py	/^    t11 = np.array(coon.get('dim_of(\\li)')) # read time data$/;"	v
+t11	oneshut.py	/^    t11 = t11[a:]$/;"	v
+t12	oneshut.py	/^    t12 = np.array(coon.get('dim_of(\\BETAP)')) # read time data$/;"	v
+t12	oneshut.py	/^    t12 = t12[a:]$/;"	v
+t13	oneshut.py	/^    t13 = np.array(coon.get('dim_of(\\LMSZ)')) # read time data$/;"	v
+t13	oneshut.py	/^    t13 = t13[a:]$/;"	v
+t14	oneshut.py	/^    t14 = np.array(coon.get('dim_of(\\IC1)')) # read time data$/;"	v
+t14	oneshut.py	/^    t14 = t14[a:]$/;"	v
+t2	oneshut.py	/^    t2 = np.array(coon.get('dim_of(\\DFSDEV)')) # read time data$/;"	v
+t2	oneshut.py	/^    t2 = t2[a:]$/;"	v
+t2	各种画图.py	/^t2 = np.arange(0.0, 2.0, 0.01)$/;"	v
+t2	结果配置.py	/^        t2 = dfsdev[0,:][np.where(dfsdev[1,:]==dfsdev[1,:].max())][0]$/;"	v
+t3	oneshut.py	/^        t3 = t3[a:]$/;"	v
+t3	oneshut.py	/^    t3 = np.arange(A[index,5],A[index,6],sample_rate)$/;"	v
+t3	oneshut.py	/^    t3 = np.array(coon.get('dim_of(\\AMINOR)')) # read time data$/;"	v
+t4	oneshut.py	/^    t4 = np.array(coon.get('dim_of(\\VP1)')) # read time data$/;"	v
+t4	oneshut.py	/^    t4 = t4[a:]$/;"	v
+t5	oneshut.py	/^    t5 = np.array(coon.get('dim_of(\\SXR23D)')) # read time data$/;"	v
+t5	oneshut.py	/^    t5 = t5[a:]$/;"	v
+t6	oneshut.py	/^    t6 = np.array(coon.get('dim_of(\\PXUV30)')) # read time data$/;"	v
+t6	oneshut.py	/^    t6 = t6[a:]$/;"	v
+t7	oneshut.py	/^    t7 = np.array(coon.get('dim_of(\\PXUV18)')) # read time data$/;"	v
+t7	oneshut.py	/^    t7 = t7[a:]$/;"	v
+t8	oneshut.py	/^    t8 = np.array(coon.get('dim_of(\\KMP13T)')) # read time data$/;"	v
+t8	oneshut.py	/^    t8 = t8[a:]$/;"	v
+t9	oneshut.py	/^    t9 = np.array(coon.get('dim_of(\\VBM10)')) # read time data$/;"	v
+t9	oneshut.py	/^    t9 = t9[a:]$/;"	v
+td	sigmoid.py	/^td = 10$/;"	v
+td	target.py	/^td = 10$/;"	v
+td	tmp.py	/^td = 10$/;"	v
+test_data_generator	Density_LSTM11f_m2o.py	/^    def test_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+test_data_generator	Density_LSTM1ff_m2o.py	/^    def test_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+test_data_generator	Density_LSTMfff_m2o.py	/^    def test_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+textprops	yuanbing.py	/^                      textprops={'fontsize':11}$/;"	v
+time	draw_LSTM_1s.py	/^time = np.load(resultpath +'all_xy.npz')['data'][:,-1000:,-1]$/;"	v
+time1	draw_LSTM_MLP.py	/^time1      = np.load(resultpath1 + 'pred_allY_time_selfc.npz')['alltime'][()]$/;"	v
+time1	draw_MLP_1s.py	/^time1 = np.load(resultpath +'all_xy.npz')['data'][:,:,-1]$/;"	v
+time2	draw_LSTM_MLP.py	/^time2      = np.load(resultpath2 +'pred_allY_time_selfc.npz')['alltime'][()]$/;"	v
+train_data_generator	Density_LSTM11f_m2o.py	/^    def train_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+train_data_generator	Density_LSTM1ff_m2o.py	/^    def train_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+train_data_generator	Density_LSTMfff_m2o.py	/^    def train_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+turn_shut	draw_LSTM_1s.py	/^def turn_shut(List):$/;"	f
+turn_shut	draw_MLP_1s.py	/^def turn_shut(List):$/;"	f
+val_data_generator	Density_LSTM11f_m2o.py	/^    def val_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+val_data_generator	Density_LSTM1ff_m2o.py	/^    def val_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+val_data_generator	Density_LSTMfff_m2o.py	/^    def val_data_generator(self, data_x, data_y):$/;"	m	class:DIS_PRED
+vp	敏感度.py	/^vp = pd.read_csv(resultpath + 'result_%d\/history_dict.csv'%11).mean()$/;"	v
+vp1	oneshut.py	/^    vp1 = np.array(coon.get(r'\\VP1'))   # read data$/;"	v
+vp1	oneshut.py	/^    vp1 = vp1[a:]$/;"	v
+weird	画出ne_ngw.py	/^weird = []$/;"	v
+weird	画出ne_ngw.py	/^weird = np.array(weird)$/;"	v
+without	choice.py	/^without = np.array(without_flat)$/;"	v
+without	fig2.py	/^without = np.array(without_flat)$/;"	v
+without_flat	choice.py	/^without_flat = []#没有平顶端的$/;"	v
+without_flat	fig2.py	/^without_flat = []#没有平顶端的$/;"	v
+without_flat	selectdata.py	/^without_flat = []#没有平顶端的$/;"	v
+x	sigmoid.py	/^x=np.arange(-10,10,0.001)$/;"	v
+x	target.py	/^x = np.arange(-10,10,0.001)$/;"	v
+x	tmp.py	/^x = np.arange(fl,td+sp,sp)$/;"	v
+x_valid	batch_generator_feed.py	/^x_valid = np.array([[[1,2],[2,3],[3,4]],[[ 6,  7],[ 8,  9],[10, 11]]])$/;"	v
+xx	sigmoid.py	/^xx = [fl,td]$/;"	v
+xx	target.py	/^xx = [fl,spx,td]$/;"	v
+xy	各种图.py	/^            xy=(0, 0), xycoords='data',$/;"	v
+xytext	各种图.py	/^            xytext=(0.4, 0.2), textcoords='figure fraction',$/;"	v
+y	lstm_stateful_many2one.py	/^y = np_utils.to_categorical(dataY)$/;"	v
+y	lstms_tateful_many2many.py	/^y = np_utils.to_categorical(dataY)$/;"	v
+y	sigmoid.py	/^y=1\/(1+np.exp(-x))$/;"	v
+y	target.py	/^y = 1\/(1+np.exp(-x))$/;"	v
+y	tmp.py	/^y = 1\/(1+np.exp(-(x-(td-(td-fl)\/3))*25))$/;"	v
+y_valid	batch_generator_feed.py	/^y_valid = np.array([0,1])$/;"	v
