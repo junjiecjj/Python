@@ -514,10 +514,10 @@ d2 = np.array([[22,15],
               [5.4,6.6]])
 d3 = np.array([[15,28],
                [7.9,4.0]])
-# maximum = np.maximum(d2,d3)
-# print("maxinum:",maximum)   #[[22.  28. ],[ 7.9  6.6]]
-# minimum = np.minimum(d2,d3)
-# print("minimum:",minimum)   #[[15.  15. ],[ 5.4  4. ]]
+maximum = np.maximum(d2,d3)
+print("maxinum:",maximum)   #[[22.  28. ],[ 7.9  6.6]]
+minimum = np.minimum(d2,d3)
+print("minimum:",minimum)   #[[15.  15. ],[ 5.4  4. ]]
 
 #数组比较函数
 result = np.greater(d2,d3)
@@ -581,7 +581,7 @@ print("A*A_:\n",A*A_)
 '''
 x − 2y + z = 0
 2y - 8z = 8
-−4�� + 5�� + 9�� = −9
+−4x + 5y + 9z = −9
 '''
 #numpy求解三元一次方程组
 A = np.mat("1 -2 1;0 2 -8;-4 5 9")
