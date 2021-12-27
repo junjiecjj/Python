@@ -3,7 +3,7 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 from scipy.optimize import leastsq
-
+# 记录差值拟合函数的用法
 ################################################
 #  https://zhuanlan.zhihu.com/p/28149195
 
