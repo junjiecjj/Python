@@ -909,7 +909,7 @@ class DIS_PRED(object):
 numb = 19
 home = os.environ['HOME']
 datapath = home+'/Density/'
-" map <F4> :TagbarToggle<CR2
+
 infopath = home+'/数据筛选/'
 resultpath =home+'/Result/result_LSTM_m2m/result_%d/'%numb
 
