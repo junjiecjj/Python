@@ -9,7 +9,7 @@ import math
 import numpy as np
 
 def softmax1D_U(x):
-2    # 
+    # 
     f_x = np.exp(x) / np.sum(np.exp(x))
     return f_x
 

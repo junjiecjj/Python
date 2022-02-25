@@ -171,7 +171,7 @@ Sympy 同样是使用 integrate () 函数来做定积分的求解，只是语法
 """
 x,y = sy.symbols('x y')
 expr=sy.sin(x**2)
-i_expr=sy.integrate(expr, (x, -oo, oo))
+i_expr=sy.integrate(expr, (x, -np.inf,np.inf))
 print(i_expr)
 
 print("**************** https://zhuanlan.zhihu.com/p/111573239 ******************** ")

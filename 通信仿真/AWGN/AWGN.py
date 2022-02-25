@@ -11,7 +11,7 @@ https://www.shuzhiduo.com/A/rV57oe7X5P/
 
 """
 
-
+import matplotlib.pyplot as plt
 import math
 import numpy as np
 
@@ -36,11 +36,17 @@ def wgn(x, snr):
     npower = xpower / snr
     return np.random.randn(len(x)) * np.sqrt(npower)
  
-t = np.arange(0, 1000000) * 0.1
-x = np.sin(t)
+t = np.arange(0, 0.2, 0.002)
+x = np.sin(2*np.pi*50*t)
 snr = 6
 n = wgn(x, snr)
 xn = x+n # 增加了6dBz信噪比噪声的信号
 
 xn1 = awgn(x,snr)
+
+
+fig, axs = plt.subplots(3, 1)
+axs[0].plot(t,x,'b-')
+axs[1].plot(t,xn,'r-')
+axs[2].plot(t,xn1,'g-')
 
