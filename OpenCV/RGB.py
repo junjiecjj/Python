@@ -10,6 +10,7 @@ def image2label(path,size_):
     w = size_[0]
     h = size_[1]
     label_im=cv2.imread(path)
+    #label_im=cv2.imread(path,cv2.IMREAD_UNCHANGED)
     #修改图像的尺寸大小
     new_array = cv2.resize(label_im, (w, h), interpolation=cv2.INTER_CUBIC)
     data=np.array(new_array,dtype='int32')
@@ -37,15 +38,15 @@ def image2label(path,size_):
     
     return data
 
-if __name__ =='__main__':
-    import cv2
-    import numpy as np
-    from PIL import Image
-    #修改的尺寸大小    
-    size_=[320,480]
-    img_path='/root/reid/reid_tutorial/train/0002_c1s1_000451_03.png'
-    label = image2label(img_path,size_)
-    #修改后的尺寸和修改后的像素值保存下来
-    save_img='./0002_c1s1_000451_03.png'
-    cv2.imwrite(save_img, label)
-    print(label[100])
+# if __name__ =='__main__':
+import cv2
+import numpy as np
+from PIL import Image
+#修改的尺寸大小    
+size_=[320,480]
+img_path='/home/jack/图片/pngsucai_6729744_d83066.png'
+label = image2label(img_path,size_)
+#修改后的尺寸和修改后的像素值保存下来
+save_img='./0002_c1s1_000451_03.png'
+cv2.imwrite(save_img, label)
+print(label[100])
