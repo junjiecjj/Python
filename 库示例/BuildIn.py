@@ -361,4 +361,105 @@ def f():
     
 # 查看内置属性
 # dir() : 查看对象的内置属性, 访问的是对象中的__dir__()方法
-print(dir(tuple))  #查看元组的方法
+print(dir(tuple))  #
+
+
+
+#============================================
+# int() 接下来介绍的是相对少见的用法，int 可以将 2 进制到 36 进制的字符串、字节串（bytes）或者字节数组（bytearray）实例转换成对应的 10 进制整数。
+# 具体的调用形式为：int(x, base=10)，其中 x 即为字符串、字节串或字节数组的实例。
+# 二进制数字可以用 0b 或者 0B 做前缀，八进制数字可以用 0o 或者 0O 做前缀，十六进制数字可以用 0x 或者 0X 做前缀，前缀是可选的。
+#============================================
+
+
+int()               # 不传入参数时，得到结果0
+
+print( " int(3) = {}".format(int(3)) )
+
+print( " int(3.6) = {}".format(int(3.6)) )
+
+#  如果是带参数base的话，12要以字符串的形式进行输入，12 为 16进制
+print( " int('12',16) = {}".format(int('12',16)) ) 
+
+print( " int('0xa',16)   = {}".format(int('0xa',16)  ) )
+
+print( " int('10',8)     = {}".format(int('10',8)   ) )
+
+print( " int('0x0010',base=16)   = {}".format(int('0x0010',base=16)   ) )
+
+x = '6'
+num1 = int(x)
+num2 = int(x, 10)
+print(num1)
+print(num2)
+
+x = '10'
+num1 = int(x, 2)
+num2 = int(x, 8)
+num3 = int(x, 16)
+print(num1)
+print(num2)
+print(num3)
+
+
+# 带正号
+x = '+a0'
+num = int(x, 16)
+print(num)
+
+
+# 带负号
+x = '-a0'
+num = int(x, 16)
+print(num)
+
+# 两端带空白
+x = '  \t  +a0\r\n  '
+num = int(x, 16)
+print(num)
+
+
+
+# base=0 时按照代码字面量直接解析
+# base 为 0 的时候会按照代码字面量（code literal）解析，即只能把 2、8、10、16 进制数字表示转换为 10 进制。对于 2、8、16 进制必须指明相应进制的前缀，否则会按照 10 进制解析。
+
+x = '10'
+num = int(x, 0)
+print(num)
+
+x = '0b10'
+num = int(x, 0)
+print(num)
+
+x = '0o10'
+num = int(x, 0)
+print(num)
+
+x = '0x10'
+num = int(x, 0)
+print(num)
+
+
+# 如果指定了base参数，那么第一个参数必须是字符类型
+# 下面的例子就是指定字符为2进制数据，将其转换为十进制
+int('11', base=2)
+
+# 如果不指定，则认为字符是十进制数据
+int('101')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
