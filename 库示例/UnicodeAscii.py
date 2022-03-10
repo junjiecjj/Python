@@ -7,6 +7,9 @@ Created on Wed Mar  9 19:39:03 2022
 """
 
 import unicodedata
+
+
+
 s = u"Marek Čech"   #(u表示是unicode而非 ascii码，不加报错！)
 line = unicodedata.normalize('NFKD',s).encode('ascii','ignore')
 print (line)
@@ -44,3 +47,28 @@ print(unicodedata.normalize('NFKD', stringVal).encode('ascii', 'replace').decode
 
 #replace 参数直接将没有 ASCII 对应的字符替换成问号 ? 符号。如果我们在同一字符串上使用 ignore：
 print(unicodedata.normalize('NFKD', stringVal).encode('ascii', 'ignore').decode())
+
+
+
+str1 = '汗'
+print (repr(str1))
+
+str2 = u'汗'
+print (repr(str2))
+str3 = str2.encode('utf-8')
+str4 = str2.encode('gbk')
+print (repr(str3))
+print (repr(str4))
+str5 = str3.decode('utf-8') 
+print( repr(str5))
+str6 = str4.decode('gbk') 
+print( repr(str6))
+
+
+
+
+
+
+
+
+
