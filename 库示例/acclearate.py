@@ -30,3 +30,14 @@ print("used {:.5}s".format(toc-tic))
 
 # 第2式：测算代码多次运行平均时间
 # 平凡方法
+from timeit import timeit
+
+g = lambda x:x**2+1
+def main1():
+    return (g(2)**120)
+
+timeit('main1()',globals = {'main1':main1},number = 10)
+
+
+#第3式：按调用函数分析代码运行时间
+#平凡方法
