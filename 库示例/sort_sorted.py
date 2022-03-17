@@ -96,3 +96,74 @@ chars=['http://c.biancheng.net',\
 print("sorted(chars) = {}".format(sorted(chars)))
 #自定义按照字符串长度排序
 print("sorted(chars,key=lambda x:len(x)) = {}".format(sorted(chars,key=lambda x:len(x))))
+
+
+
+
+
+a=[1,2,5,3,9,4,6,8,7,0,12]
+a.sort()
+print("a   = {}".format(a))
+# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12]
+
+a=[1,2,5,3,9,4,6,8,7,0,12]
+print("sorted(a)5 = {}".format(sorted(a)))
+# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12]
+print("a   = {}".format(a))
+# [1, 2, 5, 3, 9, 4, 6, 8, 7, 0, 12]
+
+
+#假设用元组保存每一个学生的信息，包括学号，姓名，年龄。用列表保存所有学生的信息。
+list1=[(8, 'Logan', 20), (2, 'Mike', 22), (5, 'Lucy', 19)]
+list1.sort()
+print("list1   = {}".format(list1))
+
+# [(2, 'Mike', 22), (5, 'Lucy', 19), (8, 'Logan', 20)]
+
+list1=[(8, 'Logan', 20), (2, 'Mike', 22), (5, 'Lucy', 19)]
+print("list1   = {}".format(list1))
+# [(2, 'Mike', 22), (5, 'Lucy', 19), (8, 'Logan', 20)]
+list1
+# [(8, 'Logan', 20), (2, 'Mike', 22), (5, 'Lucy', 19)]
+
+#小结：
+#由示例可以看出，当列表由list（或者tuple）组成时，默认情况下，sort和sorted都会根据list[0]（或者tuple[0]）作为排序的key，进行排序。
+#以上都是默认的排序方式，我们可以编写代码控制两个函数的排序行为。主要有三种方式：基于key函数；基于cmp函数和基于reverse函数
+
+
+
+list1=[(8, 'Logan', 20), (2, 'Mike', 22), (5, 'Lucy', 19)]
+list1.sort(key=lambda x:x[2])
+print("list1   = {}".format(list1))
+# [(5, 'Lucy', 19), (8, 'Logan', 20), (2, 'Mike', 22)]
+
+list1=[(8, 'Logan', 20), (2, 'Mike', 22), (5, 'Lucy', 19)]
+print("sorted(list1, key=lambda x:x[2])  = {}".format(sorted(list1, key=lambda x:x[2])))
+
+#[(5, 'Lucy', 19), (8, 'Logan', 20), (2, 'Mike', 22)]
+print("list1   = {}".format(list1))
+#[(8, 'Logan', 20), (2, 'Mike', 22), (5, 'Lucy', 19)]
+
+
+
+
+
+a=[1,2,5,3,9,4,6,8,7,0,12]
+a.sort(reverse=False)
+print("a   = {}".format(a))
+# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12]
+
+a=[1,2,5,3,9,4,6,8,7,0,12]
+a.sort(reverse=True)
+print("a   = {}".format(a))
+# [12, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+
+print("a.sort(reverse=True)  = {}".format(a.sort(reverse=True)))
+# 小结：reverse=False为升序排序(默认)；reverse=True为降序排序
+
+
+
+
+
+
+
