@@ -12,7 +12,7 @@ import time
 
 # 第 1 式：测算代码运行时间
 # 平凡方法
- tic = time.time()
+tic = time.time()
 much_job = [x**2 for x in range(1,1000000,3)]
 toc = time.time()
 
@@ -28,7 +28,7 @@ print("used {:.5}s".format(toc-tic))
 
 # 第 2 式：测算代码多次运行平均时间
 # 平凡方法
- from timeit import timeit
+from timeit import timeit
 
 g = lambda x:x**2+1
 def main1():
@@ -62,10 +62,10 @@ data = (i**2+1 for i in range(1000000))
 list_data = list(data)
 set_data = set(data)
 
-%%time
+#%%time
 1098987 in list_data
 
-%%time
+#%%time
 1098987 in set_data
 
 #第 6 式：用 dict 而非两个 list 进行匹配查找
@@ -75,11 +75,11 @@ list_b = [i**2 for i in list_a]
 dict_ab = dict(zip(list_a,list_b))
 
 
-%%time
+#%%time
 print(list_b[list_a.index(876567)])
 
 
-%%time
+#%%time
 print(dict_ab.get(876567,None) )
 
 
@@ -87,7 +87,7 @@ print(dict_ab.get(876567,None) )
 #第 7 式：优先使用 for 循环而不是 while 循环
 #低速方法
 
-%%time
+#%%time
 s,i = 0,0
 while i<10000:
 	i = i+1
@@ -97,7 +97,7 @@ print(s)
 
 
 
-%%time
+#%%time
 s = 0;
 for i in range(1,10001):
 	s = s+i
@@ -109,19 +109,19 @@ print(s)
 #低速方法
 a = [i**2+1 for i in range(2000)]
 
-%%time
+#%%time
 b = [i/sum(a) for i in a]
 
 
 #高速方法
-$$time
+#%%time
 sum_a = sum(a)
 b = [i/sum_a for i in a]
 
 
 #第 9 式：用循环机制代替递归函数
 #低速方法
-%%time
+#%%time
 def fib(n):
 	return (1 if n in (1,2) else fib(n-1)+fib(n-2))
 print(fib(30))
@@ -129,12 +129,12 @@ print(fib(30))
 
 
 #高速方法
-%%time
-def fib1(n)：
+#%%time
+def fib1(n):
 	if n in (1,2):
 		return (1)
 	a,b = 1,1
-	for i in range(2,n)：
+	for i in range(2,n):
 		a,b = b,a+b
 	return(b)
 print(fib1(30))
@@ -143,14 +143,14 @@ print(fib1(30))
 
 #第 10 式：用缓存机制加速递归函数
 #低速方法
-%%time
+#%%time
 def fib2(n):
 	return (1 if n in (1,2) else fib2(n-1)+fib2(n-2))
 print(fib2(30))
 
 
 #高速方法
-%%time
+#%%time
 from functools import lru_cache
 
 @lru_cache(100)
@@ -167,7 +167,7 @@ def my_power(x):
 
 def my_power_sum():
 	s = 0
-	for i in range(1，n+1):
+	for i in range(1,n+1):
 		s = s+my_power(i)
 	return(s)
 
@@ -183,7 +183,7 @@ def my_power1(x):
 @jit
 def my_power_sum1():
 	s = 0
-	for i in range(1，n+1):
+	for i in range(1,n+1):
 		s = s+my_power1(i)
 	return(s)
 
@@ -194,7 +194,7 @@ print(my_power_sum1(1000000))
 #低速方法
 data = [x**2%1989 for i in range(2000000)]
 
-%%time
+#%%time
 values_count = {}
 for i in data:
 	i_cnt = values_count.get(i,0)
@@ -203,8 +203,8 @@ print(values_count.get(4,0))
 
 
 #高速方法
-%%time
-for collections import Counter
+#%%time
+from collections import Counter
 values_count = Counter(data)
 print(values_count.get(4,0))
 
@@ -220,7 +220,7 @@ dic_b = {i:2*i+1 for i in range(1,1000000,3)}
 dic_c = {i:3*i+1 for i in range(1,1000000,5)}
 dic_d = {i:4*i+1 for i in range(1,1000000,7)}
 
-%%time
+#%%time
 result = dict_a.copy()
 result.update(dic_b)
 result.update(dic_c)
@@ -229,7 +229,7 @@ print(result.get(9999,0))
 
 
 #高速方法
-%%time
+#%%time
 from collections import ChainMap
 chain = ChainMap(dic_a, dic_b, dic_c, dic_d)
 print(chain.get(9999,0))
@@ -238,7 +238,7 @@ print(chain.get(9999,0))
 
 #第 14 式：使用 np.array 代替 list
 #低速方法
-%%time
+#%%time
 a = range(1,1000000,3)
 b = range(1000000,1,-3)
 c = [3*a[i] -2*b[i] for i in range(0,len(a))]
@@ -247,7 +247,7 @@ c = [3*a[i] -2*b[i] for i in range(0,len(a))]
 
 #高速方法
 
-%%time
+#%%time
 import numpy as np
 array_a  = np.arange(1,1000000,3)
 array_b = np.arange(1000000,1,-3)
@@ -264,7 +264,7 @@ b = [math.log(x) for x in a]
 
 
 #高速方法
-%%time
+#%%time
 import numpy as np
 array_a = np.arange(1,1000000,3)
 array_b = np.log(array_a)
@@ -281,7 +281,7 @@ array_b = relu(array_a)
 
 #高速方法
 
-%%time
+#%%time
 relu = lambda x:np.where(x>0,x,0)
 array_b = relu(array_a)
 
@@ -294,12 +294,13 @@ import pandas as pd
 
 df = pd.DataFrame(np.random.randint(-10,11,size(100000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
 
-%time dfresult = df.applymap(lambda x:np.sin(x)+ np.cos(x))
+#%%time
+dfresult = df.applymap(lambda x:np.sin(x)+ np.cos(x))
 
 
 #高速方法
 
-%%time
+#%%time
 dfresult = np.sin(df) + np.cos(df)
 
 
@@ -309,7 +310,7 @@ dfresult = np.sin(df) + np.cos(df)
 
 #第 18 式：使用预分配存储代替动态扩容
 #低速方法
-%%time
+#%%time
 import pandas as pd
 import numpy as np
 
@@ -320,7 +321,7 @@ for i in range(10000):
 
 
 #高速方法
-%%time
+#%%time
 import pandas as pd
 import numpy as np
 df = pd.DataFrame(np.zeros((10000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
@@ -330,7 +331,7 @@ for i in range(10000):
 
 #第 19 式：使用 csv 文件读写代替 excel 文件读写
 #低速方法
-%%time
+#%%time
 df.to_excel('data.xlsx')
 #高速方法
 df.to_csv('data.csv')
@@ -342,7 +343,7 @@ df.to_csv('data.csv')
 import pandas as pd
 import numpy as np 
 df = pd.DataFrame(np.random.randint(-10,11,size(10000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
-%%time
+#%%time
 result = df.apply(np.sum,axis = 1)
 
 
@@ -358,7 +359,8 @@ import pandas as pd
 import numpy as np 
 df = pd.DataFrame(np.random.randint(0,6,size=(100000000,5)),columns = list('abced'))
 
-%time df.groupby('a').mean()
+#%time 
+df.groupby('a').mean()
 
 
 #高速方法
@@ -366,7 +368,8 @@ df = pd.DataFrame(np.random.randint(0,6,size=(100000000,5)),columns = list('abce
 import dask.dataframe as pd
 df_dask = dd.from_pandas(df, npartitions = 40)
 
-%time df_task.groupby('a').mean().compute()
+#%time 
+df_task.groupby('a').mean().compute()
 
 
 
@@ -377,12 +380,12 @@ def muchjob(x):
 	time.sleep(5)
 	return (x**2)
 
-%%time
+#%%time
 result = [muchjob(i) for i in range(5)]
 result
 
 #高速方法
-%%time
+#%%time
 from dask import delayed, compute
 from dask import threaded,multiprocessing
 values = [delayed(muchjob)(i) for i in range(5)]
@@ -393,7 +396,7 @@ result = compute(*values,scjeduler='multiprocessing')
 
 #第 23 式：应用多线程加速 IO 密集型任务
 #低速方法
-%%time 
+#%%time 
 def ritefile(i):
 	with open('./testDictionary'+'.txt','w') as f:
 		s = ('hello %d' % i)*10000000
@@ -404,7 +407,7 @@ for i in range(10):
 	writefile(i)
 	
 #高速方法
-%%time
+#%%time
 
 import threading
 
@@ -427,7 +430,7 @@ for i in thread_list:
 
 #第 24 式：应用多进程加速 CPU 密集型任务
 #低速方法
-%%time
+#%%time
 import time
 
 def muchjob(x):
@@ -442,7 +445,7 @@ print(ans)
 
 
 #高速方法
-%%time
+#%%time
 import time
 import multiprocessing
 data = range(8)
