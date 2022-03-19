@@ -39,3 +39,7 @@ def monotonically_increasing_numba(a):
 
 a = [1, 2, 1, 3, 3, 5, 4, 6]
 b = monotonically_increasing(a)
+
+
+b1 = monotonically_increasing_numba(a)
+
