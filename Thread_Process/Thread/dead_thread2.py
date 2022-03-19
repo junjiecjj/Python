@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*-coding=utf-8-*-
 
-import multiprocessing,threading
+import  threading
 
 def loop1():
     x=0

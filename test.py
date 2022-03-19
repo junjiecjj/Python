@@ -1,32 +1,20 @@
 #!/usr/bin/env python3.6
 #-*-coding=utf-8-*-
 
-SPECIAL_TOKENS = {
-    '<PAD>': 0,
-    '<START>': 1,
-    '<END>': 2,
-    '<UNK>': 3,
-}
+# from ipyvolume import p3
 
 
-def build_vocab(
-    sequences,
-    token_to_idx={},
-    min_token_count=1,
-    delim=' ',
-    punct_to_keep=None,
-    punct_to_remove=None,
-):
-    print("sequences = {}".format(sequences))
-    print("token_to_idx = {}".format(token_to_idx))
-    print("token_to_idx = {}".format(len(token_to_idx)))
-    print("min_token_count = {}".format(min_token_count))
-    print("delim = {}".format(delim))
-    print("punct_to_keep = {}".format(punct_to_keep))
-    print("punct_to_remove = {}".format(punct_to_remove))
-    return None
+# fig = p3.figure()
+# p3.style.use('dark')
+
+# s = p3.quiver(*ds_stream.data,size=6)
+# p3.animate_glyphs(s,interval = 200)
+# p3.show()
 
 
-sentences1 = ['hello, jack.']
-    
-build_vocab(sentences1, SPECIAL_TOKENS, punct_to_keep=[';', ','], punct_to_remove=['?', '.'])
+
+import ipyvolume
+
+hzd = ipyvolume.datasets.hdz2000.fetch()
+
+ipyvolume.volshow(hzd.data,lighting = True,width=300,height=300,level=[0.4,0.6,0.9])

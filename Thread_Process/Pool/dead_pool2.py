@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*-coding=utf-8-*-
 
-import multiprocessing
+
 from multiprocessing import Pool
 
 def loop(name):

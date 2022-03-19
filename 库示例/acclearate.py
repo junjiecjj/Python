@@ -46,13 +46,13 @@ def main2():
 	result = [relu(x) for x in range(-100000,100000,1)]
 	return result
 import profile
-profile.run('main()')
+profile.run('main2()')
 
 #第 4 式：按行分析代码运行时间
 #平凡方法
 from line_profiler import LineProfiler
 lprofile = LineProfiler(main2,relu)
-lprofile.run('main()')
+lprofile.run('main2()')
 lprofile.print_stats()
 
 
@@ -155,7 +155,7 @@ from functools import lru_cache
 
 @lru_cache(100)
 def fib3(n):
-	return (1 if n in (1,2) else fib(n-1)+fib(n-2))
+	return (1 if n in (1,2) else fib2(n-1)+fib2(n-2))
 print(fib3(30))
 
 
@@ -165,7 +165,7 @@ print(fib3(30))
 def my_power(x):
 	return (x**2)
 
-def my_power_sum():
+def my_power_sum(n):
 	s = 0
 	for i in range(1,n+1):
 		s = s+my_power(i)
@@ -181,7 +181,7 @@ def my_power1(x):
 	return (x**2)
 
 @jit
-def my_power_sum1():
+def my_power_sum1(n):
 	s = 0
 	for i in range(1,n+1):
 		s = s+my_power1(i)
@@ -192,7 +192,7 @@ print(my_power_sum1(1000000))
 
 #第 12 式：使用 collections.Counter 加速计数
 #低速方法
-data = [x**2%1989 for i in range(2000000)]
+data = [x**2%1989 for x in range(2000000)]
 
 #%%time
 values_count = {}
@@ -221,7 +221,7 @@ dic_c = {i:3*i+1 for i in range(1,1000000,5)}
 dic_d = {i:4*i+1 for i in range(1,1000000,7)}
 
 #%%time
-result = dict_a.copy()
+result = dic_a.copy()
 result.update(dic_b)
 result.update(dic_c)
 result.update(dic_d)
@@ -292,7 +292,7 @@ array_b = relu(array_a)
 import numpy as np
 import pandas as pd
 
-df = pd.DataFrame(np.random.randint(-10,11,size(100000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
+df = pd.DataFrame(np.random.randint(-10,11,size=(100000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
 
 #%%time
 dfresult = df.applymap(lambda x:np.sin(x)+ np.cos(x))
@@ -342,13 +342,13 @@ df.to_csv('data.csv')
 #低速方法
 import pandas as pd
 import numpy as np 
-df = pd.DataFrame(np.random.randint(-10,11,size(10000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
+df = pd.DataFrame(np.random.randint(-10,11,size=(10000,26)),columns = list('abcdefghijklmnoqprstvuwxyz'))
 #%%time
 result = df.apply(np.sum,axis = 1)
 
 
 #高速方法
-from pandaraller import pandarallel
+from pandarallel import pandarallel
 pandarallel.initialize(nb_workers = 4)
 result = df.parallel_apply(np.sum,axis = 1)
 
@@ -365,8 +365,8 @@ df.groupby('a').mean()
 
 #高速方法
 
-import dask.dataframe as pd
-df_dask = dd.from_pandas(df, npartitions = 40)
+import dask.dataframe as dd
+df_task = dd.from_pandas(df, npartitions = 40)
 
 #%time 
 df_task.groupby('a').mean().compute()
@@ -382,7 +382,7 @@ def muchjob(x):
 
 #%%time
 result = [muchjob(i) for i in range(5)]
-result
+
 
 #高速方法
 #%%time
@@ -397,7 +397,7 @@ result = compute(*values,scjeduler='multiprocessing')
 #第 23 式：应用多线程加速 IO 密集型任务
 #低速方法
 #%%time 
-def ritefile(i):
+def writefile(i):
 	with open('./testDictionary'+'.txt','w') as f:
 		s = ('hello %d' % i)*10000000
 		f.write(s)
@@ -461,6 +461,7 @@ pool.close()
 pool.join()
 ans = [res.get() for res in result]
 print(ans)
+
 
 
 
