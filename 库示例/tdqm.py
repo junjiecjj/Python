@@ -46,6 +46,11 @@ for i in range(10):
     pbar.update(10)
 pbar.close()
 
+#===============================================================================================
+# https://zhuanlan.zhihu.com/p/163613814
+#===============================================================================================
+
+# 基于迭代对象运行: tqdm(iterator)
 
 #trange(i)是tqdm(range(i))的一种简单写法
 for i in trange(100):
@@ -60,6 +65,19 @@ for i in pbar:
     pbar.set_description('Processing '+i)
     time.sleep(0.2)
 
+# 手动进行更新
+
+import time
+from tqdm import tqdm
+with tqdm(total=200) as pbar:
+    pbar.set_description('Processing:')
+    # total表示总的项目, 循环的次数20*10(每次更新数目) = 200(total)
+    for i in range(20):
+        # 进行动作, 这里是过0.1s
+        time.sleep(0.1)
+        # 进行进度更新, 这里设置10个
+        pbar.update(10)
+
 # 发呆0.5s
 def action():
     time.sleep(0.5)
@@ -69,3 +87,29 @@ with tqdm(total=100000, desc='Example', leave=True, ncols=100, unit='B', unit_sc
         action()
         # 更新发呆进度
         pbar.update(10000)
+
+
+#===============================================================================================
+#   https://blog.csdn.net/qq_33472765/article/details/82940843
+#===============================================================================================
+
+
+import time
+from tqdm import tqdm, trange
+
+ 
+for i in tqdm(range(100)):
+    time.sleep(0.01)
+
+alist = list('letters')
+bar = tqdm(alist)
+for letter in bar:
+    bar.set_description(f"Now get {letter}")
+    time.sleep(0.1)
+
+
+
+pbar = tqdm(["a", "b", "c", "d"])
+for char in pbar:
+    time.sleep(0.1)
+    pbar.set_description("Processing %s" % char)
