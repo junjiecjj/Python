@@ -113,3 +113,180 @@ pbar = tqdm(["a", "b", "c", "d"])
 for char in pbar:
     time.sleep(0.1)
     pbar.set_description("Processing %s" % char)
+    
+#===============================================================================================
+#   https://blog.csdn.net/qq_33472765/article/details/82940843
+#===============================================================================================
+
+from tqdm import tqdm
+for i in tqdm(range(10000)):
+    pass
+
+
+import time
+from tqdm import tqdm
+for i in tqdm(range(100),ascii=True,desc='jack'):
+    time.sleep(0.01)
+
+
+
+from tqdm import tqdm
+from time import sleep
+
+text = ""
+for char in tqdm(["a", "b", "c", "d"]):
+    sleep(0.25)
+    text = text + char
+
+
+from tqdm import trange
+
+for i in trange(100):
+    sleep(0.01)
+
+
+pbar = tqdm(["a", "b", "c", "d"])
+for char in pbar:
+    sleep(0.25)
+    pbar.set_description("Processing %s" % char)
+
+# Manual control of tqdm() updates using a with statement:
+with tqdm(total=100) as pbar:
+    for i in range(10):
+        sleep(0.1)
+        pbar.update(10)
+        
+        
+pbar = tqdm(total=100)
+for i in range(10):
+    sleep(0.1)
+    pbar.update(10)
+pbar.close()
+
+
+
+from tqdm import tqdm, trange
+from random import random, randint
+from time import sleep
+
+with trange(10) as t:
+    for i in t:
+        # Description will be displayed on the left
+        t.set_description('GEN %i' % i)
+        # Postfix will be displayed on the right,
+        # formatted automatically based on argument's datatype
+        t.set_postfix(loss=random(), gen=randint(1,999), str='h',
+                      lst=[1, 2])
+        sleep(0.1)
+
+with tqdm(total=10, bar_format="{postfix[0]} {postfix[1][value]:>8.2g}",
+          postfix=["Batch", dict(value=0)]) as t:
+    for i in range(10):
+        sleep(0.1)
+        t.postfix[1]["value"] = i / 2
+        t.update()
+
+
+
+from tqdm import tqdm
+class TqdmExtraFormat(tqdm):
+    """Provides a `total_time` format parameter"""
+    @property
+    def format_dict(self):
+        d = super(TqdmExtraFormat, self).format_dict
+        total_time = d["elapsed"] * (d["total"] or 0) / max(d["n"], 1)
+        d.update(total_time=self.format_interval(total_time) + " in total")
+        return d
+
+for i in TqdmExtraFormat(
+      range(9), ascii=" .oO0",
+      bar_format="{total_time}: {percentage:.0f}%|{bar}{r_bar}"):
+    if i == 4:
+        break
+
+
+
+from time import sleep
+from tqdm import trange, tqdm
+from multiprocessing import Pool, RLock, freeze_support
+
+L = list(range(9))
+
+def progresser(n):
+    interval = 0.001 / (n + 2)
+    total = 5000
+    text = "#{}, est. {:<04.2}s".format(n, interval * total)
+    for _ in trange(total, desc=text, position=n):
+        sleep(interval)
+
+def test1():
+    freeze_support()  # for Windows support
+    tqdm.set_lock(RLock())  # for managing output contention
+    p = Pool(initializer=tqdm.set_lock, initargs=(tqdm.get_lock(),))
+    p.map(progresser, L)
+
+test1()
+
+
+
+from time import sleep
+from tqdm import tqdm, trange
+from concurrent.futures import ThreadPoolExecutor
+
+L = list(range(9))
+
+def progresser(n):
+    interval = 0.001 / (n + 2)
+    total = 5000
+    text = "#{}, est. {:<04.2}s".format(n, interval * total)
+    for _ in trange(total, desc=text):
+        sleep(interval)
+    if n == 6:
+        tqdm.write("n == 6 completed.")
+        tqdm.write("`tqdm.write()` is thread-safe in py3!")
+
+def test2():
+    with ThreadPoolExecutor() as p:
+        p.map(progresser, L)
+test2()
+
+
+
+from tqdm.asyncio import tqdm
+
+async for i in tqdm(range(9)):
+    if i == 2:
+        break
+
+
+
+from tqdm.asyncio import tqdm
+
+async for i in tqdm(range(9)):
+    if i == 2:
+        break
+
+
+
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+
+df = pd.DataFrame(np.random.randint(0, 100, (100000, 6)))
+
+# Register `pandas.progress_apply` and `pandas.Series.map_apply` with `tqdm`
+# (can use `tqdm.gui.tqdm`, `tqdm.notebook.tqdm`, optional kwargs, etc.)
+tqdm.pandas(desc="my bar!")
+
+# Now you can use `progress_apply` instead of `apply`
+# and `progress_map` instead of `map`
+df.progress_apply(lambda x: x**2)
+
+
+
+
+
+
+
+
+
