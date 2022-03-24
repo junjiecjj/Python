@@ -49,6 +49,129 @@ print("M4.shape = \n",M4.shape)
 M5 = np.random.randint(0, 10, (4,3))
 print("M5.shape = \n",M5.shape)
 
+a =  np.arange(7)
+
+# 每间隔2个取一个数
+print(a[ : 7: 2])
+
+
+b = np.arange(24).reshape(4,6)
+
+print(b,'\n\n',b.T)
+
+print(b.reshape(6,4))
+
+
+#函数resize（）的作用跟reshape（）类似，但是会改变所作用的数组，相当于有inplace=True的效果
+b.resize(6,4)
+
+print(b)
+
+
+"""
+ravel()和flatten()，将多维数组转换成一维数组，如下：
+两者的区别在于返回拷贝（copy）还是返回视图（view），flatten()返回一份拷贝，需要分配新的内存空间，对拷贝所做的修改不会影响原始矩阵，而ravel()返回的是视图（view），会影响原始矩阵。
+"""
+
+b = np.arange(12).reshape(3,4)
+print("b = \n{}".format(b ))
+
+print("b.ravel() = \n{}".format(b.ravel()))
+print("b.flatten() = \n{}".format(b.flatten()))
+
+c = b.flatten()
+d  = b.ravel()
+print("b = \n{},\nc= \n{},\nd= \n{}".format(b,c,d ))
+
+c[1]=121
+print("b = \n{},\nc= \n{},\nd= \n{}".format(b,c,d ))
+
+d[2]=899
+print("b = \n{},\nc= \n{},\nd= \n{}".format(b,c,d ))
+
+b = np.array([[ 0,  1, 20,  3,  4,  5],
+       [ 6,  7,  8,  9, 10, 11]])
+
+c = b*2
+
+print("np.hstack((b,c)) = \n{}".format(np.hstack((b,c))))#水平叠加
+
+print("np.vstack((b,c)) = \n{}".format(np.vstack((b,c))))#垂直叠加
+
+
+print("np.concatenate((b,c),axis=1) = \n{}".format(np.concatenate((b,c),axis=1)))  # axis=1时，沿水平方向叠加
+
+print("np.concatenate((b,c),axis=0) = \n{}".format(np.concatenate((b,c),axis=0)))  # axis=0时，沿垂直方向叠加
+
+
+
+#跟数组的叠加类似，数组的拆分可以分为横向拆分、纵向拆分以及深度拆分。涉及的函数为 hsplit()、vsplit()、dsplit() 以及split()
+##沿横向轴拆分（axis=1）
+print("np.hsplit(b, 2) = \n{}".format(np.hsplit(b, 2)))  
+print("np.split(b,2, axis=1) = \n{}".format(np.split(b,2, axis=1)))  #沿横向轴拆分（axis=1）
+
+
+#沿纵向轴拆分（axis=0）
+print("np.vsplit(b, 2) = \n{}".format(np.vsplit(b, 2)))  
+print("np.split(b,2,axis=0) = \n{}".format(np.split(b,2,axis=0)))  #沿横向轴拆分（axis=1）
+
+
+"""
+常用的函数如下：
+
+请注意函数在使用时需要指定axis轴的方向，若不指定，默认统计整个数组。
+
+np.sum()，返回求和
+np.mean()，返回均值
+np.max()，返回最大值
+np.min()，返回最小值
+np.ptp()，数组沿指定轴返回最大值减去最小值，即（max-min）
+np.std()，返回标准偏差（standard deviation）
+np.var()，返回方差（variance）
+np.cumsum()，返回累加值
+np.cumprod()，返回累乘积值
+
+"""
+print("np.max(b) =\n{}".format(np.max(b)))
+
+
+# 沿axis=1轴方向统计
+np.max(b,axis=1)
+
+# 沿axis=0轴方向统计
+np.max(b,axis=0)
+
+#np.ptp()，返回整个数组的最大值减去最小值，如下：
+# 沿axis=0轴方向
+np.ptp(b, axis=0)
+
+# 沿axis=1轴方向
+np.ptp(b, axis=1)
+
+#np.cumsum()，沿指定轴方向进行累加
+b.resize(4,3)
+np.cumsum(b, axis=1)
+
+np.cumsum(b, axis=0)
+
+
+#np.cumprod()，沿指定轴方向进行累乘积
+
+np.cumprod(b,axis=1)
+
+np.cumprod(b,axis=0)
+
+
+
+
+
+
+
+
+
+
+
+
 #==========================================================
 #np.array 直接创建，接受list或tuple参数
 #==========================================================

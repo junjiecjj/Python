@@ -268,7 +268,6 @@ print ("runoob 索引位置 : ", aList.index( 'runoob', 1, 3 ))
 
 
 #insert() 函数用于将指定对象插入列表的指定位置。
-
 #语法
 #insert()方法语法：
 #list.insert(index, obj)

@@ -4,13 +4,16 @@
 Created on Wed Mar  9 16:18:52 2022
 
 @author: jack
+
+键必须不可变，所以可以用字符串,数字或元组充当，所以用列表就不行，如下实例：
+
 """
 
 #========================================================================
 # Python中创建字典的几种方法
 #========================================================================
 # 1 传统的文字表达式：
-d={'name':'Allen','age':21,'gender':'male'}
+d={(20, 30):'good','name':'Allen', 'age':14, 'gender':'male',12:'kkk'}
 print("dict d = {}".format(d))
 
 #2.动态分配键值：
@@ -26,8 +29,10 @@ print("dict d = {}".format(d))
 #3.字典键值表
 d = dict(name='Allen', age=14, gender='male')
 print("dict d = {}".format(d))
-#这种形式所需的代码比常量少，但是键必须都是字符串才行，所以下列代码会报错：
+#这种形式所需的代码比常量少，但是键必须都是不带引号的字符串才行，其他的数字，元组都不行，所以下列代码会报错：
 #c = dict(name='Allen', age=14, gender='male', 1='abcd')
+#c = dict(name='Allen', age=14, gender='male', '1'='abcd')
+
 
 
 # 4.字典键值元组表
@@ -53,7 +58,13 @@ print(empty_dict)
 dict2 = {(20, 30):'good', 30:'bad'}
 print(dict2)
 
+c = {(20, 30):'good','name':'Allen', 'age':14, 'gender':'male',12:'kkk'}
+print(c)
+print(c.get('name'))
 
+
+
+#需要指出的是，元组可以作为 dict 的 key，但列表不能作为元组的 key。这是由于 dict 要求 key 必须是不可变类型，但列表是可变类型，因此列表不能作为元组的 key。
 #在使用 dict() 函数创建字典时，可以传入多个列表或元组参数作为 key-value 对，每个列表或元组将被当成一个 key-value 对，因此这些列表或元组都只能包含两个元素。例如如下代码：
 vegetables = [('celery', 1.58), ('brocoli', 1.29), ('lettuce', 2.19)]
 # 创建包含3组key-value对的字典
