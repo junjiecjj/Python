@@ -50,23 +50,31 @@ import numpy as np
 a = np.array([1,2,3,4])
 b = a.copy()
 print("a = \n{},\nb = \n{} ".format(a,b, ))
+print("id(a) = \n{},\nid(b) = \n{}, ".format(id(a),id(b), ))
 
 a[0] = 32
 print("a = \n{},\nb = \n{} ".format(a,b, ))
+print("id(a) = \n{},\nid(b) = \n{}, ".format(id(a),id(b), ))
+
 
 b[0] = 0
 print("a = \n{},\nb = \n{} ".format(a,b, ))
+print("id(a) = \n{},\nid(b) = \n{}, ".format(id(a),id(b), ))
+
 
 c = np.arange(6).reshape(2,3)
 d = c.copy() #c,d无关联
 print("c = \n{},\nd = \n{} ".format(c,d ))
+print("id(c) = \n{},\nid(d) = \n{}, ".format(id(c),id(d), ))
+
 
 d[0,1] = 32
 print("c = \n{},\nd = \n{} ".format(c,d ))
+print("id(c) = \n{},\nid(d) = \n{}, ".format(id(c),id(d), ))
 
 c[1,1] = 54
 print("c = \n{},\nd = \n{} ".format(c,d ))
-
+print("id(c) = \n{},\nid(d) = \n{}, ".format(id(c),id(d), ))
 
 
 
