@@ -27,7 +27,7 @@ def awgn(x, snr, seed=7):
     snr = 10 ** (snr / 10.0)
     xpower = np.sum(x ** 2) / len(x)
     npower = xpower / snr
-    noise = np.random.randn(len(x)) * np.sqrt(npower)
+    noise = np.random.randn(len(x)) * np.sqrt(npower)   #np.random.randn()
     return x + noise
 
 def wgn(x, snr):
@@ -36,9 +36,9 @@ def wgn(x, snr):
     npower = xpower / snr
     return np.random.randn(len(x)) * np.sqrt(npower)
  
-t = np.arange(0, 0.2, 0.002)
-x = np.sin(2*np.pi*50*t)
-snr = 6
+t = np.arange(0, 3, 0.001)
+x = np.sin(2*np.pi*t)
+snr = 2
 n = wgn(x, snr)
 xn = x+n # 增加了6dBz信噪比噪声的信号
 
@@ -46,7 +46,7 @@ xn1 = awgn(x,snr)
 
 
 fig, axs = plt.subplots(3, 1)
-axs[0].plot(t,x,'b-')
-axs[1].plot(t,xn,'r-')
-axs[2].plot(t,xn1,'g-')
+axs[0].plot(t,x,'b-',lw=0.6)
+axs[1].plot(t,xn,'r-',lw=0.6)
+axs[2].plot(t,xn1,'g-',lw=0.5)
 
