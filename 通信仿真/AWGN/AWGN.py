@@ -25,8 +25,8 @@ def awgn(x, snr, seed=7):
     '''
     np.random.seed(seed)  # 设置随机种子
     snr = 10 ** (snr / 10.0)
-    xpower = np.sum(x ** 2) / len(x)
-    npower = xpower / snr
+    xpower = np.sum(x ** 2) / len(x)   #信号功率
+    npower = xpower / snr         # 噪声功率，对于均值为0的正态分布，等于噪声的方差,因为D(X) = E(X^2) - E(X)^2 = E(X^2)
     noise = np.random.randn(len(x)) * np.sqrt(npower)   #np.random.randn()
     return x + noise
 
