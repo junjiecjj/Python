@@ -1690,36 +1690,6 @@ print (np.extract(condition, x))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #=====================================================================================
 #      NumPy 副本和视图
 #=====================================================================================
@@ -1765,11 +1735,20 @@ b = a
 print (b)
 print ('b 拥有相同 id()：')
 print (id(b))
+print ("b 是 a 吗？ {}".format(b is a))
+print(id(a.storage())==id(b.storage()))
 print ('修改 b 的形状：')
 b.shape =  3,2  
 print (b)
 print ('a 的形状也修改了：')
 print (a)
+# 改变b，a也会改变
+b[0,1] = 33
+print ('a 的形状：')
+print (a)
+print ('b 的形状：')
+print (b)
+
 
 
 import numpy as np 
@@ -1786,12 +1765,20 @@ print ('a 的 id()：')
 print (id(a))
 print ('b 的 id()：' )
 print (id(b))
+print ("b 是 a 吗？ {}".format(b is a))
 # 修改 b 的形状，并不会修改 a
 b.shape =  2,3
 print ('b 的形状：')
 print (b)
 print ('a 的形状：')
 print (a)
+# 改变b，a也会改变
+b[0,1] = 33
+print ('a 的形状：')
+print (a)
+print ('b 的形状：')
+print (b)
+
 
 #使用切片创建视图修改数据会影响到原始数组：
 import numpy as np 
@@ -1818,6 +1805,28 @@ print ('创建 a 的深层副本：')
 b = a.copy()  
 print ('数组 b：')
 print (b)
+print ("b 是 a 吗？ {}".format(b is a))
+# b 与 a 不共享任何内容  
+print ('我们能够写入 b 来写入 a 吗？')
+
+print ('修改 b 的内容：')
+b[0,0]  =  100  
+print ('修改后的数组 b：')
+print (b)
+print ('a 保持不变：')
+print (a)
+
+
+
+import numpy as np 
+ 
+a = np.array([[10,10],  [2,3],  [4,5]])  
+print ('数组 a：')
+print (a)
+print ('创建 b：')
+b = a.reshape((2,3))  
+print ('数组 b：')
+print (b)
 # b 与 a 不共享任何内容  
 print ('我们能够写入 b 来写入 a 吗？')
 print (b is a)
@@ -1828,9 +1837,24 @@ print (b)
 print ('a 保持不变：')
 print (a)
 
-
-
-
+import numpy as np 
+ 
+a = np.arange(12)
+print ('数组 a：')
+print (a)
+print ('创建 b = a.resize(3,4)：')
+b = a.resize(3,4)
+print ('数组 b：')
+print (b)
+# b 与 a 不共享任何内容  
+print ('我们能够写入 b 来写入 a 吗？')
+print (b is a)
+print ('修改 b 的内容：')
+b[0,0]  =  100  
+print ('修改后的数组 b：')
+print (b)
+print ('a 保持不变：')
+print (a)
 
 
 
@@ -1956,7 +1980,7 @@ print (j)
 import numpy.matlib 
 import numpy as np  
  
-k = np.asmatrix (j)  
+k = np.asmatrix(j)  
 print (k)
 
 
@@ -2401,6 +2425,36 @@ lower_triangle = np.tril(data, 1)
  [4 5 6 7 8]
  [1 2 3 4 5]]
 """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

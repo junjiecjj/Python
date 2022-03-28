@@ -363,19 +363,19 @@ print("a每一列的样本方差 = {}\n".format(np.var(a, axis=0,  ddof=1)))  #
 print("a所有元素的样本方差 = {}\n".format(a.var( ddof=1)))  #a所有元素的样本方差 = 8.998723308605786
 print("a所有元素的样本方差 = {}\n".format(np.var(a, ddof=1)))  #a所有元素的样本方差 = 8.998723308605786
 
-n=2
-b = a * n
 
-print(" b 所有元素的均值 = {}\n".format(b.mean()))  # b 所有元素的均值 = 3.998943383233177
-print(" b 所有元素的均值 = {}\n".format(np.mean(b)))  # b 所有元素的均值 = 3.998943383233177
+#验证对正太分布乘以一个常数加上一个常数对均值和方差的影响。
+n=2
+b = a * n + 5
+
+print(" b 所有元素的均值 = {}\n".format(b.mean()))  # b 所有元素的均值 = 9.001396174270969
+print(" b 所有元素的均值 = {}\n".format(np.mean(b)))  # b 所有元素的均值 = 9.001396174270969
 
 print(" b 所有元素的总体标准差 = {}\n".format(b.std()))  # b 所有元素的总体标准差 = 5.99957427111945
 print(" b 所有元素的总体标准差 = {}\n".format(np.std(b)))  # b 所有元素的总体标准差 = 5.99957427111945
 
 print(" b 所有元素的总体方差 = {}\n".format(b.var()))  # b 所有元素的总体方差 = 35.994891434678486
 print(" b 所有元素的总体方差 = {}\n".format(np.var(b)))  # b 所有元素的总体方差 = 35.994891434678486
-
-
 
 
 
@@ -447,6 +447,41 @@ print("-"*70)
 print("scipy模块")
 print("-"*70)
 
+print("-"*70)
+print("scipy模块  正太分布")
+print("-"*70)
+
+
+print("正太分布")
+from IPython.display import Latex
+Latex(r'$ f(x)= \frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}}  $')
+
+
+import scipy.stats as st
+
+# 生成一个正态分布的 2 行 2 列随机数，均值为 5， 标准差为 1
+print("st.norm.rvs(loc=5, scale=1, size=[2,2]) = \n{}".format(st.norm.rvs(loc=5, scale=1, size=[2,2])))
+
+print("st.norm.rvs(loc = 0,scale = 0.1,size =10) = \n{}".format(st.norm.rvs(loc = 0,scale = 0.1,size =10)))
+
+
+# 求概率密度函数指定点的函数值
+print("st.norm.pdf(0,loc = 0,scale = 1) = \n{}".format(st.norm.pdf(0,loc = 0,scale = 1)))
+print("st.norm.pdf(np.arange(3),loc = 0,scale = 1) = \n{}".format(st.norm.pdf(np.arange(3),loc = 0,scale = 1)))
+
+
+# 求累计分布函数指定点的函数值
+print("st.norm.cdf(0,loc=3,scale=1) = \n{}".format(st.norm.cdf(0,loc=3,scale=1)))
+print("st.norm.cdf(0,0,1) = \n{}".format(st.norm.cdf(0,0,1)))
+
+
+#stats.norm.ppf正态分布的累计分布函数的逆函数，即下分位点。
+z05 = st.norm.ppf(0.05)
+print(z05)
+print("st.norm.cdf(z05) = {}".format(st.norm.cdf(z05)))
+
+
+
 # Python 生成均值为 2 ，标准差为 3 的一维正态分布样本 500
 import numpy as np
 import scipy.stats as st 
@@ -513,72 +548,245 @@ plt.show()
 
 
 
+print("-"*70)
+print("scipy模块  泊松分布")
+print("-"*70)
+
+
+
+print("泊松分布的概率函数为：")
+from IPython.display import Latex
+Latex(r'$P(X=k)=\frac{\lambda^{k}}{k !} e^{-\lambda}, k=0,1,2, \ldots $')
+
+print("累积概率分布函数为：")
+Latex(r'$ P(X \leq x)=\sum_{k=0}^{x} \frac{\lambda^{k} e^{-\lambda}}{k !} $')
+# Latex(r"$\frac{{\partial {}}}{{\partial {}}}$".format(1, 2))
+
+"""
+
+
+假设我每天喝水的次数服从泊松分布，并且经统计平均每天我会喝8杯水
+请问：
+1、我明天喝7杯水概率？
+2、我明天喝9杯水以下的概率？
+
+泊松分布的概率函数为：
+      P(X=k)=\frac{\lambda^{k}}{k !} e^{-\lambda}, k=0,1,2, \ldots
+                                                   
+累积概率分布函数为：
+     P(X \leq x)=\sum_{k=0}^{x} \frac{\lambda^{k} e^{-\lambda}}{k !}
+
+均值方差：泊松分布的均值和方差都是。（上述问题一：=8，k=7）
+
+"""
+
+from IPython.display import Latex
+Latex(r'$P(X=k)=\frac{\lambda^{k}}{k !} e^{-\lambda}, k=0,1,2, \ldots $')
+
+from scipy import stats
+
+#*离散分布的简单方法大多数与连续分布很类似，但是pdf被更换为密度函数pmf。
+p = stats.poisson.pmf(7, 8)
+print("喝7杯水概率：",p)
+ 
+p = stats.poisson.cdf(9, 8)
+print("喝9杯水以下的概率：",p)
+
+
+#泊松概率及累积概率分布（以上面例子为例）：
+from scipy import stats
+import matplotlib.pyplot as plt
+
+X=range(0,16)
+Y=[]
+for k in X:
+    p = stats.poisson.pmf(k, 8)
+    Y.append(p)
+ 
+plt.bar(X, Y, color="red")
+plt.xlabel("次数")
+plt.ylabel("概率")
+plt.title("喝水次数和概率")
+plt.show()
+
+
+
+#随机数生成：
+from scipy import stats
+# 设置random_state时，每次生成的随机数一样--任意数字
+#不设置或为None时，多次生成的随机数不一样
+sample = stats.poisson.rvs(mu=8, size=14, random_state=None)
+print(sample)
+
+
+
+#泊松分布概率密度函数和累计概率绘图
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+import matplotlib.style as style
+ 
+# 绘图配置
+style.use('seaborn-bright')
+ 
+plt.rcParams['figure.figsize'] = (15, 8)
+ 
+plt.figure(dpi=120)
+ 
+# 一段时间内发生的次数
+data = np.arange(50)
+ 
+# PMF 绘制泊松分布的概率密度函数
+plt.plot(data, stats.poisson.pmf(data, mu=5), label='pmf(mu=5)')
+plt.bar(data, stats.poisson.pmf(data, mu=5), alpha=.5)
+# CDF 累积概率密度
+plt.plot(data, stats.poisson.cdf(data, mu=5), label='cdf(mu=5)')
+ 
+# PMF 绘制泊松分布的概率密度函数
+plt.plot(data, stats.poisson.pmf(data, mu=15), label='pmf(mu=15)')
+plt.bar(data, stats.poisson.pmf(data, mu=15), alpha=.5)
+# CDF 累积概率密度
+plt.plot(data, stats.poisson.cdf(data, mu=15), label='cdf(mu=15)')
+ 
+# PMF 绘制泊松分布的概率密度函数
+plt.plot(data, stats.poisson.pmf(data, mu=30), label='pmf(mu=30)')
+plt.bar(data, stats.poisson.pmf(data, mu=30), alpha=.5)
+# CDF 累积概率密度
+plt.plot(data, stats.poisson.cdf(data, mu=30), label='cdf(mu=30)')
+ 
+plt.legend(loc='upper left')
+plt.title('poisson')
+ 
+plt.show()
+ 
+print('p(x<8)时的概率：{}'.format(stats.poisson.cdf(k=8, mu=15)))
+print('p(8<x<20)时的概率：{}'.format(stats.poisson.cdf(k=20, mu=15) - stats.poisson.cdf(k=8, mu=15)))
 
 
 
 
 
+print("-"*70)
+print("scipy模块  伯努利概率分布")
+print("-"*70)
+#伯努利分布：伯努利试验单次随机试验，只有"成功（值为1）"或"失败（值为0）"这两种结果，又名两点分布或者0-1分布。
 
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
 
+from pylab import mpl
+from matplotlib.font_manager import FontProperties
+fontpath = "/usr/share/fonts/truetype/windows/"
+font  = FontProperties(fname = fontpath+"SimHei.ttf", size=13,weight='bold')
 
+p=0.7#库里投三分命中率
 
+plt.rcParams['axes.unicode_minus']=False #显示负号
+X=np.arange(0,2,1)#[0,1)
 
+pList=stats.bernoulli.pmf(X,p)#在离散分布中，请将pmf改为pdf
+print(pList)
+plt.plot(X,pList,marker='o',linestyle='None')
+'''
+vlines用于绘制竖直线（vertical lines）,
+参数说明：vline(x坐标值，y坐标最小值，y坐标最大值)
+我们传入的X是一个数组，是给数组中的每个x坐标值绘制直线，
+数值线y坐标最小值是0，y坐标最大值是对应的pList中的值
+'''
+plt.vlines(X,(0,0),pList)
+ 
+plt.xlabel('随机变量：库里投篮1次',fontproperties=font)
+plt.ylabel('概率',fontproperties=font)
+plt.title('伯努利分布：p=%.2f'% p,fontproperties=font)
+plt.show()
 
 
 
 
+#伯努利分布随机数生成
+p=0.7#发生概率
+ 
+b=stats.bernoulli.rvs(p,random_state=None,size=(2,7))#random_state=None每次生成随机
+print(b)
 
 
 
+print("-"*70)
+print("ramdon模块  瑞利分布概率分布")
+print("-"*70)
 
+print("当一个随机二维向量的两个分量呈独立的、有着相同的方差、均值为0的正态分布时，这个向量的模呈瑞利分布。例如，当随机复数的实部和虚部独立同分布于0均值，同方差的正态分布时，该复数的绝对值服从瑞利分布。\
+      \n瑞利分布的概率函数为：")
+from IPython.display import Latex
+Latex(r'$ f(x;\sigma)=\frac{x}{\sigma ^2} e^{-\frac{x^2}{2\sigma^2}}  $')
 
 
+#绘制一个样本，用于瑞利分布，比例为2，大小为2x3：
+from numpy import random
+x = random.rayleigh(scale=2, size=(2, 3))
+print(x)
 
+from numpy import random
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.distplot(random.rayleigh(scale=1, size=1000000), hist=False)
+plt.show()
 
 
+from scipy.stats import rayleigh
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(1, 1)
 
+mean, var, skew, kurt = rayleigh.stats(moments='mvsk')
 
 
 
+x = np.linspace(rayleigh.ppf(0.01), rayleigh.ppf(0.99), 100)
+ax.plot(x, rayleigh.pdf(x),'r-', lw=5, alpha=0.6, label='rayleigh pdf')
 
+rv = rayleigh()
+ax.plot(x, rv.pdf(x), 'k-', lw=2, label='frozen pdf')
 
+vals = rayleigh.ppf([0.001, 0.5, 0.999])
+np.allclose([0.001, 0.5, 0.999], rayleigh.cdf(vals))
 
 
+r = rayleigh.rvs(size=1000)
+ax.hist(r, density=True, histtype='stepfilled', alpha=0.2)
+ax.legend(loc='best', frameon=False)
+plt.show()
 
 
+"""
+https://blog.csdn.net/share727186630/article/details/107403761
 
+https://baike.baidu.com/item/%E7%91%9E%E5%88%A9%E5%88%86%E5%B8%83/10284554
 
+验证由两个均值为0，方差相同的独立同分布的正太分布分别为实部和虚部的复数向量分布符合瑞丽分布
+"""
+import numpy as np
+mean, std = 0, 3
+real = np.random.normal(loc =mean , scale= std, size = 100000000)
+img = np.random.normal(loc =mean , scale= std, size = 100000000)
 
+print(" real 所有元素的均值 = {}\n".format(np.mean(real)))  # real所有元素的均值 = 1.9994716916165884
+print(" img 所有元素的均值 = {}\n".format(np.mean(img)))    # img所有元素的均值 = 1.9994716916165884
 
+print(" real 所有元素的总体方差 = {}\n".format(real.var()))  #a所有元素的总体方差 = 8.998722858669622
+print(" img 所有元素的总体方差 = {}\n".format(np.var(img)))  #a所有元素的总体方差 = 8.998722858669622
 
 
+H = real  + img*1j 
+#H = real/np.sqrt(2) + img*1j/np.sqrt(2)
 
+H_mod = np.abs(H)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print("H_mod mean = {}, var = {}\n".format( np.sqrt(np.pi/2)*std, (4-np.pi)*std**2/2 ))
+print(" H_mod 所有元素的均值 = {}\n".format(np.mean(H_mod)))    # img所有元素的均值 = 1.9994716916165884
+print(" H_mod 所有元素的总体方差 = {}\n".format(np.var(H_mod)))  #a所有元素的总体方差 = 8.998722858669622
 
 
 

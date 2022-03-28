@@ -469,6 +469,38 @@ print(id(a), id(b))          # a和b身份不同
 for x, y in zip(a, b):       # 但它们包含的子对象身份相同
     print(id(x), id(y))
 
+import copy
+a = [1, 2, 3]
+b = copy.copy(a)
+print("a = \n{},\nb = \n{} ".format(a,b, ))
+print(id(a), id(b))          # a和b身份不同
+
+for x, y in zip(a, b):       # 但它们包含的子对象身份相同
+    print(id(x), id(y))
+
+a[0]= 12
+print("a = \n{},\nb = \n{} ".format(a,b, ))
+print(id(a), id(b))          # a和b身份不同
+
+for x, y in zip(a, b):       # 但它们包含的子对象身份相同
+    print(id(x), id(y))
+
+
+import copy
+a = [1, 2, 3]
+b = a[:]
+print("a = \n{},\nb = \n{} ".format(a,b, ))
+print(id(a), id(b))          # a和b身份不同
+
+for x, y in zip(a, b):       # 但它们包含的子对象身份相同
+    print(id(x), id(y))
+
+a[0]= 12
+print("a = \n{},\nb = \n{} ".format(a,b, ))
+print(id(a), id(b))          # a和b身份不同
+
+for x, y in zip(a, b):       # 但它们包含的子对象身份相同
+    print(id(x), id(y))
 
 """
 三、深拷贝（deep copy）

@@ -453,6 +453,62 @@ print(x)
 
 
 
+import copy
+import torch
+import numpy as np
+
+# 创建原始tensor/ndarray对象
+data = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 0, 0]]
+t0 = torch.tensor(data)  # Out: tensor([[1, 2, 3],
+        				 #              [4, 5, 6],
+        				 # 				[7, 8, 9],
+        				 #				[0, 0, 0]])
+a0 = np.array(data)  # Out: array([[1, 2, 3],
+       				 # 			  [4, 5, 6],
+       				 # 			  [7, 8, 9], 
+       				 #			  [0, 0, 0]])
+
+# view
+t1 = t0.view(3, 4)  # Out: tensor[[1, 2, 3, 4], 
+					#            [5, 6, 7, 8], 
+					# 			 [9, 0, 0, 0]]  
+a1 = a0.view().reshape(3, 4)  # array[[1, 2, 3, 4], 
+							  # 	 [5, 6, 7, 8], 
+							  # 	 [9, 0, 0, 0]] 
+print(t1.shape, a1.shape)  # Out: torch.Size([3, 4]) (3, 4)
+print(id(t1)==id(t0), id(a1)==id(a0))  # False False
+print(id(t1[0])==id(t0[0]), id(a1[0])==id(a0[0]))  # True True 
+print(id(t1[0][0])==id(t0[0][0]), id(a1[0][0])==id(a0[0][0]))  # True/False True (注意这里第一个我用了/，因为这里每次运行的结果可能是不一样的，原因不明，可能跟数据存储有关)
+
+# copy.copy
+t2 = copy.copy(t0)  # Out: tensor([[1, 2, 3],
+        			#             [4, 5, 6],
+        			# 			  [7, 8, 9],
+        			#			  [0, 0, 0]])
+a2 = copy.copy(a0)  # Out: array([[1, 2, 3],
+        			# 			 [4, 5, 6],
+        			# 			 [7, 8, 9], 
+        			#			 [0, 0, 0]])
+print(id(t2)==id(t0), id(a2)==id(a0))  # False False
+print(id(t2[0])==id(t0[0]), id(a2[0])==id(a0[0]))  # True True
+print(id(t2[0][0])==id(t0[0][0]), id(a2[0][0])==id(a0[0][0]))  # True/False True (注意这里第一个我用了/，因为这里每次运行的结果可能是不一样的，原因不明，可能跟数据存储有关)
+
+# 改变原始对象的元素
+t0[-1] = 999
+a0[-1] = 999
+print(t0[-1], t1[-1], t2[-1])  # Out: tensor([999, 999, 999]) tensor([  9, 999, 999, 999]) tensor([999, 999, 999])
+print(a0[-1], a1[-1], a2[-1])  # Out: [999 999 999] [  9 999 999 999] [0 0 0]
+
+t0[0][0] = 666
+a0[0][0] = 666
+print(t0[0][0], t1[0][0], t2[0][0])  # Out: tensor(666) tensor(666) tensor(666)
+print(a0[0][0], a1[0][0], a2[0][0])  # Out: 666 666 1
+
+
+t2[1] = 0
+print(t0[1], t1[1], t2[1])  # Out: tensor([0, 0, 0]) tensor([5, 6, 7, 8]) tensor([0, 0, 0])
+a2[1] = 0
+print(a0[1], a1[1], a2[1])  # Out: [4 5 6] [5 6 7 8] [0 0 0]
 
 
 
