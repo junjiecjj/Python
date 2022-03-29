@@ -4,6 +4,8 @@
 Created on Wed Mar 23 20:28:18 2022
 
 @author: jack
+
+本程序主要演示了list、numpy、tuple、dict、string、number等数据类型的深浅拷贝问题
 """
 
 """
@@ -45,13 +47,13 @@ a1 = a
 b1 = a1.T
 c1 = a1.reshape(3,4)
 
-print("\n\na1 = \n{},\nb1=\n{},\nc1 =\n{}".format(a, b,c))
+print("\n\na1 = \n{},\nb1=\n{},\nc1 =\n{}".format(a1, b1,c1))
 
 a1[:,0]=[0,6]
 
 print("\n\na = \n{},\nb=\n{},\nc =\n{}".format(a,b,c))
 
-print("\n\na1 = \n{},\nb1=\n{},\nc1 =\n{}".format(a, b,c))
+print("\n\na1 = \n{},\nb1=\n{},\nc1 =\n{}".format(a1, b1,c1))
 
 print(a1 == a, '\n',id(a1) == id(a))
 

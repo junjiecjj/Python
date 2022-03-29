@@ -442,6 +442,15 @@ np.linspace(start = 1, stop = 5, num = 4, endpoint = False)
 #默认 linspace 根据其他参数类型推断数据类型，很多时候，输出结果为 float 类型。如果需要指定数据类型，可以通过 dtype 设置。该参数很直接，除了 linspace 其他函数也一样，如：np.array,np.arange 等。示例：
 np.linspace(start = 0, stop = 100, num = 5, dtype = int)
 
+print("-"*70)
+print("  numpy.random.multivariate_normal()函数解析  ")
+print("-"*70)
+import numpy as np
+mean = (1, 2, 3)
+cov = [[1, 0, 0], [0, 1, 0],[0, 0, 1]]
+x = np.random.multivariate_normal(mean, cov, (100, 100))
+print(x.shape)
+
 
 print("-"*70)
 print("scipy模块")

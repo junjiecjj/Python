@@ -17,9 +17,250 @@ permute等操作的话会使该 tensor 在内存中变得不再连续。
 2    .view()方法返回的张量与原张量共享基础数据(存储器，注意不是共享内存地址)；.reshape()方法返回的可能是原张量的copy，也可能不是，这个我们不知道。
 
 
+对“视图(view)”字眼的理解
+视图是数据的一个别称或引用，通过该别称或引用亦便可访问、操作原有数据，但原有数据不会产生拷贝。如果我们对视图进行修改，它会影响到原始数据，物理内存在同一位置，这样避免了重新创建张量的高内存开销。由上面介绍的PyTorch的张量存储方式可以理解为：对张量的大部分操作就是视图操作！
+
+与之对应的概念就是副本。副本是一个数据的完整的拷贝，如果我们对副本进行修改，它不会影响到原始数据，物理内存不在同一位置。
+有关视图与副本，在NumPy中也有着重要的应用。
 
 
 """
+
+
+
+#======================================================================================
+#   
+#   https://blog.csdn.net/Flag_ing/article/details/109129752
+#======================================================================================
+
+
+
+import torch
+a = torch.arange(5)  # 初始化张量 a 为 [0, 1, 2, 3, 4]
+b = a[2:]            # 截取张量a的部分值并赋值给b，b其实只是改变了a对数据的索引方式
+print('a:', a)
+print('b:', b)
+print('ptr of storage of a:', a.storage().data_ptr())  # 打印a的存储区地址
+print('ptr of storage of b:', b.storage().data_ptr())  # 打印b的存储区地址,可以发现两者是共用存储区
+ 
+print('==================================================================')
+ 
+b[1] = 0    # 修改b中索引为1，即a中索引为3的数据为0
+print('a:', a)
+print('b:', b)
+print('ptr of storage of a:', a.storage().data_ptr())  # 打印a的存储区地址,可以发现a的相应位置的值也跟着改变，说明两者是共用存储区
+print('ptr of storage of b:', b.storage().data_ptr())  # 打印b的存储区地址
+ 
+ 
+'''   运行结果 
+
+a: tensor([0, 1, 2, 3, 4])
+b: tensor([2, 3, 4])
+ptr of storage of a: 94824007650304
+ptr of storage of b: 94824007650304
+==================================================================
+a: tensor([0, 1, 2, 0, 4])
+b: tensor([2, 0, 4])
+ptr of storage of a: 94824007650304
+ptr of storage of b: 94824007650304
+
+'''
+
+import torch
+a = torch.arange(6).reshape(2, 3)  # 初始化张量 a
+b = torch.arange(6).view(3, 2)     # 初始化张量 b
+print('a:', a)
+print('stride of a:', a.stride())  # 打印a的stride
+print('b:', b)
+print('stride of b:', b.stride())  # 打印b的stride
+
+'''   运行结果   
+
+a: tensor([[0, 1, 2],
+        [3, 4, 5]])
+stride of a: (3, 1)
+b: tensor([[0, 1],
+        [2, 3],
+        [4, 5]])
+stride of b: (2, 1)
+
+
+'''
+
+
+import torch
+a = torch.arange(9).reshape(3, 3)  # 初始化张量a
+print('struct of a:\n', a)
+print('size   of a:', a.size())    # 查看a的shape
+print('stride of a:', a.stride())  # 查看a的stride
+ 
+'''   运行结果
+
+struct of a:
+ tensor([[0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8]])
+size   of a: torch.Size([3, 3])
+stride of a: (3, 1)
+
+'''
+
+
+import torch
+a = torch.arange(9).reshape(3, 3)     # 初始化张量a
+b = a.permute(1, 0)  # 对a进行转置
+print('struct of b:\n', b)
+print('size   of b:', b.size())    # 查看b的shape
+print('stride of b:', b.stride())  # 查看b的stride
+ 
+'''   运行结果
+
+struct of b:
+ tensor([[0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8]])
+size   of b: torch.Size([3, 3])
+stride of b: (1, 3)
+
+'''
+
+
+
+import torch
+a = torch.arange(9).reshape(3, 3)             # 初始化张量a
+print('ptr of storage of a: ', a.storage().data_ptr())  # 查看a的storage区的地址
+print('storage of a: \n', a.storage())        # 查看a的storage区的数据存放形式
+b = a.permute(1, 0)                           # 转置
+print('ptr of storage of b: ', b.storage().data_ptr())  # 查看b的storage区的地址
+print('storage of b: \n', b.storage())        # 查看b的storage区的数据存放形式
+ 
+'''   运行结果   
+ptr of storage of a:  94824009018240
+storage of a: 
+  0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+[torch.LongStorage of size 9]
+ptr of storage of b:  94824009018240
+storage of b: 
+  0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+[torch.LongStorage of size 9]
+
+
+'''
+
+
+import torch
+a = torch.arange(9).reshape(3, 3)             # 初始化张量a
+print(a.view(9))
+print('============================================')
+b = a.permute(1, 0)  # 转置
+print(b.view(9))
+
+""" 运行结果 
+tensor([0, 1, 2, 3, 4, 5, 6, 7, 8])
+============================================
+Traceback (most recent call last):
+
+  File "/tmp/ipykernel_19557/2053947720.py", line 6, in <module>
+    print(b.view(9))
+
+RuntimeError: view size is not compatible with input tensor's size and stride (at least one dimension spans across two contiguous subspaces). Use .reshape(...) instead.
+
+"""
+
+
+import torch
+a = torch.arange(9).reshape(3, 3)      # 初始化张量a
+print('storage of a:\n', a.storage())  # 查看a的stride
+print('+++++++++++++++++++++++++++++++++++++++++++++++++')
+b = a.permute(1, 0).contiguous()       # 转置,并转换为符合连续性条件的tensor
+print('size    of b:', b.size())       # 查看b的shape
+print('stride  of b:', b.stride())     # 查看b的stride
+print('viewd      b:\n', b.view(9))    # 对b进行view操作，并打印结果
+print('+++++++++++++++++++++++++++++++++++++++++++++++++')
+print('storage of a:\n', a.storage())  # 查看a的存储空间
+print('storage of b:\n', b.storage())  # 查看b的存储空间
+print('+++++++++++++++++++++++++++++++++++++++++++++++++')
+print('ptr of a:\n', a.storage().data_ptr())  # 查看a的存储空间地址
+print('ptr of b:\n', b.storage().data_ptr())  # 查看b的存储空间地址
+
+'''   运行结果   
+storage of a:
+  0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+[torch.LongStorage of size 9]
++++++++++++++++++++++++++++++++++++++++++++++++++
+size    of b: torch.Size([3, 3])
+stride  of b: (3, 1)
+viewd      b:
+ tensor([0, 3, 6, 1, 4, 7, 2, 5, 8])
++++++++++++++++++++++++++++++++++++++++++++++++++
+storage of a:
+  0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+[torch.LongStorage of size 9]
+storage of b:
+  0
+ 3
+ 6
+ 1
+ 4
+ 7
+ 2
+ 5
+ 8
+[torch.LongStorage of size 9]
++++++++++++++++++++++++++++++++++++++++++++++++++
+ptr of a:
+ 94824007728448
+ptr of b:
+ 94823966505280
+
+
+由上述结果可以看出，张量a与b已经是两个存在于不同存储区的张量了。也印证了contiguous()方法开辟了一个新的存储区给b，并改变了b原始存储区数据的存放顺序。对应文章开头提到的浅拷贝，这种开辟一个新的内存区的方式其实就是深拷贝。
+'''
+
+
+"""
+
+torch的view()与reshape()方法都可以用来重塑tensor的shape，区别就是使用的条件不一样。view()方法只适用于满足连续性条件的tensor，并且该操作不会开辟新的内存空间，
+只是产生了对原存储空间的一个新别称和引用，返回值是视图。而reshape()方法的返回值既可以是视图，也可以是副本，当满足连续性条件时返回view，
+否则返回副本[ 此时等价于先调用contiguous()方法在使用view() ]。因此当不确能否使用view时，可以使用reshape。如果只是想简单地重塑一个tensor的shape，
+那么就是用reshape，但是如果需要考虑内存的开销而且要确保重塑后的tensor与之前的tensor共享存储空间，那就使用view()。
+
+
+"""
+
+
 
 import torch 
 import numpy as np
@@ -224,6 +465,8 @@ print("a = \n{},\na1 = \n{}, \nb = \n{}, \nc= \n{},\nd=\n{},\ne = \n{}".format(a
 #=========================================
 # https://www.cnblogs.com/sddai/p/14403333.html
 #=========================================
+import torch 
+import numpy as np
 
 a = torch.randint(0, 10, (3, 4))
 b = a.view(2, 6)
@@ -451,7 +694,7 @@ print(x)
 
 
 
-
+# https://blog.csdn.net/weixin_43002433/article/details/104325931
 
 import copy
 import torch
@@ -463,52 +706,592 @@ t0 = torch.tensor(data)  # Out: tensor([[1, 2, 3],
         				 #              [4, 5, 6],
         				 # 				[7, 8, 9],
         				 #				[0, 0, 0]])
-a0 = np.array(data)  # Out: array([[1, 2, 3],
-       				 # 			  [4, 5, 6],
-       				 # 			  [7, 8, 9], 
-       				 #			  [0, 0, 0]])
+
 
 # view
 t1 = t0.view(3, 4)  # Out: tensor[[1, 2, 3, 4], 
 					#            [5, 6, 7, 8], 
 					# 			 [9, 0, 0, 0]]  
-a1 = a0.view().reshape(3, 4)  # array[[1, 2, 3, 4], 
-							  # 	 [5, 6, 7, 8], 
-							  # 	 [9, 0, 0, 0]] 
-print(t1.shape, a1.shape)  # Out: torch.Size([3, 4]) (3, 4)
-print(id(t1)==id(t0), id(a1)==id(a0))  # False False
-print(id(t1[0])==id(t0[0]), id(a1[0])==id(a0[0]))  # True True 
-print(id(t1[0][0])==id(t0[0][0]), id(a1[0][0])==id(a0[0][0]))  # True/False True (注意这里第一个我用了/，因为这里每次运行的结果可能是不一样的，原因不明，可能跟数据存储有关)
+
+print(t1.shape,)  # Out: torch.Size([3, 4]) (3, 4)
+print(id(t1)==id(t0))  # False False
+print(id(t1[0])==id(t0[0]))  # True True 
+print(id(t1[0][0])==id(t0[0][0]))  # True/False True (注意这里第一个我用了/，因为这里每次运行的结果可能是不一样的，原因不明，可能跟数据存储有关)
 
 # copy.copy
 t2 = copy.copy(t0)  # Out: tensor([[1, 2, 3],
         			#             [4, 5, 6],
         			# 			  [7, 8, 9],
         			#			  [0, 0, 0]])
-a2 = copy.copy(a0)  # Out: array([[1, 2, 3],
-        			# 			 [4, 5, 6],
-        			# 			 [7, 8, 9], 
-        			#			 [0, 0, 0]])
-print(id(t2)==id(t0), id(a2)==id(a0))  # False False
-print(id(t2[0])==id(t0[0]), id(a2[0])==id(a0[0]))  # True True
-print(id(t2[0][0])==id(t0[0][0]), id(a2[0][0])==id(a0[0][0]))  # True/False True (注意这里第一个我用了/，因为这里每次运行的结果可能是不一样的，原因不明，可能跟数据存储有关)
+
+print(id(t2)==id(t0))  # False False
+print(id(t2[0])==id(t0[0]))  # True True
+print(id(t2[0][0])==id(t0[0][0]))  # True/False True (注意这里第一个我用了/，因为这里每次运行的结果可能是不一样的，原因不明，可能跟数据存储有关)
 
 # 改变原始对象的元素
 t0[-1] = 999
-a0[-1] = 999
 print(t0[-1], t1[-1], t2[-1])  # Out: tensor([999, 999, 999]) tensor([  9, 999, 999, 999]) tensor([999, 999, 999])
-print(a0[-1], a1[-1], a2[-1])  # Out: [999 999 999] [  9 999 999 999] [0 0 0]
+
 
 t0[0][0] = 666
-a0[0][0] = 666
 print(t0[0][0], t1[0][0], t2[0][0])  # Out: tensor(666) tensor(666) tensor(666)
-print(a0[0][0], a1[0][0], a2[0][0])  # Out: 666 666 1
 
 
 t2[1] = 0
 print(t0[1], t1[1], t2[1])  # Out: tensor([0, 0, 0]) tensor([5, 6, 7, 8]) tensor([0, 0, 0])
-a2[1] = 0
-print(a0[1], a1[1], a2[1])  # Out: [4 5 6] [5 6 7 8] [0 0 0]
+
+
+
+import copy
+import torch
+import numpy as np
+a = torch.arange(12).reshape(4,3) +1 
+# view
+b = a.view(3, 4)    #
+# copy
+c = copy.copy(a)
+
+#返回一个和源张量同shape、dtype和device的张量，与源张量不共享数据内存，但提供梯度的回溯。
+d = a.clone()  
+
+#detach的机制则与clone完全不同，即返回一个和源张量同shape、dtype和device的张量，与源张量共享数据内存，但不提供梯度计算，即requires_grad=False，因此脱离计算图。
+e = a.detach()
+
+# clone提供了非数据共享的梯度追溯功能，而detach又“舍弃”了梯度功能，因此clone和detach意味着着只做简单的数据复制，既不数据共享，也不对梯度共享，从此两个张量无关联。
+# 置于是先clone还是先detach，其返回值一样，一般采用tensor.clone().detach()。
+f = a.clone().detach()
+
+
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+a[0,0] = 77
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+
+
+b[1,0] = 33
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+
+
+c[2,0] = 54
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+
+d[3,0] = 67
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+
+e[1,1] = 321
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+f[0,-1] = 98
+print("\n\na = \n{},\nb=\n{},\nc =\n{},\nd =\n{},\ne =\n{},\nf =\n{}".format(a,b,c,d,e,f))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -11,6 +11,18 @@ import numpy as np
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 # https://aitechtogether.com/article/6956.html
 #======================================================================================
 #  1.tensor 初始化
@@ -73,8 +85,11 @@ print("t1 = \n{}".format(t1))
 
 
 # 数字乘
-tensor.mul(tensor)
-tensor*tensor
+print("tensor.mul(tensor) = \n{}".format(tensor.mul(tensor) ))
+print(" tensor*tensor = \n{}".format( tensor*tensor ))
+
+
+
 # 矩阵乘
 print("tensor.matmul(tensor.T) = \n{}".format(tensor.matmul(tensor.T)))
 print("tensor@tensor.T = \n{}".format(tensor@tensor.T))
@@ -94,9 +109,9 @@ print(tensor)
 
 # tensor-->numpy
 t=torch.ones(5)
-print(f't:{t}')
+print(f'Tensor:{t}')
 n=t.numpy()
-print(f'n:{n}')
+print(f'numpy:{n}')
 
 # tensor变化会在numpy中反应
 t.add_(1)
@@ -139,7 +154,7 @@ print(b.grad)
 
 
 # https://blog.csdn.net/luschka/article/details/114750073
-
+import torch
 tensor = torch.Tensor([[2,3],[4,5],[6,7]]) #生成tensor
 E = torch.from_numpy #使用numpy生成tensor
 torch_e = torch.from_numpy
