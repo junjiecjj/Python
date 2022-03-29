@@ -97,76 +97,155 @@ iris = sns.load_dataset("iris")
 sns.pairplot(iris, hue='species', size=3)
 
 
+#==============================================================================================
+#      http://seaborn.pydata.org/tutorial/relational.html
+#==============================================================================================
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme(style="darkgrid")
 
+tips = sns.load_dataset("tips")
+sns.relplot(x="total_bill", y="tip", data=tips);
 
 
+sns.relplot(x="total_bill", y="tip", hue="smoker", data=tips);
 
 
 
 
+sns.relplot(x="total_bill", y="tip", hue="smoker", style="smoker",
+            data=tips);
 
 
 
+sns.relplot(x="total_bill", y="tip", hue="smoker", style="time", data=tips);
 
 
 
+sns.relplot(x="total_bill", y="tip", hue="size", data=tips);
 
 
+sns.relplot(x="total_bill", y="tip", hue="size", palette="ch:r=-.5,l=.75", data=tips);
 
 
+sns.relplot(x="total_bill", y="tip", size="size", data=tips);
 
 
+sns.relplot(x="total_bill", y="tip", size="size", sizes=(15, 200), data=tips);
 
 
+#Emphasizing continuity with line plots
+df = pd.DataFrame(dict(time=np.arange(500),
+                       value=np.random.randn(500).cumsum()))
+g = sns.relplot(x="time", y="value", kind="line", data=df)
+g.figure.autofmt_xdate()
 
 
+df = pd.DataFrame(np.random.randn(500, 2).cumsum(axis=0), columns=["x", "y"])
+sns.relplot(x="x", y="y", sort=False, kind="line", data=df);
 
 
+#Aggregation and representing uncertainty¶
+fmri = sns.load_dataset("fmri")
+sns.relplot(x="timepoint", y="signal", kind="line", data=fmri);
 
 
+sns.relplot(x="timepoint", y="signal", ci=None, kind="line", data=fmri);
 
+sns.relplot(x="timepoint", y="signal", kind="line", ci="sd", data=fmri);
 
 
+sns.relplot(x="timepoint", y="signal", estimator=None, kind="line", data=fmri);
 
 
+#Plotting subsets of data with semantic mappings
+sns.relplot(x="timepoint", y="signal", hue="event", kind="line", data=fmri);
 
+sns.relplot(x="timepoint", y="signal", hue="region", style="event",
+            kind="line", data=fmri);
 
 
+sns.relplot(x="timepoint", y="signal", hue="region", style="event",
+            dashes=False, markers=True, kind="line", data=fmri);
 
 
 
+sns.relplot(x="timepoint", y="signal", hue="event", style="event",
+            kind="line", data=fmri);
 
 
 
+sns.relplot(x="timepoint", y="signal", hue="region",
+            units="subject", estimator=None,
+            kind="line", data=fmri.query("event == 'stim'"));
 
 
 
 
+dots = sns.load_dataset("dots").query("align == 'dots'")
+sns.relplot(x="time", y="firing_rate",
+            hue="coherence", style="choice",
+            kind="line", data=dots);
 
 
 
+palette = sns.cubehelix_palette(light=.8, n_colors=6)
+sns.relplot(x="time", y="firing_rate",
+            hue="coherence", style="choice",
+            palette=palette,
+            kind="line", data=dots);
 
 
 
 
+from matplotlib.colors import LogNorm
+palette = sns.cubehelix_palette(light=.7, n_colors=6)
+sns.relplot(x="time", y="firing_rate",
+            hue="coherence", style="choice",
+            hue_norm=LogNorm(),
+            kind="line",
+            data=dots.query("coherence > 0"));
 
 
 
+sns.relplot(x="time", y="firing_rate",
+            size="coherence", style="choice",
+            kind="line", data=dots);
 
 
+sns.relplot(x="time", y="firing_rate",
+           hue="coherence", size="choice",
+           palette=palette,
+           kind="line", data=dots);
 
 
+#Plotting with date data
+df = pd.DataFrame(dict(time=pd.date_range("2017-1-1", periods=500),
+                       value=np.random.randn(500).cumsum()))
+g = sns.relplot(x="time", y="value", kind="line", data=df)
+g.figure.autofmt_xdate()
 
 
+sns.relplot(x="total_bill", y="tip", hue="smoker",
+            col="time", data=tips);
 
 
 
+sns.relplot(x="timepoint", y="signal", hue="subject",
+            col="region", row="event", height=3,
+            kind="line", estimator=None, data=fmri);
 
 
 
 
 
+sns.relplot(x="timepoint", y="signal", hue="event", style="event",
+            col="subject", col_wrap=5,
+            height=3, aspect=.75, linewidth=2.5,
+            kind="line", data=fmri.query("region == 'frontal'"));
 
 
 
@@ -175,188 +254,309 @@ sns.pairplot(iris, hue='species', size=3)
 
 
 
+#==============================================================================================
+#      http://seaborn.pydata.org/tutorial/distributions.html
+#==============================================================================================
 
 
 
+#Plotting univariate histograms
+penguins = sns.load_dataset("penguins")
+sns.displot(penguins, x="flipper_length_mm")
 
+#Choosing the bin size
+sns.displot(penguins, x="flipper_length_mm", binwidth=3)
 
 
+sns.displot(penguins, x="flipper_length_mm", bins=20)
 
 
 
+tips = sns.load_dataset("tips")
+sns.displot(tips, x="size")
 
 
+sns.displot(tips, x="size", bins=[1, 2, 3, 4, 5, 6, 7])
 
 
+sns.displot(tips, x="size", discrete=True)
 
 
+sns.displot(tips, x="day", shrink=.8)
 
 
 
 
+#Conditioning on other variables
+sns.displot(penguins, x="flipper_length_mm", hue="species")
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", element="step")
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", multiple="stack")
 
+sns.displot(penguins, x="flipper_length_mm", hue="sex", multiple="dodge")
 
 
+sns.displot(penguins, x="flipper_length_mm", col="sex")
 
 
 
+#Normalized histogram statistics
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", stat="density")
 
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", stat="density", common_norm=False)
 
 
 
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", stat="probability")
 
 
 
 
+#Kernel density estimation
+sns.displot(penguins, x="flipper_length_mm", kind="kde")
 
+sns.displot(penguins, x="flipper_length_mm", kind="kde", bw_adjust=.25)
 
 
+sns.displot(penguins, x="flipper_length_mm", kind="kde", bw_adjust=2)
 
 
 
+#Conditioning on other variables
+sns.displot(penguins, x="flipper_length_mm", hue="species", kind="kde")
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", kind="kde", multiple="stack")
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", kind="kde", fill=True)
 
 
 
 
 
+#Kernel density estimation pitfalls
+sns.displot(tips, x="total_bill", kind="kde")
 
+sns.displot(tips, x="total_bill", kind="kde", cut=0)
 
 
 
+diamonds = sns.load_dataset("diamonds")
+sns.displot(diamonds, x="carat", kind="kde")
 
+sns.displot(diamonds, x="carat")
 
 
 
+sns.displot(diamonds, x="carat", kde=True)
 
 
 
 
 
+#Empirical cumulative distributions
 
+sns.displot(penguins, x="flipper_length_mm", kind="ecdf")
 
+sns.displot(penguins, x="flipper_length_mm", hue="species", kind="ecdf")
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm")
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", kind="kde")
 
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", hue="species")
 
 
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", hue="species", kind="kde")
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", binwidth=(2, .5))
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", binwidth=(2, .5), cbar=True)
 
 
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", kind="kde", thresh=.2, levels=4)
 
 
+sns.displot(penguins, x="bill_length_mm", y="bill_depth_mm", kind="kde", levels=[.01, .05, .1, .8])
 
 
+sns.displot(diamonds, x="price", y="clarity", log_scale=(True, False))
 
 
 
+sns.displot(diamonds, x="color", y="clarity")
 
 
+#Plotting joint and marginal distributions
 
+sns.jointplot(data=penguins, x="bill_length_mm", y="bill_depth_mm")
 
+sns.jointplot(
+    data=penguins,
+    x="bill_length_mm", y="bill_depth_mm", hue="species",
+    kind="kde"
+)
 
 
 
+g = sns.JointGrid(data=penguins, x="bill_length_mm", y="bill_depth_mm")
+g.plot_joint(sns.histplot)
+g.plot_marginals(sns.boxplot)
 
+sns.displot(
+    penguins, x="bill_length_mm", y="bill_depth_mm",
+    kind="kde", rug=True
+)
 
 
 
+sns.relplot(data=penguins, x="bill_length_mm", y="bill_depth_mm")
+sns.rugplot(data=penguins, x="bill_length_mm", y="bill_depth_mm")
 
 
+sns.pairplot(penguins)
 
 
 
 
+g = sns.PairGrid(penguins)
+g.map_upper(sns.histplot)
+g.map_lower(sns.kdeplot, fill=True)
+g.map_diag(sns.histplot, kde=True)
 
 
 
 
 
 
+#==============================================================================================
+#    http://seaborn.pydata.org/tutorial/categorical.html
+#==============================================================================================
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set_theme(style="ticks", color_codes=True)
 
 
+tips = sns.load_dataset("tips")
+sns.catplot(x="day", y="total_bill", data=tips)
 
 
 
+sns.catplot(x="day", y="total_bill", jitter=False, data=tips)
 
 
 
 
+sns.catplot(x="day", y="total_bill", kind="swarm", data=tips)
 
 
 
 
+sns.catplot(x="day", y="total_bill", hue="sex", kind="swarm", data=tips)
 
 
 
 
 
 
+sns.catplot(x="size", y="total_bill", data=tips)
 
 
 
 
 
+sns.catplot(x="smoker", y="tip", order=["No", "Yes"], data=tips)
 
 
+sns.catplot(x="total_bill", y="day", hue="time", kind="swarm", data=tips)
 
 
 
 
+#Distributions of observations within categories
+sns.catplot(x="day", y="total_bill", kind="box", data=tips)
 
+sns.catplot(x="day", y="total_bill", hue="smoker", kind="box", data=tips)
 
 
+tips["weekend"] = tips["day"].isin(["Sat", "Sun"])
+sns.catplot(x="day", y="total_bill", hue="weekend",
+            kind="box", dodge=False, data=tips)
 
 
+diamonds = sns.load_dataset("diamonds")
+sns.catplot(x="color", y="price", kind="boxen",
+            data=diamonds.sort_values("color"))
 
 
 
 
 
+#Violinplots
+sns.catplot(x="total_bill", y="day", hue="sex",
+            kind="violin", data=tips)
 
 
 
+sns.catplot(x="total_bill", y="day", hue="sex",
+            kind="violin", bw=.15, cut=0,
+            data=tips)
 
 
 
 
+sns.catplot(x="day", y="total_bill", hue="sex",
+            kind="violin", split=True, data=tips)
 
 
 
+sns.catplot(x="day", y="total_bill", hue="sex",
+            kind="violin", inner="stick", split=True,
+            palette="pastel", data=tips)
 
+g = sns.catplot(x="day", y="total_bill", kind="violin", inner=None, data=tips)
+sns.swarmplot(x="day", y="total_bill", color="k", size=3, data=tips, ax=g.ax)
 
 
 
+titanic = sns.load_dataset("titanic")
+sns.catplot(x="sex", y="survived", hue="class", kind="bar", data=titanic)
 
 
 
 
+sns.catplot(x="deck", kind="count", palette="ch:.25", data=titanic)
 
 
+sns.catplot(y="deck", hue="class", kind="count",
+            palette="pastel", edgecolor=".6",
+            data=titanic)
 
 
 
+#Point plots
+sns.catplot(x="sex", y="survived", hue="class", kind="point", data=titanic)
 
 
 
 
 
+sns.catplot(x="class", y="survived", hue="sex",
+            palette={"male": "g", "female": "m"},
+            markers=["^", "o"], linestyles=["-", "--"],
+            kind="point", data=titanic)
 
 
 
@@ -366,64 +566,348 @@ sns.pairplot(iris, hue='species', size=3)
 
 
 
+#Plotting “wide-form” data
 
+iris = sns.load_dataset("iris")
+sns.catplot(data=iris, orient="h", kind="box")
 
 
 
+sns.violinplot(x=iris.species, y=iris.sepal_length)
 
+f, ax = plt.subplots(figsize=(7, 3))
+sns.countplot(y="deck", data=titanic, color="c")
 
 
+sns.catplot(x="day", y="total_bill", hue="smoker",
+            col="time", aspect=.7,
+            kind="swarm", data=tips)
 
 
 
 
+g = sns.catplot(x="fare", y="survived", row="class",
+                kind="box", orient="h", height=1.5, aspect=4,
+                data=titanic.query("fare > 0"))
+g.set(xscale="log")
 
 
 
 
 
+#==============================================================================================
+#    http://seaborn.pydata.org/tutorial/aesthetics.html
+#==============================================================================================
 
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 
+def sinplot(flip=1):
+    x = np.linspace(0, 14, 100)
+    for i in range(1, 7):
+        plt.plot(x, np.sin(x + i * .5) * (7 - i) * flip)
+sinplot()
 
 
 
 
 
+sns.set_theme()
+sinplot()
 
 
 
 
 
+#Seaborn figure styles
 
+sns.set_style("whitegrid")
+data = np.random.normal(size=(20, 6)) + np.arange(6) / 2
+sns.boxplot(data=data);
 
 
 
+sns.set_style("dark")
+sinplot()
 
+sns.set_style("white")
+sinplot()
 
 
 
+sns.set_style("ticks")
+sinplot()
 
 
 
 
+#Removing axes spines
 
+sinplot()
+sns.despine()
 
 
 
+f, ax = plt.subplots()
+sns.violinplot(data=data)
+sns.despine(offset=10, trim=True);
 
 
 
+sns.set_style("whitegrid")
+sns.boxplot(data=data, palette="deep")
+sns.despine(left=True)
 
 
+#Temporarily setting figure style
 
+f = plt.figure(figsize=(6, 6))
+gs = f.add_gridspec(2, 2)
 
+with sns.axes_style("darkgrid"):
+    ax = f.add_subplot(gs[0, 0])
+    sinplot()
 
+with sns.axes_style("white"):
+    ax = f.add_subplot(gs[0, 1])
+    sinplot()
 
+with sns.axes_style("ticks"):
+    ax = f.add_subplot(gs[1, 0])
+    sinplot()
 
+with sns.axes_style("whitegrid"):
+    ax = f.add_subplot(gs[1, 1])
+    sinplot()
 
+f.tight_layout()
 
+
+
+
+#Overriding elements of the seaborn styles
+sns.axes_style()
+
+
+sns.set_style("darkgrid", {"axes.facecolor": ".9"})
+sinplot()
+
+
+
+
+#Scaling plot elements
+
+sns.set_theme()
+
+
+
+
+sns.set_context("paper")
+sinplot()
+
+sns.set_context("talk")
+sinplot()
+
+sns.set_context("poster")
+sinplot()
+
+
+
+sns.set_context("notebook", font_scale=1.5, rc={"lines.linewidth": 2.5})
+sinplot()
+
+
+
+
+
+
+
+
+
+#==============================================================================================
+#    http://seaborn.pydata.org/tutorial/axis_grids.html
+#==============================================================================================
+
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+tips = sns.load_dataset("tips")
+g = sns.FacetGrid(tips, col="time")
+
+
+
+g = sns.FacetGrid(tips, col="time")
+g.map(sns.histplot, "tip")
+
+
+
+g = sns.FacetGrid(tips, col="sex", hue="smoker")
+g.map(sns.scatterplot, "total_bill", "tip", alpha=.7)
+g.add_legend()
+
+
+g = sns.FacetGrid(tips, row="smoker", col="time", margin_titles=True)
+g.map(sns.regplot, "size", "total_bill", color=".3", fit_reg=False, x_jitter=.1)
+
+
+
+g = sns.FacetGrid(tips, col="day", height=4, aspect=.5)
+g.map(sns.barplot, "sex", "total_bill", order=["Male", "Female"])
+
+
+
+
+
+ordered_days = tips.day.value_counts().index
+g = sns.FacetGrid(tips, row="day", row_order=ordered_days,
+                  height=1.7, aspect=4,)
+g.map(sns.kdeplot, "total_bill")
+
+
+
+
+
+pal = dict(Lunch="seagreen", Dinner=".7")
+g = sns.FacetGrid(tips, hue="time", palette=pal, height=5)
+g.map(sns.scatterplot, "total_bill", "tip", s=100, alpha=.5)
+g.add_legend()
+
+
+attend = sns.load_dataset("attention").query("subject <= 12")
+g = sns.FacetGrid(attend, col="subject", col_wrap=4, height=2, ylim=(0, 10))
+g.map(sns.pointplot, "solutions", "score", order=[1, 2, 3], color=".3", ci=None)
+
+
+with sns.axes_style("white"):
+    g = sns.FacetGrid(tips, row="sex", col="smoker", margin_titles=True, height=2.5)
+g.map(sns.scatterplot, "total_bill", "tip", color="#334488")
+g.set_axis_labels("Total bill (US Dollars)", "Tip")
+g.set(xticks=[10, 30, 50], yticks=[2, 6, 10])
+g.figure.subplots_adjust(wspace=.02, hspace=.02)
+
+
+
+
+
+
+
+
+g = sns.FacetGrid(tips, col="smoker", margin_titles=True, height=4)
+g.map(plt.scatter, "total_bill", "tip", color="#338844", edgecolor="white", s=50, lw=1)
+for ax in g.axes_dict.values():
+    ax.axline((0, 0), slope=.2, c=".2", ls="--", zorder=0)
+g.set(xlim=(0, 60), ylim=(0, 14))
+
+
+
+
+
+
+#Using custom functions
+
+from scipy import stats
+def quantile_plot(x, **kwargs):
+    quantiles, xr = stats.probplot(x, fit=False)
+    plt.scatter(xr, quantiles, **kwargs)
+
+g = sns.FacetGrid(tips, col="sex", height=4)
+g.map(quantile_plot, "total_bill")
+
+
+
+
+def qqplot(x, y, **kwargs):
+    _, xr = stats.probplot(x, fit=False)
+    _, yr = stats.probplot(y, fit=False)
+    plt.scatter(xr, yr, **kwargs)
+
+g = sns.FacetGrid(tips, col="smoker", height=4)
+g.map(qqplot, "total_bill", "tip")
+
+
+
+g = sns.FacetGrid(tips, hue="time", col="sex", height=4)
+g.map(qqplot, "total_bill", "tip")
+g.add_legend()
+
+
+
+
+
+
+def hexbin(x, y, color, **kwargs):
+    cmap = sns.light_palette(color, as_cmap=True)
+    plt.hexbin(x, y, gridsize=15, cmap=cmap, **kwargs)
+
+with sns.axes_style("dark"):
+    g = sns.FacetGrid(tips, hue="time", col="time", height=4)
+g.map(hexbin, "total_bill", "tip", extent=[0, 50, 0, 10]);
+
+
+
+
+#Plotting pairwise data relationships
+
+iris = sns.load_dataset("iris")
+g = sns.PairGrid(iris)
+g.map(sns.scatterplot)
+
+
+
+g = sns.PairGrid(iris)
+g.map_diag(sns.histplot)
+g.map_offdiag(sns.scatterplot)
+
+
+
+
+g = sns.PairGrid(iris, hue="species")
+g.map_diag(sns.histplot)
+g.map_offdiag(sns.scatterplot)
+g.add_legend()
+
+
+
+
+
+
+g = sns.PairGrid(iris, vars=["sepal_length", "sepal_width"], hue="species")
+g.map(sns.scatterplot)
+
+
+
+g = sns.PairGrid(iris)
+g.map_upper(sns.scatterplot)
+g.map_lower(sns.kdeplot)
+g.map_diag(sns.kdeplot, lw=3, legend=False)
+
+
+
+
+
+g = sns.PairGrid(tips, y_vars=["tip"], x_vars=["total_bill", "size"], height=4)
+g.map(sns.regplot, color=".3")
+g.set(ylim=(-1, 11), yticks=[0, 5, 10])
+
+
+
+
+g = sns.PairGrid(tips, hue="size", palette="GnBu_d")
+g.map(plt.scatter, s=50, edgecolor="white")
+g.add_legend()
+
+
+
+sns.pairplot(iris, hue="species", height=2.5)
+
+
+
+g = sns.pairplot(iris, hue="species", palette="Set2", diag_kind="kde", height=2.5)
 
 
 

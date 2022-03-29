@@ -64,6 +64,19 @@ def round_tensor(t, decimal_places=3):
     return round(t.item(), decimal_places)
 
 
+
+
+
+#模型预测
+def will_it_rain(rainfall, humidity, rain_today, pressure):
+    t = torch.as_tensor([rainfall, humidity, rain_today, pressure]) \
+      .float() \
+      .to(device)
+    output = net(t)
+    return output.ge(0.5).item()
+
+
+
 sns.set(style='whitegrid', palette='muted', font_scale=1.2)
 HAPPY_COLORS_PALETTE = ["#01BEFE", "#FFDD00", "#FF7D00", "#FF006D", "#93D30C", "#8F00FF"]
 sns.set_palette(sns.color_palette(HAPPY_COLORS_PALETTE))
@@ -204,14 +217,15 @@ plt.ylabel('True label')
 plt.xlabel('Predicted label');
 
 
+#模型预测
+will_it_rain(rainfall=10, humidity=10, 
+             rain_today=True, pressure=2)
 
 
 
 
-
-
-
-
+will_it_rain(rainfall=0, humidity=1, 
+             rain_today=False, pressure=100)
 
 
 
