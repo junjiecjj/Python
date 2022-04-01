@@ -1,6 +1,9 @@
 """
 How to Use the TimeDistributed Layer for Long Short-Term Memory Networks in Python
 中的最后一个案例
+
+LSTM many2many,  stateful = false
+
 """
 
 from numpy import array
