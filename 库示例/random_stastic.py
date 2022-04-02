@@ -794,9 +794,9 @@ H_mod = np.abs(H)
 
 
 print("H_mod mean = {}, var = {}\n".format( np.sqrt(np.pi/2)*std, (4-np.pi)*std**2/2 ))
-print(" H_mod 所有元素的均值 = {}\n".format(np.mean(H_mod)))    # img所有元素的均值 = 1.9994716916165884
-print(" H_mod 所有元素的总体方差 = {}\n".format(np.var(H_mod)))  #a所有元素的总体方差 = 8.998722858669622
-
+# H_mod mean = 3.7599424119465006, var = 3.862833058845931
+print(" H_mod 所有元素的均值 = {}\n".format(np.mean(H_mod)))    # H_mod 所有元素的均值 = 3.7598373748179172
+print(" H_mod 所有元素的总体方差 = {}\n".format(np.var(H_mod))) # H_mod 所有元素的总体方差 = 3.863108295676793
 
 
 

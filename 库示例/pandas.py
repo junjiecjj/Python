@@ -91,3 +91,311 @@ print("da:\n",da,'\n')
 da.to_csv("da.txt",encoding='utf-8',sep=' ',header=1,index=1,\
           columns=['a','b','c'], float_format='%.0f')
 da1 = pd.read_csv("da.txt",sep='\s+',header=0, index_col=0, )
+
+
+
+
+
+#======================================================================
+
+df = pd.DataFrame({
+                    'a': [1, 2] * 3,
+                    'b': [True, False] * 3,
+                    'c': [1.0, 2.0] * 3,
+                    'd': ['1','2']*3
+                  })
+
+print(f"df.info() = {df.info()}\n")
+
+#数值型特征: 包括int64,float64
+df.select_dtypes(include = ['int64','float64'])
+
+#仅int型的:
+df.select_dtypes(include = 'int64')
+
+#类别型特征(object):
+df.select_dtypes(include = 'object')     
+
+#布尔型特征(bool):
+df.select_dtypes(include = 'bool')
+
+
+#除了布尔型以外的所有特征:
+df.select_dtypes(exclude = 'bool')
+
+
+#这样得到的结果是DataFrame类型数据，下面将想要的特征名称取出来:
+numerical_fea = list(df.select_dtypes(include = 'int64').columns)
+numerical_fea
+
+
+numerical_fea = list(df.select_dtypes(include =['int64','float64']).columns)
+numerical_fea
+
+
+
+df = pd.DataFrame([[1, 2], [3, 4]], columns=list('AB'))
+
+df2 = pd.DataFrame([[5, 6], [7, 8]], columns=list('AB'))
+df.append(df2)
+
+
+pd.concat([pd.DataFrame([i], columns=['A']) for i in range(5)],ignore_index=True)
+
+
+#如何在pandas中使用set_index( )与reset_index( )设置索引
+"""
+在数据分析过程中，有时出于增强数据可读性或其他原因，我们需要对数据表的索引值进行设定。在之前的文章中也有涉及过，在我们的pandas中，常用set_index( )与reset_index( )这两个函数进行索引设置，下面我们来了解一下这两个函数的用法。
+
+DataFrame.set_index(keys, drop=True, append=False, inplace=False, verify_integrity=False)
+
+参数解释：
+
+keys：列标签或列标签/数组列表，需要设置为索引的列
+
+drop：默认为True，删除用作新索引的列
+
+append：是否将列附加到现有索引，默认为False。
+
+inplace：输入布尔值，表示当前操作是否对原数据生效，默认为False。
+
+verify_integrity：检查新索引的副本。否则，请将检查推迟到必要时进行。将其设置为false将提高该方法的性能，默认为false。
+
+
+
+"""
+
+
+
+import pandas as pd
+import numpy as np
+df = pd.DataFrame({'Country':['China','China', 'India', 'India', 'America', 'Japan', 'China', 'India'], 
+ 
+                   'Income':[10000, 10000, 5000, 5002, 40000, 50000, 8000, 5000],
+ 
+                    'Age':[50, 43, 34, 40, 25, 25, 45, 32]})
+
+
+
+
+df_new = df.set_index('Country',drop=True, append=False, inplace=False, verify_integrity=False)
+print(f"df_new = \n{df_new}\n")
+
+
+
+# 可以看到，在上一步的代码中，是指定了drop=True，也就是删除用作新索引的列，下面师门尝试将drop=False.
+df_new1 = df.set_index('Country',drop=False, append=False, inplace=False, verify_integrity=False)
+print(f"df_new1 = \n{df_new1}\n")
+
+
+
+df_new2 = df.set_index('Country',drop=False, append=True, inplace=False, verify_integrity=False)
+print(f"df_new2 = \n{df_new2}\n")
+
+df_new3 = df.set_index('Country',drop=True, append=True, inplace=False, verify_integrity=False)
+print(f"df_new3 = \n{df_new3}\n")
+
+
+
+
+"""
+二、reset_index( )
+1、函数体及主要参数解释：
+
+DataFrame.reset_index(level=None, drop=False, inplace=False, col_level=0, col_fill='')
+参数解释：
+
+level：数值类型可以为：int、str、tuple或list，默认无，仅从索引中删除给定级别。默认情况下移除所有级别。控制了具体要还原的那个等级的索引 。
+
+drop：当指定drop=False时，则索引列会被还原为普通列；否则，经设置后的新索引值被会丢弃。默认为False。
+
+inplace：输入布尔值，表示当前操作是否对原数据生效，默认为False。
+
+col_level：数值类型为int或str，默认值为0，如果列有多个级别，则确定将标签插入到哪个级别。默认情况下，它将插入到第一级。
+
+col_fill：对象，默认‘’，如果列有多个级别，则确定其他级别的命名方式。如果没有，则重复索引名。
+
+注意~~~reset_index（）还原可分为两种类型，第一种是对原来的数据表进行reset；第二种是对使用过set_index()函数的数据表进行reset。
+
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
