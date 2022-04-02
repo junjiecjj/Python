@@ -3,6 +3,16 @@
 """
 Created on Sun Jul 14 13:51:57 2019
 @author: jack
+
+LSTM  many2many  stateful = True
+model.fit(X, y, epochs=1, batch_size=batch_size, verbose=2, shuffle=False)
+
+ 关于stateful：
+https://zhuanlan.zhihu.com/p/34495801
+
+https://www.zhihu.com/question/276242710
+
+
 """
 
 # Stateful LSTM to learn one-char to one-char mapping
@@ -37,7 +47,7 @@ X = X / float(len(alphabet))
 # one hot encode the output variable
 y = np_utils.to_categorical(dataY)
 # create and fit the model
-batch_size = 1
+batch_size = 5
 model = Sequential()
 model.add(LSTM(50, batch_input_shape=(batch_size, X.shape[1], X.shape[2]), stateful=True,return_sequences=True))
 model.add(TimeDistributed(Dense(y.shape[2], activation='softmax')))
@@ -46,10 +56,14 @@ for i in range(30):
 	model.fit(X, y, epochs=1, batch_size=batch_size, verbose=2, shuffle=False)
 	model.reset_states()
     
-
+print(model.summary())
 res = model.predict(X,batch_size=batch_size,verbose=0)
 
+
 """
+dataX.shape = [20,3]
+dataY.shape = [20,3]
+
 X.shape
 Out[2]: (20, 3, 1)
 

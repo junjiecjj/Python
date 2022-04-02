@@ -55,8 +55,14 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(3, 1)
 
     def forward(self, x):
+        print("x.shape = {}\n".format(x.shape)) #x.shape = torch.Size([99751, 4])
+        
         x = F.relu(self.fc1(x))
+        print("x111.shape = {}\n".format(x.shape)) #x111.shape = torch.Size([99751, 5])
+        
         x = F.relu(self.fc2(x))
+        
+        print("x222.shape = {}\n".format(x.shape)) #x222.shape = torch.Size([99751, 3])
         return torch.sigmoid(self.fc3(x))
 
 #寻找最优参数
@@ -146,16 +152,17 @@ y_train = torch.squeeze(torch.from_numpy(y_train.to_numpy()).float())
 X_test = torch.from_numpy(X_test.to_numpy()).float()
 y_test = torch.squeeze(torch.from_numpy(y_test.to_numpy()).float())
 
-print(X_train.shape, y_train.shape)
-print(X_test.shape, y_test.shape)
-
+print("X_train.shape = {}, y_train.shape = {}\n".format(X_train.shape, y_train.shape))
+print("X_test.shape = {}, y_test.shape = {}\n".format(X_test.shape, y_test.shape))
+# X_train.shape = torch.Size([99751, 4]), y_train.shape = torch.Size([99751])=
+# X_test.shape = torch.Size([24938, 4]), y_test.shape = torch.Size([24938])
 
 
 
 #可视化神经元
 net = Net(X_train.shape[1])
 #Build your model here
-ann_viz(net, view=True)
+#ann_viz(net, view=True)
 
 
 #损失函数
