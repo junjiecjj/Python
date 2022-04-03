@@ -29,7 +29,7 @@ print(f"x_np = {x_np}\n")
 
 #创建一个 5x3 矩阵，但是未初始化:
 x = torch.empty(5, 3)
-<<<<<<< HEAD
+
 print(f"x = {x}\n")
 
 # 使用[0,1]均匀分布随机初始化二维数组
@@ -46,13 +46,12 @@ y=torch.rand(2,3,4,5)
 print(f"y.size() = {y.size()}\n")
 print(f"y = {y}\n")
 
-=======
-print(x)
+
 
 #创建一个随机初始化的矩阵:
 x = torch.rand(5, 3)
 print(x)
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
+
 
 #从另外一个张量（Tensors）获取,注意：除非明确覆盖，否则新张量保留参数张量的属性（形状、数据类型）
 x_ones = torch.ones_like(x_data) # retains the properties of x_data
@@ -72,11 +71,7 @@ print(f"全1张量: \n {ones_tensor} \n")
 print(f"零张量: \n {zeros_tensor}")
 
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
 #张量（Tensors）的属性
 #张量属性描述了它们的形状、数据类型和存储它们的设备（比如CPU还是GPU）。
 tensor = torch.rand(3, 4)
@@ -122,7 +117,6 @@ print(f'tensor @ tensor.T) \n {tensor @ tensor.T}')
 print(tensor, '\n')
 tensor.add_(5)
 print(tensor)
-    
 
 #使用Numpy桥接（可选看）
 #CPU 和 NumPy 数组上的张量可以共享它们的底层内存位置，改变一个将改变另一个。
@@ -241,7 +235,7 @@ if torch.cuda.is_available():
 #tensor([0.7632], device='cuda:0')
 #tensor([0.7632], dtype=torch.float64)
 
-<<<<<<< HEAD
+
 #其中要特别注意的就是标量，我们先生成一个标量：
 #我们直接使用现有数字生成
 scalar =torch.tensor(3.1433223)
@@ -262,11 +256,11 @@ print(f"tensor.item() = {tensor.item()}\n")
 
 #基本类型
 #Tensor的基本数据类型有五种： 
-- 32位浮点型：torch.FloatTensor。 (默认) 
-- 64位整型：torch.LongTensor。 
-- 32位整型：torch.IntTensor。 
-- 16位整型：torch.ShortTensor。 
-- 64位浮点型：torch.DoubleTensor。
+#- 32位浮点型：torch.FloatTensor。 (默认) 
+#- 64位整型：torch.LongTensor。 
+#- 32位整型：torch.IntTensor。 
+#- 16位整型：torch.ShortTensor。 
+#- 64位浮点型：torch.DoubleTensor。
 
 #除以上数字类型外，还有 byte和chart型
 tensor = torch.tensor([3.1433223]) 
@@ -347,7 +341,7 @@ print(z)
 #tensor([[-0.3821, -2.6932, -1.3884],
 #        [ 0.7468, -0.7697, -0.0883],
 #        [ 0.7688, -1.3485,  0.7517]])
-正如官方60分钟教程中所说，以_为结尾的，均会改变调用值
+#正如官方60分钟教程中所说，以_为结尾的，均会改变调用值
 
 # add 完成后x的值改变了
 x.add_(y)
@@ -355,17 +349,13 @@ print(x)
 #tensor([[-0.3821, -2.6932, -1.3884],
 #        [ 0.7468, -0.7697, -0.0883],
 #        [ 0.7688, -1.3485,  0.7517]])
-=======
 
-
-
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
 
 #=============================================================================
 # Autograd: 自动求导机制
 #=============================================================================
 
-<<<<<<< HEAD
+
 #----------------------------------------------- 分割线 ----------------------------------------------
 import torch
 
@@ -400,7 +390,7 @@ out.grad_fn = <MeanBackward0 object at 0x7f1366312940>
 现在，我们从out开始进行反向传播：
 """
 #反向传播 因为 out是一个纯量（scalar），out.backward() 等于out.backward(torch.tensor(1))。
-out.backward(torch.tensor(2))
+out.backward(torch.tensor(1))
 
 print(f"x.grad = {x.grad}\n")
 
@@ -418,26 +408,21 @@ x.grad = tensor([[9., 9.],
 
 
 #----------------------------------------------- 分割线 ----------------------------------------------
-=======
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
+
 import torch
 
 
 x = torch.ones(2, 2, requires_grad=True)
-print(f"x = \n{x}\n")
-
-
 y = x + 2
-print(f"y = \n{y}\n")
-
-print("y.grad_fn = \n{y.grad_fn}\n")
-
-
 z = y * y * 3
 out = z.mean()
+#x->y->z->out
+print(f"x = {x}\n")
+print(f"y = {y}\n")
+print(f"z = {z}\n")
+print(f"out = {out}\n")
+print(f"out.grad_fn = {out.grad_fn}\n")
 
-print(f"z = {z}, out = {out}\n")
-<<<<<<< HEAD
 #z = tensor([[27., 27.],
 #        [27., 27.]], out = 27.0
 
@@ -451,8 +436,17 @@ print(f"x.grad = {x.grad}\n")
 
 #----------------------------------------------- 分割线 ----------------------------------------------
 import torch
-=======
 
+x = torch.ones(2, 2, requires_grad=True)
+y = x + 2
+z = y * y * 3
+out = z.mean()
+#x->y->z->out
+print(f"x = {x}\n")
+print(f"y = {y}\n")
+print(f"z = {z}\n")
+print(f"out = {out}\n")
+print(f"out.grad_fn = {out.grad_fn}\n")
 
 gradients = torch.tensor([[0, 1],[2,3]], dtype=torch.float)
 #反向传播 因为 out是一个纯量（scalar），out.backward() 等于out.backward(torch.tensor(1))。
@@ -460,7 +454,7 @@ out.backward(torch.tensor(2))
 
 print(f"x.grad = {x.grad}\n")
 
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
+
 a = torch.randn(2, 2)
 a = ((a * 3) / (a - 1))
 print(f"a.requires_grad = {a.requires_grad}\n")
@@ -469,7 +463,7 @@ print(f"a.requires_grad = {a.requires_grad}\n")
 b = (a * a).sum()
 print(f"b.grad_fn = {b.grad_fn}\n")
 
-<<<<<<< HEAD
+
 """
 a.requires_grad = False
 
@@ -480,12 +474,10 @@ b.grad_fn = <SumBackward0 object at 0x7f136630a070>
 
 
 #----------------------------------------------- 分割线 ----------------------------------------------
-=======
 
 
 
 
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
 import torch
 x = torch.randn(3, requires_grad=True)
 
@@ -497,14 +489,13 @@ while y.data.norm() < 1000:
 
 print(f"t = {y}\n")
 
-<<<<<<< HEAD
+
 """
 如果需要计算导数，你可以在Tensor上调用.backward()。 如果Tensor是一个标量（即它包含一个元素数据）则不需要为backward()指定任何参数， 
 但是如果它有更多的元素，你需要指定一个gradient 参数来匹配张量的形状。
 
 """
-=======
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
+
 
 #在这个情形中，y不再是个标量。torch.autograd无法直接计算出完整的雅可比行列，但是如果我们只想要vector-Jacobian product，只需将向量作为参数传入backward：
 
@@ -522,7 +513,7 @@ with torch.no_grad():
     print((x ** 2).requires_grad)
 
 
-<<<<<<< HEAD
+
 #----------------------------------------------- 分割线 ----------------------------------------------
 import torch
 from torch.autograd import Variable
@@ -579,9 +570,7 @@ z.grad = None
 """
 
 #----------------------------------------------- 分割线 ----------------------------------------------
-=======
 
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
 import torch
 from torch.autograd import Variable
 
@@ -591,19 +580,22 @@ y = x + 2
 z = y*y*3
 out = z.mean()
 #x->y->z->out
-print(x)
-print(y)
-print(z)
-print(out)
+print(f"x = {x}\n")
+print(f"y = {y}\n")
+print(f"z = {z}\n")
+print(f"out = {out}\n")
 
 
-<<<<<<< HEAD
+
 #如果是z关于x求导就必须指定gradient参数：
-
+x = torch.Tensor([[1.,2.,3.],[4.,5.,6.]])  #grad_fn是None
+x = Variable(x, requires_grad=True)
+y = x + 2
+z = y*y*3
 gradients = torch.Tensor([[2.,1.,1.],[3.,1.,1.]])
-=======
+
 out.backward()
-print(x.grad)
+print(f"x.grad = \n{x.grad}\n")
 
 #结果:
 #tensor([[3., 4., 5.],
@@ -612,12 +604,12 @@ print(x.grad)
 #如果是z关于x求导就必须指定gradient参数：
 
 gradients = torch.Tensor([[2.,1.,1.],[1.,1.,1.]])
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
+
 z.backward(gradient=gradients)
 #若z不是一个标量，那么就先构造一个标量的值：L = torch.sum(z*gradient)，再关于L对各个leaf Variable计算梯度
 #对x关于L求梯度
-print(x.grad)
-<<<<<<< HEAD
+print(f"x.grad = \n{x.grad}\n")
+
 #结果:
 #tensor([[36., 24., 30.],
 #        [36., 42., 48.]])
@@ -627,14 +619,7 @@ print(x.grad)
 # print(x.grad) 
 #报错:RuntimeError: grad can be implicitly created only for scalar outputs只能为标量创建隐式变量
   
-=======
 
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
-
-
-
-
-<<<<<<< HEAD
 #----------------------------------------------- 分割线 ----------------------------------------------
 """
 https://lulaoshi.info/machine-learning/neural-network/pytorch-tensor-autograd
@@ -696,15 +681,7 @@ for t in range(500):
         # 必须在下次反向传播前先将.grad中的梯度清零
         w1.grad.zero_()
         w2.grad.zero_()
-=======
 
-
-
-
-
-
-
->>>>>>> 1b0e4b7810aaaf7667772d873b1d0f802cfba8ad
 
 
 
