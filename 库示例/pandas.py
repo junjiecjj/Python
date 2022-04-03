@@ -98,6 +98,7 @@ da1 = pd.read_csv("da.txt",sep='\s+',header=0, index_col=0, )
 
 #=====================================================================
 # 如何在pandas中使用set_index( )与reset_index( )设置索引
+# https://zhuanlan.zhihu.com/p/110819220
 #=====================================================================
      
 
@@ -230,7 +231,7 @@ df = pd.DataFrame({'Country':['China','China', 'India', 'India', 'America', 'Jap
                    'Income':[10000, 10000, 5000, 5002, 40000, 50000, 8000, 5000],
  
                     'Age':[50, 43, 34, 40, 25, 25, 45, 32]})
-
+print(f"df = \n{df}\n")
 
 df_new = df.set_index('Country',drop=True, append=False, inplace=False, verify_integrity=False)
 print(f"df_new = \n{df_new}\n")
@@ -257,6 +258,11 @@ df = pd.DataFrame({'Country':['China','China', 'India', 'India', 'America', 'Jap
 
 print(f"df = \n{df}\n")
 
+print(f"df column name= \n{list(df)}")
+print(f"df column name= \n{df.columns.values}")
+print(f"df column name= \n{df.columns.tolist()}")
+
+
 
 df_new03 = df.reset_index(drop=False)
 print(f"df_new03 = \n{df_new03}\n")
@@ -267,12 +273,33 @@ df_new04 = df.reset_index(drop=True)
 print(f"df_new04 = \n{df_new04}\n")
 
 
+df1 = pd.DataFrame({'Country':['Franch','Gemm', 'England', 'Austra'], 
+ 
+                   'Income':[778, 54, 3223, 476],
+ 
+                    'Age':[12, 55,   98, 76]})
+print(f"df1 = \n{df1}\n")
 
 
+combined = df.append(df1)
+print(f"combined = \n{combined}\n")
+
+df2 = combined.reset_index()
+print(f"df2 = \n{df2}\n")
+
+# combined.reset_index(inplace=True)
+# print(f"combined = \n{combined}\n")
+
+#如果我们想直接使用重置后的索引，不保留原来的index，就可以加上(drop = True)，
+df3 = combined.reset_index( drop = True)
+print(f"df3 = \n{df3}\n")
+# combined.reset_index(inplace=True, drop = True)
+# print(f"combined = \n{combined}\n")
 
 
 #=====================================================================
 # 如何使用drop方法对数据进行删减处理
+# https://zhuanlan.zhihu.com/p/109913870
 #=====================================================================
 
 
@@ -287,13 +314,11 @@ axis为0时表示删除行，axis为1时表示删除列，还是一样~
 关于参数errors：
 
 errors='raise'会让程序在labels接收到没有的行名或者列名时抛出错误导致程序停止运行，errors='ignore'会忽略没有的行名或者列名，只对存在的行名或者列名进行操作，没有指定的话也是默认‘errors='raise'’。
-labels:
-axis:
-level:
-inplace:
-     
-     
-     
+label: 接受string或者array,代表删除的行或列的标签，无默认。
+axis: 接受0或1，代表操作的轴向，默认为0，代表按行删除
+levels: 接受Int或者索引名，代表标签所在的级别，默认为None。
+inplaces: 接受boolean，代表操作是否对原数据生效，默认为false
+
 """
 import pandas as pd
 import numpy as np
@@ -307,40 +332,92 @@ print(f"cities = \n{cities}\n")
 #（1）删除掉第a行：
 
 df1=cities.drop(labels='a')
-df1
+print(f"df1 = \n{df1}\n")
 
 
+df2=cities.drop(index='a')
+print(f"df2 = \n{df2}\n")
 
+#可以看到，因为这里我们是删除行，所以我们用labels、index都是可以的。不过还是推荐使用labels。而已还是要注意~drop默认对原表不生效，如果要对原表生效，需要添加参数：inplace=True
 
 
+#（2）删除非连续的多行：
+df1=cities.drop(labels=['a','c','e'])
+print(f"df1 = \n{df1}\n")
 
+#这里我们要插播一下比较细节的东西，大家以后可能会遇到的一个问题：
+#为了方便看，我们这次不设置索引名，下面重新创建一下数据表：
+import pandas as pd
+city = pd.DataFrame(np.random.randn(5, 5),
+     columns=['shenzhen', 'guangzhou', 'beijing', 'nanjing', 'haerbin'])
+print(f"city = \n{city}\n")
 
+#我们还是删掉第1行（1实际上是第二行），而已这一次我们加上inplace=True：
+city.drop(labels=1,axis=0,inplace=True)
+print(f"city = \n{city}\n")
 
 
+#如果这个时候，我们再输入一次：
+city.drop(labels=1,axis=0,inplace=True)
 
 
+"""
+（报错了，很应该啊，好像也没什么，毕竟第1行本来就被我们删掉了）
 
+但是！！！注意了，我们在这里想说明的是：
+如果我们没标注索引，而已把数据一行一行删掉的话，该行对应的索引也是被我们删掉的！
 
+比如说一个数据表里一共有5行，我们把第2、第3行给删掉了，就会顺道对应把索引2、索引3删掉，这时候数据的索引就会变成[1、4、5]，即使这个时候原来的第4行数据现在变成第2行了，现在也无法用索引第2行的方式来获取现在的第2行（原来的第4行），因为索引已经乱了。
 
+所以说，大家在用drop的时候还是要注意这一点的。同时，我们该如何解决这个问题呢？
 
+答案是要将索引重置，这样后面再次使用才不会因为索引不存在而报错。
 
+重置索引的方法是：reset_index
 
+reset_index，默认(drop = False)，当我们指定(drop = True)时，则不会保留原来的index，会直接使用重置后的索引。
+"""
 
 
+df1 = city.reset_index()
+print(f"df1 = \n{df1}\n")
 
+#如果我们想直接使用重置后的索引，不保留原来的index，就可以加上(drop = True)，如下所示：
+df2 = city.reset_index(drop=True)
+print(f"df2 = \n{df2}\n")
 
 
 
+#这个时候我们再试试删除第1行，果然没有问题了。
+df2.drop(labels=1,axis=0,inplace=True)
+print(f"df2 = \n{df2}\n")
 
 
 
+#（3）删除连续的多行：
+#当我们想删除连续多行时，如果还是一个一个标签输入的话，显得不太智能，所以我们可以用更简便的方法：
+#再建一个新的数据表:
+import pandas as pd
 
+people= pd.DataFrame(np.random.randn(6, 6),
+     columns=['jack', 'rose', 'mike', 'chenqi', 'amy','tom'])
+print(f"people  = \n{people}\n")    
 
+#当我们想删去第2-4行时，可以用如下表示：
+df2=people.drop(labels=range(2,5),axis=0)
+print(f"df2 = \n{df2}\n")
 
 
+#（4）删除列：
+#在最新的表中删除‘jack’这一列：
 
+df2=people.drop(labels='jack',axis=1)
+print(f"df2 = \n{df2}\n")
 
 
+#同时删除‘rose’、‘mike’这两列：
+df2=people.drop(labels=['rose','mike'],axis=1)
+print(f"df2 = \n{df2}\n")
 
 
 
@@ -348,41 +425,68 @@ df1
 
 
 
+#=====================================================================
+# pandas.get_dummies 的用法
+# https://zhuanlan.zhihu.com/p/109913870
+#=====================================================================
 
+import pandas as pd
+df = pd.DataFrame([  
+            ['green' , 'A'],   
+            ['red'   , 'B'],   
+            ['blue'  , 'A']])  
 
+df.columns = ['color',  'class'] 
+print(f"df = \n{df}\n")
 
+df1 = pd.get_dummies(df) 
+print(f"df1 = \n{df1}\n")
 
+# 可以对指定列进行get_dummies
+df3 = pd.get_dummies(df.color)
+print(f"df3 = \n{df3}\n")
 
 
+#将指定列进行get_dummies 后合并到元数据中
+df4 = df.join(pd.get_dummies(df.color))
+print(f"df4 = \n{df4}\n")
+# or
+df5 = pd.concat([df,df3], axis=1)
+print(f"df5 = \n{df5}\n")
 
 
+import pandas as pd
+df = pd.DataFrame({
+    'gender':['m','f','m','f','m','f','n']})
+df_onehot = pd.get_dummies(df)
 
+print(f"df_onehot = \n{df_onehot}\n")
 
 
+import pandas as pd
+data_df = pd.DataFrame({
+    'id':[1,2,3,4,5,6,7],'gender':['m','f','m','f','m','f','n']})
+df_onehot = pd.get_dummies(data_df)
+print(f"df_onehot = \n{df_onehot}\n")
 
 
+#prefix: string, list of strings, or dict of strings, default None
+#用于附加DataFrame列名的字符串。在DataFrame上调用get_dummies时，传递长度等于列数的列表。或者，前缀可以是将列名映射到前缀的字典。
+import pandas as pd
+data_df = pd.DataFrame({
+    'id':[1,2,3,4,5,6,7],'gender':['m','f','m','f','m','f','n']})
+df_onehot = pd.get_dummies(data_df, prefix ='gen')
+print(f"df_onehot = \n{df_onehot}\n")
 
 
+# prefix_sep: string, default ‘_’
+# 如果附加前缀，则使用分隔符/分隔符。或作为前缀传递列表或字典。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import pandas as pd
+data_df = pd.DataFrame({
+    'id':[1,2,3,4,5,6,7],'gender':['m','f','m','f','m','f','n']})
+df_onehot = pd.get_dummies(data_df, prefix ='gen', prefix_sep = '/')
+print(f"df_onehot = \n{df_onehot}\n")
 
 
 

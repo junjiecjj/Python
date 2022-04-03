@@ -86,7 +86,7 @@ class Net(nn.Module):
 train_data_path ='train.csv'
 train = pd.read_csv(train_data_path)
 print(f"train.shape = {train.shape}")#train.shape = (1460, 81)
-print(f"train.describe() = {train.describe()}")
+print(f"train.describe() = \n{train.describe()}")
 num_of_train_data = train.shape[0]
 
 

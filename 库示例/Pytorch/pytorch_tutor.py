@@ -584,26 +584,30 @@ print(f"x = {x}\n")
 print(f"y = {y}\n")
 print(f"z = {z}\n")
 print(f"out = {out}\n")
+#反向传播 因为 out是一个纯量（scalar），out.backward() 等于out.backward(torch.tensor(1))。
+out.backward()
 
+print(f"x.grad = {x.grad}\n")
 
 
 #如果是z关于x求导就必须指定gradient参数：
+import torch
+from torch.autograd import Variable
+
 x = torch.Tensor([[1.,2.,3.],[4.,5.,6.]])  #grad_fn是None
 x = Variable(x, requires_grad=True)
 y = x + 2
 z = y*y*3
-gradients = torch.Tensor([[2.,1.,1.],[3.,1.,1.]])
-
-out.backward()
-print(f"x.grad = \n{x.grad}\n")
-
-#结果:
-#tensor([[3., 4., 5.],
-#        [6., 7., 8.]])
+out = z.mean()
+#x->y->z->out
+print(f"x = {x}\n")
+print(f"y = {y}\n")
+print(f"z = {z}\n")
+print(f"out = {out}\n")
 
 #如果是z关于x求导就必须指定gradient参数：
 
-gradients = torch.Tensor([[2.,1.,1.],[1.,1.,1.]])
+gradients = torch.Tensor([[2.,1.,1.],[3.,1.,1.]])
 
 z.backward(gradient=gradients)
 #若z不是一个标量，那么就先构造一个标量的值：L = torch.sum(z*gradient)，再关于L对各个leaf Variable计算梯度
