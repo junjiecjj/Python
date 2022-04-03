@@ -96,7 +96,10 @@ da1 = pd.read_csv("da.txt",sep='\s+',header=0, index_col=0, )
 
 
 
-#======================================================================
+#=====================================================================
+# 如何在pandas中使用set_index( )与reset_index( )设置索引
+#=====================================================================
+     
 
 df = pd.DataFrame({
                     'a': [1, 2] * 3,
@@ -218,39 +221,93 @@ col_fill：对象，默认‘’，如果列有多个级别，则确定其他级
 注意~~~reset_index（）还原可分为两种类型，第一种是对原来的数据表进行reset；第二种是对使用过set_index()函数的数据表进行reset。
 
 """
+#（1）我们先看一下第二种情况，即对使用过set_index()函数的数据表进行reset：
+
+import pandas as pd
+import numpy as np
+df = pd.DataFrame({'Country':['China','China', 'India', 'India', 'America', 'Japan', 'China', 'India'], 
+ 
+                   'Income':[10000, 10000, 5000, 5002, 40000, 50000, 8000, 5000],
+ 
+                    'Age':[50, 43, 34, 40, 25, 25, 45, 32]})
+
+
+df_new = df.set_index('Country',drop=True, append=False, inplace=False, verify_integrity=False)
+print(f"df_new = \n{df_new}\n")
+
+
+df_new01 = df_new.reset_index(drop=False)
+print(f"df_new01 = \n{df_new01}\n")
+
+
+df_new02 = df_new.reset_index(drop=True)
+print(f"df_new02 = \n{df_new02}\n")
+
+
+
+#（2）再看下第一种情况，即对原来的数据表进行reset处理：
+
+import pandas as pd
+import numpy as np
+df = pd.DataFrame({'Country':['China','China', 'India', 'India', 'America', 'Japan', 'China', 'India'], 
+ 
+                   'Income':[10000, 10000, 5000, 5002, 40000, 50000, 8000, 5000],
+ 
+                    'Age':[50, 43, 34, 40, 25, 25, 45, 32]})
+
+print(f"df = \n{df}\n")
+
+
+df_new03 = df.reset_index(drop=False)
+print(f"df_new03 = \n{df_new03}\n")
+
+
+
+df_new04 = df.reset_index(drop=True)
+print(f"df_new04 = \n{df_new04}\n")
 
 
 
 
 
 
+#=====================================================================
+# 如何使用drop方法对数据进行删减处理
+#=====================================================================
+
+
+"""
+下面我们先简单说一下drop的用法及一些主要参数：
+drop函数：drop(labels, axis=0, level=None, inplace=False, errors='raise')
+
+关于参数axis：
+
+axis为0时表示删除行，axis为1时表示删除列，还是一样~
+
+关于参数errors：
+
+errors='raise'会让程序在labels接收到没有的行名或者列名时抛出错误导致程序停止运行，errors='ignore'会忽略没有的行名或者列名，只对存在的行名或者列名进行操作，没有指定的话也是默认‘errors='raise'’。
+labels:
+axis:
+level:
+inplace:
+     
+     
+     
+"""
+import pandas as pd
+import numpy as np
+cities = pd.DataFrame(np.random.randn(5, 5),
+     index=['a', 'b', 'c', 'd', 'e'],
+     columns=['shenzhen', 'guangzhou', 'beijing', 'nanjing', 'haerbin'])
+print(f"cities = \n{cities}\n")
 
 
 
+#（1）删除掉第a行：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+df1=cities.drop(labels='a')
+df1
 
 
 
