@@ -58,7 +58,7 @@ class LeNet(nn.Module):
 #训练模型
 
 #load_data_fashion_mnist()方法返回训练集和测试集。
-def load_data_fashion_mnist(batch_size, resize=None, root='~/Datasets/FashionMNIST'):
+def load_data_fashion_mnist(batch_size, resize=None, root='~/公共的/MLData/FashionMNIST'):
     """Use torchvision.datasets module to download the fashion mnist dataset and then load into memory."""
     trans = []
     if resize:
