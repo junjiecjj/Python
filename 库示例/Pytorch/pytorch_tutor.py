@@ -423,8 +423,20 @@ print(f"z = {z}\n")
 print(f"out = {out}\n")
 print(f"out.grad_fn = {out.grad_fn}\n")
 
-#z = tensor([[27., 27.],
-#        [27., 27.]], out = 27.0
+"""
+x = tensor([[1., 1.],
+        [1., 1.]], requires_grad=True)
+
+y = tensor([[3., 3.],
+        [3., 3.]], grad_fn=<AddBackward0>)
+
+z = tensor([[27., 27.],
+        [27., 27.]], grad_fn=<MulBackward0>)
+
+out = 27.0
+
+out.grad_fn = <MeanBackward0 object at 0x7fa344125850>
+"""
 
 gradients = torch.tensor([[0, 1],[2,3]], dtype=torch.float)
 #反向传播 因为 out是一个纯量（scalar），out.backward() 等于out.backward(torch.tensor(1))。
@@ -448,13 +460,29 @@ print(f"z = {z}\n")
 print(f"out = {out}\n")
 print(f"out.grad_fn = {out.grad_fn}\n")
 
+"""
+x = tensor([[1., 1.],
+        [1., 1.]], requires_grad=True)
+
+y = tensor([[3., 3.],
+        [3., 3.]], grad_fn=<AddBackward0>)
+
+z = tensor([[27., 27.],
+        [27., 27.]], grad_fn=<MulBackward0>)
+
+out = 27.0
+
+out.grad_fn = <MeanBackward0 object at 0x7fa3440aab50>
+"""
+
 gradients = torch.tensor([[0, 1],[2,3]], dtype=torch.float)
 #反向传播 因为 out是一个纯量（scalar），out.backward() 等于out.backward(torch.tensor(1))。
 out.backward(torch.tensor(2))
 
 print(f"x.grad = {x.grad}\n")
 
-
+#----------------------------------------------- 分割线 ----------------------------------------------
+import torch
 a = torch.randn(2, 2)
 a = ((a * 3) / (a - 1))
 print(f"a.requires_grad = {a.requires_grad}\n")
@@ -472,6 +500,22 @@ a.requires_grad = True
 b.grad_fn = <SumBackward0 object at 0x7f136630a070>
 """
 
+
+
+import torch
+a = torch.randn(2, 2)
+a = ((a * 3) / (a - 1))
+print(f"a.requires_grad = {a.requires_grad}\n")
+
+b = (a * a).sum()
+print(f"b.grad_fn = {b.grad_fn}\n")
+
+
+"""
+a.requires_grad = False
+
+b.grad_fn = None
+"""
 
 #----------------------------------------------- 分割线 ----------------------------------------------
 
