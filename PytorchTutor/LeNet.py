@@ -113,12 +113,16 @@ def train(net, train_iter, test_iter, batch_size, optimizer, num_epochs, device=
         for X, y in train_iter:
             X = X.to(device)
             y = y.to(device)
-            y_hat = net(X)
-            l = loss(y_hat, y)
+            # X.shape = torch.Size([256, 1, 28, 28]), y.shape = torch.Size([256])
+            
+            y_hat = net(X)      # y_hat.shape = torch.Size([256, 10])
+            l = loss(y_hat, y)  # l = 2.3009374141693115
             optimizer.zero_grad()
             l.backward()
             optimizer.step()
-            train_l_sum += l.cpu().item()
+            train_l_sum += l.cpu().item() #  l.cpu().item() = 2.3009374141693115
+            
+            # (y_hat.argmax(dim=1) == y).sum().cpu().item() = 25
             train_acc_sum += (y_hat.argmax(dim=1) == y).sum().cpu().item()
             n += y.shape[0]
             batch_count += 1
@@ -130,7 +134,7 @@ def train(net, train_iter, test_iter, batch_size, optimizer, num_epochs, device=
 #在整个程序的主逻辑中，设置必要的参数，读入训练和测试数据并开始训练：
 #def main():
 batch_size = 256
-lr, num_epochs = 0.9, 100
+lr, num_epochs = 0.9, 3
 
 net = LeNet()
 optimizer = torch.optim.SGD(net.parameters(), lr=lr)
