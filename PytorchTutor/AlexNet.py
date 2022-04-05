@@ -15,8 +15,11 @@ import numpy as np
 import torch, torchvision, sys
 from torch import nn, optim
 import torch.nn.functional as F
-
-
+import argparse
+import os
+import time
+sys.path.append("..") 
+import mlutils.pytorch as mlutils
 
 
 
@@ -78,7 +81,7 @@ class AlexNet(nn.Module):
 
 
 #模型训练
-def load_data_fashion_mnist(batch_size, resize=None, root='~/Datasets/FashionMNIST'):
+def load_data_fashion_mnist(batch_size, resize=None, root='~/公共的/MLData/FashionMNIST'):
     """Use torchvision.datasets module to download the fashion mnist dataset and then load into memory."""
     trans = []
     if resize:
