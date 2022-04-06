@@ -3,6 +3,7 @@ import torchvision
 from torch import nn
 import sys
 import time
+import numpy as np
 
 def load_data_fashion_mnist(batch_size, resize=None, root='~/公共的/MLData/FashionMNIST'):
     """Use torchvision.datasets module to download the fashion mnist dataset and then load into memory."""
@@ -32,7 +33,7 @@ def try_gpu(i=0):
 def accuracy(y_hat, y):
     """Compute the number of correct predictions."""
     if len(y_hat.shape) > 1 and y_hat.shape[1] > 1:
-        y_hat = argmax(y_hat, axis=1)        
+        y_hat = argmax(y_hat, axis=1)
     cmp = astype(y_hat, y.dtype) == y
     return float(reduce_sum(astype(cmp, y.dtype)))
 

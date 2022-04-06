@@ -21,7 +21,7 @@ import time
 sys.path.append("..") 
 import mlutils.pytorch as mlutils
 
-
+ind = 1
 
 class AlexNet(nn.Module):
     def __init__(self):
@@ -72,9 +72,22 @@ class AlexNet(nn.Module):
         )
 
     def forward(self, img):
-        feature = self.conv(img)
-        output = self.fc(feature.view(img.shape[0], -1))
-        return output
+         # img.shape = torch.Size([128, 1, 224, 224])
+         # ind = 1
+         feature = self.conv(img)  
+         # feature.shape = torch.Size([128, 256, 5, 5])
+         
+         output = self.fc(feature.view(img.shape[0], -1))
+         # feature.view(img.shape[0], -1).shape = torch.Size([128, 6400])
+         # output.shape = torch.Size([128, 10])
+         
+         #if ind == 1:
+         #     print(f"img.shape = {img.shape}")
+         #     print(f"feature.shape = {feature.shape}")
+         #     print(f"feature.view(img.shape[0], -1).shape = {feature.view(img.shape[0], -1).shape}")
+         #     print(f"output.shape = {output.shape}")
+         #ind += 1
+         return output
 
 
 
@@ -83,7 +96,7 @@ class AlexNet(nn.Module):
 #模型训练
 def load_data_fashion_mnist(batch_size, resize=None, root='~/公共的/MLData/FashionMNIST'):
     """Use torchvision.datasets module to download the fashion mnist dataset and then load into memory."""
-    trans = []
+    trans = [] 
     if resize:
         trans.append(torchvision.transforms.Resize(size=resize))
     trans.append(torchvision.transforms.ToTensor())
@@ -118,10 +131,10 @@ def train(net, train_iter, test_iter, batch_size, optimizer, num_epochs, device=
             # set the network in training mode
             net.train()
             # move data to device (gpu)
-            X = X.to(device)
-            y = y.to(device)
-            y_hat = net(X)
-            l = loss(y_hat, y)
+            X = X.to(device)  # X.shape = torch.Size([128, 1, 224, 224])
+            y = y.to(device)  # y.shape = torch.Size([128])
+            y_hat = net(X)    # torch.Size([128, 10])
+            l = loss(y_hat, y)   # tensor(2.3036, grad_fn=<NllLossBackward0>)
             optimizer.zero_grad()
             l.backward()
             optimizer.step()

@@ -135,7 +135,11 @@ test_features = torch.tensor(combined[num_of_train_data:].values, dtype=torch.fl
 print("train data size: ", train_features.shape)
 print("label data size: ", train_labels.shape)
 print("test data size: ", test_features.shape)
-
+"""
+train data size:  torch.Size([1460, 149])
+label data size:  torch.Size([1460, 1])
+test data size:  torch.Size([1459, 149])
+"""
 
 
 
@@ -159,7 +163,7 @@ losses = []
 # 训练500轮
 for t in range(500):
     y_pred = model(train_features)
-    
+    # print(f"y_pred.shape = {y_pred.shape}")  #y_pred.shape = torch.Size([1460, 1])
     loss = criterion(y_pred, train_labels)
     # print(t, loss.item())
     losses.append(loss.item())
