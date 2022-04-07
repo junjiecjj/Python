@@ -52,6 +52,13 @@ class LeNet(nn.Module):
     def forward(self, img):
         feature = self.conv(img)
         output = self.fc(feature.view(img.shape[0], -1))
+        print(f"img.shape = {img.shape}\nfeature.shape = {feature.shape}\noutput.shape = {output.shape}\nfeature.view(img.shape[0], -1).shape = {feature.view(img.shape[0], -1).shape}")
+        """
+          img.shape = torch.Size([256, 1, 28, 28])
+          feature.shape = torch.Size([256, 16, 5, 5])
+          output.shape = torch.Size([256, 10])
+          feature.view(img.shape[0], -1).shape = torch.Size([256, 400])
+        """
         return output
 
 
