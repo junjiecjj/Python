@@ -90,6 +90,7 @@ def load_data_cifar10(batch_size, resize=None, root='~/Datasets/CIFAR10'):
 
 def main(args):
     net = resnet18()
+    print(f"net = \n{net}\n")
 
     optimizer = torch.optim.Adam(net.parameters(), lr=args.lr)
 

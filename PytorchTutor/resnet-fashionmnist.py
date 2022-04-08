@@ -60,7 +60,7 @@ def resnet18():
 
 def main(args):
     net = resnet18()
-
+    print(f"net = \n{net}\n")
     optimizer = torch.optim.Adam(net.parameters(), lr=args.lr)
 
     # load data

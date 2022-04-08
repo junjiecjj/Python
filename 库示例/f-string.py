@@ -312,14 +312,12 @@ print(f'{name} is {age} years old')
 
 
 #该示例使用两个变量设置字符串格式。
-
 print('%s is %d years old' % (name, age))
 
 #这是最旧的选项。 它使用%运算符和经典字符串格式指定，例如%s和%d。
-
 print('{} is {} years old'.format(name, age))
-#从 Python 3.0 开始，format()函数被引入以提供高级格式化选项。
 
+#从 Python 3.0 开始，format()函数被引入以提供高级格式化选项。
 print(f'{name} is {age} years old')
 
 #从 Python 3.6 开始，Python f 字符串可用。 该字符串具有f前缀，并使用{}评估变量。
@@ -385,8 +383,6 @@ print(f'Max of {a} and {b} is {mymax(a, b)}')
 
 #Python f 字符串对象
 #Python f 字符串也接受对象。 对象必须定义了__str__()或__repr__()魔术函数。
-
-
 
 class User:
     def __init__(self, name, occupation):

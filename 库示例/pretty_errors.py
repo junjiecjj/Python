@@ -19,7 +19,9 @@ pretty_errors.configure(
     lines_after         = 2,
     line_color          = pretty_errors.RED + '> ' + pretty_errors.default_config.line_color,
     code_color          = '  ' + pretty_errors.default_config.line_color,
-    header_color        = 'blue'
+    header_color        = 'blue',
+    truncate_code       = 'True',
+    display_locals      = 'True'
 )
 
 # 原来的代码
