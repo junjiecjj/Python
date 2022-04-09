@@ -4,6 +4,8 @@
 Created on Sat Apr  9 19:18:40 2022
 
 @author: jack
+
+https://pytorchbook.cn/chapter2/2.1.3-pytorch-basics-nerual-network/
 """
 
 # 首先要引入相关的包

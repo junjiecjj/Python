@@ -273,12 +273,13 @@ for X, y in test_iter1:
 
 
 """
-X.shape = torch.Size([128, 1, 224, 224]), y.shape = torch.Size([128])
-X.shape = torch.Size([128, 1, 224, 224]), y.shape = torch.Size([128])
-X.shape = torch.Size([128, 1, 224, 224]), y.shape = torch.Size([128])
-X.shape = torch.Size([128, 1, 224, 224]), y.shape = torch.Size([128])
-X.shape = torch.Size([128, 1, 224, 224]), y.shape = torch.Size([128])
-X.shape = torch.Size([16, 1, 224, 224]), y.shape = torch.Size([16])   #last
+X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128])
+X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128])
+X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128])
+X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128])
+X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128])
+X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128])
+X.shape = torch.Size([16, 3, 32, 32]), y.shape = torch.Size([16])  #last
 """
 
 
