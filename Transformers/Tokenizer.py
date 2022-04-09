@@ -7,7 +7,7 @@ Created on Sat Apr  9 17:14:22 2022
 """
 
 
-
+#Tokenizer
 from transformers import BertTokenizer
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
@@ -26,6 +26,22 @@ print(encoded_input)
 
 
 
+batch_sentences = ["我是一句话", "我是另一句话", "我是最后一句话"]
+batch = tokenizer(batch_sentences, padding=True, return_tensors="pt")
+print(batch)
+
+
+
+#Model
+
+from transformers import BertModel
+model = BertModel.from_pretrained("bert-base-chinese")
+bert_output = model(input_ids=batch['input_ids'])
+
+print(f"len(bert_output) = {len(bert_output)}")
+
+print(f"bert_output[0].shape = {bert_output[0].shape}")
+print(f"bert_output[1].shape = {bert_output[1].shape}")
 
 
 
@@ -34,21 +50,7 @@ print(encoded_input)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#下游任务
 
 
 
