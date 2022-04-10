@@ -60,7 +60,7 @@ $ loss(x,y)=1/n\sum(x_i-y_i)^2 $
 
 多分类用的交叉熵损失函数，LogSoftMax和NLLLoss集成到一个类中，会调用nn.NLLLoss函数，我们可以理解为CrossEntropyLoss()=log_softmax() + NLLLoss()
 
-$loss(x,class)=−log\frac{exp(x[class])}{∑_jexp(x[j])} =−x[class]+log(∑_j exp(x[j]))$
+$loss(x,class)=−log(\frac{exp(x[class])}{∑_j exp(x[j])}) =−x[class]+log(∑_j exp(x[j]))$
 
 因为使用了NLLLoss，所以也可以传入weight参数，这时loss的计算公式变为：
 
@@ -105,7 +105,8 @@ import torch.nn as nn
 import math
 
 # 注意这里的标签值class，并不参与直接计算，而是作为一个索引,索引对象为实际类别
-# 举个栗子，我们一共有三种类别，批量大小为1（为了好计算），那么输入size为（1,3），具体值为torch.Tensor([[-0.7715, -0.6205,-0.2562]])。标签值为target = torch.tensor([0])，这里标签值为0，表示属于第0类。loss计算如下：
+# 举个栗子，我们一共有三种类别，批量大小为1（为了好计算），那么输入size为（1,3），具体值为torch.Tensor([[-0.7715, -0.6205,-0.2562]])。标签值为target = torch.tensor([0])，
+# 这里标签值为0，表示属于第0类。loss计算如下：
 
 print("=="*60)
 print("   nn.CrossEntropyLoss()  ")
@@ -113,7 +114,7 @@ print("=="*60)
 
 entroy=nn.CrossEntropyLoss()
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562]])
-target = torch.tensor([0])
+target = torch.tensor([2])  #这里最大为2,不能超过input.size(-1)-1 = 3
 output = entroy(input, target)
 print(f"output1 = {output}")
 #根据公式计算
@@ -294,7 +295,7 @@ reduction：用来指定损失结果返回的是mean、sum还是none。
 
 """
 x = torch.randn(10, 5)
-y= torch.randint(0, 5, (10,))
+y= torch.randint(0, 5, (10,))   #这里的5不能>=5,必须<=x.size(-1)
 weights = torch.tensor([1., 2., 3., 4., 5.])
 
 criterion_good = nn.CrossEntropyLoss(weight=weights)
@@ -600,7 +601,7 @@ ln = -w_n [yn*log(xn) + (1-yn)*log(1-xn)]
 l(x,y) = mean(L)   if reduction = 'mean'
 l(x,y) = sum(L)   if reduction = 'sum'
 
-这里需要注意的是target的值必须为0或1，但是也不一定。
+这里需要注意的是target的值必须为0或1，虽然不是0或1不会报错，但是实际使用中只有0和1才有意义。
 
 
 """
@@ -620,9 +621,29 @@ input1 = m(inpuT)
 print(f"input1 = {input1}")
 
 loss1 = torch.nn.BCELoss()
-
 output1 = loss1(input1,target)
 print(f"output1 = {output1}")
+# output1 = 0.9610683917999268
+
+loss1 = torch.nn.BCELoss(reduction='mean')
+output1 = loss1(input1,target)
+print(f"output1 = {output1}")
+# output1 = 0.9610683917999268
+
+loss1 = torch.nn.BCELoss(reduction='none')
+output1 = loss1(input1,target)
+print(f"output1 = {output1}")
+"""
+output1 = tensor([[0.5811, 0.5096, 0.7358],
+        [1.4815, 2.3977, 0.6080],
+        [0.4149, 0.8690, 1.0520]])
+"""
+
+
+loss1 = torch.nn.BCELoss(reduction='sum')
+output1 = loss1(input1,target)
+print(f"output1 = {output1}")
+#output1 = 8.649615287780762
 
 
 """
