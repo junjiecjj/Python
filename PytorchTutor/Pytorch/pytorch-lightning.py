@@ -75,6 +75,7 @@ class LightningMNISTClassifier(pl.LightningModule):
     mnist_test = MNIST(os.getcwd(), train=False, download=True, transform=transform)
     
     self.mnist_train, self.mnist_val = random_split(mnist_train, [55000, 5000])
+    
   def train_dataloader(self):
     return DataLoader(self.mnist_train, batch_size=64)
   def val_dataloader(self):

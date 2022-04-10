@@ -257,20 +257,114 @@ print(b.shape)
 
 
 
+# torch.max用法
+"""
+torch.max(input, dim, keepdim=False, out=None) 
+输出是： (Tensor, LongTensor)
+返回第dim的最大值
+
+torch.max(a,0) ：返回第0维，即每一列中最大值的那个元素，且返回索引（返回最大元素在这一列的行索引）
+
+torch.max(a,1)  返回每一行中最大值的那个元素，且返回其索引（返回最大元素在这一行的列索引）
+
+
+torch.max()[0]， 只返回最大值的每个数
+
+troch.max()[1]， 只返回最大值的每个索引
+
+torch.max()[1].data 只返回variable中的数据部分（去掉Variable containing:）
+
+torch.max()[1].data.numpy() 把数据转化成numpy ndarry
+
+torch.max()[1].data.numpy().squeeze() 把数据条目中维度为1 的删除掉
+
+torch.max(tensor1,tensor2) element-wise 比较tensor1 和tensor2 中的元素，返回较大的那个值
+"""
+
+
+
+
+x = torch.rand(4,4)
+print('x:\n',x)
+print('torch.max(x,1):\n',torch.max(x,1))
+print('torch.max(x,0):\n',torch.max(x,0))
+print('torch.max(x,1)[0]:\n',torch.max(x,1)[0])
+print('torch.max(x,1)[1]:\n',torch.max(x,1)[1])
+print('torch.max(x,1)[1].data:\n',torch.max(x,1)[1].data)
+print('torch.max(x,1)[1].numpy():\n',torch.max(x,1)[1].numpy())
+print('torch.max(x,1)[1].data.numpy():\n',torch.max(x,1)[1].data.numpy())
+
+"""
+*注：在有的地方我们会看到torch.max(a, 1).data.numpy()的写法，这是因为在早期的pytorch的版本中，variable变量和tenosr是不一样的数据格式，variable可以进行反向传播，tensor不可以，需要将variable转变成tensor再转变成numpy。现在的版本已经将variable和tenosr合并，所以只用torch.max(a,1).numpy()就可以了。
+
+"""
+
+
+print('torch.max(x,1)[1].numpy().squeeze():\n',torch.max(x,1)[1].numpy().squeeze())
+print('torch.max(x,1)[1].data.numpy().squeeze():\n',torch.max(x,1)[1].data.numpy().squeeze())
+
+print('torch.max(x,1)[0].data:\n',torch.max(x,1)[0].data)
+
+print('torch.max(x,1)[0].numpy():\n',torch.max(x,1)[0].numpy())
+print('torch.max(x,1)[0].data.numpy():\n',torch.max(x,1)[0].data.numpy())
+
+print('torch.max(x,1)[0].numpy().squeeze():\n',torch.max(x,1)[0].numpy().squeeze())
+print('torch.max(x,1)[0].data.numpy().squeeze():\n',torch.max(x,1)[0].data.numpy().squeeze())
+
+
+
+
+
+import torch
+a = torch.randn(1, 3)
+print(f"torch.max(a) = {torch.max(a)}")
+
+
+
+import torch
+a = torch.tensor([[1, 5, 62, 54], [2, 6, 2, 6], [2, 65, 2, 6]])
+print('a:', a,
+      '\n\ntorch.max(a):', torch.max(a),
+      '\n\ntorch.max(a, 0):', torch.max(a, 0),
+      '\n\ntorch.max(a, 0)[0]:', torch.max(a, 0)[0],
+      '\n\ntorch.max(a, 0)[1]:', torch.max(a, 0)[1],
+      '\n\ntorch.max(a, 0)[1].data:', torch.max(a, 0)[1].data,
+      '\n\ntorch.max(a, 0)[1].data.numpy():', torch.max(a, 0)[1].data.numpy(),
+      '\n\ntorch.max(a, 0)[1].numpy():', torch.max(a, 0)[1].numpy(),
+      '\n\ntorch.max(a, 1):', torch.max(a, 1))
+
+
+
+import torch
+a = torch.randn(4)
+b = torch.randn(4)
+c = torch.max(a, b)
+print(f"a = {a}\nb = {b}\ntorch.max(a,b) = {torch.max(a,b)}")
+
+
+import torch
+a = torch.arange(12).reshape(3,2,2)
+b = (torch.arange(12)*1.1).reshape(3,2,2)
+c= torch.max(a, b)
+print(f"a = \n{a}\nb = \n{b}\ntorch.max(a,b) = \n{torch.max(a,b)}")
+
+
+import torch
+a = torch.arange(12).reshape(6,1,2)
+b = torch.arange(4).reshape(1,2,2)
+c= torch.max(a, b)
+print(f"a = \n{a}\nb = \n{b}\ntorch.max(a,b) = \n{torch.max(a,b)}")
 
 
 
 
 
 
-
-
-
-
-
-
-
-
+import torch
+a = torch.rand(4, 1, 3)
+b = torch.rand(1, 3, 3)
+c= torch.max(a, b)
+print(f"a = \n{a}\nb = \n{b}\ntorch.max(a,b) = \n{torch.max(a,b)}")
 
 
 

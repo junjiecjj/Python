@@ -15,7 +15,7 @@ Created on Thu Mar 17 19:30:45 2022
 
 #考虑function为lambda表达式的情形。此时lambda表达式:的左边的参数的个数与map函数sequence的个数相等, :右边的表达式是左边一个或者多个参数的函数。
 
-print( (map(lambda x: x+1, [1,2,3]))) #[2, 3, 4]
+print( list((map(lambda x: x+1, [1,2,3])))) #[2, 3, 4]
 
 print(list(map(lambda x, y:x+y, [1,2,3], [4,5,6]))) #[5, 7, 9]
 
