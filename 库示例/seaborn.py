@@ -910,17 +910,58 @@ sns.pairplot(iris, hue="species", height=2.5)
 g = sns.pairplot(iris, hue="species", palette="Set2", diag_kind="kde", height=2.5)
 
 
+print("=="*40)
+# https://www.heywhale.com/mw/project/5e0596d72823a10036b0385c
+"""
+Matplotlib试着让简单的事情更加简单，困难的事情变得可能，而Seaborn就是让困难的东西更加简单。
 
+seaborn是针对统计绘图的，一般来说，seaborn能满足数据分析90%的绘图需求。
 
+Seaborn其实是在matplotlib的基础上进行了更高级的API封装，从而使得作图更加容易，在大多数情况下使用seaborn就能做出很具有吸引力的图，应该把Seaborn视为matplotlib的补充，而不是替代物。
 
+用matplotlib最大的困难是其默认的各种参数，而Seaborn则完全避免了这一问题。
 
+seaborn一共有5个大类21种图，分别是：
+Relational plots 关系类图表
 
+relplot() 关系类图表的接口，其实是下面两种图的集成，通过指定kind参数可以画出下面的两种图
+scatterplot() 散点图
+lineplot() 折线图
+Categorical plots 分类图表
 
+catplot() 分类图表的接口，其实是下面八种图表的集成，，通过指定kind参数可以画出下面的八种图
+stripplot() 分类散点图
+swarmplot() 能够显示分布密度的分类散点图
+boxplot() 箱图
+violinplot() 小提琴图
+boxenplot() 增强箱图
+pointplot() 点图
+barplot() 条形图
+countplot() 计数图
+Distribution plot 分布图
 
+jointplot() 双变量关系图
+pairplot() 变量关系组图
+distplot() 直方图，质量估计图
+kdeplot() 核函数密度估计图
+rugplot() 将数组中的数据点绘制为轴上的数据
+Regression plots 回归图
 
+lmplot() 回归模型图
+regplot() 线性回归图
+residplot() 线性回归残差图
+Matrix plots 矩阵图
 
+heatmap() 热力图
+clustermap() 聚集图
+"""
 
 
+# 如果不添加这句，是无法直接在jupyter里看到图的
+import seaborn as sns
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 
@@ -946,48 +987,108 @@ g = sns.pairplot(iris, hue="species", palette="Set2", diag_kind="kde", height=2.
 
 
 
+print("=="*40)
+# https://codertw.com/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80/716978/
 
+import seaborn as sns
 
+sns.set(font_scale=1.5,style="white")
 
 
 
+#本次試用的數據集是Seaborn內置的tips小費數據集：
+data=sns.load_dataset("tips")
+data.head(5) 
 
 
 
 
+#我們先來看一下lmplot是什麼樣的
+sns.lmplot(x="total_bill",y="tip",data=data)
 
 
 
 
+#可以看到lmplot對所選數據集進行了一元線性迴歸，擬合出了一條最佳的直線，
+#接下來進入具體參數的演示。
+#col:根據所指定屬性在列上分類
+#row:根據所指定屬性在行上分類
+sns.lmplot(x="total_bill",y="tip",data=data,row="sex",col="smoker")
 
 
 
 
 
+#結合我們的數據集，看上圖的橫縱座標就可以明白這兩個參數的用法
 
+#col_wrap:指定每行的列數，最多等於col參數所對應的不同類別的數量
 
+sns.lmplot(x="total_bill",y="tip",data=data,col="day",col_wrap=4) 
 
+sns.lmplot(x="total_bill",y="tip",data=data,col="day",col_wrap=2) 
 
 
 
+#aspect:控制圖的長寬比
+sns.lmplot(x="total_bill",y="tip",data=data,aspect=1)  
+#長度比寬度等於一比一，即正方形
 
 
 
+sns.lmplot(x="total_bill",y="tip",data=data,aspect=1.5)  
+#長度比寬度等於1:1.5，可以看到橫軸更長一點
 
 
 
 
 
 
+#sharex:共享x軸刻度（默認為True）
+#sharey:共享y軸刻度（默認為True）
+sns.lmplot(x="total_bill",y="tip",data=data,row="sex",col="smoker",sharex=False)
+#可以看到設置為False時，各個子圖的x軸的5#座標刻度是不一樣的
 
 
 
+#hue:用於分類
+sns.lmplot(x="total_bill",y="tip",data=data,hue="sex",palette="husl") 
 
 
 
+#ci:控制迴歸的置信區間（有學過統計學的同學們應該都是知道滴）
+#顯示0.95的置信區間
+sns.lmplot(x="total_bill",y="tip",data=data,ci=95)
 
 
 
+
+
+
+#x_jitter:給x軸隨機增加噪音點
+#y_jitter:給y軸隨機增加噪音點
+#設置這兩個參數不影響最後的迴歸直線
+sns.lmplot(x="size",y="tip",data=data,x_jitter=False) 
+
+
+
+
+
+sns.lmplot(x="size",y="tip",data=data,x_jitter=True)    
+#可以看到剛才的一列一列的數據點被隨機   
+#打亂了，但不會影響到最後的迴歸直線
+
+
+
+
+
+#order:控制進行迴歸的冪次（一次以上即是多項式迴歸）
+
+sns.lmplot(x="total_bill",y="tip",data=data,order=1)  #一元線性迴歸
+sns.lmplot(x="total_bill",y="tip",data=data,order=2) #次數最高為2
+sns.lmplot(x="total_bill",y="tip",data=data,order=3) #次數最高為3
+
+
+print("=="*40)
 
 
 
