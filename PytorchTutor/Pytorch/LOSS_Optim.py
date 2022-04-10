@@ -254,8 +254,27 @@ nllloss_func=nn.NLLLoss()
 nlloss_output=nllloss_func(logsoftmax_output,y_target)
 print('nlloss_output:\n',nlloss_output)
 
+
+#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss=nn.CrossEntropyLoss()
+crossentropyloss_output=crossentropyloss(x_input,y_target)
+print('crossentropyloss_output:\n',crossentropyloss_output)
+
+
+#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss=nn.CrossEntropyLoss(reduction='mean')
+crossentropyloss_output=crossentropyloss(x_input,y_target)
+print('crossentropyloss_output:\n',crossentropyloss_output)
+
+
 #直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
 crossentropyloss=nn.CrossEntropyLoss(reduction='none')
+crossentropyloss_output=crossentropyloss(x_input,y_target)
+print('crossentropyloss_output:\n',crossentropyloss_output)
+
+
+#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss=nn.CrossEntropyLoss(reduction='sum')
 crossentropyloss_output=crossentropyloss(x_input,y_target)
 print('crossentropyloss_output:\n',crossentropyloss_output)
 
@@ -287,13 +306,6 @@ loss = loss.sum() / weights[y].sum()
 
 print(loss == loss_good)
 
-
-
-
-
-print("=="*60)
-print(" nn.MSELoss(reduction='mean') ")
-print("=="*60)
 
 
 
