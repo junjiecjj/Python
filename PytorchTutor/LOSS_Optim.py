@@ -6,6 +6,29 @@ Created on Sat Apr  9 22:19:41 2022
 @author: jack
 """
 
+"""
+torch.optim.SGD
+随机梯度下降算法，带有动量（momentum）的算法作为一个可选参数可以进行设置，样例如下：
+
+#lr参数为学习率，对于SGD来说一般选择0.1 0.01.0.001，如何设置会在后面实战的章节中详细说明
+##如果设置了momentum，就是带有动量的SGD，可以不设置
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+torch.optim.RMSprop
+除了以上的带有动量Momentum梯度下降法外，RMSprop（root mean square prop）也是一种可以加快梯度下降的算法，利用RMSprop算法，可以减小某些维度梯度更新波动较大的情况，使其梯度下降的速度变得更快
+
+#我们的课程基本不会使用到RMSprop所以这里只给一个实例
+optimizer = torch.optim.RMSprop(model.parameters(), lr=0.01, alpha=0.99)
+torch.optim.Adam
+Adam 优化算法的基本思想就是将 Momentum 和 RMSprop 结合起来形成的一种适用于不同深度学习结构的优化算法
+
+# 这里的lr，betas，还有eps都是用默认值即可，所以Adam是一个使用起来最简单的优化方法
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08)
+
+"""
+
+
+
+
 
 
 
