@@ -3243,81 +3243,192 @@ print("=="*40)
 
 
 
+# https://zhuanlan.zhihu.com/p/27435863
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+np.random.seed(sum(map(ord,"aesthetics")))  # 定义种子
 
 
 
 
 
+def sinplot(flip=1):
+    x = np.linspace(0,14,100)
+    for i in range(1,7):
+        plt.plot(x,np.sin(x+i*.5)*(7-i)*flip)
 
 
 
 
+sinplot()
 
+import seaborn as sns
+sinplot()
 
 
+"""
+样式控制：axes_style() and set_style()
+有5个seaborn的主题，适用于不同的应用和人群偏好：
 
+darkgrid 黑色网格（默认）
+whitegrid 白色网格
+dark 黑色背景
+white 白色背景
+ticks 应该是四周都有刻度线的白背景？
+网格能够帮助我们查找图表中的定量信息，而灰色网格主题中的白线能避免影响数据的表现，白色网格主题则类似的，当然更适合表达“重数据元素”（heavy data elements不理解）
+"""
 
 
+sns.set_style("whitegrid")
+data = np.random.normal(size=(20, 6)) + np.arange(6) / 2
+sns.boxplot(data=data);
 
 
 
+#对于许多场景，(特别是对于像对话这样的设置，您主要想使用图形来提供数据模式的印象)，网格就不那么必要了
 
+sns.set_style("dark")
+sinplot()
 
 
 
 
+sns.set_style("white")
+sinplot()
 
 
 
 
+#有时你可能想要给情节增加一点额外的结构，这就是ticks参数的用途:
 
+sns.set_style("ticks")
+sinplot()
+# 官方的例子在上方/右方也拥有刻度线，而验证时却没有（是jupyter notebook的原因？）
 
 
 
 
+#用despine()进行边框控制
+#white和ticks参数的样式，都可以删除上方和右方坐标轴上不需要的边框，这在matplotlib中是无法通过参数实现的，却可以在seaborn中通过despine()函数轻松移除他们。
 
+sns.set_style("white")
+sinplot() # 默认无参数状态，就是删除上方和右方的边框
+sns.despine()
 
 
+#一些图的边框可以通过数据移位，当然调用despine()也能做同样的事。当边框没有覆盖整个数据轴的范围的时候，trim参数会限制留存的边框范围。
+f, ax = plt.subplots()
+sns.violinplot(data=data)
+sns.despine(offset=10, trim=True); # offset 两坐标轴离开距离；
 
 
 
 
 
+#你也可以通过往despine()中添加参数去控制边框
 
+sns.set_style("whitegrid")
+sns.boxplot(data=data, palette="deep")
+sns.despine(left=True) # 删除左边边框
+st = sns.axes_style("darkgrid")
 
 
 
+#临时设定图形样式
+#虽然来回切换非常容易，但sns也允许用with语句中套用axes_style()达到临时设置参数的效果（仅对with块内的绘图函数起作用）。这也允许创建不同风格的坐标轴。
 
+with sns.axes_style("darkgrid"):
+    plt.subplot(211)
+    sinplot()
+plt.subplot(212)
+sinplot(-1)
 
+"""
 
+seaborn样式中最重要的元素
+如果您想要定制seanborn的样式，可以将参数字典传递给axes_style()和set_style()的rc参数。注意，只能通过该方法覆盖样式定义的一部分参数。(然而，更高层次的set()函数接受任何matplotlib参数的字典)。
 
+如果您想要查看包含哪些参数，您可以只调用该函数而不带参数，这将返回当前设置的字典:
 
+sns.axes_style()
 
+{'axes.axisbelow': True,
+ 'axes.edgecolor': 'white',
+ 'axes.facecolor': '#EAEAF2',
+ 'axes.grid': True,
+ 'axes.labelcolor': '.15',
+ 'axes.linewidth': 0.0,
+ 'figure.facecolor': 'white',
+ 'font.family': ['sans-serif'],
+ 'font.sans-serif': ['Arial',
+  'Liberation Sans',
+  'Bitstream Vera Sans',
+  'sans-serif'],
+ 'grid.color': 'white',
+ 'grid.linestyle': '-',
+ 'image.cmap': 'Greys',
+ 'legend.frameon': False,
+ 'legend.numpoints': 1,
+ 'legend.scatterpoints': 1,
+ 'lines.solid_capstyle': 'round',
+ 'text.color': '.15',
+ 'xtick.color': '.15',
+ 'xtick.direction': 'out',
+ 'xtick.major.size': 0.0,
+ 'xtick.minor.size': 0.0,
+ 'ytick.color': '.15',
+ 'ytick.direction': 'out',
+ 'ytick.major.size': 0.0,
+ 'ytick.minor.size': 0.0}
+或许，你可以试试不同种类的参数效果
+"""
 
+sns.set_style("darkgrid", {"axes.facecolor": ".9"})
+sinplot()
 
 
 
 
 
+#通过 plotting_context() 和 set_context() 调整绘图元素
+#另一组参数控制绘图元素的规模，这应该让您使用相同的代码来制作适合在较大或较小的情节适当的场景中使用的情节。
 
+#首先，可以通过sns.set()重置参数。
 
+sns.set()
+#四种预设，按相对尺寸的顺序(线条越来越粗)，分别是paper，notebook, talk, and poster。notebook的样式是默认的，上面的绘图都是使用默认的notebook预设。
 
+sns.set_context("paper")
+plt.figure(figsize=(8,6))
+sinplot()
 
 
+# default 默认设置
+sns.set_context("notebook")
+plt.figure(figsize=(8,6))
+sinplot()
 
+sns.set_context("talk")
+plt.figure(figsize=(8,6))
+sinplot()
 
 
+sns.set_context("poster")
+plt.figure(figsize=(8,6))
+sinplot()
 
 
 
 
+#通过观察各种样式的结果，你应当可以了解context函数
 
+#类似的，还可以使用其中一个名称来调用set_context()来设置参数，您可以通过提供参数值的字典来覆盖参数。
 
+#通过更改context还可以独立地扩展字体元素的大小。(这个选项也可以通过顶级set()函数获得）。
 
-
-
-
-
+sns.set_context("notebook", font_scale=1.5, rc={"lines.linewidth": 2.5})
+sinplot()
 
 
 

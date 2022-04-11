@@ -842,24 +842,38 @@ print(loss3)
 #tensor(37.)
 
 
+#https://blog.csdn.net/Will_Ye/article/details/104994504
+import torch
+import torch.nn.functional as F
+input = torch.randn(2,2,3)
+print(input)
 
 
+m = nn.Softmax() 
+print(m(input))
+
+#当dim=0时， 是对每一维度相同位置的数值进行softmax运算
+m = nn.Softmax(dim=0) 
+print(m(input))
+#当dim=-3时， 是对每一维度相同位置的数值进行softmax运算
+m = nn.Softmax(dim=-3) 
+print(m(input))
+
+#当dim=1时， 是对某一维度的列进行softmax运算：
+m = nn.Softmax(dim=1) 
+print(m(input))
+#当dim=-2时， 是对某一维度的列进行softmax运算：
+m = nn.Softmax(dim=-2) 
+print(m(input))
+
+#当dim=2时， 是对某一维度的行进行softmax运算：
+m = nn.Softmax(dim=2) 
+print(m(input))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#要注意的是当dim=-1时， 是对某一维度的行进行softmax运算：
+m = nn.Softmax(dim=-1) 
+print(m(input))
 
 
 
