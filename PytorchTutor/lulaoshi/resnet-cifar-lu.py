@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr  4 20:49:23 2022
+
+@author: jack
+
+https://lulaoshi.info/machine-learning/convolutional/resnet
+
+
+"""
+
+
 import torch
 import torchvision
 from torch import nn
@@ -60,7 +73,7 @@ def resnet18():
 
     return net
 
-def load_data_cifar10(batch_size, resize=None, root='~/Datasets/CIFAR10'):
+def load_data_cifar10(batch_size, resize=None, root='~/公共的/MLData/CIFAR10'):
     transform_train = torchvision.transforms.Compose([
         torchvision.transforms.RandomCrop(32, padding=4),
         torchvision.transforms.RandomHorizontalFlip(),
@@ -96,6 +109,7 @@ def main(args):
 
     # load data
     train_iter, test_iter = load_data_cifar10(batch_size=args.batch_size)
+    # X.shape = torch.Size([128, 3, 32, 32]), y.shape = torch.Size([128]).y_hat.shape = torch.Size([128, 10])
     # train
     mlutils.train(net, train_iter, test_iter, args.batch_size, optimizer, args.num_epochs)
 

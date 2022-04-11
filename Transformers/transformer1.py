@@ -348,10 +348,6 @@ plt.legend(["dim %d"%p for p in [4,5,6,7]])
 
 
 
-
-
-
-
 def make_model(src_vocab,
                tgt_vocab,
                N=6,

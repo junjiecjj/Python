@@ -104,9 +104,11 @@ for epoch in range(2):  # 多批次循环
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
+    #for inputs, labels in trainloader:
         # 获取输入
         inputs, labels = data
-
+        print(f"inputs.shape = {inputs.shape},labels.shape = {labels.shape}")
+        #inputs.shape = torch.Size([4, 3, 32, 32]),labels.shape = torch.Size([4])
         # 梯度置0
         optimizer.zero_grad()
 

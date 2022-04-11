@@ -55,6 +55,7 @@ def train(net, train_iter, test_iter, batch_size, optimizer, num_epochs, device=
             X = X.to(device)
             y = y.to(device)
             y_hat = net(X)
+            print(f"X.shape = {X.shape}, y.shape = {y.shape}.y_hat.shape = {y_hat.shape}")
             l = loss(y_hat, y)
             optimizer.zero_grad()
             l.backward()
