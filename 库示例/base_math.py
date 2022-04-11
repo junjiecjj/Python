@@ -65,8 +65,8 @@ print( "math.log(math.pi) : ", math.log(math.pi))
 print( "math.log(10,2) : ", math.log(10,2))
 
 
-
-
+print(f"np.exp(2) = {np.exp(2)}")
+print(f"2**3 = {2**3}")
 
 
 

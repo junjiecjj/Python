@@ -115,7 +115,7 @@ print("=="*60)
 entroy=nn.CrossEntropyLoss()
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562]])
 target = torch.tensor([2])  #这里最大为2,不能超过input.size(-1)-1 = 3
-output = entroy(input, target)
+output = entroy(input, target)  #target 和 input千万别反了,会报错
 print(f"output1 = {output}")
 #根据公式计算
 # −x[0]+log(exp(x[0])+exp(x[1])+exp(x[2]))
@@ -140,7 +140,7 @@ print(f"inputx 1 = {inputx}")
 inputx=m(inputx)
 print(f"inputx 2 = {inputx}")
 
-output2 = loss(inputx, target)
+output2 = loss(inputx, target) #target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
 
 # 注意，使用nn.CrossEntropyLoss()时，不需要现将输出经过softmax层，否则计算的损失会有误，
@@ -160,7 +160,7 @@ print(f"inputx 1 = {inputx}")
 inputx=m(inputx)
 print(f"inputx 2 = {inputx}")
 
-output2 = loss(inputx, target)
+output2 = loss(inputx, target)#target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
 
 
@@ -180,7 +180,7 @@ print(f"inputx 1 = {inputx}")
 inputx=m(inputx)
 print(f"inputx 2 = {inputx}")
 
-output2 = loss(inputx, target)
+output2 = loss(inputx, target) #target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
 
 
@@ -199,7 +199,7 @@ print(f"inputx 1 = {inputx}")
 inputx=m(inputx)
 print(f"inputx 2 = {inputx}")
 
-output2 = loss(inputx, target)
+output2 = loss(inputx, target)#target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
 
 
@@ -209,7 +209,7 @@ print(f"output2 = {output2}")
 entroy=nn.CrossEntropyLoss(reduction='none')
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
 target = torch.tensor([0,1])
-output = entroy(input, target)
+output = entroy(input, target)#target 和 input千万别反了,会报错
 print(f"output1 = {output}")
 
 
@@ -217,14 +217,14 @@ print(f"output1 = {output}")
 entroy=nn.CrossEntropyLoss(reduction='mean')
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
 target = torch.tensor([0,1])
-output = entroy(input, target)
+output = entroy(input, target)#target 和 input千万别反了,会报错
 print(f"output1 = {output}")
 
 #====================================================
 entroy=nn.CrossEntropyLoss(reduction='sum')
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
 target = torch.tensor([0,1])
-output = entroy(input, target)
+output = entroy(input, target)#target 和 input千万别反了,会报错
 print(f"output1 = {output}")
 
 
@@ -234,7 +234,8 @@ import torch
 import torch.nn as nn
 x_input=torch.randn(3,3)#随机生成输入 
 print('x_input:\n',x_input) 
-y_target=torch.tensor([1,2,0])#设置输出具体值 print('y_target\n',y_target)
+y_target=torch.tensor([1,2,0])#设置输出具体值 
+print('y_target\n',y_target)
 
 #计算输入softmax，此时可以看到每一行加到一起结果都是1
 softmax_func=nn.Softmax(dim=1)
@@ -252,31 +253,31 @@ print('logsoftmax_output:\n',logsoftmax_output)
 
 #pytorch中关于NLLLoss的默认参数配置为：reducetion=True、size_average=True
 nllloss_func=nn.NLLLoss()
-nlloss_output=nllloss_func(logsoftmax_output,y_target)
+nlloss_output=nllloss_func(logsoftmax_output,y_target)#target 和 input千万别反了,会报错
 print('nlloss_output:\n',nlloss_output)
 
 
 #直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
 crossentropyloss=nn.CrossEntropyLoss()
-crossentropyloss_output=crossentropyloss(x_input,y_target)
+crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
 print('crossentropyloss_output:\n',crossentropyloss_output)
 
 
 #直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
 crossentropyloss=nn.CrossEntropyLoss(reduction='mean')
-crossentropyloss_output=crossentropyloss(x_input,y_target)
+crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
 print('crossentropyloss_output:\n',crossentropyloss_output)
 
 
 #直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
 crossentropyloss=nn.CrossEntropyLoss(reduction='none')
-crossentropyloss_output=crossentropyloss(x_input,y_target)
+crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
 print('crossentropyloss_output:\n',crossentropyloss_output)
 
 
 #直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
 crossentropyloss=nn.CrossEntropyLoss(reduction='sum')
-crossentropyloss_output=crossentropyloss(x_input,y_target)
+crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
 print('crossentropyloss_output:\n',crossentropyloss_output)
 
 
@@ -284,6 +285,8 @@ print('crossentropyloss_output:\n',crossentropyloss_output)
 
 
 """
+https://www.codeleading.com/article/37034424506/
+
 Pytorch中的交叉熵损失函数nn.CrossEntropyLoss之中包含两个非常有用的参数：
 
 weight：用来平衡样本之间的不平衡；
@@ -294,23 +297,114 @@ reduction：用来指定损失结果返回的是mean、sum还是none。
 使用reduction='none’的同时指定weights的时候，会导致产生的结果有错误，这是因为当我们指定reduction='none’的时候，该函数不会对结果使用weight进行规范化。
 
 """
-x = torch.randn(10, 5)
-y= torch.randint(0, 5, (10,))   #这里的5不能>=5,必须<=x.size(-1)
+x = torch.tensor([[-2.2105,  0.0971,  0.3266, -0.0403, -0.7734],
+        [-0.9611,  0.9855, -0.7131,  1.9102, -0.0249],
+        [ 1.0615, -0.8349,  0.8135, -0.8576, -0.3983],
+        [ 0.0135, -1.0360, -0.4179,  1.3075,  2.4753],
+        [-1.7417, -0.8576, -2.5673,  0.7397,  1.4467],
+        [-1.8565,  0.5760, -1.6394, -1.3055, -1.0683],
+        [ 1.7444, -0.4352,  0.5160,  1.1678,  0.4746],
+        [ 0.2409,  0.0209,  0.4686, -0.1821,  1.1949],
+        [ 0.7831, -2.3620,  0.5771, -0.4640, -1.4672],
+        [-0.0283,  0.8300, -1.4431, -1.1761,  0.4875]])
+y= torch.tensor([3, 1, 0, 4, 1, 0, 1, 2, 0, 2])   #这里的5不能>=5,必须<=x.size(-1)
 weights = torch.tensor([1., 2., 3., 4., 5.])
+print(f"x = \n{x}\ny = {y}")
 
 criterion_good = nn.CrossEntropyLoss(weight=weights)
 loss_good = criterion_good(x, y)
+print(f"loss_good = {loss_good}")
+
 
 criterion = nn.CrossEntropyLoss(weight=weights, reduction='none')
-loss = criterion(x, y)
+loss = criterion(x, y)  #target 和 input千万别反了,会报错
+print(f"loss = {loss}")
+
 loss = loss.sum() / weights[y].sum()
-
-print(loss == loss_good)
-
+print(f"loss = {loss}")
 
 
+criterion = nn.CrossEntropyLoss(weight=weights, reduction='mean')
+loss = criterion(x, y)  #target 和 input千万别反了,会报错
+print(f"loss = {loss}")
+
+criterion = nn.CrossEntropyLoss(weight=weights, reduction='sum')
+loss = criterion(x, y)  #target 和 input千万别反了,会报错
+print(f"loss = {loss}")
+
+"""
+x = torch.randn(10, 5)
+y= torch.randint(0, 5, (10,))   #这里的5不能>=5,必须<=x.size(-1)
+weights = torch.tensor([1., 2., 3., 4., 5.])
+print(f"x = \n{x}\ny = {y}")
+x = 
+tensor([[-2.2105,  0.0971,  0.3266, -0.0403, -0.7734],
+        [-0.9611,  0.9855, -0.7131,  1.9102, -0.0249],
+        [ 1.0615, -0.8349,  0.8135, -0.8576, -0.3983],
+        [ 0.0135, -1.0360, -0.4179,  1.3075,  2.4753],
+        [-1.7417, -0.8576, -2.5673,  0.7397,  1.4467],
+        [-1.8565,  0.5760, -1.6394, -1.3055, -1.0683],
+        [ 1.7444, -0.4352,  0.5160,  1.1678,  0.4746],
+        [ 0.2409,  0.0209,  0.4686, -0.1821,  1.1949],
+        [ 0.7831, -2.3620,  0.5771, -0.4640, -1.4672],
+        [-0.0283,  0.8300, -1.4431, -1.1761,  0.4875]])
+y = tensor([3, 1, 0, 4, 1, 0, 1, 2, 0, 2])
 
 
+criterion_good = nn.CrossEntropyLoss(weight=weights)
+loss_good = criterion_good(x, y)
+print(f"loss_good = {loss_good}")
+loss_good = 1.7052634954452515
+
+criterion = nn.CrossEntropyLoss(weight=weights, reduction='none')
+loss = criterion(x, y)  #target 和 input千万别反了,会报错
+print(f"loss = {loss}")
+loss = tensor([5.7261, 2.8753, 0.8370, 1.9656, 5.6130, 2.8659, 5.9798, 4.8431, 0.8107,
+        9.4097])
+
+
+loss = loss.sum() / weights[y].sum()
+print(f"loss = {loss}")
+loss = 1.705263614654541
+
+criterion = nn.CrossEntropyLoss(weight=weights, reduction='mean')
+loss = criterion(x, y)  #target 和 input千万别反了,会报错
+print(f"loss = {loss}")
+loss = 1.7052634954452515
+
+criterion = nn.CrossEntropyLoss(weight=weights, reduction='sum')
+loss = criterion(x, y)  #target 和 input千万别反了,会报错
+print(f"loss = {loss}")
+loss = 40.92632293701172
+
+(0.0403 + np.log( np.exp(-2.2105) +np.exp(0.0971) +np.exp(0.3266) +np.exp(-0.0403) +np.exp(-0.7734) ))*4
+Out[154]: 5.726134558306921
+
+
+a = [1,2,3,4,5]
+
+b = [3, 1, 0, 4, 1, 0, 1, 2, 0, 2]
+
+
+40.92632293701172/sum([a[i] for i in b])
+Out[163]: 1.7052634557088215
+
+"""
+
+
+
+#====================================================
+input=torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
+target = torch.tensor([0,1])  
+weights = torch.tensor([4, 2., 8.])
+entroy=nn.CrossEntropyLoss(weight=weights,reduction='none')
+
+output = entroy(input, target)  #target 和 input千万别反了,会报错
+print(f"output1 = {output}")
+#根据公式计算
+# −x[0]+log(exp(x[0])+exp(x[1])+exp(x[2]))
+# = 0.7715 + log( exp( − 0.7715 ) + exp( − 0.6205 ) + exp( − 0.2562 ) = 1.3447266007601868 
+# =0.7715+log(exp(−0.7715)+exp(−0.6205)+exp(−0.2562)=1.3447266007601868
 
 
 
@@ -350,7 +444,7 @@ loss = nn.BCELoss(size_average=False, reduce=False)
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)   #target 和 lossinput千万别反了
+output = loss(lossinput, target)   #target 和 lossinput千万别反了，不会报错，但是结果没意义
 # 放在loss(lossinput, target)中的参数lossinput, target一定要经过sigmoid激活
 
 print("输入值:")
@@ -378,7 +472,7 @@ loss = nn.BCELoss(size_average=True, reduce=False)
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -404,7 +498,7 @@ loss = nn.BCELoss(size_average=True, reduce=True)
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -432,7 +526,7 @@ loss = nn.BCELoss(size_average=False, reduce=True)
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -460,7 +554,7 @@ loss = nn.BCELoss(reduction = 'none')
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -487,7 +581,7 @@ loss = nn.BCELoss(reduction = 'sum')
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -514,7 +608,7 @@ loss = nn.BCELoss(reduction = 'mean')
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -543,7 +637,7 @@ loss = nn.BCELoss(weight=weights,size_average=False, reduce=False)
 input = torch.randn(3, requires_grad=True)
 target = torch.empty(3).random_(2)
 lossinput = m(input)
-output = loss(lossinput, target)  #target 和 lossinput千万别反了
+output = loss(lossinput, target)  #target 和 lossinput千万别反了，不会报错，但是结果没意义
 
 print("输入值:")
 print(lossinput)
@@ -619,19 +713,25 @@ target = torch.tensor([[0, 1, 0],
 m = torch.nn.Sigmoid()
 input1 = m(inpuT)
 print(f"input1 = {input1}")
+"""
+input1 = tensor([[0.4407, 0.6008, 0.5209],
+        [0.2273, 0.9091, 0.4556],
+        [0.6604, 0.4194, 0.3492]])
+"""
+
 
 loss1 = torch.nn.BCELoss()
-output1 = loss1(input1,target)
+output1 = loss1(input1,target) #target 和 input千万别反了,，不会报错，但是结果没意义
 print(f"output1 = {output1}")
 # output1 = 0.9610683917999268
 
 loss1 = torch.nn.BCELoss(reduction='mean')
-output1 = loss1(input1,target)
+output1 = loss1(input1,target)  #target 和 input千万别反了,，不会报错，但是结果没意义
 print(f"output1 = {output1}")
 # output1 = 0.9610683917999268
 
 loss1 = torch.nn.BCELoss(reduction='none')
-output1 = loss1(input1,target)
+output1 = loss1(input1,target)   #target 和 input千万别反了,，不会报错，但是结果没意义
 print(f"output1 = {output1}")
 """
 output1 = tensor([[0.5811, 0.5096, 0.7358],
@@ -641,7 +741,7 @@ output1 = tensor([[0.5811, 0.5096, 0.7358],
 
 
 loss1 = torch.nn.BCELoss(reduction='sum')
-output1 = loss1(input1,target)
+output1 = loss1(input1,target)  #target 和 input千万别反了,，不会报错，但是结果没意义
 print(f"output1 = {output1}")
 #output1 = 8.649615287780762
 
@@ -675,7 +775,7 @@ target = torch.tensor([[0, 1, 0],
                      [1, 0, 0],
                      [1, 1, 1]])*1.0
 loss2 = torch.nn.BCEWithLogitsLoss()
-output2 = loss2(inpuT,target)
+output2 = loss2(inpuT,target) #target 和 input千万别反了,，不会报错，但是结果没意义
 print(f"output2 = {output2}")
 
 
@@ -716,7 +816,7 @@ y = torch.Tensor([[1, 0, 0],
 #如果reduction='none'：
 
 criterion1 = nn.MSELoss(reduction='none')
-loss1 = criterion1(x, y)
+loss1 = criterion1(x, y)  #x,y顺序不影响结果，因为是均方根
 print(loss1)
 """
 tensor([[0., 4., 9.],
@@ -728,7 +828,7 @@ tensor([[0., 4., 9.],
 
 #如果reduction='mean'：
 criterion2 = nn.MSELoss(reduction='mean')
-loss2 = criterion2(x, y)
+loss2 = criterion2(x, y) #x,y顺序不影响结果，因为是均方根
 print(loss2)
 
 #tensor(4.1111)
@@ -736,7 +836,7 @@ print(loss2)
 
 #如果reduction='sum'：
 criterion3 = nn.MSELoss(reduction='sum')
-loss3 = criterion3(x, y)
+loss3 = criterion3(x, y) #x,y顺序不影响结果，因为是均方根
 print(loss3)
 
 #tensor(37.)
