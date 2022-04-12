@@ -281,6 +281,10 @@ class MultiHeadedAttention(nn.Module):
 
     def forward(self, query, key, value, mask=None):
         # query,key,value: batch,seq_len,d_model
+        print(f"query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
+        #query.shape = torch.Size([2, 4, 12]),
+        #key.shape=torch.Size([2, 4, 12]),
+        #value.shape = torch.Size([2, 4, 12])
         
         if mask is not None:
             mask = mask.unsqueeze(1)
