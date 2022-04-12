@@ -216,8 +216,8 @@ def attention(query, key, value, mask=None, dropout=None):
 
 
 
-
-def test_attention():
+# 3D
+def test_attention_3D():
     query = torch.randn(3, 5, 4)  # batch, target_len, feats
     key = torch.randn(3, 6, 4)  # batch, seq_len, feats
     value = torch.randn(3, 6, 8)  # batch, seq_len, val_feats
@@ -226,9 +226,41 @@ def test_attention():
     assert attn.shape == (3, 5, 8)
     print("Test passed")
 
+# 2D
+def test_attention_2D():
+    query = torch.randn(3, 5)  # batch, target_len, feats
+    key = torch.randn(4,5)  # batch, seq_len, feats
+    value = torch.randn(4, 8)  # batch, seq_len, val_feats
+    attn, _ = attention(query, key, value)
+    print(attn.shape)
+    assert attn.shape == (3, 8)
+    print("Test passed")
 
-test_attention()
+# 4D
+def test_attention_4D():
+     query = torch.randn(3, 5, 4,6)  # batch, target_len, feats
+     key = torch.randn(3, 5, 7,6)  # batch, seq_len, feats
+     value = torch.randn(3, 5, 7,9)  # batch, seq_len, val_feats
+     attn, _ = attention(query, key, value)
+     print(attn.shape)
+     assert attn.shape == (3, 5, 4,9)
+     print("Test passed")
 
+# 5D
+def test_attention_5D():
+     query = torch.randn(3, 5,9, 4,6)  # batch, target_len, feats
+     key = torch.randn(3, 5, 9,7,6)  # batch, seq_len, feats
+     value = torch.randn(3, 5,9, 7,9)  # batch, seq_len, val_feats
+     attn, _ = attention(query, key, value)
+     print(attn.shape)
+     assert attn.shape == (3, 5,9, 4,9)
+     print("Test passed")
+
+
+test_attention_3D()
+test_attention_2D()
+test_attention_4D()
+test_attention_5D()
 
 
 
