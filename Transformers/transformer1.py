@@ -241,8 +241,8 @@ class MultiHeadedAttention(nn.Module):
         """
         super(MultiHeadedAttention, self).__init__()
         assert d_model % h == 0
-        self.d_k = d_model // h
-        self.h = h
+        self.d_k = d_model // h  # 6
+        self.h = h              # 2
         self.linears = clone(nn.Linear(d_model, d_model), 4)
         self.attn = None
         self.dropout = nn.Dropout(dropout)
@@ -252,39 +252,44 @@ class MultiHeadedAttention(nn.Module):
         
         if mask is not None:
             mask = mask.unsqueeze(1)
-        nbatches = query.size(0)
-
-        query, key, value = [
-            l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
-            for l, x in zip(self.linears, (query, key, value))
-        ]
-
+        nbatches = query.size(0)  # 2
+        
+        for l, x in zip(self.linears, (query, key, value)):
+             print(f"l =  {l},\nx = {x}\nx.shape = {x.shape}")
+        
+        query, key, value = [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)  for l, x in zip(self.linears, (query, key, value)) ]
+        #query, key, value = [l(x)  for l, x in zip(self.linears, (query, key, value)) ]
+        print(f"query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
+        """
+        x.shape = torch.Size([2, 4, 12])
+        query.shape = torch.Size([2, 2, 4, 6]),
+        key.shape=torch.Size([2, 2, 4, 6]),
+        value.shape = torch.Size([2, 2, 4, 6])
+        """
         x, self.attn = attention(
             query,  # batch,num_head,seq_len,feats
             key,
             value,
             mask=mask,
             dropout=self.dropout)
-
-        x = x.transpose(1, 2).contiguous().view(nbatches, -1,
-                                                self.h * self.d_k)
+        print(f"x.shape = {x.shape}") # x.shape = torch.Size([2, 2, 4, 6])
+        x = x.transpose(1, 2).contiguous().view(nbatches, -1, self.h * self.d_k)
+        print(f"x.shape = {x.shape}") # x.shape = torch.Size([2, 4, 12])
+        
         # batch,seq_len,num_head*feats
+        print(f"self.linears[-1](x).shape = {self.linears[-1](x).shape}") #self.linears[-1](x).shape = torch.Size([2, 4, 12])
         return self.linears[-1](x)
-
-
-
-
-
-
 
 
 
 
 def test_multi_head():
     x = torch.randn(2, 4, 12)
+    y = torch.randn(2, 4, 12)
+    z = torch.randn(2, 4, 12)
     d_model = x.shape[-1]
     model = MultiHeadedAttention(2, d_model)
-    attn = model(x, x, x)
+    attn = model(x, y, z)
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
 

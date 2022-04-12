@@ -65,6 +65,7 @@ def main(args):
 
     # load data
     train_iter, test_iter = mlutils.load_data_fashion_mnist(batch_size=args.batch_size, resize=96)
+    # X.shape = torch.Size([256, 1, 96, 96]), y.shape = torch.Size([256]).y_hat.shape = torch.Size([256, 10])
     # train
     mlutils.train(net, train_iter, test_iter, args.batch_size, optimizer, args.num_epochs)
 

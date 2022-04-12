@@ -334,3 +334,758 @@ print("shape of x.mean(axis=2,keepdim=False):")         #[2, 3]
 print(x.mean(axis=2,keepdim=False).shape)                  
 
 
+
+
+
+#========================================= mask() =============================================
+import torch
+import math
+
+
+
+q = torch.Tensor([np.random.random(10),np.random.random(10),np.random.random(10), np.random.random(10), np.zeros((10,1)), np.zeros((10,1))])
+k = torch.Tensor([np.random.random(10),np.random.random(10),np.random.random(10), np.random.random(10), np.zeros((10,1)), np.zeros((10,1))])
+scores = torch.matmul(q, k.transpose(0,1)) / math.sqrt(10)
+mask = torch.Tensor([1,1,1,1,0,0])
+mask1 = mask.unsqueeze(1)
+scores1 = scores.masked_fill(mask1==0, -np.inf)
+
+
+
+mas = torch.from_numpy( np.triu(np.ones((6,6)), k=1),).byte()
+scores2 = scores.masked_fill(mas==0, -np.inf)
+
+
+
+
+
+"""
+5. masked_fill_(mask, value)方法
+
+其中mask是张量，元素是布尔值， value是要填充的值。该方法会在mask中为True的位置上填充value值。mask和value的形状要么是相同的， 要么是可以进行广播的， 否则会报错。
+"""
+#========================================= mask() =============================================
+# https://codeantenna.com/a/SqCLQ4AQNN
+import torch
+a=torch.tensor([[[5,5,5,5], [6,6,6,6], [7,7,7,7]], [[1,1,1,1],[2,2,2,2],[3,3,3,3]]])
+print(f"a = {a}")
+"""
+tensor([[[5, 5, 5, 5],
+         [6, 6, 6, 6],
+         [7, 7, 7, 7]],
+
+        [[1, 1, 1, 1],
+         [2, 2, 2, 2],
+         [3, 3, 3, 3]]])
+"""
+print(a.size())
+#torch.Size([2, 3, 4])
+print("#############################################3")
+#############################################3
+mask = torch.ByteTensor([[[1],[1],[0]],[[0],[1],[1]]])
+print(f"mask.size() = {mask.size()}")
+#torch.Size([2, 3, 1])
+b = a.masked_fill(mask, value=torch.tensor(-1e9))
+print(f"b1 = {b}")
+
+
+
+
+
+#可以看到a和mask的shape对应分别是 2 3 4 对应 2 3 1  ，可以看到mask为中的第一个1，使得a的第一行全部被mask掉了，那么我把mask的shape改成2 3 4 ，是不是可以指定位置mask掉呢
+mask1 = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+b = a.masked_fill(mask1, value=torch.tensor(-1e9))
+
+
+#的确可以，好的，如果shape相同，那就是对应位置被mask掉，
+#那么现在，我把mask的shape改成1，3，4 a保持为 2 ，3 ，4 会不会对于a的最外层的两个维度进行一样的mask呢？
+
+mask = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]]])
+b1 = a.masked_fill(mask, value=torch.tensor(-1e9))
+print(f"b = {b1}")
+"""
+tensor([[[-1000000000, -1000000000,           5,           5],
+         [-1000000000,           6,           6,           6],
+         [          7,           7,           7,           7]],
+
+        [[-1000000000, -1000000000,           1,           1],
+         [-1000000000,           2,           2,           2],
+         [          3,           3,           3,           3]]])
+"""
+print(f"a.shape() = {a.shape()}")
+
+#的确是这样的，最外层的两个维度进行了相同的mask
+#那么再改一改，mask改成1，1，4，这样是不是行a都会被相同的mask掉
+mask = torch.ByteTensor([[[1,1,0,0]]])
+b = a.masked_fill(mask, value=torch.tensor(-1e9))
+print(f"b = {b}")
+"""
+tensor([[[-1000000000, -1000000000,           5,           5],
+         [-1000000000, -1000000000,           6,           6],
+         [-1000000000, -1000000000,           7,           7]],
+
+        [[-1000000000, -1000000000,           1,           1],
+         [-1000000000, -1000000000,           2,           2],
+         [-1000000000, -1000000000,           3,           3]]])
+"""
+
+
+
+
+import torch
+
+mask = torch.randint(0, 2, (3, 1)).bool()
+target = torch.randn(3, 2)
+print(target)
+# tensor([[-0.4297,  0.6459],
+#         [ 1.2334, -1.5065],
+#         [ 0.1295,  0.2587]])
+
+print(mask)
+# tensor([[False],
+#         [False],
+#         [ True]])
+
+# 注意mask和target是可以广播的
+target.masked_fill_(mask, -100)
+print(target)
+# tensor([[-100.0000, -100.0000],
+#         [ 1.2334, -1.5065],
+#         [-1.0000, -1.0000]])
+# 如果执行target.masked_fill(mask, -1)， 是非in_place操作， 那么target本身的值不会改变
+
+
+
+import torch
+import torch.nn as nn
+a = torch.randint(0, 255, (2, 3, 3))
+print(f"a = {a}")
+mask = torch.tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).bool()
+print(f"mask = {mask}")
+a.masked_fill_(~mask, 0)
+print(f"a = {a}")
+
+
+# 当然， 你也可以自己手动mask
+a = torch.tensor([[1,2,3], [2,1,0]])
+model = nn.Embedding(num_embeddings = 10, embedding_dim = 6)
+b = model(a)
+mask = (a!=0).float().unsqueeze(-1)
+result = b * mask
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

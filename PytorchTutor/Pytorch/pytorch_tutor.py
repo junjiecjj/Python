@@ -111,6 +111,22 @@ print(f"tensor * tensor \n {tensor * tensor}")
 print(f'tensor.matmul(tensor.T) \n {tensor.matmul(tensor.T)} \n')
 print(f'tensor @ tensor.T) \n {tensor @ tensor.T}')
 
+
+a = torch.arange(96).reshape(2,4,12)
+
+b = a.view(2, -1, 2, 6)
+
+X = a.view(2, -1, 2, 6).transpose(1,2)
+
+C = X.transpose(-2, -1)
+
+B = torch.matmul(X, C)
+
+D = torch.matmul(B, X)
+
+print(f"a = \n{a}\nb = \n{b}\nX = \n{X}\nC = \n{C}\nB = \n{B}\nD = \n{D}")
+
+
 #本地化操作
 #具有_后缀的操作是本地化操作。例如：x.copy_(y), x.t_(), 将改变x。
 #注意：就地操作节省了一些内存，但在计算导数时可能会出现问题，因为会立即丢失历史记录。因此，不鼓励使用它们。
@@ -275,11 +291,20 @@ print(f"double.dtype = {double.dtype}\n")
 # double = tensor([3.1433], dtype=torch.float64)
 # double.dtype = torch.float64
 
+do = torch.DoubleTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {do}\n")
+print(f"ch.dtype = {do.dtype}\n")
+
+
 flo = tensor.float()
 print(f"flo = {flo}\n")
 print(f"flo.dtype = {flo.dtype}\n")
 # flo = tensor([3.1433])
 # flo.dtype = torch.float32
+
+fl = torch.FloatTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {fl}\n")
+print(f"ch.dtype = {fl.dtype}\n")
 
 half=tensor.half()
 print(f"half = {half}\n")
@@ -287,6 +312,9 @@ print(f"half.dtype = {half.dtype}\n")
 # half = tensor([3.1426], dtype=torch.float16)
 # half.dtype = torch.float16
 
+ha = torch.HalfTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {ha}\n")
+print(f"ch.dtype = {ha.dtype}\n")
 
 long=tensor.long()
 print(f"long = {long}\n")
@@ -294,11 +322,20 @@ print(f"long.dtype = {long.dtype}\n")
 # long = tensor([3])
 # long.dtype = torch.int64
 
+Lo = torch.LongTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {Lo}\n")
+print(f"ch.dtype = {Lo.dtype}\n")
+
+
 int_t=tensor.int()
 print(f"int_t = {int_t}\n")
 print(f"int_t.dtype = {int_t.dtype}\n")
 # int_t = tensor([3], dtype=torch.int32)
 # int_t.dtype = torch.int32
+
+In = torch.IntTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {In}\n")
+print(f"ch.dtype = {In.dtype}\n")
 
 short = tensor.short()
 print(f"short = {short}\n")
@@ -306,7 +343,9 @@ print(f"short.dtype = {short.dtype}\n")
 #  = tensor([3], dtype=torch.int16)
 # short.dtype = torch.int16
 
-
+sh = torch.ShortTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {sh}\n")
+print(f"ch.dtype = {sh.dtype}\n")
 
 ch = tensor.char()
 print(f"ch = {ch}\n")
@@ -314,11 +353,22 @@ print(f"ch.dtype = {ch.dtype}\n")
 #  ch = tensor([3], dtype=torch.int8)
 # ch.dtype = torch.int8
 
+ch = torch.CharTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"ch = {ch}\n")
+print(f"ch.dtype = {ch.dtype}\n")
+
 bt = tensor.byte()
 print(f"bt = {bt}\n")
 print(f"bt.dtype = {bt.dtype}\n")
 # bt = tensor([3], dtype=torch.uint8)
 # bt.dtype = torch.uint8
+
+bt = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"bt = {bt}\n")
+print(f"bt.dtype = {bt.dtype}\n")
+
+
+
 
 x = torch.randn(3, 3)
 print(x)
@@ -733,12 +783,102 @@ for t in range(500):
 
 
 
+#=======================================================================================
+# pytorch nn.Embedding的用法和理解
+#=======================================================================================
+"""
+https://www.jianshu.com/p/63e7acc5e890
+
+torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=None,
+ max_norm=None,  norm_type=2.0,   scale_grad_by_freq=False, 
+ sparse=False,  _weight=None)
+其为一个简单的存储固定大小的词典的嵌入向量的查找表，意思就是说，给一个编号，嵌入层就能返回这个编号对应的嵌入向量，嵌入向量反映了各个编号代表的符号之间的语义关系。
+
+输入为一个编号列表，输出为对应的符号嵌入向量列表。
+
+参数解释
+num_embeddings (python:int) – 词典的大小尺寸，比如总共出现5000个词，那就输入5000。此时index为（0-4999）
+embedding_dim (python:int) – 嵌入向量的维度，即用多少维来表示一个符号。
+padding_idx (python:int, optional) – 填充id，比如，输入长度为100，但是每次的句子长度并不一样，后面就需要用统一的数字填充，而这里就是指定这个数字，这样，网络在遇到填充id时，就不会计算其与其它符号的相关性。（初始化为0）
+max_norm (python:float, optional) – 最大范数，如果嵌入向量的范数超过了这个界限，就要进行再归一化。
+norm_type (python:float, optional) – 指定利用什么范数计算，并用于对比max_norm，默认为2范数。
+scale_grad_by_freq (boolean, optional) – 根据单词在mini-batch中出现的频率，对梯度进行放缩。默认为False.
+sparse (bool, optional) – 若为True,则与权重矩阵相关的梯度转变为稀疏张量。
+
+"""
+
+batch = [['i', 'am', 'a', 'boy', '.'], ['i', 'am', 'very', 'luck', '.'], ['how', 'are', 'you', '?']]
+#可见，每个句子的长度，即每个内层list的元素数为：5,5,4。这个长度也要记录。
+lens = [5,5,4]
+
+batch = [[3,6,5,6,7],[6,4,7,9,5],[4,5,8,7]]
+
+#同时，每个句子结尾要加EOS，假设EOS在词典中的index是1。
+batch = [[3,6,5,6,7,1],[6,4,7,9,5,1],[4,5,8,7,1]]
+
+
+#那么长度要更新：
+lens = [6,6,5]
+
+#很显然，这个mini-batch中的句子长度不一致！所以为了规整的处理，对长度不足的句子，进行填充。填充PAD假设序号是2，填充之后为：
+batch = [[3,6,5,6,7,1],[6,4,7,9,5,1],[4,5,8,7,1,2]]
+
+
+#batch还要转成LongTensor：
+
+batch=torch.LongTensor(batch)
+
+
+#建立词向量层
+embed = torch.nn.Embedding(num_embeddings=20,embedding_dim=6)
+
+
+#好了，现在使用建立了的embedding直接通过batch取词向量了，如：
+embed_batch = embed(batch)
+
+
+print(f"embed_batch = \n{embed_batch}")
 
 
 
 
 
 
+#=======================================================================================
+import numpy as np
+import torch
+import torch.nn as nn
+
+# Input size表示这批有2个句子，每个句子由4个单词构成
+Input = torch.LongTensor([[1,2,4,5],[4,3,2,9]])
+print(f"Input = \n{Input}")
+
+# 构造一个(假装)vocab size=10，每个vocab用3-d向量表示的table
+embedding = nn.Embedding(10, 3)
+# 可以看做每行是一个词汇的向量表示！
+print(f"embedding.weight = \n{embedding.weight}")
+
+Out = embedding(Input)
+print(f"Out = \n{Out}")
+
+#a=embedding(input)是去embedding.weight中取对应index的词向量！
+#看a的第一行，input处index=1，对应取出weight中index=1的那一行。其实就是按index取词向量！
+embedding = nn.Embedding(10, 6)
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+
+#==============================================================================
+# https://zhuanlan.zhihu.com/p/272844969
+embedding = nn.Embedding(5, 3)  # 定义一个具有5个单词，维度为3的查询矩阵
+print(embedding.weight)  # 展示该矩阵的具体内容
+test = torch.LongTensor([[0, 2, 0, 1],
+                         [1, 3, 4, 4]])  # 该test矩阵用于被embed，其size为[2, 4]
+# 其中的第一行为[0, 2, 0, 1]，表示获取查询矩阵中ID为0, 2, 0, 1的查询向量
+# 可以在之后的test输出中与embed的输出进行比较
+test = embedding(test)
+print(test.size())  # 输出embed后test的size，为[2, 4, 3]，增加
+# 的3，是因为查询向量的维度为3
+print(test)  # 输出embed后的test的内容
 
 
 
