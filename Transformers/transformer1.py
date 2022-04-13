@@ -82,7 +82,7 @@ class Encoder(nn.Module):
         需要自主生成 mask 
         """
         for layer in self.layers:
-            x = layer(x, mask)
+            x = layer(x, mask)  #每一层的mask共用，但是后一层的x输入为前一层的x输出
         return self.norm(x)
 
 
@@ -98,7 +98,7 @@ class LayerNorm(nn.Module):
         self.b_2 = nn.Parameter(torch.ones(features))
         self.eps = eps
 
-    def forward(self, x):
+    def forward(self, x):  # 此模块不改变X的shape
         """
         x --> (x - x.mean) / x.std 
         """
@@ -262,7 +262,7 @@ test_attention_5D()
 
 
 
-
+# 此模块不改变x的shape,即Q,K,V的shape和return的shape一致。
 class MultiHeadedAttention(nn.Module):
     def __init__(self, h, d_model, dropout=0.1):
         """
@@ -334,7 +334,7 @@ test_multi_head()
 
 
 
-
+# 此模块不改变x的shape，即输入和输出的shape一样
 class PositionwiseFeedForward(nn.Module):
     def __init__(self, d_model, d_ff, dropout=0.1):
         super(PositionwiseFeedForward, self).__init__()
@@ -345,6 +345,8 @@ class PositionwiseFeedForward(nn.Module):
     def forward(self, x):
         return self.w_2(self.dropout(F.relu(self.w_1(x))))
 
+
+# x.shape = (batch_size,seq_len),则return X.shape = (batch_size,seq_len,d_model=512)
 class Embeddings(nn.Module):
     def __init__(self, d_model, vocab):
         super(Embeddings, self).__init__()
@@ -355,7 +357,8 @@ class Embeddings(nn.Module):
         return self.lut(x) * math.sqrt(self.d_model)
 
 
-
+# x.shape = (batch_size,seq_len,d_model=512),则return X.shape = (batch_size,seq_len,d_model=512)
+# 此模块不改变x的shape，即输入和输出的shape一样
 class PositionalEncoding(nn.Module):
     "Implement the PE function."
 
