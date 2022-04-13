@@ -108,8 +108,26 @@ print(f"tensor.mul(tensor) \n {tensor.mul(tensor)} \n")
 # Alternative syntax:
 print(f"tensor * tensor \n {tensor * tensor}")
 
+a = torch.arange(8).reshape(2,4)
+b = torch.arange(8).reshape(2,4) + 1
+
+print(f"a = \n{a},\nb = \n{b}")
+print(f"a.mul(b) \n {a.mul(b)} \n")
+
+print(f"a*b \n {a*b} \n")
+
+
+
 print(f'tensor.matmul(tensor.T) \n {tensor.matmul(tensor.T)} \n')
 print(f'tensor @ tensor.T) \n {tensor @ tensor.T}')
+
+a = torch.arange(8).reshape(2,4)
+b = torch.arange(8).reshape(2,4) + 1
+
+print(f"a = \n{a},\nb = \n{b}")
+print(f"a.matmul(b) \n {a.matmul(b.T)} \n")
+
+print(f"a@b \n {a@b.T} \n")
 
 #======================================== attention =============================================
 a = torch.arange(96).reshape(2,4,12)
@@ -947,7 +965,8 @@ batch = [[3,6,5,6,7,1],[6,4,7,9,5,1],[4,5,8,7,1,2]]
 #batch还要转成LongTensor：
 
 batch=torch.LongTensor(batch)
-
+print(f"batch.shape = {batch.shape}")
+#batch.shape = torch.Size([3, 6])
 
 #建立词向量层
 embed = torch.nn.Embedding(num_embeddings=20,embedding_dim=6)
@@ -955,8 +974,8 @@ embed = torch.nn.Embedding(num_embeddings=20,embedding_dim=6)
 
 #好了，现在使用建立了的embedding直接通过batch取词向量了，如：
 embed_batch = embed(batch)
-
-
+print(f"embed_batch.shape = {embed_batch.shape}")
+#embed_batch.shape = torch.Size([3, 6, 6])
 print(f"embed_batch = \n{embed_batch}")
 
 
@@ -968,13 +987,13 @@ print(f"embed_batch = \n{embed_batch}")
 import numpy as np
 import torch
 import torch.nn as nn
-
+# 2D
 # Input size表示这批有2个句子，每个句子由4个单词构成
 Input = torch.LongTensor([[1,2,4,5],[4,3,2,9]])
 print(f"Input = \n{Input}")
 
 # 构造一个(假装)vocab size=10，每个vocab用3-d向量表示的table
-embedding = nn.Embedding(10, 3)
+embedding = nn.Embedding(num_embeddings=10, embedding_dim=3)
 # 可以看做每行是一个词汇的向量表示！
 print(f"embedding.weight = \n{embedding.weight}")
 
@@ -983,9 +1002,48 @@ print(f"Out = \n{Out}")
 
 #a=embedding(input)是去embedding.weight中取对应index的词向量！
 #看a的第一行，input处index=1，对应取出weight中index=1的那一行。其实就是按index取词向量！
-embedding = nn.Embedding(10, 6)
+embedding = nn.Embedding(num_embeddings=10, embedding_dim=6)
 Out = embedding(Input)
 print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+
+
+embedding = nn.Embedding(num_embeddings=10, embedding_dim=12)
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+
+
+embedding = nn.Embedding(num_embeddings=5, embedding_dim=6)   # num_embeddings必须大于input的最大元素值
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+# IndexError: index out of range in self
+
+
+# 3D
+Input = torch.LongTensor([[[1,2,4,5],[4,3,2,9],[10,12,18,11]],[[1,2,4,5],[4,3,2,9],[22,21,18,20]]])
+print(f"Input = \n{Input}")
+print(f" Input.shape = {Input.shape}")
+embedding = nn.Embedding(num_embeddings=30, embedding_dim=6)   # num_embeddings必须大于input的最大元素值
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+
+
+# 1D
+Input = torch.LongTensor([1,2,3,4])
+print(f"Input = \n{Input}")
+print(f" Input.shape = {Input.shape}")
+embedding = nn.Embedding(num_embeddings=30, embedding_dim=6)   # num_embeddings必须大于input的最大元素值
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+
+# 2D
+Input = torch.LongTensor([1,2,3,4]).view(-1,1)
+print(f"Input = \n{Input}")
+print(f" Input.shape = {Input.shape}")
+embedding = nn.Embedding(num_embeddings=30, embedding_dim=6)   # num_embeddings必须大于input的最大元素值
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+
+
 
 #==============================================================================
 # https://zhuanlan.zhihu.com/p/272844969
@@ -1004,27 +1062,28 @@ print(test)  # 输出embed后的test的内容
 
 
 
+#==================================Python中::（双冒号）的用法============================================
+print(f"list(range(10)[::2]) = {list(list(range(10)[::2]))}")
+
+print(f"range(100)[5:18:2] = {list(range(100)[5:18:2])}")
+
+s = range(20)
+
+print(f"s[::3] = {list(s[::3])}")
 
 
+print(f"s[2::3] = {list(s[2::3])}")
 
 
+print(f"s[:10:3] = {list(s[:10:3])}")
 
 
+print(f"'123123123'[::3] = {'123123123'[::3]}")
 
 
+# a[::-1]相当于 a[-1:-len(a)-1:-1]，也就是从最后一个元素到第一个元素复制一遍。所以你看到一个倒序的东东。
 
-
-
-
-
-
-
-
-
-
-
-
-
+print(f"s[::-1] = {list(s[::-1])}")
 
 
 

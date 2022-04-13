@@ -160,8 +160,6 @@ class Decoder(nn.Module):
         return self.norm(x)
 
 
-
-
 class DecoderLayer(nn.Module):
     def __init__(self, size, self_attn, src_attn, feed_forward, dropout):
         super(DecoderLayer, self).__init__()
@@ -368,8 +366,7 @@ class PositionalEncoding(nn.Module):
         # Compute the positional encodings once in log space.
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len).unsqueeze(1)
-        div_term = torch.exp(
-            torch.arange(0, d_model, 2) * -(math.log(10000.0) / d_model))
+        div_term = torch.exp(torch.arange(0, d_model, 2) * -(math.log(10000.0)/d_model) )
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
         pe = pe.unsqueeze(0)
@@ -389,13 +386,7 @@ plt.legend(["dim %d"%p for p in [4,5,6,7]])
 
 
 
-def make_model(src_vocab,
-               tgt_vocab,
-               N=6,
-               d_model=512,
-               d_ff=2048,
-               h=8,
-               dropout=0.1):
+def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
     attn = MultiHeadedAttention(h, d_model)
