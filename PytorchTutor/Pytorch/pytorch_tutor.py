@@ -124,8 +124,9 @@ B = torch.matmul(X, C)
 
 D = torch.matmul(B, X)
 
-print(f"a = \n{a}\nb = \n{b}\nX = \n{X}\nC = \n{C}\nB = \n{B}\nD = \n{D}")
-print(f"a.shape = \n{a.shape}\nb.shape = \n{b.shape}\nX.shape = \n{X.shape}\nC.shape = \n{C.shape}\nB.shape = \n{B.shape}\nD.shape = \n{D.shape}")
+print(f"a = a.shape = {a.shape} \n{a}\nb = b.shape = {b.shape} \n{b} \nX = X.shape = {X.shape} \n{X}\n\
+C = C.shape = {C.shape}\n {C}\n B = B.shape = {B.shape} \n{B}\n D = D.shape = {D.shape} \n{D}\n")
+
 """
 X = 
 tensor([[[[ 0,  1,  2,  3,  4,  5],     
