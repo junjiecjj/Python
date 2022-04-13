@@ -90,9 +90,6 @@ class AlexNet(nn.Module):
          return output
 
 
-
-
-
 #模型训练
 def load_data_fashion_mnist(batch_size, resize=None, root='~/公共的/MLData/FashionMNIST'):
     """Use torchvision.datasets module to download the fashion mnist dataset and then load into memory."""

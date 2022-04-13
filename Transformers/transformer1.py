@@ -406,11 +406,11 @@ plt.legend(["dim %d"%p for p in [4,5,6,7]])
 def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
-    attn = MultiHeadedAttention(h, d_model)
-    ff = PositionwiseFeedForward(d_model, d_ff, dropout)
+    attn = MultiHeadedAttention(h, d_model)  # h为多头头数，d-model为每个样本的特征数，NLP中是表示词向量的维度 (Transformer-base： d=512d=512，Transformer-big: d = 1024d=1024)。
+    ff = PositionwiseFeedForward(d_model, d_ff, dropout)   #d_ff为前向网络的神经节点数
     position = PositionalEncoding(d_model, dropout)
     model = EncoderDecoder(
-        Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
+        Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N), # N为Encoder和Decoder层数
         Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), N),
         nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
         nn.Sequential(Embeddings(d_model, tgt_vocab), c(position)),
