@@ -46,6 +46,18 @@ y=torch.rand(2,3,4,5)
 print(f"y.size() = {y.size()}\n")
 print(f"y = {y}\n")
 
+a = torch.arange(96).reshape(2,4,12)
+print(f"a = \n{a}\na[:,:2] = \n{a[:,:2]}\n")
+print(f"a = \n{a}\na[:,:2,:] = \n{a[:,:2,:]}\n")
+
+a = torch.arange(24).reshape(2,3,4)
+b = torch.arange(12).reshape(1,3,4)
+c = a+b
+print(f"a = \n{a}")
+print(f"b = \n{b}")
+print(f"c = \n{c}")
+
+
 
 
 #创建一个随机初始化的矩阵:
