@@ -298,11 +298,11 @@ class MultiHeadedAttention(nn.Module):
         nbatches = query.size(0)  # 2
         
         for l, x in zip(self.linears, (query, key, value)):
-             print(f"l =  {l},\nx.shape = {x.shape}")
+             print(f"line = {sys._getframe().f_lineno}, l =  {l},\nx.shape = {x.shape}")
         
         query, key, value = [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)  for l, x in zip(self.linears, (query, key, value)) ]
         #query, key, value = [l(x)  for l, x in zip(self.linears, (query, key, value)) ]
-        print(f"query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
+        print(f"L = {sys._getframe().f_lineno}, query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
         """
         x.shape = torch.Size([2, 4, 12])
         query.shape = torch.Size([2, 2, 4, 6]),
@@ -323,105 +323,7 @@ class MultiHeadedAttention(nn.Module):
         print(f"self.linears[-1](x).shape = {self.linears[-1](x).shape}") #self.linears[-1](x).shape = torch.Size([2, 4, 12])
         return self.linears[-1](x)
 
-class Batch:
-    def __init__(self, src, trg=None, pad=0):
-        """
-        src: 输入序列
-        trg: 目标序列
-        """
-        self.src = src
-        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
-        if trg is not None:
-            self.trg = trg[:, :-1]
-            self.trg_y = trg[:, 1:]
-            self.trg_mask = self.make_std_mask(self.trg, pad)
-            self.ntokens = (self.trg_y != pad).data.sum()
 
-    @staticmethod
-    def make_std_mask(tgt, pad):
-        """
-        将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
-        """
-        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
-        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
-        return tgt_mask
-
-
-
-
-src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
-trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
-
-sample = Batch(src, trg)
-print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
-
-print(f"sample.src_mask = \n{sample.src_mask}")
-print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
-
-print(f"sample.trg_mask = \n{sample.trg_mask}")
-print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
-
-print(f"sample.trg_mask = {sample.trg_mask}, sample.ntokens = {sample.ntokens}")
-
-
-
-
-def test_multi_head():
-    x = torch.randn(2, 4, 12)
-    y = torch.randn(2, 4, 12)
-    z = torch.randn(2, 4, 12)
-    d_model = x.shape[-1]
-    model = MultiHeadedAttention(2, d_model)
-    attn = model(x, y, z)
-    assert attn.shape == (2, 4, 12)
-    print("Test passed!")
-test_multi_head()
-
-def test_multi_head1():
-    x = torch.randn(2, 4, 12)
-    y = torch.randn(2, 4, 12)
-    z = torch.randn(2, 4, 12)
-    d_model = x.shape[-1]
-    model = MultiHeadedAttention(2, d_model)
-    attn = model(x, y, z)
-    assert attn.shape == (2, 4, 12)
-    print("Test passed!")
-test_multi_head1()
-
-def test_multi_head2():
-    x = torch.randn(128, 31, 128)
-    mask = torch.randn(128, 1, 31)
-    d_model = x.shape[-1]
-    model = MultiHeadedAttention(8, d_model)
-    attn = model(x, x, x,mask=mask)
-    assert attn.shape == (128, 31, 128)
-    print("Test passed!")
-test_multi_head2()
-
-def test_multi_head3():
-    x = torch.randn(128, 30, 128)
-    m = torch.randn(128, 31, 128)
-    mask = torch.randn(128, 1, 31)
-    d_model = x.shape[-1]
-    model = MultiHeadedAttention(8, d_model)
-    attn = model(x, m, m,mask=mask)
-    assert attn.shape == (128, 30, 128)
-    print("Test passed!")
-test_multi_head3()
-
-def test_multi_head4():
-    x = torch.randn(128, 30, 128)
-    m = torch.randn(128, 31, 128)
-    mask = torch.randn(128, 1, 31)
-    d_model = x.shape[-1]
-    model = MultiHeadedAttention(8, d_model)
-    attn = model(x, m, m,mask=mask)
-    assert attn.shape == (128, 30, 128)
-    print("Test passed!")
-test_multi_head4()
-
-
-# 以上测试说明 MultiHeadedAttention() 不改变x的shape
 
 
 
@@ -484,7 +386,7 @@ Test_PositionwiseFeedForward2()
 
 # x.shape = (batch_size,seq_len),则return X.shape = (batch_size,seq_len,d_model=512)
 class Embeddings(nn.Module):
-    def __init__(self, d_model, vocab):
+    def __init__(self, vocab, d_model):
         super(Embeddings, self).__init__()
         self.lut = nn.Embedding(vocab, d_model)
         self.d_model = d_model
@@ -498,7 +400,7 @@ def test_Embeddings():
      x = torch.randint(0,20,(5,9))
      vocab = 132
      d_model = 128
-     em = Embeddings(d_model, vocab)
+     em = Embeddings(vocab,d_model )
      out = em(x)
      print(out.shape)
      assert out.shape == (5, 9, d_model)
@@ -511,7 +413,7 @@ def test_Embeddings2():
      x = torch.randint(0,20,(5,))
      vocab = 132
      d_model = 128
-     em = Embeddings(d_model, vocab)
+     em = Embeddings( vocab, d_model)
      out = em(x)
      print(out.shape)
      assert out.shape == (5,  d_model)
@@ -523,7 +425,7 @@ def test_Embeddings3():
      x = torch.randint(0,20,(5,9,12))
      vocab = 132
      d_model = 128
-     em = Embeddings(d_model, vocab)
+     em = Embeddings( vocab, d_model)
      out = em(x)
      print(out.shape)
      assert out.shape == (5, 9,12, d_model)
@@ -614,7 +516,115 @@ def Test_PositionalEncoding2():
 
 # 以上测试说明PositionalEncoding()的输入x只能是三维的，且不改变x的shape
 
+class Batch:
+    def __init__(self, src, trg=None, pad=0):
+        """
+        src: 输入序列
+        trg: 目标序列
+        """
+        self.src = src
+        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        if trg is not None:
+            self.trg = trg[:, :-1]
+            self.trg_y = trg[:, 1:]
+            self.trg_mask = self.make_std_mask(self.trg, pad)
+            self.ntokens = (self.trg_y != pad).data.sum()
 
+    @staticmethod
+    def make_std_mask(tgt, pad):
+        """
+        将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
+        """
+        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
+        return tgt_mask
+
+
+
+
+src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
+trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
+
+sample = Batch(src, trg)
+print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
+
+print(f"sample.src_mask = \n{sample.src_mask}")
+print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
+
+print(f"sample.trg_mask = \n{sample.trg_mask}")
+print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
+
+print(f"sample.trg_mask = {sample.trg_mask}, sample.ntokens = {sample.ntokens}")
+
+
+
+
+def test_multi_head():
+    x = torch.randint(1, 200, (2, 4, 12), dtype=torch.float)
+    y = torch.randint(1, 200, (2, 4, 12), dtype=torch.float)
+    z = torch.randint(1, 200, (2, 4, 12), dtype=torch.float)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(2, d_model)
+    attn = model(x, y, z)
+    assert attn.shape == (2, 4, 12)
+    print("Test passed!")
+test_multi_head()
+
+def test_multi_head1():
+    x = torch.randn(2, 4, 12)
+    y = torch.randn(2, 4, 12)
+    z = torch.randn(2, 4, 12)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(2, d_model)
+    attn = model(x, y, z)
+    assert attn.shape == (2, 4, 12)
+    print("Test passed!")
+test_multi_head1()
+
+def test_multi_head2(pad = 0):
+    x = torch.randint(1, 200, (128, 31))
+    src_mask = (x != pad).unsqueeze(-2) 
+    
+    d_model = 128
+    emb = Embeddings(2222, d_model)
+    x_e = emb(x)
+    
+    PE = PositionalEncoding(d_model=d_model, dropout=0.1)
+    
+    x_pe = PE(x_e)
+    
+    d_model = x.shape[-1]
+    
+    model = MultiHeadedAttention(8, d_model)
+    attn = model(x_pe, x_pe, x_pe, mask = src_mask)
+    assert attn.shape == (128, 31, 128)
+    print("Test passed!")
+test_multi_head2()
+
+def test_multi_head3():
+    x = torch.randn(128, 30, 128)
+    m = torch.randn(128, 31, 128)
+    mask = torch.randn(128, 1, 31)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(8, d_model)
+    attn = model(x, m, m,mask=mask)
+    assert attn.shape == (128, 30, 128)
+    print("Test passed!")
+test_multi_head3()
+
+def test_multi_head4():
+    x = torch.randn(128, 30, 128)
+    m = torch.randn(128, 31, 128)
+    mask = torch.randn(128, 1, 31)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(8, d_model)
+    attn = model(x, m, m,mask=mask)
+    assert attn.shape == (128, 30, 128)
+    print("Test passed!")
+test_multi_head4()
+
+
+# 以上测试说明 MultiHeadedAttention() 不改变x的shape
 
 
 
@@ -629,8 +639,8 @@ def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0
     model = EncoderDecoder(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N), # N为Encoder和Decoder层数
         Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), N),
-        nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
-        nn.Sequential(Embeddings(d_model, tgt_vocab), c(position)),
+        nn.Sequential(Embeddings(src_vocab, d_model), c(position)),
+        nn.Sequential(Embeddings(tgt_vocab, d_model), c(position)),
         Generator(d_model, tgt_vocab),
     )
 
