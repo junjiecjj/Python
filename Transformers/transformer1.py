@@ -323,6 +323,46 @@ class MultiHeadedAttention(nn.Module):
         print(f"self.linears[-1](x).shape = {self.linears[-1](x).shape}") #self.linears[-1](x).shape = torch.Size([2, 4, 12])
         return self.linears[-1](x)
 
+class Batch:
+    def __init__(self, src, trg=None, pad=0):
+        """
+        src: 输入序列
+        trg: 目标序列
+        """
+        self.src = src
+        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        if trg is not None:
+            self.trg = trg[:, :-1]
+            self.trg_y = trg[:, 1:]
+            self.trg_mask = self.make_std_mask(self.trg, pad)
+            self.ntokens = (self.trg_y != pad).data.sum()
+
+    @staticmethod
+    def make_std_mask(tgt, pad):
+        """
+        将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
+        """
+        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
+        return tgt_mask
+
+
+
+
+src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
+trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
+
+sample = Batch(src, trg)
+print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
+
+print(f"sample.src_mask = \n{sample.src_mask}")
+print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
+
+print(f"sample.trg_mask = \n{sample.trg_mask}")
+print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
+
+print(f"sample.trg_mask = {sample.trg_mask}, sample.ntokens = {sample.ntokens}")
+
 
 
 
@@ -335,7 +375,7 @@ def test_multi_head():
     attn = model(x, y, z)
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
-
+test_multi_head()
 
 def test_multi_head1():
     x = torch.randn(2, 4, 12)
@@ -346,7 +386,7 @@ def test_multi_head1():
     attn = model(x, y, z)
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
-
+test_multi_head1()
 
 def test_multi_head2():
     x = torch.randn(128, 31, 128)
@@ -356,7 +396,7 @@ def test_multi_head2():
     attn = model(x, x, x,mask=mask)
     assert attn.shape == (128, 31, 128)
     print("Test passed!")
-
+test_multi_head2()
 
 def test_multi_head3():
     x = torch.randn(128, 30, 128)
@@ -367,7 +407,7 @@ def test_multi_head3():
     attn = model(x, m, m,mask=mask)
     assert attn.shape == (128, 30, 128)
     print("Test passed!")
-
+test_multi_head3()
 
 def test_multi_head4():
     x = torch.randn(128, 30, 128)
@@ -378,12 +418,9 @@ def test_multi_head4():
     attn = model(x, m, m,mask=mask)
     assert attn.shape == (128, 30, 128)
     print("Test passed!")
-
-test_multi_head()
-test_multi_head1()
-test_multi_head2()
-test_multi_head3()
 test_multi_head4()
+
+
 # 以上测试说明 MultiHeadedAttention() 不改变x的shape
 
 
@@ -562,7 +599,7 @@ def Test_PositionalEncoding1():
     attn = pe(x )
     assert attn.shape == (4, 5, 6,  12)
     print("Test passed!")
-Test_PositionalEncoding1()  #error
+#Test_PositionalEncoding1()  #error
 
 
 def Test_PositionalEncoding2():
@@ -572,7 +609,7 @@ def Test_PositionalEncoding2():
     attn = pe(x )
     assert attn.shape == (4,    12)
     print("Test passed!")
-Test_PositionalEncoding2() #error
+#Test_PositionalEncoding2() #error
 
 
 # 以上测试说明PositionalEncoding()的输入x只能是三维的，且不改变x的shape
@@ -606,11 +643,11 @@ def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0
 
 tmp_model = make_model(10, 10, 2)
 # 查看模型结构：
-print(f"tmp_model = \n{tmp_model}")
-print(f"tmp_model.src_embed = \n{tmp_model.src_embed}")
+#print(f"tmp_model = \n{tmp_model}")
+#print(f"tmp_model.src_embed = \n{tmp_model.src_embed}")
 
 
-
+"""
 # 查看网络参数：
 for name, parameters in tmp_model.named_parameters():
     print(name, ':', parameters.size())
@@ -635,50 +672,10 @@ for name, param in tmp_model.named_parameters():
           param.requires_grad = False
      if name in opt_para:
           param.requires_grad = True
-
-
-class Batch:
-    def __init__(self, src, trg=None, pad=0):
-        """
-        src: 输入序列
-        trg: 目标序列
-        """
-        self.src = src
-        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
-        if trg is not None:
-            self.trg = trg[:, :-1]
-            self.trg_y = trg[:, 1:]
-            self.trg_mask = self.make_std_mask(self.trg, pad)
-            self.ntokens = (self.trg_y != pad).data.sum()
-
-    @staticmethod
-    def make_std_mask(tgt, pad):
-        """
-        将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
-        """
-        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
-        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
-        return tgt_mask
+"""
 
 
 
-
-src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
-trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
-
-sample = Batch(src, trg)
-print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
-
-print(f"sample.src_mask = \n{sample.src_mask}")
-print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
-
-print(f"sample.trg_mask = \n{sample.trg_mask}")
-print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
-
-
-
-
-sample.trg_mask, sample.ntokens
 
 
 def run_epoch(data_iter, model, loss_compute):
@@ -703,111 +700,414 @@ def run_epoch(data_iter, model, loss_compute):
 
 
 
+global max_src_in_batch, max_tgt_in_batch
+def batch_size_fn(new, count, sofar):
+    global max_src_in_batch, max_tgt_in_batch
+    if count == 1:
+        max_src_in_batch = 0
+        max_tgt_in_batch = 0
+    max_src_in_batch = max(max_src_in_batch,  len(new.src))
+    max_tgt_in_batch = max(max_tgt_in_batch,  len(new.trg) + 2)
+    src_elements = count * max_src_in_batch
+    tgt_elements = count * max_tgt_in_batch
+    return max(src_elements, tgt_elements)        
 
 
 
 
 
+class NoamOpt:
+    def __init__(self, model_size, factor, warmup, optimizer):
+        self.optimizer = optimizer
+        self._step = 0
+        self.warmup = warmup
+        self.factor = factor
+        self.model_size = model_size
+        self._rate = 0
 
+    def step(self):
+        self._step += 1
+        rate = self.rate()
+        for p in self.optimizer.param_groups:
+            p['lr'] = rate
+        self._rate = rate
+        self.optimizer.step()
 
+    def rate(self, step=None):
+        if step is None:
+            step = self._step
+        return self.factor * (self.model_size**(-0.5) *
+                              min(step**(-0.5), step * self.warmup**(-1.5)))
 
 
+def get_std_opt(model):
+    return NoamOpt(
+        model.src_embed[0].d_model, 2, 4000,
+        torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98),
+                         eps=1e-9))
 
 
 
 
 
 
+opts = [
+    NoamOpt(512, 1, 4000, None),
+    NoamOpt(512, 1, 8000, None),
+    NoamOpt(256, 1, 4000, None),
+]
+plt.plot(np.arange(1, 20000),
+         [[opt.rate(i) for opt in opts] for i in range(1, 20000)])
+plt.legend(["512:4000", "512:8000", "256:4000"])
 
 
 
 
 
+class LabelSmoothing(nn.Module):
+    def __init__(self, size, padding_idx, smoothing=0.0):
+        super(LabelSmoothing, self).__init__()
+        self.criterion = nn.KLDivLoss(size_average=False)
+        self.padding_idx = padding_idx
+        self.confidence = 1.0 - smoothing
+        self.smoothing = smoothing
+        self.size = size
+        self.true_dist = None
 
+    def forward(self, x, target):
+        assert x.size(1) == self.size
+        true_dist = x.data.clone()
 
+        true_dist.fill_(self.smoothing / (self.size - 2))
+        
+        true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
+        
+        true_dist[:, self.padding_idx] = 0
+        mask = torch.nonzero(target.data == self.padding_idx)
+        if mask.dim() > 0:
+            true_dist.index_fill_(0, mask.squeeze(), 0.0)
+        self.true_dist = true_dist
+        return self.criterion(x, Variable(true_dist, requires_grad=False))
 
 
+crit = LabelSmoothing(size=5, padding_idx=0, smoothing=0.4)
+predict = torch.FloatTensor([
+    [0, 0.2, 0.7, 0.1, 0],
+    [0, 0.2, 0.7, 0.1, 0],
+    [0, 0.2, 0.7, 0.1, 0],
+])
+v = crit(Variable(predict.log()), Variable(torch.LongTensor([2, 1, 0])))
+plt.imshow(crit.true_dist)
+crit.true_dist
 
 
 
 
 
 
+crit = LabelSmoothing(5, 0, 0.1)
 
 
+def loss(x):
+    d = x + 3 * 1
+    predict = torch.FloatTensor([
+        [0, x / d, 1 / d, 1 / d, 1 / d],  # 概率分布，x 的值越大，标签 1 的概率越大
+    ])
+    #print(predict)
+    return crit(
+        Variable(predict.log()),
+        Variable(torch.LongTensor([1])),  # 真实标签为 1
+    ).item()
 
 
+plt.plot(np.arange(1, 100), [loss(x) for x in range(1, 100)])
 
 
 
 
 
 
+# 生成随机数据
+def data_gen(V, batch, nbatches):
+    for i in range(nbatches):
+        data = torch.from_numpy(np.random.randint(1, V, size=(batch, 10)))
+        data[:, 0] = 1
+        src = Variable(data, requires_grad=False)
+        tgt = Variable(data, requires_grad=False)
+        yield Batch(src, tgt, 0)
 
 
 
 
+class SimpleLossCompute:
+    def __init__(self, generator, criterion, opt=None):
+        self.generator = generator  # 模型最后的输出层
+        self.criterion = criterion
+        self.opt = opt
 
+    def __call__(self, x, y, norm):
+        x = self.generator(x)
+        loss = self.criterion(x.contiguous().view(-1, x.size(-1)),
+                              y.contiguous().view(-1)) / norm
+        loss.backward()
+        if self.opt is not None:
+            self.opt.step()
+            self.opt.optimizer.zero_grad()
+        return loss.data.item() * norm
 
 
+V = 11
+criterion = LabelSmoothing(size=V, padding_idx=0, smoothing=0.0)
+model = make_model(V, V, N=2)
+model_opt = NoamOpt(
+    model.src_embed[0].d_model, 1, 400,
+    torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 
+for epoch in range(10):
+    model.train()
+    run_epoch(data_gen(V, 30, 20), model,
+              SimpleLossCompute(model.generator, criterion, model_opt))
+    model.eval()
+    print(
+        run_epoch(data_gen(V, 30, 5), model,
+                  SimpleLossCompute(model.generator, criterion, None)))
 
 
+def greedy_decode(model, src, src_mask, max_len, start_symbol):
+    memory = model.encode(src, src_mask)
+    ys = torch.ones(1, 1).fill_(start_symbol).type_as(src.data)
+    for i in range(max_len - 1):
+        out = model.decode(
+            memory, src_mask, Variable(ys),
+            Variable(subsequent_mask(ys.size(1)).type_as(src.data)))
+        prob = model.generator(out[:, -1])
+        _, next_word = torch.max(prob, dim=1)
+        next_word = next_word.item()
+        ys = torch.cat(
+            [ys, torch.ones(1, 1).type_as(src.data).fill_(next_word)], dim=1)
+    return ys
 
 
+model.eval()
+src = Variable(torch.LongTensor([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]))
+src_mask = Variable(torch.ones(1, 1, 10))
+print(greedy_decode(model, src, src_mask, max_len=10, start_symbol=1))
 
 
 
+# 实战
+from torchtext import data, datasets
 
+if True:
+    import spacy
+    spacy_de = spacy.load("de_core_news_sm")
+    spacy_en = spacy.load("en_core_web_sm")
 
+    def tokenize_de(text):
+        return [tok.text for tok in spacy_de.tokenizer(text)]
 
+    def tokenize_en(text):
+        return [tok.text for tok in spacy_en.tokenizer(text)]
 
+    BOS_WORD = '<s>'
+    EOS_WORD = '</s>'
+    BLANK_WORD = "<blank>"
+    SRC = data.Field(tokenize=tokenize_de,
+                     pad_token=BLANK_WORD)  # 定义预处理流程，分词、填充、
+    TGT = data.Field(tokenize=tokenize_en,
+                     init_token=BOS_WORD,
+                     eos_token=EOS_WORD,
+                     pad_token=BLANK_WORD)
 
+    MAX_LEN = 100
 
+    # 数据集
+    train, val, test = datasets.IWSLT.splits(
+        exts=('.de', '.en'),
+        fields=(SRC, TGT),
+        filter_pred=lambda x: len(vars(x)['src']) <= MAX_LEN and len(
+            vars(x)['trg']) <= MAX_LEN)
+    MIN_FREQ = 2
 
+    # 创建词汇表
+    SRC.build_vocab(train.src, min_freq=MIN_FREQ)
+    TGT.build_vocab(train.trg, min_freq=MIN_FREQ)
 
 
 
+# 数据分批对训练速度很重要：需要拆分成均匀的批次，最小的填充
 
+class MyIterator(data.Iterator):
+    def create_batches(self):
+        if self.train: # 训练模式，数据分批，然后打乱顺序
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            def pool(d, random_shuffler):
+                for p in data.batch(d, self.batch_size * 100):
+                    p_batch = data.batch(sorted(p, key=self.sort_key),
+                                         self.batch_size, self.batch_size_fn)
+                    for b in random_shuffler(list(p_batch)):
+                        yield b
+
+            self.batches = pool(self.data(), self.random_shuffler)
+
+        else:
+            self.batches = []
+            for b in data.batch(self.data(), self.batch_size,
+                                self.batch_size_fn):
+                self.batches.append(sorted(b, key=self.sort_key))
+
+
+def rebatch(pad_idx, batch): # batch first --> True
+    "Fix order in torchtext to match ours"
+    src, trg = batch.src.transpose(0, 1), batch.trg.transpose(0, 1)
+    return Batch(src, trg, pad_idx)
+
+
+
+
+# 使用 multi-gpu 加速训练速度：将单词生成拆分成块，便于并行处理
+
+
+class MultiGPULossCompute:
+    def __init__(self, generator, criterion, devices, opt=None, chunk_size=5):
+        self.generator = generator
+        self.criterion = nn.parallel.replicate(criterion, devices=devices)
+        self.opt = opt
+        self.devices = devices
+        self.chunk_size = chunk_size
+
+    def __call__(self, out, targets, normalize):
+        
+        total = 0.0
+        
+        # 将最终的线性输出层 并行 到多个 gpu中
+        generator = nn.parallel.replicate(self.generator, devices=devices)
+        
+        # 将 transformer 的输出张量 并行 多个 gpu 中
+        out_scatter = nn.parallel.scatter(out, target_gpus=self.devices)
+        out_grad = [[] for _ in out_scatter]
+        
+        # 将目标 并行 到多个 gpu 中
+        targets = nn.parallel.scatter(targets, target_gpus=self.devices)
+
+        # 将生成拆分成块？？
+        chunk_size = self.chunk_size
+        for i in range(0, out_scatter[0].size(1), chunk_size):
+
+            # 预测分布
+            out_column = [[
+                Variable(o[:, i:i + chunk_size].data,
+                         requires_grad=self.opt is not None)
+            ] for o in out_scatter]
+            gen = nn.parallel.parallel_apply(generator, out_column)
+
+            # 计算损失
+            y = [(g.contiguous().view(-1, g.size(-1)),
+                  t[:, i:i + chunk_size].contiguous().view(-1))
+                 for g, t in zip(gen, targets)]
+            loss = nn.parallel.parallel_apply(self.criterion, y)
+
+            # 损失求和并归一化
+            l = nn.parallel.gather(loss, target_device=self.devices[0])
+            l = l.sum()[0] / normalize
+            total += l.data[0]
+
+            # 反向传播
+            if self.opt is not None:
+                l.backward()
+                for j, l in enumerate(loss):
+                    out_grad[j].append(out_column[j][0].grad.data.clone())
+
+        # 反向传播整个模型
+        if self.opt is not None:
+            out_grad = [Variable(torch.cat(og, dim=1)) for og in out_grad]
+            o1 = out
+            o2 = nn.parallel.gather(out_grad, target_device=self.devices[0])
+            o1.backward(gradient=o2)
+            self.opt.step()
+            self.opt.optimizer.zero_grad()
+        return total * normalize
+
+
+devices = [0, 1, 2, 3]
+if True:
+    pad_idx = TGT.vocab.stoi["<blank>"]
+    model = make_model(len(SRC.vocab), len(TGT.vocab), N=6)
+    model.cuda()
+    criterion = LabelSmoothing(size=len(TGT.vocab),
+                               padding_idx=pad_idx,
+                               smoothing=0.1)
+    criterion.cuda()
+    BATCH_SIZE = 12000
+    train_iter = MyIterator(train,
+                            batch_size=BATCH_SIZE,
+                            device=0,
+                            repeat=False,
+                            sort_key=lambda x: (len(x.src), len(x.trg)),
+                            batch_size_fn=batch_size_fn,
+                            train=True)
+    valid_iter = MyIterator(val,
+                            batch_size=BATCH_SIZE,
+                            device=0,
+                            repeat=False,
+                            sort_key=lambda x: (len(x.src), len(x.trg)),
+                            batch_size_fn=batch_size_fn,
+                            train=False)
+    model_par = nn.DataParallel(model, device_ids=devices)
+
+
+if False:
+    model_opt = NoamOpt(
+        model.src_embed[0].d_model, 1, 2000,
+        torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98),
+                         eps=1e-9))
+    for epoch in range(10):
+        model_par.train()
+        run_epoch((rebatch(pad_idx, b) for b in train_iter), model_par,
+                  MultiGPULossCompute(model.generator,
+                                      criterion,
+                                      devices=devices,
+                                      opt=model_opt))
+        model_par.eval()
+        loss = run_epoch((rebatch(pad_idx, b) for b in valid_iter), model_par,
+                         MultiGPULossCompute(model.generator,
+                                             criterion,
+                                             devices=devices,
+                                             opt=None))
+        print(loss)
+else:
+    model = torch.load("iwslt.pt")
+
+
+
+
+
+for i, batch in enumerate(valid_iter):
+    src = batch.src.transpose(0, 1)[:1]
+    src_mask = (src != SRC.vocab.stoi["<blank>"]).unsqueeze(-2)
+    out = greedy_decode(model,
+                        src,
+                        src_mask,
+                        max_len=60,
+                        start_symbol=TGT.vocab.stoi["<s>"])
+    print("Translation:", end="\t")
+    for i in range(1, out.size(1)):
+        sym = TGT.vocab.itos[out[0, i]]
+        if sym == "</s>": break
+        print(sym, end=" ")
+    print()
+    print("Target:", end="\t")
+    for i in range(1, batch.trg.size(0)):
+        sym = TGT.vocab.itos[batch.trg.data[i, 0]]
+        if sym == "</s>": break
+        print(sym, end=" ")
+    print()
+    break
+
+
+if False:
+    model.src_embed[0].lut.weight = model.tgt_embeddings[0].lut.weight
+    model.generator.lut.weight = model.tgt_embed[0].lut.weight
 
 
 
