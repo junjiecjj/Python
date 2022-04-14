@@ -466,8 +466,6 @@ for name, param in tmp_model.named_parameters():
           param.requires_grad = True
 
 
-
-
 class Batch:
     def __init__(self, src, trg=None, pad=0):
         """
