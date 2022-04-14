@@ -1057,6 +1057,31 @@ print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
 
 
 
+Input = torch.LongTensor([0.1,2.3,0.5,5.6]).view(-1,1)   # input元素必须为整数，否则Embedding会将其转化为整数
+print(f"Input = \n{Input}")
+print(f" Input.shape = {Input.shape}")
+embedding = nn.Embedding(num_embeddings=30, embedding_dim=6)   # num_embeddings必须大于input的最大元素值
+Out = embedding(Input)
+print(f"Out = \n{Out},\n Out.shape = {Out.shape}")
+"""
+Input = 
+tensor([[0],
+        [2],
+        [0],
+        [5]])
+ Input.shape = torch.Size([4, 1])
+Out = 
+tensor([[[ 1.9019, -0.8279, -0.4124,  0.4178, -0.0228,  0.5323]],
+
+        [[-0.0520,  0.6144, -1.8603, -0.5358,  1.9237,  2.0032]],
+
+        [[ 1.9019, -0.8279, -0.4124,  0.4178, -0.0228,  0.5323]],
+
+        [[ 0.9151, -0.9837,  0.3220,  0.8575, -0.3587,  0.1849]]],
+       grad_fn=<EmbeddingBackward0>),
+ Out.shape = torch.Size([4, 1, 6])
+ """
+
 #==============================================================================
 # https://zhuanlan.zhihu.com/p/272844969
 embedding = nn.Embedding(5, 3)  # 定义一个具有5个单词，维度为3的查询矩阵

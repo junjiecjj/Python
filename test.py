@@ -13,46 +13,24 @@
 
 
 
-import torch
-import torch.utils.data as Data
-import numpy as np
-import torch.nn as nn
-
-
-
-class EncoderDecoder(object):
-     def __init__(self, encoder,  ):
-          self.encoder = encoder
-          #self.decoder = decoder
-     
-     def encoder(src, src_mask):
-          #return self.encoder(src, src_mask)
-          return src+src_mask
-          #return self.encoder(self.src_embed(src), src_mask)
-              
-def aa(a,b):
-     return a+b
-
-
-
-class Encoder(nn.Module):
-     def __init__(self, a,  ):
-          self.A = a
-          #self.decoder = decoder
-     
-     def src_embed(self, src):
-          #return self.encoder(src, src_mask)
-          return src+self.A
-     
-     def forward(self, Src, Src_mask):
-          return Src+Src_mask
-          
-
-net = EncoderDecoder(123)
-
-
-
-
+import sys  
+import inspect  
+import os  
+  
+  
+def get_current_function_name():
+    return inspect.stack()[1][3]
+ 
+def get_attrs():  
+    print('Module:', __name__)  
+    print('File Path: ', __file__)  
+    print('File Name: ', os.path.basename(__file__))  
+    print('Line No.: ', sys._getframe().f_lineno)  
+    print('Func: ', sys._getframe().f_code.co_name)
+    print('Func: ', get_current_function_name())  
+  
+  
+get_attrs() 
 
 
 

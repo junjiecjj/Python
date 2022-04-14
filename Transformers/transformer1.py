@@ -20,6 +20,15 @@ import seaborn
 seaborn.set_context(context='talk')
 
 
+import sys
+
+def function():
+     print(sys._getframe().f_code.co_filename)  # 当前位置所在的文件名
+     print(sys._getframe().f_code.co_name)  # 当前位置所在的函数名
+     print(sys._getframe().f_lineno)  # 当前位置所在的行号
+function()
+
+
 
 class EncoderDecoder(nn.Module):
     def __init__(self, encoder, decoder, src_embed, tgt_embed, generator):
@@ -38,16 +47,16 @@ class EncoderDecoder(nn.Module):
         src --> memory
         memory + tgt --> output
         """
-        memory = self.encode(src, src_mask)
-        return self.decode(memory, src_mask, tgt, tgt_mask)
+        memory = self.Encode(src, src_mask)
+        return self.Decode(tgt, memory, src_mask, tgt_mask)
 
-    def encode(self, src, src_mask):
+    def Encode(self, src, src_mask):
         """
         src --> memory
         """
         return self.encoder(self.src_embed(src), src_mask)
 
-    def decode(self, memory, src_mask, tgt, tgt_mask):
+    def Decode(self, tgt, memory, src_mask,  tgt_mask):
         """
         memory + tgt --> output
         """
@@ -289,7 +298,7 @@ class MultiHeadedAttention(nn.Module):
         nbatches = query.size(0)  # 2
         
         for l, x in zip(self.linears, (query, key, value)):
-             print(f"l =  {l},\nx = {x}\nx.shape = {x.shape}")
+             print(f"l =  {l},\nx.shape = {x.shape}")
         
         query, key, value = [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)  for l, x in zip(self.linears, (query, key, value)) ]
         #query, key, value = [l(x)  for l, x in zip(self.linears, (query, key, value)) ]
@@ -327,7 +336,65 @@ def test_multi_head():
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
 
+
+def test_multi_head1():
+    x = torch.randn(2, 4, 12)
+    y = torch.randn(2, 4, 12)
+    z = torch.randn(2, 4, 12)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(2, d_model)
+    attn = model(x, y, z)
+    assert attn.shape == (2, 4, 12)
+    print("Test passed!")
+
+
+def test_multi_head2():
+    x = torch.randn(128, 31, 128)
+    mask = torch.randn(128, 1, 31)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(8, d_model)
+    attn = model(x, x, x,mask=mask)
+    assert attn.shape == (128, 31, 128)
+    print("Test passed!")
+
+
+def test_multi_head3():
+    x = torch.randn(128, 30, 128)
+    m = torch.randn(128, 31, 128)
+    mask = torch.randn(128, 1, 31)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(8, d_model)
+    attn = model(x, m, m,mask=mask)
+    assert attn.shape == (128, 30, 128)
+    print("Test passed!")
+
+
+def test_multi_head4():
+    x = torch.randn(128, 30, 128)
+    m = torch.randn(128, 31, 128)
+    mask = torch.randn(128, 1, 31)
+    d_model = x.shape[-1]
+    model = MultiHeadedAttention(8, d_model)
+    attn = model(x, m, m,mask=mask)
+    assert attn.shape == (128, 30, 128)
+    print("Test passed!")
+
 test_multi_head()
+test_multi_head1()
+test_multi_head2()
+test_multi_head3()
+test_multi_head4()
+# 以上测试说明 MultiHeadedAttention() 不改变x的shape
+
+
+
+src_vocab=10
+tgt_vocab=10
+N=6
+d_model=512
+d_ff=2048
+h=8
+dropout=0.1
 
 
 
@@ -346,6 +413,38 @@ class PositionwiseFeedForward(nn.Module):
         return self.w_2(self.dropout(F.relu(self.w_1(x))))
 
 
+def Test_PositionwiseFeedForward():
+    x = torch.randn(2, 4, 12)
+    d_model = x.shape[-1]
+    model = PositionwiseFeedForward(d_model, 33)
+    attn = model(x )
+    assert attn.shape == (2, 4, 12)
+    print("Test passed!")
+
+def Test_PositionwiseFeedForward1():
+    x = torch.randn(4, 12)
+    d_model = x.shape[-1]
+    model = PositionwiseFeedForward(d_model, 33)
+    attn = model(x )
+    assert attn.shape == (4, 12)
+    print("Test passed!")
+
+def Test_PositionwiseFeedForward2():
+    x = torch.randn(4, 5, 6, 12)
+    d_model = x.shape[-1]
+    model = PositionwiseFeedForward(d_model, 33)
+    attn = model(x )
+    assert attn.shape == (4, 5, 6, 12)
+    print("Test passed!")
+    
+
+Test_PositionwiseFeedForward()
+Test_PositionwiseFeedForward1()
+Test_PositionwiseFeedForward2()
+# 以上测试说明 PositionwiseFeedForward() 不改变x的shape
+
+
+
 # x.shape = (batch_size,seq_len),则return X.shape = (batch_size,seq_len,d_model=512)
 class Embeddings(nn.Module):
     def __init__(self, d_model, vocab):
@@ -355,6 +454,47 @@ class Embeddings(nn.Module):
 
     def forward(self, x):
         return self.lut(x) * math.sqrt(self.d_model)
+
+
+
+def test_Embeddings():
+     x = torch.randint(0,20,(5,9))
+     vocab = 132
+     d_model = 128
+     em = Embeddings(d_model, vocab)
+     out = em(x)
+     print(out.shape)
+     assert out.shape == (5, 9, d_model)
+     print("Test passed!")
+test_Embeddings()
+     
+
+
+def test_Embeddings2():
+     x = torch.randint(0,20,(5,))
+     vocab = 132
+     d_model = 128
+     em = Embeddings(d_model, vocab)
+     out = em(x)
+     print(out.shape)
+     assert out.shape == (5,  d_model)
+     print("Test passed!")
+test_Embeddings2()
+
+
+def test_Embeddings3():
+     x = torch.randint(0,20,(5,9,12))
+     vocab = 132
+     d_model = 128
+     em = Embeddings(d_model, vocab)
+     out = em(x)
+     print(out.shape)
+     assert out.shape == (5, 9,12, d_model)
+     print("Test passed!")
+test_Embeddings3()
+
+
+# 以上测试说明Embedding只是在x的最后一维增加一个词向量维度
 
 
 # x.shape = (batch_size,seq_len,d_model=512),则return X.shape = (batch_size,seq_len,d_model=512)
@@ -405,6 +545,43 @@ plt.plot(np.arange(100), y[0, :, 4:8].data.numpy())
 plt.legend(["dim %d"%p for p in [4,5,6,7]])
 
 
+def Test_PositionalEncoding():
+    x = torch.randn(4, 5, 12)
+    d_model = x.shape[-1]
+    pe = PositionalEncoding(d_model, 0)
+    attn = pe(x )
+    assert attn.shape == (4, 5,  12)
+    print("Test passed!")
+Test_PositionalEncoding()
+
+
+def Test_PositionalEncoding1():
+    x = torch.randn(4, 5, 6, 12)
+    d_model = x.shape[-1]
+    pe = PositionalEncoding(d_model, 0)
+    attn = pe(x )
+    assert attn.shape == (4, 5, 6,  12)
+    print("Test passed!")
+Test_PositionalEncoding1()  #error
+
+
+def Test_PositionalEncoding2():
+    x = torch.randn(4,   12)
+    d_model = x.shape[-1]
+    pe = PositionalEncoding(d_model, 0)
+    attn = pe(x )
+    assert attn.shape == (4,    12)
+    print("Test passed!")
+Test_PositionalEncoding2() #error
+
+
+# 以上测试说明PositionalEncoding()的输入x只能是三维的，且不改变x的shape
+
+
+
+
+
+
 
 def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     "Helper: Construct a model from hyperparameters."
@@ -431,12 +608,6 @@ tmp_model = make_model(10, 10, 2)
 # 查看模型结构：
 print(f"tmp_model = \n{tmp_model}")
 print(f"tmp_model.src_embed = \n{tmp_model.src_embed}")
-
-from torchkeras import summary
-#print(summary(tmp_model, input_shape=(3,4,3,3,3 )))
-
-from torchsummary import summary
-#print(f"summary(tmp_model, (3, 224, 224)) = {summary(tmp_model, (3, 224, 224))}")
 
 
 

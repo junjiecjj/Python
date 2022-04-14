@@ -185,7 +185,9 @@ localtime = time.localtime()
 print ("本地时间为 :", localtime)
 
 
-
+import time
+localtime = time.asctime( time.localtime() )
+print ("本地时间为 :", localtime)
 
 import time
 localtime = time.asctime( time.localtime(time.time()) )
