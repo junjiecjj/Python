@@ -370,7 +370,7 @@ class PositionalEncoding(nn.Module):
         # Compute the positional encodings once in log space.
         pe = torch.zeros(max_len, d_model)
         #(5000,512)矩阵，保持每个位置的位置编码，一共5000个位置，
-        #每个位置用一个512维度向量来表示其位置编码
+        #每个位置用一个512维度向量来表示其位置编码，512也是词向量长度
 
         position = torch.arange(0, max_len).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2) * -(math.log(10000.0)/d_model) )
@@ -428,9 +428,42 @@ def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0
     return model
 
 tmp_model = make_model(10, 10, 2)
+# 查看模型结构：
 print(f"tmp_model = \n{tmp_model}")
+print(f"tmp_model.src_embed = \n{tmp_model.src_embed}")
+
+from torchkeras import summary
+#print(summary(tmp_model, input_shape=(3,4,3,3,3 )))
+
+from torchsummary import summary
+#print(f"summary(tmp_model, (3, 224, 224)) = {summary(tmp_model, (3, 224, 224))}")
 
 
+
+# 查看网络参数：
+for name, parameters in tmp_model.named_parameters():
+    print(name, ':', parameters.size())
+
+# #打印模型每层命名
+#for k, v in tmp_model.items():
+#     print(k,':',v)
+  
+  
+
+#打印模型参数
+for name, param in tmp_model.named_parameters():
+     if param.requires_grad:
+          print("-----model.named_parameters()--{}:{}".format(name, ""))
+
+
+
+#设置参数是否更新：
+opt_para = ['module.classifier.weight', 'module.classifier.bias']
+for name, param in tmp_model.named_parameters():
+     if name not in opt_para:
+          param.requires_grad = False
+     if name in opt_para:
+          param.requires_grad = True
 
 
 
@@ -442,7 +475,7 @@ class Batch:
         trg: 目标序列
         """
         self.src = src
-        self.src_mask = (src != pad).unsqueeze(-2)
+        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
         if trg is not None:
             self.trg = trg[:, :-1]
             self.trg_y = trg[:, 1:]
@@ -454,20 +487,24 @@ class Batch:
         """
         将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
         """
-        tgt_mask = (tgt != pad).unsqueeze(-2)
-        tgt_mask = tgt_mask & Variable(
-            subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data))
+        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
         return tgt_mask
 
 
 
 
 src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
-trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,
-                                         0]])  # batch=2,seq_len=6
+trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
 
 sample = Batch(src, trg)
-sample.src_mask
+print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
+
+print(f"sample.src_mask = \n{sample.src_mask}")
+print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
+
+print(f"sample.trg_mask = \n{sample.trg_mask}")
+print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
 
 
 
