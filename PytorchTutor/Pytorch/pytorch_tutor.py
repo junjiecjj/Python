@@ -141,142 +141,6 @@ print(f"a.matmul(b) \n {a.matmul(b.T)} \n")
 
 print(f"a@b \n {a@b.T} \n")
 
-#======================================== attention =============================================
-a = torch.arange(96).reshape(2,4,12)
-
-b = a.view(2, -1, 2, 6)
-
-X = a.view(2, -1, 2, 6).transpose(1,2)
-
-C = X.transpose(-2, -1)
-
-B = torch.matmul(X, C)
-
-D = torch.matmul(B, X)
-
-print(f"a = a.shape = {a.shape} \n{a}\nb = b.shape = {b.shape} \n{b} \nX = X.shape = {X.shape} \n{X}\n\
-C = C.shape = {C.shape}\n {C}\n B = B.shape = {B.shape} \n{B}\n D = D.shape = {D.shape} \n{D}\n")
-
-"""
-X = 
-tensor([[[[ 0,  1,  2,  3,  4,  5],     
-          [12, 13, 14, 15, 16, 17],
-          [24, 25, 26, 27, 28, 29],
-          [36, 37, 38, 39, 40, 41]],
-
-         [[ 6,  7,  8,  9, 10, 11],
-          [18, 19, 20, 21, 22, 23],
-          [30, 31, 32, 33, 34, 35],
-          [42, 43, 44, 45, 46, 47]]],
-
-
-        [[[48, 49, 50, 51, 52, 53],
-          [60, 61, 62, 63, 64, 65],
-          [72, 73, 74, 75, 76, 77],
-          [84, 85, 86, 87, 88, 89]],
-
-         [[54, 55, 56, 57, 58, 59],
-          [66, 67, 68, 69, 70, 71],
-          [78, 79, 80, 81, 82, 83],
-          [90, 91, 92, 93, 94, 95]]]])
-C = 
-tensor([[[[ 0, 12, 24, 36],
-          [ 1, 13, 25, 37],
-          [ 2, 14, 26, 38],
-          [ 3, 15, 27, 39],
-          [ 4, 16, 28, 40],
-          [ 5, 17, 29, 41]],
-
-         [[ 6, 18, 30, 42],
-          [ 7, 19, 31, 43],
-          [ 8, 20, 32, 44],
-          [ 9, 21, 33, 45],
-          [10, 22, 34, 46],
-          [11, 23, 35, 47]]],
-
-
-        [[[48, 60, 72, 84],
-          [49, 61, 73, 85],
-          [50, 62, 74, 86],
-          [51, 63, 75, 87],
-          [52, 64, 76, 88],
-          [53, 65, 77, 89]],
-
-         [[54, 66, 78, 90],
-          [55, 67, 79, 91],
-          [56, 68, 80, 92],
-          [57, 69, 81, 93],
-          [58, 70, 82, 94],
-          [59, 71, 83, 95]]]])
-B = 
-tensor([[[[   55,   235,   415,   595],
-          [  235,  1279,  2323,  3367],
-          [  415,  2323,  4231,  6139],
-          [  595,  3367,  6139,  8911]],
-
-         [[  451,  1063,  1675,  2287],
-          [ 1063,  2539,  4015,  5491],
-          [ 1675,  4015,  6355,  8695],
-          [ 2287,  5491,  8695, 11899]]],
-
-
-        [[[15319, 18955, 22591, 26227],
-          [18955, 23455, 27955, 32455],
-          [22591, 27955, 33319, 38683],
-          [26227, 32455, 38683, 44911]],
-
-         [[19171, 23239, 27307, 31375],
-          [23239, 28171, 33103, 38035],
-          [27307, 33103, 38899, 44695],
-          [31375, 38035, 44695, 51355]]]])
-D = 
-tensor([[[[   34200,    35500,    36800,    38100,    39400,    40700],
-          [  192312,   199516,   206720,   213924,   221128,   228332],
-          [  350424,   363532,   376640,   389748,   402856,   415964],
-          [  508536,   527548,   546560,   565572,   584584,   603596]],
-
-         [[  168144,   173620,   179096,   184572,   190048,   195524],
-          [  403152,   416260,   429368,   442476,   455584,   468692],
-          [  638160,   658900,   679640,   700380,   721120,   741860],
-          [  873168,   901540,   929912,   958284,   986656,  1015028]]],
-
-
-        [[[ 5702232,  5785324,  5868416,  5951508,  6034600,  6117692],
-          [ 7056120,  7158940,  7261760,  7364580,  7467400,  7570220],
-          [ 8410008,  8532556,  8655104,  8777652,  8900200,  9022748],
-          [ 9763896,  9906172, 10048448, 10190724, 10333000, 10475276]],
-
-         [[ 7522704,  7623796,  7724888,  7825980,  7927072,  8028164],
-          [ 9119376,  9241924,  9364472,  9487020,  9609568,  9732116],
-          [10716048, 10860052, 11004056, 11148060, 11292064, 11436068],
-          [12312720, 12478180, 12643640, 12809100, 12974560, 13140020]]]])
-.shape = 
-torch.Size([2, 4, 12])
-b.shape = 
-torch.Size([2, 4, 2, 6])
-X.shape = 
-torch.Size([2, 2, 4, 6])
-C.shape = 
-torch.Size([2, 2, 6, 4])
-B.shape = 
-torch.Size([2, 2, 4, 4])
-D.shape = 
-torch.Size([2, 2, 4, 6])
-"""
-
-
-#=====================================attention QKV================================================
-a = torch.arange(60).reshape(3, 5, 4)  # batch, target_len, feats
-b = torch.arange(72).reshape(3, 6, 4)  # batch, seq_len, feats
-c = torch.arange(144).reshape(3, 6, 8)  # batch, seq_len, val_feats
-
-d = torch.matmul(a, b.transpose(-2, -1))
-
-e = torch.matmul(d, c)
-print(f"a = \n{a}\nb = \n{b}\nc = \n{c}\nd = \n{d}\ne = \n{e}\n")
-
-print(f"a.shape = \n{a.shape}\nb.shape = \n{b.shape}\nc.shape = \n{c.shape}\nd.shape = \n{d.shape}\ne.shape = \n{e.shape}\n")
-
 #本地化操作
 #具有_后缀的操作是本地化操作。例如：x.copy_(y), x.t_(), 将改变x。
 #注意：就地操作节省了一些内存，但在计算导数时可能会出现问题，因为会立即丢失历史记录。因此，不鼓励使用它们。
@@ -419,103 +283,6 @@ print(f"tensor.size() = {tensor.size()}\n")
 #特别的：如果张量中只有一个元素的tensor也可以调用tensor.item方法
 print(f"tensor.item() = {tensor.item()}\n")
 
-
-#基本类型
-#Tensor的基本数据类型有五种： 
-#- 32位浮点型：torch.FloatTensor。 (默认) 
-#- 64位整型：torch.LongTensor。 
-#- 32位整型：torch.IntTensor。 
-#- 16位整型：torch.ShortTensor。 
-#- 64位浮点型：torch.DoubleTensor。
-
-#除以上数字类型外，还有 byte和chart型
-tensor = torch.tensor([3.1433223]) 
-print(f"tensor = {tensor}\n")
-print(f"tensor.dtype = {tensor.dtype}\n")
-# tensor = tensor([3.1433])
-# tensor.dtype = torch.float32
-
-double = tensor.double()
-print(f"double = {double}\n")
-print(f"double.dtype = {double.dtype}\n")
-# double = tensor([3.1433], dtype=torch.float64)
-# double.dtype = torch.float64
-
-do = torch.DoubleTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"sh = {do}\n")
-print(f"ch.dtype = {do.dtype}\n")
-
-
-flo = tensor.float()
-print(f"flo = {flo}\n")
-print(f"flo.dtype = {flo.dtype}\n")
-# flo = tensor([3.1433])
-# flo.dtype = torch.float32
-
-fl = torch.FloatTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"sh = {fl}\n")
-print(f"ch.dtype = {fl.dtype}\n")
-
-half=tensor.half()
-print(f"half = {half}\n")
-print(f"half.dtype = {half.dtype}\n")
-# half = tensor([3.1426], dtype=torch.float16)
-# half.dtype = torch.float16
-
-ha = torch.HalfTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"sh = {ha}\n")
-print(f"ch.dtype = {ha.dtype}\n")
-
-long=tensor.long()
-print(f"long = {long}\n")
-print(f"long.dtype = {long.dtype}\n")
-# long = tensor([3])
-# long.dtype = torch.int64
-
-Lo = torch.LongTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"sh = {Lo}\n")
-print(f"ch.dtype = {Lo.dtype}\n")
-
-
-int_t=tensor.int()
-print(f"int_t = {int_t}\n")
-print(f"int_t.dtype = {int_t.dtype}\n")
-# int_t = tensor([3], dtype=torch.int32)
-# int_t.dtype = torch.int32
-
-In = torch.IntTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"sh = {In}\n")
-print(f"ch.dtype = {In.dtype}\n")
-
-short = tensor.short()
-print(f"short = {short}\n")
-print(f"short.dtype = {short.dtype}\n")
-#  = tensor([3], dtype=torch.int16)
-# short.dtype = torch.int16
-
-sh = torch.ShortTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"sh = {sh}\n")
-print(f"ch.dtype = {sh.dtype}\n")
-
-ch = tensor.char()
-print(f"ch = {ch}\n")
-print(f"ch.dtype = {ch.dtype}\n")
-#  ch = tensor([3], dtype=torch.int8)
-# ch.dtype = torch.int8
-
-ch = torch.CharTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"ch = {ch}\n")
-print(f"ch.dtype = {ch.dtype}\n")
-
-bt = tensor.byte()
-print(f"bt = {bt}\n")
-print(f"bt.dtype = {bt.dtype}\n")
-# bt = tensor([3], dtype=torch.uint8)
-# bt.dtype = torch.uint8
-
-bt = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-print(f"bt = {bt}\n")
-print(f"bt.dtype = {bt.dtype}\n")
 
 
 
@@ -1127,35 +894,338 @@ print(f"s[::-1] = {list(s[::-1])}")
 
 
 
+#======================================== attention =============================================
+a = torch.arange(96).reshape(2,4,12)
+
+b = a.view(2, -1, 2, 6)
+
+X = a.view(2, -1, 2, 6).transpose(1,2)
+
+C = X.transpose(-2, -1)
+
+B = torch.matmul(X, C)
+
+D = torch.matmul(B, X)
+
+print(f"a = a.shape = {a.shape} \n{a}\nb = b.shape = {b.shape} \n{b} \nX = X.shape = {X.shape} \n{X}\n\
+C = C.shape = {C.shape}\n {C}\n B = B.shape = {B.shape} \n{B}\n D = D.shape = {D.shape} \n{D}\n")
+
+"""
+X = 
+tensor([[[[ 0,  1,  2,  3,  4,  5],     
+          [12, 13, 14, 15, 16, 17],
+          [24, 25, 26, 27, 28, 29],
+          [36, 37, 38, 39, 40, 41]],
+
+         [[ 6,  7,  8,  9, 10, 11],
+          [18, 19, 20, 21, 22, 23],
+          [30, 31, 32, 33, 34, 35],
+          [42, 43, 44, 45, 46, 47]]],
+
+
+        [[[48, 49, 50, 51, 52, 53],
+          [60, 61, 62, 63, 64, 65],
+          [72, 73, 74, 75, 76, 77],
+          [84, 85, 86, 87, 88, 89]],
+
+         [[54, 55, 56, 57, 58, 59],
+          [66, 67, 68, 69, 70, 71],
+          [78, 79, 80, 81, 82, 83],
+          [90, 91, 92, 93, 94, 95]]]])
+C = 
+tensor([[[[ 0, 12, 24, 36],
+          [ 1, 13, 25, 37],
+          [ 2, 14, 26, 38],
+          [ 3, 15, 27, 39],
+          [ 4, 16, 28, 40],
+          [ 5, 17, 29, 41]],
+
+         [[ 6, 18, 30, 42],
+          [ 7, 19, 31, 43],
+          [ 8, 20, 32, 44],
+          [ 9, 21, 33, 45],
+          [10, 22, 34, 46],
+          [11, 23, 35, 47]]],
+
+
+        [[[48, 60, 72, 84],
+          [49, 61, 73, 85],
+          [50, 62, 74, 86],
+          [51, 63, 75, 87],
+          [52, 64, 76, 88],
+          [53, 65, 77, 89]],
+
+         [[54, 66, 78, 90],
+          [55, 67, 79, 91],
+          [56, 68, 80, 92],
+          [57, 69, 81, 93],
+          [58, 70, 82, 94],
+          [59, 71, 83, 95]]]])
+B = 
+tensor([[[[   55,   235,   415,   595],
+          [  235,  1279,  2323,  3367],
+          [  415,  2323,  4231,  6139],
+          [  595,  3367,  6139,  8911]],
+
+         [[  451,  1063,  1675,  2287],
+          [ 1063,  2539,  4015,  5491],
+          [ 1675,  4015,  6355,  8695],
+          [ 2287,  5491,  8695, 11899]]],
+
+
+        [[[15319, 18955, 22591, 26227],
+          [18955, 23455, 27955, 32455],
+          [22591, 27955, 33319, 38683],
+          [26227, 32455, 38683, 44911]],
+
+         [[19171, 23239, 27307, 31375],
+          [23239, 28171, 33103, 38035],
+          [27307, 33103, 38899, 44695],
+          [31375, 38035, 44695, 51355]]]])
+D = 
+tensor([[[[   34200,    35500,    36800,    38100,    39400,    40700],
+          [  192312,   199516,   206720,   213924,   221128,   228332],
+          [  350424,   363532,   376640,   389748,   402856,   415964],
+          [  508536,   527548,   546560,   565572,   584584,   603596]],
+
+         [[  168144,   173620,   179096,   184572,   190048,   195524],
+          [  403152,   416260,   429368,   442476,   455584,   468692],
+          [  638160,   658900,   679640,   700380,   721120,   741860],
+          [  873168,   901540,   929912,   958284,   986656,  1015028]]],
+
+
+        [[[ 5702232,  5785324,  5868416,  5951508,  6034600,  6117692],
+          [ 7056120,  7158940,  7261760,  7364580,  7467400,  7570220],
+          [ 8410008,  8532556,  8655104,  8777652,  8900200,  9022748],
+          [ 9763896,  9906172, 10048448, 10190724, 10333000, 10475276]],
+
+         [[ 7522704,  7623796,  7724888,  7825980,  7927072,  8028164],
+          [ 9119376,  9241924,  9364472,  9487020,  9609568,  9732116],
+          [10716048, 10860052, 11004056, 11148060, 11292064, 11436068],
+          [12312720, 12478180, 12643640, 12809100, 12974560, 13140020]]]])
+.shape = 
+torch.Size([2, 4, 12])
+b.shape = 
+torch.Size([2, 4, 2, 6])
+X.shape = 
+torch.Size([2, 2, 4, 6])
+C.shape = 
+torch.Size([2, 2, 6, 4])
+B.shape = 
+torch.Size([2, 2, 4, 4])
+D.shape = 
+torch.Size([2, 2, 4, 6])
+"""
+
+
+#=====================================attention QKV================================================
+a = torch.arange(60).reshape(3, 5, 4)  # batch, target_len, feats
+b = torch.arange(72).reshape(3, 6, 4)  # batch, seq_len, feats
+c = torch.arange(144).reshape(3, 6, 8)  # batch, seq_len, val_feats
+
+d = torch.matmul(a, b.transpose(-2, -1))
+
+e = torch.matmul(d, c)
+print(f"a = \n{a}\nb = \n{b}\nc = \n{c}\nd = \n{d}\ne = \n{e}\n")
+
+print(f"a.shape = \n{a.shape}\nb.shape = \n{b.shape}\nc.shape = \n{c.shape}\nd.shape = \n{d.shape}\ne.shape = \n{e.shape}\n")
 
 
 
 
 
 
+#=========================================展示mask的过程 mask() =============================================
+import torch
+import math
+
+
+
+q = torch.Tensor([np.random.random(10),np.random.random(10),np.random.random(10), np.random.random(10), np.zeros((10,1)), np.zeros((10,1))])
+k = torch.Tensor([np.random.random(10),np.random.random(10),np.random.random(10), np.random.random(10), np.zeros((10,1)), np.zeros((10,1))])
+scores = torch.matmul(q, k.transpose(0,1)) / math.sqrt(10)
+mask = torch.Tensor([1,1,1,1,0,0])
+mask1 = mask.unsqueeze(1)
+scores1 = scores.masked_fill(mask1==0, -np.inf)
+
+
+
+mas = torch.from_numpy( np.triu(np.ones((6,6)), k=1),).byte()
+scores2 = scores.masked_fill(mas==0, -np.inf)
 
 
 
 
 
+"""
+5. masked_fill_(mask, value)方法
+
+其中mask是张量，元素是布尔值， value是要填充的值。该方法会在mask中为True的位置上填充value值。mask和value的形状要么是相同的， 要么是可以进行广播的， 否则会报错。
+"""
+#=========================================展示mask的过程 mask() =============================================
+# https://codeantenna.com/a/SqCLQ4AQNN
+import torch
+a=torch.tensor([[[5,5,5,5], [6,6,6,6], [7,7,7,7]], [[1,1,1,1],[2,2,2,2],[3,3,3,3]]])
+print(f"a = {a}")
+"""
+tensor([[[5, 5, 5, 5],
+         [6, 6, 6, 6],
+         [7, 7, 7, 7]],
+
+        [[1, 1, 1, 1],
+         [2, 2, 2, 2],
+         [3, 3, 3, 3]]])
+"""
+print(a.size())
+#torch.Size([2, 3, 4])
+
+#############################################3
+mask = torch.ByteTensor([[[1],[1],[0]],[[0],[1],[1]]])
+print(f"mask.size() = {mask.size()}")
+#torch.Size([2, 3, 1])
+b = a.masked_fill(mask, value=torch.tensor(-1e9))
+print(f"b1 = {b}")
 
 
 
 
 
+#可以看到a和mask的shape对应分别是 2 3 4 对应 2 3 1  ，可以看到mask为中的第一个1，使得a的第一行全部被mask掉了，那么我把mask的shape改成2 3 4 ，是不是可以指定位置mask掉呢
+mask1 = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+b = a.masked_fill(mask1, value=torch.tensor(-1e9))
+
+
+#的确可以，好的，如果shape相同，那就是对应位置被mask掉，
+#那么现在，我把mask的shape改成1，3，4 a保持为 2 ，3 ，4 会不会对于a的最外层的两个维度进行一样的mask呢？
+
+mask = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]]])
+b1 = a.masked_fill(mask, value=torch.tensor(-1e9))
+print(f"b = {b1}")
+"""
+tensor([[[-1000000000, -1000000000,           5,           5],
+         [-1000000000,           6,           6,           6],
+         [          7,           7,           7,           7]],
+
+        [[-1000000000, -1000000000,           1,           1],
+         [-1000000000,           2,           2,           2],
+         [          3,           3,           3,           3]]])
+"""
+print(f"a.shape() = {a.shape()}")
+
+#的确是这样的，最外层的两个维度进行了相同的mask
+#那么再改一改，mask改成1，1，4，这样是不是行a都会被相同的mask掉
+mask = torch.ByteTensor([[[1,1,0,0]]])
+b = a.masked_fill(mask, value=torch.tensor(-1e9))
+print(f"b = {b}")
+"""
+tensor([[[-1000000000, -1000000000,           5,           5],
+         [-1000000000, -1000000000,           6,           6],
+         [-1000000000, -1000000000,           7,           7]],
+
+        [[-1000000000, -1000000000,           1,           1],
+         [-1000000000, -1000000000,           2,           2],
+         [-1000000000, -1000000000,           3,           3]]])
+"""
+
+
+
+
+import torch
+
+mask = torch.randint(0, 2, (3, 1)).bool()
+target = torch.randn(3, 2)
+print(target)
+# tensor([[-0.4297,  0.6459],
+#         [ 1.2334, -1.5065],
+#         [ 0.1295,  0.2587]])
+
+print(mask)
+# tensor([[False],
+#         [False],
+#         [ True]])
+
+# 注意mask和target是可以广播的
+target.masked_fill_(mask, -100)
+print(target)
+# tensor([[-100.0000, -100.0000],
+#         [ -100.0000, -100.0000],
+#         [-1.0000, -1.0000]])
+# 如果执行target.masked_fill(mask, -1)， 是非in_place操作， 那么target本身的值不会改变
+
+
+
+import torch
+import torch.nn as nn
+a = torch.randint(0, 255, (2, 3, 3))
+print(f"a = {a}")
+mask = torch.tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).bool()
+print(f"mask = {mask}")
+a.masked_fill_(~mask, 0)
+print(f"a = {a}")
+
+
+# 当然， 你也可以自己手动mask
+a = torch.tensor([[1,2,3], [2,1,0]])
+model = nn.Embedding(num_embeddings = 10, embedding_dim = 6)
+b = model(a)
+mask = (a!=0).float().unsqueeze(-1)
+result = b * mask
+
+
+
+# 当然， 你也可以自己手动mask
+# attn_output = self.mha(x, x, x, mask) 
+# x.shape=(128,31,d_model=128), mask.shape = torch.Size([128, 1, 31])
+# Q*K = (128,8,31,31)  mask = (128,1,1,31)
+a = torch.arange(48).reshape(2,2,3,4)
+masK = torch.randint(0,2,(2,1,1,4))
+b = a+masK*(-1e9)
+
+
+# attn_output = self.mha(x, x, x, mask) 
+# x.shape = torch.Size(128, 30,128), tgt_mask.shape =  torch.Size([128, 30, 30])
+# Q*K = (128,8,30,30)  mask = (128,1,30,30)
+a = torch.arange(3*2*4*4).reshape(3,2,4,4)
+masK = torch.randint(0,2,(3,1,4,4))
+b = a+masK*(-1e9)
+
+
+
+a = torch.arange(3*2*4*4).reshape(3,2,4,4)
+masK = torch.randint(0,2,(3,1,1,4))
+b = a+masK*(-1e9)
+
+
+
+# attn_output = self.src_mha(x, memory, memory, src_mask)  # q, k, v
+#  x.shape = torch.Size(128, 30,128),src_mask.shape = torch.Size([128, 1, 31])
+# Q*K = (128,8,30,31)  mask = (128,1,1,31)
+a = torch.arange(3*2*3*4).reshape(3,2,3,4)
+masK = torch.randint(0,2,(3,1,1,4))
+b = a+masK*(-1e9)
 
 
 
 
 
+#==========================  展示mask叠加的过程============================================
 
+seq_len = 5   # 30
+batchsize = 3  #128
+pad = 0
 
+attn_shape = (1, seq_len, seq_len)
+sub_mask = torch.from_numpy(np.triu(np.ones(attn_shape), k=1) .astype('uint8'))==0
+sub_mask = sub_mask.type(torch.uint8)
+print(f"sub_mask = \n{sub_mask}")
 
+tgt = torch.randint(0, 2, (batchsize, seq_len))
+tgt_mask = (tgt != pad).unsqueeze(-2).type(torch.uint8)
+print(f"tgt_mask.shape = {tgt_mask.shape}")
+print(f"tgt_mask = \n{tgt_mask}")
 
-
-
-
-
+tgt_mask = tgt_mask & sub_mask    
+print(f"tgt_mask.shape = {tgt_mask.shape}")
 
 
 

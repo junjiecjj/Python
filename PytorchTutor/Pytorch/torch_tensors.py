@@ -339,149 +339,178 @@ print(x.mean(axis=2,keepdim=False).shape)
 
 
 
+#基本类型
+#Tensor的基本数据类型有五种： 
+#- 32位浮点型：torch.FloatTensor。 (默认) 
+#- 64位整型：torch.LongTensor。 
+#- 32位整型：torch.IntTensor。 
+#- 16位整型：torch.ShortTensor。 
+#- 64位浮点型：torch.DoubleTensor。
 
-#========================================= mask() =============================================
-import torch
-import math
+#除以上数字类型外，还有 byte和chart型
+tensor = torch.tensor([3.1433223]) 
+print(f"tensor = {tensor}\n")
+print(f"tensor.dtype = {tensor.dtype}\n")
+# tensor = tensor([3.1433])
+# tensor.dtype = torch.float32
 
+double = tensor.double()
+print(f"double = {double}\n")
+print(f"double.dtype = {double.dtype}\n")
+# double = tensor([3.1433], dtype=torch.float64)
+# double.dtype = torch.float64
 
+do = torch.DoubleTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"do = {do}\n")
+print(f"do.dtype = {do.dtype}\n")
+# do.dtype = torch.float64
 
-q = torch.Tensor([np.random.random(10),np.random.random(10),np.random.random(10), np.random.random(10), np.zeros((10,1)), np.zeros((10,1))])
-k = torch.Tensor([np.random.random(10),np.random.random(10),np.random.random(10), np.random.random(10), np.zeros((10,1)), np.zeros((10,1))])
-scores = torch.matmul(q, k.transpose(0,1)) / math.sqrt(10)
-mask = torch.Tensor([1,1,1,1,0,0])
-mask1 = mask.unsqueeze(1)
-scores1 = scores.masked_fill(mask1==0, -np.inf)
+flo = tensor.float()
+print(f"flo = {flo}\n")
+print(f"flo.dtype = {flo.dtype}\n")
+# flo = tensor([3.1433])
+# flo.dtype = torch.float32
 
-
-
-mas = torch.from_numpy( np.triu(np.ones((6,6)), k=1),).byte()
-scores2 = scores.masked_fill(mas==0, -np.inf)
-
-
-
-
-
-"""
-5. masked_fill_(mask, value)方法
-
-其中mask是张量，元素是布尔值， value是要填充的值。该方法会在mask中为True的位置上填充value值。mask和value的形状要么是相同的， 要么是可以进行广播的， 否则会报错。
-"""
-#========================================= mask() =============================================
-# https://codeantenna.com/a/SqCLQ4AQNN
-import torch
-a=torch.tensor([[[5,5,5,5], [6,6,6,6], [7,7,7,7]], [[1,1,1,1],[2,2,2,2],[3,3,3,3]]])
-print(f"a = {a}")
-"""
-tensor([[[5, 5, 5, 5],
-         [6, 6, 6, 6],
-         [7, 7, 7, 7]],
-
-        [[1, 1, 1, 1],
-         [2, 2, 2, 2],
-         [3, 3, 3, 3]]])
-"""
-print(a.size())
-#torch.Size([2, 3, 4])
-print("#############################################3")
-#############################################3
-mask = torch.ByteTensor([[[1],[1],[0]],[[0],[1],[1]]])
-print(f"mask.size() = {mask.size()}")
-#torch.Size([2, 3, 1])
-b = a.masked_fill(mask, value=torch.tensor(-1e9))
-print(f"b1 = {b}")
+fl = torch.FloatTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"fl = {fl}\n")
+print(f"fl.dtype = {fl.dtype}\n")
+# fl.dtype = torch.float32
 
 
+half=tensor.half()
+print(f"half = {half}\n")
+print(f"half.dtype = {half.dtype}\n")
+# half = tensor([3.1426], dtype=torch.float16)
+# half.dtype = torch.float16
+
+ha = torch.HalfTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"ha = {ha}\n")
+print(f"ha.dtype = {ha.dtype}\n")
+#ha.dtype = torch.float16
+
+long=tensor.long()
+print(f"long = {long}\n")
+print(f"long.dtype = {long.dtype}\n")
+# long = tensor([3])
+# long.dtype = torch.int64
+
+Lo = torch.LongTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"Lo = {Lo}\n")
+print(f"Lo.dtype = {Lo.dtype}\n")
+#Lo.dtype = torch.int64
+
+int_t=tensor.int()
+print(f"int_t = {int_t}\n")
+print(f"int_t.dtype = {int_t.dtype}\n")
+# int_t = tensor([3], dtype=torch.int32)
+# int_t.dtype = torch.int32
+
+In = torch.IntTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"In = {In}\n")
+print(f"In.dtype = {In.dtype}\n")
+# In.dtype = torch.int32
 
 
+short = tensor.short()
+print(f"short = {short}\n")
+print(f"short.dtype = {short.dtype}\n")
+#  = tensor([3], dtype=torch.int16)
+# short.dtype = torch.int16
 
-#可以看到a和mask的shape对应分别是 2 3 4 对应 2 3 1  ，可以看到mask为中的第一个1，使得a的第一行全部被mask掉了，那么我把mask的shape改成2 3 4 ，是不是可以指定位置mask掉呢
-mask1 = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
-b = a.masked_fill(mask1, value=torch.tensor(-1e9))
+sh = torch.ShortTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"sh = {sh}\n")
+print(f"sh.dtype = {sh.dtype}\n")
+# sh.dtype = torch.int16
 
+ch = tensor.char()
+print(f"ch = {ch}\n")
+print(f"ch.dtype = {ch.dtype}\n")
+#  ch = tensor([3], dtype=torch.int8)
+# ch.dtype = torch.int8
 
-#的确可以，好的，如果shape相同，那就是对应位置被mask掉，
-#那么现在，我把mask的shape改成1，3，4 a保持为 2 ，3 ，4 会不会对于a的最外层的两个维度进行一样的mask呢？
+ch = torch.CharTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"ch = {ch}\n")
+print(f"ch.dtype = {ch.dtype}\n")
+# ch.dtype = torch.int8
 
-mask = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]]])
-b1 = a.masked_fill(mask, value=torch.tensor(-1e9))
-print(f"b = {b1}")
-"""
-tensor([[[-1000000000, -1000000000,           5,           5],
-         [-1000000000,           6,           6,           6],
-         [          7,           7,           7,           7]],
+bt = tensor.byte()
+print(f"bt = {bt}\n")
+print(f"bt.dtype = {bt.dtype}\n")
+# bt = tensor([3], dtype=torch.uint8)
+# bt.dtype = torch.uint8
 
-        [[-1000000000, -1000000000,           1,           1],
-         [-1000000000,           2,           2,           2],
-         [          3,           3,           3,           3]]])
-"""
-print(f"a.shape() = {a.shape()}")
-
-#的确是这样的，最外层的两个维度进行了相同的mask
-#那么再改一改，mask改成1，1，4，这样是不是行a都会被相同的mask掉
-mask = torch.ByteTensor([[[1,1,0,0]]])
-b = a.masked_fill(mask, value=torch.tensor(-1e9))
-print(f"b = {b}")
-"""
-tensor([[[-1000000000, -1000000000,           5,           5],
-         [-1000000000, -1000000000,           6,           6],
-         [-1000000000, -1000000000,           7,           7]],
-
-        [[-1000000000, -1000000000,           1,           1],
-         [-1000000000, -1000000000,           2,           2],
-         [-1000000000, -1000000000,           3,           3]]])
-"""
+bt = torch.ByteTensor([[[1,1,0,0],[1,0,0,0],[0,0,0,0]],[[0,0,0,0],[1,1,1,1],[1,1,1,1]]])
+print(f"bt = {bt}\n")
+print(f"bt.dtype = {bt.dtype}\n")
+# bt.dtype = torch.uint8
 
 
+#================================================= data type chage=================================================
+data = torch.ones(2, 2)
+print(data.dtype)
+#result: torch.float32
+# 可能在操作过程中指定其他数据类型--这里就按照ones--对应int64类型
+data = data.type(torch.float64)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.float64
 
 
-import torch
-
-mask = torch.randint(0, 2, (3, 1)).bool()
-target = torch.randn(3, 2)
-print(target)
-# tensor([[-0.4297,  0.6459],
-#         [ 1.2334, -1.5065],
-#         [ 0.1295,  0.2587]])
-
-print(mask)
-# tensor([[False],
-#         [False],
-#         [ True]])
-
-# 注意mask和target是可以广播的
-target.masked_fill_(mask, -100)
-print(target)
-# tensor([[-100.0000, -100.0000],
-#         [ 1.2334, -1.5065],
-#         [-1.0000, -1.0000]])
-# 如果执行target.masked_fill(mask, -1)， 是非in_place操作， 那么target本身的值不会改变
+data = data.type(torch.float32)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.float32
 
 
+data = data.type(torch.float)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.float32
 
-import torch
-import torch.nn as nn
-a = torch.randint(0, 255, (2, 3, 3))
-print(f"a = {a}")
-mask = torch.tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).bool()
-print(f"mask = {mask}")
-a.masked_fill_(~mask, 0)
-print(f"a = {a}")
+data = data.type(torch.float16)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.float16
+
+data = data.type(torch.int64)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.int64
+
+data = data.type(torch.int32)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.int32
+
+data = data.type(torch.int16)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+# torch.int16
+
+data = data.type(torch.int8)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+# torch.int8
+
+data = data.type(torch.double)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.float64
+
+data = data.type(torch.uchar)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+#result: torch.float64
+
+data = data.type(torch.bool)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+# torch.bool
+
+data = data.type(torch.uint8)  # 要接收类型已经改变的tensor数据，否则data本身是不会直接改变数据类型的
+print(data.dtype)
+# torch.uint8
 
 
-# 当然， 你也可以自己手动mask
-a = torch.tensor([[1,2,3], [2,1,0]])
-model = nn.Embedding(num_embeddings = 10, embedding_dim = 6)
-b = model(a)
-mask = (a!=0).float().unsqueeze(-1)
-result = b * mask
-
-
-
-
-
-
-
+data = torch.ones(2, 2)
+data_float = torch.randn(2, 2,dtype=torch.float64)  # 这里的数据类型为torch.float64
+print(data.dtype)
+print(data_float.dtype)
+# torch.float32
+# torch.float64
+# 可能在操作过程中指定其他数据类型--这里就按照ones--对应int64类型
+data = data.type_as(data_float )
+print(data.dtype)
+#   torch.float64
 
 
 
