@@ -1219,7 +1219,11 @@ sub_mask = torch.from_numpy(np.triu(np.ones(attn_shape), k=1) .astype('uint8'))=
 sub_mask = sub_mask.type(torch.uint8)
 print(f"sub_mask = \n{sub_mask}")
 
-tgt = torch.randint(0, 2, (batchsize, seq_len))
+tgt = torch.randint(1, 10, (batchsize, seq_len))
+tgt[-1,-4:] = 0
+tgt[-2,-3:] = 0
+tgt[-3,-1:] = 0
+
 tgt_mask = (tgt != pad).unsqueeze(-2).type(torch.uint8)
 print(f"tgt_mask.shape = {tgt_mask.shape}")
 print(f"tgt_mask = \n{tgt_mask}")
@@ -1230,7 +1234,30 @@ print(f"tgt_mask.shape = {tgt_mask.shape}")
 
 
 
+#===========================================================================================================
+def subsequent_mask(size):
+    "Mask out subsequent positions."
+    ##生成向后遮掩的掩码张量，参数size是掩码张量最后两个维度的大小，它最后两维形成一个方阵  
+    attn_shape = (1, size, size)
+    #然后使用np.ones方法向这个形状中添加1元素，形成上三角阵(k=1)  
+    subsequent_mask = np.triu(np.ones(attn_shape), k=1).astype('uint8')
+    return torch.from_numpy(subsequent_mask)
 
+
+trg = torch.randint(1, 10, (batchsize, seq_len))
+trg[-1,-4:] = 0
+trg[-2,-3:] = 0
+trg[-3,-1:] = 0
+trg_mask = (trg == pad ).unsqueeze(-2).type(torch.FloatTensor) # [batch, 1, seq_len]  torch.Size([128, 1, 30])
+print(f"trg_mask = \n{trg_mask}")
+
+
+look_ahead_mask = subsequent_mask(trg.size(-1)).type_as(trg_mask.data)#  torch.Size([1, 30, 30])
+print(f"look_ahead_mask = \n{look_ahead_mask}")
+
+# 将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
+combined_mask = torch.max(trg_mask, look_ahead_mask)    # torch.Size([128, 30, 30])
+print(f"combined_mask = \n{combined_mask}")
 
 
 
