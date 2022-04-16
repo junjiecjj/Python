@@ -1214,10 +1214,7 @@ seq_len = 5   # 30
 batchsize = 3  #128
 pad = 0
 
-attn_shape = (1, seq_len, seq_len)
-sub_mask = torch.from_numpy(np.triu(np.ones(attn_shape), k=1) .astype('uint8'))==0
-sub_mask = sub_mask.type(torch.uint8)
-print(f"sub_mask = \n{sub_mask}")
+
 
 tgt = torch.randint(1, 10, (batchsize, seq_len))
 tgt[-1,-4:] = 0
@@ -1228,13 +1225,20 @@ tgt_mask = (tgt != pad).unsqueeze(-2).type(torch.uint8)
 print(f"tgt_mask.shape = {tgt_mask.shape}")
 print(f"tgt_mask = \n{tgt_mask}")
 
+
+attn_shape = (1, seq_len, seq_len)
+sub_mask = torch.from_numpy(np.triu(np.ones(attn_shape), k=1) .astype('uint8'))==0
+sub_mask = sub_mask.type(torch.uint8)
+print(f"sub_mask = \n{sub_mask}")
+
+
 tgt_mask = tgt_mask & sub_mask    
 print(f"tgt_mask.shape = {tgt_mask.shape}")
 
 
 
 
-#===========================================================================================================
+#============================================================================
 def subsequent_mask(size):
     "Mask out subsequent positions."
     ##生成向后遮掩的掩码张量，参数size是掩码张量最后两个维度的大小，它最后两维形成一个方阵  
