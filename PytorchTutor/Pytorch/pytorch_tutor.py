@@ -1234,7 +1234,7 @@ print(f"sub_mask = \n{sub_mask}")
 
 tgt_mask = tgt_mask & sub_mask    
 print(f"tgt_mask.shape = {tgt_mask.shape}")
-
+print(f"tgt_mask = {tgt_mask}")
 
 
 

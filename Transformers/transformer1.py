@@ -535,44 +535,6 @@ def Test_PositionalEncoding2():
 
 # 以上测试说明PositionalEncoding()的输入x只能是三维的，且不改变x的shape
 
-class Batch:
-    def __init__(self, src, trg=None, pad=0):
-        """
-        src: 输入序列
-        trg: 目标序列
-        """
-        self.src = src
-        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
-        if trg is not None:
-            self.trg = trg[:, :-1]
-            self.trg_y = trg[:, 1:]
-            self.trg_mask = self.make_std_mask(self.trg, pad)
-            self.ntokens = (self.trg_y != pad).data.sum()
-
-    @staticmethod
-    def make_std_mask(tgt, pad):
-        """
-        将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
-        """
-        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
-        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
-        return tgt_mask
-
-
-src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
-trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
-
-sample = Batch(src, trg)
-print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
-
-print(f"sample.src_mask = \n{sample.src_mask}")
-print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
-
-print(f"sample.trg_mask = \n{sample.trg_mask}")
-print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
-
-print(f"sample.trg_mask = {sample.trg_mask}, sample.ntokens = {sample.ntokens}")
-
 
 
 
@@ -846,6 +808,44 @@ for name, param in tmp_model.named_parameters():
           param.requires_grad = True
 """
 
+
+class Batch:
+    def __init__(self, src, trg=None, pad=0):
+        """
+        src: 输入序列
+        trg: 目标序列
+        """
+        self.src = src
+        self.src_mask = (src != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        if trg is not None:
+            self.trg = trg[:, :-1]
+            self.trg_y = trg[:, 1:]
+            self.trg_mask = self.make_std_mask(self.trg, pad)
+            self.ntokens = (self.trg_y != pad).data.sum()
+
+    @staticmethod
+    def make_std_mask(tgt, pad):
+        """
+        将 pad 产生的 mask，和序列一次预测下一个单词产生的 mask 结合起来
+        """
+        tgt_mask = (tgt != pad).unsqueeze(-2) #torch.Size([2, 1, 5])
+        tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
+        return tgt_mask
+
+
+src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
+trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
+
+sample = Batch(src, trg)
+print(f"sample.src = \n{sample.src}\nsample.trg = \n{sample.trg}")
+
+print(f"sample.src_mask = \n{sample.src_mask}")
+print(f"sample.src_mask.shape = \n{sample.src_mask.shape}")
+
+print(f"sample.trg_mask = \n{sample.trg_mask}")
+print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
+
+print(f"sample.trg_mask = {sample.trg_mask}, sample.ntokens = {sample.ntokens}")
 
 
 
