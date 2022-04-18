@@ -651,6 +651,23 @@ print(c)
 #         [-0.0269, -0.9876, -2.3126]])
 
 
+#torch.nonezero()的作用就是找到tensor中所有不为0的索引。（要注意返回值的size）
+import torch
+a=torch.randint(-1,2,(10,),dtype=torch.int)
+print(a)
+print(a.size())
+print(torch.nonzero(a))
+print(torch.nonzero(a).size())
+print(torch.nonzero(a).squeeze())
+
+import torch
+a=torch.randint(-1,2,(3,4),dtype=torch.int)
+print(a)
+print(a.size())
+print(torch.nonzero(a))
+print(torch.nonzero(a).size())
+
+
 
 
 

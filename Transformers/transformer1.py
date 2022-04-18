@@ -971,7 +971,7 @@ predict = torch.FloatTensor([
 ])
 v = crit(Variable(predict.log()), Variable(torch.LongTensor([2, 1, 0])))
 plt.imshow(crit.true_dist)
-crit.true_dist
+print(f"crit.true_dist = \n{crit.true_dist}")
 
 
 
