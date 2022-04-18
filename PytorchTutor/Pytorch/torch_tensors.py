@@ -666,7 +666,7 @@ print(a)
 print(a.size())
 print(torch.nonzero(a))
 print(torch.nonzero(a).size())
-
+print(torch.nonzero(a).squeeze())
 
 
 

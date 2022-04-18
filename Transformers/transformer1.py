@@ -26,7 +26,7 @@ def function():
      print(sys._getframe().f_code.co_filename)  # 当前位置所在的文件名
      print(sys._getframe().f_code.co_name)  # 当前位置所在的函数名
      print(sys._getframe().f_lineno)  # 当前位置所在的行号
-function()
+#function()
 
 
 
@@ -47,16 +47,16 @@ class EncoderDecoder(nn.Module):
         src --> memory
         memory + tgt --> output
         """
-        memory = self.Encode(src, src_mask)
-        return self.Decode(tgt, memory, src_mask, tgt_mask)
+        memory = self.encode(src, src_mask)
+        return self.decode(tgt, memory, src_mask, tgt_mask)
 
-    def Encode(self, src, src_mask):
+    def encode(self, src, src_mask):
         """
         src --> memory
         """
         return self.encoder(self.src_embed(src), src_mask)
 
-    def Decode(self, tgt, memory, src_mask,  tgt_mask):
+    def decode(self, tgt, memory, src_mask,  tgt_mask):
         """
         memory + tgt --> output
         """
@@ -69,7 +69,7 @@ class Generator(nn.Module):
     def __init__(self, d_model, vocab):
         super(Generator, self).__init__()
         self.proj = nn.Linear(d_model, vocab)
-
+    # x.shape = (batch, seq_len, d_model) ---->  (batch, seq_len, vocab)
     def forward(self, x):
         return F.log_softmax(self.proj(x), dim=-1)
 
@@ -126,7 +126,7 @@ def test_layernorm():
     print("After Norm: \n", x.detach().numpy())
 
 
-test_layernorm()
+# test_layernorm()
 
 
 
@@ -264,10 +264,10 @@ def test_attention_5D():
      print("Test passed")
 
 
-test_attention_3D()
-test_attention_2D()
-test_attention_4D()
-test_attention_5D()
+#test_attention_3D()
+# test_attention_2D()
+# test_attention_4D()
+# test_attention_5D()
 
 
 
@@ -288,15 +288,15 @@ class MultiHeadedAttention(nn.Module):
 
     def forward(self, query, key, value, mask=None):
         # query,key,value: batch,seq_len,d_model
-        print(f"query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
+        #print(f"line = {sys._getframe().f_lineno}, query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
         #query.shape = torch.Size([2, 4, 12]),
         #key.shape=torch.Size([2, 4, 12]),
         #value.shape = torch.Size([2, 4, 12])
         
         if mask is not None:
-            print(f"mask.shape = {mask.shape}")
+            #print(f"..........mask.shape = {mask.shape}")
             mask = mask.unsqueeze(1)
-            print(f"mask.shape = {mask.shape}")
+            #print(f"........mask.shape = {mask.shape}")
         nbatches = query.size(0)  # 2
 
         #for l, x in zip(self.linears, (query, key, value)):
@@ -304,7 +304,7 @@ class MultiHeadedAttention(nn.Module):
 
         query, key, value = [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)  for l, x in zip(self.linears, (query, key, value)) ]
         #query, key, value = [l(x)  for l, x in zip(self.linears, (query, key, value)) ]
-        print(f"L = {sys._getframe().f_lineno}, query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
+        #print(f"L = {sys._getframe().f_lineno}, query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
         """
         x.shape = torch.Size([2, 4, 12])
         query.shape = torch.Size([2, 2, 4, 6]),
@@ -317,12 +317,12 @@ class MultiHeadedAttention(nn.Module):
             value,
             mask=mask,
             dropout=self.dropout)
-        print(f"1  x.shape = {x.shape}") # x.shape = torch.Size([2, 2, 4, 6])
+        #print(f"1  x.shape = {x.shape}") # x.shape = torch.Size([2, 2, 4, 6])
         x = x.transpose(1, 2).contiguous().view(nbatches, -1, self.h * self.d_k)
-        print(f"2  x.shape = {x.shape}") # x.shape = torch.Size([2, 4, 12])
+        #print(f"2  x.shape = {x.shape}") # x.shape = torch.Size([2, 4, 12])
 
         # batch,seq_len,num_head*feats
-        print(f"self.linears[-1](x).shape = {self.linears[-1](x).shape}") #self.linears[-1](x).shape = torch.Size([2, 4, 12])
+        #print(f"self.linears[-1](x).shape = {self.linears[-1](x).shape}") #self.linears[-1](x).shape = torch.Size([2, 4, 12])
         return self.linears[-1](x)
 
     def attention(self, query, key, value, mask=None, dropout=None):
@@ -397,9 +397,9 @@ def Test_PositionwiseFeedForward2():
     print("Test passed!")
 
 
-Test_PositionwiseFeedForward()
-Test_PositionwiseFeedForward1()
-Test_PositionwiseFeedForward2()
+#Test_PositionwiseFeedForward()
+#Test_PositionwiseFeedForward1()
+#Test_PositionwiseFeedForward2()
 # 以上测试说明 PositionwiseFeedForward() 不改变x的shape
 
 
@@ -412,6 +412,9 @@ class Embeddings(nn.Module):
         self.d_model = d_model
 
     def forward(self, x):
+        #print(f"line={sys._getframe().f_lineno},x.shape = {x.shape}")
+        #print(f"line={sys._getframe().f_lineno},self.lut(x).shape = {self.lut(x).shape}")
+        print(f"x = {x}, self.d_model = {self.d_model}")
         return self.lut(x) * math.sqrt(self.d_model)
 
 
@@ -425,7 +428,7 @@ def test_Embeddings():
      print(out.shape)
      assert out.shape == (5, 9, d_model)
      print("Test passed!")
-test_Embeddings()
+#test_Embeddings()
 
 
 
@@ -438,7 +441,7 @@ def test_Embeddings2():
      print(out.shape)
      assert out.shape == (5,  d_model)
      print("Test passed!")
-test_Embeddings2()
+#test_Embeddings2()
 
 
 def test_Embeddings3():
@@ -450,7 +453,7 @@ def test_Embeddings3():
      print(out.shape)
      assert out.shape == (5, 9,12, d_model)
      print("Test passed!")
-test_Embeddings3()
+#test_Embeddings3()
 
 
 # 以上测试说明Embedding只是在x的最后一维增加一个词向量维度
@@ -482,7 +485,9 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
+        #print(f"line={sys._getframe().f_lineno},x.shape = {x.shape}")
         x = x + Variable(self.pe[:, :x.size(1)], requires_grad=False)
+        #print(f"line={sys._getframe().f_lineno},x.shape = {x.shape}")
         # 接受1.Embeddings的词嵌入结果x，
         #然后把自己的位置编码pe，封装成torch的Variable(不需要梯度)，加上去。
         #例如，假设x是(30,10,512)的一个tensor，
@@ -548,7 +553,7 @@ def test_multi_head():
     attn = model(x, y, z)
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
-test_multi_head()
+#test_multi_head()
 
 def test_multi_head1():
     x = torch.randn(2, 4, 12)
@@ -559,7 +564,7 @@ def test_multi_head1():
     attn = model(x, y, z)
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
-test_multi_head1()
+#test_multi_head1()
 
 
 def test_multi_head_src(pad = 0):
@@ -606,7 +611,7 @@ def test_multi_head_src(pad = 0):
      print(f"2  attn.shape = {attn.shape}")
 
      print("Test passed!")
-test_multi_head_src()
+#test_multi_head_src()
 
 
 def test_multi_head_tgt(pad = 0):
@@ -656,7 +661,7 @@ def test_multi_head_tgt(pad = 0):
      print(f"2  attn.shape = {attn.shape}")
 
      print("Test passed!")
-test_multi_head_tgt()
+#test_multi_head_tgt()
 
 
 def test_multi_headSrcTgt(pad = 0):
@@ -701,7 +706,7 @@ def test_multi_headSrcTgt(pad = 0):
      print(f"2  attn.shape = {attn.shape}")
 
      print("Test passed!")
-test_multi_headSrcTgt()
+#test_multi_headSrcTgt()
 
 def test_multi_head2(pad = 0):
     x = torch.randint(1, 200, (128, 31))
@@ -724,7 +729,7 @@ def test_multi_head2(pad = 0):
     attn = model(x_pe, x_pe, x_pe, mask = src_mask)
     assert attn.shape == (128, 31, 128)
     print("Test passed!")
-test_multi_head2()
+#test_multi_head2()
 
 def test_multi_head3():
     x = torch.randn(128, 30, 128)
@@ -735,7 +740,7 @@ def test_multi_head3():
     attn = model(x, m, m,mask=mask)
     assert attn.shape == (128, 30, 128)
     print("Test passed!")
-test_multi_head3()
+#test_multi_head3()
 
 def test_multi_head4():
     x = torch.randn(128, 30, 128)
@@ -746,7 +751,7 @@ def test_multi_head4():
     attn = model(x, m, m,mask=mask)
     assert attn.shape == (128, 30, 128)
     print("Test passed!")
-test_multi_head4()
+#test_multi_head4()
 
 
 # 以上测试说明 MultiHeadedAttention() 不改变x的shape
@@ -776,7 +781,7 @@ def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0
             nn.init.xavier_uniform_(p)
     return model
 
-tmp_model = make_model(10, 10, 2)
+# tmp_model = make_model(10, 10, 2)
 # 查看模型结构：
 #print(f"tmp_model = \n{tmp_model}")
 #print(f"tmp_model.src_embed = \n{tmp_model.src_embed}")
@@ -833,6 +838,7 @@ class Batch:
         tgt_mask = tgt_mask & Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data)) #torch.Size([1, 5, 5])
         return tgt_mask
 
+"""
 
 src = torch.tensor([[3, 5, 7, 0, 0], [2, 4, 6, 8, 0]])  # batch=2,seq_len=5
 trg = torch.tensor([[2, 3, 4, 5, 0, 0], [3, 5, 6, 0, 0,0]])  # batch=2,seq_len=6
@@ -848,7 +854,7 @@ print(f"sample.trg_mask.shape = \n{sample.trg_mask.shape}")
 
 print(f"sample.trg_mask = {sample.trg_mask}, sample.ntokens = {sample.ntokens}")
 
-
+"""
 
 
 def run_epoch(data_iter, model, loss_compute):
@@ -857,9 +863,11 @@ def run_epoch(data_iter, model, loss_compute):
     total_loss = 0
     tokens = 0
     for i, batch in enumerate(data_iter):
-        out = model.forward(batch.src, batch.trg, batch.src_mask,
-                            batch.trg_mask)
+        out = model.forward(batch.src, batch.trg, batch.src_mask, batch.trg_mask)
+        # print(f"out.shape = {out.shape}, batch.trg_y.shape = {batch.trg_y.shape}")
+        # out.shape = torch.Size([30, 9, 512]), batch.trg_y.shape = torch.Size([30, 9])
         loss = loss_compute(out, batch.trg_y, batch.ntokens)
+        # print(f"loss = {loss}")  # loss = 818.6756591796875
         total_loss += loss
         total_tokens += batch.ntokens  # 总 tokens 数
         tokens += batch.ntokens  # 50 批训练时的总 tokens 数
@@ -922,7 +930,7 @@ def get_std_opt(model):
 
 
 
-
+"""
 
 opts = [
     NoamOpt(512, 1, 4000, None),
@@ -933,7 +941,7 @@ plt.plot(np.arange(1, 20000),
          [[opt.rate(i) for opt in opts] for i in range(1, 20000)])
 plt.legend(["512:4000", "512:8000", "256:4000"])
 
-
+"""
 
 
 
@@ -962,7 +970,7 @@ class LabelSmoothing(nn.Module):
         self.true_dist = true_dist
         return self.criterion(x, Variable(true_dist, requires_grad=False))
 
-
+"""
 crit = LabelSmoothing(size=5, padding_idx=0, smoothing=0.4)
 predict = torch.FloatTensor([
     [0, 0.2, 0.7, 0.1, 0],
@@ -972,8 +980,6 @@ predict = torch.FloatTensor([
 v = crit(Variable(predict.log()), Variable(torch.LongTensor([2, 1, 0])))
 plt.imshow(crit.true_dist)
 print(f"crit.true_dist = \n{crit.true_dist}")
-
-
 
 
 
@@ -996,7 +1002,7 @@ def loss(x):
 plt.plot(np.arange(1, 100), [loss(x) for x in range(1, 100)])
 
 
-
+"""
 
 
 
@@ -1019,9 +1025,14 @@ class SimpleLossCompute:
         self.opt = opt
 
     def __call__(self, x, y, norm):
+        # print(f"1  x.shape = {x.shape}, y.shape = {y.shape}")
+        # x.shape = torch.Size([30, 9, 512]), y.shape = torch.Size([30, 9])
         x = self.generator(x)
-        loss = self.criterion(x.contiguous().view(-1, x.size(-1)),
-                              y.contiguous().view(-1)) / norm
+        # print(f"2  x.shape = {x.shape}, y.shape = {y.shape}")
+        # x.shape = torch.Size([30, 9, 11]), y.shape = torch.Size([30, 9])
+        #print(x.contiguous().view(-1, x.size(-1)).shape)  # torch.Size([270, 11])
+        #print(y.contiguous().view(-1).shape)  # torch.Size([270])
+        loss = self.criterion(x.contiguous().view(-1, x.size(-1)), y.contiguous().view(-1)) / norm
         loss.backward()
         if self.opt is not None:
             self.opt.step()
@@ -1032,27 +1043,20 @@ class SimpleLossCompute:
 V = 11
 criterion = LabelSmoothing(size=V, padding_idx=0, smoothing=0.0)
 model = make_model(V, V, N=2)
-model_opt = NoamOpt(
-    model.src_embed[0].d_model, 1, 400,
-    torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
+model_opt = NoamOpt(model.src_embed[0].d_model, 1, 400, torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 
 for epoch in range(10):
     model.train()
-    run_epoch(data_gen(V, 30, 20), model,
-              SimpleLossCompute(model.generator, criterion, model_opt))
+    run_epoch(data_gen(V, 30, 20), model, SimpleLossCompute(model.generator, criterion, model_opt))
     model.eval()
-    print(
-        run_epoch(data_gen(V, 30, 5), model,
-                  SimpleLossCompute(model.generator, criterion, None)))
+    print(run_epoch(data_gen(V, 30, 5), model, SimpleLossCompute(model.generator, criterion, None)))
 
 
 def greedy_decode(model, src, src_mask, max_len, start_symbol):
-    memory = model.encode(src, src_mask)
-    ys = torch.ones(1, 1).fill_(start_symbol).type_as(src.data)
+    memory = model.encode(src, src_mask) # torch.Size([1, 10, 512])
+    ys = torch.ones(1, 1).fill_(start_symbol).type_as(src.data)  # tensor([[1]])
     for i in range(max_len - 1):
-        out = model.decode(
-            memory, src_mask, Variable(ys),
-            Variable(subsequent_mask(ys.size(1)).type_as(src.data)))
+        out = model.decode(Variable(ys), memory, src_mask, Variable(subsequent_mask(ys.size(1)).type_as(src.data)))
         prob = model.generator(out[:, -1])
         _, next_word = torch.max(prob, dim=1)
         next_word = next_word.item()
@@ -1116,8 +1120,7 @@ class MyIterator(data.Iterator):
 
             def pool(d, random_shuffler):
                 for p in data.batch(d, self.batch_size * 100):
-                    p_batch = data.batch(sorted(p, key=self.sort_key),
-                                         self.batch_size, self.batch_size_fn)
+                    p_batch = data.batch(sorted(p, key=self.sort_key), self.batch_size, self.batch_size_fn)
                     for b in random_shuffler(list(p_batch)):
                         yield b
 
@@ -1125,8 +1128,7 @@ class MyIterator(data.Iterator):
 
         else:
             self.batches = []
-            for b in data.batch(self.data(), self.batch_size,
-                                self.batch_size_fn):
+            for b in data.batch(self.data(), self.batch_size, self.batch_size_fn):
                 self.batches.append(sorted(b, key=self.sort_key))
 
 
