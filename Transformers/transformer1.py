@@ -292,10 +292,11 @@ class MultiHeadedAttention(nn.Module):
         #query.shape = torch.Size([2, 4, 12]),
         #key.shape=torch.Size([2, 4, 12]),
         #value.shape = torch.Size([2, 4, 12])
-        print(f"mask.shape = {mask.shape}")
+        
         if mask is not None:
+            print(f"mask.shape = {mask.shape}")
             mask = mask.unsqueeze(1)
-        print(f"mask.shape = {mask.shape}")
+            print(f"mask.shape = {mask.shape}")
         nbatches = query.size(0)  # 2
 
         #for l, x in zip(self.linears, (query, key, value)):

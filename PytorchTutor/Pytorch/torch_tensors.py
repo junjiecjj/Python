@@ -50,6 +50,22 @@ print(zeros_tensor)
 rand_tensor=torch.randint(3,20,(4,5))
 print(rand_tensor)
 
+
+#比如有个张量a，那么a.normal_()就表示用标准正态分布填充a，是in_place操作，如下图所示：
+a = torch.ones([2,3])
+print(f"a = {a}")
+
+a.normal_(mean=0, std=0.01)
+print(f"a = {a}")
+
+
+#比如有个张量b，那么b.fill_(0)就表示用0填充b，是in_place操作，如下图所示：
+a = torch.rand([2,3])
+print(f"a = {a}")
+
+a.fill_(0)
+print(f"a = {a}")
+
 #======================================================================================
 #    2.tensor 性质
 #======================================================================================
@@ -515,57 +531,124 @@ print(data.dtype)
 
 
 
+"""
+scatter(dim, index, src)的三个参数为：
+
+（1）dim:沿着哪个维度进行索引
+
+（2）index: 用来scatter的元素索引
+
+（3）src: 用来scatter的源元素，可以使一个标量也可以是一个张量
+
+官方给的例子为三维情况下的例子：
+
+
+y = y.scatter(dim,index,src)
+ 
+#则结果为：
+y[ index[i][j][k]  ] [j][k] = src[i][j][k] # if dim == 0
+y[i] [ index[i][j][k] ] [k] = src[i][j][k] # if dim == 1
+y[i][j] [ index[i][j][k] ]  = src[i][j][k] # if dim == 2
+
+如果是二维的例子，则应该对应下面的情况：
+
+y = y.scatter(dim,index,src)
+ 
+#则：
+y [ index[i][j] ] [j] = src[i][j] #if dim==0
+y[i] [ index[i][j] ]  = src[i][j] #if dim==1
+
+
+
+
+"""
+
+
+
+
+import torch
+ 
+x = torch.randn(2,4)
+print(x)
+y = torch.zeros(3,4)
+y = y.scatter_(0,torch.LongTensor([[2,1,2,2],[0,2,1,1]]),x)
+print(y)
+
+
+#那么这个函数有什么作用呢？其实可以利用这个功能将pytorch 中mini batch中的返回的label（特指[ 1,0,4,9 ]，即size为[4]这样的label）转为one-hot类型的label,举例子如下：
+import torch
+ 
+mini_batch = 4
+out_planes = 6
+out_put = torch.rand(mini_batch, out_planes)
+softmax = torch.nn.Softmax(dim=1)
+out_put = softmax(out_put)
+ 
+print(out_put)
+label = torch.tensor([1,3,3,5])
+one_hot_label = torch.zeros(mini_batch, out_planes).scatter_(1,label.unsqueeze(1),1)
+print(one_hot_label)
+
+
+x = torch.rand(2, 5)
+print(x)
+
+
+torch.zeros(3, 5).scatter_(0, torch.LongTensor([[0, 1, 2, 0, 0], [2, 0, 0, 1, 2]]), x)
+
+z = torch.zeros(2, 4).scatter_(1, torch.LongTensor([[2], [3]]), 1.23)
+print(z)
 
 
 
 
 
+#pytorch: gather函数，index_fill函数
+a=torch.arange(0,16).view(4,4)
+
+index=torch.LongTensor([[0,1,2,3]])
+
+torch.gather(a, 0, index)
+
+
+index=torch.LongTensor([[0],[1],[1],[2]])
+
+a.gather(1,index)
 
 
 
+#index_fill(dim,index,val)按照指定的维度轴dim 根据index去对应位置，将原tensor用参数val值填充，这里强调一下，index必须是1D tensor，index去指定轴上索引数据时候会广播，与上面gather的index去索引不同(一一对应查)
+a=torch.arange(0,16).view(4,4)
+print(a)
+
+index=torch.LongTensor([[0],[1],[1],[2]])
+index.squeeze()
+
+a.index_fill(0,index.squeeze(),100)
 
 
+import torch
+a = torch.randn(4, 3)
+print(a)
+# tensor([[-1.7189,  0.9798, -0.0428],
+#         [ 0.7184, -0.2824, -1.0289],
+#         [ 1.2858,  0.8423, -1.0473],
+#         [-0.0269, -0.9876, -2.3126]])
 
+index = torch.tensor([0, 2])
+b=a.index_fill(1, index, 9)#要填充1维
+print(b)
+# tensor([[ 9.0000,  0.9798,  9.0000],
+#         [ 9.0000, -0.2824,  9.0000],
+#         [ 9.0000,  0.8423,  9.0000],
+#         [ 9.0000, -0.9876,  9.0000]])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+c=a.index_fill(0, index, 9)#要填充0维
+print(c)
+# tensor([[ 9.0000,  9.0000,  9.0000],
+#         [ 0.7184, -0.2824, -1.0289],
+#         [ 9.0000,  9.0000,  9.0000],
+#         [-0.0269, -0.9876, -2.3126]])
 
 
 
