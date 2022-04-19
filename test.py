@@ -1,50 +1,21 @@
 #!/usr/bin/env python3.6
 #-*-coding=utf-8-*-
 
-# from ipyvolume import p3
 
 
-# fig = p3.figure()
-# p3.style.use('dark')
-
-# s = p3.quiver(*ds_stream.data,size=6)
-# p3.animate_glyphs(s,interval = 200)
-# p3.show()
-
-
-
-import sys  
-import inspect  
-import os  
-  
-  
-def get_current_function_name():
-    return inspect.stack()[1][3]
- 
-def get_attrs():  
-    print('Module:', __name__)  
-    print('File Path: ', __file__)  
-    print('File Name: ', os.path.basename(__file__))  
-    print('Line No.: ', sys._getframe().f_lineno)  
-    print('Func: ', sys._getframe().f_code.co_name)
-    print('Func: ', get_current_function_name())  
-  
-  
-get_attrs() 
+from torchtext.legacy import data
+from torchtext.legacy.vocab import Vectors
+from torch.nn import init
+from tqdm import tqdm
 
 
 
 
 
-
-
-
-
-
-
-
-
-
+tokenize = lambda x: x.split()
+# fix_length指定了每条文本的长度，截断补长
+TEXT = data.Field(sequential=True, tokenize=tokenize, lower=True, fix_length=200)
+LABEL = data.Field(sequential=False, use_vocab=False)
 
 
 

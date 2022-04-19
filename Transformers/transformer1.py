@@ -414,7 +414,7 @@ class Embeddings(nn.Module):
     def forward(self, x):
         #print(f"line={sys._getframe().f_lineno},x.shape = {x.shape}")
         #print(f"line={sys._getframe().f_lineno},self.lut(x).shape = {self.lut(x).shape}")
-        print(f"x = {x}, self.d_model = {self.d_model}")
+        #print(f"x = {x}, self.d_model = {self.d_model}")
         return self.lut(x) * math.sqrt(self.d_model)
 
 
@@ -1078,7 +1078,7 @@ from torchtext import data, datasets
 
 if True:
     import spacy
-    spacy_de = spacy.load("de_core_news_sm")
+    #spacy_de = spacy.load("de_core_news_sm")
     spacy_en = spacy.load("en_core_web_sm")
 
     def tokenize_de(text):

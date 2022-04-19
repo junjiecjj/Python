@@ -524,6 +524,45 @@ with torch.no_grad():
     print((x ** 2).requires_grad)
 
 
+#----------------------------------------------- 分割线 ----------------------------------------------
+x = torch.randn(10, 5, requires_grad = True)
+y = torch.randn(10, 5, requires_grad = True)
+z = torch.randn(10, 5, requires_grad = True)
+print(f"x.requires_grad = {x.requires_grad}")
+print(f"x.grad_fn = {x.grad_fn}\n")
+with torch.no_grad():
+    w = x + y + z
+    out = w.sum()
+    #out.backward()
+    print(f"x.requires_grad = {x.requires_grad}")
+    print(f"x.grad = {x.grad}")
+    print(f"x.grad_fn = {x.grad_fn}\n")
+    
+    print(f"w.requires_grad = {w.requires_grad}")
+    print(f"w.grad = {w.grad}")
+    print(f"w.grad_fn = {w.grad_fn}\n")
+    
+    print(f"out.requires_grad = {out.requires_grad}")
+    print(f"out.grad = {out.grad}")
+    print(f"out.grad_fn = {out.grad_fn}\n")
+    
+print(f"x.requires_grad = {x.requires_grad}")
+print(f"w.requires_grad = {w.requires_grad}")
+
+#----------------------------------------------- 分割线 ----------------------------------------------
+x = torch.randn(10, 5, requires_grad = True)
+y = torch.randn(10, 5, requires_grad = True)
+z = torch.randn(10, 5, requires_grad = True)
+print(x.requires_grad)
+
+w = x + y + z
+print(x.requires_grad)
+print(f"x.grad = {x.grad}\n")
+print(w.requires_grad)
+print(w.grad_fn)
+print(x.requires_grad)
+print(w.requires_grad)
+
 
 #----------------------------------------------- 分割线 ----------------------------------------------
 import torch
