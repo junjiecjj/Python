@@ -70,6 +70,7 @@ vegetables = [('celery', 1.58), ('brocoli', 1.29), ('lettuce', 2.19)]
 # 创建包含3组key-value对的字典
 dict3 = dict(vegetables)
 print(dict3) # {'celery': 1.58, 'brocoli': 1.29, 'lettuce': 2.19}
+
 cars = [['BMW', 8.5], ['BENS', 8.3], ['AUDI', 7.9]]
 # 创建包含3组key-value对的字典
 dict4 = dict(cars)
@@ -173,8 +174,10 @@ print(list(kys)) # ['BMW', 'BENS', 'AUDI']
 print(list(kys)[1]) # 'BENS'
 # 获取字典所有的value，返回一个dict_values对象
 vals = cars.values()
+
+print(type(vals))  
 # 将dict_values转换成列表
-print(type(vals)) # [8.5, 8.3, 7.9]
+print(list(vals)) # [8.5, 8.3, 7.9]
 # 访问第2个value
 print(list(vals)[1]) # 8.3
 
@@ -251,17 +254,107 @@ print(temp % book)
 
 
 
+# 看起来字典的keys()和values()方法返回的列表始终是一对一的映射（假设字典在调用这两个方法之间没有改变）。
+d = {'one':1, 'two': 2, 'three': 3}
+k, v = d.keys(), d.values()
+
+for i in range(len(k)):
+     print (d[k[i]] == v[i])
+
+
+# 实例1：按键(key)排序
+def dictionairy():  
+  
+    # 声明字典
+    key_value ={}     
+ 
+    # 初始化
+    key_value[2] = 56       
+    key_value[1] = 2 
+    key_value[5] = 12 
+    key_value[4] = 24
+    key_value[6] = 18      
+    key_value[3] = 323 
+ 
+    print ("按键(key)排序:")   
+ 
+    # sorted(key_value) 返回重新排序的列表
+    # 字典按键排序
+    for i in sorted (key_value) : 
+        print ((i, key_value[i]), end =" ") 
+# 调用函数
+dictionairy()    
+"""
+按键(key)排序:
+(1, 2) (2, 56) (3, 323) (4, 24) (5, 12) (6, 18) 
+"""
+
+#实例2：按值(value)排序
+def dictionairy():  
+ 
+    # 声明字典
+    key_value ={}     
+ 
+    # 初始化
+    key_value[2] = 56       
+    key_value[1] = 2 
+    key_value[5] = 12 
+    key_value[4] = 24
+    key_value[6] = 18      
+    key_value[3] = 323 
+ 
+ 
+    print ("按值(value)排序:")   
+    print(sorted(key_value.items(), key = lambda kv:(kv[1], kv[0])))     
+dictionairy()  
+"""
+按值(value)排序:
+[(1, 2), (5, 12), (6, 18), (4, 24), (2, 56), (3, 323)]
+"""
+
+#实例 3 : 字典列表排序
+lis = [{ "name" : "Taobao", "age" : 100},  
+{ "name" : "Runoob", "age" : 7 }, 
+{ "name" : "Google", "age" : 100 }, 
+{ "name" : "Wiki" , "age" : 200 }] 
+  
+# 通过 age 升序排序
+print ("列表通过 age 升序排序: ")
+print (sorted(lis, key = lambda i: i['age']) )
+  
+print ("\r") 
+  
+# 先按 age 排序，再按 name 排序
+print ("列表通过 age 和 name 排序: ")
+print (sorted(lis, key = lambda i: (i['age'], i['name'])) )
+  
+print ("\r") 
+  
+# 按 age 降序排序
+print ("列表通过 age 降序排序: ")
+print (sorted(lis, key = lambda i: i['age'],reverse=True) )
+"""
+列表通过 age 升序排序: 
+[{'name': 'Runoob', 'age': 7}, {'name': 'Taobao', 'age': 100}, {'name': 'Google', 'age': 100}, {'name': 'Wiki', 'age': 200}]
+
+列表通过 age 和 name 排序: 
+[{'name': 'Runoob', 'age': 7}, {'name': 'Google', 'age': 100}, {'name': 'Taobao', 'age': 100}, {'name': 'Wiki', 'age': 200}]
+
+列表通过 age 降序排序: 
+[{'name': 'Wiki', 'age': 200}, {'name': 'Taobao', 'age': 100}, {'name': 'Google', 'age': 100}, {'name': 'Runoob', 'age': 7}]
+"""
+
 
 #========================================================================
 # https://www.1024sou.com/article/419794.html
 # Python字典（dict ）的几种遍历方式
 #========================================================================
-
+#1.使用 for key in dict 遍历字典
 x = {'a': 'A', 'b': 'B'}
 for key in x:
     print(key)
 
-
+#2.使用 for key in dict.keys () 遍历字典的键
 # keys
 book = {
     'title': 'Python',
@@ -272,8 +365,8 @@ book = {
 for key in book.keys():
     print(key)
     
-    
-    # values
+#3.使用 for values in dict.values () 遍历字典的值
+# values
 book = {
     'title': 'Python',
     'author': '-----',
@@ -283,7 +376,7 @@ book = {
 for value in book.values():
     print(value)
     
-    
+#4.使用 for item in dict.items () 遍历字典的键值对
 x = {'a': 'A', 'b': 'B'}
 for item in x.items():
     key = item[0]
