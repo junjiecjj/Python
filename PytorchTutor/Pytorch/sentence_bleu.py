@@ -41,8 +41,8 @@ print(score)
 #语料库BLEU分数 
 # two references for one document
 from nltk.translate.bleu_score import corpus_bleu
-references = [[['this', 'is', 'a', 'test'], ['this', 'is' 'test']]]
-candidates = [['this', 'is', 'a', 'test']]
+references = [[['this', 'is', 'a', 'test'], ['this', 'is' 'test']],[['this', 'is', 'a', 'test'], ['this', 'is' 'test']]]
+candidates = [['this', 'is', 'a', 'test'],['this', 'is', 'a', 'test']]
 score = corpus_bleu(references, candidates)
 print(score)
 
@@ -55,6 +55,12 @@ candidate = ['this', 'is', 'a', 'test']
 score = sentence_bleu(reference, candidate, weights=(1, 0, 0, 0))
 print(score)
 
+from nltk.translate.bleu_score import sentence_bleu
+reference = ['this', 'is', 'small', 'test']
+candidate = ['this', 'is', 'a', 'test']
+score = sentence_bleu([reference], candidate, weights=(1, 0, 0, 0))
+print(score)
+
 #
 # n-gram individual BLEU
 from nltk.translate.bleu_score import sentence_bleu
@@ -63,7 +69,7 @@ candidate = ['this', 'is', 'a', 'test']
 print('Individual 1-gram: %f' % sentence_bleu(reference, candidate, weights=(1, 0, 0, 0)))
 print('Individual 2-gram: %f' % sentence_bleu(reference, candidate, weights=(0, 1, 0, 0)))
 print('Individual 3-gram: %f' % sentence_bleu(reference, candidate, weights=(0, 0, 1, 0)))
-print('Individual 4-gram: %f' % sentence_bleu(reference, candidate, weights=(0, 0, 0, 1))
+print('Individual 4-gram: %f' % sentence_bleu(reference, candidate, weights=(0, 0, 0, 1)))
 
 
 
