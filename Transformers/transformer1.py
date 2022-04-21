@@ -1058,10 +1058,10 @@ def greedy_decode(model, src, src_mask, max_len, start_symbol):
     memory = model.encode(src, src_mask) # torch.Size([1, 10, 512])
     ys = torch.ones(1, 1).fill_(start_symbol).type_as(src.data)  # tensor([[1]])
     for i in range(max_len - 1):
-        out = model.decode(Variable(ys), memory, src_mask, Variable(subsequent_mask(ys.size(1)).type_as(src.data)))
-        prob = model.generator(out[:, -1])
-        _, next_word = torch.max(prob, dim=1)
-        next_word = next_word.item()
+        out = model.decode(Variable(ys), memory, src_mask, Variable(subsequent_mask(ys.size(1)).type_as(src.data)))  #torch.Size([1, 3, 512])
+        prob = model.generator(out[:, -1])  #torch.Size([1, 11])
+        _, next_word = torch.max(prob, dim=1)   #
+        next_word = next_word.item()      # 4
         ys = torch.cat([ys, torch.ones(1, 1).type_as(src.data).fill_(next_word)], dim=1)
     return ys
 
