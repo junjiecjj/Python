@@ -11,8 +11,6 @@ https://github.com/junjiecjj/vit-pytorch/edit/main/vit_pytorch/vit.py
 
 
 
-
-
 import torch
 from torch import nn
 
