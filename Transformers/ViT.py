@@ -139,26 +139,34 @@ class ViT(nn.Module):
         assert image_height % patch_height == 0 and image_width % patch_width == 0
         'Image dimensions must be divisible by the patch size.'
 
-        num_patches = (image_height // patch_height) * (image_width // patch_width)
-        patch_dim = channels * patch_height * patch_width
+        num_patches = (image_height // patch_height) * (image_width // patch_width) # 获取图像切块的个数
+        patch_dim = channels * patch_height * patch_width # 线性变换时的输入大小，即每一个图像宽、高、通道的乘积
         assert pool in {'cls', 'mean'}, 'pool type must be either cls (cls token) or mean (mean pooling)'
 
         self.to_patch_embedding = nn.Sequential(
+            # 将批量为b通道为c高为h*p1宽为w*p2的图像转化为批量为b个数为h*w维度为p1*p2*c的图像块
+            # 即，把b张c通道的图像分割成b*（h*w）张大小为P1*p2*c的图像块
+            # 例如：patch_size为16  (8, 3, 48, 48)->(8, 9, 768)
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1 = patch_height, p2 = patch_width),
+            
+            # 对分割好的图像块进行线性处理（全连接），输入维度为每一个小块的所有像素个数，输出为dim（函数传入的参数）
             nn.Linear(patch_dim, dim),)
 
+        # 位置编码，获取一组正态分布的数据用于训练
         self.pos_embedding = nn.Parameter(torch.randn(1, num_patches + 1, dim))
+        
+        # 分类令牌，可训练
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
         self.dropout = nn.Dropout(emb_dropout)
 
         self.transformer = Transformer(dim, depth, heads, dim_head, mlp_dim, dropout)
 
         self.pool = pool
-        self.to_latent = nn.Identity()
+        self.to_latent = nn.Identity() # 占位操作
 
         self.mlp_head = nn.Sequential(
-            nn.LayerNorm(dim),
-            nn.Linear(dim, num_classes)
+            nn.LayerNorm(dim),  # 正则化
+            nn.Linear(dim, num_classes) # 线性输出
         )
 
     def forward(self, img):
