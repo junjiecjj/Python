@@ -670,104 +670,175 @@ print(torch.nonzero(a).squeeze())
 
 
 
+#================================================= nn.LayerNorm =================================================
 
+import torch
+import torch.nn as nn
+import numpy as np
+a = np.array([[1, 20, 3, 4],
+               [5, 6, 7, 8,],
+               [9, 10, 11, 12]], dtype=np.double)
+b = torch.from_numpy(a).type(torch.FloatTensor)
+a1 = np.zeros_like(a)
 
 
+#只对最后 1 个维度进行标准化
+layer_norm = nn.LayerNorm(4, eps=1e-6) # 最后一个维度大小为4，因此normalized_shape是4
+c = layer_norm(b)
+print(c)
 
+#怎么验证对不对呢？我们可以使用 np 对数组 a 手动计算下标准化看看：
+mean_a = np.mean(a, axis=1)  # 计算最后一个维度的均值 = [7. 6.5 10.5]
+var_a = np.var(a, axis=1)    # 计算最后一个维度的方差 = [57.5 1.25 1.25]
+# 对最后一个维度做标准化 减均值后除以标准差
+a1[0, :] = (a[0, :] - mean_a[0]) / np.sqrt(var_a[0])
+a1[1, :] = (a[1, :] - mean_a[1]) / np.sqrt(var_a[1])
+a1[2, :] = (a[2, :] - mean_a[2]) / np.sqrt(var_a[2])
+print(a1)
 
 
+#举例-对最后 D 个维度进行标准化
 
+layer_norm = nn.LayerNorm([3, 4], eps=1e-6)
+c = layer_norm(b)
+print(c)
 
 
+#怎么做验证呢？也让 np 在所有数据上做标准化：
 
+mean_a = np.mean(a)  # 计算所有数据的均值，返回标量
+var_a = np.var(a)    # 计算所有数据的方差，返回标量
+a = (a - mean_a) / np.sqrt(var_a)  # 对整体做标准化
+print(a)
 
 
+# NLP Example
+batch, sentence_length, embedding_dim = 20, 5, 10
+embedding = torch.randn(batch, sentence_length, embedding_dim)
+layer_norm = nn.LayerNorm(embedding_dim)
+print(f"layer_norm(embedding) = \n{layer_norm(embedding)}")
 
 
 
+# Image Example
+N, C, H, W = 20, 5, 10, 10
+input = torch.randn(N, C, H, W)
+layer_norm = nn.LayerNorm([C, H, W])
+print(f"layer_norm(input) = \n{layer_norm(input)}")
 
 
 
+#================================================= rearrange=================================================
 
+import numpy as np
+import torch
+from einops import rearrange, repeat
 
+a = np.arange(2*3*4*5).reshape(2,3,4,5)
+print(f"a.shape = {a.shape}") #images.shape = (2, 3, 4, 5)
 
+print(f"rearrange(a, 'b h w c -> b h w c').shape = {rearrange(a, 'b h w c -> b h w c').shape}")  #  (2, 3, 4, 5)
 
+#沿height维进行concat
+print(f"rearrange(a, 'b h w c -> (b h) w c').shape = {rearrange(a, 'b h w c -> (b h) w c').shape}")  # (6, 4, 5)
 
 
 
+# 沿width维进行concat
+print(f"rearrange(a, 'b h w c -> h (b w) c').shape = {rearrange(a, 'b h w c -> h (b w) c').shape}")  # (3, 8, 5)
 
 
 
 
+# 转换维度的次序，比如将通道维度放在height和weight前边
+print(f"rearrange(a, 'b h w c -> b c h w').shape = {rearrange(a, 'b h w c -> b c h w').shape}")
 
 
+#放缩宽和高，通道数
+# 这里(h h1) (w w1)就相当于h与w变为原来的1/h1,1/w1倍
+# split each image into 4 smaller (top-left, top-right, bottom-left, bottom-right), 128 = 32 * 2 * 2  ：(128, 15, 20, 3)
+print(rearrange(a, 'b h (w w1) c -> (b  w1) h w c',  w1=2).shape)
 
 
 
+#
+#将单通道灰度图，按照通道层扩增
+import numpy as np
+from einops import rearrange, repeat, reduce
 
+# a grayscale image (of shape height x width)
+image = np.random.randn(2, 3)
+# change it to RGB format by repeating in each channel：(30, 40, 3)
+print(repeat(image, 'h w -> h w c', c=4).shape)
 
 
 
 
+#扩增height，变为原来的2倍
+print(repeat(image, 'h w -> (repeat h) w', repeat=2).shape)
 
 
 
+#扩增weight，变为原来的3倍
+print(repeat(image, 'h w -> h (repeat w)', repeat=3).shape)
 
 
 
+#把每一个pixel扩充4倍
+print(repeat(image, 'h w -> h (repeat w)', repeat=3).shape)
 
 
+#把每一个pixel扩充4倍
+print(repeat(image, 'h w -> (h h2) (w w2)', h2=2, w2=2).shape)
 
 
 
+#先下采样，然后上采样
+downsampled = reduce(image, '(h h2) (w w2) -> h w', 'mean', h2=2, w2=2)
+print(repeat(downsampled, 'h w -> (h h2) (w w2)', h2=2, w2=2).shape)
 
+#减少一维
+import numpy as np
+from einops import rearrange, reduce
 
+x = np.random.randn(100, 32, 64)
+# perform max-reduction on the first axis:(32, 64)
+print(reduce(x, 't b c -> b c', 'max').shape)
 
 
 
+# 和上面的操作一样，只不过，更易读
+# same as previous, but with clearer axes meaning:(32, 64)
+print(reduce(x, 'time batch channel -> batch channel', 'max').shape)
 
 
 
+#模拟最大池化功能
+x = np.random.randn(10, 20, 30, 40)
+# 2d max-pooling with kernel size = 2 * 2 for image processing:(10, 20, 15, 20)
+y1 = reduce(x, 'b c (h1 h2) (w1 w2) -> b c h1 w1', 'max', h2=2, w2=2)
+print(y1.shape)
 
 
 
+#全局平均池化
+print(reduce(x, 'b c h w -> b c', 'mean').shape)
 
 
 
 
+a = np.arange(2*3*4).reshape(2,3,4)
+print(f"a.shape = {a.shape}") #images.shape = (2, 3, 4, 5)
 
+print(f"rearrange(a, 'h w c -> w h c').shape = {rearrange(a, 'h w c -> w h c').shape}")  #  (2, 3, 4, 5)
 
 
 
 
+a = np.arange(2*3*8).reshape(2,3,8)
+print(f"a.shape = {a.shape}") #images.shape = (2, 3, 4, 5)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(f"rearrange(a, 'b n (h d) -> b h n d', h = 2).shape = {rearrange(a, 'b n (h d) -> b h n d', h = 2).shape}")  #  (2, 3, 4, 5)
 
 
 

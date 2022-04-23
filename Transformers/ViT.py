@@ -130,8 +130,8 @@ class Transformer(nn.Module):
         return x
 
 class ViT(nn.Module):
-    def __init__(self, *, image_size, patch_size, num_classes, dim, 
-                 depth, heads, mlp_dim, pool = 'cls', channels = 3, dim_head = 64, dropout = 0., emb_dropout = 0.):
+    def __init__(self, *, image_size, patch_size, num_classes, dim, depth, heads, mlp_dim,
+                 pool = 'cls', channels = 3, dim_head = 64, dropout = 0., emb_dropout = 0.):
         super().__init__()
         image_height, image_width = pair(image_size)
         patch_height, patch_width = pair(patch_size)
@@ -145,8 +145,7 @@ class ViT(nn.Module):
 
         self.to_patch_embedding = nn.Sequential(
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1 = patch_height, p2 = patch_width),
-            nn.Linear(patch_dim, dim),
-        )
+            nn.Linear(patch_dim, dim),)
 
         self.pos_embedding = nn.Parameter(torch.randn(1, num_patches + 1, dim))
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
@@ -163,10 +162,12 @@ class ViT(nn.Module):
         )
 
     def forward(self, img):
-        x = self.to_patch_embedding(img) # 切块操作，shape (b, n, dim)，b为批量，n为切块数目，dim为最终线性操作时输入的神经元个数
+         # 切块操作，shape (b, n, dim)，b为批量，n为切块数目，dim为最终线性操作时输入的神经元个数
+        x = self.to_patch_embedding(img) 
         b, n, _ = x.shape  # shape (b, n, 1024)
-
-        cls_tokens = repeat(self.cls_token, '1 n d -> b n d', b = b) # 分类令牌，将self.cls_token（形状为1, 1, dim）赋值为shape (b, 1, dim)
+        
+        # 分类令牌，将self.cls_token（形状为1, 1, dim）赋值为shape (b, 1, dim)
+        cls_tokens = repeat(self.cls_token, '1 n d -> b n d', b = b) 
         x = torch.cat((cls_tokens, x), dim=1) # 将分类令牌拼接到输入中，x的shape (b, n+1, 1024)
         x += self.pos_embedding[:, :(n + 1)] # 进行位置编码，shape (b, n+1, 1024)
         x = self.dropout(x)

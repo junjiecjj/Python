@@ -234,6 +234,7 @@ X.shape = torch.Size([16, 1, 224, 224]), y.shape = torch.Size([16])   #last
 
 
 #CIFAR10
+#我们使用CIFAR10数据集，CIFAR10由 10 个类别的 60000 张 32x32 彩色图像组成，每类 6000 张图像。这些类是：飞机、汽车、鸟、猫、鹿、狗、青蛙、马、船、卡车。
 import torch, torchvision,sys
 
 
