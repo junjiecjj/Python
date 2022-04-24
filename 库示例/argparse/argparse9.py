@@ -16,11 +16,12 @@ parser.add_argument('--foo', action='store_true')
 parser.add_argument('--foa', action='store_true')
 parser.add_argument('--bar', action='store_false')
 parser.add_argument('--baz', action='store_false')
+parser.add_argument('--data_train', type=str, default='DIV2K+CAF10+MINST', help='train dataset name')
 
 
 args = parser.parse_args()
 args, unparsed = parser.parse_known_args()
-
+args.data_train = args.data_train.split('+')
 
 print(f"args = {args}")
 
@@ -36,7 +37,7 @@ foo ------> False
 foa ------> False
 bar ------> True
 baz ------> True
-
+data_train ------> ['DIV2K', 'CAF10', 'MINST']
 
 
 ❯ python argparse9.py --foo --bar
@@ -45,7 +46,7 @@ foo ------> True
 foa ------> False
 bar ------> False
 baz ------> True
-
+data_train ------> ['DIV2K', 'CAF10', 'MINST']
 
 
 """

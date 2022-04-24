@@ -1,33 +1,20 @@
 #!/usr/bin/env python3.6
 #-*-coding=utf-8-*-
 
+import mindspore_hub as mshub
 
-import argparse
-def basic_options():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--data_mode', type=str, default= 'unaligned', help='chooses how datasets are loaded')
-    parser.add_argument('--mode', type=str, default='test', help='test mode')
-    return parser
+from mindspore import context
 
-def data_options(parser):
-    parser.add_argument('--lr', type=str, default='0.0001', help='learning rate')
-    return parser
+from src.args import args
 
-if __name__ == '__main__':
-    parser = basic_options()
-    opt, unparsed = parser.parse_known_args()
-    print(opt)
-    print(unparsed)
-    parser = data_options(parser)
-    opt = parser.parse_args()
-    print(opt)
+context.set_context(mode=context.PYNATIVE_MODE,
+                    device_target="GPU",
+                    device_id=0)
 
+model = "noah-cvlab/gpu/1.1/ipt_v1.0_Set14_SR_x4"
+network = mshub.load(model, args)
 
-
-
-
-
-
+network.set_train(False)
 
 
 

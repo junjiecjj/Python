@@ -16,7 +16,11 @@ group.add_argument("-v", "--verbose", action="store_true") #在互斥组中添�
 group.add_argument("-q", "--quiet", action="store_true")
 parser.add_argument("x", type=int, help="the base")
 parser.add_argument("y", type=int, help="the exponent")
+parser.add_argument('--data_train', type=str, default='DIV2K+CAF10+MINST', help='train dataset name')
+
 args = parser.parse_args()
+args.data_train = args.data_train.split('+')
+
 answer = args.x**args.y
 
 if args.quiet:
