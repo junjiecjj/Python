@@ -23,7 +23,7 @@ print(args)
 
 
 #==========================================================================
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="miao shu")
 #parser.add_argument('--data-dir', default='data/train_data.pkl', type=str)
 parser.add_argument('--vocab-file', default='europarl/vocab.json', type=str)
 parser.add_argument('--checkpoint-path', default='checkpoints/deepsc-Rayleigh', type=str)

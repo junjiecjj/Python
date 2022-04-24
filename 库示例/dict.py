@@ -350,9 +350,13 @@ print (sorted(lis, key = lambda i: i['age'],reverse=True) )
 # Python字典（dict ）的几种遍历方式
 #========================================================================
 #1.使用 for key in dict 遍历字典
-x = {'a': 'A', 'b': 'B'}
+x = {'a': 'A', 'b': 'B','chen':'liang','junjie':'qingxia'}
 for key in x:
-    print(key)
+    print(f"key={key}, value={x[key]}")
+
+
+for key in x:
+    print(f"key={key}")
 
 #2.使用 for key in dict.keys () 遍历字典的键
 # keys
