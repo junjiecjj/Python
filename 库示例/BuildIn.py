@@ -451,6 +451,477 @@ int('101')
 
 
 
+"""
+描述
+getattr() 函数用于返回一个对象属性值。
+
+语法
+getattr 语法：
+
+getattr(object, name[, default])
+参数
+object -- 对象。
+name -- 字符串，对象属性。
+default -- 默认返回值，如果不提供该参数，在没有对应属性时，将触发 AttributeError。
+返回值
+返回对象属性值。
+"""
+class A(object):
+     def set(self, a, b):
+          x = a        
+          a = b        
+          b = x        
+          print( a, b   )
+
+a = A()       
+c = getattr(a, 'set')
+c(a='1', b='2')
+
+getattr(A(), 'set')(a=12,b=23)
+
+
+
+
+"""
+Python compile() 函数
+Python 内置函数 Python 内置函数
+
+描述
+compile() 函数将一个字符串编译为字节代码。
+
+语法
+以下是 compile() 方法的语法:
+
+compile(source, filename, mode[, flags[, dont_inherit]])
+参数
+source -- 字符串或者AST（Abstract Syntax Trees）对象。。
+filename -- 代码文件名称，如果不是从文件读取代码则传递一些可辨认的值。
+mode -- 指定编译代码的种类。可以指定为 exec, eval, single。
+flags -- 变量作用域，局部命名空间，如果被提供，可以是任何映射对象。。
+flags和dont_inherit是用来控制编译源码时的标志
+返回值
+返回表达式执行结果。
+"""
+
+str = "for i in range(0,10): print(i)" 
+c = compile(str,'','exec')   # 编译为字节代码对象 
+print(f"c = {c}")
+
+exec(c)
+
+
+
+
+"""
+Python locals() 函数
+Python 内置函数 Python 内置函数
+
+描述
+locals() 函数会以字典类型返回当前位置的全部局部变量。
+
+对于函数, 方法, lambda 函式, 类, 以及实现了 __call__ 方法的类实例, 它都返回 True。
+
+语法
+locals() 函数语法：
+
+locals()
+参数
+无
+返回值
+返回字典类型的局部变量。
+"""
+
+
+def runoob(arg):    # 两个局部变量：arg、z
+     z = 1
+     print (locals())
+
+runoob(4)
+#{'z': 1, 'arg': 4}      # 返回一个名字/值对的字典
+
+
+
+
+
+"""
+Python xrange() 函数
+Python 内置函数 Python 内置函数
+
+描述
+xrange() 函数用法与 range 完全相同，所不同的是生成的不是一个数组，而是一个生成器。
+
+语法
+xrange 语法：
+
+xrange(stop)
+xrange(start, stop[, step])
+参数说明：
+
+start: 计数从 start 开始。默认是从 0 开始。例如 xrange(5) 等价于 xrange(0， 5)
+stop: 计数到 stop 结束，但不包括 stop。例如：xrange(0， 5) 是 [0, 1, 2, 3, 4] 没有 5
+step：步长，默认为1。例如：xrange(0， 5) 等价于 xrange(0, 5, 1)
+返回值
+返回生成器。
+"""
+
+
+xrange(8)
+#xrange(8)
+list(xrange(8))
+#[0, 1, 2, 3, 4, 5, 6, 7]
+range(8)                 # range 使用
+#[0, 1, 2, 3, 4, 5, 6, 7]
+xrange(3, 5)
+xrange(3, 5)
+list(xrange(3,5))
+#[3, 4]
+range(3,5)               # 使用 range
+#[3, 4]
+xrange(0,6,2)
+xrange(0, 6, 2)              # 步长为 2
+list(xrange(0,6,2))
+#[0, 2, 4]
+
+
+
+"""
+Python vars() 函数
+Python 内置函数 Python 内置函数
+
+描述
+vars() 函数返回对象object的属性和属性值的字典对象。
+
+语法
+vars() 函数语法：
+
+vars([object])
+参数
+object -- 对象
+返回值
+返回对象object的属性和属性值的字典对象，如果没有参数，就打印当前调用位置的属性和属性值 类似 locals()。
+"""
+
+class Runoob:
+     a = 1
+print(vars(Runoob))
+# {'a': 1, '__module__': '__main__', '__doc__': None}
+runoob = Runoob()
+print(vars(runoob))
+
+
+
+
+
+"""
+Python bytearray() 函数
+Python 内置函数 Python 内置函数
+
+描述
+bytearray() 方法返回一个新字节数组。这个数组里的元素是可变的，并且每个元素的值范围: 0 <= x < 256。
+
+语法
+bytearray()方法语法：
+
+class bytearray([source[, encoding[, errors]]])
+参数
+如果 source 为整数，则返回一个长度为 source 的初始化数组；
+如果 source 为字符串，则按照指定的 encoding 将字符串转换为字节序列；
+如果 source 为可迭代类型，则元素必须为[0 ,255] 中的整数；
+如果 source 为与 buffer 接口一致的对象，则此对象也可以被用于初始化 bytearray。
+如果没有输入任何参数，默认就是初始化数组为0个元素。
+返回值
+返回新字节数组。
+"""
+bytearray()
+# bytearray(b'')
+
+bytearray([1,2,3])
+#bytearray(b'\x01\x02\x03')
+
+
+bytearray('runoob', 'utf-8')
+#bytearray(b'runoob')
+
+
+
+"""
+Python hex() 函数
+Python 内置函数 Python 内置函数
+
+描述
+hex() 函数用于将10进制整数转换成16进制，以字符串形式表示。
+
+语法
+hex 语法：
+
+hex(x)
+参数说明：
+
+x -- 10进制整数
+返回值
+返回16进制数，以字符串形式表示。
+"""
+hex(255)
+# '0xff'
+hex(-42)
+# '-0x2a'
+hex(1L)
+# '0x1L'
+hex(12)
+# '0xc'
+type(hex(12))
+# <class 'str'>      # 字符串
+
+
+
+"""
+Python frozenset() 函数
+Python 内置函数 Python 内置函数
+
+描述
+frozenset() 返回一个冻结的集合，冻结后集合不能再添加或删除任何元素。
+
+语法
+frozenset() 函数语法：
+
+class frozenset([iterable])
+参数
+iterable -- 可迭代的对象，比如列表、字典、元组等等。
+返回值
+返回新的 frozenset 对象，如果不提供任何参数，默认会生成空集合。
+"""
+
+a = frozenset(range(10))     # 生成一个新的不可变集合
+a
+frozenset([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+b = frozenset('runoob') 
+b
+#frozenset(['b', 'r', 'u', 'o', 'n'])   # 创建不可变集合
+
+
+
+
+
+"""
+描述
+hasattr() 函数用于判断对象是否包含对应的属性。
+
+语法
+hasattr 语法：
+
+hasattr(object, name)
+参数
+object -- 对象。
+name -- 字符串，属性名。
+返回值
+如果对象有该属性返回 True，否则返回 False。
+
+实例
+以下实例展示了 hasattr 的使用方法：
+"""
+
+class Coordinate:
+    x = 10
+    y = -5
+    z = 0
+ 
+point1 = Coordinate() 
+print(hasattr(point1, 'x'))
+print(hasattr(point1, 'y'))
+print(hasattr(point1, 'z'))
+print(hasattr(point1, 'no'))  # 没有该属性
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
