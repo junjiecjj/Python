@@ -734,55 +734,320 @@ print(hasattr(point1, 'no'))  # 没有该属性
 
 
 
+"""
+Python int() 函数
+Python 内置函数 Python 内置函数
+
+描述
+int() 函数用于将一个字符串或数字转换为整型。
+
+语法
+以下是 int() 方法的语法:
+
+class int(x, base=10)
+参数
+x -- 字符串或数字。
+base -- 进制数，默认十进制。
+返回值
+返回整型数据。
+"""
+int()               # 不传入参数时，得到结果0
+#0
+int(3)
+#3
+int(3.6)
+#3
+int('12',16)        # 如果是带参数base的话，12要以字符串的形式进行输入，12 为 16进制
+#18
+int('0xa',16)  
+#10  
+int('10',8)  
+#8
+
+#x 有两种：str / int
+
+#1、若 x 为纯数字，则不能有 base 参数，否则报错；其作用为对入参 x 取整
+int(3.1415926)
+#3
+
+int(-11.123)
+#-11
+
+int(2.5,10)
+#报错
+int(2.5)
+#2
+
+#2、若 x 为 str，则 base 可略可有。
+#base 存在时，视 x 为 base 类型数字，并将其转换为 10 进制数字。
+#若 x 不符合 base 规则，则报错。如:
+
+int("9",2)  #报错，因为2进制无9
+int("9")
+#9 
+#默认10进制
+int("3.14",8)
+int("1.2")
+#均报错，str须为整数
+int("1001",2)
+#9
+# "1001"才是2进制格式，并转化为十进制数字9
+int("0xa",16)
+#10
+# ≥16进制才会允许入参为a,b,c...
+int("b",8) #报错
+int("123",8)
+#83
+#视123为8进制数字，对应的10进制为83
+
+
+
+
+"""
+Python input() 函数
+Python 内置函数 Python 内置函数
+
+1、在 Python2.x 中 raw_input( ) 和 input( )，两个函数都存在，其中区别为:
+
+raw_input( ) 将所有输入作为字符串看待，返回字符串类型。
+input( ) 只能接收"数字"的输入，在对待纯数字输入时具有自己的特性，它返回所输入的数字的类型（ int, float ）。
+2、在 Python3.x 中 raw_input( ) 和 input( ) 进行了整合，去除了 raw_input( )，仅保留了 input( ) 函数，其接收任意任性输入，将所有输入默认为字符串处理，并返回字符串类型。
+
+函数语法
+input([prompt])
+参数说明：
+
+prompt: 提示信息
+"""
+
+a = input("input:") # #input的输出结果都是作为字符串
+#input:123                  # 输入整数
+type(a)
+#<type 'int'>               # 整型
+a = input("input:")    
+#input:"runoob"           # 正确，字符串表达式
+type(a)
+#<type 'str'>             # 字符串
+a = input("input:")
+#input:runoob               # 报错，不是表达式
+#Traceback (most recent call last):
+#  File "<stdin>", line 1, in <module>
+#  File "<string>", line 1, in <module>
+#NameError: name 'runoob' is not defined
+#<type 'str'>
+
+
+
+"""
+Python ord() 函数
+Python 内置函数 Python 内置函数
+
+描述
+ord() 函数是 chr() 函数（对于8位的ASCII字符串）或 unichr() 函数（对于Unicode对象）的配对函数，它以一个字符（长度为1的字符串）作为参数，返回对应的 ASCII 数值，或者 Unicode 数值，如果所给的 Unicode 字符超出了你的 Python 定义范围，则会引发一个 TypeError 的异常。
+
+语法
+以下是 ord() 方法的语法:
+
+ord(c)
+参数
+c -- 字符。
+返回值
+返回值是对应的十进制整数。
+"""
+
+
+ord('a')
+#97
+ord('b')
+#98
+ord('c')
+#99
+
+
+
+"""
+Python hash() 函数
+Python 内置函数 Python 内置函数
+
+描述
+hash() 用于获取取一个对象（字符串或者数值等）的哈希值。
+
+语法
+hash 语法：
+
+hash(object)
+参数说明：
+
+object -- 对象；
+返回值
+返回对象的哈希值。
+
+实例
+以下实例展示了 hash 的使用方法："""
+
+
+hash('test')            # 字符串
+#2314058222102390712
+hash(1)                 # 数字
+#1
+hash(str([1,2,3]))      # 集合
+#1335416675971793195
+hash(str(sorted({'1':1}))) # 字典
+#7666464346782421378
+
+
+"""
+Python oct() 函数
+Python 内置函数 Python 内置函数
+
+描述
+oct() 函数将一个整数转换成 8 进制字符串。
+
+Python2.x 版本的 8 进制以 0 作为前缀表示。
+Python3.x 版本的 8 进制以 0o 作为前缀表示。
+语法
+oct 语法：
+
+oct(x)
+参数说明：
+
+x -- 整数。
+"""
+
+
+oct(10)
+#'0o12'
+oct(20)
+#'0o24'
+oct(15)
+#'0o17'
+
+
+
+
+"""
+Python exec 内置语句
+Python 内置函数 Python 内置函数
+
+描述
+exec 执行储存在字符串或文件中的Python语句，相比于 eval，exec可以执行更复杂的 Python 代码。
+
+需要说明的是在 Python2 中exec不是函数，而是一个内置语句(statement)，但是Python 2中有一个 execfile() 函数。可以理解为 Python 3 把 exec 这个 statement 和 execfile() 函数的功能够整合到一个新的 exec() 函数中去了。
+
+语法
+以下是 exec 的语法:
+
+exec obj
+参数
+obj -- 要执行的表达式。
+返回值
+exec 返回值永远为 None。
+"""
+
+
+exec ('print ("Hello World")')
+Hello World
+# 单行语句字符串
+exec "print 'runoob.com'"
+runoob.com
+ 
+#  多行语句字符串
+exec ("""for i in range(5):
+     print ("iter time: %d" % i)
+     """)
+
+
+
+x = 10
+expr = """
+z = 30
+sum = x + y + z
+print(sum)
+"""
+def func():
+    y = 20
+    exec(expr)
+    exec(expr, {'x': 1, 'y': 2})
+    exec(expr, {'x': 1, 'y': 2}, {'y': 3, 'z': 4})
+    
+func()
 
 
 
 
 
+"""
+https://www.runoob.com/python/python-func-super.html
+super()
+
+Python super() 函数
+Python 内置函数 Python 内置函数
+
+描述
+super() 函数是用于调用父类(超类)的一个方法。
+
+super() 是用来解决多重继承问题的，直接用类名调用父类方法在使用单继承的时候没问题，但是如果使用多继承，会涉及到查找顺序（MRO）、重复调用（钻石继承）等种种问题。
+
+MRO 就是类的方法解析顺序表, 其实也就是继承父类方法时的顺序表。
+
+语法
+以下是 super() 方法的语法:
+
+super(type[, object-or-type])
+参数
+type -- 类。
+object-or-type -- 类，一般是 self
+
+"""
+
+
+
+class FooParent(object):
+    def __init__(self):
+        self.parent = 'I\'m the parent.'
+        print ('Parent')
+    
+    def bar(self,message):
+        print ("%s from Parent" % message)
+ 
+class FooChild(FooParent):
+    def __init__(self):
+        # super(FooChild,self) 首先找到 FooChild 的父类（就是类 FooParent），并用FooParent的初始化方法初始化子类FooChild
+        super(FooChild,self).__init__()    
+        print ('Child')
+        
+    def bar(self,message):
+        super(FooChild, self).bar(message)
+        print ('Child bar fuction')
+        print (self.parent)
+
+if __name__ == '__main__':
+    fooChild = FooChild()
+    fooChild.bar('HelloWorld')
 
 
 
 
+"""
+Python bin() 函数
+Python 内置函数 Python 内置函数
 
+描述
+bin() 返回一个整数 int 或者长整数 long int 的二进制表示。
 
+语法
+以下是 bin() 方法的语法:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+bin(x)
+参数
+x -- int 或者 long int 数字
+返回值
+字符串。
+"""
+bin(10)
+# '0b1010'
+bin(20)
+# '0b10100'
 
 
 
