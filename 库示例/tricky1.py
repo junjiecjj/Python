@@ -177,44 +177,46 @@ f = csv.reader(f, delimiter='\t')
 #itertools 中定义了很多迭代器工具，例如子序列工具：
 
 import itertools
-itertools.islice(iterable, start=None, stop, step=None)
-# islice('ABCDEF', 2, None) -> C, D, E, F
+# itertools.islice(iterable, start=None, stop, step=None)
+itertools.islice('ABCDEF', 2, None) #-> C, D, E, F
 
-itertools.filterfalse(predicate, iterable)         # 过滤掉predicate为False的元素
-# filterfalse(lambda x: x < 5, [1, 4, 6, 4, 1]) -> 6
+#itertools.filterfalse(predicate, iterable)         # 过滤掉predicate为False的元素
+itertools.filterfalse(lambda x: x < 5, [1, 4, 6, 4, 1]) #-> 6
 
-itertools.takewhile(predicate, iterable)           # 当predicate为False时停止迭代
-# takewhile(lambda x: x < 5, [1, 4, 6, 4, 1]) -> 1, 4
+#itertools.takewhile(predicate, iterable)           # 当predicate为False时停止迭代
+itertools.takewhile(lambda x: x < 5, [1, 4, 6, 4, 1]) #-> 1, 4
 
-itertools.dropwhile(predicate, iterable)           # 当predicate为False时开始迭代
-# dropwhile(lambda x: x < 5, [1, 4, 6, 4, 1]) -> 6, 4, 1
+#itertools.dropwhile(predicate, iterable)           # 当predicate为False时开始迭代
+itertools.dropwhile(lambda x: x < 5, [1, 4, 6, 4, 1]) #-> 6, 4, 1
 
-itertools.compress(iterable, selectors)            # 根据selectors每个元素是True或False进行选择
-# compress('ABCDEF', [1, 0, 1, 0, 1, 1]) -> A, C, E, F
+#itertools.compress(iterable, selectors)            # 根据selectors每个元素是True或False进行选择
+itertools.compress('ABCDEF', [1, 0, 1, 0, 1, 1]) #-> A, C, E, F
+
+
 #序列排序：
+#itertools.sorted(iterable, key=None, reverse=False)
 
-sorted(iterable, key=None, reverse=False)
+#itertools.groupby(iterable, key=None)              # 按值分组，iterable需要先被排序
+itertools.groupby(sorted([1, 4, 6, 4, 1])) #-> (1, iter1), (4, iter4), (6, iter6)
 
-itertools.groupby(iterable, key=None)              # 按值分组，iterable需要先被排序
-# groupby(sorted([1, 4, 6, 4, 1])) -> (1, iter1), (4, iter4), (6, iter6)
+#itertools.permutations(iterable, r=None)           # 排列，返回值是Tuple
+itertools.permutations('ABCD', 2) #-> AB, AC, AD, BA, BC, BD, CA, CB, CD, DA, DB, DC
 
-itertools.permutations(iterable, r=None)           # 排列，返回值是Tuple
-# permutations('ABCD', 2) -> AB, AC, AD, BA, BC, BD, CA, CB, CD, DA, DB, DC
+#itertools.combinations(iterable, r=None)           # 组合，返回值是Tuple
+#itertools.combinations_with_replacement(...)
+itertools.combinations('ABCD', 2) #-> AB, AC, AD, BC, BD, CD
 
-itertools.combinations(iterable, r=None)           # 组合，返回值是Tuple
-itertools.combinations_with_replacement(...)
-# combinations('ABCD', 2) -> AB, AC, AD, BC, BD, CD
+
 #多个序列合并：
-
-itertools.chain(*iterables)                        # 多个序列直接拼接
-# chain('ABC', 'DEF') -> A, B, C, D, E, F
+#itertools.chain(*iterables)                        # 多个序列直接拼接
+itertools.chain('ABC', 'DEF') # -> A, B, C, D, E, F
 
 import heapq
-heapq.merge(*iterables, key=None, reverse=False)   # 多个序列按顺序拼接
-# merge('ABF', 'CDE') -> A, B, C, D, E, F
+# heapq.merge(*iterables, key=None, reverse=False)   # 多个序列按顺序拼接
+itertools.merge('ABF', 'CDE') # -> A, B, C, D, E, F
 
-zip(*iterables)                                    # 当最短的序列耗尽时停止，结果只能被消耗一次
-itertools.zip_longest(*iterables, fillvalue=None)  # 当最长的序列耗尽时停止，结果只能被消耗一次
+# zip(*iterables)                                    # 当最短的序列耗尽时停止，结果只能被消耗一次
+# itertools.zip_longest(*iterables, fillvalue=None)  # 当最长的序列耗尽时停止，结果只能被消耗一次
 
 
 #3.3 计数器
@@ -222,19 +224,19 @@ itertools.zip_longest(*iterables, fillvalue=None)  # 当最长的序列耗尽时
 
 import collections
 # 创建
-collections.Counter(iterable)
+# collections.Counter(iterable)
 
 # 频次
-collections.Counter[key]                 # key出现频次
+#collections.Counter[key]                 # key出现频次
 # 返回n个出现频次最高的元素和其对应出现频次，如果n为None，返回所有元素
-collections.Counter.most_common(n=None)
+#collections.Counter.most_common(n=None)
 
 # 插入/更新
-collections.Counter.update(iterable)
-counter1 + counter2; counter1 - counter2  # counter加减
+#collections.Counter.update(iterable)
+#counter1 + counter2; counter1 - counter2  # counter加减
 
 # 检查两个字符串的组成元素是否相同
-collections.Counter(list1) == collections.Counter(list2)
+# collections.Counter(list1) == collections.Counter(list2)
 #3.4 带默认值的 Dict
 #当访问不存在的 Key 时，defaultdict 会将其设置为某个默认值。
 
@@ -254,7 +256,7 @@ sys.stderr.write('')
 #输出警告信息
 
 import warnings
-warnings.warn(message, category=UserWarning)  
+# warnings.warn(message, category=UserWarning)  
 # category的取值有DeprecationWarning, SyntaxWarning, RuntimeWarning, ResourceWarning, FutureWarning
 #控制警告消息的输出
 
