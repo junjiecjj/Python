@@ -1341,6 +1341,96 @@ except:
 # 可以递归创建./two/three目录
 
 
+"""
+得到当前工作目录，即当前Python脚本工作的目录路径: os.getcwd()
+
+返回指定目录下的所有文件和目录名:os.listdir()
+
+函数用来删除一个文件:os.remove()
+
+删除多个目录：os.removedirs（r“c：\python”）
+
+检验给出的路径是否是一个文件：os.path.isfile()
+
+检验给出的路径是否是一个目录：os.path.isdir()
+
+判断是否是绝对路径：os.path.isabs()
+
+检验给出的路径是否真地存:os.path.exists()
+
+返回一个路径的目录名和文件名:os.path.split()
+
+分离扩展名：os.path.splitext()
+
+获取路径名：os.path.dirname()
+
+获取文件名：os.path.basename()
+
+运行shell命令: os.system()
+
+读取和设置环境变量:os.getenv()与os.putenv()
+
+给出当前平台使用的行终止符:os.linesep Windows使用’\r\n’，Linux使用’\n’而Mac使用’\r’
+
+指示你正在使用的平台：os.name 对于Windows，它是’nt’，而对于Linux/Unix用户，它是’posix’
+
+重命名：os.rename（old， new）
+
+创建多级目录：os.makedirs（r“c：\python\test”）
+
+创建单个目录：os.mkdir（“test”）
+
+获取文件属性：os.stat（file）
+
+修改文件权限与时间戳：os.chmod（file）
+
+终止当前进程：os.exit（）
+
+获取文件大小：os.path.getsize（filename）
+
+
+创建目录
+os.mkdir("file")
+复制文件：
+shutil.copyfile("oldfile","newfile") #oldfile和newfile都只能是文件
+shutil.copy("oldfile","newfile") #oldfile只能是文件夹，newfile可以是文件，也可以是目标目录
+复制文件夹：
+shutil.copytree("olddir","newdir") #olddir和newdir都只能是目录，且newdir必须不存在
+重命名文件（目录）
+os.rename("oldname","newname") #文件或目录都是使用这条命令
+移动文件（目录）
+shutil.move("oldpos","newpos")
+删除文件
+os.remove("file")
+删除目录
+os.rmdir("dir") #只能删除空目录
+shutil.rmtree("dir") #空目录、有内容的目录都可以删
+转换目录
+os.chdir("path") #换路径
+
+
+os.path 模块提供了一些函数， 返回一个相对路径的绝对路径， 以及检查给定的路径是否为绝对路径。
+
+调用 os.path.abspath(path)将返回参数的绝对路径的字符串。这是将相对路径转换为绝对路径的简便方法。
+调用 os.path.isabs(path)，如果参数是一个绝对路径，就返回 True，如果参数是一个相对路径，就返回 False。
+调用 os.path.relpath(path, start)将返回从 start 路径到 path 的相对路径的字符串。如果没有提供 start，就使用当前工作目录作为开始路径。
+调用 os.listdir(path)将返回文件名字符串的列表，包含 path 参数中的每个文件（这个函数在 os 模块中，而不是 os.path）。
+
+检查路径有效性
+如果你提供的路径不存在， 许多 Python 函数就会崩溃并报错。 os.path 模块提供了一些函数，用于检测给定的路径是否存在，以及它是文件还是文件夹。
+
+如果 path 参数所指的文件或文件夹存在， 调用 os.path.exists(path)将返回 True，否则返回 False。
+如果 path 参数存在，并且是一个文件， 调用 os.path.isfile(path)将返回 True， 否则返回 False。
+如果 path 参数存在， 并且是一个文件夹， 调用 os.path.isdir(path)将返回 True，否则返回 False。
+在现代Python版本中，可以使用os.scandir()和 pathlib.Path 来替代 os.listdir()。
+os.scandir()调用时返回一个迭代器而不是一个列表。
+
+import os
+with os.scandir('my_directory') as entries:
+    for entry in entries:
+        print(entry.name)
+"""
+
 # change directory
 import os, sys
 
@@ -1355,14 +1445,16 @@ retval = os.getcwd()
 print ( f"当前工作目录为 {retval} ")
 
 
+import glob
+glob.glob(os.path.join('/home/jack/图片/Wallpapers', '*' + '.jpg'))
+
+# ['/home/jack/图片/Wallpapers/DSC_4564.jpg',
+#  '/home/jack/图片/Wallpapers/DSC_4352.jpg']
 
 
-
-
-
-
-
-
+sorted(glob.glob(os.path.join('/home/jack/图片/Wallpapers', '*' + '.jpg')))
+# ['/home/jack/图片/Wallpapers/DSC_4352.jpg',
+#  '/home/jack/图片/Wallpapers/DSC_4564.jpg']
 
 
 
