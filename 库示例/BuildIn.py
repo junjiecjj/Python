@@ -1250,24 +1250,109 @@ a='runoob'
 print(globals()) # globals 函数返回一个全局变量的字典，包括所有导入的变量。
 
 
+"""
+os.mkdir()
+用法
+mkdir(path,mode)
+1
+参数
+path ：要创建的目录的路径（绝对路径或者相对路径）
+mode ： Linux 目录权限数字表示，windows 请忽略该参数
+权限种类分为三种，分别为 读，写，可执行。
+身份为 owners，groups，others 三种。
+3 × 3 共有 9种 权限
+使用 3 个数字表示3个身份的权限
+对于任何一个身份，可读 为 4，可写为 2，可执行为 1，用户具有的权限为相应的权重相加的结果，例如具有可读和可写权限，但是没有执行权限，则数字为 1 + 2=3。
+默认是 777
+注意： mkdir 只能创建一个目录，不能递归创建目录，例如创建 ./two/three 目录的时候，./two 目录必须存在，否则报错，另外需要注意的是，如果已经存在了目录，则创建目录也会失败！
+
+
+
+os.makedirs()
+用法
+makedirs(path, mode=0o777, exist_ok=False):
+1
+参数
+path : 要创建的目录，绝对路径或者相对路径
+mode： 和上面一样，windows 用户请忽略
+exist_ok：如果已经存在怎么处理，默认是 False ，即：已经存在程序报错。当为 True 时，创建目录的时候如果已经存在就不报错。
+
+"""
 
 
 
 
+# python 3
+import os
+path1="./one"
+path2="./one/two"
+path3="./two/three"
+
+try:
+    os.mkdir(path1)
+    print("创建"+path1+"成功")
+except:
+    pass
+
+try:
+    os.mkdir(path2)
+    print("创建" + path2 + "成功")
+except:
+    pass
+
+try:
+    os.mkdir(path3)
+except:
+    print("无法创建{0}目录".format(path3))
+
+# 输出：
+# 创建./one成功
+# 创建./one/two成功
+# 无法创建./two/three目录
 
 
 
+import os
+path1="./one"
+path2="./one/two"
+path3="./two/three"
+
+try:
+    os.makedirs(path1,exist_ok=True)
+    print("创建"+path1+"成功，或者目录已经存在")
+except:
+    pass
+
+try:
+    os.makedirs(path2,exist_ok=True)
+    print("创建" + path2 + "成功，或者目录已经存在")
+except:
+    pass
+
+try:
+    os.makedirs(path3,exist_ok=True)
+    print("可以递归创建{0}目录".format(path3))
+except:
+    pass
+
+# 输出结果
+# 创建./one成功，或者目录已经存在
+# 创建./one/two成功，或者目录已经存在
+# 可以递归创建./two/three目录
 
 
+# change directory
+import os, sys
+
+path = "/home/jack/tmp"
+
+retval = os.getcwd()
+print ( f"当前工作目录为 {retval} ")
 
 
-
-
-
-
-
-
-
+os.chdir(path)
+retval = os.getcwd()
+print ( f"当前工作目录为 {retval} ")
 
 
 
