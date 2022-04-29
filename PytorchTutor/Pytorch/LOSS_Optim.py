@@ -92,7 +92,27 @@ $ loss(o,t)=-\frac{1}{n}\sum_iweights[i] *(t[i]* log(o[i])+(1-t[i])* log(1-o[i])
 用的时候需要在该层前面加上 Sigmoid 函数。
 
 """
+#====================================================
+print("=="*60)
+print("   nn.L1Loss  ")
+print("=="*60)
+import torch
+import torch.nn as nn
 
+input = torch.randn(3, 5, requires_grad=True)
+target = torch.randn(3, 5)
+
+loss = nn.L1Loss(reduction='none')
+output = loss(input, target)
+print(f"output = {output}")
+
+loss = nn.L1Loss(reduction='mean')
+output = loss(input, target)
+print(f"output = {output}")
+
+loss = nn.L1Loss(reduction='sum')
+output = loss(input, target)
+print(f"output = {output}")
 
 
 # https://zhuanlan.zhihu.com/p/98785902
