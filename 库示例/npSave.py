@@ -206,7 +206,7 @@ print(f"ar2 = \n{ar2}")
 np.save(path1, (ar1,ar2), allow_pickle=True )#如果文件路径末尾没有扩展名.npy，该扩展名会被自动加上。
 
 #读取数组数据, .npy文件
-ar_load = np.load(path1, allow_pickle=True )
+ar_load = np.load(path1, allow_pickle=True )# 必须有allow_pickle=True，否则出错
 print(f"ar_load = \n{ar_load}")
 
 print(f"ar_load[0] = \n{ar_load[0]}")
@@ -220,35 +220,55 @@ path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
 ar1 = {"Hello":np.random.randint(1,5,size=(4,4)),"Jack":np.random.randint(1,3,size=(2,4))}
 print(f"ar1 = {ar1}")
 
-np.save(path1, ar1, allow_pickle=True )
-ar2_load = np.load(path1, allow_pickle=True)#指定逗号分割符
+np.save(path1, ar1, allow_pickle=True )# 可以没有allow_pickle=True
+ar2_load = np.load(path1, allow_pickle=True)# 必须有allow_pickle=True，否则出错
 print(f"ar2_load[()] = \n{ar2_load[()]}")
-
+print(f"ar2_load.item() = \n{ar2_load.item()}")
 
 print(f"ar2_load[()][\"Hello\"] = \n{ar2_load[()]['Hello']}")
 print(f"ar2_load[()]['Jack'] = \n{ar2_load[()]['Jack']}")
+
+# ar1 = {'Hello': array([[3, 2, 4, 4],
+#        [4, 2, 4, 3],
+#        [3, 3, 4, 2],
+#        [3, 2, 1, 4]]), 'Jack': array([[2, 1, 2, 1],
+#        [2, 2, 1, 2]])}
+# ar2_load[()] = 
+# {'Hello': array([[3, 2, 4, 4],
+#        [4, 2, 4, 3],
+#        [3, 3, 4, 2],
+#        [3, 2, 1, 4]]), 'Jack': array([[2, 1, 2, 1],
+#        [2, 2, 1, 2]])}
+# ar2_load.item() = 
+# {'Hello': array([[3, 2, 4, 4],
+#        [4, 2, 4, 3],
+#        [3, 3, 4, 2],
+#        [3, 2, 1, 4]]), 'Jack': array([[2, 1, 2, 1],
+#        [2, 2, 1, 2]])}
 # ar2_load[()]["Hello"] = 
-# [[1 3 3 2]
-#  [2 4 1 2]
-#  [4 1 4 2]
-#  [4 3 3 1]]
+# [[3 2 4 4]
+#  [4 2 4 3]
+#  [3 3 4 2]
+#  [3 2 1 4]]
 # ar2_load[()]['Jack'] = 
-# [[1 1 2 1]
-#  [1 1 1 1]]
+# [[2 1 2 1]
+#  [2 2 1 2]]
 
 
+import numpy as np
+	# define
+dict = {'a' : {1,2,3}, 'b': {4,5,6}}
+	# save
+np.save(path1,dict)
+	# load
+dict_load=np.load(path1, allow_pickle=True)
+	
+print("dict =",dict_load.item())
+print("dict['a'] =",dict_load.item()['a'])
 
-#保存1个字典为npy
-dict_ = {'a' : 1, 'b': 2}
-np.save('/home/jack/公共的/MLData/TrashFile/test2.npy',dict_, allow_pickle=True)
-dict_load=np.load('/home/jack/公共的/MLData/TrashFile/test2.npy', allow_pickle=True)
-print(f"dict_load = \n{dict_load} \n dict_load[()]['a'] = \n{dict_load[()]['a']} \n dict_load[()]['b'] = \n{dict_load[()]['b']}")
-# dict_load = 
-# {'a': 1, 'b': 2} 
-#  dict_load[()]['a'] = 
-# 1 
-#  dict_load[()]['b'] = 
-# 2
+
+# dict = {'a': {1, 2, 3}, 'b': {4, 5, 6}}
+# dict['a'] = {1, 2, 3}
 
 
 
@@ -293,42 +313,32 @@ ar2 = np.random.randint(1,3,size=(2,4))
 Dic = {"first":[12,21,33], "name":"jack" }
 np.save(path1, (Dic,ar1,ar2), allow_pickle=True )
 Data = np.load(path1, allow_pickle=True)#指定逗号分割符
-print(f"Data[()] = \n{Data[()]}")
+print(f"Data = \n{Data}")
 
-print(f"Data[()][0]['first'] = \n{Data[()][0]['first']}")
-print(f"Data[()][0]['name'] = \n{Data[()][0]['name']}")
-print(f"Data[()][1]  = \n{Data[()][1] }")
-print(f"Data[()][2]  = \n{Data[()][2] }")
+print(f"Data[0]['first'] = \n{Data[0]['first']}")
+print(f"Data[0]['name'] = \n{Data[0]['name']}")
+print(f"Data[1]  = \n{Data[1] }")
+print(f"Data[2]  = \n{Data[2] }")
 
-# Data
-# Out[105]: 
-# array([{'first': [12, 21, 33], 'name': 'jack'}, array([[1, 2, 3, 3],
-#                                                        [1, 1, 2, 4],
-#                                                        [1, 2, 1, 1],
-#                                                        [1, 4, 3, 2]]),
-#        array([[2, 1, 2, 1],
-#               [1, 1, 1, 2]])], dtype=object)
-
-# Data[()][0]
-# Out[106]: {'first': [12, 21, 33], 'name': 'jack'}
-
-# Data[()][0]['first']
-# Out[107]: [12, 21, 33]
-
-# Data[()][0]['name']
-# Out[108]: 'jack'
-
-# Data[()][1]
-# Out[109]: 
-# array([[1, 2, 3, 3],
-#        [1, 1, 2, 4],
-#        [1, 2, 1, 1],
-#        [1, 4, 3, 2]])
-
-# Data[()][2]
-# Out[110]: 
-# array([[2, 1, 2, 1],
-#        [1, 1, 1, 2]])
+# Data = 
+# [{'first': [12, 21, 33], 'name': 'jack'} array([[4, 4, 1, 3],
+#                                                 [4, 2, 4, 4],
+#                                                 [4, 1, 3, 2],
+#                                                 [1, 4, 1, 1]])
+#  array([[2, 2, 1, 1],
+#         [1, 2, 2, 1]])]
+# Data[0]['first'] = 
+# [12, 21, 33]
+# Data[0]['name'] = 
+# jack
+# Data[1]  = 
+# [[4 4 1 3]
+#  [4 2 4 4]
+#  [4 1 3 2]
+#  [1 4 1 1]]
+# Data[2]  = 
+# [[2 2 1 1]
+#  [1 2 2 1]]
 
 
 #同时保存多个数组和多个字典
@@ -339,39 +349,39 @@ Dic1 = {"first":[12,21,33], "name":"jack" }
 Dic2 = {"first":np.arange(6).reshape(2,3), "name":"David" }
 np.save(path1, (Dic1,ar1,ar2,Dic2), allow_pickle=True )
 Data = np.load(path1, allow_pickle=True)#指定逗号分割符
-print(f"Data[()] = \n{Data[()]}")
+print(f"Data = \n{Data}")
 
-print(f"Data[()][0]['first'] = \n{Data[()][0]['first']}")
-print(f"Data[()][0]['name'] = \n{Data[()][0]['name']}")
-print(f"Data[()][1]  = \n{Data[()][1] }")
-print(f"Data[()][2]  = \n{Data[()][2] }")
-print(f"Data[()][3]['first'] = \n{Data[()][3]['first']}")
-print(f"Data[()][3]['name'] = \n{Data[()][3]['name']}")
+print(f"Data[0]['first'] = \n{Data[0]['first']}")
+print(f"Data[0]['name'] = \n{Data[0]['name']}")
+print(f"Data[1]  = \n{Data[1] }")
+print(f"Data[2]  = \n{Data[2] }")
+print(f"Data[3]['first'] = \n{Data[3]['first']}")
+print(f"Data[3]['name'] = \n{Data[3]['name']}")
 
-# Data[()] = 
-# [{'first': [12, 21, 33], 'name': 'jack'} array([[2, 1, 3, 1],
-#                                                 [4, 4, 2, 3],
-#                                                 [1, 1, 3, 4],
-#                                                 [2, 4, 2, 4]])
-#  array([[1, 1, 1, 2],
-#         [2, 2, 2, 2]]) {'first': array([[0, 1, 2],
+# Data = 
+# [{'first': [12, 21, 33], 'name': 'jack'} array([[1, 4, 3, 2],
+#                                                 [1, 1, 2, 4],
+#                                                 [2, 4, 4, 1],
+#                                                 [2, 3, 2, 2]])
+#  array([[2, 1, 1, 1],
+#         [1, 1, 1, 2]]) {'first': array([[0, 1, 2],
 #                               [3, 4, 5]]), 'name': 'David'}]
-# Data[()][0]['first'] = 
+# Data[0]['first'] = 
 # [12, 21, 33]
-# Data[()][0]['name'] = 
+# Data[0]['name'] = 
 # jack
-# Data[()][1]  = 
-# [[2 1 3 1]
-#  [4 4 2 3]
-#  [1 1 3 4]
-#  [2 4 2 4]]
-# Data[()][2]  = 
-# [[1 1 1 2]
-#  [2 2 2 2]]
-# Data[()][3]['first'] = 
+# Data[1]  = 
+# [[1 4 3 2]
+#  [1 1 2 4]
+#  [2 4 4 1]
+#  [2 3 2 2]]
+# Data[2]  = 
+# [[2 1 1 1]
+#  [1 1 1 2]]
+# Data[3]['first'] = 
 # [[0 1 2]
 #  [3 4 5]]
-# Data[()][3]['name'] = 
+# Data[3]['name'] = 
 # David
 
 #============================================================================
