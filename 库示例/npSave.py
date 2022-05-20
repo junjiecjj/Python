@@ -203,15 +203,37 @@ ar2 = np.random.randint(1,10,size=(2,4))
 print(f"ar1 = \n{ar1}")
 print(f"ar2 = \n{ar2}")
 
-np.save(path1, (ar1,ar2), allow_pickle=True )#如果文件路径末尾没有扩展名.npy，该扩展名会被自动加上。
+np.save(path1, (ar1,ar2), allow_pickle=True )# 可以没有allow_pickle=True,因为默认为True
 
 #读取数组数据, .npy文件
 ar_load = np.load(path1, allow_pickle=True )# 必须有allow_pickle=True，否则出错
 print(f"ar_load = \n{ar_load}")
-
 print(f"ar_load[0] = \n{ar_load[0]}")
-
 print(f"ar_load[1] = \n{ar_load[1]}")
+
+
+# ar1 = 
+# [[ 0  1  2  3  4  5]
+#  [ 6  7  8  9 10 11]
+#  [12 13 14 15 16 17]
+#  [18 19 20 21 22 23]]
+# ar2 = 
+# [[8 7 7 3]
+#  [5 7 5 7]]
+# ar_load = 
+# [array([[ 0,  1,  2,  3,  4,  5],
+#         [ 6,  7,  8,  9, 10, 11],
+#         [12, 13, 14, 15, 16, 17],
+#         [18, 19, 20, 21, 22, 23]]) array([[8, 7, 7, 3],
+#                                           [5, 7, 5, 7]])]
+# ar_load[0] = 
+# [[ 0  1  2  3  4  5]
+#  [ 6  7  8  9 10 11]
+#  [12 13 14 15 16 17]
+#  [18 19 20 21 22 23]]
+# ar_load[1] = 
+# [[8 7 7 3]
+#  [5 7 5 7]]
 
 
 
@@ -220,8 +242,9 @@ path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
 ar1 = {"Hello":np.random.randint(1,5,size=(4,4)),"Jack":np.random.randint(1,3,size=(2,4))}
 print(f"ar1 = {ar1}")
 
-np.save(path1, ar1, allow_pickle=True )# 可以没有allow_pickle=True
+np.save(path1, ar1, allow_pickle=True )# 可以没有allow_pickle=True,因为默认为True
 ar2_load = np.load(path1, allow_pickle=True)# 必须有allow_pickle=True，否则出错
+print(f"ar2_load = \n{ar2_load}")
 print(f"ar2_load[()] = \n{ar2_load[()]}")
 print(f"ar2_load.item() = \n{ar2_load.item()}")
 
@@ -281,10 +304,10 @@ print(f"ar1 = {ar1}")
 print(f"ar2 = {ar2}")
 print(f"Dic = \n{Dic}")
 
-np.save(path1, Dic, allow_pickle=True )
-Dic_load = np.load(path1, allow_pickle=True)#指定逗号分割符
+np.save(path1, Dic, allow_pickle=True )     # 可以没有allow_pickle=True
+Dic_load = np.load(path1, allow_pickle=True)# 必须有allow_pickle=True，否则出错
 print(f"Dic_load[()] = \n{Dic_load[()]}")
-
+print(f"Dic_load.item() = \n{Dic_load.item()}")
 print(f"Dic_load[()]['first'] = \n{Dic_load[()]['first']}")
 print(f"Dic_load[()]['name'] = \n{Dic_load[()]['name']}")
 
@@ -312,7 +335,7 @@ ar1 =  np.random.randint(1,5,size=(4,4))
 ar2 = np.random.randint(1,3,size=(2,4))
 Dic = {"first":[12,21,33], "name":"jack" }
 np.save(path1, (Dic,ar1,ar2), allow_pickle=True )
-Data = np.load(path1, allow_pickle=True)#指定逗号分割符
+Data = np.load(path1, allow_pickle=True)# 必须有allow_pickle=True，否则出错
 print(f"Data = \n{Data}")
 
 print(f"Data[0]['first'] = \n{Data[0]['first']}")
@@ -348,7 +371,7 @@ ar2 = np.random.randint(1,3,size=(2,4))
 Dic1 = {"first":[12,21,33], "name":"jack" }
 Dic2 = {"first":np.arange(6).reshape(2,3), "name":"David" }
 np.save(path1, (Dic1,ar1,ar2,Dic2), allow_pickle=True )
-Data = np.load(path1, allow_pickle=True)#指定逗号分割符
+Data = np.load(path1, allow_pickle=True)# 必须有allow_pickle=True，否则出错
 print(f"Data = \n{Data}")
 
 print(f"Data[0]['first'] = \n{Data[0]['first']}")
@@ -434,9 +457,9 @@ print(f"ar1 = \n{ar1}\n ar2 = \n{ar2}")
 np.savez(path, A = ar1, B = ar2)
 
 
-DATA = np.load(path)
+DATA = np.load(path)  # 可以没有allow_pickle=True
 print(f"DATA = {DATA}")
-
+print(f"DATA.files = {DATA.files}")
 
 print(f"DATA['A'] = \n{DATA['A']}\nDATA['B'] = \n{DATA['B']}")
 
@@ -450,6 +473,7 @@ print(f"DATA['A'] = \n{DATA['A']}\nDATA['B'] = \n{DATA['B']}")
 # [[ 0 11 22]
 #  [33 44 55]]
 # DATA = <numpy.lib.npyio.NpzFile object at 0x7f24c1853fd0>
+# DATA.files = ['A', 'B']
 # DATA['A'] = 
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
@@ -561,7 +585,8 @@ np.savez_compressed(path, A = ar1, B = ar2)
 
 
 DATA = np.load(path)
-print(DATA)
+print(f"DATA = \n{DATA}")
+print(f"DATA.files = {DATA.files}")
 print(f"DATA['A'] = \n{DATA['A']}\nDATA['B'] = \n{DATA['B']}")
 
 
