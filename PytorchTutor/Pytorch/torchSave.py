@@ -115,13 +115,51 @@ model.eval()
 """
 
 
+# 跨设备存储与加载
+# 跨设备的情况指对于一些数据的保存、加载在不同的设备上，比如一个在CPU上，一个在GPU上的情况，大致可以分为如下几种情况：
+
+# 从CPU保存，加载到CPU
+# 实际上，这就是默认的情况，我们上文提到的所有内容都没有关心设备的问题，因此也就适应于这种情况。
+
+# 从CPU保存，加载到GPU
+# 保存：依旧使用默认的方法
+# 加载：有两种可选的方式
+# 使用 torch.load() 函数的 map_location 参数指定加载后的数据保存的设备
+# 对于加载后的模型使用 to() 函数发送到设备
+torch.save(net.state_dict(), PATH)
+
+device = torch.device("cuda")
+
+loaded_net = Net()
+loaded_net.load_state_dict(torch.load(PATH, map_location=device))
+# or
+loaded_net.load_state_dict(torch.load(PATH))
+loaded_net.to(device)
 
 
 
+# 从GPU保存，加载到CPU
+# 保存：依旧使用默认的方法
+# 加载：只能使用 torch.load() 函数的 map_location 参数指定加载后的数据保存的设备
+torch.save(net.state_dict(), PATH)
+
+device = torch.device("cpu")
+
+loaded_net = Net()
+loaded_net.load_state_dict(torch.load(PATH, map_location=device))
 
 
 
+# 从GPU保存，加载到GPU
+# 保存：依旧使用默认的方法
+# 加载：只能使用 对于加载后的模型进行 to() 函数发送到设备
+torch.save(net.state_dict(), PATH)
 
+device = torch.device("cuda")
+
+loaded_net = Net()
+loaded_net.load_state_dict(torch.load(PATH))
+loaded_net.to(device)
 
 
 
