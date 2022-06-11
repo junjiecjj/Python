@@ -264,7 +264,7 @@ def test_attention_5D():
      print("Test passed")
 
 
-#test_attention_3D()
+# test_attention_3D()
 # test_attention_2D()
 # test_attention_4D()
 # test_attention_5D()
@@ -304,7 +304,7 @@ class MultiHeadedAttention(nn.Module):
 
         query, key, value = [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)  for l, x in zip(self.linears, (query, key, value)) ]
         #query, key, value = [l(x)  for l, x in zip(self.linears, (query, key, value)) ]
-        #print(f"L = {sys._getframe().f_lineno}, query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
+        print(f"L = {sys._getframe().f_lineno}, query.shape = {query.shape},\nkey.shape={key.shape},\nvalue.shape = {value.shape}")
         """
         x.shape = torch.Size([2, 4, 12])
         query.shape = torch.Size([2, 2, 4, 6]),
@@ -317,9 +317,9 @@ class MultiHeadedAttention(nn.Module):
             value,
             mask=mask,
             dropout=self.dropout)
-        #print(f"1  x.shape = {x.shape}") # x.shape = torch.Size([2, 2, 4, 6])
+        print(f"1  x.shape = {x.shape}") # x.shape = torch.Size([2, 2, 4, 6])
         x = x.transpose(1, 2).contiguous().view(nbatches, -1, self.h * self.d_k)
-        #print(f"2  x.shape = {x.shape}") # x.shape = torch.Size([2, 4, 12])
+        print(f"2  x.shape = {x.shape}") # x.shape = torch.Size([2, 4, 12])
 
         # batch,seq_len,num_head*feats
         #print(f"self.linears[-1](x).shape = {self.linears[-1](x).shape}") #self.linears[-1](x).shape = torch.Size([2, 4, 12])
@@ -335,13 +335,16 @@ class MultiHeadedAttention(nn.Module):
          """
          d_k = query.size(-1)
          scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
-
+         print(f" 1  scores.shape = {scores.shape}")
+         
          if mask is not None:
              scores = scores.masked_fill(mask == 0, -1e9)
+         print(f" 2  scores.shape = {scores.shape}")
          p_attn = F.softmax(scores, dim=-1)
 
          if dropout is not None:
              p_attn = dropout(p_attn)
+         print(f"torch.matmul(p_attn, value).shape = {torch.matmul(p_attn, value).shape}")
          return torch.matmul(p_attn, value), p_attn
 
 
@@ -542,8 +545,6 @@ def Test_PositionalEncoding2():
 # 以上测试说明PositionalEncoding()的输入x只能是三维的，且不改变x的shape
 
 
-
-
 def test_multi_head():
     x = torch.randint(1, 200, (2, 4, 12), dtype=torch.float)
     y = torch.randint(1, 200, (2, 4, 12), dtype=torch.float)
@@ -554,6 +555,7 @@ def test_multi_head():
     assert attn.shape == (2, 4, 12)
     print("Test passed!")
 #test_multi_head()
+
 
 def test_multi_head1():
     x = torch.randn(2, 4, 12)
@@ -567,161 +569,20 @@ def test_multi_head1():
 #test_multi_head1()
 
 
-def test_multi_head_src(pad = 0):
-     d_model = 128
-     batchsize = 128
-     seq_len = 31
-     head = 8
-
-     x = torch.randint(1, 20, (batchsize, seq_len, d_model), dtype=torch.float)
-     print(f"x.shape = {x.shape}")
-
-     src_mask = (torch.randint( 0, 2, (batchsize, seq_len)) != pad).unsqueeze(-2)
-     print(f"src_mask.shape = {src_mask.shape}")
-
-     if src_mask != None:
-          src_mask = src_mask.unsqueeze(1)
-     print(f"src_mask.shape = {src_mask.shape}")
-
-
-     d_k = d_model//head
-     x = x.view(batchsize, -1, head, d_k)
-     print(f"x.shape = {x.shape}")
-
-     x = x.transpose(1,2)
-     print(f"x.shape = {x.shape}")
-
-     scores = torch.matmul(x, x.transpose(-2,-1))
-     print(f"1 scores.shape = {scores.shape}")
-     if src_mask is not None:
-          scores = scores.masked_fill(src_mask==0, -1e9)
-          print(f"2 scores.shape = {scores.shape}")
-
-     p_attn = F.softmax(scores, dim = -1)
-     print(f"1 p_attn.shape = {p_attn.shape}")
-
-     dropout = nn.Dropout(0.1)
-     P_attn = dropout(p_attn)
-     print(f"2 P_attn.shape = {P_attn.shape}")
-     attn = torch.matmul(P_attn, x)
-
-     print(f"1  attn.shape = {attn.shape}")
-
-     attn = attn.transpose(1,2).contiguous().view(batchsize, -1, head*d_k)
-     print(f"2  attn.shape = {attn.shape}")
-
-     print("Test passed!")
-#test_multi_head_src()
-
-
-def test_multi_head_tgt(pad = 0):
-     batchsize = 128
-     d_model = 128
-     seq_len = 30
-     head = 8
-
-     x = torch.randint(1, 20, (batchsize, seq_len, d_model), dtype=torch.float)
-     print(f"x.shape = {x.shape}")
-
-
-     attn_shape = (1, seq_len, seq_len)
-     sub_mask = torch.from_numpy(np.triu(np.ones(attn_shape), k=1) .astype('uint8'))==0
-     # sub_mask.type
-     
-     tgt_mask = (torch.randint(0, 2, (batchsize, seq_len)) != pad).unsqueeze(-2)
-     print(f"tgt_mask.shape = {tgt_mask.shape}")
-
-     tgt_mask = tgt_mask & sub_mask    
-     print(f"tgt_mask.shape = {tgt_mask.shape}")
-
-     if tgt_mask != None:
-          tgt_mask = tgt_mask.unsqueeze(1)
-     print(f"tgt_mask.shape = {tgt_mask.shape}")
-
-
-     d_k = d_model//head
-     x = x.view(batchsize, -1, head, d_k)
-     print(f"x.shape = {x.shape}")
-
-     x = x.transpose(1,2)
-     print(f"x.shape = {x.shape}")
-
-     scores = torch.matmul(x, x.transpose(-2,-1))
-     print(f"1 scores.shape = {scores.shape}")
-     if tgt_mask is not None:
-          scores = scores.masked_fill(tgt_mask==0, -1e9)
-          print(f"2 scores.shape = {scores.shape}")
-
-
-     attn = torch.matmul(scores, x)
-
-     print(f"1  attn.shape = {attn.shape}")
-
-     attn = attn.transpose(1,2).contiguous().view(batchsize, -1, head*d_k)
-     print(f"2  attn.shape = {attn.shape}")
-
-     print("Test passed!")
-#test_multi_head_tgt()
-
-
-def test_multi_headSrcTgt(pad = 0):
-     d_model = 128
-     batchsize = 128
-     seq_len_tgt = 30
-     seq_len_src = 31
-     head = 8
-
-     x = torch.randint(1, 20, (batchsize, seq_len_tgt, d_model), dtype=torch.float)
-     print(f"x.shape = {x.shape}")
-
-     src_mask = (torch.randint(0, 2, (batchsize, seq_len_src)) != pad).unsqueeze(-2)
-     print(f"src_mask.shape = {src_mask.shape}")
-
-     if src_mask != None:
-          src_mask = src_mask.unsqueeze(1)
-     print(f"src_mask.shape = {src_mask.shape}")
-
-     m =   torch.randint(1, 20, (batchsize, seq_len_src, d_model), dtype=torch.float)
-
-
-     d_k = d_model//head
-     x = x.view(batchsize, -1, head, d_k).transpose(1,2)
-     print(f"x.shape = {x.shape}")
-
-     m = m.view(batchsize, -1, head, d_k).transpose(1,2)
-     print(f"m.shape = {m.shape}")
-
-     scores = torch.matmul(x, m.transpose(-2,-1))
-     print(f"1 scores.shape = {scores.shape}")
-     
-     if src_mask is not None:
-          scores = scores.masked_fill(src_mask==0, -1e9)
-          print(f"2 scores.shape = {scores.shape}")
-
-
-     attn = torch.matmul(scores, m)
-     print(f"1  attn.shape = {attn.shape}")
-
-     attn = attn.transpose(1,2).contiguous().view(batchsize, -1, head*d_k)
-     print(f"2  attn.shape = {attn.shape}")
-
-     print("Test passed!")
-#test_multi_headSrcTgt()
-
 def test_multi_head2(pad = 0):
     x = torch.randint(1, 200, (128, 31))
     src_mask = (x != pad).unsqueeze(-2)
-    print(f"src_mask.shape = {src_mask.shape}")
+    print(f"src_mask.shape = {src_mask.shape}") # src_mask.shape = torch.Size([128, 1, 31])
 
     d_model = 128
     emb = Embeddings(2222, d_model)
     x_e = emb(x)
-    print(f"x_e.shape = {x_e.shape}")
+    print(f"x_e.shape = {x_e.shape}") # x_e.shape = torch.Size([128, 31, 128])
 
     PE = PositionalEncoding(d_model=d_model, dropout=0.1)
 
     x_pe = PE(x_e)
-    print(f"x_pe.shape = {x_pe.shape}")
+    print(f"x_pe.shape = {x_pe.shape}") # x_pe.shape = torch.Size([128, 31, 128])
 
     d_model = x_pe.shape[-1]
 
@@ -729,7 +590,7 @@ def test_multi_head2(pad = 0):
     attn = model(x_pe, x_pe, x_pe, mask = src_mask)
     assert attn.shape == (128, 31, 128)
     print("Test passed!")
-#test_multi_head2()
+# test_multi_head2()
 
 def test_multi_head3():
     x = torch.randn(128, 30, 128)
@@ -752,6 +613,150 @@ def test_multi_head4():
     assert attn.shape == (128, 30, 128)
     print("Test passed!")
 #test_multi_head4()
+
+
+def test_multi_head_src(pad = 0):
+     d_model = 128
+     batchsize = 128
+     seq_len = 31
+     head = 8
+
+     x = torch.randint(1, 20, (batchsize, seq_len, d_model), dtype=torch.float)
+     print(f"x.shape = {x.shape}")# x.shape = torch.Size([128, 31, 128])
+
+     src_mask = (torch.randint( 0, 2, (batchsize, seq_len)) != pad).unsqueeze(-2)
+     print(f"src_mask.shape = {src_mask.shape}") # src_mask.shape = torch.Size([128, 1, 31])
+
+     if src_mask != None:
+          src_mask = src_mask.unsqueeze(1)
+     print(f"src_mask.shape = {src_mask.shape}") # src_mask.shape = torch.Size([128, 1, 1, 31])
+
+
+     d_k = d_model//head
+     x = x.view(batchsize, -1, head, d_k)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 31, 8, 16])
+
+     x = x.transpose(1,2)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 8, 31, 16])
+
+     scores = torch.matmul(x, x.transpose(-2,-1))
+     print(f"1 scores.shape = {scores.shape}") #  1 scores.shape = torch.Size([128, 8, 31, 31])
+     if src_mask is not None:
+          scores = scores.masked_fill(src_mask==0, -1e9)
+          print(f"2 scores.shape = {scores.shape}") # 2 scores.shape = torch.Size([128, 8, 31, 31])
+
+     p_attn = F.softmax(scores, dim = -1)
+     print(f"1 p_attn.shape = {p_attn.shape}") #  1 p_attn.shape = torch.Size([128, 8, 31, 31])
+
+     dropout = nn.Dropout(0.1)
+     P_attn = dropout(p_attn)
+     print(f"2 P_attn.shape = {P_attn.shape}") # 2 P_attn.shape = torch.Size([128, 8, 31, 31])
+     attn = torch.matmul(P_attn, x)
+
+     print(f"1  attn.shape = {attn.shape}") # 1  attn.shape = torch.Size([128, 8, 31, 16])
+
+     attn = attn.transpose(1,2).contiguous().view(batchsize, -1, head*d_k)
+     print(f"2  attn.shape = {attn.shape}") # 2  attn.shape = torch.Size([128, 31, 128])
+
+     print("Test passed!")
+#test_multi_head_src()
+
+
+def test_multi_head_tgt(pad = 0):
+     batchsize = 128
+     d_model = 128
+     seq_len = 30
+     head = 8
+
+     x = torch.randint(1, 20, (batchsize, seq_len, d_model), dtype=torch.float)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 30, 128])
+
+
+     attn_shape = (1, seq_len, seq_len)
+     sub_mask = torch.from_numpy(np.triu(np.ones(attn_shape), k=1) .astype('uint8'))==0
+     # sub_mask.type
+     
+     tgt_mask = (torch.randint(0, 2, (batchsize, seq_len)) != pad).unsqueeze(-2)
+     print(f"tgt_mask.shape = {tgt_mask.shape}") # tgt_mask.shape = torch.Size([128, 1, 30])
+
+     tgt_mask = tgt_mask & sub_mask    
+     print(f"tgt_mask.shape = {tgt_mask.shape}") # tgt_mask.shape = torch.Size([128, 30, 30])
+
+     if tgt_mask != None:
+          tgt_mask = tgt_mask.unsqueeze(1)
+     print(f"tgt_mask.shape = {tgt_mask.shape}") # tgt_mask.shape = torch.Size([128, 1, 30, 30])
+
+
+     d_k = d_model//head
+     x = x.view(batchsize, -1, head, d_k)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 30, 8, 16])
+
+     x = x.transpose(1,2)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 8, 30, 16])
+
+     scores = torch.matmul(x, x.transpose(-2,-1))
+     print(f"1 scores.shape = {scores.shape}") # 1 scores.shape = torch.Size([128, 8, 30, 30])
+     if tgt_mask is not None:
+          scores = scores.masked_fill(tgt_mask==0, -1e9)
+          print(f"2 scores.shape = {scores.shape}") # 2 scores.shape = torch.Size([128, 8, 30, 30])
+
+
+     attn = torch.matmul(scores, x)
+
+     print(f"1  attn.shape = {attn.shape}") # 1  attn.shape = torch.Size([128, 8, 30, 16])
+
+     attn = attn.transpose(1,2).contiguous().view(batchsize, -1, head*d_k)
+     print(f"2  attn.shape = {attn.shape}") #  2  attn.shape = torch.Size([128, 30, 128])
+
+     print("Test passed!")
+#test_multi_head_tgt()
+
+
+def test_multi_headSrcTgt(pad = 0):
+     d_model = 128
+     batchsize = 128
+     seq_len_tgt = 30
+     seq_len_src = 31
+     head = 8
+
+     x = torch.randint(1, 20, (batchsize, seq_len_tgt, d_model), dtype=torch.float)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 30, 128])
+
+     src_mask = (torch.randint(0, 2, (batchsize, seq_len_src)) != pad).unsqueeze(-2)
+     print(f"src_mask.shape = {src_mask.shape}") # src_mask.shape = torch.Size([128, 1, 31])
+
+     if src_mask != None:
+          src_mask = src_mask.unsqueeze(1)
+     print(f"src_mask.shape = {src_mask.shape}") # src_mask.shape = torch.Size([128, 1, 1, 31])
+
+     m =   torch.randint(1, 20, (batchsize, seq_len_src, d_model), dtype=torch.float)
+     print(f"m.shape = {m.shape}") # m.shape = torch.Size([128, 31, 128])
+
+     d_k = d_model//head
+     x = x.view(batchsize, -1, head, d_k).transpose(1,2)
+     print(f"x.shape = {x.shape}") # x.shape = torch.Size([128, 8, 30, 16])
+
+     m = m.view(batchsize, -1, head, d_k).transpose(1,2)
+     print(f"m.shape = {m.shape}") # m.shape = torch.Size([128, 8, 31, 16])
+
+     scores = torch.matmul(x, m.transpose(-2,-1))
+     print(f"1 scores.shape = {scores.shape}") # 1 scores.shape = torch.Size([128, 8, 30, 31])
+     
+     if src_mask is not None:
+          scores = scores.masked_fill(src_mask==0, -1e9)
+          print(f"2 scores.shape = {scores.shape}") # 2 scores.shape = torch.Size([128, 8, 30, 31])
+
+
+     attn = torch.matmul(scores, m)
+     print(f"1  attn.shape = {attn.shape}") # 1  attn.shape = torch.Size([128, 8, 30, 16])
+
+     attn = attn.transpose(1,2).contiguous().view(batchsize, -1, head*d_k)
+     print(f"2  attn.shape = {attn.shape}") # 2  attn.shape = torch.Size([128, 30, 128])
+
+     print("Test passed!")
+#test_multi_headSrcTgt()
+
+
 
 
 # 以上测试说明 MultiHeadedAttention() 不改变x的shape

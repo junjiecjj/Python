@@ -49,6 +49,130 @@ test_args_kwargs(**kwargs)
 
 
 
+#================================================================================================
+# https://blog.csdn.net/luckytanggu/article/details/51714757
+#================================================================================================
+# 一、位置参数
+# 调用函数时根据函数定义的参数位置来传递参数。
+def print_hello(name, sex):
+	sex_dict = {1: u'先生', 2: u'女士'}
+	print('hello %s %s, welcome to python world!' %(name, sex_dict.get(sex, u'先生')))
+	
+
+# 两个参数的顺序必须一一对应，且少一个参数都不可以
+print_hello('tanggu', 1)
+
+
+# 二、关键字参数
+# 用于函数调用，通过“键-值”形式加以指定。可以让函数更加清晰、容易使用，同时也清除了参数的顺序需求。
+
+# 以下是用关键字参数正确调用函数的实例
+print_hello('tanggu', sex=1)
+print_hello(name='tanggu', sex=1)
+print_hello(sex=1, name='tanggu')
+
+# 以下是错误的调用方式
+# print_hello(1, name='tanggu')
+# print_hello(name='tanggu', 1)
+# print_hello(sex=1, 'tanggu')
+# 通过上面的代码，我们可以发现：有位置参数时，位置参数必须在关键字参数的前面，但关键字参数之间不存在先后顺序的
+
+# 三、默认参数
+# 用于定义函数，为参数提供默认值，调用函数时可传可不传该默认参数的值（注意：所有位置参数必须出现在默认参数前，包括函数定义和调用）
+
+# 正确的默认参数定义方式--> 位置参数在前，默认参数在后
+def print_hello(name, sex=1):
+	sex_dict = {1: u'先生', 2: u'女士'}
+	print('hello %s %s, welcome to python world!' %(name, sex_dict.get(sex, u'先生')))
+
+# 错误的定义方式
+# def print_hello1(sex=1, name):
+# 	sex_dict = {1: u'先生', 2: u'女士'}
+# 	print('hello %s %s, welcome to python world!' %(name, sex_dict.get(sex, u'先生')))
+    
+# 调用时不传sex的值，则使用默认值1
+print_hello('tanggu')
+
+print_hello('tanggu',2)
+
+#调用时传入sex的值，并指定为2
+print_hello('tanggu', sex=2)
+
+
+
+
+# 基本原则是：先位置参数，默认参数，包裹位置，包裹关键字(定义和调用都应遵循)
+def func(name, age, sex=1, *args, **kargs):
+	print (name, age, sex, args, kargs)
+	
+
+func('tanggu', 25, 2, 'music', 'sport', class1=2)
+# tanggu 25 1 ('music', 'sport') {'class1'=2}
+
+
+#================================================================================================
+# https://blog.csdn.net/cadi2011/article/details/86641811
+#================================================================================================
+
+#定义一个名为temp的函数，参数列表共4个参数
+
+def temp(first,second="Hello World",*args,**kwargs):
+    print(first)
+    print(second)
+    print(args)
+    print(kwargs)
+ 
+# 1、参数first称为位置参数
+
+# 2、参数second称为默认参数
+
+# 3、参数*args称为可变参数
+
+# 4、参数**kwargs也称为可变参数
+
+
+
+
+#关键字参数
+#1、函数调用时，指定参数名称，称为关键字参数（别和默认参数混淆，这里是函数调用）
+
+def temp(a,b,c):
+    print(a)
+    print(b)
+    print(c)
+
+
+temp(100, 32, c = 1100) 
+
+
+# 命名关键字参数
+# 1、英文名：Keyword-only parameter
+
+# 2、特点：必须使用关键字方式传递参数
+
+# 3、语法
+
+def only_kw(a,*,b,c):
+    print(a)
+    print(b)
+    print(c)
+ 
+ 
+only_kw(100,b=1000,c=99) #b和c必须使用参数名传递参数
+
+
+
+#命名位置参数
+def only_position(a,b,/):
+    print(a)
+    print(b)
+#函数调用时，必须使用位置参数方式传递参数……，不能再使用关键字参数调用该函数
+
+
+
+
+
+
 
 
 
