@@ -156,8 +156,8 @@ def only_kw(a,*,b,c):
     print(a)
     print(b)
     print(c)
- 
- 
+
+
 only_kw(100,b=1000,c=99) #b和c必须使用参数名传递参数
 
 
@@ -169,10 +169,10 @@ def only_position(a,b,/):
 #函数调用时，必须使用位置参数方式传递参数……，不能再使用关键字参数调用该函数
 
 
+only_position(1,2)
 
 
-
-
+#  only_position(a = 1,b = 2)   # error
 
 
 

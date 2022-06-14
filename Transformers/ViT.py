@@ -79,9 +79,10 @@ class FeedForward(nn.Module):
         return self.net(x)
 
 class Attention(nn.Module):
+    # dim=1024, heads = 16, dim_head = 64, dropout = 0.
     def __init__(self, dim, heads = 8, dim_head = 64, dropout = 0.):
         super().__init__()
-        inner_dim = dim_head *  heads  # 计算最终进行全连接操作时输入神经元的个数
+        inner_dim = dim_head *  heads  # 计算最终进行全连接操作时输入神经元的个数,1024
         #print(f"line={sys._getframe().f_lineno}, inner_dim = {inner_dim}")  # 1024
         project_out = not (heads == 1 and dim_head == dim) # 多头注意力并且输入和输出维度相同时为True
 
@@ -129,6 +130,7 @@ class Attention(nn.Module):
         return self.to_out(out) # ([20, 65, 1024])
 
 class Transformer(nn.Module):
+    # dim=1024, depth=6, heads=16, dim_head=64, mlp_dim=2048
     def __init__(self, dim, depth, heads, dim_head, mlp_dim, dropout = 0.):
         super().__init__()
         self.layers = nn.ModuleList([])  # Transformer包含多个编码器的叠加
@@ -170,13 +172,14 @@ class ViT(nn.Module):
         self.to_patch_embedding = nn.Sequential(
             # 将批量为b通道为c高为h*p1宽为w*p2的图像转化为批量为b个数为h*w维度为p1*p2*c的图像块
             # 即，把b张c通道的图像分割成b*（h*w）张大小为P1*p2*c的图像块
-            # 例如：patch_size为16  (8, 3, 48, 48)->(8, 9, 768)
+            # 例如：x.shape =  (20, 3, 8*32, 8*32) ->(20, 64, 3*32*32=3072)
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1 = patch_height, p2 = patch_width),
             # 对分割好的图像块进行线性处理（全连接），输入维度为每一个小块的所有像素个数，输出为dim（函数传入的参数）
             nn.Linear(patch_dim, dim),)
 
         # 位置编码，获取一组正态分布的数据用于训练
         self.pos_embedding = nn.Parameter(torch.randn(1, num_patches + 1, dim))
+        # (1,65,1024)
         
         # 分类令牌，可训练
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
@@ -243,3 +246,28 @@ v = ViT(
 img = torch.randn(20, 3, 256, 256)
 
 preds = v(img)
+
+
+print(f"preds.shape = {preds.shape}")  #preds.shape = torch.Size([20, 1000])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
