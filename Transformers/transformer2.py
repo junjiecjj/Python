@@ -88,11 +88,13 @@ encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
 transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=6)
 src = torch.rand(10, 32, 512)
 out = transformer_encoder(src)
-
 # out.shape
 # Out[346]: torch.Size([10, 32, 512])
 
-
+# src = torch.rand(20,3, 128, 512)
+# out = transformer_encoder(src)
+# tgt_len, bsz, embed_dim = query.shape
+# ValueError: too many values to unpack (expected 3)
 
 """
 3、TransformerDecoder
@@ -114,6 +116,9 @@ out = transformer_decoder(tgt, memory)
 # out.shape
 # Out[348]: torch.Size([20, 32, 512])
 
+# tgt = torch.rand(20,3, 32, 512)
+# out = transformer_decoder(tgt, memory)
+# ValueError: too many values to unpack (expected 3)
 
 
 """
@@ -133,9 +138,13 @@ activation – the activation function of intermediate layer, relu or gelu (defa
 encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=8)
 src = torch.rand(10, 32, 512)
 out = encoder_layer(src)
+print(f"out.shape = {out.shape}")
 # out.shape
 # Out[350]: torch.Size([10, 32, 512])
 
+src = torch.rand(10,3, 32, 512)
+out = encoder_layer(src)
+print(f"out.shape = {out.shape}")
 
 
 """
@@ -184,9 +193,87 @@ multihead_attn = nn.MultiheadAttention(embed_dim, num_heads)
 attn_output, attn_output_weights = multihead_attn(query, key, value)
 """
 
+import torch 
+import torch.nn as nn
+from collections import OrderedDict
+from torch.nn import functional as f
+ 
+
+
+# 此模块不改变x的shape,即Q,K,V的shape和return的shape一致。
+class MultiHeadedAttention(nn.Module):
+     # num_heads=8, d_model=128,
+    def __init__(self, num_heads, d_model, dropout=0.1):
+        "Take in model size and number of heads."
+        super(MultiHeadedAttention, self).__init__()
+        assert d_model % num_heads == 0
+        # We assume d_v always equals d_k
+        self.d_k = d_model // num_heads    # d_k=16
+        self.num_heads = num_heads
+
+        self.wq = nn.Linear(d_model, d_model)
+        self.wk = nn.Linear(d_model, d_model)
+        self.wv = nn.Linear(d_model, d_model)
+
+        self.dense = nn.Linear(d_model, d_model)
+
+        #self.linears = clones(nn.Linear(d_model, d_model), 4)
+        self.attn = None
+        self.dropout = nn.Dropout(p=dropout)
+
+    def forward(self, query, key, value, mask=None):
+        "Implements Figure 2"
+        if mask is not None:
+            # Same mask applied to all h heads.
+            mask = mask.unsqueeze(1)
+        nbatches = query.size(0)  # nbatches = 128
+
+        # 1) Do all the linear projections in batch from d_model => h x d_k
+        query = self.wq(query).view(nbatches, -1, self.num_heads, self.d_k)
+        query = query.transpose(1, 2)
+
+        key = self.wk(key).view(nbatches, -1, self.num_heads, self.d_k)
+        key = key.transpose(1, 2)
+
+        value = self.wv(value).view(nbatches, -1, self.num_heads, self.d_k)
+        value = value.transpose(1, 2)
+
+        # 2) Apply attention on all the projected vectors in batch.
+        x, self.attn = self.attention(query, key, value, mask=mask)
+
+        # 3) "Concat" using a view and apply a final linear.
+        x = x.transpose(1, 2).contiguous().view(nbatches, -1, self.num_heads * self.d_k)
+
+        x = self.dense(x)
+        x = self.dropout(x)
+
+        return x
+
+    def attention(self, query, key, value, mask=None):
+        "Compute 'Scaled Dot Product Attention'"
+        d_k = query.size(-1)
+        scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
+        #print(mask.shape)
+        if mask is not None:
+            # 根据mask，指定位置填充 -1e9
+            scores += (mask * -1e9)
+            # attention weights
+        p_attn = F.softmax(scores, dim=-1)
+        return torch.matmul(p_attn, value), p_attn
 
 
 
+A = torch.Tensor(5,2,4)
+nn.init.xavier_normal_(A)
+# 此模块不改变x的shape,即Q,K,V的shape和return的shape一致。
+self_attn = torch.nn.MultiheadAttention(embed_dim=4, num_heads=2, dropout=0.0)
+res,weight = self_attn(A,A,A)
+
+print(f"res.shape = {res.shape}")  # res.shape = torch.Size([5, 2, 4])
+
+att1 = MultiHeadedAttention(2,4)
+res1 = att1(A,A,A)
+print(f"res1.shape = {res1.shape}")  # res1.shape = torch.Size([5, 2, 4])
 
 
 # https://zhuanlan.zhihu.com/p/358206572

@@ -1955,7 +1955,7 @@ sns.relplot(x="sepal_length", y="sepal_width", hue="species", data=iris)
 
 
 #Seaborn 的函数都有大量实用的参数，例如我们指定 style 参数可以赋予不同类别的散点不同的形状。更多的参数，希望大家通过阅读官方文档了解。
-#sns.relplot(x="sepal_length", y="sepal_width",
+sns.relplot(x="sepal_length", y="sepal_width",
             hue="species", style="species", data=iris)
 
 #不只是散点图，该方法还支持线形图，只需要指定 kind="line" 参数即可。线形图和散点图适用于不同类型的数据。线形态绘制时还会自动给出 95% 的置信区间。

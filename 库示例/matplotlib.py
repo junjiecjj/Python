@@ -15,11 +15,15 @@ plt.axvline(x=1,ls='--',color='b',label='*',marker='_')
 ax1.legend(loc='best')
 plt.show()
 '''
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
 
+
+import matplotlib
+#matplotlib.get_backend()
+matplotlib.use('TkAgg')  # 大小写无所谓 tkaGg ,TkAgg 都行
 import matplotlib.pyplot as plt
 import numpy as np
+# matplotlib.use('QT5Agg')
+
 
 t1 = np.arange(0.0, 2.0, 0.1)
 t2 = np.arange(0.0, 2.0, 0.01)

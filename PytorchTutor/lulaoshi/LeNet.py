@@ -19,7 +19,7 @@ from torch import nn, optim
 import torch.nn.functional as F
 
 
-
+#  nn.Conv2d的输入必须为4维的(N,C,H,W)
 
 
 #网络模型结构
