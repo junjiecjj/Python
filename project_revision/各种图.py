@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.6
 #-*-coding=utf-8-*-
 #from __future__ import (absolute_import, division,print_function, unicode_literals)
+import matplotlib
+matplotlib.get_backend()
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
