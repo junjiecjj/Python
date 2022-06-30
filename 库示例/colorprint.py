@@ -70,7 +70,7 @@ print("\033[31m a = %d, f = %f, s = %s  \033[0m"%(12,12.13,'sasada'))
 
 print("\033[5;31;46m  test..2.................    \033[0m")
 
-class bcolors:
+class bcolors(object):
     OK = '\033[32m' #GREEN
     WARNING = '\033[33m' #YELLOW
     FAIL = '\033[31m' #RED

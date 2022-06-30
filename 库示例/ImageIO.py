@@ -120,10 +120,14 @@ def display(imagepath):
 
 
 
-imagepath='/home/jack/图片/Wallpapers/DSC_4352.jpg'
+imagepath='/home/jack/图片/Wallpapers/3DBed.jpg'
 im_PIL, im_imageio, im_cv2, im_matplotlib, im_skimge = display(imagepath)
 plt.imshow(im_cv2[:,:,::-1]) #交换 BGR 中的 BR
 
+
+print(f"(im_PIL-im_imageio).min() = {(im_PIL-im_imageio).min()},  (im_PIL-im_imageio).max() = {(im_PIL-im_imageio).max()},\
+      (im_PIL-im_matplotlib).min() = {(im_PIL-im_matplotlib).min()}, (im_PIL-im_matplotlib).max() = {(im_PIL-im_matplotlib).max()},\
+           (im_PIL-im_skimge).min() = {(im_PIL-im_skimge).min()}, (im_PIL-im_skimge).max() = {(im_PIL-im_skimge).max()}")
 
 """
 图片为三通道时，五种读取方式读取的结果几乎都一样，只是 cv2 读取的结果通道顺序为 BGR, 所以显示上出现了一点不同，通过转换将 BR 通道交换之后显示效果正常，但是 np allclose 函数显示两张图片还是有一些不同
@@ -147,11 +151,11 @@ s[index[:,0], index[:,1],index[:,2]]
 
 值得注意的是， im_imageio 和 im_cv2image 作差之后仍为 image 对象，由于 image 对象不允许存在负值，所以有些负数会被加上 256，比如 -1 会自动转换为 255
 """
-imagepath='/home/jack/图片/Wallpapers/DSC_4352.jpg'
+imagepath='/home/jack/图片/Wallpapers/3DBed.jpg'
 im_PIL, im_imageio, im_cv2, im_matplotlib, im_skimge = display(imagepath)
 plt.imshow(im_cv2[:,:,::-1]) #交换 BGR 中的 BR
 plt.show()
-plt.imshow(im_cv2) #交换 BGR 中的 BR
+
 
 
 """

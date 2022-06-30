@@ -134,7 +134,7 @@ print("=="*60)
 
 entroy=nn.CrossEntropyLoss()
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562]])
-target = torch.tensor([2])  #这里最大为2,不能超过input.size(-1)-1 = 3
+target = torch.tensor([0])  #这里最大为2,不能超过input.size(-1)-1 = 3
 output = entroy(input, target)  #target 和 input千万别反了,会报错
 print(f"output1 = {output}")
 #根据公式计算
@@ -249,7 +249,9 @@ print(f"output1 = {output}")
 
 
 
-
+#=====================================================================
+#    https://zhuanlan.zhihu.com/p/98785902
+#=====================================================================
 import torch
 import torch.nn as nn
 x_input=torch.randn(3,3)#随机生成输入 
@@ -798,6 +800,16 @@ loss2 = torch.nn.BCEWithLogitsLoss()
 output2 = loss2(inpuT,target) #target 和 input千万别反了,，不会报错，但是结果没意义
 print(f"output2 = {output2}")
 
+
+
+
+inpuT = torch.randn(3,10,10)
+
+target = torch.randint(0,2,size=(3,10,10))*1.0
+
+loss2 = torch.nn.BCEWithLogitsLoss(reduction='none')
+output2 = loss2(inpuT,target) #target 和 input千万别反了,，不会报错，但是结果没意义
+print(f"output2.shape = {output2.shape}")
 
 
 

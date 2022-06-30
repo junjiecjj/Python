@@ -26,7 +26,9 @@ def function():
      print(sys._getframe().f_code.co_filename)  # 当前位置所在的文件名
      print(sys._getframe().f_code.co_name)  # 当前位置所在的函数名
      print(sys._getframe().f_lineno)  # 当前位置所在的行号
-#function()
+     print(f"File={sys._getframe().f_code.co_filename}, Func={sys._getframe().f_code.co_name}, Line={sys._getframe().f_lineno}")
+     
+function()
 
 
 

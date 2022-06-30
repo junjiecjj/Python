@@ -11,6 +11,192 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 
+#==============================================================================================
+# https://www.cnblogs.com/skyfsm/p/8276501.html
+#==============================================================================================
+
+import cv2
+import numpy as np
+
+#读入图片：默认彩色图，cv2.IMREAD_GRAYSCALE灰度图，cv2.IMREAD_UNCHANGED包含alpha通道
+img = cv2.imread('./lena.png')
+cv2.imshow('src',img)
+print(img.shape) # (h,w,c)
+print(img.size) # 像素总数目
+print(img.dtype)
+# (512, 512, 3)
+# 786432
+# print(img)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+
+import cv2
+import numpy as np
+
+#读入图片：默认彩色图，cv2.IMREAD_GRAYSCALE灰度图，cv2.IMREAD_UNCHANGED包含alpha通道
+img = cv2.imread('./lena.png')
+cv2.imshow('src',img[256:,256:,:])
+print(img.shape) # (h,w,c)
+print(img.size) # 像素总数目
+print(img.dtype)
+# (512, 512, 3)
+# 786432
+# print(img)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+gray = cv2.imread('./lena.png',cv2.IMREAD_GRAYSCALE) #灰度图
+cv2.imshow('gray',gray)
+print(gray.shape)
+print(gray.size)
+#print(gray)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+#也可以这么写，先读入彩色图，再转灰度图
+src = cv2.imread('./lena.png')
+gray = cv2.cvtColor(src,cv2.COLOR_BGR2GRAY)
+cv2.imshow('gray',gray)
+print(gray.shape)
+print(gray.size)
+#print(gray)
+cv2.waitKey()
+
+
+
+import cv2
+#读入图片：默认彩色图，cv2.IMREAD_GRAYSCALE灰度图，cv2.IMREAD_UNCHANGED包含alpha通道
+img = cv2.imread('./lena.png')
+cv2.imshow('src',img)
+print(img.shape) # (h,w,c)
+print(img.size) # 像素总数目
+print(img.dtype)
+# (512, 512, 3)
+# 786432
+# print(img)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+
+#注意到，opencv读入的图片的彩色图是一个channel last的三维矩阵（h,w,c），即（高度，宽度，通道）
+#有时候在深度学习中用到的的图片矩阵形式可能是channel first，那我们可以这样转一下
+print(img.shape)
+img = img.transpose(2,0,1)
+print(img.shape)
+
+#有时候还要扩展维度，比如有时候我们需要预测单张图片，要在要加一列做图片的个数，可以这么做
+img = np.expand_dims(img, axis=0)
+print(img.shape)
+
+# (1, 3, 512, 512)
+
+
+
+
+#因为opencv读入的图片矩阵数值是0到255，有时我们需要对其进行归一化为0~1
+img3 = cv2.imread('./lena.png')
+img3 = img3.astype("float") / 255.0  #注意需要先转化数据类型为float
+print(img3.dtype)
+print(img3)
+
+#存储图片
+cv2.imwrite('test1.jpg',img3) #得到的是全黑的图片，因为我们把它归一化了
+#所以要得到可视化的图，需要先*255还原
+img3 = img3 * 255
+cv2.imwrite('test2.jpg',img3)  #这样就可以看到彩色原图了
+
+# opencv对于读进来的图片的通道排列是BGR，而不是主流的RGB！谨记！
+#opencv读入的矩阵是BGR，如果想转为RGB，可以这么转
+img4 = cv2.imread('./lena.png')
+img4 = cv2.cvtColor(img4,cv2.COLOR_BGR2RGB)
+
+
+#分离通道
+img5 = cv2.imread('./lena.png')
+cv2.imshow('src',img5)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+b,g,r = cv2.split(img5)
+#合并通道
+img5 = cv2.merge((b,g,r))
+cv2.imshow('src',img5)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+#也可以不拆分
+img5[:,:,2] = 0  #将红色通道值全部设0
+cv2.imshow('src',img5)
+cv2.waitKey()
+
+
+#也可以不拆分
+img5[:,:,0] = 0  #将红色通道值全部设0
+cv2.imshow('src',img5)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+
+#也可以不拆分
+img5[:,:,1] = 0  #将红色通道值全部设0
+cv2.imshow('src',img5)
+cv2.waitKey()
+cv2.destroyAllWindows()
+
+import matplotlib.pyplot as plt
+import numpy as np
+#与opencv结合使用
+import cv2
+im2 = cv2.imread('./lena.png')
+plt.imshow(im2)
+plt.axis('off')
+plt.show()
+#发现图像颜色怪怪的，原因当然是我们前面提到的RGB顺序不同的原因啦,转一下就好
+im2 = cv2.cvtColor(im2,cv2.COLOR_BGR2RGB)
+plt.imshow(im2)
+plt.axis('off')
+plt.show()
+#所以无论用什么库读进图片，只要把图片改为矩阵，那么matplotlib就可以处理了
+
+
+
+import imageio
+im2 = imageio.imread('./lena.png')
+print(im2.dtype)
+print(im2.size)
+print(im2.shape)
+plt.imshow(im2)
+plt.show()
+#print(im2)
+imageio.imsave('imageio.png',im2)
+
+# uint8
+# 786432
+# (512, 512, 3)
+
+
+import cv2
+import numpy as np
+
+n=4   # n max  is 4 RGBA
+img = np.random.randint(0,255,(512,512,n),dtype=np.uint8)
+
+cv2.imshow('src',img)
+print(img.shape) # (h,w,c)
+print(img.size) # 像素总数目
+print(img.dtype)
+# (512, 512, 3)
+# 786432
+# print(img)
+cv2.waitKey()
+cv2.destroyAllWindows()
+#==============================================================================================
+#  
+#==============================================================================================
+
+
+
 # if __name__ =='__main__':
 
 #修改的尺寸大小
@@ -87,7 +273,7 @@ img1_2 = np.array(img1_1)
 
 
 #===================================================================================
-#
+# https://www.cnblogs.com/hanxiaosheng/p/9559996.html
 #===================================================================================
 # 读取一张四川大录古藏寨的照片
 img3 = cv2.imread('./origin.png')
@@ -116,7 +302,7 @@ cv2.imwrite('bordered_300x300.png', img_300x300)
 
 
 #===================================================================================
-#
+# https://www.cnblogs.com/hanxiaosheng/p/9559996.html
 #===================================================================================
 # 读取一张四川大录古藏寨的照片
 img4 = cv2.imread('./origin.png')
@@ -316,3 +502,86 @@ print("chr(97) = {}".format(chr(97)))
 
 print("ord('\x1b') = {}".format(ord('\x1b')))
 print("chr(27) = {}".format(chr(27)))
+
+#===================================================================================
+# pickle dump load
+#===================================================================================
+
+import imageio,pickle
+import torch
+import numpy as np
+
+img = '/home/jack/IPT-Pretrain/Data/benchmark/Set5/HR/baby.png'
+
+x = imageio.imread(img)
+x1 = np.ascontiguousarray(x.transpose((2, 0, 1)))
+
+x2 =   torch.from_numpy(x1).float()
+x2.mul_(255 / 255)
+
+f = '299086.pt'
+with open(f, 'wb') as _f:
+     pickle.dump(imageio.imread(img), _f)
+
+
+with open(f, 'rb') as _f:
+     lr = pickle.load(_f)
+
+print(f"lr.shape = {lr.shape}")
+
+
+
+
+
+
+
+
+#===================================================================================
+# pickle dump load
+#===================================================================================
+
+
+
+
+
+
+img=cv2.imread("lena.png")
+bgra = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
+
+
+b,g,r,a=cv2.split(bgra)
+a[:,:]=125
+bgra125=cv2.merge([b,g,r,a])
+a[:,:]=0
+bgra0=cv2.merge([b,g,r,a])
+cv2.imshow("img",img)
+cv2.imshow("bgra",bgra)
+cv2.imshow("bgra125",bgra125)
+cv2.imshow("bgra0",bgra0)
+cv2.waitKey()
+cv2.destroyAllWindows()
+cv2.imwrite("bgra.png", bgra)
+cv2.imwrite("bgra125.png", bgra125)
+cv2.imwrite("bgra0.png", bgra0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

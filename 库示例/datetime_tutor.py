@@ -442,6 +442,7 @@ print(type(now))
 now1 = datetime(year=2020,month=8,day=27) #年月日为必填参数，其余未传入时默认为0
 print("当前日期为：",now1)
 # 当前日期为： 2020-08-27 00:00:00
+
 """
 datetime.datetime类的静态属性
 1、以下是datetime.datetime类的一些(类)静态方法和属性：直接通过类名调用
@@ -501,8 +502,8 @@ now = datetime.today()
 print("当前时间为：",now)
 # 当前时间为： 2022-04-26 22:43:48.349421
 
-
-today=  datetime.today()
+import datetime
+today=  datetime.datetime.today()
 print("today = {}".format(today))
 # today = 2022-04-26 22:44:00.188934
 

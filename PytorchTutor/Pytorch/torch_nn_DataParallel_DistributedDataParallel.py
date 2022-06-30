@@ -23,6 +23,9 @@ https://zhuanlan.zhihu.com/p/467103734
 
 
 """
+from torch.nn.parallel.data_parallel import DataParallel
+from  torch.nn   import DataParallel
+
 
 import os
 import torch

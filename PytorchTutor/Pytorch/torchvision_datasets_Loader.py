@@ -506,9 +506,56 @@ Imagenet一共有三个文件夹，分别是train、val、test，train里边有1
 
 
 
+"""
+https://blog.csdn.net/geter_CS/article/details/83378786
+首先看torch.utils.data.Dataset这个抽象类。可以使用这个抽象类来构造pytorch数据集。要注意的是以这个类构造的子类，一定要定义两个函数一个是__len__，另一个是__getitem__，前者提供数据集size，而后者通过给定索引获取数据和标签。__getitem__一次只能获取一个数据（不知道是不是强制性的），所以通过torch.utils.data.DataLoader来定义一个新的迭代器，实现batch读取。首先我们来定义一个简单的数据集：
+
+"""
+
+
+import torch
+
+from torch.utils.data.dataset import Dataset
+from torch.utils.data import DataLoader
+import numpy as np
+
+class TxtDataset(Dataset):#这是一个Dataset子类
+    def __init__(self):
+        self.Data=np.asarray([[1,2],[3,4],[2,1],[6,4],[4,5]])#特征向量集合,特征是2维表示一段文本
+        self.Label=np.asarray([1, 2, 0, 1, 2])#标签是1维,表示文本类别
+ 
+    def __getitem__(self, index):
+        txt=  self.Data[index]
+        label= self.Label[index]
+        return txt, label #返回标签
+ 
+    def __len__(self):
+        return len(self.Data)
 
 
 
+
+Txt=TxtDataset()
+print(f"Txt[1] = {Txt[1]}")
+print(f"Txt.__len__() = {Txt.__len__()}")
+
+
+
+test_loader = DataLoader(Txt,batch_size=2,shuffle=False,
+                          num_workers=4)
+for i,traindata in enumerate(test_loader):
+    print('i:',i)
+    Data,Label=traindata
+    print('data:',Data)
+    print('Label:',Label)
+#这里的enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中
+
+
+
+
+   
+     
+   
 
 
 

@@ -17,7 +17,7 @@ import numpy as np
 import torch, torchvision, sys
 from torch import nn, optim
 import torch.nn.functional as F
-
+from torch.autograd import Variable
 
 #  nn.Conv2d的输入必须为4维的(N,C,H,W)
 
@@ -52,7 +52,7 @@ class LeNet(nn.Module):
     def forward(self, img):
         feature = self.conv(img)
         output = self.fc(feature.view(img.shape[0], -1))
-        print(f"img.shape = {img.shape}\nfeature.shape = {feature.shape}\noutput.shape = {output.shape}\nfeature.view(img.shape[0], -1).shape = {feature.view(img.shape[0], -1).shape}")
+        # print(f"img.shape = {img.shape}\nfeature.shape = {feature.shape}\noutput.shape = {output.shape}\nfeature.view(img.shape[0], -1).shape = {feature.view(img.shape[0], -1).shape}")
         """
           img.shape = torch.Size([256, 1, 28, 28])
           feature.shape = torch.Size([256, 16, 5, 5])
@@ -124,6 +124,8 @@ def train(net, train_iter, test_iter, batch_size, optimizer, num_epochs, device=
             
             y_hat = net(X)      # y_hat.shape = torch.Size([256, 10])
             l = loss(y_hat, y)  # l = 2.3009374141693115
+            l = Variable(l, requires_grad = True)
+            # print(f"y_hat.shape = {y_hat.shape}, l.shape = {l.shape}")
             optimizer.zero_grad()
             l.backward()
             optimizer.step()
@@ -134,14 +136,14 @@ def train(net, train_iter, test_iter, batch_size, optimizer, num_epochs, device=
             n += y.shape[0]
             batch_count += 1
         test_acc = evaluate_accuracy(test_iter, net)
-        if epoch % 10 == 0:
+        if epoch % 3 == 0:
             print(f'epoch {epoch + 1} : loss {train_l_sum / batch_count:.3f}, train acc {train_acc_sum / n:.3f}, test acc {test_acc:.3f}')
 
 
 #在整个程序的主逻辑中，设置必要的参数，读入训练和测试数据并开始训练：
 #def main():
 batch_size = 256
-lr, num_epochs = 0.9, 3
+lr, num_epochs = 0.9, 10
 
 net = LeNet()
 optimizer = torch.optim.SGD(net.parameters(), lr=lr)

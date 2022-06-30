@@ -44,7 +44,7 @@ import numpy as np
 from PIL import Image
 #修改的尺寸大小    
 size_=[320,480]
-img_path='/home/jack/图片/pngsucai_6729744_d83066.png'
+img_path='/home/jack/图片/Wallpapers/3DBed.jpg'
 label = image2label(img_path,size_)
 #修改后的尺寸和修改后的像素值保存下来
 save_img='./0002_c1s1_000451_03.png'

@@ -2,69 +2,40 @@
 # -*- coding: utf-8 -*-
 # https://www.jianshu.com/p/12a8207149b0
 
-
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
 import torch
-import torch.optim as optim
-from torch.optim.lr_scheduler import MultiStepLR
-from torchvision.models import AlexNet
+from torch.nn import functional as f
 
-num_epochs = 100
+batchszie = 1
+C = 3
+H = 5
+W = 5
 
-#定义2分类网络
-model = AlexNet(num_classes=2)
-optimizer = optim.SGD(params=model.parameters(), lr=0.05)
+x = torch.arange(0, batchszie*C*H*W).float()
+x = x.view(batchszie,C,H,W)
 
-scheduler = MultiStepLR(
-    optimizer=optimizer,
-    milestones=[10, 20, 40],  # 设定调整的间隔数
-    gamma=0.5,  # 系数
-    last_epoch=-1 
-)
+# print(f"x = \n{x}")
 
-# train-like iteration
-lrs, epochs = [], []
-for epoch in range(num_epochs):
-    lrs.append(scheduler.get_lr())  #.get_lr()获取当前学习率
-    epochs.append(epoch)
+print(f"x.shape = {x.shape}")
 
-    pass  # 在这里进行迭代训练
-    #学习率更新
-    scheduler.step()
+kernelsize = 2
+stride = 1
+x1 = f.unfold(x, kernel_size=kernelsize, dilation=1, stride=stride)
+print(f"x1.shape = {x1.shape}")
 
-# visualize
-plt.figure()
-plt.legend()
-plt.plot(epochs, lrs, label='MultiStepLR')
-plt.show()
+x2 = x1.transpose(0,2).contiguous()
+print(f"x2.shape = {x2.shape}")
 
 
+x3 = x2.view(x2.size(0),-1,kernelsize,kernelsize)
+print(f"x3.shape = {x3.shape}")
 
+
+B, C_kh_kw, L = x1.size()
+x4 = x1.permute(0, 2, 1)
+print(f"x4.shape = {x4.shape}")
+
+x5 = x4.view(B, L, -1, kernelsize, kernelsize)
+print(f"x5.shape = {x5.shape}")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-     
-   
-     
-   
-     
-   
-     

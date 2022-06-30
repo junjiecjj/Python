@@ -23,9 +23,10 @@ test_args(1, 2, 3, 4)
 
 def test_kwargs(first, *args, **kwargs):
    print('Required argument: ', first)
-   print(type(kwargs))
+   print(type(args))
    for v in args:
       print ('Optional argument (args): ', v)
+   print(type(kwargs))
    for k, v in kwargs.items():
       print ('Optional argument %s (kwargs): %s' % (k, v))
 
