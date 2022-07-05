@@ -25,5 +25,5 @@ if __name__=='__main__':
     p.start()
 
     p.join()
-
-print('Child process end.')
+    
+    print('Child process end.')

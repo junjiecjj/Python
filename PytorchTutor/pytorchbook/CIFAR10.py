@@ -18,6 +18,7 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.autograd import Variable
 
 # 读取和归一化 CIFAR10
 transform = transforms.Compose(
@@ -96,7 +97,11 @@ net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-
+# # optimizer.param_groups   是List，且长度为1，list的元素是字典，键有:'lr', 'momentum','dampening','weight_decay'
+# for param_group in optimizer.param_groups:#在每次更新参数前迭代更改学习率 
+#     print(f" param_group = {type(param_group)} \n")
+#     print(f" param_group['lr'] = {param_group['lr']} \n ")
+#     # param_group["lr"] = 1 
 
 
 # 训练网路
@@ -115,7 +120,8 @@ for epoch in range(2):  # 多批次循环
         # 正向传播，反向传播，优化
         outputs = net(inputs)
         loss = criterion(outputs, labels)
-        loss.backward()
+        l = Variable(loss, requires_grad = True)
+        l.backward()
         optimizer.step()
 
         # 打印状态信息
@@ -143,8 +149,7 @@ outputs = net(images)
 
 _, predicted = torch.max(outputs, 1)
 
-print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
-                              for j in range(4)))
+print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] for j in range(4)))
 
 
 

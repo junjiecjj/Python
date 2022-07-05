@@ -29,7 +29,7 @@ class Benchmark(A):
     def __init__(self, args, name='', train=True, benchmark=True):
         super(Benchmark, self).__init__(args, name=name, train=train, benchmark=True)
     def print1(self):
-         print(f"hello, Mr.Wang")
+         print(f"hello, Mr.Wang  {self.name}")
 
 
 classA = A(args=222, name='junjie', train=True, benchmark=True)

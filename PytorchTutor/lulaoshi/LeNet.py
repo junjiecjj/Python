@@ -147,7 +147,13 @@ lr, num_epochs = 0.9, 10
 
 net = LeNet()
 optimizer = torch.optim.SGD(net.parameters(), lr=lr)
+
+# for param_group in optimizer.param_groups:#在每次更新参数前迭代更改学习率 
+#     print(f" param_group = {type(param_group)} \n")
+#     print(f" param_group['lr'] = {param_group['lr']} \n ")
+#     param_group["lr"] = lr 
     
+
 # load data
 train_iter, test_iter = load_data_fashion_mnist(batch_size=batch_size)
 # train

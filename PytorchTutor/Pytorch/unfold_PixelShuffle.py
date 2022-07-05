@@ -57,17 +57,28 @@ x1 = f.unfold(x, kernel_size=kernelsize, dilation=1, stride=stride)
 print(f"x1.shape = {x1.shape}")
 B, C_kh_kw, L = x1.size()
 
-
+#===========================================================================
 x2 = x1.permute(0, 2, 1)
 print(f"x2.shape = {x2.shape}")
 
-x2 = x2.view(B, L, -1, kernelsize, kernelsize)
-print(f"x2.shape = {x2.shape}")
+x3 = x2.view(B, L, -1, kernelsize, kernelsize)
+print(f"x3.shape = {x3.shape}")
 
 # x.shape = torch.Size([1, 3, 5, 5])
 # x1.shape = torch.Size([1, 12, 16])
 # x2.shape = torch.Size([1, 16, 12])
-# x2.shape = torch.Size([1, 16, 3, 2, 2])
+# x3.shape = torch.Size([1, 16, 3, 2, 2])
+
+#===========================================================================
+x2 = x1.transpose(0,2).contiguous()
+print(f"x2.shape = {x2.shape}")
+
+x3 = x2.view(x2.size(0),-1,kernelsize,kernelsize)
+print(f"x3.shape = {x3.shape}")
+
+# x2.shape = torch.Size([16, 12, 1])
+# x3.shape = torch.Size([16, 3, 2, 2])
+#===========================================================================
 
 
 x3 = x1.transpose(1,2).transpose(0,1).contiguous()
@@ -376,11 +387,11 @@ print(f"x2.shape = {x2.shape}")
 import torch
 import torch.nn as nn
 
-x1 = torch.arange(1*27648*18).reshape(1,27648,18)*1.0
-
-fold = nn.Fold(kernel_size=96, stride=24, output_size=(96,504))
+x1 = torch.arange(1*27648*324).reshape(1,27648,324)*1.0
+print(f"x1.shape = {x1.shape}")
+fold = nn.Fold(kernel_size=96, stride=24, output_size=(504,504))
 x2 = fold(x1)
-print(f"x2 = \n{x2}")
+#print(f"x2 = \n{x2}")
 print(f"x2.shape = {x2.shape}")
 
 
