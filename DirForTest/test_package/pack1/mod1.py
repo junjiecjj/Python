@@ -14,3 +14,4 @@ import os
 
 def pack1_func_1():
     print(f"1   I'm in  {os.getcwd()}")
+pack1_func_1()

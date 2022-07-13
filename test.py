@@ -3,54 +3,19 @@
 # https://www.jianshu.com/p/12a8207149b0
 
 
+name = 1111
+derain = 100
 
-from pandas import Series,DataFrame
-import pandas as pd
-
-df = pd.DataFrame({'Country':['China','China', 'India', 'India', 'America', 'Japan', 'China', 'India'], 
- 
-                   'Income':[10000, 10000, 5000, 5002, 40000, 50000, 8000, 5000],
- 
-                    'Age':[50, 43, 34, 40, 25, 25, 45, 32]})
-breed = df['Country']
-file = Series.as_matrix(breed)
+if name in ['Set1','Set2','Set3','Set5', 'Set14', 'B100', 'Urban100',] and derain:
+     print(f"yes, {name} is in DataBase. \n")
+else:
+     print(f"no, {name} is not in DataBase. \n")
 
 
 
-
-
-sr = pd.Series(['New York', 'Chicago', 'Toronto', 'Lisbon', 'Rio']) 
-result = sr.as_matrix() 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+a=1
+if a==1:
+     print(f"a = {a}")
 
 
 

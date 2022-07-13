@@ -14,5 +14,5 @@
 
 
 # 在根目录下的 __init__.py 文件写入下列语句
-import test_package.pack1
-import test_package.pack2
+import test_package.pack1 as pak1
+import test_package.pack2 as pak2
