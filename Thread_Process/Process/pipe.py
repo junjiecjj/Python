@@ -10,7 +10,7 @@ from multiprocessing import Process, Pipe
 
 import time
 
-\# 子进程执行方法
+# 子进程执行方法
 
 def f(Subconn):
 

@@ -100,6 +100,390 @@ optimizer.step()
 
 
 
+#========================================================================================
+# https://www.jianshu.com/p/9643cba47655?u_atoken=568ba1dd-322d-46a0-8097-8d68d1d0a859&u_asession=01yziPZpcGlZUx6sL3zb5NALh-SWMUpgwwLcUSIri9OLP8qfBnnOPMHavxg4crv3uPX0KNBwm7Lovlpxjd_P_q4JsKWYrT3W_NKPr8w6oU7K8xYXK4ZiJjOBj_JrChRp8xPpcarp92QKzyJKyYjREPlmBkFo3NEHBv0PZUm6pbxQU&u_asig=05INXw5uDoPWF7rcvX5GDmMczVXXpo52EOlLKB0UEwEx0dcIKp8AU3DEKfZZovOfEnXiTSMkbXALvFiuOwI5l3EZi8fD0cLn9JzrBPgdInFDd_EkWGfGaUoFt0zgwnLs3nRQXiXhfn5CWFimiB5FTf4pMiTkQlzWNHltxC3QkRjnD9JS7q8ZD7Xtz2Ly-b0kmuyAKRFSVJkkdwVUnyHAIJzW133U0bA1D264r16WyKRQin7ZDHhIq6RLjYTsjrhXtIWPRPQyB_SKrj-61LB_f61u3h9VXwMyh6PgyDIVSG1W8P1jhq9WAI7deW5maUWQuPMCiaxWNGs0SKRybKdVaVocS8_KYqQM2dyFvA6tiWgc6ldpZUFuHg1IvYPl7tY5TgmWspDxyAEEo4kbsryBKb9Q&u_aref=mWEbfXS7ymBmu6jwEFNvjM5k3dY%3D
+#========================================================================================
+
+
+import torch
+import matplotlib.pyplot as plt
+
+from torch.optim import lr_scheduler, Adam
+import torch.nn as nn
+import torch.optim as optim
+
+import matplotlib
+matplotlib.get_backend()
+matplotlib.use('TkAgg')
+
+class net(nn.Module):
+    def __init__(self):
+        super(net,self).__init__()
+        self.fc = nn.Linear(1,10)
+    def forward(self,x):
+        return self.fc(x)
+
+
+
+
+
+
+def make_optimizer( net):
+    '''
+        make optimizer and scheduler together
+    '''
+    # optimizer
+    #  filter() 函数用于过滤序列，过滤掉不符合条件的元素，返回一个迭代器对象，如果要转换为列表，可以使用 list() 来转换。
+    # 该接收两个参数，第一个为函数，第二个为序列，序列的每个元素作为参数传递给函数进行判断，然后返回 True 或 False，最后将返回 True 的元素放到新列表中。
+    trainable = filter(lambda x: x.requires_grad, net.parameters())
+
+    #  lr = 1e-4, weight_decay = 0
+    kwargs_optimizer = {'lr': 0.1, 'weight_decay': 0 }
+
+    # optimizer = ADAM
+
+
+    optimizer_class = optim.Adam
+    kwargs_optimizer['betas'] = (0.9, 0.999)
+    kwargs_optimizer['eps'] =  1e-8
+
+
+    # scheduler, milestones = 0,   gamma = 0.5
+    milestones =  [20, 40, 60, 100, 120]  # [200]
+    kwargs_scheduler = {'milestones': milestones, 'gamma': 0.5}  # args.gamma =0.5
+    scheduler_class = lrs.MultiStepLR
+
+    class CustomOptimizer(optimizer_class):
+        def __init__(self, *args, **kwargs):
+            super(CustomOptimizer, self).__init__(*args, **kwargs)
+
+        def _register_scheduler(self, scheduler_class, **kwargs):
+            self.scheduler = scheduler_class(self, **kwargs)
+
+        def save(self, save_dir):
+            torch.save(self.state_dict(), self.get_dir(save_dir))
+
+        def load(self, load_dir, epoch=1):
+            self.load_state_dict(torch.load(self.get_dir(load_dir)))
+            if epoch > 1:
+                for _ in range(epoch): self.scheduler.step()
+
+        def get_dir(self, dir_path):
+            return os.path.join(dir_path, 'optimizer.pt')
+
+        def schedule(self):
+            self.scheduler.step()
+
+        def get_lr(self):
+            return self.scheduler.get_lr()[0]
+
+        def get_last_epoch(self):
+            return self.scheduler.last_epoch
+
+    optimizer = CustomOptimizer(trainable, **kwargs_optimizer)
+    optimizer._register_scheduler(scheduler_class, **kwargs_scheduler)
+    return optimizer
+
+model = net()
+LR = 0.01
+optimizer = make_optimizer(  model)
+
+
+lr_list1 = []
+lr_list2 = []
+for epoch in range(200):
+     optimizer.schedule()
+     lr_list1.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(200),lr_list1,color = 'r')
+#plt.plot(range(100),lr_list2,color = 'b')
+plt.show()
+
+
+
+#========================================================================================
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+lr_list = []
+for epoch in range(100):
+    if epoch % 5 == 0:
+        for p in optimizer.param_groups:
+            p['lr'] *= 0.9
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+plt.show()
+
+
+
+#========================================================================================
+import numpy as np 
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+lambda1 = lambda epoch:np.sin(epoch) / epoch
+scheduler = lr_scheduler.LambdaLR(optimizer,lr_lambda = lambda1)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+plt.show()
+
+
+#========================================================================================
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+plt.show()
+
+#========================================================================================
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.MultiStepLR(optimizer,milestones=[20,80],gamma = 0.9)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+plt.show()
+
+
+
+
+
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+
+
+
+
+
+#========================================================================================
+# https://zhuanlan.zhihu.com/p/352212135
+#========================================================================================
+
+# 手动设置学习率衰减1
+import torch
+import matplotlib.pyplot as plt
+
+from torch.optim import Adam, lr_scheduler
+import torch.nn as nn
+class net(nn.Module):
+    def __init__(self):
+        super(net,self).__init__()
+        self.fc = nn.Linear(1,10)
+    def forward(self,x):
+        return self.fc(x)
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+lr_list = []
+for epoch in range(100):
+    if epoch % 5 == 0:
+        for p in optimizer.param_groups:
+            p['lr'] *= 0.9
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+plt.show()
+
+# 手动设置学习率衰减2
+import torch
+import matplotlib.pyplot as plt
+
+from torch.optim import *
+import torch.nn as nn
+class net(nn.Module):
+    def __init__(self):
+        super(net,self).__init__()
+        self.fc = nn.Linear(1,10)
+    def forward(self,x):
+        return self.fc(x)
+
+def adjust_learning_rate(optimiz, epoch, base_lr):
+     lr = base_lr * (0.1 ** (epoch // 30))
+     for param_group in optimizer.param_groups:
+          param_group["lr"] = lr     
+     
+     return lr
+     
+   
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+
+lr_list1 = []
+lr_list2 = []
+for epoch in range(100):
+     lr = adjust_learning_rate(optimizer, epoch, LR)
+     lr_list1.append(optimizer.state_dict()['param_groups'][0]['lr'])
+     lr_list2.append(lr)
+     optimizer.step()
+plt.plot(range(100),lr_list1,color = 'r')
+plt.plot(range(100),lr_list2,color = 'b')
+plt.show()
+
+
+# 手动设置学习率衰减3
+import torch
+import matplotlib.pyplot as plt
+
+from torch.optim import *
+import torch.nn as nn
+class net(nn.Module):
+    def __init__(self):
+        super(net,self).__init__()
+        self.fc = nn.Linear(1,10)
+    def forward(self,x):
+        return self.fc(x)
+
+def adjust_learning_rate(epoch, base_lr):
+     lr = base_lr * (0.1 ** (epoch // 30))
+
+     return lr
+     
+   
+model = net()
+LR = 0.01
+
+
+lr_list1 = []
+lr_list2 = []
+for epoch in range(100):
+     lr = adjust_learning_rate(epoch, LR)
+     optimizer = Adam(model.parameters(),lr = lr)
+     lr_list1.append(optimizer.state_dict()['param_groups'][0]['lr'])
+     lr_list2.append(lr)
+     optimizer.step()
+plt.plot(range(100),lr_list1,color = 'r')
+plt.plot(range(100),lr_list2,color = 'b')
+plt.show()
+
+
+#========================================================================================
+
+# lr_scheduler.LambdaLR
+initial_lr =0.1
+optimizer_1 = torch.optim.Adam(model.parameters(), lr = initial_lr)
+scheduler_1 = lr_scheduler.LambdaLR(optimizer_1, lr_lambda=lambda epoch: 1/(epoch+1))
+# train
+print("第%d个epoch的学习率：%f" % (epoch, optimizer_1.param_groups[0]['lr']))
+scheduler_1.step()
+# -----------------使用示例2------------------
+import numpy as np 
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+lambda1 = lambda epoch:np.sin(epoch) / epoch
+scheduler = lr_scheduler.LambdaLR(optimizer,lr_lambda = lambda1)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+
+
+
+
+
+
+#========================================================================================
+# torch.optim.lr_scheduler.StepLR
+
+
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.StepLR(optimizer,step_size=5,gamma = 0.8)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+
+
+
+
+
+
+
+
+#========================================================================================
+
+# torch.optim.lr_scheduler.MultiStepLR
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.MultiStepLR(optimizer,milestones=[20,80],gamma = 0.9)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+
+
+
+
+
+
+
+
+#========================================================================================
+# torch.optim.lr_scheduler.ExponentialLR
+
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+for epoch in range(100):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+
+
+
+
+
+
+
+
+
+#========================================================================================
+# torch.optim.lr_scheduler.CosineAnnealingLR
+
+
+lr_list = []
+model = net()
+LR = 0.01
+optimizer = Adam(model.parameters(),lr = LR)
+scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max = 20)
+for epoch in range(50):
+    scheduler.step()
+    lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
+plt.plot(range(100),lr_list,color = 'r')
+
+
+
+
+
+
+
+
+#========================================================================================
 
 
 
@@ -111,43 +495,7 @@ optimizer.step()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#========================================================================================
 
 
 

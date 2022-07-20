@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #-*-coding=utf-8-*-
-'''
+
 #https://www.cnblogs.com/linhaifeng/articles/7428874.html
 #*****************************************
 from multiprocessing import Process,Queue
@@ -57,7 +57,7 @@ if __name__=='__main__':
     print("主")
 
 #************************************************
-'''
+
 from multiprocessing import Process,Queue
 import time,random,os
 def consumer(q):
@@ -65,14 +65,14 @@ def consumer(q):
         res=q.get()
         if res is None:break #收到结束信号则结束
         time.sleep(random.randint(1,3))
-        print('\033[45m%s 吃 %s\033[0m' %(os.getpid(),res))
+        print('\n\033[36m%s 吃 %s\033[0m\n' %(os.getpid(),res))
 
 def producer(name,q):
     for i in range(2):
         time.sleep(random.randint(1,3))
         res='%s%s' %(name,i)
         q.put(res)
-        print('\033[44m%s 生产了 %s\033[0m' %(os.getpid(),res))
+        print('\n\033[32m%s 生产了 %s\033[0m\n' %(os.getpid(),res))
 
 
 
@@ -97,12 +97,58 @@ if __name__ == '__main__':
     p1.join() #必须保证生产者全部生产完毕,才应该发送结束信号
     p2.join()
     p3.join()
-    q.put(None) #有几个消费者就应该发送几次结束信号None
+    q.put(None) #有几个消费者就应该发送几次结束信号None,否则无法退出队列。
     q.put(None) #发送结束信号
+    c1.join()
+    c2.join()
     print('主')
 #**********************************************************************
 
+from multiprocessing import Process,JoinableQueue
+import time,random,os
+def consumer(q):
+    while True:
+        res=q.get()
+        time.sleep(random.randint(1,3))
+        print('\n\033[36m%s 吃 %s\033[0m\n' %(os.getpid(),res))
 
+        q.task_done() #向q.join()发送一次信号,证明一个数据已经被取走了
+
+def producer(name,q):
+    for i in range(2):
+        time.sleep(random.randint(1,3))
+        res='%s%s' %(name,i)
+        q.put(res)
+        print('\n\033[32m%s 生产了 %s\033[0m\n' %(os.getpid(),res))
+    q.join()
+
+
+if __name__ == '__main__':
+    q=JoinableQueue()
+    #生产者们:即厨师们
+    p1=Process(target=producer,args=('包子',q))
+    p2=Process(target=producer,args=('骨头',q))
+    p3=Process(target=producer,args=('泔水',q))
+
+    #消费者们:即吃货们
+    c1=Process(target=consumer,args=(q,))
+    c2=Process(target=consumer,args=(q,))
+    c1.daemon=True
+    c2.daemon=True
+
+    #开始
+    p_l=[p1,p2,p3,c1,c2]
+    for p in p_l:
+        p.start()
+
+    p1.join()
+    p2.join()
+    p3.join()
+    print('主')
+
+    #主进程等--->p1,p2,p3等---->c1,c2
+    #p1,p2,p3结束了,证明c1,c2肯定全都收完了p1,p2,p3发到队列的数据
+    #因而c1,c2也没有存在的价值了,应该随着主进程的结束而结束,所以设置成守护进程
 
 
 
@@ -457,7 +503,7 @@ q.join() #计数器不为0的时候 阻塞等待计数器为0后通过
 #coding=utf-8
 from multiprocessing import Queue
 q=Queue(3) #初始化一个Queue对象，最多可接收三条put消息
-q.put("消息1") 
+q.put("消息1")
 q.put("消息2")
 print(q.full())  #False
 q.put("消息3")
@@ -515,7 +561,7 @@ if __name__=='__main__':
     pw = Process(target=write, args=(q,))
     pr = Process(target=read, args=(q,))
     # 启动子进程pw，写入:
-    pw.start()    
+    pw.start()
     # 启动子进程pr，读取:
     pr.start()
     # 等待pw结束:
@@ -591,8 +637,8 @@ def work_1(q):
             print("work_1 error")
        finally:
            print("work_1 end!!!")
-        
-#取出队列中的数据        
+
+#取出队列中的数据
 def work_2(q):
        try:
            n=1

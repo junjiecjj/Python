@@ -22,10 +22,10 @@ class net_seq(nn.Module):
         super(net_seq, self).__init__()
         self.seq = nn.Sequential(
                         nn.Conv2d(1,20,5),
-                         nn.ReLU(),
-                          nn.Conv2d(20,64,5),
-                       nn.ReLU()
-                       )      
+                        nn.ReLU(),
+                        nn.Conv2d(20,64,5),
+                        nn.ReLU()
+                    )
     def forward(self, x):
         return self.seq(x)
 net_seq = net_seq()
@@ -184,7 +184,7 @@ class net1(nn.Module):
                          nn.ReLU(),
                           nn.Conv2d(20,64,5),
                        nn.ReLU()
-                       )      
+                       )
     def forward(self, x):
         return self.seq(x)
 
@@ -347,7 +347,7 @@ class ResBlock1(nn.Module):
 
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
-        
+
      def forward(self, x):
            res = self.body(x).mul(self.res_scale)
            res += x
@@ -371,7 +371,7 @@ class ResBlock2(nn.Sequential):
 
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
-        
+
      # def forward(self, x):
      #       res = self.body(x).mul(self.res_scale)
      #       res += x
@@ -427,9 +427,9 @@ class Upsampler(nn.Module):
             raise NotImplementedError
 
        #  super(Upsampler, self).__init__(*m)
-       
+
         self.body = nn.Sequential(*m)
-        
+
     def forward(self, x):
            res = self.body(x)
            return res
