@@ -1,0 +1,20 @@
+{
+    "mode": "eval",
+    "data_root": "./data",
+    "model_name" : "WideResNet",
+    "model_depth": 34,
+    "model_width": 10,
+    "num_class":10,
+    "phase": "adv",
+  
+    "batch_size": 128,
+    "save_path": "results",
+    "restore": false,
+    "spbn": false,
+  
+    "attack": "PGD",
+    "attack_steps": 7,
+    "attack_eps": 8.0,
+    "attack_lr": 2.0,
+    "random_init": true
+  }

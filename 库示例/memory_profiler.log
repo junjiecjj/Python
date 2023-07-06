@@ -1,0 +1,11 @@
+Filename: /home/jack/anaconda3/lib/python3.9/site-packages/memory_profiler.py
+
+Line #    Mem usage    Increment  Occurences   Line Contents
+============================================================
+  1140 883.8828 MiB 883.8828 MiB           1               def wrapper(*args, **kwargs):
+  1141 883.8828 MiB   0.0000 MiB           1                   prof = get_prof()
+  1142 883.8867 MiB   0.0039 MiB           1                   val = prof(func)(*args, **kwargs)
+  1143 883.8867 MiB   0.0000 MiB           1                   show_results_bound(prof)
+  1144 883.8867 MiB   0.0000 MiB           1                   return val
+
+

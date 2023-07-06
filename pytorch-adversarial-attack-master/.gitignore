@@ -1,0 +1,6 @@
+__pycache__/*
+cifar_model/state_dict/*
+cifar_model/__pycache__/*
+checkpoint/*
+results/*
+data/*
