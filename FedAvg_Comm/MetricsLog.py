@@ -29,7 +29,7 @@ import objgraph
 
 # 本项目自己编写的库
 sys.path.append("../")
-from Option import args
+# from Option import args
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"

@@ -38,9 +38,6 @@ from trainers.AE_cnn_classify_Mnist_R_SNR_join         import   AE_cnn_classify_
 from model import LeNets
 # from model import AutoEncoder
 
-
-
-
 #==============================================================================================================
 # 设置随机数种子
 Utility.set_random_seed(args.seed,  deterministic = True, benchmark = True)

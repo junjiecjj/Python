@@ -40,8 +40,10 @@ class client(object):
         Net.load_state_dict(global_parameters, strict=True)
         ## 载入Client自有数据集, 加载本地数据
         self.train_dataloader = DataLoader(self.train_ds, batch_size = localBatchSize, shuffle = True)
+        # print("    local epoch: ", end = " ")
         ## 设置迭代次数
         for epoch in range(localEpoch):
+            # print(f" {epoch}", end = ", ")
             for data, label in self.train_dataloader:
                 # 加载到GPU上
                 data, label = data.to(self.dev), label.to(self.dev)
@@ -55,6 +57,7 @@ class client(object):
                 loss.backward()
                 # 计算梯度，并更新梯度
                 opti.step()
+        # print("")
         # 返回当前Client基于自己的数据训练得到的新的模型参数
         return Net.state_dict()
 
@@ -74,25 +77,27 @@ Non-IID：
 '''
 class ClientsGroup(object):
     #  dataSetName 数据集的名称, isIID 是否是IID, numOfClients 客户端的数量, dev 设备(GPU), clients_set 客户端
-    def __init__(self, dataSetName = 'MNIST', isIID = False, numOfClients = 100, dev = None):
-        self.data_set_name = dataSetName
-        self.is_iid = isIID
-        self.num_of_clients = numOfClients
-        self.dev = dev
-        self.clients_set = {}
+    def __init__(self, data_root, dataSetName = 'MNIST', isIID = False, numOfClients = 100, dev = None, test_batsize = 128):
+        self.data_root        = data_root
+        self.data_set_name    = dataSetName
+        self.is_iid           = isIID
+        self.num_of_clients   = numOfClients
+        self.dev              = dev
+        self.clients_set      = {}
         self.test_data_loader = None
+        self.test_bs          = test_batsize
         self.dataSetAllocation()
         return
 
     def dataSetAllocation(self):
         # 得到已经被重新分配的数据
-        mnistDataSet = GetDataSet(self.data_set_name, self.is_iid)
+        mnistDataSet = GetDataSet(self.data_set_name, self.is_iid, self.data_root)
 
         test_data  =  mnistDataSet.test_data
         test_label =  mnistDataSet.test_label
 
         # 加载测试数据
-        self.test_data_loader = DataLoader(TensorDataset(test_data, test_label), batch_size = 128, shuffle = False)
+        self.test_data_loader = DataLoader(TensorDataset(test_data, test_label), batch_size = self.test_bs, shuffle = False)
 
         train_data  = mnistDataSet.train_data
         train_label = mnistDataSet.train_label

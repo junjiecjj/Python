@@ -11,20 +11,23 @@ import   torch
 
 
 class Server(object):
-    def __init__(self, conf, eval_dataset, device = "cuda:0"):
-        self.device       = device
-        self.conf         = conf
-        self.global_model = models.get_model(self.conf["model_name"]).to(self.device)
+    def __init__(self, Args, model, test_dataloader, device = None):
+        if device != None:
+            self.device = device
+        else:
+            self.device = next(model.parameters()).device
+        self.args         = Args
+        self.global_model = model
         # for name, var in self.global_model.state_dict().items():
             # print(f"{name}: {var.is_leaf}, {var.shape}, {var.requires_grad}, {var.type()}  ")
-        self.eval_loader  = torch.utils.data.DataLoader(eval_dataset, batch_size=self.conf["batch_size"], shuffle=True)
+        self.eval_loader  = test_dataloader
         return
 
     def model_aggregate(self, weight_accumulator):
         for name, data in self.global_model.state_dict().items():
-            update_per_layer = weight_accumulator[name] * self.conf["lambda"]
-            if self.conf['dp']:
-                sigma = self.conf['sigma']
+            update_per_layer = weight_accumulator[name] * self.args["lambda"]
+            if self.args['dp']:
+                sigma = self.args['sigma']
                 noise = torch.normal(mean = 0, std = sigma, size = update_per_layer.shape ).to(self.device)
                 update_per_layer.add_(noise)
             if data.type() != update_per_layer.type():
@@ -34,31 +37,28 @@ class Server(object):
                 data.add_(update_per_layer)
         return
 
+
     def model_eval(self):
         self.global_model.eval()
-        #print("\n\nstart to model evaluation......")
-        #for name, layer in self.global_model.named_parameters():
-        #    print(name, "->", torch.mean(layer.data))
-        total_loss = 0.0
-        correct = 0
-        dataset_size = 0
-        for batch_id, batch in enumerate(self.eval_loader):
-            data, target = batch
-            dataset_size += data.size()[0]
-            data, target = data.to(self.device), target.to(self.device)
+        ## 训练结束之后，我们要通过测试集来验证方法的泛化性，注意:虽然训练时，Server没有得到过任何一条数据，但是联邦学习最终的目的还是要在Server端学习到一个鲁棒的模型，所以在做测试的时候，是在Server端进行的
+        ##  加载Server在最后得到的模型参数
+        # self.global_model.load_state_dict(global_parameters, strict=True)
+        sum_accu    = 0.0
+        sum_loss    = 0.0
+        examples    = 0
+        loss_fn = torch.nn.CrossEntropyLoss(reduction='sum')
+        # 载入测试集
+        for data, label in self.eval_loader:
+            examples   += data.shape[0]
+            data, label = data.to(self.device), label.to(self.device)
+            preds       = self.global_model(data)
+            sum_loss    += loss_fn(preds, label).item()
+            preds       = torch.argmax(preds, dim=1)
+            sum_accu    += (preds == label).float().sum().item()
+        acc     = sum_accu / examples
+        avg_los = sum_loss / examples
 
-            output = self.global_model(data)
-            #print(output)
-            total_loss += torch.nn.functional.cross_entropy(output, target, reduction='sum').item() # sum up batch loss
-            pred = output.data.max(1)[1]  # get the index of the max log-probability
-            correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-
-        acc = 100.0 * (float(correct) / float(dataset_size))
-        total_l = total_loss / dataset_size
-
-        return acc, total_l
-
-
+        return acc, avg_los
 
 
 

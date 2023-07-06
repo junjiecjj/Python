@@ -42,6 +42,8 @@ parser.add_argument('--cfraction',       type=float, default = 0.1,           he
 parser.add_argument('--loc_epochs',      type=int,   default = 10,            help='local train epoch')
 ## local_batchsize 大小
 parser.add_argument('--local_batchsize', type=int,   default = 128,           help='local train batch size')
+## test_batchsize 大小
+parser.add_argument('--test_batchsize', type=int,   default = 128,           help='test batch size')
 ## 模型名称
 parser.add_argument('--model_name',      type=str,   default = "mnist_cnn",   help='the model to train')
 ## 所用的数据集
@@ -52,7 +54,7 @@ parser.add_argument('--save_freq',       type=int,   default = 20,            he
 ## num_comm 表示通信次数，此处设置为1k
 parser.add_argument('--num_comm',        type=int,   default = 500,              help='number of communications')
 ## 数据是否 IID
-parser.add_argument('--IID',             type=int,   default= 0 ,                 help='the way to allocate data to clients')
+parser.add_argument('--isIID',             type=int,   default= 0 ,                 help='the way to allocate data to clients')
 
 ##====================================================================================================================
 parser.add_argument('--precision',       type=str,   default='single', choices=('single', 'half'),   help='FP precision for test (single | half)')

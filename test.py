@@ -14,18 +14,28 @@ import copy
 import torch
 
 
-# matplotlib.use('Agg')
-# matplotlib.rcParams['text.usetex'] = True
-filepath2 = '/home/jack/snap/'
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
+class Server(object):
+    def __init__(self, a):
+        self.A = a
+        return
 
+    def hh(self):
+        return
 
+class Client(object):
+    def __init__(self, ser):
+        self.serv = ser
 
+    def cha(self):
+        self.serv.A += 100
+        return
 
+ser = Server(12)
+print(ser.A)
 
-
+cli = Client(ser)
+cli.cha()
+print(ser.A)
 
 
 

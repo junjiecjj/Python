@@ -58,7 +58,7 @@ ckp = Utility.checkpoint(args)
 
 #=================================================== main =====================================================
 def main():
-    recorder = MetricsLog.TraRecorder(4, name = "Train", )
+    recorder = MetricsLog.TraRecorder(5, name = "Train", )
 
     # 初始化模型
     net = get_model(args.model_name).to(args.device)
@@ -68,12 +68,14 @@ def main():
     # 优化算法，随机梯度下降法, 使用Adam下降法
     optim = Optimizer.make_optimizer(args, net, )
 
-    ## 创建Clients群
-    myClients = ClientsGroup('mnist', args.IID, args.num_of_clients, args.device)
+    ## 创建 Clients 群
+    myClients = ClientsGroup(args.dir_minst, args.dataset, args.isIID, args.num_of_clients, args.device, args.test_batchsize)
     testDataLoader = myClients.test_data_loader
-    server = Server(args, testDataLoader)
 
-    # ---------------------------------------以上准备工作已经完成------------------------------------------#
+    ## 创建 server
+    server = Server(args, net, testDataLoader)
+
+    # --------------------------------------- 完成以上准备工作 ------------------------------------------#
     #  选取若干个Clients
     num_in_comm = int(max(args.num_of_clients * args.cfraction, 1))
 
@@ -93,18 +95,17 @@ def main():
         ckp.write_log(f"Communicate round {round_idx + 1} / {args.num_comm} : ", train=True)
 
         ### 从100个客户端随机选取10个
-        ## np.random.shuffle(np.arange(args.num_of_clients))
         chosen = np.random.choice(range(args.num_of_clients), num_in_comm, replace=False)
-        # order = np.random.permutation(args.num_of_clients)
 
         # 生成10个客户端
         clients_in_comm = ['client{}'.format(i) for i in chosen]
 
         sum_parameters = None
         # 每个Client基于当前模型参数和自己的数据训练并更新模型, 返回每个Client更新后的参数
-        for client in tqdm(clients_in_comm):
+        for client in  tqdm(clients_in_comm):
+            # print(f"  {client:<10}:", end = " ")
             # 获取当前Client训练得到的参数
-            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, net, loss_func, optim, global_parameters)
+            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, server.global_model, loss_func, optim, global_parameters)
             # 对所有的Client返回的参数累加（最后取平均值）
             if sum_parameters is None:
                 sum_parameters = {}
@@ -117,29 +118,23 @@ def main():
         for var in global_parameters:
             global_parameters[var] = (sum_parameters[var] / num_in_comm)
 
+        server.global_model.load_state_dict(global_parameters, strict=True)
+
+        ## 优化器学习率调整
         optim.schedule()
-        ## 训练结束之后，我们要通过测试集来验证方法的泛化性，注意:虽然训练时，Server没有得到过任何一条数据，但是联邦学习最终的目的还是要在Server端学习到一个鲁棒的模型，所以在做测试的时候，是在Server端进行的
-        #  加载Server在最后得到的模型参数
-        net.load_state_dict(global_parameters, strict=True)
-        sum_accu = 0
-        num = 0
-        # 载入测试集
-        for data, label in testDataLoader:
-            data, label = data.to(args.device), label.to(args.device)
-            preds = net(data)
-            preds = torch.argmax(preds, dim=1)
-            sum_accu += (preds == label).float().sum().item()
-            num += data.shape[0]
-        acc = sum_accu / num
         epochLos = loss_func.avg()
-        print(f"    Accuracy: {acc}, lr = {lr}, loss={epochLos:.3f}" )
-        ckp.write_log(f"    lr = {lr}, loss={epochLos:.3f}, Accuracy={acc:.3f}", train=True)
-        recorder.assign([lr, epochLos, acc])
+
+        ## 训练结束之后，我们要通过测试集来验证方法的泛化性，注意:虽然训练时，Server没有得到过任何一条数据，但是联邦学习最终的目的还是要在Server端学习到一个鲁棒的模型，所以在做测试的时候，是在Server端进行的
+        acc, evl_loss = server.model_eval()
+
+        print(f"  Accuracy: {acc}, lr = {lr}, train_loss = {epochLos:.3f}, evl_loss = {evl_loss:.3f}" )
+        ckp.write_log(f"  lr = {lr}, loss={epochLos:.3f}, Accuracy={acc:.3f}, evl_loss = {evl_loss:.3f}", train=True)
+        recorder.assign([lr, acc, epochLos, evl_loss])
 
         if (round_idx + 1) % args.save_freq == 0:
             torch.save(net, os.path.join(ckp.savedir, '{}_Ncomm={}_E={}_B={}_lr={}_num_clients={}_cf={:.1f}.pt'.format(args.model_name, round_idx, args.loc_epochs, args.local_batchsize, args.learning_rate, args.num_of_clients, args.cfraction )))
 
-        recorder.plot_inonefig(ckp.savedir, metric_str = ['lr', 'train loss', 'Accuracy'])
+        recorder.plot_inonefig(ckp.savedir, metric_str = ['lr', 'Accuracy', 'train loss', 'val loss'])
     recorder.save(ckp.savedir)
     return
 

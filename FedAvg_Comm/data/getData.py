@@ -19,7 +19,8 @@ import torch
 
 
 class GetDataSet(object):
-    def __init__(self, dataSetName, isIID = False):
+    def __init__(self, dataSetName, isIID = False, data_root = "/home/jack/公共的/MLData/"):
+        self.data_root       = data_root
         self.name            = dataSetName
         self.train_data      = None  # 训练集
         self.train_label     = None  # 标签
@@ -29,19 +30,20 @@ class GetDataSet(object):
         self.test_label      = None  # 测试的标签
         self.test_data_size  = None   # 测试集数据Size
 
-        if self.name == 'mnist':
+        if self.name.lower() == 'mnist':
             self.load_MNIST_torch(isIID)
-        elif self.name == 'cifar10':
+        elif self.name.lower() == 'cifar10':
             self.load_cifar10(isIID)
         else:
             pass
+        return
 
 
     def load_MNIST_torch(self, isIID = False):
         train_tf = torchvision.transforms.Compose([transforms.ToTensor()])
         test_tf  = torchvision.transforms.Compose([transforms.ToTensor()])
-        train_set = torchvision.datasets.MNIST(root = "/home/jack/公共的/MLData/", train = True,  download = True, transform = train_tf)
-        test_set  = torchvision.datasets.MNIST(root = "/home/jack/公共的/MLData/", train = False, download = True, transform = test_tf)
+        train_set = torchvision.datasets.MNIST(root = self.data_root, train = True,  download = True, transform = train_tf)
+        test_set  = torchvision.datasets.MNIST(root = self.data_root, train = False, download = True, transform = test_tf)
 
         ## 训练数据Size
         self.train_data_size = train_set.data.shape[0]  # 60000

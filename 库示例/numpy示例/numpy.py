@@ -54,6 +54,18 @@ num = (label1 == y).sum()
 print(f"num = \n  {num}")
 
 
+org = np.arange(20)
+print(f"org = {org}")
+
+np.random.shuffle(org)
+print(f"org = {org}")
+
+order = np.random.permutation(20)
+print(f"order = {order}")
+
+choice = np.random.choice(range(20), 4, replace=False)
+print(f"choice = {choice}")
+
 #========================================================================
 
 import torch
