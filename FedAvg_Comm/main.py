@@ -72,6 +72,7 @@ def main():
     myClients = ClientsGroup('mnist', args.IID, args.num_of_clients, args.device)
     testDataLoader = myClients.test_data_loader
     server = Server(args, testDataLoader)
+
     # ---------------------------------------以上准备工作已经完成------------------------------------------#
     #  选取若干个Clients
     num_in_comm = int(max(args.num_of_clients * args.cfraction, 1))
