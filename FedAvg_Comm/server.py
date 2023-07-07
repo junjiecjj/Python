@@ -8,33 +8,34 @@ Created on Thu Jul  6 15:43:42 2023
 
 
 import   torch
-
+from model import get_model
 
 class Server(object):
-    def __init__(self, Args, model, test_dataloader, device = None):
-        if device != None:
-            self.device = device
-        else:
-            self.device = next(model.parameters()).device
+    def __init__(self, Args, test_dataloader, device = None, model = None):
+        self.device       = device
         self.args         = Args
-        self.global_model = model
+        self.global_model = model # get_model(self.args.model_name).to(self.device)
         # for name, var in self.global_model.state_dict().items():
             # print(f"{name}: {var.is_leaf}, {var.shape}, {var.requires_grad}, {var.type()}  ")
         self.eval_loader  = test_dataloader
         return
 
     def model_aggregate(self, weight_accumulator):
-        for name, data in self.global_model.state_dict().items():
-            update_per_layer = weight_accumulator[name] * self.args["lambda"]
-            if self.args['dp']:
-                sigma = self.args['sigma']
-                noise = torch.normal(mean = 0, std = sigma, size = update_per_layer.shape ).to(self.device)
-                update_per_layer.add_(noise)
-            if data.type() != update_per_layer.type():
-                print(f"{data.type()}, {update_per_layer.type()}")
-                data.add_(update_per_layer.to(torch.int64))
-            else:
-                data.add_(update_per_layer)
+        if self.args.transmitted_diff:
+            for name, data in self.global_model.state_dict().items():
+                update_per_layer = weight_accumulator[name] * self.args["lambda"]
+                if self.args['dp']:
+                    sigma = self.args['sigma']
+                    noise = torch.normal(mean = 0, std = sigma, size = update_per_layer.shape ).to(self.device)
+                    update_per_layer.add_(noise)
+                if data.type() != update_per_layer.type():
+                    print(f"{data.type()}, {update_per_layer.type()}")
+                    data.add_(update_per_layer.to(torch.int64))
+                else:
+                    data.add_(update_per_layer)
+
+        else:
+            self.global_model.load_state_dict(weight_accumulator, strict=True)
         return
 
 
@@ -49,7 +50,7 @@ class Server(object):
         loss_fn = torch.nn.CrossEntropyLoss(reduction='sum')
         # 载入测试集
         for data, label in self.eval_loader:
-            examples   += data.shape[0]
+            examples    += data.shape[0]
             data, label = data.to(self.device), label.to(self.device)
             preds       = self.global_model(data)
             sum_loss    += loss_fn(preds, label).item()

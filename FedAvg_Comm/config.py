@@ -35,26 +35,28 @@ parser.add_argument('--device',          type = str, default = 'cuda:0',   help 
 parser.add_argument('--seed',            type = int, default = 1,          help = 'random seed')
 
 ## 客户端的数量
-parser.add_argument('--num_of_clients',  type=int,   default = 100,           help='numer of the clients')
+parser.add_argument('--num_of_clients',  type=int,   default = 100,           help = 'numer of the clients')
 ## 随机挑选的客户端的数量
-parser.add_argument('--cfraction',       type=float, default = 0.1,           help='C fraction, 0 means 1 client, 1 means total clients')
+parser.add_argument('--cfraction',       type=float, default = 0.1,           help = 'C fraction, 0 means 1 client, 1 means total clients')
 ## 训练次数(客户端更新次数)
-parser.add_argument('--loc_epochs',      type=int,   default = 10,            help='local train epoch')
+parser.add_argument('--loc_epochs',      type=int,   default = 10,            help = 'local train epoch')
 ## local_batchsize 大小
-parser.add_argument('--local_batchsize', type=int,   default = 128,           help='local train batch size')
+parser.add_argument('--local_batchsize', type=int,   default = 128,           help = 'local train batch size')
 ## test_batchsize 大小
-parser.add_argument('--test_batchsize', type=int,   default = 128,           help='test batch size')
+parser.add_argument('--test_batchsize', type=int,   default = 128,           help = 'test batch size')
 ## 模型名称
-parser.add_argument('--model_name',      type=str,   default = "mnist_cnn",   help='the model to train')
+parser.add_argument('--model_name',      type=str,   default = "mnist_cnn",   help = 'the model to train')
 ## 所用的数据集
-parser.add_argument("--dataset",         type=str,   default = "mnist",       help="需要训练的数据集")
+parser.add_argument("--dataset",         type=str,   default = "mnist",       help = "需要训练的数据集")
 ## 模型验证频率（通信频率）
 parser.add_argument("--val_freq",        type=int,   default = 5,             help = "model validation frequency(of communications)")
 parser.add_argument('--save_freq',       type=int,   default = 20,            help = 'global model save frequency(of communication)')
 ## num_comm 表示通信次数，此处设置为1k
-parser.add_argument('--num_comm',        type=int,   default = 500,              help='number of communications')
+parser.add_argument('--num_comm',        type=int,   default = 500,              help = 'number of communications')
 ## 数据是否 IID
-parser.add_argument('--isIID',             type=int,   default= 0 ,                 help='the way to allocate data to clients')
+parser.add_argument('--isIID',             type=int,   default= 0 ,                 help = 'the way to allocate data to clients')
+## 传输的是模型参数还是模型更新
+parser.add_argument('--transmitted_diff',  type=int,   default= 0 ,                 help = 'the way to allocate data to clients')
 
 ##====================================================================================================================
 parser.add_argument('--precision',       type=str,   default='single', choices=('single', 'half'),   help='FP precision for test (single | half)')

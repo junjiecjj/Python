@@ -48,7 +48,7 @@ class net(nn.Module):
     def forward(self, x):
         return self.fc2(self.fc1(x))
 
-model = net()
+model = net()  # .to("cuda:0")
 
 print(f"模型结构为：\n{model}, \n模型参数为:")
 for name, param in  model.named_parameters():
@@ -73,7 +73,7 @@ params = {}
 lc = model.state_dict()
 for key in lc:
     params[key] = lc[key] # .detach().cpu().numpy()
-    print(f" {key}, {lc[key].is_leaf}, {lc[key].shape}, {lc[key].requires_grad}, {lc[key].type()} \n  {lc[key]}")
+    print(f" {key}, {lc[key].is_leaf}, {lc[key].shape}, {lc[key].device}, {lc[key].requires_grad}, {lc[key].type()} \n  {lc[key]}")
     # print(name)
     # print(ae.state_dict()[name])
 
@@ -83,7 +83,7 @@ lc = model.state_dict().items()
 for key, var in lc:
     params[key] = var # .detach().cpu().numpy()
     # print("key:"+str(key)+",var:"+str(var))
-    print(f"{key}, {var.is_leaf}, {var.shape}, {var.requires_grad}, {var.type()} \n  {var}" )
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
     # print(f"张量{key}的Size : "+str(var.size()))
 
 #======================================== 3: named_parameters ===============================================
@@ -102,21 +102,204 @@ for i in range(l):
 params = {}
 for name, param in model.named_parameters():
     # print(f"  name = {name}\n  param = \n    {param}")
-    params[name] = param.data.detach()#.cpu().numpy()
-    print(f"{name}, {param.data.is_leaf}, {param.size()}, {param.requires_grad}, {param.type()} :\n  {param.data}")
+    params[name] = param.data.detach()# .cpu().numpy()
+    print(f"{name}, {param.data.is_leaf}, {param.size()}, {param.device}, {param.requires_grad}, {param.type()} :\n  {param.data}")
 
 ## Print dict, 1
 for key, pam in params.items():
-    print(f"{key}: \n    {pam}")
+    print(f"{key}: {pam.device},  \n    {pam}")
 
 ## Print dict, 2
 for key in params:
-    print(f"{key}: \n    {params[key]}")
+    print(f"{key}: {pam.device},  \n    {params[key]}")
 
 #======================================== 5: parameters ===============================================
 #打印出参数矩阵及值
 for parameters in model.parameters():
         print(f"{parameters.is_leaf}, {parameters.shape}, {parameters.requires_grad} {parameters.type()}, ")
+
+
+#===============================================================================================================
+#                                            模型参数加载
+#===============================================================================================================
+
+# 定义一个简单的网络
+class net(nn.Module):
+    def __init__(self, num_class=10):
+        super(net, self).__init__()
+        self.fc1 = nn.Linear(8, 4)
+        self.fc2 = nn.Linear(4, num_class)
+
+
+    def forward(self, x):
+        return self.fc2(self.fc1(x))
+
+model = net().to("cuda:0")
+
+## 加载时的参数可以是在cpu上，模型在哪加载后的参数就在哪，与加载前的参数的device无关，只与模型的device有关
+
+params = {}
+for key, var in model.state_dict().items():
+    params[key] = var.clone().cpu() #.detach()
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
+
+
+tmp_param = {}
+for i , (key, val) in enumerate(params.items()):
+    tmp_param[key] = torch.ones_like(val) + i
+
+#======================================== 1 : 加载字典 ===============================================
+print(f"model.state_dict() = \n{model.state_dict()} \n\n")
+
+model.load_state_dict(tmp_param)
+print(f"model.state_dict() = \n{model.state_dict()} \n\n")
+
+
+model.load_state_dict(params)
+print(f"model.state_dict() = \n{model.state_dict()} \n\n")
+for key, var in model.state_dict().items():
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
+
+
+#======================================== 1 : 加载字典 ===============================================
+
+
+import copy
+
+print(f"model.state_dict() = \n{model.state_dict()} \n\n")
+
+param_sd = copy.deepcopy(params)
+param_sd["fc2.bias"] += 10
+model.load_state_dict(param_sd)
+print(f"model.state_dict() = \n{model.state_dict()} \n\n")
+
+
+#======================================== 2: 加载 model.state_dict().items():" error ===============================================
+import copy
+
+model.load_state_dict(model.state_dict().items())
+## TypeError: Expected state_dict to be dict-like, got <class 'odict_items'>.
+
+
+#======================================== 3: 加载 model.state_dict() :" ===============================================
+import copy
+
+model = net()  # .to("cuda:0")
+
+sd = copy.deepcopy(model.state_dict())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, param in model.state_dict().items():
+    model.state_dict()[key].add_(10)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+
+model.load_state_dict(sd)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+
+
+
+
+#===============================================================================================================
+#                                            改变模型参数
+#===============================================================================================================
+
+# 定义一个简单的网络
+class net(nn.Module):
+    def __init__(self, num_class=10):
+        super(net, self).__init__()
+        self.fc1 = nn.Linear(8, 4)
+        self.fc2 = nn.Linear(4, num_class)
+
+
+    def forward(self, x):
+        return self.fc2(self.fc1(x))
+
+model = net()  # .to("cuda:0")
+
+
+orig_params = {}
+for key, var in model.state_dict().items():
+    orig_params[key] = var.clone().cpu()   # .detach().cpu().numpy()
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
+
+
+tmp_param = {}
+for i , (key, val) in enumerate(orig_params.items()):
+    tmp_param[key] = torch.ones_like(val) + i
+
+
+
+#======================================== 0: model.load_state_dict(tmp_param) :" ===============================================
+model.load_state_dict(tmp_param)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+
+#======================================== 1: state_dict : var.add_  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    var.add_(10)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+
+#======================================== 1: state_dict : var.add_ " ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    var.add_(tmp_param[key].clone())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== 1: state_dict :model.state_dict()[key].add_ ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    model.state_dict()[key].add_(tmp_param[key].clone())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== 1: state_dict :model.state_dict()[key].copy_ ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    model.state_dict()[key].copy_(tmp_param[key].clone())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== 2: model.named_parameters() : param.data =   ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for name, param in model.named_parameters():
+    param.data = tmp_param[name].clone()
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== 2: model.named_parameters() : param.data.add_  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for name, param in model.named_parameters():
+    param.data.add_(tmp_param[name].clone())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== 2: model.named_parameters() : model.state_dict()[name].add_  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for name, param in model.named_parameters():
+    model.state_dict()[name].add_(tmp_param[name].clone())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== 2: model.named_parameters() : model.state_dict()[name].copy_  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for name, param in model.named_parameters():
+    model.state_dict()[name].copy_(tmp_param[name].clone())
+print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 
 
