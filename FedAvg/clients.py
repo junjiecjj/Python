@@ -16,20 +16,31 @@ import torch
 from torch.utils.data import TensorDataset
 from torch.utils.data import DataLoader
 
-from model import get_model
+# from model import get_model
 from data.getData import GetDataSet
 # 优化器
-import Optimizer
+# import Optimizer
 
 class client(object):
-    def __init__(self, model, trainDataSet, device = None, client_name = "client10"):
+    def __init__(self, model, trainDataSet, args, client_name = "client10"):
         self.train_ds         = trainDataSet
-        self.device           = device
+        self.device           = args.device
         # self.local_model      = get_model(local_modelname).to(self.device)
         self.client_name      = client_name
         self.train_dataloader = None
         self.local_parameters = None
         self.local_model      = model
+        if args.Random_Mask == True:
+            self.mask = {}
+            for name, param in self.local_model.state_dict().items():
+                p = torch.ones_like(param)*args.prop
+                if torch.is_floating_point(param):
+                    self.mask[name] = torch.bernoulli(p)
+                else:
+                    self.mask[name] = torch.bernoulli(p).long()
+        # for key, var in self.mask.items():
+            # print(f"0:  {key}: {var}")
+        # print(f"mask = {self.mask['conv1.bias']}")
         return
 
 
@@ -78,22 +89,23 @@ class client(object):
 
         ## 如果传输的是模型参数差值
         if args.transmitted_diff:
-            diff = {}
+            local_update = {}
             for key, var in self.local_model.state_dict().items():
-                diff[key] = var - global_parameters[key]
-            # print(f"0: {global_parameters['fc2.bias']}")
-            # print(f"1: {self.local_model.state_dict()['fc2.bias']}")
-            # print(f"{self.client_name}: {diff['fc2.bias']}")
-            # for key, var in global_parameters.items():
-                # print(f"1:  {key}: {var.min():.3f}, {var.max():.3f}, {var.mean():.3f}")
-            return diff
+                local_update[key] = var - global_parameters[key]
+
         ## 直接传递模型参数
         else:
-            local_parms = {}
+            local_update = {}
             for key, var in self.local_model.state_dict().items():
-                local_parms[key] = var.clone()
+                local_update[key] = var.clone()
             # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
-            return  local_parms  # self.local_model.state_dict() #  local_parms
+        # print(f"0: {local_update['conv1.bias']}")
+        ## 随机掩码
+        if args.Random_Mask == True:
+            for key, var in local_update.items():
+                local_update[key] = local_update[key]*self.mask[key]
+        # print(f"1: {local_update['conv1.bias']}")
+        return  local_update  # self.local_model.state_dict() #  local_parms
 
 
 '''
@@ -108,17 +120,19 @@ Non-IID：
 '''
 class ClientsGroup(object):
     ##  dataSetName 数据集的名称, isIID 是否是IID, numOfClients 客户端的数量, dev 设备(GPU), clients_set 客户端
-    def __init__(self, model, data_root, dataSetName = 'MNIST',  isIID = False, numOfClients = 100, device = None, test_batsize = 128):
+    ## data_root, dataSetName = 'MNIST',  isIID = False, numOfClients = 100, device = None, test_batsize = 128
+    def __init__(self, model, data_root, args = None):
         # args.dir_minst, args.dataset, args.isIID, args.num_of_clients, args.device, args.test_batchsize
         self.local_model       = model
         self.data_root         = data_root
-        self.dataset_name      = dataSetName
-        self.is_iid            = isIID
-        self.num_of_clients    = numOfClients
-        self.device            = device
+        self.dataset_name      = args.dataset
+        self.is_iid            = args.isIID
+        self.num_of_clients    = args.num_of_clients
+        self.device            = args.device
         self.clients_set       = {}
         self.test_data_loader  = None
-        self.test_bs           = test_batsize
+        self.test_bs           = args.test_batchsize
+        self.args              = args
         self.dataSetAllocation()
         return
 
@@ -162,7 +176,7 @@ class ClientsGroup(object):
             local_data, local_label = torch.cat([data_shards1, data_shards2], axis = 0 ), torch.cat([label_shards1, label_shards2], axis = 0 )
 
             # 创建一个客户端
-            someone = client(self.local_model, TensorDataset(local_data, local_label), self.device, 'client{}'.format(i))
+            someone = client(self.local_model, TensorDataset(local_data, local_label), self.args, 'client{}'.format(i))
             # 为每一个clients 设置一个名字
             self.clients_set['client{}'.format(i)] = someone
         return

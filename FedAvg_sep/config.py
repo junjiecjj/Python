@@ -40,7 +40,7 @@ parser.add_argument('--seed',            type = int, default = 1,          help 
 ##=============================================================================================================================================
 
 ## 客户端的数量
-parser.add_argument('--num_of_clients',  type=int,   default = 100,           help = 'numer of the clients')
+parser.add_argument('--num_of_clients',  type=int,   default = 50,           help = 'numer of the clients')
 ## 随机挑选的客户端的数量
 parser.add_argument('--cfraction',       type=float, default = 0.1,           help = 'C fraction, 0 means 1 client, 1 means total clients')
 ## 训练次数(客户端更新次数)
@@ -65,6 +65,11 @@ parser.add_argument('--transmitted_diff',  type=int,   default= 0,           hel
 ##==============================================  差分隐私 ======================================================================
 ## 是否使用 DP
 parser.add_argument('--DP',                type=int,   default= 0 ,           help = 'use differental privacy')
+
+##==============================================  模型稀疏：随机掩码 ==============================================================
+## 是否使用模型稀疏
+parser.add_argument('--Random_Mask',       type=float,   default = 0,             help = 'use Random_Mask')
+parser.add_argument('--prop',              type=float,   default = 0.8,           help = ' ')
 
 
 ##=============================================================================================================================================

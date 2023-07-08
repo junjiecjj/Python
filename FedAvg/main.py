@@ -83,7 +83,7 @@ def main():
     optim = Optimizer.make_optimizer(args, net, )
 
     ## 创建 Clients 群
-    myClients = ClientsGroup(net, args.dir_minst, args.dataset, args.isIID, args.num_of_clients, args.device, args.test_batchsize)
+    myClients = ClientsGroup(net, args.dir_minst, args )
     testDataLoader = myClients.test_data_loader
 
     ## 创建 server
@@ -116,6 +116,8 @@ def main():
         for client in tqdm(candidates):
             ## 获取当前Client训练得到的参数
             local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, loss_func, optim, global_parameters, args)
+            # for key, var in local_parameters.items():
+                # print(f"0:  {key}: {var}")
             ## 对所有的Client返回的参数累加（最后取平均值）
             for var in sum_parameters:
                 sum_parameters[var].add_(local_parameters[var])
@@ -135,14 +137,10 @@ def main():
         ## 优化器学习率调整
         optim.schedule()
         epochLos = loss_func.avg()
+        recorder.assign([lr, acc, epochLos, evl_loss])
 
         print(f"    Accuracy: {acc}, lr = {lr}, train_loss = {epochLos:.3f}, evl_loss = {evl_loss:.3f}" )
         ckp.write_log(f"    lr = {lr}, loss={epochLos:.3f}, Accuracy={acc:.3f}, evl_loss = {evl_loss:.3f}", train=True)
-        recorder.assign([lr, acc, epochLos, evl_loss])
-
-        if (round_idx + 1) % args.save_freq == 0:
-            torch.save(net, os.path.join(ckp.savedir, '{}_Ncomm={}_E={}_B={}_lr={}_num_clients={}_cf={:.1f}.pt'.format(args.model_name, round_idx, args.loc_epochs, args.local_batchsize, args.learning_rate, args.num_of_clients, args.cfraction )))
-
         recorder.plot_inonefig(ckp.savedir, metric_str = ['lr', 'Accuracy', 'train loss', 'val loss'])
         if (round_idx + 1) % 100 == 0:
             recorder.save(ckp.savedir)

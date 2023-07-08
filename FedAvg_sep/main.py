@@ -57,7 +57,7 @@ ckp = Utility.checkpoint(args)
 def main():
     recorder = MetricsLog.TraRecorder(3, name = "Train", )
     ## 创建 Clients 群
-    myClients = ClientsGroup(args.model_name, args.dir_minst, args.dataset, args.isIID, args.num_of_clients, args.device, args.test_batchsize, )
+    myClients = ClientsGroup(args.model_name, args.dir_minst, args )
     testDataLoader = myClients.test_data_loader
 
     ## 创建 server
@@ -90,7 +90,7 @@ def main():
             sum_parameters[name] = torch.zeros_like(params)
 
         for client in tqdm(candidates):
-            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, global_parameters, args)   #lossFun = loss_func, optim = optim
+            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, global_parameters, )   #lossFun = loss_func, optim = optim
             for var in sum_parameters:
                 sum_parameters[var].add_(local_parameters[var])
         for var in global_parameters:

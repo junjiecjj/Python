@@ -19,25 +19,37 @@ from torch.utils.data import DataLoader
 from model import get_model
 from data.getData import GetDataSet
 
+# 优化器
+import Optimizer
 
 class client(object):
-    def __init__(self, device, modelname, trainDataSet, client_name = "client10"):
-        self.device           = device
+    def __init__(self,  modelname, trainDataSet, args, client_name = "client10"):
+        self.args             = args
+        self.device           = args.device
         # self.modelname        = modelname
         self.train_ds         = trainDataSet
         self.client_name      = client_name
         self.local_model      = get_model(modelname).to(self.device)
         self.train_dataloader = None
         self.local_parameters = None
+
+        # self.optim = Optimizer.make_optimizer(args, self.local_model, )
+        if args.Random_Mask == True:
+            self.mask = {}
+            for name, param in self.local_model.state_dict().items():
+                p = torch.ones_like(param)*args.prop
+                if torch.is_floating_point(param):
+                    self.mask[name] = torch.bernoulli(p)
+                else:
+                    self.mask[name] = torch.bernoulli(p).long()
         return
 
     ## args.loc_epochs, args.local_batchsize,
-    def localUpdate(self, localEpoch, localBatchSize, global_parameters, args):
+    def localUpdate(self, localEpoch, localBatchSize, global_parameters, ):
         ## localEpoch:         当前Client的迭代次数
         ## localBatchSize:      当前Client的batchsize大小
         ## global_parmeters:   当前通讯中最全局参数
         ## return:           返回当前Client基于自己的数据训练得到的新的模型参数
-
 
         ## 加载当前通信中最新全局参数, 传入网络模型，并加载global_parameters参数的
         self.local_model.load_state_dict(global_parameters, strict = True)
@@ -67,25 +79,26 @@ class client(object):
                 optim.zero_grad()
                 loss.backward()
                 optim.step()
-
+            # optim.schedule()
         ## 如果传输的是模型参数差值
-        if args.transmitted_diff:
-            diff = {}
+        if self.args.transmitted_diff:
+            local_update = {}
             for key, var in self.local_model.state_dict().items():
-                diff[key] = var - global_parameters[key]
-            # print(f"0: {global_parameters['fc2.bias']}")
-            # print(f"1: {self.local_model.state_dict()['fc2.bias']}")
-            # print(f"{self.client_name}: {diff['fc2.bias']}")
-            # for key, var in global_parameters.items():
-                # print(f"1:  {key}: {var.min():.3f}, {var.max():.3f}, {var.mean():.3f}")
-            return diff
+                local_update[key] = var - global_parameters[key]
+            # return diff
         ## 直接传递模型参数
         else:
-            local_parms = {}
+            local_update = {}
             for key, var in self.local_model.state_dict().items():
-                local_parms[key] = var.clone()
+                local_update[key] = var.clone()
             # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
-            return  local_parms  # self.local_model.state_dict() #  local_parms
+            # return  local_parms  # self.local_model.state_dict() #  local_parms
+        ## 随机掩码
+        if self.args.Random_Mask == True:
+            for key, var in local_update.items():
+                local_update[key] = local_update[key]*self.mask[key]
+        # print(f"1: {local_update['conv1.bias']}")
+        return  local_update  # self.local_model.state_dict() #  local_parms
 
 
 '''
@@ -99,16 +112,18 @@ Non-IID：
     然后将其划分为 200 组大小为 300 的数据切片，然后分给每个 Client 两个切片。
 '''
 # args.dir_minst, args.dataset, args.isIID, args.num_of_clients, args.device, args.test_batchsize, args.model_name,
+# modelname, data_root,  dataSetName = 'MNIST',  isIID = False, numOfClients = 100, device = None, test_batsize = 128
 class ClientsGroup(object):
     #  dataSetName 数据集的名称, isIID 是否是IID, numOfClients 客户端的数量, dev 设备(GPU), clients_set 客户端
-    def __init__(self, modelname, data_root, dataSetName = 'MNIST',  isIID = False, numOfClients = 100, device = None, test_batsize = 128):
+    def __init__(self, modelname, data_root, args ):
+        self.args              = args
         self.modelname         = modelname
         self.data_root         = data_root
-        self.dataset_name      = dataSetName
-        self.is_iid            = isIID
-        self.num_of_clients    = numOfClients
-        self.device            = device
-        self.test_bs           = test_batsize
+        self.dataset_name      = args.dataset
+        self.is_iid            = args.isIID
+        self.num_of_clients    = args.num_of_clients
+        self.device            = args.device
+        self.test_bs           = args.test_batchsize
         self.clients_set       = {}
         self.test_data_loader  = None
 
@@ -155,7 +170,7 @@ class ClientsGroup(object):
             local_data, local_label = torch.cat([data_shards1, data_shards2], axis = 0 ), torch.cat([label_shards1, label_shards2], axis = 0 )
 
             # 创建一个客户端
-            someone = client(self.device, self.modelname, TensorDataset(local_data, local_label), f"client{i}", )
+            someone = client(self.modelname, TensorDataset(local_data, local_label), self.args, f"client{i}", )
             # 为每一个clients 设置一个名字
             self.clients_set['client{}'.format(i)] = someone
         return
