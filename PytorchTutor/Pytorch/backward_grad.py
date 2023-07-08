@@ -41,8 +41,8 @@ import torch.optim as optim
 class net(nn.Module):
     def __init__(self, num_class=10):
         super(net, self).__init__()
-        self.fc1 = nn.Linear(8, 4)
-        self.fc2 = nn.Linear(4, num_class)
+        self.fc1 = torch.nn.Linear(8, 4)
+        self.fc2 = torch.nn.Linear(4, num_class)
 
 
     def forward(self, x):
@@ -127,8 +127,8 @@ for parameters in model.parameters():
 class net(nn.Module):
     def __init__(self, num_class=10):
         super(net, self).__init__()
-        self.fc1 = nn.Linear(8, 4)
-        self.fc2 = nn.Linear(4, num_class)
+        self.fc1 = torch.nn.Linear(8, 4)
+        self.fc2 = torch.nn.Linear(4, num_class)
 
 
     def forward(self, x):
@@ -206,28 +206,34 @@ print(f"model.state_dict() = {model.state_dict()} \n\n")
 #===============================================================================================================
 
 # 定义一个简单的网络
-class net(nn.Module):
+class net(torch.nn.Module):
     def __init__(self, num_class=10):
         super(net, self).__init__()
-        self.fc1 = nn.Linear(8, 4)
-        self.fc2 = nn.Linear(4, num_class)
+        self.fc1 = torch.nn.Linear(8, 4)
+        self.fc2 = torch.nn.Linear(4, num_class)
 
 
     def forward(self, x):
         return self.fc2(self.fc1(x))
 
-model = net()  # .to("cuda:0")
+model = net().to("cuda:0")
 
 
 orig_params = {}
 for key, var in model.state_dict().items():
-    orig_params[key] = var.clone().cpu()   # .detach().cpu().numpy()
+    orig_params[key] = var.clone()#.cpu()   # .detach().cpu().numpy()
     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
 
 
 tmp_param = {}
 for i , (key, val) in enumerate(orig_params.items()):
-    tmp_param[key] = torch.ones_like(val) + i
+    tmp_param[key] = torch.ones_like(val.clone().cpu()) + i
+
+
+
+# for key, var in model.state_dict().items():
+#     orig_params[key] += tmp_param[key]
+# RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
 
 
 

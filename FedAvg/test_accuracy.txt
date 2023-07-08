@@ -7,7 +7,3 @@ communicate round 5  accuracy: 0.09799999743700027
 communicate round 1  accuracy: 0.0892999991774559
 communicate round 2  accuracy: 0.11799999326467514
 communicate round 3  accuracy: 0.46439993381500244
-communicate round 1  accuracy: 0.10235363990068436
-communicate round 2  accuracy: 0.1136273741722107
-communicate round 3  accuracy: 0.21469542384147644
-communicate round 4  accuracy: 0.40219542384147644
