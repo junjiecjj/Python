@@ -57,7 +57,7 @@ parser.add_argument("--dataset",         type=str,   default = "mnist",       he
 parser.add_argument("--val_freq",        type=int,   default = 5,             help = "model validation frequency(of communications)")
 parser.add_argument('--save_freq',       type=int,   default = 20,            help = 'global model save frequency(of communication)')
 ## num_comm 表示通信次数，此处设置为1k
-parser.add_argument('--num_comm',        type=int,   default = 500,           help = 'number of communications')
+parser.add_argument('--num_comm',        type=int,   default = 300,           help = 'number of communications')
 ## 数据是否 IID
 parser.add_argument('--isIID',             type=int,   default= 0 ,           help = 'the way to allocate data to clients')
 ## 传输的是模型参数还是模型更新

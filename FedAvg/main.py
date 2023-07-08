@@ -144,7 +144,8 @@ def main():
             torch.save(net, os.path.join(ckp.savedir, '{}_Ncomm={}_E={}_B={}_lr={}_num_clients={}_cf={:.1f}.pt'.format(args.model_name, round_idx, args.loc_epochs, args.local_batchsize, args.learning_rate, args.num_of_clients, args.cfraction )))
 
         recorder.plot_inonefig(ckp.savedir, metric_str = ['lr', 'Accuracy', 'train loss', 'val loss'])
-    recorder.save(ckp.savedir)
+        if (round_idx + 1) % 100 == 0:
+            recorder.save(ckp.savedir)
     return
 
 
