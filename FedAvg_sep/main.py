@@ -68,6 +68,7 @@ def main():
 
     ## 得到全局的参数
     global_parameters = {}
+
     ## 得到每一层中全连接层中的名称fc1.weight 以及权重weights(tenor)
     for key, var in server.global_model.state_dict().items():
         global_parameters[key] = var.clone()
@@ -86,17 +87,24 @@ def main():
         # candidates = np.random.choice(list(myClients.clients_set.keys()), num_in_comm, replace = False)
 
         sum_parameters = {}
+        cnt = {}
         for name, params in server.global_model.state_dict().items():
             sum_parameters[name] = torch.zeros_like(params)
+            cnt[name]            = 0.0
 
         for client in tqdm(candidates):
             local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, global_parameters, )   #lossFun = loss_func, optim = optim
-            for var in sum_parameters:
-                sum_parameters[var].add_(local_parameters[var])
-        for var in global_parameters:
-            sum_parameters[var] = (sum_parameters[var] / num_in_comm)
+            ## 对所有的Client返回的参数累加（最后取平均值）
+            for key, params in server.global_model.state_dict().items():
+                # sum_parameters[key].add_(local_parameters[key])
+                if key in local_parameters:
+                    sum_parameters[key].add_(local_parameters[key].clone())
+                    cnt[key] += 1
+        ## 取平均值，得到本次通信中Server得到的更新后的模型参数
+        # for var in global_parameters:
+            # sum_parameters[var] = (sum_parameters[var] / num_in_comm)
 
-        global_parameters = server.model_aggregate(sum_parameters)
+        global_parameters = server.model_aggregate(sum_parameters, cnt)
         acc, evl_loss = server.model_eval()
         recorder.assign([ acc, evl_loss])
 

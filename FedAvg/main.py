@@ -14,6 +14,8 @@ Created on 2023/06/30
     (1) 客户端在每轮通信之前需要把最新的全局模型加载；且客户端返回的是自身训练后的模型参数；
     (2) 服务端直接把客户端返回的模型参数做个平均，加载到全局模型；
 
+本地化差分隐私中，每个用户将各自的数据进行扰动后，再上传至数据收集者处，而任意两个用户之间 并不知晓对方的数据记录，本地化差分隐私中并不存在全局敏感性的概念，因此，拉普拉斯机制和指数机 制并不适用．
+
 """
 
 
@@ -93,6 +95,9 @@ def main():
     ##  选取的 Clients 数量
     num_in_comm = int(max(args.num_of_clients * args.cfraction, 1))
 
+    ##==================================================================================================
+    ##                                核心代码
+    ##==================================================================================================
     ## num_comm 表示通信次数
     for round_idx in range(args.num_comm):
         loss_func.addlog()
@@ -101,32 +106,31 @@ def main():
         print(f"Communicate round {round_idx + 1} / {args.num_comm} : ")
         ckp.write_log(f"Communicate round {round_idx + 1} / {args.num_comm} : ", train=True)
 
-        ##==================================================================================================
-        ##                     核心代码
-        ##==================================================================================================
         ## 从100个客户端随机选取10个
         candidates = ['client{}'.format(i) for i in np.random.choice(range(args.num_of_clients), num_in_comm, replace = False)]
         # candidates = np.random.choice(list(myClients.clients_set.keys()), num_in_comm, replace = False)
 
         sum_parameters = {}
+        cnt = {}
         for name, params in server.global_model.state_dict().items():
             sum_parameters[name] = torch.zeros_like(params)
-
+            cnt[name]            = 0.0
         ## 每个 Client 基于当前模型参数和自己的数据训练并更新模型, 返回每个Client更新后的参数
         for client in tqdm(candidates):
             ## 获取当前Client训练得到的参数
-            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, loss_func, optim, global_parameters, args)
-            # for key, var in local_parameters.items():
-                # print(f"0:  {key}: {var}")
+            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, loss_func, optim, global_parameters,)
             ## 对所有的Client返回的参数累加（最后取平均值）
-            for var in sum_parameters:
-                sum_parameters[var].add_(local_parameters[var])
+            for key, params in server.global_model.state_dict().items():
+                # sum_parameters[key].add_(local_parameters[key])
+                if key in local_parameters:
+                    sum_parameters[key].add_(local_parameters[key].clone())
+                    cnt[key] += 1
 
         ## 取平均值，得到本次通信中Server得到的更新后的模型参数
-        for var in sum_parameters:
-            sum_parameters[var] = (sum_parameters[var] / num_in_comm)
+        # for var in sum_parameters:
+        #     sum_parameters[var] = (sum_parameters[var] / num_in_comm)
 
-        global_parameters = server.model_aggregate(sum_parameters )
+        global_parameters = server.model_aggregate(sum_parameters, cnt)
 
         ## 训练结束之后，我们要通过测试集来验证方法的泛化性，注意:虽然训练时，Server没有得到过任何一条数据，但是联邦学习最终的目的还是要在Server端学习到一个鲁棒的模型，所以在做测试的时候，是在Server端进行的
         acc, evl_loss = server.model_eval()

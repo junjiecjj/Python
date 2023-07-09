@@ -23,6 +23,7 @@ from data.getData import GetDataSet
 
 class client(object):
     def __init__(self, model, trainDataSet, args, client_name = "client10"):
+        self.args             = args
         self.train_ds         = trainDataSet
         self.device           = args.device
         # self.local_model      = get_model(local_modelname).to(self.device)
@@ -32,19 +33,18 @@ class client(object):
         self.local_model      = model
         if args.Random_Mask == True:
             self.mask = {}
-            for name, param in self.local_model.state_dict().items():
-                p = torch.ones_like(param)*args.prop
-                if torch.is_floating_point(param):
-                    self.mask[name] = torch.bernoulli(p)
-                else:
-                    self.mask[name] = torch.bernoulli(p).long()
+            # for name, param in self.local_model.state_dict().items():
+            #     p = torch.ones_like(param)*args.prop
+            #     if torch.is_floating_point(param):
+            #         self.mask[name] = torch.bernoulli(p)
+            #     else:
+            #         self.mask[name] = torch.bernoulli(p).long()
         # for key, var in self.mask.items():
             # print(f"0:  {key}: {var}")
         # print(f"mask = {self.mask['conv1.bias']}")
         return
 
-
-    def localUpdate(self, localEpoch, localBatchSize, lossFun, opti, global_parameters, args):
+    def localUpdate(self, localEpoch, localBatchSize, lossFun, opti, global_parameters, ):
         ## localEpoch:         当前Client的迭代次数
         ## localBatchSize:      当前Client的batchsize大小
         ## Net Server:        共享的模型
@@ -55,15 +55,11 @@ class client(object):
         # for key, var in global_parameters.items():
             # print(f"0:  {key}: {var.min():.3f}, {var.max():.3f}, {var.mean():.3f}")
         ## 加载当前通信中最新全局参数, 传入网络模型，并加载global_parameters参数的
+        ## 1
         self.local_model.load_state_dict(global_parameters, strict=True)
-
-        # for key, var in self.local_model.state_dict().items():
-        #     print(f"{key}: {var.min():.3f}, {var.max():.3f}, {var.mean():.3f}")
-
-        ## 测试是否加载成功
-        # for key, var in self.local_model.state_dict().items():
-        #     diff = var - global_parameters[key]
-        #     print(f"1:  {key}: {diff.min():.3f}, {diff.max():.3f}, {diff.mean():.3f}" )
+        ## 2
+        # for name, param in global_parameters.items():
+            # self.local_model.state_dict()[name].copy_(param.clone())
 
         ## 载入Client自有数据集, 加载本地数据
         self.train_dataloader = DataLoader(self.train_ds, batch_size = localBatchSize, shuffle = True)
@@ -88,23 +84,40 @@ class client(object):
                 opti.step()
 
         ## 如果传输的是模型参数差值
-        if args.transmitted_diff:
+        if self.args.transmitted_diff:
             local_update = {}
             for key, var in self.local_model.state_dict().items():
                 local_update[key] = var - global_parameters[key]
-
-        ## 直接传递模型参数
-        else:
+        else: ## 直接传递模型参数
             local_update = {}
             for key, var in self.local_model.state_dict().items():
                 local_update[key] = var.clone()
             # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
         # print(f"0: {local_update['conv1.bias']}")
+
+        ## 差分隐私
+        if self.args.DP == True:
+            pass
+
         ## 随机掩码
-        if args.Random_Mask == True:
-            for key, var in local_update.items():
-                local_update[key] = local_update[key]*self.mask[key]
+        if self.args.Random_Mask == True:
+            # print("随机掩码")
+            self.mask = {}
+            for key, param in local_update.items():
+                p = torch.ones_like(param) * self.args.prop
+                self.mask[key] = torch.bernoulli(p)
+                local_update[key].mul_(self.mask[key])
         # print(f"1: {local_update['conv1.bias']}")
+
+        ## 模型压缩
+        if self.args.Compression == True:
+            # print(f"{len(local_update)}")
+            # print("模型压缩")
+            local_update = sorted(local_update.items(), key = lambda item:abs(torch.mean(item[1].float())), reverse=True)
+            ret_size = int(self.args.crate * len(local_update))
+            # print(f"{ret_size}")
+            local_update =  dict(local_update[:ret_size])
+
         return  local_update  # self.local_model.state_dict() #  local_parms
 
 

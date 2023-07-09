@@ -72,17 +72,80 @@ print(list(map(lambda x, y, z:x*y*z, s , s, s)))
 
 
 
+mylist = [3,6,3,2,4,8,23]
+sorted(mylist, key=lambda x: x%2==0)
+
+random = [(2, 2), (3, 4), (4, 1), (1, 3)]
+#按第二个元素升序排列
+s = sorted(random,key=lambda x:x[1])
+print(s)
+#按第一个元素降序排列
+ss = sorted(random,key=lambda x:x[0])
+print(ss)
+# [(4, 1), (2, 2), (1, 3), (3, 4)]
+# [(1, 3), (2, 2), (3, 4), (4, 1)]
+
+a=[('b',3),('a',2),('d',4),('c',1)]
+##按照第一个元素排序
+sorted(a,key=lambda x:x[0])
+# [('a', 2), ('b', 3), ('c', 1), ('d', 4)]
+
+## 按照第二个元素排序
+sorted(a,key=lambda x:x[1])
+# [('c',1),('a',2),('b',3),('d',4)]
+
+# 求字符串每个单词的长度
+sentence = "Welcome To Beijing!"
+words = sentence.split()
+lengths  = map(lambda x:len(x),words)
+print(list(lengths))
+# [7,2,8]
 
 
+def increment(n):
+    return lambda x:x+n
+
+f=increment(4)
+f(2)
+# 6
+
+Names = ['Anne', 'Amy', 'Bob', 'David', 'Carrie', 'Barbara', 'Zach']
+B_Name= filter(lambda x: x.startswith('B'),Names)
+print(list(B_Name))
+# ['Bob', 'Barbara']
+
+# 求两个列表元素的和
+a = [1,2,3,4]
+b = [5,6,7,8]
+print(list(map(lambda x,y:x+y, a,b)))
+
+# [6,8,10,12]
+
+# 4、按年龄升序
+students = {'john':15, 'jane':12,'dave':10}
+sorted(students.items(), key=lambda s: s[1])
+
+# 4、按年龄升序
+students = [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
+sorted(students, key=lambda s: s[2])
+# 结果：
+# [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+# 5、按年龄降序
+sorted(students, key=lambda s: s[2], reverse=True)
+# 结果：
+# [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
+
+# import reduce
+# # 2、两数相加，lambda 写法
+# reduce(lambda x, y: x + y, [1, 2, 3, 4, 5])
+# # 结果：
+# # 15
 
 
-
-
-
-
-
-
-
+# 2、将列表[1, 2, 3]中能够被3整除的元素过滤出来
+newlist = filter(lambda x: x % 3 == 0, [1, 2, 3])
+print(list(newlist))
+# 结果： [3]
 
 
 

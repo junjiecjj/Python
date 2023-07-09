@@ -23,7 +23,7 @@ from data.getData import GetDataSet
 import Optimizer
 
 class client(object):
-    def __init__(self,  modelname, trainDataSet, args, client_name = "client10"):
+    def __init__(self, modelname, trainDataSet, args, client_name = "client10"):
         self.args             = args
         self.device           = args.device
         # self.modelname        = modelname
@@ -36,12 +36,9 @@ class client(object):
         # self.optim = Optimizer.make_optimizer(args, self.local_model, )
         if args.Random_Mask == True:
             self.mask = {}
-            for name, param in self.local_model.state_dict().items():
-                p = torch.ones_like(param)*args.prop
-                if torch.is_floating_point(param):
-                    self.mask[name] = torch.bernoulli(p)
-                else:
-                    self.mask[name] = torch.bernoulli(p).long()
+            # for name, param in self.local_model.state_dict().items():
+            #     p = torch.ones_like(param)*args.prop
+            #     self.mask[name] = torch.bernoulli(p)
         return
 
     ## args.loc_epochs, args.local_batchsize,
@@ -86,17 +83,36 @@ class client(object):
             for key, var in self.local_model.state_dict().items():
                 local_update[key] = var - global_parameters[key]
             # return diff
-        ## 直接传递模型参数
-        else:
+        else: ## 直接传递模型参数
             local_update = {}
             for key, var in self.local_model.state_dict().items():
                 local_update[key] = var.clone()
             # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
             # return  local_parms  # self.local_model.state_dict() #  local_parms
+
+        ## 差分隐私
+        if self.args.DP == True:
+            pass
+
         ## 随机掩码
         if self.args.Random_Mask == True:
-            for key, var in local_update.items():
-                local_update[key] = local_update[key]*self.mask[key]
+            # print("随机掩码")
+            self.mask = {}
+            for key, param in local_update.items():
+                p = torch.ones_like(param) * self.args.prop
+                self.mask[key] = torch.bernoulli(p)
+                local_update[key].mul_(self.mask[key])
+        # print(f"1: {local_update['conv1.bias']}")
+
+        ## 模型压缩
+        if self.args.Compression == True:
+            # print(f"{len(local_update)}")
+            # print("模型压缩")
+            local_update = sorted(local_update.items(), key = lambda item:abs(torch.mean(item[1].float())), reverse=True)
+            ret_size = int(self.args.crate * len(local_update))
+            # print(f"{ret_size}")
+            local_update =  dict(local_update[:ret_size])
+
         # print(f"1: {local_update['conv1.bias']}")
         return  local_update  # self.local_model.state_dict() #  local_parms
 

@@ -15,32 +15,38 @@ class Server(object):
         self.args         = Args
         self.device       = self.args.device
         self.global_model = get_model(self.args.model_name).to(self.device)
-        # for name, var in self.global_model.state_dict().items():
-            # print(f"{name}: {var.is_leaf}, {var.shape}, {var.requires_grad}, {var.type()}  ")
+
         self.eval_loader  = test_dataloader
         return
 
-    def model_aggregate(self, weight_accumulator):
-        # 传输的是模型差值，且使用差分隐私
-        if self.args.transmitted_diff and self.args.DP:
-            for name, data in self.global_model.state_dict().items():
-                update_per_layer = weight_accumulator[name] * self.args["lambda"]
-                if self.args['dp']:
-                    sigma = self.args['sigma']
-                    noise = torch.normal(mean = 0, std = sigma, size = update_per_layer.shape ).to(self.device)
-                    update_per_layer.add_(noise)
-                if data.type() != update_per_layer.type():
-                    print(f"{data.type()}, {update_per_layer.type()}")
-                    data.add_(update_per_layer.to(torch.int64))
-                else:
-                    data.add_(update_per_layer)
-        # 传输的是模型差值，且不使用差分隐私
-        elif self.args.transmitted_diff and not self.args.DP:
+    def model_aggregate(self, weight_accumulator, cnt = None):
+        ## 取平均值，得到本次通信中Server得到的更新后的模型参数
+        num_in_comm = int(max(self.args.num_of_clients * self.args.cfraction, 1))
+        print(f"cnt:   {cnt.values()}")
+        for key in weight_accumulator:
+            if cnt[key] > 0:
+                weight_accumulator[key].div_(cnt[key])
+
+        if self.args.transmitted_diff: ## 传输的是模型差值
             for key, val in weight_accumulator.items():
-                self.global_model.state_dict()[key].add_(val)
-        # 传输的是模型参数，直接赋值
-        elif not self.args.transmitted_diff:
-            self.global_model.load_state_dict(weight_accumulator, strict=True)
+                if cnt[key] > 0:
+                    self.global_model.state_dict()[key].add_(val)
+            # for key, param in self.global_model.state_dict().items():
+                # if key in weight_accumulator and cnt[key] > 0:
+                    # param.add_(weight_accumulator[key])
+        ## 传输的是模型参数，直接赋值
+        elif not self.args.transmitted_diff :
+            for key, val in weight_accumulator.items():
+                if cnt[key] > 0:
+                    self.global_model.state_dict()[key].copy_(val.clone())
+            # for key, param in self.global_model.state_dict().items():
+                # if key in weight_accumulator and cnt[key] > 0:
+                    # param.copy_(weight_accumulator[key])
+
+        if self.args.DP: ##  使用差分隐私
+            for key, data in self.global_model.state_dict().items():
+                noise = torch.normal(mean = 0, std = self.args.sigma, size = data.shape ).to(self.device)
+                data.add_(noise)
 
         # 得到当前最新的全局模型
         global_parameters = {}

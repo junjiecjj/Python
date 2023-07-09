@@ -32,7 +32,7 @@ parser.add_argument('--modelUse',        type = str, default = 'FedAvg',   help=
 # 设备相关
 parser.add_argument('--cpu',             type = int, default = False,      help = 'use cpu only')
 parser.add_argument('--device',          type = str, default = 'cuda:0',   help = 'cuda device')
-parser.add_argument('--seed',            type = int, default = 1,          help = 'random seed')
+parser.add_argument('--seed',            type = int, default = 1,    help = 'random seed')
 
 ##=============================================================================================================================================
 ##==============================================  联邦学习相关参数 ======================================================================
@@ -54,22 +54,31 @@ parser.add_argument('--model_name',      type=str,   default = "mnist_cnn",   he
 parser.add_argument("--dataset",         type=str,   default = "mnist",       help = "需要训练的数据集")
 ## 模型验证频率（通信频率）
 parser.add_argument("--val_freq",        type=int,   default = 5,             help = "model validation frequency(of communications)")
-parser.add_argument('--save_freq',       type=int,   default = 20,            help = 'global model save frequency(of communication)')
+parser.add_argument('--save_freq',       type=int,   default = 20,            help = "global model save frequency(of communication)")
 ## num_comm 表示通信次数，此处设置为1k
 parser.add_argument('--num_comm',        type=int,   default = 300,           help = 'number of communications')
 ## 数据是否 IID
-parser.add_argument('--isIID',             type=int,   default= 0 ,           help = 'the way to allocate data to clients')
+parser.add_argument('--isIID',             type=int,   default = 0 ,           help = 'the way to allocate data to clients')
 ## 传输的是模型参数还是模型更新
-parser.add_argument('--transmitted_diff',  type=int,   default= 1,           help = 'the way to allocate data to clients')
+parser.add_argument('--transmitted_diff',  type=int,   default = 1,           help = 'the way to allocate data to clients')
 ##==============================================  差分隐私 ======================================================================
 ## 是否使用 DP
-parser.add_argument('--DP',                type=int,   default= 0 ,           help = 'use differental privacy')
+parser.add_argument('--DP',                type=int,   default = 0 ,            help = 'use differental privacy')
+
+parser.add_argument('--C',                 type=int,   default = 1000 ,         help = ' differental privacy')
+parser.add_argument('--sigma',             type=int,   default = 0.001 ,        help = ' differental privacy')
+parser.add_argument('--q',                 type=int,   default = 0.1,           help = ' differental privacy')
+parser.add_argument('--w',                 type=int,   default = 1,             help = ' differental privacy')
 
 ##==============================================  模型稀疏：随机掩码 ==============================================================
 ## 是否使用模型稀疏
 parser.add_argument('--Random_Mask',       type=float,   default = 1,             help = 'use Random_Mask')
-parser.add_argument('--prop',              type=float,   default = 0.8,           help = ' ')
+parser.add_argument('--prop',              type=float,   default = 0.7,           help = ' ')
 
+##==============================================  模型压缩 ==============================================================
+## 是否使用模型稀疏
+parser.add_argument('--Compression',       type=float,   default = 0,             help = 'use Compression')
+parser.add_argument('--crate',             type=float,   default = 0.9,           help = ' ')
 
 
 ##=============================================================================================================================================
@@ -96,7 +105,7 @@ parser.add_argument('--power',         type = int,     default = 2,     help='wa
 
 # Optimization specifications
 parser.add_argument('--learning_rate', type = float, default = 0.01,            help = 'learning rate')
-parser.add_argument('--optimizer',     type = str,   default = 'ADAM', choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
+parser.add_argument('--optimizer',     type = str,   default = 'ADAM',           choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
 parser.add_argument('--decay',         type = str,   default = '20-40-80-120',   help = 'learning rate decay type')
 parser.add_argument('--gamma',         type = float, default = 0.6,              help = 'learning rate decay factor for step decay')
 parser.add_argument('--momentum',      type = float, default = 0.9,              help = 'SGD momentum')
