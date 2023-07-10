@@ -27,14 +27,9 @@ class FLClient(nn.Module):
         super(FLClient, self).__init__()
         self.device = device
         self.BATCH_SIZE = batch_size
-        self.torch_dataset = TensorDataset(torch.tensor(data[0]),
-                                           torch.tensor(data[1]))
+        self.torch_dataset = TensorDataset(torch.tensor(data[0]), torch.tensor(data[1]))
         self.data_size = len(self.torch_dataset)
-        self.data_loader = DataLoader(
-            dataset=self.torch_dataset,
-            batch_size=self.BATCH_SIZE,
-            shuffle=True
-        )
+        self.data_loader = DataLoader(dataset=self.torch_dataset, batch_size=self.BATCH_SIZE, shuffle=True )
         self.sigma = sigma    # DP noise level
         self.lr = lr
         self.E = E
@@ -57,8 +52,7 @@ class FLClient(nn.Module):
         # optimizer = torch.optim.Adam(self.model.parameters())
         
         for e in range(self.E):
-            # randomly select q fraction samples from data
-            # according to the privacy analysis of moments accountant
+            # randomly select q fraction samples from data according to the privacy analysis of moments accountant
             # training "Lots" are sampled by poisson sampling
             idx = np.where(np.random.rand(len(self.torch_dataset[:][0])) < self.q)[0]
 
@@ -119,7 +113,7 @@ class FLServer(nn.Module):
         self.data = []
         self.target = []
         for sample in fl_param['data'][self.client_num:]:
-            self.data += [torch.tensor(sample[0]).to(self.device)]    # test set
+            self.data   += [torch.tensor(sample[0]).to(self.device)]  # test set
             self.target += [torch.tensor(sample[1]).to(self.device)]  # target label
 
         self.input_size = int(self.data[0].shape[1])
@@ -130,6 +124,7 @@ class FLServer(nn.Module):
         
         # calibration with subsampeld Gaussian mechanism under composition 
         self.sigma = calibrating_sampled_gaussian(fl_param['q'], fl_param['eps'], fl_param['delta'], iters=fl_param['E']*fl_param['tot_T'], err=1e-3)
+        
         print("noise scale =", self.sigma)
         
         self.clients = [FLClient(fl_param['model'],

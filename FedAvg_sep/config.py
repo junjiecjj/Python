@@ -78,8 +78,8 @@ parser.add_argument('--prop',              type=float,   default = 0.8,         
 
 ##==============================================  模型压缩 ==============================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Compression',       type=float,   default = 0,             help = 'use Compression')
-parser.add_argument('--crate',             type=float,   default = 0.9,           help = ' ')
+parser.add_argument('--Compression',       type=float,   default = 1,             help = 'use Compression')
+parser.add_argument('--crate',             type=float,   default = 0.5,           help = ' ')
 
 
 ##=============================================================================================================================================

@@ -177,7 +177,7 @@ def make_optimizer( net):
 
         def get_last_epoch(self):
             return self.scheduler.last_epoch
-        
+
         def reset_state(self):
             self.state = collections.defaultdict(dict)
             self.scheduler.last_epoch = 0
@@ -233,7 +233,7 @@ plt.show()
 
 
 #========================================================================================
-import numpy as np 
+import numpy as np
 lr_list = []
 model = net()
 LR = 0.01
@@ -334,11 +334,11 @@ class net(nn.Module):
 def adjust_learning_rate(optimiz, epoch, base_lr):
      lr = base_lr * (0.1 ** (epoch // 30))
      for param_group in optimizer.param_groups:
-          param_group["lr"] = lr     
-     
+          param_group["lr"] = lr
+
      return lr
-     
-   
+
+
 model = net()
 LR = 0.01
 optimizer = Adam(model.parameters(),lr = LR)
@@ -372,8 +372,8 @@ def adjust_learning_rate(epoch, base_lr):
      lr = base_lr * (0.1 ** (epoch // 30))
 
      return lr
-     
-   
+
+
 model = net()
 LR = 0.01
 
@@ -401,7 +401,7 @@ scheduler_1 = lr_scheduler.LambdaLR(optimizer_1, lr_lambda=lambda epoch: 1/(epoc
 print("第%d个epoch的学习率：%f" % (epoch, optimizer_1.param_groups[0]['lr']))
 scheduler_1.step()
 # -----------------使用示例2------------------
-import numpy as np 
+import numpy as np
 lr_list = []
 model = net()
 LR = 0.01
@@ -474,12 +474,6 @@ plt.plot(range(100),lr_list,color = 'r')
 
 
 
-
-
-
-
-
-
 #========================================================================================
 # torch.optim.lr_scheduler.CosineAnnealingLR
 
@@ -496,27 +490,140 @@ plt.plot(range(100),lr_list,color = 'r')
 
 
 
+#========================================================================================
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader
+import torchvision
+from torchvision import datasets
+import torchvision.transforms as transforms
+import sys
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
+class LeNet_1(nn.Module):
+    def __init__(self, ):
+        super(LeNet_1, self).__init__()
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(320, 50)
+        self.fc2 = nn.Linear(50, 10)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = x.view(-1, 320)
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training = self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
+
+
+root='/home/jack/公共的/MLData/'
+tmpout = "/home/jack/SemanticNoise_AdversarialAttack/tmpout/"
+
+
+batch_size = 32
+trans = []
+
+trans.append( transforms.ToTensor() )
+# trans.append( transforms.Normalize([0.5], [0.5]) )
+transform =  transforms.Compose(trans)
+
+
+trainset =  datasets.MNIST(root = root, train = True, download = True, transform = transform) # 表示是否需要对数据进行预处理，none为不进行预处理
+testset =  datasets.MNIST(root = root, train = False, download = True, transform = transform) # 表示是否需要对数据进行预处理，none为不进行预处理
+
+train_iter = DataLoader(trainset, batch_size=batch_size, shuffle = False,  )
+test_iter = DataLoader(testset, batch_size=batch_size, shuffle = False,  )
+
+
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+    print(f"PyTorch is running on GPU: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device("cpu")
+    print("PyTorch is running on CPU.")
+
+print(f"len(trainset) = {len(trainset)}, len(train_iter) = {len(train_iter)}, ")
+# batch_size = 25, len(trainset) = 60000, len(testset) = 10000, len(train_iter) = 2400, len(test_iter) = 400
+
+
+model = LeNet_1()
+model = model.to(device)
+optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
+lossfn = torch.nn.CrossEntropyLoss()
+
+
+# for epoch in range(100):
+optimizer.zero_grad()
+clipped_grads = {name: torch.zeros_like(param) for name, param in model.named_parameters()}
+print(f"origin: {model.state_dict()['fc2.bias'].is_leaf}, {model.state_dict()['fc2.bias'].shape}, {model.state_dict()['fc2.bias'].device}, {model.state_dict()['fc2.bias'].requires_grad}, {model.state_dict()['fc2.bias'].type()}, {model.state_dict()['fc2.bias'].grad} \n")
+
+
+for batch, (X, y) in enumerate(train_iter):
+    X, y  = X.to(device), y.to(device)
+    #print(f"X.requires_grad = {X.requires_grad}, y.requires_grad = {y.requires_grad}")
+    y_hat = model(X)
+    loss = lossfn(y_hat, y)
+
+    optimizer.zero_grad()
+    loss.backward()
+    print(f"{batch}, 0: {model.state_dict()['fc2.bias'].is_leaf}, {model.state_dict()['fc2.bias'].shape}, {model.state_dict()['fc2.bias'].device}, {model.state_dict()['fc2.bias'].requires_grad}, {model.state_dict()['fc2.bias'].type()}, {model.state_dict()['fc2.bias'].grad} \n {model.state_dict()['fc2.bias']}")
+    optimizer.step()
+    print(f"{batch}, 1: {model.state_dict()['fc2.bias'].is_leaf}, {model.state_dict()['fc2.bias'].shape}, {model.state_dict()['fc2.bias'].device}, {model.state_dict()['fc2.bias'].requires_grad}, {model.state_dict()['fc2.bias'].type()}, {model.state_dict()['fc2.bias'].grad} \n {model.state_dict()['fc2.bias']}")
+#========================================================================================
+
+model = LeNet_1()
+model = model.to(device)
+optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
+lossfn = torch.nn.CrossEntropyLoss(reduction='none')
+
+
+
+# for epoch in range(100):
+optimizer.zero_grad()
+clipped_grads = {name: torch.zeros_like(param) for name, param in model.named_parameters()}
+print(f"model.state_dict() = {model.state_dict()['fc2.bias']} \n\n")
 
 
 
 
+for batch, (X, y) in enumerate(train_iter):
+    X, y  = X.to(device), y.to(device)
+    #print(f"X.requires_grad = {X.requires_grad}, y.requires_grad = {y.requires_grad}")
+    y_hat = model(X)
+    loss = lossfn(y_hat, y)  # l = 2.3009374141693115
+    for i in range(loss.size(0)):
+        loss[i].backward(retain_graph=True)
+        print(f"{batch}: {i}: {model.state_dict()['fc2.bias'].is_leaf}, {model.state_dict()['fc2.bias'].shape}, {model.state_dict()['fc2.bias'].device}, {model.state_dict()['fc2.bias'].requires_grad}, {model.state_dict()['fc2.bias'].type()}, {model.state_dict()['fc2.bias'].grad} \n")
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=0.1)
+        for name, param in model.named_parameters():
+            clipped_grads[name] += param.grad
+        model.zero_grad()
+
+    # optimizer.zero_grad()
+    # loss.backward()
+optimizer.step()
 
 #========================================================================================
 
 
 
 
-
-
-
-
-
-
-
-#========================================================================================
-
-
-
+params = {}
+lc = model.state_dict().items()
+for key, var in lc:
+    params[key] = var # .detach().cpu().numpy()
+    # print("key:"+str(key)+",var:"+str(var))
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
+    # print(f"张量{key}的Size : "+str(var.size()))
 
 
 

@@ -12,7 +12,6 @@ class MNIST_CNN(nn.Module):
     """
     def __init__(self, input_dim, output_dim):
         super(MNIST_CNN, self).__init__()
-        
         self.layer1 = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=8, stride=2, padding=2),
             nn.Tanh(),
@@ -24,8 +23,8 @@ class MNIST_CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=1))
         
         self.fc = nn.Sequential(nn.Linear(4 * 4 * 32, 32),
-                                        nn.Tanh(),
-                                        nn.Linear(32, 10))
+                                nn.Tanh(),
+                                nn.Linear(32, 10))
 
     def forward(self, x):
         x = self.layer1(x)

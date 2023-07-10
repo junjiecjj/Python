@@ -83,7 +83,7 @@ lc = model.state_dict().items()
 for key, var in lc:
     params[key] = var # .detach().cpu().numpy()
     # print("key:"+str(key)+",var:"+str(var))
-    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
     # print(f"张量{key}的Size : "+str(var.size()))
 
 #======================================== 3: named_parameters ===============================================
@@ -950,8 +950,6 @@ model = net()
 #打印每一层的参数名和参数值
 #schemem1(recommended)
 for name, param in model.named_parameters():
-    # print(f"  name = {name}\n  param = \n    {param}")
-    # print(f"  name = {name}\n  param.data = \n    {param.data}")
     print(f"{name:<10}, is leaf : {param.is_leaf}: size = {param.size()}, requires_grad = {param.requires_grad} ")
 
 

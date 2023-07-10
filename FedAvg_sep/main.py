@@ -75,9 +75,11 @@ def main():
 
     ##==================================================================================================
     ##                     核心代码
+    ##  print(torch.cuda.memory_summary()) 查看显存信息
     ##==================================================================================================
     ## num_comm 表示通信次数，
     for round_idx in range(args.num_comm):
+        torch.cuda.empty_cache()  # 释放显存
         recorder.addlog(round_idx)
         print(f"Communicate round {round_idx + 1} / {args.num_comm} : ")
         ckp.write_log(f"Communicate round {round_idx + 1} / {args.num_comm} : ", train=True)
@@ -93,7 +95,7 @@ def main():
             cnt[name]            = 0.0
 
         for client in tqdm(candidates):
-            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, global_parameters, )   #lossFun = loss_func, optim = optim
+            local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, global_parameters )   #lossFun = loss_func, optim = optim
             ## 对所有的Client返回的参数累加（最后取平均值）
             for key, params in server.global_model.state_dict().items():
                 # sum_parameters[key].add_(local_parameters[key])

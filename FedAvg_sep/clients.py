@@ -63,7 +63,7 @@ class client(object):
         #     print(f"{key}: {diff.size()}, {diff.min()}, {diff.max()} " )
         lossFun = torch.nn.CrossEntropyLoss()
         # optim   = torch.optim.Adam(self.local_model.parameters(), lr = 0.001, betas = (0.5, 0.999), eps = 1e-8)
-        optim  = torch.optim.SGD(self.local_model.parameters(), lr = 0.01, momentum = 0.0001 )
+        optim  = torch.optim.SGD(self.local_model.parameters(), lr = 0.001, momentum = 0.9 )
 
         self.local_model.train()
         ## 设置迭代次数

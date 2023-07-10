@@ -70,10 +70,10 @@ $ loss(x, class) = weights[class] * (-x[class] + log(\sum_j exp(x[j]))) $
 
 # output是网络的输出，size=[batch_size, class]
 #如网络的batch size为128，数据分为10类，则size=[128, 10]
- 
+
 # target是数据的真实标签，是标量，size=[batch_size]
 #如网络的batch size为128，则size=[128]
- 
+
 crossentropyloss=nn.CrossEntropyLoss()
 crossentropyloss_output=crossentropyloss(output,target)
 
@@ -116,7 +116,7 @@ PyTorch的反向传播(即tensor.backward())是通过autograd包来实现的，a
 step()函数的作用是执行一次优化步骤，通过梯度下降法来更新参数的值。因为梯度下降是基于梯度的，所以在执行optimizer.step()函数前应先执行loss.backward()函数来计算梯度。
 
 注意：optimizer只负责通过梯度下降进行优化，而不负责产生梯度，梯度是tensor.backward()方法产生的。
- 
+
 
 
 loss.backward()的作用
@@ -256,9 +256,9 @@ print(f"output2 = {output2}")
 #=====================================================================
 import torch
 import torch.nn as nn
-x_input=torch.randn(3,3)#随机生成输入 
-print('x_input:\n',x_input) 
-y_target=torch.tensor([1,2,0])#设置输出具体值 
+x_input=torch.randn(3,3)#随机生成输入
+print('x_input:\n',x_input)
+y_target=torch.tensor([1,2,0])#设置输出具体值
 print('y_target\n',y_target)
 
 #计算输入softmax，此时可以看到每一行加到一起结果都是1
@@ -361,7 +361,7 @@ x = torch.randn(10, 5)
 y= torch.randint(0, 5, (10,))   #这里的5不能>=5,必须<=x.size(-1)
 weights = torch.tensor([1., 2., 3., 4., 5.])
 print(f"x = \n{x}\ny = {y}")
-x = 
+x =
 tensor([[-2.2105,  0.0971,  0.3266, -0.0403, -0.7734],
         [-0.9611,  0.9855, -0.7131,  1.9102, -0.0249],
         [ 1.0615, -0.8349,  0.8135, -0.8576, -0.3983],
@@ -450,21 +450,26 @@ loss = nn.CrossEntropyLoss(size_average=False, reduce=False, reduction='none')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
 
+# output = tensor([1.3447, 1.0201])
+# output = tensor([1.3447, 1.0201])
+# output = tensor([1.3447, 1.0201])
+
 #========================= 2 ===========================
 loss = nn.CrossEntropyLoss(size_average=True, reduce=False, reduction='sum')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
 
-
-
 loss = nn.CrossEntropyLoss(size_average=True, reduce=False, reduction='mean')
-
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
 
 loss = nn.CrossEntropyLoss(size_average=True, reduce=False, reduction='none')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
+
+# output = tensor([1.3447, 1.0201])
+# output = tensor([1.3447, 1.0201])
+# output = tensor([1.3447, 1.0201])
 
 #=========================== 3 =========================
 loss = nn.CrossEntropyLoss(size_average=False, reduce=True, reduction='sum')
@@ -481,6 +486,10 @@ loss = nn.CrossEntropyLoss(size_average=False, reduce=True, reduction='none')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
 
+# output = 2.3648266792297363
+# output = 2.3648266792297363
+# output = 2.3648266792297363
+
 #=========================== 4 =========================
 loss = nn.CrossEntropyLoss(size_average=True, reduce=True, reduction='sum')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
@@ -496,6 +505,9 @@ loss = nn.CrossEntropyLoss(size_average=True, reduce=True, reduction='none')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
 
+# output = 1.1824133396148682
+# output = 1.1824133396148682
+# output = 1.1824133396148682
 
 #=========================== 5 =========================
 loss = nn.CrossEntropyLoss( reduction='sum')
@@ -513,7 +525,9 @@ loss = nn.CrossEntropyLoss( reduction='none')
 output = loss(y_hat, y)#target 和 input千万别反了,会报错
 print(f"output = {output}")
 
-
+# output = 2.3648266792297363
+# output = 1.1824133396148682
+# output = tensor([1.3447, 1.0201])
 #=========================== 6  =========================
 y_hat = torch.randn(3, 5, requires_grad = True)
 y =  torch.randn(3, 5).softmax(dim = 1)
@@ -535,7 +549,7 @@ print(f"output = {output}")
 
 #========================== weights ==========================
 input=torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
-target = torch.tensor([0, 1])  
+target = torch.tensor([0, 1])
 weights = torch.tensor([4, 2., 8.])
 entroy=nn.CrossEntropyLoss(weight=weights,reduction='none')
 
@@ -543,7 +557,7 @@ output = entroy(input, target)  #target 和 input千万别反了,会报错
 print(f"output1 = {output}")
 #根据公式计算
 # −x[0]+log(exp(x[0])+exp(x[1])+exp(x[2]))
-# = 0.7715 + log( exp( − 0.7715 ) + exp( − 0.6205 ) + exp( − 0.2562 ) = 1.3447266007601868 
+# = 0.7715 + log( exp( − 0.7715 ) + exp( − 0.6205 ) + exp( − 0.2562 ) = 1.3447266007601868
 # =0.7715+log(exp(−0.7715)+exp(−0.6205)+exp(−0.2562)=1.3447266007601868
 
 
@@ -893,7 +907,7 @@ reduction='sum'：求所有对应位置差的平方的和，返回的是一个�
 
 
 """
-import torch 
+import torch
 x = torch.Tensor([[1, 2, 3],
                       [2, 1, 3],
                       [3, 1, 2]])
@@ -940,30 +954,30 @@ input = torch.randn(2,2,3)
 print(input)
 
 
-m = nn.Softmax() 
+m = nn.Softmax()
 print(m(input))
 
 #当dim=0时， 是对每一维度相同位置的数值进行softmax运算
-m = nn.Softmax(dim=0) 
+m = nn.Softmax(dim=0)
 print(m(input))
 #当dim=-3时， 是对每一维度相同位置的数值进行softmax运算
-m = nn.Softmax(dim=-3) 
+m = nn.Softmax(dim=-3)
 print(m(input))
 
 #当dim=1时， 是对某一维度的列进行softmax运算：
-m = nn.Softmax(dim=1) 
+m = nn.Softmax(dim=1)
 print(m(input))
 #当dim=-2时， 是对某一维度的列进行softmax运算：
-m = nn.Softmax(dim=-2) 
+m = nn.Softmax(dim=-2)
 print(m(input))
 
 #当dim=2时， 是对某一维度的行进行softmax运算：
-m = nn.Softmax(dim=2) 
+m = nn.Softmax(dim=2)
 print(m(input))
 
 
 #要注意的是当dim=-1时， 是对某一维度的行进行softmax运算：
-m = nn.Softmax(dim=-1) 
+m = nn.Softmax(dim=-1)
 print(m(input))
 
 
