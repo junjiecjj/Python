@@ -4,8 +4,6 @@
 Created on 2023/04/25
 @author: Junjie Chen
 
-
-
 """
 
 # 系统库
@@ -194,7 +192,7 @@ class TraRecorder(object):
         out_fig = plt.gcf()
 
         # out_fig.savefig( os.path.join(savepath, f"{self.basename}.pdf") )
-        out_fig.savefig( os.path.join(savepath, f"{self.basename}_Plot.eps") )
+        out_fig.savefig(os.path.join(savepath, f"{self.basename}_Plot.eps") )
         # plt.show()
         plt.close()
         return
