@@ -4,6 +4,11 @@
 Created on Sun Jun 25 11:07:19 2023
 
 @author: jack
+
+本文件主要测试的是：
+(一): 获取模型的参数;
+(二)：加载模型的参数和改变模型的参数;
+(三)：
 """
 
 
@@ -932,16 +937,13 @@ print("grad: ", x.grad, a.grad, b.grad, y.grad)
 
 
 #===============================================================================================================
-#                                                       PyTorch求导相关
+#                          测试模型参数在模型训练过程中什么时候改变，结果为：在optimizer.step()之后会改变
 #===============================================================================================================
 import sys,os
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
-import imageio
 import matplotlib
 matplotlib.use('TkAgg')
-
 import torch.optim as optim
 
 
@@ -966,11 +968,11 @@ label = torch.randint(0,10,[3]).long()
 for key, var in model.named_parameters():
     print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n{var.data}")
 
-params = {}
-for key, var in model.state_dict().items():
-    params[key] = var # .detach().cpu().numpy()
-    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} \n\n" )
 
+for key, var in model.state_dict().items():
+    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} \n\n" )
+# for key, var in model.named_parameters():
+    # print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 
 
 
@@ -999,12 +1001,81 @@ print("\n\n")
 
 
 
+#===============================================================================================================
+#                     测试模型训练过程中什么时候会产生参数的梯度，结果为：在loss.backward()之后会产生梯度
+#===============================================================================================================
+import sys,os
+import torch
+import torch.nn as nn
+import matplotlib
+matplotlib.use('TkAgg')
+import torch.optim as optim
+
+
+# 定义一个简单的网络
+class net(nn.Module):
+    def __init__(self, num_class=10):
+        super(net, self).__init__()
+        self.fc1 = nn.Linear(8, 4)
+        self.fc2 = nn.Linear(4, num_class)
+
+
+    def forward(self, x):
+        return self.fc2(self.fc1(x))
+
+model = net()
+loss_fn = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-2)  # 传入的是所有的参数
+x = torch.randn((3, 8))
+label = torch.randint(0,10,[3]).long()
+
+
+for key, var in model.named_parameters():
+    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n{var.data}")
+
+
+# for key, var in model.state_dict().items():
+    # print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} \n\n" )
+for key, var in model.named_parameters():
+    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 
 
 
+output = model(x)
+#print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
+loss = loss_fn(output, label)
+
+for key, var in model.named_parameters():
+    print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+print("\n\n")
+
+optimizer.zero_grad()
+for key, var in model.named_parameters():
+    print(f"2: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+print("\n\n")
+
+loss.backward()
+for key, var in model.named_parameters():
+    print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+print("\n\n")
+
+optimizer.step()
+for key, var in model.named_parameters():
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+print("\n\n")
 
 
+# for key, var in model.state_dict().items():
+#     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
+# for key, var in model.named_parameters():
+    # print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 
+
+"""
+
+torch.nn.utils.clip_grad_norm_()的使用应该在loss.backward()之后，**optimizer.step()**之前：
+
+"""
 
 
 
