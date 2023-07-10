@@ -934,6 +934,16 @@ print("grad: ", x.grad, a.grad, b.grad, y.grad)
 #===============================================================================================================
 #                                                       PyTorch求导相关
 #===============================================================================================================
+import sys,os
+import torch
+from torch.autograd import Variable
+import torch.nn as nn
+import imageio
+import matplotlib
+matplotlib.use('TkAgg')
+
+import torch.optim as optim
+
 
 # 定义一个简单的网络
 class net(nn.Module):
@@ -947,26 +957,44 @@ class net(nn.Module):
         return self.fc2(self.fc1(x))
 
 model = net()
-#打印每一层的参数名和参数值
-#schemem1(recommended)
-for name, param in model.named_parameters():
-    print(f"{name:<10}, is leaf : {param.is_leaf}: size = {param.size()}, requires_grad = {param.requires_grad} ")
-
-
 loss_fn = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-2)  # 传入的是所有的参数
-
-
-
 x = torch.randn((3, 8))
 label = torch.randint(0,10,[3]).long()
+
+
+for key, var in model.named_parameters():
+    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n{var.data}")
+
+params = {}
+for key, var in model.state_dict().items():
+    params[key] = var # .detach().cpu().numpy()
+    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} \n\n" )
+
+
+
 
 output = model(x)
 #print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
 loss = loss_fn(output, label)
+for key, var in model.state_dict().items():
+    print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
+print("\n\n")
+
 optimizer.zero_grad()
+for key, var in model.state_dict().items():
+    print(f"2: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
+print("\n\n")
+
 loss.backward()
+for key, var in model.state_dict().items():
+    print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
+print("\n\n")
+
 optimizer.step()
+for key, var in model.state_dict().items():
+    print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
+print("\n\n")
 
 
 

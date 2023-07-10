@@ -414,10 +414,6 @@ for epoch in range(100):
 plt.plot(range(100),lr_list,color = 'r')
 
 
-
-
-
-
 #========================================================================================
 # torch.optim.lr_scheduler.StepLR
 
@@ -434,11 +430,6 @@ plt.plot(range(100),lr_list,color = 'r')
 
 
 
-
-
-
-
-
 #========================================================================================
 
 # torch.optim.lr_scheduler.MultiStepLR
@@ -451,12 +442,6 @@ for epoch in range(100):
     scheduler.step()
     lr_list.append(optimizer.state_dict()['param_groups'][0]['lr'])
 plt.plot(range(100),lr_list,color = 'r')
-
-
-
-
-
-
 
 
 #========================================================================================
@@ -618,8 +603,7 @@ optimizer.step()
 
 
 params = {}
-lc = model.state_dict().items()
-for key, var in lc:
+for key, var in model.state_dict().items():
     params[key] = var # .detach().cpu().numpy()
     # print("key:"+str(key)+",var:"+str(var))
     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
