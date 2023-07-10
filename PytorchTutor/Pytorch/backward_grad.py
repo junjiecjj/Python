@@ -1073,8 +1073,13 @@ print("\n\n")
 
 """
 
-torch.nn.utils.clip_grad_norm_()的使用应该在loss.backward()之后，**optimizer.step()**之前：
+模型训练过程: 梯度清零，loss求导(这一步获得梯度), optim.step()(这一步梯度更新，模型参数改变)
 
+梯度剪裁 torch.nn.utils.clip_grad_norm_()的使用应该在loss.backward()之后，optimizer.step()之前;
+
+为了获取梯度,只能使用如下方法: model.state_dict().items()是行不通的;
+for k, v in net.named_parameters():
+    print(v.grad)
 """
 
 
