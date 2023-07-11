@@ -6,6 +6,13 @@ Created on Sat Apr  9 19:18:40 2022
 @author: jack
 
 https://pytorchbook.cn/chapter2/2.1.3-pytorch-basics-nerual-network/
+本文件主要是测试优化器相关的内容;
+
+本次探索了在不同实验场景下model.zero_grad和potimizer.zero_grad的区别和关系。这两个方法都是对网络进行梯度置零，但是在不同应用场景下有比较优的选择，总结如下：
+
+当仅有一个model，同时optimizer只包含这一个model的参数，那么model.zero_grad和optimizer.zero_grad没有区别，可以任意使用。
+当有多个model，同时optimizer包含多个model的参数时，如果这多个model都需要训练，那么使用optimizer.zero_grad是比较好的方式，耗时和防止出错上比对每个model都进行zero_grad要更好。
+当有多个model，对于每个model或者部分model有对应的optimizer，同时还有一个total_optimizer包含多个model的参数时。如果是是只想训练某一个model或者一部分model，可以选择对需要训练的那个model进行model.zero_grad，然后使用他对应的optimizer进行优化。如果是想对所有的model进行训练，那么使用total_optimizer.zero_grad是更优的方式。
 """
 
 # 首先要引入相关的包

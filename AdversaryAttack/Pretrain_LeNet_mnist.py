@@ -126,7 +126,7 @@ class LeNetMinst_PreTrain(object):
                     acc = tcommon.accuracy(y_hat, y)
                     metric.add(loss.item(), acc, X.shape[0])
                 # 输出训练状态
-                if batch % 100 == 0:
+                if (batch+1) % 100 == 0:
                     frac1 = (epoch + 1) / self.args.epochs
                     frac2 = (batch + 1) / len(self.loader_train)
                     print("    [epoch: {:*>5d}/{}({:0>6.2%}), batch: {:*>5d}/{}({:0>6.2%})]\tLoss: {:.4f} \t  Train acc:{:4.2f} ".format(epoch+1, self.args.epochs, frac1, batch+1, len(self.loader_train), frac2, loss.item()/X.shape[0], acc, ))
@@ -152,12 +152,11 @@ class LeNetMinst_PreTrain(object):
             print(f"  Epoch: {epoch+1}/{self.args.epochs}({(epoch+1)*100.0/self.args.epochs:5.2f}%) | loss = {epochLos:.4f}/{TraRecord[1]:.4f} | train acc: {epoch_train_acc:.3f}/{TraRecord[2]:.3f}, test acc: {test_acc:.3f}/{TraRecord[3]:.3f}| Time {tmp/60.0:.3f}/{tm.hold()/60.0:.3f}(分钟)\n")
             self.ckp.write_log(f"  Epoch {epoch+1}/{self.args.epochs} | loss = {epochLos.item():.4f} | train acc: {epoch_train_acc:.3f}/{TraRecord[1]:.3f}, test acc: {test_acc:.3f}/{TraRecord[2]:.3f} | Time {tmp/60.0:.3f}/{tm.hold()/60.0:.3f}(分钟) \n", train=True)
 
-
         TraRecord.save(self.ckp.savedir)
         TraRecord.plot_inonefig(self.ckp.savedir, metric_str = ["lr", "Train Loss", "train acc", "val acc"])
 
         ### 保存网络中的参数, 速度快，占空间少
-        torch.save(model.state_dict(), f"/home/jack/SemanticNoise_AdversarialAttack/LeNet_AlexNet/LeNet_Minst_classifier_{tm.start_str}.pt")   # 训练和测试都归一化
+        # torch.save(model.state_dict(), f"/home/jack/SemanticNoise_AdversarialAttack/LeNet_AlexNet/LeNet_Minst_classifier_{tm.start_str}.pt")   # 训练和测试都归一化
 
         self.ckp.write_log(f"#=== 本次训练完毕,开始时刻:{tm.start_str},结束时刻:{tm.now()},用时:{tm.hold()/60.0:.3f}分钟 ===",train=True)
         print(color.higred(f"\n#============ 训练完毕,开始时刻:{tm.start_str},结束时刻:{tm.now()},用时:{tm.hold()/60.0:.3f}分钟 =================\n"))

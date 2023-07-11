@@ -431,7 +431,8 @@ print(f"output1 = {output}")
 
 
 #=======================1=============================
-
+import torch
+import torch.nn as nn
 y_hat=torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
 y = torch.tensor([0,1])
 
