@@ -221,7 +221,7 @@ print(ret_inf)
 
 
 #=================================================================================================================
-#                                                      矩阵范数 torch
+#                                                矩阵范数 torch.linalg.norm
 #=================================================================================================================
 
 """
@@ -232,7 +232,7 @@ ord                      norm for matrices                   norm for vectors
 None (default)           Frobenius norm                    2-norm (see below)
 ‘fro’                    Frobenius norm                     – not supported –
 ‘nuc’                     nuclear norm                      – not supported –
-inf                  max(sum(abs(x), dim=1))                 max(abs(x))
+inf                   max(sum(abs(x), dim=1))                 max(abs(x))
 -inf                  min(sum(abs(x), dim=1))                min(abs(x))
 0                      – not supported –                      sum(x != 0)
 1                      max(sum(abs(x), dim=0))                 as below
@@ -286,7 +286,7 @@ print(ret_nuc)
 
 
 #=================================================================================================================
-#                                                      向量范数 torch
+#                                                      向量范数 torch.linalg.norm
 #=================================================================================================================
 
 
@@ -320,15 +320,17 @@ print(ret_3)
 ret_4 = torch.linalg.norm(A, ord = 4,  )                               # ret_3 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_4)
 
-ret_inf = torch.linalg.norm(A, ord = float('inf'), )                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最大值，matlab调用函数norm(x, inf)。
+ret_inf = torch.linalg.norm(A, ord = float('inf'), )                   # max(abs(x))
 print(ret_inf)
-ret_inf = torch.linalg.norm(A, ord = -float('inf'), )                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
+ret_inf = torch.linalg.norm(A, ord = -float('inf'), )                  # min(abs(x))
 print(ret_inf)
 
 
 #=================================================================================================================
-#                                                      向量范数 torch
+#                                     向量范数 torch.linalg.norm
 #=================================================================================================================
+## axis为处理类型：当axis=1时表示按行向量处理，求多个行向量的范数。当axis=0时表示按列向量处理，求多个列向量的范数。当axis=None表示矩阵范数
+
 import torch
 
 A = torch.tensor([[3., -4.],[-6., 2.]])
@@ -383,7 +385,7 @@ print(ret_inf)
 
 
 #=================================================================================================================
-#                                                      矩阵范数 torch
+#                                                      矩阵范数 torch.linalg.matrix_norm
 #=================================================================================================================
 
 """
@@ -447,7 +449,7 @@ print(ret_nuc)
 
 
 #=================================================================================================================
-#                                                      向量范数 torch
+#                                                      向量范数 torch.linalg.vector_norm
 #=================================================================================================================
 """
 torch.linalg.vector_norm(x, ord=2, dim=None, keepdim=False, *, dtype=None, out=None) → Tensor
@@ -459,7 +461,7 @@ ord                              vector norm
 inf                              max(abs(x))
 -inf                             min(abs(x))
 0                                sum(x != 0)
-other int or float              sum(abs(x)^{ord})^{(1 / ord)}
+other int or float               sum(abs(x)^{ord})^{(1 / ord)}
 """
 
 import torch
@@ -469,13 +471,13 @@ print(A)
 
 
 
-ret_0 = torch.linalg.vector_norm(A, ord = 0,  )                               # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
+ret_0 = torch.linalg.vector_norm(A, ord = 0, )                               # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
 print(ret_0)
 
-ret_1 = torch.linalg.vector_norm(A, ord = 1,  )                               # ret_1 返回的是 1 范数, 向量元素绝对值之和，matlab调用函数norm(x, 1) 。
+ret_1 = torch.linalg.vector_norm(A, ord = 1, )                               # ret_1 返回的是 1 范数, 向量元素绝对值之和，matlab调用函数norm(x, 1) 。
 print(ret_1)
 
-ret_1 = torch.linalg.vector_norm(A, ord = -1,  )                               # ret_1 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_1 = torch.linalg.vector_norm(A, ord = -1, )                              # ret_1 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_1)
 
 
@@ -484,31 +486,49 @@ ret_all = torch.linalg.vector_norm(A,    )
 print(ret_all)
 ret_2 = torch.linalg.vector_norm(A, ord = 2,  )                               # ret_2 返回的是 2 范数的值; Euclid范数（欧几里得范数，常用计算向量长度），即向量元素绝对值的平方和再开方，matlab调用函数norm(x, 2)。
 print(ret_2)
-ret_2 = torch.linalg.vector_norm(A, ord = -2,  )                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_2 = torch.linalg.vector_norm(A, ord = -2,  )                              # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_2)
 
 ## 向量的p范数：
-ret_3 = torch.linalg.vector_norm(A, ord = 3,  )                               # ret_3 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_3 = torch.linalg.vector_norm(A, ord = 3,  )                               #  返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_3)
 
-ret_4 = torch.linalg.vector_norm(A, ord = 4,  )                               # ret_3 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_4 = torch.linalg.vector_norm(A, ord = 4,  )                               #  返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_4)
 
-ret_inf = torch.linalg.vector_norm(A, ord = float('inf'), )                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最大值，matlab调用函数norm(x, inf)。
+ret_inf = torch.linalg.vector_norm(A, ord = float('inf'), )                   # max(abs(x))
 print(ret_inf)
-ret_inf = torch.linalg.vector_norm(A, ord = -float('inf'), )                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
+ret_inf = torch.linalg.vector_norm(A, ord = -float('inf'), )                  # min(abs(x))
 print(ret_inf)
 
 
 
 
 
+#=================================================================================================================
+#                              torch.norm()函数的用法
+#=================================================================================================================
+"""
+https://blog.csdn.net/qq_36556893/article/details/90698186
+
+意思就是inputs的一共N维的话对这N个数据求p范数，当然这个还是太抽象了，接下来还是看具体的代码~
+
+p指的是求p范数的p值，函数默认p=2，那么就是求2范数
+ ||x||_{p} = \sqrt[p]{x_{1}^{p} + x_{2}^{p} + \ldots + x_{N}^{p}}
+
+"""
 
 
+import torch
+
+A = torch.tensor([[3., -4.],[-6., 2.]])
+print(A)
 
 
-
-
+inputs1 = torch.norm(A, p=2, dim=1, keepdim=True)  ##（p = 2，dim = 1）每行的数据进行2范数运算
+print(inputs1)
+inputs2 = torch.norm(A, p=2, dim=0, keepdim=True)  ## （p = 2，dim = 0）每列的据进行2范数运算
+print(inputs2)
 
 
 
