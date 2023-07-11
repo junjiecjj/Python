@@ -64,10 +64,10 @@ parser.add_argument('--transmitted_diff',  type=int,   default = 1,           he
 ##==============================================  差分隐私 ======================================================================
 ## 是否使用 DP
 parser.add_argument('--DP',                type=int,   default = 0 ,            help = 'use differental privacy')
-
-parser.add_argument('--C',                 type=int,   default = 1000 ,         help = ' differental privacy')
-parser.add_argument('--sigma',             type=int,   default = 0.001 ,        help = ' differental privacy')
-parser.add_argument('--q',                 type=int,   default = 0.1,           help = ' differental privacy')
+parser.add_argument('--eps',               type=int,   default = 8 ,            help = '隐私预算')
+parser.add_argument('--clip',              type=int,   default = 0.1 ,          help = '梯度剪切')
+parser.add_argument('--delta',             type=int,   default = 0.001 ,        help = '超出隐私预算的概率')
+parser.add_argument('--q',                 type=int,   default = 0.1,           help = '每epoch数据百分比')
 parser.add_argument('--w',                 type=int,   default = 1,             help = ' differental privacy')
 
 ##==============================================  模型稀疏：随机掩码 ==============================================================

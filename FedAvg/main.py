@@ -126,10 +126,6 @@ def main():
                     sum_parameters[key].add_(local_parameters[key].clone())
                     cnt[key] += 1
 
-        ## 取平均值，得到本次通信中Server得到的更新后的模型参数
-        # for var in sum_parameters:
-        #     sum_parameters[var] = (sum_parameters[var] / num_in_comm)
-
         global_parameters = server.model_aggregate(sum_parameters, cnt)
 
         ## 训练结束之后，我们要通过测试集来验证方法的泛化性，注意:虽然训练时，Server没有得到过任何一条数据，但是联邦学习最终的目的还是要在Server端学习到一个鲁棒的模型，所以在做测试的时候，是在Server端进行的

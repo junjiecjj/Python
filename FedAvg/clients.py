@@ -60,44 +60,45 @@ class client(object):
         ## 2
         # for name, param in global_parameters.items():
             # self.local_model.state_dict()[name].copy_(param.clone())
-
-        ## 载入Client自有数据集, 加载本地数据
-        self.train_dataloader = DataLoader(self.train_ds, batch_size = localBatchSize, shuffle = True)
-        # print("    local epoch: ", end = " ")
-
-        self.local_model.train()
-        ## 设置迭代次数
-        for epoch in range(localEpoch):
-            # print(f" {epoch}", end = ", ")
-            for data, label in self.train_dataloader:
-                # 加载到GPU上
-                data, label = data.to(self.device), label.to(self.device)
-                # 模型上传入数据
-                preds = self.local_model(data)
-                # 计算损失函数
-                loss = lossFun(preds, label)
-                # 将梯度归零，初始化梯度
-                opti.zero_grad()
-                # 反向传播
-                loss.backward()
-                # 计算梯度，并更新梯度
-                opti.step()
-
-        ## 如果传输的是模型参数差值
-        if self.args.transmitted_diff:
-            local_update = {}
-            for key, var in self.local_model.state_dict().items():
-                local_update[key] = var - global_parameters[key]
-        else: ## 直接传递模型参数
-            local_update = {}
-            for key, var in self.local_model.state_dict().items():
-                local_update[key] = var.clone()
-            # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
-        # print(f"0: {local_update['conv1.bias']}")
-
         ## 差分隐私
         if self.args.DP == True:
-            pass
+
+        else:
+            ## 载入Client自有数据集, 加载本地数据
+            self.train_dataloader = DataLoader(self.train_ds, batch_size = localBatchSize, shuffle = True)
+            # print("    local epoch: ", end = " ")
+
+            self.local_model.train()
+            ## 设置迭代次数
+            for epoch in range(localEpoch):
+                # print(f" {epoch}", end = ", ")
+                for data, label in self.train_dataloader:
+                    # 加载到GPU上
+                    data, label = data.to(self.device), label.to(self.device)
+                    # 模型上传入数据
+                    preds = self.local_model(data)
+                    # 计算损失函数
+                    loss = lossFun(preds, label)
+                    # 将梯度归零，初始化梯度
+                    opti.zero_grad()
+                    # 反向传播
+                    loss.backward()
+                    # 计算梯度，并更新梯度
+                    opti.step()
+
+            ## 如果传输的是模型参数差值
+            if self.args.transmitted_diff:
+                local_update = {}
+                for key, var in self.local_model.state_dict().items():
+                    local_update[key] = var - global_parameters[key]
+            else: ## 直接传递模型参数
+                local_update = {}
+                for key, var in self.local_model.state_dict().items():
+                    local_update[key] = var.clone()
+                # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
+            # print(f"0: {local_update['conv1.bias']}")
+
+
 
         ## 随机掩码
         if self.args.Random_Mask == True:
