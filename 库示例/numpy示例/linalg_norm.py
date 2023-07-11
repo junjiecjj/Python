@@ -99,9 +99,9 @@ print(ret_2)
 ret_2 = np.linalg.norm(A, ord = -2, axis = None, keepdims = True)                         #  谱范数，即A'A矩阵的最小特征值的开平方。matlab调用函数norm(x, 2)。
 print(ret_2)
 
-# ret_3 = np.linalg.norm(A, ord = 3, axis = None)                                                # ret_3 返回的是  ValueError: Invalid norm order for matrices.
+# ret_3 = np.linalg.norm(A, ord = 3, axis = None)                                                   # ret_3 返回的是  ValueError: Invalid norm order for matrices.
 # print(ret_3)
-# ret_3 = np.linalg.norm(A, ord = -3, axis = None)                                                # ret_3 返回的是  ValueError: Invalid norm order for matrices.
+# ret_3 = np.linalg.norm(A, ord = -3, axis = None)                                                  # ret_3 返回的是  ValueError: Invalid norm order for matrices.
 # print(ret_3)
 
 ret_nuc = np.linalg.norm(A, ord = 'nuc', axis = None)                    # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
