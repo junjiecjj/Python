@@ -97,7 +97,7 @@ sorted(a,key=lambda x:x[1])
 # 求字符串每个单词的长度
 sentence = "Welcome To Beijing!"
 words = sentence.split()
-lengths  = map(lambda x:len(x),words)
+lengths  = map(lambda x:len(x), words)
 print(list(lengths))
 # [7,2,8]
 

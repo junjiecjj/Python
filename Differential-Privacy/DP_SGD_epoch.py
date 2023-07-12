@@ -21,8 +21,6 @@ import matplotlib.pyplot as plt
 import argparse
 
 
-
-
 # 初始化随机数种子
 def set_random_seed(seed = 10, deterministic = False, benchmark = False):
     # random.seed(seed)
@@ -89,15 +87,13 @@ class LeNet_3(torch.nn.Module):
             torch.nn.Dropout2d(),
             ## 20, 8, 8 -> 20, 4, 4
             torch.nn.MaxPool2d(kernel_size = 2, ),
-            torch.nn.ReLU()
-        )
+            torch.nn.ReLU() )
         self.fc = torch.nn.Sequential(
             ## full connect layer 1
             torch.nn.Linear(320, 50), torch.nn.ReLU(),
             torch.nn.Dropout(),
             torch.nn.Linear(50, 10),
-            torch.nn.LogSoftmax(dim = 1)
-        )
+            torch.nn.LogSoftmax(dim = 1) )
     def forward(self, img):
         feature = self.conv(img)
         output = self.fc(feature.view(img.shape[0], -1))
@@ -108,7 +104,6 @@ def validata( model, dataloader, device = None):
     model.eval()
     if not device:
         device = next(model.parameters()).device
-
     acc = 0.0
     examples = 0.0
     with torch.no_grad():
@@ -137,7 +132,7 @@ trainset       = torchvision.datasets.MNIST(root = data_root, train = True,  dow
 testset        = torchvision.datasets.MNIST(root = data_root, train = False, download = True, transform = torchvision.transforms.ToTensor() )
 train_loader   = torch.utils.data.DataLoader(trainset, batch_size = args.batch_size, shuffle = True, )
 test_loader    = torch.utils.data.DataLoader(testset,  batch_size = args.batch_size, shuffle = False, )
-device = torch.device("cuda:0" if torch.cuda.is_available()  else "cpu")
+device         = torch.device("cuda:0" if torch.cuda.is_available()  else "cpu")
 
 model = LeNet_3().to(device)
 lossFun = torch.nn.CrossEntropyLoss(reduction='none')

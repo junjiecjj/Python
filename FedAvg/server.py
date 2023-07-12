@@ -25,7 +25,7 @@ class Server(object):
     def model_aggregate(self, weight_accumulator, cnt = None):
         ## 取平均值，得到本次通信中Server得到的更新后的模型参数
         num_in_comm = int(max(self.args.num_of_clients * self.args.cfraction, 1))
-        print(f"cnt:   {cnt.values()}")
+        # print(f"cnt:   {cnt.values()}")
         for key in weight_accumulator:
             if cnt[key] > 0:
                 weight_accumulator[key].div_(cnt[key])
@@ -51,11 +51,8 @@ class Server(object):
                 # if key in weight_accumulator and cnt[key] > 0:
                     # param.copy_(weight_accumulator[key])
 
-        if self.args.DP: ##  使用差分隐私
-            # self.global_model.load_state_dict(self.last_pamas, strict=True)
-            for key, data in self.global_model.state_dict().items():
-                noise = torch.normal(mean = 0, std = self.args.sigma, size = data.shape ).to(self.device)
-                data.add_(noise)
+        if self.args.ClientDP: ##  使用差分隐私
+            pass
 
         # 得到当前最新的全局模型并赋值给存储上次最新模型的字典
         global_parameters = {}
@@ -74,19 +71,45 @@ class Server(object):
         sum_accu    = 0.0
         sum_loss    = 0.0
         examples    = 0
-        loss_fn = torch.nn.CrossEntropyLoss(reduction='sum')
+        loss_fn     = torch.nn.CrossEntropyLoss(reduction='sum')
         # 载入测试集
-        for data, label in self.eval_loader:
-            examples    += data.shape[0]
-            data, label = data.to(self.device), label.to(self.device)
-            preds       = self.global_model(data)
-            sum_loss    += loss_fn(preds, label).item()
-            preds       = torch.argmax(preds, dim=1)
-            sum_accu    += (preds == label).float().sum().item()
+        for X, y in self.eval_loader:
+            examples    += X.shape[0]
+            X, y        = X.to(self.device), y.to(self.device)
+            preds       = self.global_model(X)
+            sum_loss    += loss_fn(preds, y).item()
+            sum_accu    += (torch.argmax(preds, dim=1) == y).float().sum().item()
         acc     = sum_accu / examples
         avg_los = sum_loss / examples
 
         return acc, avg_los
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

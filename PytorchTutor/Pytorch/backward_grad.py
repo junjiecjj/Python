@@ -309,6 +309,7 @@ for key, var in model.named_parameters():
 print("\n\n")
 
 torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
+
 for key, var in model.named_parameters():
     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 print("\n\n")

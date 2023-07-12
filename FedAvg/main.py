@@ -47,6 +47,7 @@ import Optimizer
 
 import MetricsLog
 
+from rdp_analysis import calibrating_sampled_gaussian
 
 #==================================================== device ===================================================
 # 如果不想用CPU且存在GPU, 则用GPU; 否则用CPU;
@@ -57,6 +58,11 @@ else:
     args.device = torch.device("cpu")
     print("PyTorch is running on CPU.")
 
+if args.DP:
+    Total_iters = int( args.num_comm * args.loc_epochs)
+    print("Calcuating Sigma \n")
+    args.sigma = calibrating_sampled_gaussian(args.q, args.eps, args.delta, Total_iters)
+    print(f"sigma = {args.sigma }")
 #==================================================  seed =====================================================
 # 设置随机数种子
 Utility.set_random_seed(args.seed, deterministic = True, benchmark = True)

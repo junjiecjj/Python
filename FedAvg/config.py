@@ -27,12 +27,12 @@ parser.add_argument('--user_name', type=str, default = user_name, help='user nam
 parser.add_argument('--user_home', type=str, default = user_home, help='user home')
 
 # model  specifications
-parser.add_argument('--modelUse',        type = str, default = 'FedAvg',   help='You can set various templates in option.py')
+parser.add_argument('--modelUse',        type = str, default = 'FedAvg',   help='model name')
 
 # 设备相关
 parser.add_argument('--cpu',             type = int, default = False,      help = 'use cpu only')
 parser.add_argument('--device',          type = str, default = 'cuda:0',   help = 'cuda device')
-parser.add_argument('--seed',            type = int, default = 1,    help = 'random seed')
+parser.add_argument('--seed',            type = int, default = 1,          help = 'random seed')
 
 ##=============================================================================================================================================
 ##==============================================  联邦学习相关参数 ======================================================================
@@ -47,7 +47,7 @@ parser.add_argument('--loc_epochs',      type=int,   default = 10,            he
 ## local_batchsize 大小
 parser.add_argument('--local_batchsize', type=int,   default = 128,           help = 'local train batch size')
 ## test_batchsize 大小
-parser.add_argument('--test_batchsize', type=int,   default = 128,           help = 'test batch size')
+parser.add_argument('--test_batchsize',  type=int,   default = 128,           help = 'test batch size')
 ## 模型名称
 parser.add_argument('--model_name',      type=str,   default = "mnist_cnn",   help = 'the model to train')
 ## 所用的数据集
@@ -58,27 +58,32 @@ parser.add_argument('--save_freq',       type=int,   default = 20,            he
 ## num_comm 表示通信次数，此处设置为1k
 parser.add_argument('--num_comm',        type=int,   default = 300,           help = 'number of communications')
 ## 数据是否 IID
-parser.add_argument('--isIID',             type=int,   default = 0 ,           help = 'the way to allocate data to clients')
+parser.add_argument('--isIID',             type=int,   default = 0 ,          help = 'the way to allocate data to clients')
 ## 传输的是模型参数还是模型更新
 parser.add_argument('--transmitted_diff',  type=int,   default = 1,           help = 'the way to allocate data to clients')
 ##==============================================  差分隐私 ======================================================================
-## 是否使用 DP
-parser.add_argument('--DP',                type=int,   default = 0 ,            help = 'use differental privacy')
-parser.add_argument('--eps',               type=int,   default = 8 ,            help = '隐私预算')
-parser.add_argument('--clip',              type=int,   default = 0.1 ,          help = '梯度剪切')
-parser.add_argument('--delta',             type=int,   default = 0.001 ,        help = '超出隐私预算的概率')
-parser.add_argument('--q',                 type=int,   default = 0.1,           help = '每epoch数据百分比')
-parser.add_argument('--w',                 type=int,   default = 1,             help = ' differental privacy')
+## 是否使用 Local DP
+parser.add_argument('--LDP',                type=int,     default = 1 ,            help = '是否使用local 差分隐私')
+## 是否使用 Client DP
+parser.add_argument('--CDP',                type=int,     default = 0 ,            help = '是否使用 client 差分隐私')
+
+parser.add_argument('--eps',               type=float,   default = 8,             help = '隐私预算')
+parser.add_argument('--clip',              type=float,   default = 10 ,          help = '梯度剪切')
+parser.add_argument('--delta',             type=float,   default = 0.0001 ,       help = '超出隐私预算的概率')
+parser.add_argument('--q',                 type=float,   default = 0.1,         help = '每epoch数据百分比')
+parser.add_argument('--sigma',             type=float,   default = 1,             help = '高斯噪声的标准差的一部分,总的为 clip*sigma')
+
+
 
 ##==============================================  模型稀疏：随机掩码 ==============================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Random_Mask',       type=float,   default = 1,             help = 'use Random_Mask')
-parser.add_argument('--prop',              type=float,   default = 0.7,           help = ' ')
+parser.add_argument('--Random_Mask',       type=float,   default = 0,             help = '是否使用随机掩码')
+parser.add_argument('--prop',              type=float,   default = 0.7,           help = '掩码是1的概率')
 
 ##==============================================  模型压缩 ==============================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Compression',       type=float,   default = 0,             help = 'use Compression')
-parser.add_argument('--crate',             type=float,   default = 0.9,           help = ' ')
+parser.add_argument('--Compression',       type=float,   default = 0,             help = '是否使用压缩')
+parser.add_argument('--crate',             type=float,   default = 0.9,           help = '压缩率:选取前crate的模型参数进行传输')
 
 
 ##=============================================================================================================================================
@@ -116,6 +121,7 @@ parser.add_argument('--gclip',         type = float, default = 0,               
 
 # Loss specifications
 parser.add_argument('--loss',         type = str, default = '1*CrossEntropy',   help = 'loss function configuration')
+parser.add_argument('--reduction',    type = str, default = 'sum',              help = 'loss function configuration')
 
 args, unparsed = parser.parse_known_args()
 

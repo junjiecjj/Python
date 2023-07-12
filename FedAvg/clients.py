@@ -60,18 +60,47 @@ class client(object):
         ## 2
         # for name, param in global_parameters.items():
             # self.local_model.state_dict()[name].copy_(param.clone())
-        ## 差分隐私
-        if self.args.DP == True:
+        self.local_model.train()
 
+        ## local 差分隐私: Local DP-SGD
+        if self.args.LDP == True:
+            lossFun = torch.nn.CrossEntropyLoss(reduction='none')
+            idx = np.random.choice(range(len(self.train_ds)), round(len(self.train_ds)*self.args.q),  replace=False)
+            sampled_dataset = TensorDataset(self.train_ds[idx][0], self.train_ds[idx][1])
+            # print(f"{self.client_name}: {len(sampled_dataset)}")
+            self.train_dataloader = DataLoader(sampled_dataset, batch_size = localBatchSize, shuffle = True)
+            for epoch in range(self.args.loc_epochs):
+                opti.zero_grad()       ## 必须在反向传播前先清零。
+                ## 初始化记录裁剪和添加噪声的容器
+                clipped_grads = {}
+                for key, param in self.local_model.named_parameters():
+                    clipped_grads[key] = torch.zeros_like(param)
+
+                for batch, (X, y) in enumerate(self.train_dataloader):
+                    # model.zero_grad()
+                    X, y =  X.to(self.device), y.to(self.device)
+                    y_hat = self.local_model(X)
+                    losses = lossFun(y_hat, y)
+                    for los in losses:
+                        los.backward(retain_graph=True)
+                        # 裁剪梯度，C 为边界值，使得模型参数梯度在 [-C,C] 范围内
+                        torch.nn.utils.clip_grad_norm_(self.local_model.parameters(), self.args.clip)
+                        # 存储裁剪后的梯度
+                        for key, param in self.local_model.named_parameters():
+                            clipped_grads[key].add_(param.grad)
+                        self.local_model.zero_grad()
+                for key, param in self.local_model.named_parameters():
+                    # 初始化噪声
+                    noise = torch.normal(mean = 0, std = self.args.sigma * self.args.clip, size = param.shape ).to(self.device)
+                    # 添加高斯噪声
+                    clipped_grads[key].add_(noise)
+                    param.grad = clipped_grads[key] / round(len(self.train_ds)*self.args.q)
+                opti.step()
         else:
             ## 载入Client自有数据集, 加载本地数据
             self.train_dataloader = DataLoader(self.train_ds, batch_size = localBatchSize, shuffle = True)
-            # print("    local epoch: ", end = " ")
-
-            self.local_model.train()
             ## 设置迭代次数
             for epoch in range(localEpoch):
-                # print(f" {epoch}", end = ", ")
                 for data, label in self.train_dataloader:
                     # 加载到GPU上
                     data, label = data.to(self.device), label.to(self.device)
@@ -86,19 +115,16 @@ class client(object):
                     # 计算梯度，并更新梯度
                     opti.step()
 
-            ## 如果传输的是模型参数差值
-            if self.args.transmitted_diff:
-                local_update = {}
-                for key, var in self.local_model.state_dict().items():
-                    local_update[key] = var - global_parameters[key]
-            else: ## 直接传递模型参数
-                local_update = {}
-                for key, var in self.local_model.state_dict().items():
-                    local_update[key] = var.clone()
-                # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
-            # print(f"0: {local_update['conv1.bias']}")
-
-
+        ## 如果传输的是模型参数差值
+        if self.args.transmitted_diff:
+            local_update = {}
+            for key, var in self.local_model.state_dict().items():
+                local_update[key] = var - global_parameters[key]
+        else: ## 直接传递模型参数
+            local_update = {}
+            for key, var in self.local_model.state_dict().items():
+                local_update[key] = var.clone()
+            # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
 
         ## 随机掩码
         if self.args.Random_Mask == True:
@@ -108,8 +134,6 @@ class client(object):
                 p = torch.ones_like(param) * self.args.prop
                 self.mask[key] = torch.bernoulli(p)
                 local_update[key].mul_(self.mask[key])
-        # print(f"1: {local_update['conv1.bias']}")
-
         ## 模型压缩
         if self.args.Compression == True:
             # print(f"{len(local_update)}")

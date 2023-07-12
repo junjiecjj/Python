@@ -31,13 +31,13 @@ class myLoss(nn.modules.loss._Loss):
         for loss in args.loss.split('+'):  #  ['1*MSE']
             weight, loss_type = loss.split('*')
             if loss_type == 'MSE':
-                loss_function = torch.nn.MSELoss(reduction='sum')
+                loss_function = torch.nn.MSELoss(reduction=args.reduction)
             elif loss_type == 'L1':
-                loss_function = torch.nn.L1Loss(reduction='sum')
+                loss_function = torch.nn.L1Loss(reduction=args.reduction)
             elif loss_type == 'BCE':
-                loss_function = torch.nn.BCELoss(reduction='sum')  # reduction='sum'
+                loss_function = torch.nn.BCELoss(reduction=args.reduction)  # reduction='sum'
             elif loss_type == 'CrossEntropy':
-                    loss_function = torch.nn.CrossEntropyLoss(reduction='sum')
+                    loss_function = torch.nn.CrossEntropyLoss(reduction=args.reduction)
             self.loss.append({'type': loss_type, 'weight': float(weight), 'function': loss_function} )
 
         if len(self.loss) > 1:

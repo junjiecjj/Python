@@ -26,8 +26,8 @@ Created on Tue Jul  4 14:48:00 2023
     1-范数： 列和范数，即所有矩阵列向量绝对值之和的最大值，matlab调用函数norm(A, 1)。
     2-范数： 谱范数，即A'A矩阵的最大特征值的开平方。matlab调用函数norm(x, 2)。
     ∞-范数： 行和范数，即所有矩阵行向量绝对值之和的最大值，matlab调用函数norm(A, inf)。
-    F-范数： Frobenius范数，即矩阵元素绝对值的平方和再开平方，matlab调用函数norm(A, ’fro‘)。
-
+    F-范数： Frobenius范数，它通常也叫做矩阵的L2范数, 即矩阵元素绝对值的平方和再开平方，matlab调用函数norm(A, ’fro‘)。
+    p-范数 : not supported,矩阵没有所谓的p范数，只有向量有
 
 np.linalg.norm(X):
     X为向量时，默认求向量2范数，即求向量元素绝对值的平方和再开方；
@@ -58,6 +58,12 @@ The nuclear norm is the sum of the singular values.
 
 Both the Frobenius and nuclear norm orders are only defined for
 matrices and raise a ValueError when ``x.ndim != 2``.
+
+
+但是 torch.norm 却是可以求矩阵的p范数：torch.norm(A, p=2, dim=1, keepdim=True)
+    意思就是 A 的一共N维的话对这N个数据求p范数， 接下来还是看具体的代码
+    p指的是求p范数的p值，函数默认p=2，那么就是求2范数
+    ||x||_{p} = \sqrt[p]{x_{1}^{p} + x_{2}^{p} + \ldots + x_{N}^{p}}
 
 """
 
@@ -276,10 +282,10 @@ print(ret_2)
 ret_2 = torch.linalg.norm(A, ord = -2, dim = None, keepdim = True)                         #  谱范数，即A'A矩阵的最小特征值的开平方。matlab调用函数norm(x, 2)。
 print(ret_2)
 
-# ret_3 = np.linalg.norm(A, ord = 3, axis = None)                                                # ret_3 返回的是  ValueError: Invalid norm order for matrices.
-# print(ret_3)
-# ret_3 = np.linalg.norm(A, ord = -3, axis = None)                                                # ret_3 返回的是  ValueError: Invalid norm order for matrices.
-# print(ret_3)
+ret_3 = torch.linalg.norm(A, ord = 3, axis = None)                                                # linalg.matrix_norm: Order 3 not supported.
+print(ret_3)
+ret_3 = torch.linalg.norm(A, ord = -3, axis = None)                                                # RuntimeError: linalg.matrix_norm: Order 3 not supported.
+print(ret_3)
 
 ret_nuc = torch.linalg.norm(A, ord = 'nuc', dim = None)                    # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
 print(ret_nuc)
@@ -511,7 +517,7 @@ print(ret_inf)
 """
 https://blog.csdn.net/qq_36556893/article/details/90698186
 
-意思就是inputs的一共N维的话对这N个数据求p范数，当然这个还是太抽象了，接下来还是看具体的代码~
+意思就是inputs的一共N维的话对这N个数据求p范数， 接下来还是看具体的代码~
 
 p指的是求p范数的p值，函数默认p=2，那么就是求2范数
  ||x||_{p} = \sqrt[p]{x_{1}^{p} + x_{2}^{p} + \ldots + x_{N}^{p}}

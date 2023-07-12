@@ -78,13 +78,13 @@ def calibrating_sampled_gaussian(q, eps, bad_event, iters=1, err=1e-3):
     return sigma_max
 
 
-q = 0.1
-eps = 4.0
-bad_event = 1e-5
-iters = 10*500
-err = 1e-3
-sigma = calibrating_sampled_gaussian(q, eps, bad_event, iters, err)
-print(f"sigma = {sigma}")
+# q = 0.1
+# eps = 4.0
+# bad_event = 1e-5
+# iters = 10*500
+# err = 1e-3
+# sigma = calibrating_sampled_gaussian(q, eps, bad_event, iters, err)
+# print(f"sigma = {sigma}")
 
 
 
