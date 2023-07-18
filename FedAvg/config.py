@@ -58,32 +58,35 @@ parser.add_argument('--save_freq',       type=int,   default = 20,            he
 ## num_comm 表示通信次数，此处设置为1k
 parser.add_argument('--num_comm',        type=int,   default = 300,           help = 'number of communications')
 ## 数据是否 IID
-parser.add_argument('--isIID',             type=int,   default = 0 ,          help = 'the way to allocate data to clients')
+parser.add_argument('--isIID',               type=int,   default = 0 ,        )
 ## 传输的是模型参数还是模型更新
-parser.add_argument('--transmitted_diff',  type=int,   default = 1,           help = 'the way to allocate data to clients')
+parser.add_argument('--transmitted_diff',    type=int,   default = 1,       help = 'the way to allocate data to clients')
 ##==============================================  差分隐私 ======================================================================
 ## 是否使用 Local DP
-parser.add_argument('--LDP',                type=int,     default = 1 ,            help = '是否使用local 差分隐私')
+parser.add_argument('--LDP',                 type=int,     default = 0,            help = '是否使用local 差分隐私')
 ## 是否使用 Client DP
-parser.add_argument('--CDP',                type=int,     default = 0 ,            help = '是否使用 client 差分隐私')
+parser.add_argument('--ClientDP',            type=int,     default = 0 ,            help = '是否使用 client 差分隐私')
 
-parser.add_argument('--eps',               type=float,   default = 8,             help = '隐私预算')
-parser.add_argument('--clip',              type=float,   default = 10 ,          help = '梯度剪切')
-parser.add_argument('--delta',             type=float,   default = 0.0001 ,       help = '超出隐私预算的概率')
-parser.add_argument('--q',                 type=float,   default = 0.1,         help = '每epoch数据百分比')
-parser.add_argument('--sigma',             type=float,   default = 1,             help = '高斯噪声的标准差的一部分,总的为 clip*sigma')
+parser.add_argument('--eps',                 type=float,   default = 8,              help = '隐私预算')
+parser.add_argument('--clip',                type=float,   default = 10 ,            help = '梯度剪切')
+parser.add_argument('--delta',               type=float,   default = 0.0001 ,        help = '超出隐私预算的概率')
+parser.add_argument('--q',                   type=float,   default = 0.1,            help = '每epoch数据百分比')
+parser.add_argument('--sigma',               type=float,   default = 1,              help = '高斯噪声的标准差的一部分,总的为 clip*sigma')
 
-
+##================================================= 量化 ========================================================================
+## 是否使用模型稀疏
+parser.add_argument('--Quantz',            type = int,     default = 1,            help = '是否使用量化')
+parser.add_argument('--B',                 type = int,     default = 4,            help = '量化比特数')
 
 ##==============================================  模型稀疏：随机掩码 ==============================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Random_Mask',       type=float,   default = 0,             help = '是否使用随机掩码')
-parser.add_argument('--prop',              type=float,   default = 0.7,           help = '掩码是1的概率')
+parser.add_argument('--Random_Mask',       type = int,     default = 1,             help = '是否使用随机掩码')
+parser.add_argument('--prop',              type = float,   default = 0.9,           help = '掩码是1的概率')
 
 ##==============================================  模型压缩 ==============================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Compression',       type=float,   default = 0,             help = '是否使用压缩')
-parser.add_argument('--crate',             type=float,   default = 0.9,           help = '压缩率:选取前crate的模型参数进行传输')
+parser.add_argument('--Compression',       type = int,     default = 0,             help = '是否使用压缩')
+parser.add_argument('--crate',             type = float,   default = 0.9,           help = '压缩率:选取前crate的模型参数进行传输')
 
 
 ##=============================================================================================================================================

@@ -67,6 +67,11 @@ class ResultPlot():
         self.diff_publ_mask08       = torch.load(os.path.join(self.rootdir, "2023-07-09-15:45:34_FedAvg/TraRecorder.pt"))
         self.diff_publ_comp05       = torch.load(os.path.join(self.rootdir, "2023-07-09-17:14:50_FedAvg/TraRecorder.pt"))
         self.diff_publ_comp09       = torch.load(os.path.join(self.rootdir, "2023-07-09-17:49:28_FedAvg/TraRecorder.pt"))
+        self.diff_lcoalDP           = torch.load(os.path.join(self.rootdir, "2023-07-12-15:18:23_FedAvg/TraRecorder.pt"))
+        self.diff_quant8bit         = torch.load(os.path.join(self.rootdir, "2023-07-15-15:10:00_FedAvg/TraRecorder.pt"))
+        self.diff_quant4bit         = torch.load(os.path.join(self.rootdir, "2023-07-15-15:51:50_FedAvg/TraRecorder.pt"))
+        self.diff_quant2bit         = torch.load(os.path.join(self.rootdir, "2023-07-15-16:26:34_FedAvg/TraRecorder.pt"))
+
         return
 
     # 画出 JSCC (包括在指定信噪比 tra_test_snr 训练) 在指定测试信噪比 tra_test_snr, 指定压缩率 Rlist下训练完后, 不同攻击强度 epslist,PSNR 随 压缩率 Rlist 的曲线. 每条曲线对应一个 tra_test_snr
@@ -88,6 +93,17 @@ class ResultPlot():
         lb = "compress:0.9"
         axs.plot(self.diff_publ_comp09[:, 0], self.diff_publ_comp09[:, 2], label = lb, color = '#FFA500', linestyle = '--', )
 
+        lb = "local DP"
+        axs.plot(self.diff_lcoalDP[:, 0], self.diff_lcoalDP[:, 2], label = lb, color = 'r', linestyle = '-', )
+
+        lb = "Quant: 8 bit"
+        axs.plot(self.diff_quant8bit[:, 0], self.diff_quant8bit[:, 2], label = lb, color = 'g', linestyle = '-', )
+
+        lb = "Quant: 4 bit"
+        axs.plot(self.diff_quant4bit[:, 0], self.diff_quant4bit[:, 2], label = lb, color = 'g', linestyle = '--', )
+
+        lb = "Quant: 2 bit"
+        axs.plot(self.diff_quant2bit[:, 0], self.diff_quant2bit[:, 2], label = lb, color = 'g', linestyle = '-.', )
 
         # label
         font = {'family':'Times New Roman','style':'normal','size':22 }
@@ -133,6 +149,14 @@ class ResultPlot():
 pl = ResultPlot( ) # 1: '2022-10-12-17:38:12'  2:'2022-10-14-09:56:05'
 
 pl.compare()
+
+
+
+
+
+
+
+
 
 
 

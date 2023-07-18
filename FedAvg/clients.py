@@ -21,6 +21,16 @@ from data.getData import GetDataSet
 # 优化器
 # import Optimizer
 
+def Quantilize(params, G = None, B = 8):
+    if type(B) != int or (G != None and type(G) != int):
+        raise ValueError("B 必须是 int, 且 G 不为None时也必须是整数!!!")
+    if G == None:
+        G =  2**(B - 1)
+    # print(f"G = {G}")
+    params = torch.clamp(torch.round(params * G), min = -2**(B-1), max = 2**(B-1) - 1, )/G
+    return params
+
+
 class client(object):
     def __init__(self, model, trainDataSet, args, client_name = "client10"):
         self.args             = args
@@ -115,16 +125,16 @@ class client(object):
                     # 计算梯度，并更新梯度
                     opti.step()
 
+        local_update = {}
         ## 如果传输的是模型参数差值
         if self.args.transmitted_diff:
-            local_update = {}
             for key, var in self.local_model.state_dict().items():
                 local_update[key] = var - global_parameters[key]
         else: ## 直接传递模型参数
-            local_update = {}
             for key, var in self.local_model.state_dict().items():
                 local_update[key] = var.clone()
             # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
+        # print(f"{self.client_name} 0: {local_update['fc2.bias']}")
 
         ## 随机掩码
         if self.args.Random_Mask == True:
@@ -134,6 +144,8 @@ class client(object):
                 p = torch.ones_like(param) * self.args.prop
                 self.mask[key] = torch.bernoulli(p)
                 local_update[key].mul_(self.mask[key])
+        # print(f"{self.client_name} 1: {local_update['fc2.bias']}")
+
         ## 模型压缩
         if self.args.Compression == True:
             # print(f"{len(local_update)}")
@@ -142,6 +154,13 @@ class client(object):
             ret_size = int(self.args.crate * len(local_update))
             # print(f"{ret_size}")
             local_update =  dict(local_update[:ret_size])
+
+        # print(f"{self.client_name} 2: {local_update['fc2.bias']}")
+        ## 如果使用量化
+        if self.args.Quantz:
+            for key in local_update:
+                local_update[key] = Quantilize(local_update[key], B = self.args.B)
+        # print(f"{self.client_name} 3: {local_update['fc2.bias']}")
 
         return  local_update  # self.local_model.state_dict() #  local_parms
 

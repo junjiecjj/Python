@@ -320,8 +320,33 @@ x.trunc()
 x.frac()
 
 
+# torch.exp
+a = torch.ones(2, 2)
+# 输出
+    # tensor([[1., 1.],
+    #         [1., 1.]])
+
+# 自认底数e
+torch.exp(a)
 
 
+# torch.log
+# 对数
+# 默认底数是e
+# 可以更换为Log2、log10
+
+# torch.floor() 向下取整
+
+# torch.ceil() 向上取整
+
+# torch.tunc() 取整数部分
+
+# torch.frac() 取小数部分
+
+# torch.round() 四舍五入部分
+
+# torch.clamp(input, min, max, out=None)
+# 将输入input张量每个元素的范围限制到区间 [min,max]，返回结果到一个新张量。
 
 #张量（Tensors）的属性
 #张量属性描述了它们的形状、数据类型和存储它们的设备（比如CPU还是GPU）。

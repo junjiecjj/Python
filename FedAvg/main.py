@@ -58,7 +58,7 @@ else:
     args.device = torch.device("cpu")
     print("PyTorch is running on CPU.")
 
-if args.DP:
+if args.LDP:
     Total_iters = int( args.num_comm * args.loc_epochs)
     print("Calcuating Sigma \n")
     args.sigma = calibrating_sampled_gaussian(args.q, args.eps, args.delta, Total_iters)
@@ -77,9 +77,11 @@ def main():
 
     ## 初始化模型， 因为后面的 server 和 ClientsGroup 都是共享一个net，所以会有一些处理比较麻烦
     net = get_model(args.model_name).to(args.device)
-    # for key, var in net.state_dict().items():
+    data_valum = 0.0
+    for key, var in net.state_dict().items():
+        data_valum += var.numel()
         # print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}  " )
-
+    print(f"sum data volum = {data_valum}")
     ## 得到全局的参数
     global_parameters = {}
     for key, var in net.state_dict().items():
@@ -109,8 +111,8 @@ def main():
         loss_func.addlog()
         lr =  optim.updatelr()
         recorder.addlog(round_idx)
-        print(f"Communicate round {round_idx + 1} / {args.num_comm} : ")
-        ckp.write_log(f"Communicate round {round_idx + 1} / {args.num_comm} : ", train=True)
+        print(f"Communicate round : {round_idx + 1} / {args.num_comm} : ")
+        ckp.write_log(f"Communicate round : {round_idx + 1} / {args.num_comm} : ", train = True)
 
         ## 从100个客户端随机选取10个
         candidates = ['client{}'.format(i) for i in np.random.choice(range(args.num_of_clients), num_in_comm, replace = False)]

@@ -15,78 +15,32 @@ import torch
 import torchvision
 from torchvision import transforms as transforms
 
-def mnist_noniid(train_label, num_users):
-    """
-    Sample non-I.I.D client data from MNIST dataset
-    :param dataset:
-    :param num_users:
-    :return:
-    """
-    # num_shards, num_imgs = 30, 2000
-    num_shards = int(num_users*3)
-    num_imgs = int(60000 / num_shards)
-    idx_shard = [i for i in range(num_shards)]
-    dict_users = {i: np.array([], dtype='int64') for i in range(num_users)}
-    idxs = np.arange(num_shards*num_imgs)
-    train_label = train_label.numpy()
 
-    ## sort train_label
-    idxs_labels = np.vstack((idxs, train_label))
-    idxs_labels = idxs_labels[:,idxs_labels[1,:].argsort()]
-    idxs = idxs_labels[0,:]
-
-    ## divide and assign
-    for i in range(num_users):
-        rand_set = set(np.random.choice(idx_shard, 3, replace=False))
-        idx_shard = list(set(idx_shard) - rand_set)
-        for rand in rand_set:
-            dict_users[i] = np.concatenate((dict_users[i], idxs[rand*num_imgs:(rand+1)*num_imgs]), axis=0)
-    return dict_users
+def Quantilize(params, G = None, B = 8):
+    if type(B) != int or (G != None and type(G) != int):
+        raise ValueError("B 必须是 int, 且 G 不为None时也必须是整数!!!")
+    if G == None:
+        G =  2**B - 1
+    params1 = torch.clamp(torch.round(params * G), min = -2**(B-1), max = 2**(B-1) - 1, )/G
+    return params1
 
 
-train = torchvision.datasets.MNIST(root="/home/jack/公共的/MLData/", train=True, download=True, transform=transforms.ToTensor())
-train_data = train.data.float().unsqueeze(1)
-train_label = train.targets
+A = torch.randn(5, 3).to("cuda")  #torch.rand(size, generator, names)
 
-mean = train_data.mean()
-std = train_data.std()
-train_data = (train_data - mean) / std
+B = 8
 
-test = torchvision.datasets.MNIST(root="/home/jack/公共的/MLData/", train=False, download=True, transform=transforms.ToTensor())
-test_data = test.data.float().unsqueeze(1)
-test_label = test.targets
-test_data = (test_data - mean) / std
+G = 2**8 - 1
 
-# split MNIST (training set) into non-iid data sets
-non_iid = []
-num_users = 10
-user_dict = mnist_noniid(train_label, num_users)
+A1 = A * G
 
-for i in range(num_users):
-    idx = user_dict[i]
-    d = train_data[idx]
-    targets = train_label[idx].float()
-    non_iid.append((d, targets))
-non_iid.append((test_data.float(), test_label.float()))
+A2 = torch.round(A1)
+
+A3 = torch.clamp(A2, min = -2**(B-1), max = 2**(B-1) - 1, )
 
 
+A_recv = A3/G
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print()
 
 
 
