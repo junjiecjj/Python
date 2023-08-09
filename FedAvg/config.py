@@ -112,7 +112,7 @@ parser.add_argument('--lr_end',        type = float,   default = 1e-4,  help='�
 parser.add_argument('--power',         type = int,     default = 2,     help='warm up多项式的次数，当power=1时（默认）等价于 get_linear_schedule_with_warmup函数')
 
 # Optimization specifications
-parser.add_argument('--learning_rate', type = float, default = 0.01,            help = 'learning rate')
+parser.add_argument('--learning_rate', type = float, default = 0.01,             help = 'learning rate')
 parser.add_argument('--optimizer',     type = str,   default = 'ADAM',           choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
 parser.add_argument('--decay',         type = str,   default = '20-40-80-120',   help = 'learning rate decay type')
 parser.add_argument('--gamma',         type = float, default = 0.6,              help = 'learning rate decay factor for step decay')
