@@ -45,38 +45,38 @@ noise = np.random.normal(0, sigma, size = n)
 
 
 # LDPC decode(hard decision)
-def decode(H,y,m,n,p):
+def decode(H, y, m, n, p):
     fr = np.zeros((m, 2 * p)) # check nodes received
     fs = np.zeros((m, 2 * p)) # check nodes send
     Sum = np.zeros(m) # check nodes received sum(for parity check)
     # message nodes table
-    # 前p列为校验节点发来的消息，第p+1列为原始消息，第p+2列作为游标
-    c=np.zeros((n,p+2))
-    y1=np.zeros(n)
+    # 前 p 列为校验节点发来的消息，第 p+1 列为原始消息，第 p+2 列作为游标
+    c = np.zeros((n, p+2))
+    y1 = np.zeros(n)
 
     # Fill the check nodes received table
     for i in range(m):
-        count=0
+        count = 0
         for j in range(n):
             if H[i][j] == 1:
-                fr[i,count]=y[j]
-                Sum[i]=Sum[i]+y[j]
-                count = count+1
+                fr[i, count] = y[j]
+                Sum[i] = Sum[i] + y[j]
+                count += 1
 
     # Calculate the check nodes send table
     for i in range(m):
         for j in range(2*p):
-            fs[i,j]=(Sum[i]-fr[i,j])%2
+            fs[i, j] = (Sum[i] - fr[i,j])%2
 
     # Fill the message node table
     for i in range(m):
         count=0
         for j in range(n):
             if H[i][j]==1:
-                index=int(c[j,p+1])
-                c[j,index]=fs[i,count]
+                index = int(c[j, p+1])
+                c[j, index] = fs[i, count]
                 count = count+1
-                c[j,p+1]+=1
+                c[j, p+1] += 1
 
     # Fill the last column with y
     for i in range(n):
