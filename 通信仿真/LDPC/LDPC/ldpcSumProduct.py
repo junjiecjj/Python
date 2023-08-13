@@ -30,15 +30,15 @@ def bit2check(rPos, receivedPzero, neg=False):
     rPos[rPosMask] = 0
     rPostmp[rPosMask] = 0
     if not neg:
-        qPostmp2 = np.multiply(1-receivedPzero, rPostmp)   
+        qPostmp2 = np.multiply(1-receivedPzero, rPostmp)
     else:
-        qPostmp2 = np.multiply(receivedPzero, rPostmp)   
+        qPostmp2 = np.multiply(receivedPzero, rPostmp)
     return  rowProductPos, qPostmp2
 
 def sumProduct(received, H, sigma, maxiter=10):
     #initial
     decoded = np.zeros(received.shape[1])
-    receivedP = pfunction(received,sigma)
+    receivedP = pfunction(received, sigma)
     receivedP = receivedP.reshape(-1, H.shape[1])
     #循环words
     for j in range(len(receivedP)):
@@ -58,7 +58,7 @@ def sumProduct(received, H, sigma, maxiter=10):
             k[H_mask] = np.divide(1,qPostmp2[H_mask]+qNegtmp2[H_mask])
             #qPos = np.multiply(k,qPostmp2)
             qNeg = np.multiply(k,qNegtmp2)
-        
+
         QtmpPos = np.multiply(1-receivedPzero, rowProductPos)
         QtmpNeg = np.multiply(receivedPzero, rowProductNeg)
         K = np.divide(1,QtmpPos+QtmpNeg)
@@ -93,15 +93,14 @@ for i,sigma in enumerate(sigmas):
     bitErrRatioHard = sum(sum((received>0)!=encodedRe))/encodedRe.shape[1]
     bitErrRatio[:,i] = [np.log10(bitErrRatioSumP),np.log10(bitErrRatioBitFlip),
                         np.log10(bitErrRatioHard),np.log10(0.5*erfc(np.sqrt(10**(snrs[i]/10))))]
-    
-    print('snr',snrs[i],'\n硬判决误码率：',bitErrRatioHard,'\n比特翻转误码率：',
-          bitErrRatioBitFlip,'\n和积译码误码率：',bitErrRatioSumP)
+
+    print('snr',snrs[i],'\n硬判决误码率：',bitErrRatioHard,'\n比特翻转误码率：', bitErrRatioBitFlip,'\n和积译码误码率：',bitErrRatioSumP)
 
 # 绘制图像
-plt.plot(snrs, bitErrRatio[0], color='red',marker='o', label='sum product')  
-plt.plot(snrs, bitErrRatio[1], color='blue',marker='s', label='bit flip')  
-plt.plot(snrs, bitErrRatio[2], color='green',marker='^', label='hard descion')  
-#plt.plot(snrs, bitErrRatio[3], color='black', label='theoretical')  
+plt.plot(snrs, bitErrRatio[0], color='red',marker='o', label='sum product')
+plt.plot(snrs, bitErrRatio[1], color='blue',marker='s', label='bit flip')
+plt.plot(snrs, bitErrRatio[2], color='green',marker='^', label='hard descion')
+#plt.plot(snrs, bitErrRatio[3], color='black', label='theoretical')
 # 设置图像属性
 plt.xlabel('SNR (dB)')
 plt.ylabel('BER')

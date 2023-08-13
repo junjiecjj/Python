@@ -13,10 +13,10 @@ import numpy as np
 def genH(m, n, p):
     H = np.zeros((m, n))
     for i in range(m):
-        j=2*i
+        # j=2*i
         for j in range(2*i,2*p+2*i):
-            H[i, j%n]=1
-            j=j+1
+            H[i, j%n] = 1
+            j = j+1
     return H
 
 
@@ -24,59 +24,59 @@ def genH(m, n, p):
 def modulate(c):
     for i in range(np.size(c)):
         if c[i] == 0:
-            c[i]=1
+            c[i] = 1
         else:
-            c[i]=-1
+            c[i] = -1
     return c
 
 def demodulate(y):
     for i in range(np.size(y)):
         if y[i] > 0:
-            y[i]=0
+            y[i] = 0
         else:
-            y[i]=1
+            y[i] = 1
     return y
 
-snr=6
-n=1000
+snr   = 6
+n     = 1000
 sigma = 10**(-snr/20)
-noise=np.random.normal(0,sigma,size=n)
+noise = np.random.normal(0, sigma, size = n)
 
 
 
 # LDPC decode(hard decision)
-def decode(H,y,m,n,p):
+def decode(H, y, m, n, p):
     fr = np.zeros((m, 2 * p)) # check nodes received
     fs = np.zeros((m, 2 * p)) # check nodes send
-    sum = np.zeros(m) # check nodes received sum(for parity check)
+    Sum = np.zeros(m) # check nodes received sum(for parity check)
     # message nodes table
-    # 前p列为校验节点发来的消息，第p+1列为原始消息，第p+2列作为游标
-    c=np.zeros((n,p+2))
-    y1=np.zeros(n)
+    # 前 p 列为校验节点发来的消息，第 p+1 列为原始消息，第 p+2 列作为游标
+    c = np.zeros((n, p+2))
+    y1 = np.zeros(n)
 
     # Fill the check nodes received table
     for i in range(m):
-        count=0
+        count = 0
         for j in range(n):
             if H[i][j] == 1:
-                fr[i,count]=y[j]
-                sum[i]=sum[i]+y[j]
-                count = count+1
+                fr[i, count] = y[j]
+                Sum[i] = Sum[i] + y[j]
+                count += 1
 
     # Calculate the check nodes send table
     for i in range(m):
         for j in range(2*p):
-            fs[i,j]=(sum[i]-fr[i,j])%2
+            fs[i, j] = (Sum[i] - fr[i,j])%2
 
     # Fill the message node table
     for i in range(m):
         count=0
         for j in range(n):
             if H[i][j]==1:
-                index=int(c[j,p+1])
-                c[j,index]=fs[i,count]
+                index = int(c[j, p+1])
+                c[j, index] = fs[i, count]
                 count = count+1
-                c[j,p+1]+=1
+                c[j, p+1] += 1
 
     # Fill the last column with y
     for i in range(n):
@@ -97,8 +97,7 @@ m=4 # Number of rows
 n=8 # Number of columns
 p=2 # Number of 1s in a colomn
 
-H=np.zeros((4,8))
-H=[[0,1,0,1,1,0,0,1],[1,1,1,0,0,1,0,0],[0,0,1,0,0,1,1,1],[1,0,0,1,1,0,1,0]]
+H = genH(m, n, p)
 
 y=np.zeros(n)
 y=[1,1,0,1,0,1,0,1]

@@ -24,13 +24,13 @@ from channel import AWGN
 from modulation import  BPSK,  demodu_BPSK
 import utility
 from argsLDPC import arg
-from ldpc_coder import LDPC_Coder
+from ldpc_coder import LDPC_Coder_Llr
 
 
 utility.set_random_seed()
 
 source = SourceSink()
-ldpccode =  LDPC_Coder(arg)
+ldpccode =  LDPC_Coder_Llr(arg)
 
 
 def  BPSK_AWGN_Simulation(args):
@@ -41,14 +41,14 @@ def  BPSK_AWGN_Simulation(args):
 
         print( f"\nsnr = {snr}(dB):\n")
         while source.m_num_tot_blk < args.m_max_blk_num and source.m_num_err_blk < args.m_max_blk_err:
-            uu = source.GenerateBitStr(ldpccode.m_len_uu)
-            cc = ldpccode.encode(uu)
+            uu = source.GenerateBitStr(ldpccode.codedim)
+            cc = ldpccode.encoder(uu)
             yy = BPSK(cc)
             yy = channel.forward(yy)
 
             yy_recv = utility.yyToLLR(yy, channel.noise_var)
 
-            uu_hat, iter_num = ldpccode.Decoder(yy_recv)
+            uu_hat, iter_num = ldpccode.decoder(yy_recv)
             source.CntErr(uu, uu_hat)
             if source.m_num_tot_blk % 1000 == 0:
                 source.PrintScreen(snr = snr)
