@@ -62,31 +62,23 @@ def ldpc_decode_data(h, delta):
     return uu, yy
 
 
+##  归一化最小和算法（Normalized MSA）
 def ldpc_decode(h, yy, iter_num = 5, alpha = 0.75):
-
     LPn = np.zeros(h.shape, dtype = 'float')
-
     #  从变量节点向校验节点发送的置信度
     Lqmn = np.zeros(h.shape, dtype = 'float')
-
     #  从校验节点向变量节点发送的置信度
     Lrmn = np.zeros(h.shape, dtype = 'float')
-
     # len = 9
     LQn = np.zeros(len(Lqmn[0]), dtype = 'float')
-
     # len = 3
     check_data = yy[len(Lqmn[0]):]
-
-    #print(yy)
-    #print(check_data)
 
     for row in range(len(Lqmn)):
         for col in range(len(Lqmn[0])):
             if h[row][col] == 1:
                 LPn[row][col] = yy[col]
                 Lqmn[row][col] = yy[col]
-
     for _ in range(iter_num):
         for row in range(len(Lqmn)):
             for col in range(len(Lqmn[0])):
@@ -113,21 +105,16 @@ def ldpc_decode(h, yy, iter_num = 5, alpha = 0.75):
                         if row_idx != row:
                             sum_tmp += Lrmn[row_idx][col]
                     Lqmn[row][col] = LPn[row][col] + sum_tmp
-
     for col in range(len(LQn)):
         sum_tmp = 0.0
         for row in range(len(Lqmn)):
             sum_tmp += Lrmn[row][col]
-
         LQn[col] = sum_tmp
-
     #print ("LQnIn:",LQn)
     #print ("decode_data:",decode_data)
     LQn = LQn + yy[0:len(LQn)]
     #print ("LQnOut:",LQn)
-
     bits = bit_judge(LQn)
-
     return bits
 
 

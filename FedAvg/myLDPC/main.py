@@ -4,44 +4,530 @@
 Created on Thu Aug 10 21:08:38 2023
 
 @author: jack
+
+numpy.nonzero()
+numpy.nonzero() 函数返回输入数组中非零元素的索引。
+
+numpy.where()
+numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
+
+
 """
-
-
-class  FourWay_List(object):
-    def __init__(self):
-        self.m_row_no = 0
-        self.m_col_no = 0
-        self.m_alpha  = [0, 0]
-        self.m_beta   = [0, 0]
-        self.m_v2c    = [0, 0]
-        self.m_c2v    = [0, 0]
-
-        self.left     = None
-        self.right    = None
-        self.up       = None
-        self.down     = None
-
-        return
+## system lib
+import numpy  as np
 
 
 
-a = FourWay_List()
-a.m_row_no = 6
-a.m_col_no = 7
-aa = FourWay_List()
-aa.m_row_no = 12
-aa.m_col_no = 3
+##  自己编写的库
+from sourcesink import SourceSink
+from channel import AWGN
+from modulation import  BPSK,  demodu_BPSK
+import utility
+from argsLDPC import arg
+from ldpc_coder import LDPC_Coder
 
-a.right = aa
+
+utility.set_random_seed()
+
+source = SourceSink()
+ldpccode =  LDPC_Coder(arg)
 
 
-b = FourWay_List()
-b.m_row_no = 4
-b.m_col_no = 9
+def  BPSK_AWGN_Simulation(args):
 
-L = []
+    for snr in np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr):
+        channel = AWGN(snr)
+        source.ClrCnt()
 
-L.append(a)
-L.append(b)
+        print( f"\nsnr = {snr}(dB):\n")
+        while source.m_num_tot_blk < args.m_max_blk_num and source.m_num_err_blk < args.m_max_blk_err:
+            uu = source.GenerateBitStr(ldpccode.m_len_uu)
+            cc = ldpccode.encode(uu)
+            yy = BPSK(cc)
+            yy = channel.forward(yy)
+
+            yy_recv = utility.yyToLLR(yy, channel.noise_var)
+
+            uu_hat, iter_num = ldpccode.Decoder(yy_recv)
+            source.CntErr(uu, uu_hat)
+            if source.m_num_tot_blk % 1000 == 0:
+                source.PrintScreen(snr = snr)
+                # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
+        print("  *** *** *** *** ***\n");
+        source.PrintScreen(snr = snr);
+        print("  *** *** *** *** ***\n");
+
+        source.SaveToFile(snr = snr)
+
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

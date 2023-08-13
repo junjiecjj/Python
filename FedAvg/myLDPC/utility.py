@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Aug 11 16:31:10 2023
-
-@author: jack
+@author: JunJie Chen
 
 np.mod(np.matmul(KbinRe, G), 2)
 
@@ -11,6 +10,35 @@ np.mod(np.matmul(KbinRe, G), 2)
 """
 
 import numpy as np
+import random
+import numpy as np
+import torch
+
+
+# 初始化随机数种子
+def set_random_seed(seed = 1, deterministic = False, benchmark = False):
+    np.set_printoptions(linewidth = 100)
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    if deterministic:
+        torch.backends.cudnn.deterministic = True
+    if benchmark:
+        torch.backends.cudnn.benchmark = True
+    return
+
+##  yy --> 对数域LLR
+def yyToLLR(yy, noise_var = 1.0):
+    LLr = np.zeros_like(yy)
+    LLr =  2.0*yy/noise_var
+    return LLr
+
+##  yy --> 概率域
+def yyToProb(yy, noise_var = 1.0):
+    prob = np.zeros_like(yy)
+    prob = 1.0 / (1.0 + np.exp(-2.0*yy/noise_var))
+    return prob
 
 def HardDecision(TLLRs):
     CodeWord = np.zeros(np.shape(TLLRs)).astype(int)
@@ -34,7 +62,7 @@ def CodeWordValidation(ParityCheckMatrix, CodeWord):
 输出：生成与yy等长的全0的码字，bits，如果yy[i]<0,则bits[i] = 1
 """
 def bit_judge(data_in):
-    bits = np.zeros(len(data_in), dtype = 'int')
+    bits = np.zeros(data_in.size, dtype = 'int')
     for i in range(len(bits)):
         if data_in[i] < 0 :
             bits[i] = 1
@@ -45,23 +73,186 @@ def bit_judge(data_in):
 输入：两个等长的比特串。
 输出：两个比特串的汉明距离，即不同位的长度。
 """
-def err_bit_count(bits0, bits1):
-    number = 0
-    for i in range(len(bits0)):
-        if bits0[i] != bits1[i]:
-            number += 1
-    return number
+def err_count(bits0, bits1):
+    err = 0
+    assert bits0.shape == bits1.shape
 
-
-def errorRate(c,y1):
-    err=0
-    total=np.size(c)
-    i=0
+    total = np.size(bits0)
     for i in range(total):
-        if c[i] != y1[i]:
-            err+=1
-    r = err/total
-    return r
+        if bits0[i] != bits1[i]:
+            err += 1
+    err_rate = err/total
+    return err, err_rate
+
+
+class  EdgeLDPC(object):
+    def __init__(self):
+        self.m_row_no = 0
+        self.m_col_no = 0
+        self.m_alpha  = [0, 0]
+        self.m_beta   = [0, 0]
+        self.m_v2c    = [0, 0]
+        self.m_c2v    = [0, 0]
+
+        self.left     = None
+        self.right    = None
+        self.up       = None
+        self.down     = None
+        return
+
+
+
+# a = EdgeLDPC()
+# a.m_row_no = 6
+# a.m_col_no = 7
+# aa = EdgeLDPC()
+# aa.m_row_no = 12
+# aa.m_col_no = 3
+
+# a.right = aa
+
+
+# b = EdgeLDPC()
+# b.m_row_no = 4
+# b.m_col_no = 9
+
+# L = []
+
+# L.append(a)
+# L.append(b)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

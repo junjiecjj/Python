@@ -38,7 +38,7 @@ def bit2check(rPos, receivedPzero, neg=False):
 def sumProduct(received, H, sigma, maxiter=10):
     #initial
     decoded = np.zeros(received.shape[1])
-    receivedP = pfunction(received,sigma)
+    receivedP = pfunction(received, sigma)
     receivedP = receivedP.reshape(-1, H.shape[1])
     #循环words
     for j in range(len(receivedP)):

@@ -114,7 +114,6 @@ print(x[np.argsort(x)])
 # NumPy 数据类型
 #=====================================================================================
 
-
 import numpy as np
 # int8, int16, int32, int64 四种数据类型可以使用字符串 'i1', 'i2','i4','i8' 代替
 dt = np.dtype('i4')
@@ -125,13 +124,10 @@ import numpy as np
 dt = np.dtype('<i4')
 print(dt)
 
-
 # 首先创建结构化数据类型
 import numpy as np
 dt = np.dtype([('age',np.int8)])
 print(dt)
-
-
 
 # 将数据类型应用于 ndarray 对象
 import numpy as np
@@ -161,7 +157,6 @@ print(c)
 print(d)
 
 
-
 x = np.array([[  0,  1,  2],[  3,  4,  5],[  6,  7,  8],[  9,  10,  11]])
 print ('我们的数组是：')
 print (x)
@@ -176,8 +171,6 @@ a = np.array([np.nan,  1,2,np.nan,3,4,5])
 print (a[~np.isnan(a)])
 
 
-
-
 x=np.arange(32).reshape((8,4))
 print (x[[4,2,1,7]])
 
@@ -188,8 +181,6 @@ print (x[[-4,-2,-1,-7]])
 
 x=np.arange(32).reshape((8,4))
 print (x[np.ix_([1,5,7,2],[0,3,1,2])])
-
-
 
 
 #=====================================================================================
@@ -755,7 +746,7 @@ print (np.delete(a,5))
 print ('\n')
 
 print ('删除第二列：')
-print (np.delete(a,1,axis = 1))
+print (np.delete(a, 1, axis = 1))
 print ('\n')
 
 print ('包含从数组中删除的替代值的切片：')
@@ -2048,8 +2039,6 @@ numpy.matmul
 numpy.matmul 函数返回两个数组的矩阵乘积。 虽然它返回二维数组的正常乘积，但如果任一参数的维数大于2，则将其视为存在于最后两个索引的矩阵的栈，并进行相应广播。
 另一方面，如果任一参数是一维数组，则通过在其维度上附加 1 来将其提升为矩阵，并在乘法之后被去除。
 对于二维数组，它就是矩阵乘法：
-
-
 
 
 numpy.linalg.det()
