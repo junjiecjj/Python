@@ -31,7 +31,10 @@ class LDPC_Coder_Llr(object):
 
         ## 译码相关参数
         self.m_max_iter = args.max_iteration  # 最大迭代次数
-
+        self.SetRows = {}  # 每行不为0的列号
+        self.SetCols = {}  # 每列不为0的行号
+        self.MV2C = None  # 变量节点 到 校验节点 的消息
+        self.MC2V = None # 校验节点 到 变量节点 的消息
         self.cc_hat = None
         return
 
@@ -42,7 +45,7 @@ class LDPC_Coder_Llr(object):
             tmp = f.readline()
             # print(tmp)
             self.num_row, self.num_col, self.codechk = [int(i) for i in tmp.strip().split()]
-            self.encH = np.zeros( (self.num_row, self.num_col), dtype = np.int64 )
+            self.encH = np.zeros( (self.num_row, self.num_col), dtype = np.int8 )
             tmp = f.readline()
             # print(tmp)
             while 1:
@@ -56,6 +59,10 @@ class LDPC_Coder_Llr(object):
         self.codelen = self.num_col
         self.codedim = self.codelen - self.codechk
         self.coderate = self.codedim / self.codelen
+
+        self.MV2C = np.zeros( (self.num_row, self.num_col), dtype = np.float64 )
+        self.MC2V = np.zeros( (self.num_row, self.num_col), dtype = np.float64 )
+
         return
 
     def systemH(self):
@@ -110,7 +117,7 @@ class LDPC_Coder_Llr(object):
         self.coderate = self.codedim / self.codelen
 
         ##======================================================
-        ## 根据列交换结果交换原encH矩阵的列
+        ## 根据列交换结果交换原 decH 矩阵的列
         ##=======================================================
         for j in range(self.num_col):
             self.decH[:, j] = tmpH[:, col_exchange[j]]
@@ -144,9 +151,9 @@ class LDPC_Coder_Llr(object):
 
     def decoder(self, yy_llr):
         iter_num = 0
-        uu_hat = np.zeros(self.codedim, dtype = np.int64)
+        uu_hat = np.zeros(self.codedim, dtype = np.int8)
 
-
+        self.
 
         return uu_hat, iter_num
 
@@ -170,11 +177,11 @@ class LDPC_Coder_Llr(object):
 
 
 # codechk = 3
-# uu = np.array([1, 0, 0, 1, 1, 1, 0])
-# encH = np.random.randint(low = 0, high = 2, size = (3, 10 ), dtype = np.int64)
-# cc1 = np.zeros(10, dtype = np.int64)
-# cc2 = np.zeros(10, dtype = np.int64)
-# cc3 = np.zeros(10, dtype = np.int64)
+# uu = np.array([1, 0, 0, 1, 1, 1, 0], dtype = np.int8)
+# encH = np.random.randint(low = 0, high = 2, size = (3, 10 ), dtype = np.int8)
+# cc1 = np.zeros(10, dtype = np.int8)
+# cc2 = np.zeros(10, dtype = np.int8)
+# cc3 = np.zeros(10, dtype = np.int8)
 
 
 # cc1[codechk:] = uu
@@ -191,6 +198,24 @@ class LDPC_Coder_Llr(object):
 #         cc3[i] ^=  (uu[j]&encH[i, codechk:][j])
 
 
+
+# import copy
+
+# tmpH = np.arange(20).reshape(4,5)
+# encH = copy.deepcopy(tmpH)
+# decH = copy.deepcopy(tmpH)
+
+
+
+# exchange = [4,3,1,0,2]
+
+# for j in range(5):
+#     for i in range(4):
+#         encH[i, j] = tmpH[i, exchange[j]]
+
+
+# for j in range(5):
+#     decH[:, j] = tmpH[:, exchange[j]]
 
 
 

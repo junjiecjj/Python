@@ -42,7 +42,7 @@ class SourceSink(object):
 
     def GenerateBitStr(self, Len):
         # uu = np.random.choice([0, 1], Len, p=[0.5, 0.5])
-        uu = np.random.randint(low = 0, high = 2, size = (Len, ), )  #dtype = None )
+        uu = np.random.randint(low = 0, high = 2, size = (Len, ), dtype = np.int8 )
 
         return uu
 

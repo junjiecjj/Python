@@ -33,24 +33,6 @@ with open('PEG1024regular0.5.txt', 'r', encoding='utf-8') as f:
 
 
 
-import copy
-
-tmpH = np.arange(20).reshape(4,5)
-encH = copy.deepcopy(tmpH)
-decH = copy.deepcopy(tmpH)
-
-
-
-exchange = [4,3,1,0,2]
-
-for j in range(5):
-    for i in range(4):
-        encH[i, j] = tmpH[i, exchange[j]]
-
-
-for j in range(5):
-    decH[:, j] = tmpH[:, exchange[j]]
-
 
 
 
