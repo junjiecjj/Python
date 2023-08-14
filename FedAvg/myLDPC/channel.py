@@ -6,7 +6,7 @@ Created on Fri Aug 11 10:41:16 2023
 """
 
 import numpy as np
-from bitstring import BitArray
+# from bitstring import BitArray
 from numpy.random import shuffle
 from typing import List, Sequence, TypeVar, Union, Dict, Tuple
 
@@ -19,7 +19,7 @@ noise_var = lambda snr_in_db: 10.0 ** (-snr_in_db / 10.0)
 class AWGN(object):
     def __init__(self, snr_in_db:float) -> float:
         self.noise_var = noise_var(snr_in_db)
-        self.std_dev = np.sqrt(noise_var(snr_in_db))
+        self.noise_std = np.sqrt(noise_var(snr_in_db))
 
     def forward(self, cc:_array) -> _array:
         # if type(cc) == list:
@@ -27,10 +27,7 @@ class AWGN(object):
         #     shape = len(cc)
         # elif type(cc) == np.ndarray:
         #     shape = cc.shape
-        return cc + np.random.normal(0, self.std_dev, size = cc.shape )
-
-
-
+        return cc + np.random.normal(0, self.noise_std, size = cc.shape )
 
 
 def lines_to_array(lines):

@@ -21,8 +21,8 @@ home = os.path.expanduser('~')
 
 ldpc_args = {
 
-"minimum_snr" : 0 ,
-"maximum_snr" : 6 ,
+"minimum_snr" : 2 ,
+"maximum_snr" : 4 ,
 "increment_snr" : 0.5,
 "maximum_error_number" : 500,
 "maximum_block_number" : 100000000,

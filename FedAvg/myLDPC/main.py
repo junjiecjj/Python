@@ -15,7 +15,7 @@ numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
 """
 ## system lib
 import numpy  as np
-
+import datetime
 
 
 ##  自己编写的库
@@ -29,31 +29,36 @@ from ldpc_coder import LDPC_Coder_Llr
 
 utility.set_random_seed()
 
+
+# print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
+
 source = SourceSink()
-ldpccode =  LDPC_Coder_Llr(arg)
+lp =  LDPC_Coder_Llr(arg)
+
+# print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
 
 
 def  BPSK_AWGN_Simulation(args):
-
     for snr in np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr):
         channel = AWGN(snr)
         source.ClrCnt()
 
         print( f"\nsnr = {snr}(dB):\n")
-        while source.m_num_tot_blk < args.m_max_blk_num and source.m_num_err_blk < args.m_max_blk_err:
-            uu = source.GenerateBitStr(ldpccode.codedim)
-            cc = ldpccode.encoder(uu)
+        while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
+            uu = source.GenerateBitStr(lp.codedim)
+            cc = lp.encoder(uu)
             yy = BPSK(cc)
             yy = channel.forward(yy)
 
             yy_recv = utility.yyToLLR(yy, channel.noise_var)
 
-            uu_hat, iter_num = ldpccode.decoder(yy_recv)
+            uu_hat, iter_num = lp.decoder(yy_recv)
+            source.tot_iter += iter_num
             source.CntErr(uu, uu_hat)
-            if source.m_num_tot_blk % 1000 == 0:
+            if source.tot_blk % 2 == 0:
                 source.PrintScreen(snr = snr)
                 # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
-        print("  *** *** *** *** ***\n");
+        print("  *** *** *** *** ***");
         source.PrintScreen(snr = snr);
         print("  *** *** *** *** ***\n");
 
@@ -63,7 +68,7 @@ def  BPSK_AWGN_Simulation(args):
 
 
 
-
+BPSK_AWGN_Simulation(arg)
 
 
 

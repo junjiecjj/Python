@@ -53,7 +53,7 @@ sy.pprint(f"f({xx})={f.subs({x:xx})}")
 
 
 yy=4
-f1=sy.sqrt(x**2+y**2)
+f1 = sy.sqrt(x**2+y**2)
 print("**************** 5 ******************** ")
 display(Latex(f"$$f_1(x,y)={sy.latex(f1)}$$"))
 print("**************** 6 ******************** ")
@@ -132,7 +132,7 @@ print(sy.solve([x + y-10,2*x+y-16],[x,y]))
 print("**************** 解三元一次方程组 ******************** ")
 x,y = sy.symbols('x y')
 a,b,c=sy.symbols('a b c')
-expr=a*x**2 + b*x + c
+expr = a*x**2 + b*x + c
 s_expr=sy.solve( expr, x)
 print(s_expr)
 
@@ -166,13 +166,48 @@ expr=sy.exp(x)*sy.sin(x) + sy.exp(x)*sy.cos(x)
 i_expr=sy.integrate(expr,x)
 print(i_expr)
 
+
+#===========
+x, a, t = sy.symbols('x, a, t')
+expr = (x-a)**2 * (1/sy.sqrt(2 * sy.pi)) * sy.exp(-x**2/2)
+i_expr=sy.integrate(expr, (x, -sy.oo, t))
+print(i_expr)
+
+display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))
+sy.simplify(i_expr)
+
+#===========
+x,   t = sy.symbols('x,  t')
+expr = x**2 * (1/sy.sqrt(2 * sy.pi)) * sy.exp(-x**2/2)
+i_expr=sy.integrate(expr,(x, -sy.oo, t))
+print(i_expr)
+
+display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))
+sy.simplify(i_expr)
+print(sy.simplify(i_expr))
+
+
+#===========
+x, t = sy.symbols('x,  t')
+expr =  (1/sy.sqrt(2 * sy.pi)) * sy.exp(-x**2/2)
+i_expr = sy.integrate(expr,(x, -sy.oo, t))
+# print(i_expr)
+display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))
+
+
+sy.simplify(i_expr)
+print(sy.simplify(i_expr))
+
+display(Latex(f"$$f_1(x,y)={sy.latex(f1)}$$"))
+
+
 print("**************** 求定积分 ******************** ")
 """
 Sympy 同样是使用 integrate () 函数来做定积分的求解，只是语法不同：integrate (表达式，（变量，下区间，上区间))，我们来看如果求解
 """
 x,y = sy.symbols('x y')
 expr=sy.sin(x**2)
-i_expr=sy.integrate(expr, (x, -np.inf,np.inf))
+i_expr=sy.integrate(expr, (x, -np.inf, np.inf))
 print(i_expr)
 
 print("**************** https://zhuanlan.zhihu.com/p/111573239 ******************** ")
@@ -630,8 +665,8 @@ from gekko import GEKKO
 
 m = GEKKO()  # 定义模型
 x = m.Var()  # 定义模型变量，初值为0
-y = m.Var()  
-z = m.Var()  
+y = m.Var()
+z = m.Var()
 m.Equations([10 * x - y - 2 * z == 72,
              -x + 10 * y - 2 * z == 83,
              -x - y + 5 * z == 42, ])  # 方程组
@@ -690,14 +725,14 @@ inv_A = A.I  # A的逆矩阵
 # x = inv_A.dot(b)  # A的逆矩阵与b做点积运算
 x = np.linalg.solve(A, b)
 print(x)
- 
+
 # 5. 利用sympy的solve和nsolve求解
 # 5.1 利用solve求解所有精确解
 from sympy import symbols, Eq, solve
 
 x, y, z = symbols('x y z')
 eqs = [Eq(10 * x - y - 2 * z, 72),
-       Eq(-x + 10 * y - 2 * z, 83), 
+       Eq(-x + 10 * y - 2 * z, 83),
        Eq(-x - y + 5 * z, 42)]
 print(solve(eqs, [x, y, z]))
 

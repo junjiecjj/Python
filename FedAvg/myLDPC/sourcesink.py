@@ -9,8 +9,8 @@ Created on Sat Aug 12 15:20:38 2023
 """
 
 import numpy as np
-import os, sys
-import math
+# import os, sys
+# import math
 import datetime
 
 
@@ -34,8 +34,8 @@ class SourceSink(object):
 
     def InitLog(self, logfile = "SNR_BerFer.txt",):
         with open(logfile, 'a+') as f:
-            print("#=====================================================================================\n",  file = f)
-            print("                      " + self.now + '\n',  file = f)
+            print("#=====================================================================================",  file = f)
+            print("                      " + self.now,  file = f)
             print("#=====================================================================================\n",  file = f)
         return
 
@@ -43,7 +43,6 @@ class SourceSink(object):
     def GenerateBitStr(self, Len):
         # uu = np.random.choice([0, 1], Len, p=[0.5, 0.5])
         uu = np.random.randint(low = 0, high = 2, size = (Len, ), dtype = np.int8 )
-
         return uu
 
 
