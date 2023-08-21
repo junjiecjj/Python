@@ -60,7 +60,9 @@ def BPSK_AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None
     dic_berfer[name] = {"ber":source.ber, "fer":source.fer, "ave_iter":source.ave_iter }
     if lock != None:
         lock.acquire()
+        print("  *** *** *** *** ***");
         source.PrintScreen(snr = snr);
+        print("  *** *** *** *** ***\n");
         source.SaveToFile(snr = snr)
         lock.release()
     return
@@ -69,35 +71,35 @@ def BPSK_AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None
 
 # BPSK_AWGN_Simulation(topargs)
 
-if __name__ == '__main__':
-    utility.set_random_seed(1)
-    # print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
-    ldpcCoder =  LDPC_Coder_llr(topargs)
-    coderargs = {'codedim':ldpcCoder.codedim,
-                 'codelen':ldpcCoder.codelen,
-                 'codechk':ldpcCoder.codechk,
-                 'coderate':ldpcCoder.coderate,
-                 'row':ldpcCoder.num_row,
-                 'col':ldpcCoder.num_col}
-    utility.WrLogHead(promargs = topargs, codeargs = coderargs)
+# if __name__ == '__main__':
+utility.set_random_seed(1)
+# print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
+ldpcCoder =  LDPC_Coder_llr(topargs)
+coderargs = {'codedim':ldpcCoder.codedim,
+             'codelen':ldpcCoder.codelen,
+             'codechk':ldpcCoder.codechk,
+             'coderate':ldpcCoder.coderate,
+             'row':ldpcCoder.num_row,
+             'col':ldpcCoder.num_col}
+utility.WrLogHead(promargs = topargs, codeargs = coderargs)
 
-    m = multiprocessing.Manager()
-    # dict_param = m.dict()
-    dict_berfer = m.dict()
-    lock = multiprocessing.Lock()  # 这个一定要定义为全局
-    jobs = []
+m = multiprocessing.Manager()
+# dict_param = m.dict()
+dict_berfer = m.dict()
+lock = multiprocessing.Lock()  # 这个一定要定义为全局
+jobs = []
 
-    for i, snr in enumerate(np.arange(topargs.minimum_snr, topargs.maximum_snr + topargs.increment_snr/2.0, topargs.increment_snr)):
-        ps = multiprocessing.Process(target = BPSK_AWGN_Simulation, args=(i, f"snr={snr:.2f}(dB)", topargs, snr, dict_berfer, lock ))
-        jobs.append(ps)
-        ps.start()
+for i, snr in enumerate(np.arange(topargs.minimum_snr, topargs.maximum_snr + topargs.increment_snr/2.0, topargs.increment_snr)):
+    ps = multiprocessing.Process(target = BPSK_AWGN_Simulation, args=(i, f"snr={snr:.2f}(dB)", topargs, snr, dict_berfer, lock ))
+    jobs.append(ps)
+    ps.start()
 
-    for p in jobs:
-        p.join()
+for p in jobs:
+    p.join()
 
-    for snr in  np.arange(topargs.minimum_snr, topargs.maximum_snr + topargs.increment_snr/2.0, topargs.increment_snr):
-        name = f"snr={snr:.2f}(dB)"
-        print(f"{name} {dict_berfer[name]['ber']:.8f} {dict_berfer[name]['fer']:.8f} {dict_berfer[name]['ave_iter']:.3f}")
+for snr in  np.arange(topargs.minimum_snr, topargs.maximum_snr + topargs.increment_snr/2.0, topargs.increment_snr):
+    name = f"snr={snr:.2f}(dB)"
+    print(f"{name} {dict_berfer[name]['ber']:.8f} {dict_berfer[name]['fer']:.8f} {dict_berfer[name]['ave_iter']:.3f}")
 
 
 
