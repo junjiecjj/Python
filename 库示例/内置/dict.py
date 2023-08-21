@@ -38,30 +38,35 @@ print("dict d = {}".format(d))
 # 4.字典键值元组表
 d=dict([('name','Allen'),('age',21),('gender','male')])
 print("dict d = {}".format(d))
-
+# dict d = {'name': 'Allen', 'age': 21, 'gender': 'male'}
 
 #5.所有键的值都相同或者赋予初始值：
 d=dict.fromkeys(['height','weight'],'normal')
 print("dict d = {}".format(d))
+# dict d = {'height': 'normal', 'weight': 'normal'}
 
 
-
-#  http://c.biancheng.net/view/2212.html  
+#  http://c.biancheng.net/view/2212.html
 #  https://www.runoob.com/python/python-dictionary.html
 #如下代码示范了使用花括号语法创建字典：
 scores = {'语文': 89, '数学': 92, '英语': 93}
 print(scores)
+# {'语文': 89, '数学': 92, '英语': 93}
+
 # 空的花括号代表空的dict
 empty_dict = {}
 print(empty_dict)
 # 使用元组作为dict的key
 dict2 = {(20, 30):'good', 30:'bad'}
 print(dict2)
+# {}
+# {(20, 30): 'good', 30: 'bad'}
 
 c = {(20, 30):'good','name':'Allen', 'age':14, 'gender':'male',12:'kkk'}
 print(c)
 print(c.get('name'))
-
+# {(20, 30): 'good', 'name': 'Allen', 'age': 14, 'gender': 'male', 12: 'kkk'}
+# Allen
 
 
 #需要指出的是，元组可以作为 dict 的 key，但列表不能作为元组的 key。这是由于 dict 要求 key 必须是不可变类型，但列表是可变类型，因此列表不能作为元组的 key。
@@ -70,12 +75,14 @@ vegetables = [('celery', 1.58), ('brocoli', 1.29), ('lettuce', 2.19)]
 # 创建包含3组key-value对的字典
 dict3 = dict(vegetables)
 print(dict3) # {'celery': 1.58, 'brocoli': 1.29, 'lettuce': 2.19}
+# {'celery': 1.58, 'brocoli': 1.29, 'lettuce': 2.19}
+
 
 cars = [['BMW', 8.5], ['BENS', 8.3], ['AUDI', 7.9]]
 # 创建包含3组key-value对的字典
 dict4 = dict(cars)
 print(dict4) # {'BMW': 8.5, 'BENS': 8.3, 'AUDI': 7.9}
-
+# {'BMW': 8.5, 'BENS': 8.3, 'AUDI': 7.9}
 
 #如果不为 dict() 函数传入任何参数，则代表创建一个空的字典。例如如下代码：
 # 创建空的字典
@@ -86,13 +93,16 @@ print(dict5) # {}
 # 使用关键字参数来创建字典
 dict6 = dict(spinach = 1.39, cabbage = 2.59)
 print(dict6) # {'spinach': 1.39, 'cabbage': 2.59}
-
+# {'spinach': 1.39, 'cabbage': 2.59}
 
 #如下代码示范了通过 key 访问 value：
 scores = {'语文': 89}
 # 通过key访问value
 print(scores['语文'])
 print(scores)
+# 89
+# {'语文': 89}
+
 
 #如果要为 dict 添加 key-value 对，只需为不存在的 key 赋值即可：
 # 对不存在的key赋值，就是增加key-value对
@@ -112,7 +122,8 @@ cars = {'BMW': 8.5, 'BENS': 8.3, 'AUDI': 7.9}
 # 对存在的key-value对赋值，改变key-value对
 cars['BENS'] = 4.3
 cars['AUDI'] = 3.8
-print(cars) # {'BMW': 8.5, 'BENS': 4.3, 'AUDI': 3.8}
+print(cars)
+# {'BMW': 8.5, 'BENS': 4.3, 'AUDI': 3.8}
 
 
 #如果要判断字典是否包含指定的 key，则可以使用 in 或 not in 运算符。需要指出的是，对于 dict 而言，in 或 not in 运算符都是基于 key 来判断的。例如如下代码：
@@ -162,20 +173,29 @@ cars = {'BMW': 8.5, 'BENS': 8.3, 'AUDI': 7.9}
 ims = cars.items()
 print(type(ims)) # <class 'dict_items'>
 # 将dict_items转换成列表
-print(list(ims)) # [('BMW', 8.5), ('BENS', 8.3), ('AUDI', 7.9)]
+print(list(ims))
+# [('BMW', 8.5), ('BENS', 8.3), ('AUDI', 7.9)]
+
 # 访问第2个key-value对
-print(list(ims)[1]) # ('BENS', 8.3)
+print(list(ims)[1])
+# ('BENS', 8.3)
+
 # 获取字典所有的key，返回一个dict_keys对象
 kys = cars.keys()
 print(type(kys)) # <class 'dict_keys'>
 # 将dict_keys转换成列表
-print(list(kys)) # ['BMW', 'BENS', 'AUDI']
+print(list(kys))
+# ['BMW', 'BENS', 'AUDI']
+
+
 # 访问第2个key
-print(list(kys)[1]) # 'BENS'
+print(list(kys)[1])
+# 'BENS'
+
 # 获取字典所有的value，返回一个dict_values对象
 vals = cars.values()
 
-print(type(vals))  
+print(type(vals))
 # 将dict_values转换成列表
 print(list(vals)) # [8.5, 8.3, 7.9]
 # 访问第2个value
@@ -197,9 +217,12 @@ print(cars) # {'BMW': 8.5, 'BENS': 8.3}
 #如下代码示范了 popitem() 方法的用法：
 cars = {'AUDI': 7.9, 'BENS': 8.3, 'BMW': 8.5}
 print(cars)
+# {'AUDI': 7.9, 'BENS': 8.3, 'BMW': 8.5}
 # 弹出字典底层存储的最后一个key-value对
-print(cars.popitem()) # ('AUDI', 7.9)
-print(cars) # {'BMW': 8.5, 'BENS': 8.3}
+print(cars.popitem())
+# ('BMW', 8.5)
+print(cars)
+# {'BMW': 8.5, 'BENS': 8.3}
 
 #由于实际上 popitem 弹出的就是一个元组，因此程序完全可以通过序列解包的方式用两个变量分别接收 key 和 value。例如如下代码：
 # 将弹出项的key赋值给k、value赋值给v
@@ -207,8 +230,8 @@ k, v = cars.popitem()
 print(k, v) # BENS 8.3
 
 
-#setdefault()方法
-#setdefault() 方法也用于根据 key 来获取对应 value 的值。但该方法有一个额外的功能，即当程序要获取的 key 在字典中不存在时，该方法会先为这个不存在的 key 设置一个默认的 value，然后再返回该 key 对应的 value。
+# setdefault()方法
+# setdefault() 方法也用于根据 key 来获取对应 value 的值。但该方法有一个额外的功能，即当程序要获取的 key 在字典中不存在时，该方法会先为这个不存在的 key 设置一个默认的 value，然后再返回该 key 对应的 value。
 
 #总之，setdefault() 方法总能返回指定 key 对应的 value；如果该 key-value 对存在，则直接返回该 key 对应的 value；如果该 key-value 对不存在，则先为该 key 设置默认的 value，然后再返回该 key 对应的 value。
 
@@ -248,10 +271,13 @@ temp = '教程是:%(name)s, 价格是:%(price)010.2f, 出版社是:%(publish)s'
 book = {'name':'Python基础教程', 'price': 99, 'publish': 'C语言中文网'}
 # 使用字典为字符串模板中的key传入值
 print(temp % book)
+# 教程是:Python基础教程, 价格是:0000099.00, 出版社是:C语言中文网
+
+
 book = {'name':'C语言小白变怪兽', 'price':159, 'publish': 'C语言中文网'}
 # 使用字典为字符串模板中的key传入值
 print(temp % book)
-
+# 教程是:C语言小白变怪兽, 价格是:0000159.00, 出版社是:C语言中文网
 
 
 # 看起来字典的keys()和values()方法返回的列表始终是一对一的映射（假设字典在调用这两个方法之间没有改变）。
@@ -263,84 +289,84 @@ for i in range(len(k)):
 
 
 # 实例1：按键(key)排序
-def dictionairy():  
-  
+def dictionairy():
+
     # 声明字典
-    key_value ={}     
- 
+    key_value ={}
+
     # 初始化
-    key_value[2] = 56       
-    key_value[1] = 2 
-    key_value[5] = 12 
+    key_value[2] = 56
+    key_value[1] = 2
+    key_value[5] = 12
     key_value[4] = 24
-    key_value[6] = 18      
-    key_value[3] = 323 
- 
-    print ("按键(key)排序:")   
- 
+    key_value[6] = 18
+    key_value[3] = 323
+
+    print ("按键(key)排序:")
+
     # sorted(key_value) 返回重新排序的列表
     # 字典按键排序
-    for i in sorted (key_value) : 
-        print ((i, key_value[i]), end =" ") 
+    for i in sorted (key_value) :
+        print ((i, key_value[i]), end =" ")
 # 调用函数
-dictionairy()    
+dictionairy()
 """
 按键(key)排序:
-(1, 2) (2, 56) (3, 323) (4, 24) (5, 12) (6, 18) 
+(1, 2) (2, 56) (3, 323) (4, 24) (5, 12) (6, 18)
 """
 
 #实例2：按值(value)排序
-def dictionairy():  
- 
+def dictionairy():
+
     # 声明字典
-    key_value ={}     
- 
+    key_value ={}
+
     # 初始化
-    key_value[2] = 56       
-    key_value[1] = 2 
-    key_value[5] = 12 
+    key_value[2] = 56
+    key_value[1] = 2
+    key_value[5] = 12
     key_value[4] = 24
-    key_value[6] = 18      
-    key_value[3] = 323 
- 
- 
-    print ("按值(value)排序:")   
-    print(sorted(key_value.items(), key = lambda kv:(kv[1], kv[0])))     
-dictionairy()  
+    key_value[6] = 18
+    key_value[3] = 323
+
+
+    print ("按值(value)排序:")
+    print(sorted(key_value.items(), key = lambda kv:(kv[1], kv[0])))
+dictionairy()
 """
 按值(value)排序:
 [(1, 2), (5, 12), (6, 18), (4, 24), (2, 56), (3, 323)]
 """
 
 #实例 3 : 字典列表排序
-lis = [{ "name" : "Taobao", "age" : 100},  
-{ "name" : "Runoob", "age" : 7 }, 
-{ "name" : "Google", "age" : 100 }, 
-{ "name" : "Wiki" , "age" : 200 }] 
-  
+lis = [{ "name" : "Taobao", "age" : 100},
+{ "name" : "Runoob", "age" : 7 },
+{ "name" : "Google", "age" : 100 },
+{ "name" : "Wiki" , "age" : 200 }]
+
 # 通过 age 升序排序
 print ("列表通过 age 升序排序: ")
 print (sorted(lis, key = lambda i: i['age']) )
-  
-print ("\r") 
-  
+
+print ("\r")
+
 # 先按 age 排序，再按 name 排序
 print ("列表通过 age 和 name 排序: ")
 print (sorted(lis, key = lambda i: (i['age'], i['name'])) )
-  
-print ("\r") 
-  
+
+print ("\r")
+
 # 按 age 降序排序
 print ("列表通过 age 降序排序: ")
 print (sorted(lis, key = lambda i: i['age'],reverse=True) )
 """
-列表通过 age 升序排序: 
+列表通过 age 升序排序:
 [{'name': 'Runoob', 'age': 7}, {'name': 'Taobao', 'age': 100}, {'name': 'Google', 'age': 100}, {'name': 'Wiki', 'age': 200}]
 
-列表通过 age 和 name 排序: 
+列表通过 age 和 name 排序:
 [{'name': 'Runoob', 'age': 7}, {'name': 'Google', 'age': 100}, {'name': 'Taobao', 'age': 100}, {'name': 'Wiki', 'age': 200}]
 
-列表通过 age 降序排序: 
+列表通过 age 降序排序:
 [{'name': 'Wiki', 'age': 200}, {'name': 'Taobao', 'age': 100}, {'name': 'Google', 'age': 100}, {'name': 'Runoob', 'age': 7}]
 """
 
@@ -368,7 +394,7 @@ book = {
 
 for key in book.keys():
     print(key)
-    
+
 #3.使用 for values in dict.values () 遍历字典的值
 # values
 book = {
@@ -379,30 +405,36 @@ book = {
 
 for value in book.values():
     print(value)
-    
+# Python
+# -----
+# 人生苦短，我用python
+
+
 #4.使用 for item in dict.items () 遍历字典的键值对
 x = {'a': 'A', 'b': 'B'}
 for item in x.items():
     key = item[0]
     value = item[1]
     print('%s   %s:%s' % (item, key, value))
-    
+# ('a', 'A')   a:A
+# ('b', 'B')   b:B
 
 
 item = (1, 2)
 a, b = item
 print(a, b)
-
+# 1 2
 
 
 
 x = {'a': 'A', 'b': 'B'}
 for key, value in x.items():
     print('%s:%s' % (key, value))
-    
-    
-    
-    
+# a:A
+# b:B
+
+
+
 
 
 

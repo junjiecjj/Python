@@ -134,7 +134,6 @@ class DIS_PRED(object):
 
     """此函数是并行读取某一炮所有诊断信号从平顶端到破裂,但没有归一化"""
     def get_one_shot(self, i, name):
-
         pcrl01 = np.load(datapath+'%d.npz'%(self.A[i,0]))['pcrl01']
         dfsdev = np.load(datapath+'%d.npz'%(self.A[i,0]))['dfsdev']
         vp1 = np.load(datapath+'%d.npz'%(self.A[i,0]))['vp1']
@@ -171,10 +170,8 @@ class DIS_PRED(object):
         else:
             pass
 
-
         if flat_top>=disr_time:
             print("%d 平顶端时刻大于破裂时刻，冲突\n"%self.A[i,0])
-
 
         pcrl01 = self.signal_Range(pcrl01,flat_top, disr_time, i)
         dfsdev = self.signal_Range(dfsdev, flat_top, disr_time, i)
@@ -293,7 +290,7 @@ class DIS_PRED(object):
         arry_l =[]
         pool = Pool(self.cpu_use)
         for i in self.all_shot:
-            res = pool.apply_async(self.get_one_shot,(i,'flat2disr',))
+            res = pool.apply_async(self.get_one_shot, (i,'flat2disr',))
             res_l.append(res)
         pool.close()
         pool.join()

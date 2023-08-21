@@ -56,7 +56,7 @@ parser.add_argument("--dataset",         type=str,   default = "mnist",       he
 parser.add_argument("--val_freq",        type=int,   default = 5,             help = "model validation frequency(of communications)")
 parser.add_argument('--save_freq',       type=int,   default = 20,            help = "global model save frequency(of communication)")
 ## num_comm 表示通信次数，此处设置为1k
-parser.add_argument('--num_comm',        type=int,   default = 300,           help = 'number of communications')
+parser.add_argument('--num_comm',        type=int,   default = 500,           help = 'number of communications')
 ## 数据是否 IID
 parser.add_argument('--isIID',               type=int,   default = 0 ,        )
 ## 传输的是模型参数还是模型更新
@@ -75,12 +75,12 @@ parser.add_argument('--sigma',               type=float,   default = 1,         
 
 ##================================================= 量化 ========================================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Quantz',            type = int,     default = 1,            help = '是否使用量化')
+parser.add_argument('--Quantz',            type = int,     default = 0,            help = '是否使用量化')
 parser.add_argument('--B',                 type = int,     default = 4,            help = '量化比特数')
 
 ##==============================================  模型稀疏：随机掩码 ==============================================================
 ## 是否使用模型稀疏
-parser.add_argument('--Random_Mask',       type = int,     default = 1,             help = '是否使用随机掩码')
+parser.add_argument('--Random_Mask',       type = int,     default = 0,             help = '是否使用随机掩码')
 parser.add_argument('--prop',              type = float,   default = 0.9,           help = '掩码是1的概率')
 
 ##==============================================  模型压缩 ==============================================================

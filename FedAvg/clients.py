@@ -148,8 +148,6 @@ class client(object):
 
         ## 模型压缩
         if self.args.Compression == True:
-            # print(f"{len(local_update)}")
-            # print("模型压缩")
             local_update = sorted(local_update.items(), key = lambda item:abs(torch.mean(item[1].float())), reverse=True)
             ret_size = int(self.args.crate * len(local_update))
             # print(f"{ret_size}")

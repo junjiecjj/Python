@@ -30,7 +30,8 @@ class Server(object):
             if cnt[key] > 0:
                 weight_accumulator[key].div_(cnt[key])
 
-        if self.args.transmitted_diff: ## 传输的是模型差值
+        ## 传输的是模型差值
+        if self.args.transmitted_diff:
             ## 先加载上次的模型，再加上这次的更新
             self.global_model.load_state_dict(self.last_pamas, strict=True)
             for key, val in weight_accumulator.items():
@@ -39,7 +40,6 @@ class Server(object):
             # for key, param in self.global_model.state_dict().items():
                 # if key in weight_accumulator and cnt[key] > 0:
                     # param.add_(weight_accumulator[key])
-
         ## 传输的是模型参数，直接赋值
         elif not self.args.transmitted_diff :
             # print("传输的是模型参数")

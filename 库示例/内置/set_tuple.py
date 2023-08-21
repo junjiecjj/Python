@@ -11,7 +11,7 @@ list：有序，可重复，可修改
 tuple：有序，可重复，不可修改
 
 
-Python中list，tuple，dict和set的主要区别：tuple是一个不可改变的list，set是一个没有Value的dict，list，dict和set的数据是可变的，tuple数据是不可变的！ 
+Python中list，tuple，dict和set的主要区别：tuple是一个不可改变的list，set是一个没有Value的dict，list，dict和set的数据是可变的，tuple数据是不可变的！
 
 列表list是最自由的，可以使用索引、切片，可以进行计算和修改；
 
@@ -23,6 +23,7 @@ set集合是无序的，不重复的，和字典类似也是使用中括号{}表
 """
 
 
+
 #=====================================================================================
 #           Python 元组（Tuple）
 #=====================================================================================
@@ -31,8 +32,19 @@ a = (3.14, 'China', 'Jason')
 b = ('jack','iii',123,90.12)
 #但是不能重新赋值替换：
 # a[1] = 'America'   error
-
 print("a = \n{},\nb = \n{},\na[1] = \n{} ".format(a,b, a[1]))
+# a =
+# (3.14, 'China', 'Jason'),
+# b =
+# ('jack', 'iii', 123, 90.12),
+# a[1] =
+# China
+for i in a:
+    print(i)
+# 3.14
+# China
+# Jason
+
 
 
 l1,l2,l3 = a
@@ -43,21 +55,30 @@ print("len(a) = %d"%(len(a)))  #
 
 c = a+b
 print(c)
+# (3.14, 'China', 'Jason', 'jack', 'iii', 123, 90.12)
+
 
 a = (3.14, 'China','China','China', 'Jason')
 if 3.14 in a:
     print("true")
+# true
 
 for i in a: #
     print(i )
-
+# 3.14
+# China
+# China
+# China
+# Jason
 
 #  内置函数
 num = (1,2,3,12,32,4,6,7,123.12)
 print(max(num)) #最大值
 print(min(num))  #最小值
 print("len(a) = %d"%(len(a)))  #长度
-
+# 123.12
+# 1
+# len(a) = 5
 
 
 
@@ -77,18 +98,20 @@ t = ()
 t = (3.14,)
 
 """
-要知道如果你希望一个函数返回多个返回值，其实只要返回一个tuple就可以了，因为tuple里面的含有多个值，而且是不可变的（就像是java里面的final）。当然，tuple也是可变的，比如:
-    
+要知道如果你希望一个函数返回多个返回值，其实只要返回一个tuple就可以了，因为tuple里面的含有多个值，而且是不可变的（就像是java里面的final）。
+当然，tuple也是可变的，比如:
+
 这是因为Tuple所谓的不可变指的是指向的位置不可变，因为本例子中第四个元素并不是基本类型，而是一个List类型，所以t指向的该List的位置是不变的，但是List本身的内容是可以变化的，因为List本身在内存中的分配并不是连续的。
 
 """
 t = (3.14, 'China', 'Jason', ['A', 'B'])
 print(t)
+# (3.14, 'China', 'Jason', ['A', 'B'])
 L = t[3]
 L[0] = 122
 L[1] = 233
 print(t)
-
+# (3.14, 'China', 'Jason', [122, 233])
 
 
 
@@ -141,7 +164,7 @@ print(s)
 
 
 #集合也可以用表达式（推导）的方式创建
-s = {x * 2 for x in 'abc'}  #{'aa', 'bb', 'cc} 
+s = {x * 2 for x in 'abc'}  #{'aa', 'bb', 'cc}
 print(s)
 s = {x **2 for x in range(1,5)}   #{1, 4, 9, 16}
 print(s)

@@ -73,3 +73,6 @@ for data in [b'Michael', b'Tracy', b'Sarah']:
 s.send(b'exit')
 s.close()
 #我们需要打开两个命令行窗口，一个运行服务器程序，另一个运行客户端程序，就可以看到效果了：
+
+
+
