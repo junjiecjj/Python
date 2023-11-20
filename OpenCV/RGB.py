@@ -176,6 +176,8 @@ ext = '.png'
 
 savefile = './Figures/PltCv2Imageio' + ext
 
+
+
 #==========================================================================
 
 #====================================================
@@ -188,7 +190,9 @@ img = cv2.imread(source, cv2.IMREAD_COLOR)
 # img = imageio.imread(source, mode = 'RGB')
 
 # img = skimage.io.imread(source)
+ep = [cv2.IMWRITE_JPEG2000_COMPRESSION_X, 10]
 
+cv2.imwrit("hhhh.jp2", img, ep)
 
 #====================================================
 #  第一次读取的展示

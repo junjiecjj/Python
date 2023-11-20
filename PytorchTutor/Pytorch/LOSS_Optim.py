@@ -7,22 +7,26 @@ Created on Sat Apr  9 22:19:41 2022
 """
 
 """
-torch.optim.SGD
-随机梯度下降算法，带有动量（momentum）的算法作为一个可选参数可以进行设置，样例如下：
+(1) torch.optim.SGD
+    随机梯度下降算法，带有动量（momentum）的算法作为一个可选参数可以进行设置，样例如下：
 
-#lr参数为学习率，对于SGD来说一般选择0.1 0.01.0.001，如何设置会在后面实战的章节中详细说明
-##如果设置了momentum，就是带有动量的SGD，可以不设置
-optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
-torch.optim.RMSprop
-除了以上的带有动量Momentum梯度下降法外，RMSprop（root mean square prop）也是一种可以加快梯度下降的算法，利用RMSprop算法，可以减小某些维度梯度更新波动较大的情况，使其梯度下降的速度变得更快
+    #lr参数为学习率，对于SGD来说一般选择0.1 0.01.0.001，如何设置会在后面实战的章节中详细说明
+    ##如果设置了momentum，就是带有动量的SGD，可以不设置
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
 
-#我们的课程基本不会使用到RMSprop所以这里只给一个实例
-optimizer = torch.optim.RMSprop(model.parameters(), lr=0.01, alpha=0.99)
-torch.optim.Adam
-Adam 优化算法的基本思想就是将 Momentum 和 RMSprop 结合起来形成的一种适用于不同深度学习结构的优化算法
+(2) torch.optim.RMSprop
+    除了以上的带有动量Momentum梯度下降法外，RMSprop（root mean square prop）也是一种可以加快梯度下降的算法，利用RMSprop算法，可以减小某些维度梯度更新波动较大的情况，使其梯度下降的速度变得更快
 
-# 这里的lr，betas，还有eps都是用默认值即可，所以Adam是一个使用起来最简单的优化方法
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08)
+    #我们的课程基本不会使用到RMSprop所以这里只给一个实例
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=0.01, alpha=0.99)
+
+
+
+(3) torch.optim.Adam
+    Adam 优化算法的基本思想就是将 Momentum 和 RMSprop 结合起来形成的一种适用于不同深度学习结构的优化算法
+
+    # 这里的lr，betas，还有eps都是用默认值即可，所以Adam是一个使用起来最简单的优化方法
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08)
 
 """
 
@@ -32,64 +36,64 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), e
 """
 
 
-### nn.L1Loss:
+(1) nn.L1Loss:
 
-输入x和目标y之间差的绝对值，要求 x 和 y 的维度要一样（可以是向量或者矩阵），得到的 loss 维度也是对应一样的
+    输入x和目标y之间差的绝对值，要求 x 和 y 的维度要一样（可以是向量或者矩阵），得到的 loss 维度也是对应一样的
 
-$ loss(x,y)=1/n\sum|x_i-y_i| $
+    $ loss(x,y)=1/n\sum|x_i-y_i| $
 
-### nn.NLLLoss:
+(2) nn.NLLLoss:
 
-用于多分类的负对数似然损失函数
+    用于多分类的负对数似然损失函数
 
-$ loss(x, class) = -x[class]$
+    $ loss(x, class) = -x[class]$
 
-NLLLoss中如果传递了weights参数，会对损失进行加权，公式就变成了
+    NLLLoss中如果传递了weights参数，会对损失进行加权，公式就变成了
 
-$ loss(x, class) = -weights[class] * x[class] $
-
-
-
-### nn.MSELoss:
-
-均方损失函数 ，输入x和目标y之间均方差
-
-$ loss(x,y)=1/n\sum(x_i-y_i)^2 $
-
-### nn.CrossEntropyLoss:
-
-多分类用的交叉熵损失函数，LogSoftMax和NLLLoss集成到一个类中，会调用nn.NLLLoss函数，我们可以理解为CrossEntropyLoss()=log_softmax() + NLLLoss()
-
-$loss(x,class)=−log(\frac{exp(x[class])}{∑_j exp(x[j])}) =−x[class]+log(∑_j exp(x[j]))$
-
-因为使用了NLLLoss，所以也可以传入weight参数，这时loss的计算公式变为：
-
-$ loss(x, class) = weights[class] * (-x[class] + log(\sum_j exp(x[j]))) $
-
-所以一般多分类的情况会使用这个损失函数
-
-# output是网络的输出，size=[batch_size, class]
-#如网络的batch size为128，数据分为10类，则size=[128, 10]
-
-# target是数据的真实标签，是标量，size=[batch_size]
-#如网络的batch size为128，则size=[128]
-
-crossentropyloss=nn.CrossEntropyLoss()
-crossentropyloss_output=crossentropyloss(output,target)
+    $ loss(x, class) = -weights[class] * x[class] $
 
 
 
-### nn.BCELoss:
+(3) nn.MSELoss:
 
-计算 x 与 y 之间的二进制交叉熵。
+    均方损失函数 ，输入x和目标y之间均方差
 
-$ loss(o,t)=-\frac{1}{n}\sum_i(t[i] *log(o[i])+(1-t[i])* log(1-o[i])) $
+    $ loss(x,y)=1/n\sum(x_i-y_i)^2 $
 
-与NLLLoss类似，也可以添加权重参数：
+(4) nn.CrossEntropyLoss:
 
-$ loss(o,t)=-\frac{1}{n}\sum_iweights[i] *(t[i]* log(o[i])+(1-t[i])* log(1-o[i])) $
+    多分类用的交叉熵损失函数，LogSoftMax和NLLLoss集成到一个类中，会调用nn.NLLLoss函数，我们可以理解为CrossEntropyLoss()=log_softmax() + NLLLoss()
 
-用的时候需要在该层前面加上 Sigmoid 函数。
+    $loss(x,class)=−log(\frac{exp(x[class])}{∑_j exp(x[j])}) =−x[class]+log(∑_j exp(x[j]))$
+
+    因为使用了NLLLoss，所以也可以传入weight参数，这时loss的计算公式变为：
+
+    $ loss(x, class) = weights[class] * (-x[class] + log(\sum_j exp(x[j]))) $
+
+    所以一般多分类的情况会使用这个损失函数
+
+    # output是网络的输出，size=[batch_size, class]
+    #如网络的batch size为128，数据分为10类，则size=[128, 10]
+
+    # target是数据的真实标签，是标量，size=[batch_size]
+    #如网络的batch size为128，则size=[128]
+
+    crossentropyloss=nn.CrossEntropyLoss()
+    crossentropyloss_output=crossentropyloss(output,target)
+
+
+
+(5) nn.BCELoss:
+
+    计算 x 与 y 之间的二进制交叉熵。
+
+    $ loss(o,t)=-\frac{1}{n}\sum_i(t[i] *log(o[i])+(1-t[i])* log(1-o[i])) $
+
+    与NLLLoss类似，也可以添加权重参数：
+
+    $ loss(o,t)=-\frac{1}{n}\sum_iweights[i] *(t[i]* log(o[i])+(1-t[i])* log(1-o[i])) $
+
+    用的时候需要在该层前面加上 Sigmoid 函数。
 
 """
 
@@ -98,37 +102,33 @@ $ loss(o,t)=-\frac{1}{n}\sum_iweights[i] *(t[i]* log(o[i])+(1-t[i])* log(1-o[i])
 通常会在遍历epochs的过程中依次用到optimizer.zero_grad(),loss.backward()和optimizer.step()三个函数
 总得来说，这三个函数的作用是先将梯度归零（optimizer.zero_grad()），然后反向传播计算得到每个参数的梯度值（loss.backward()），最后通过梯度下降执行一步参数更新（optimizer.step()）
 一、optimizer.zero_grad()：
-optimizer.zero_grad()函数会遍历模型的所有参数，通过p.grad.detach_()方法截断反向传播的梯度流，再通过p.grad.zero_()函数将每个参数的梯度值设为0，即上一次的梯度记录被清空。
+    optimizer.zero_grad()函数会遍历模型的所有参数，通过p.grad.detach_()方法截断反向传播的梯度流，再通过p.grad.zero_()函数将每个参数的梯度值设为0，即上一次的梯度记录被清空。
 
-因为训练的过程通常使用mini-batch方法，所以如果不将梯度清零的话，梯度会与上一个batch的数据相关，因此该函数要写在反向传播和梯度下降之前。
+    因为训练的过程通常使用mini-batch方法，所以如果不将梯度清零的话，梯度会与上一个batch的数据相关，因此该函数要写在反向传播和梯度下降之前。
 
 
 二、loss.backward()：
-PyTorch的反向传播(即tensor.backward())是通过autograd包来实现的，autograd包会根据tensor进行过的数学运算来自动计算其对应的梯度。
+    PyTorch的反向传播(即tensor.backward())是通过autograd包来实现的，autograd包会根据tensor进行过的数学运算来自动计算其对应的梯度。
 
-具体来说，torch.tensor是autograd包的基础类，如果你设置tensor的requires_grads为True，就会开始跟踪这个tensor上面的所有运算，如果你做完运算后使用tensor.backward()，所有的梯度就会自动运算，tensor的梯度将会累加到它的.grad属性里面去。
+    具体来说，torch.tensor是autograd包的基础类，如果你设置tensor的requires_grads为True，就会开始跟踪这个tensor上面的所有运算，如果你做完运算后使用tensor.backward()，所有的梯度就会自动运算，tensor的梯度将会累加到它的.grad属性里面去。
 
-更具体地说，损失函数loss是由模型的所有权重w经过一系列运算得到的，若某个w的requires_grads为True，则w的所有上层参数（后面层的权重w）的.grad_fn属性中就保存了对应的运算，然后在使用loss.backward()后，会一层层的反向传播计算每个w的梯度值，并保存到该w的.grad属性中。
+    更具体地说，损失函数loss是由模型的所有权重w经过一系列运算得到的，若某个w的requires_grads为True，则w的所有上层参数（后面层的权重w）的.grad_fn属性中就保存了对应的运算，然后在使用loss.backward()后，会一层层的反向传播计算每个w的梯度值，并保存到该w的.grad属性中。
 
-如果没有进行tensor.backward()的话，梯度值将会是None，因此loss.backward()要写在optimizer.step()之前。
+    如果没有进行tensor.backward()的话，梯度值将会是None，因此loss.backward()要写在optimizer.step()之前。
 
 三、optimizer.step()：
-step()函数的作用是执行一次优化步骤，通过梯度下降法来更新参数的值。因为梯度下降是基于梯度的，所以在执行optimizer.step()函数前应先执行loss.backward()函数来计算梯度。
+    step()函数的作用是执行一次优化步骤，通过梯度下降法来更新参数的值。因为梯度下降是基于梯度的，所以在执行optimizer.step()函数前应先执行loss.backward()函数来计算梯度。
 
-注意：optimizer只负责通过梯度下降进行优化，而不负责产生梯度，梯度是tensor.backward()方法产生的。
-
+    注意：optimizer只负责通过梯度下降进行优化，而不负责产生梯度，梯度是tensor.backward()方法产生的。
 
 
 loss.backward()的作用
-我们都知道，loss.backward()函数的作用是根据loss来计算网络参数的梯度，其对应的输入默认为网络的叶子节点，即数据集内的数据，
-
+    我们都知道，loss.backward()函数的作用是根据loss来计算网络参数的梯度，其对应的输入默认为网络的叶子节点，即数据集内的数据，
 
 optimizer.step()的作用
-优化器的作用就是针对计算得到的参数梯度对网络参数进行更新，所以要想使得优化器起作用，主要需要两个东西：
-
-优化器需要知道当前的网络模型的参数空间
-优化器需要知道反向传播的梯度信息（即backward计算得到的信息）
-
+    优化器的作用就是针对计算得到的参数梯度对网络参数进行更新，所以要想使得优化器起作用，主要需要两个东西：
+    优化器需要知道当前的网络模型的参数空间
+    优化器需要知道反向传播的梯度信息（即backward计算得到的信息）
 
 """
 

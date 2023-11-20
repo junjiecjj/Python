@@ -43,10 +43,7 @@ class Server(object):
                 # if key in weight_accumulator and cnt[key] > 0:
                     # param.copy_(weight_accumulator[key])
 
-        if self.args.DP: ##  使用差分隐私
-            for key, data in self.global_model.state_dict().items():
-                noise = torch.normal(mean = 0, std = self.args.sigma, size = data.shape ).to(self.device)
-                data.add_(noise)
+
 
         # 得到当前最新的全局模型
         global_parameters = {}

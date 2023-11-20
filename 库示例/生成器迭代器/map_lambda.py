@@ -61,15 +61,15 @@ print(list(map(lambda x: f(x), [1,2,3])) ) #[True, False, False]
 def f1(x):
     return True if x==1 else False
 print(list(map(f1, [1,2,3]))) #[True, False, False]
-
+# [True, False, False]
 
 s = [1,2,3]
 print(list(map(lambda x:x+1,s)))
-
+# [2, 3, 4]
 
 s = [1,2,3]
 print(list(map(lambda x, y, z:x*y*z, s , s, s)))
-
+# [1, 8, 27]
 
 
 mylist = [3,6,3,2,4,8,23]
@@ -97,7 +97,7 @@ sorted(a,key=lambda x:x[1])
 # 求字符串每个单词的长度
 sentence = "Welcome To Beijing!"
 words = sentence.split()
-lengths  = map(lambda x:len(x), words)
+lengths  = map(lambda x:len(x),words)
 print(list(lengths))
 # [7,2,8]
 
@@ -108,6 +108,9 @@ def increment(n):
 f=increment(4)
 f(2)
 # 6
+
+a = np.arange(12).reshape(3,4)
+f(a)
 
 Names = ['Anne', 'Amy', 'Bob', 'David', 'Carrie', 'Barbara', 'Zach']
 B_Name= filter(lambda x: x.startswith('B'),Names)
@@ -135,11 +138,11 @@ sorted(students, key=lambda s: s[2], reverse=True)
 # 结果：
 # [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
 
-# import reduce
-# # 2、两数相加，lambda 写法
-# reduce(lambda x, y: x + y, [1, 2, 3, 4, 5])
-# # 结果：
-# # 15
+import reduce
+# 2、两数相加，lambda 写法
+reduce(lambda x, y: x + y, [1, 2, 3, 4, 5])
+# 结果：
+# 15
 
 
 # 2、将列表[1, 2, 3]中能够被3整除的元素过滤出来
@@ -148,7 +151,50 @@ print(list(newlist))
 # 结果： [3]
 
 
+# 1、 [x for x in data if condition]
+# 此时data数据中只有满足if条件才能保留，最后生成一列表.
+res=[i  for  i  in  range(10)  if  i%2==0]
+print(res)
+# [0, 2, 4, 6, 8]
 
+# 2、[exp1 if condition else exp2 for x in data]
+# 此处if…else，当data中的数据满足if条件时，exp1，否则exp2，最后生成一列表.
+
+res=[i   if  i%2==0  else i+1  for  i  in  range(10)]
+print(res)
+# [0, 2, 2, 4, 4, 6, 6, 8, 8, 10]
+
+
+
+a = [x+y for x in range(1,5) if x > 2 for y in range(1,5) if y < 4]
+print(a)
+# [4, 5, 6, 5, 6, 7]
+
+
+# 执行顺序
+for x in range(1,5):
+    if x >2 :
+        for y in range(1,5):
+            if y < 4:
+                print(x+y)
+# 4
+# 5
+# 6
+# 5
+# 6
+# 7
+
+#1-100中3的倍数
+
+p = [x for x in range(1,12) if x%3 == 0]
+print(p)
+# [3, 6, 9]
+
+#1-100中，不是3的倍数的数去相反数，其余的数保持不变
+q = [x if x%3==0 else -x for x in range(1,12)]
+print(q)
+
+# [-1, -2, 3, -4, -5, 6, -7, -8, 9, -10, -11]
 
 
 

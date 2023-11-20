@@ -14,7 +14,7 @@ ToTensor() 是pytorch中的数据预处理函数，包含在 torchvision.transfo
 
 （2）如果 PIL Image 属于 (L, LA, P, I, F, RGB, YCbCr, RGBA, CMYK, 1) 中的一种图像类型，或者 numpy.ndarray 格式数据类型是 np.uint8 ，则将 [0, 255] 的数据转为 [0.0, 1.0] ，也就是说将所有数据除以 255 进行归一化。
 
-（3）将 HWC 的图像格式转为 CHW 的 tensor 格式。CNN训练时需要的数据格式是[N,C,N,W]，也就是说经过 ToTensor() 处理的图像可以直接输入到CNN网络中，不需要再进行reshape。
+（3）将 HWC 的图像格式转为 CHW 的 tensor 格式。CNN训练时需要的数据格式是[N,C,H,W]，也就是说经过 ToTensor() 处理的图像可以直接输入到CNN网络中，不需要再进行reshape。
 
 
 """
@@ -153,8 +153,8 @@ print(f"imgcv1.dtype = {imgcv1.dtype}")
 # imgcv1.dtype = torch.float32
 
 
-print(f"np.allclose(img2, imgcv[:,:,::-1]) =  {np.allclose(img2, imgcv[:,:,::-1])}") 
-print(f"np.allclose(img1, imgcv1) =  {np.allclose(img1, imgcv1)}") 
+print(f"np.allclose(img2, imgcv[:,:,::-1]) =  {np.allclose(img2, imgcv[:,:,::-1])}")
+print(f"np.allclose(img1, imgcv1) =  {np.allclose(img1, imgcv1)}")
 # np.allclose(img2, imgcv[:,:,::-1]) =  True
 # np.allclose(img1, imgcv1) =  True
 
@@ -166,7 +166,7 @@ print(f"np.allclose(img1, imgcv1) =  {np.allclose(img1, imgcv1)}")
 #======================================= imageio =================================================
 import PIL
 from PIL import Image
- 
+
 import imageio.v2 as imageio
 import numpy as np
 import cv2
@@ -204,8 +204,8 @@ print(f"imgio1.dtype = {imgio1.dtype}")
 # imgio1.dtype = torch.float32
 
 
-print(f"\n\nnp.allclose(img2, imgio) =  {np.allclose(img2, imgio)}") 
-print(f"np.allclose(img1, imgio1) =  {np.allclose(img1, imgio1)}\n") 
+print(f"\n\nnp.allclose(img2, imgio) =  {np.allclose(img2, imgio)}")
+print(f"np.allclose(img1, imgio1) =  {np.allclose(img1, imgio1)}\n")
 # np.allclose(img2, imgio) =  True
 # np.allclose(img1, imgio1) =  True
 
@@ -214,7 +214,7 @@ print(f"np.allclose(img1, imgio1) =  {np.allclose(img1, imgio1)}\n")
 #======================================= skimage.io. =================================================
 import PIL
 from PIL import Image
- 
+
 import imageio.v2 as imageio
 import numpy as np
 import cv2
@@ -223,7 +223,7 @@ import skimage
 import sys
 
 # 原图是 png 还是 jpg
-source = './Figures/baby.png' # './Figures/lena.png'  ./Figures/flower.jpg'
+source = '/home/jack/公共的/Python/PytorchTutor/Pytorch/torchvision_transforms/Figures/baby.png'# './Figures/lena.png'  ./Figures/flower.jpg'
 
 # source = './Figures/flower.jpg'
 
@@ -252,8 +252,8 @@ print(f"io1.dtype = {io1.dtype}")
 # io1.dtype = torch.float32
 
 
-print(f"\n\nnp.allclose(img2, io) =  {np.allclose(img2, io)}") 
-print(f"np.allclose(img1, io1) =  {np.allclose(img1, io1)}\n") 
+print(f"\n\nnp.allclose(img2, io) =  {np.allclose(img2, io)}")
+print(f"np.allclose(img1, io1) =  {np.allclose(img1, io1)}\n")
 # np.allclose(img2, io) =  True
 # np.allclose(img1, io1) =  True
 

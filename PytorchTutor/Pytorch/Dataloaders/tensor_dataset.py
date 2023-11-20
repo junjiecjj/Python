@@ -34,6 +34,8 @@ return tensor_1[index], tensor_2[index], ..., tensor_n[index]
 __len__ 就不用多说了，因为所有张量的第一个维度大小都相同，所以直接返回传入的第一个张量在第一个维度的大小即可。
 TensorDataset 将张量的第一个维度视为数据集大小的维度，数据集在传入 DataLoader 后，该维度也是 batch_size 所在的维度
 
+
+注意：TensorDataset 中的参数必须是 tensor
 """
 
 from torch.utils.data import TensorDataset
@@ -41,7 +43,10 @@ import torch
 from torch.utils.data import DataLoader
 
 a = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9]])
+a = torch.arange(36).reshape(12, 3)
+
 b = torch.tensor([44, 55, 66, 44, 55, 66, 44, 55, 66, 44, 55, 66])
+b = torch.arange(44, 44+12)
 train_ids = TensorDataset(a, b)
 # 切片输出
 print(train_ids[0:2])
@@ -52,7 +57,7 @@ for x_train, y_label in train_ids:
 # DataLoader进行数据封装
 print('=' * 80)
 train_loader = DataLoader(dataset=train_ids, batch_size=4, shuffle=True)
-for i, data in enumerate(train_loader, 1):  # 注意enumerate返回值有两个,一个是序号，一个是数据（包含训练数据和标签）
+for i, data in enumerate(train_loader):  # 注意enumerate返回值有两个,一个是序号，一个是数据（包含训练数据和标签）
     x_data, label = data
     print(f"batch {i}: \n  x_data:{x_data}\n  label: {label}")
 

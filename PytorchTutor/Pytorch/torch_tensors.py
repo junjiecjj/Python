@@ -282,10 +282,10 @@ print(x)
 
 
 #从另外一个张量（Tensors）获取,注意：除非明确覆盖，否则新张量保留参数张量的属性（形状、数据类型）
-x_ones = torch.ones_like(x_data) # retains the properties of x_data
+x_ones = torch.ones_like(x) # retains the properties of x_data
 print(f"全1的张量: \n {x_ones} \n")
 
-x_rand = torch.rand_like(x_data, dtype=torch.float) # overrides the datatype of x_data
+x_rand = torch.rand_like(x, dtype=torch.float) # overrides the datatype of x_data
 print(f"随机张量: \n {x_rand} \n")
 
 #shape是张量维度的元组。在下面的函数中，它决定了输出张量的维度。
@@ -297,6 +297,11 @@ zeros_tensor = torch.zeros(shape)
 print(f"随机张量: \n {rand_tensor} \n")
 print(f"全1张量: \n {ones_tensor} \n")
 print(f"零张量: \n {zeros_tensor}")
+
+
+
+
+
 
 #======================================================================================
 #   取整/取余 运算

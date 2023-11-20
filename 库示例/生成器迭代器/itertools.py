@@ -17,7 +17,7 @@ print(s)
 # 2
 name = 'leo'
 n=37
-s = '{name} has {n} message.' 
+s = '{name} has {n} message.'
 print(s.format_map(vars()))
 
 
@@ -77,25 +77,26 @@ print(f"np.compress([False, True], a, axis=1) = {np.compress([False, True], a, a
 print(f"np.compress([False, True], a) = {np.compress([False, True], a)}")
 
 #====================================================================
-import itertools 
+import itertools
 import operator
-Codes =['C', 'C++', 'Java', 'Python'] 
-selectors = [False, False, False, True] 
-  
-Best_Programming = itertools.compress(Codes, selectors) 
-  
+Codes =['C', 'C++', 'Java', 'Python']
+selectors = [False, True, False, True]
+
+Best_Programming = itertools.compress(Codes, selectors)
+
 for each in Best_Programming:
     print(each)
-
+# C++
+# Python
 
 
 #====================================================================
-import itertools 
-import operator 
-  
-  
-example = itertools.compress('ABCDE', [1, 0, 1, 0, 0]) 
-  
+import itertools
+import operator
+
+
+example = itertools.compress('ABCDE', [1, 0, 1, 0, 0])
+
 for each in example:
     print(each)
 

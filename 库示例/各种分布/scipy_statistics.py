@@ -4,6 +4,10 @@
 Created on Wed Aug 17 09:43:24 2022
 
 @author: jack
+
+https://docs.scipy.org/doc/scipy/reference/stats.html
+
+
 """
 from scipy import stats
 import numpy as np
@@ -388,7 +392,7 @@ fig, ax = plt.subplots(1,1)
 lambdaUse = 2
 loc = 0
 scale = 1.0/lambdaUse
- 
+
 
 #ppf:累积分布函数的反函数。q=0.01时，ppf就是p(X<x)=0.01时的x值。
 x = np.linspace(0, stats.expon.ppf(0.99,loc,scale), 100)
@@ -406,7 +410,7 @@ plt.show()
 #=========================================================================
 # 画出 pdf, cdf
 from scipy import stats
- 
+
 lambdaUse = 2
 loc = 0
 scale = 1.0/lambdaUse
@@ -445,14 +449,14 @@ plt.show()
 
 #================================================================================
 
-X = np.linspace(0, 5, 5000) 
- 
-exponetial_distribtuion = stats.expon.pdf(X, loc=0, scale=1) 
- 
-plt.subplots(figsize=(8,5)) 
-plt.plot(X, exponetial_distribtuion) 
-plt.title("Exponential Distribution") 
-plt.legend() 
+X = np.linspace(0, 5, 5000)
+
+exponetial_distribtuion = stats.expon.pdf(X, loc=0, scale=1)
+
+plt.subplots(figsize=(8,5))
+plt.plot(X, exponetial_distribtuion)
+plt.title("Exponential Distribution")
+plt.legend()
 plt.show()
 
 
@@ -499,7 +503,7 @@ print(sample)
 df = 1
 x = np.linspace(stats.chi2.ppf(0.2, df = df), stats.chi2.ppf(0.99, df = df), 100)
 x = np.arange(stats.chi2(df = df).ppf(0.2 ),  stats.chi2.ppf(0.99, df = df), 0.1)
- 
+
 pdf = stats.chi2.pdf(x, df = df)
 frozenpdf = stats.chi2(df = df,).pdf(x, )
 cdf = stats.chi2.cdf(x, df = df)
@@ -541,14 +545,14 @@ plt.title('卡方分布PDF（自由度为3）')
 plt.show()
 
 
-X = np.arange(0, 6, 0.25) 
- 
-plt.subplots(figsize=(8, 5)) 
-plt.plot(X, stats.chi2.pdf(X, df=1), label="1 d.o.f") 
-plt.plot(X, stats.chi2.pdf(X, df=2), label="2 d.o.f") 
-plt.plot(X, stats.chi2.pdf(X, df=3), label="3 d.o.f") 
-plt.title("Chi-squared Distribution") 
-plt.legend() 
+X = np.arange(0, 6, 0.25)
+
+plt.subplots(figsize=(8, 5))
+plt.plot(X, stats.chi2.pdf(X, df=1), label="1 d.o.f")
+plt.plot(X, stats.chi2.pdf(X, df=2), label="2 d.o.f")
+plt.plot(X, stats.chi2.pdf(X, df=3), label="3 d.o.f")
+plt.title("Chi-squared Distribution")
+plt.legend()
 plt.show()
 
 
@@ -576,24 +580,24 @@ print( mean,var,skew,kurt)
 
 
 
-import seaborn as sns 
-from scipy import stats 
- 
-X1 = stats.t.rvs(df=1, size=4) 
-X2 = stats.t.rvs(df=3, size=4) 
-X3 = stats.t.rvs(df=9, size=4) 
- 
-plt.subplots(figsize=(8,5)) 
-sns.kdeplot(X1, label = "1 d.o.f") 
-sns.kdeplot(X2, label = "3 d.o.f") 
-sns.kdeplot(X3, label = "6 d.o.f") 
-plt.title("Student's t distribution") 
-plt.legend() 
+import seaborn as sns
+from scipy import stats
+
+X1 = stats.t.rvs(df=1, size=4)
+X2 = stats.t.rvs(df=3, size=4)
+X3 = stats.t.rvs(df=9, size=4)
+
+plt.subplots(figsize=(8,5))
+sns.kdeplot(X1, label = "1 d.o.f")
+sns.kdeplot(X2, label = "3 d.o.f")
+sns.kdeplot(X3, label = "6 d.o.f")
+plt.title("Student's t distribution")
+plt.legend()
 plt.show()
 
 #==============================================================================
 from scipy import stats
- 
+
 #随机数生成：
 # 设置random_state时，每次生成的随机数一样--任意数字
 #不设置或为None时，多次生成的随机数不一样
@@ -722,9 +726,10 @@ print("当一个随机二维向量的两个分量呈独立的、有着相同的�
 from IPython.display import Latex
 Latex(r'$ f(x;\sigma)=\frac{x}{\sigma ^2} e^{-\frac{x^2}{2\sigma^2}}  $')
 
+import matplotlib
+matplotlib.use('TkAgg')
 from scipy import stats
 import matplotlib.pyplot as plt
-
 
 
 loc = 0
@@ -734,7 +739,6 @@ mean, var, skew, kurt = stats.rayleigh(loc = loc, scale = scale).stats(moments='
 print( mean,var,skew,kurt)
 mean, var, skew, kurt = stats.rayleigh.stats(moments='mvsk', loc = loc, scale = scale)
 print( mean,var,skew,kurt)
-
 
 #随机数生成：
 from scipy import stats
@@ -763,8 +767,8 @@ frozencdf = stats.rayleigh(loc = loc, scale = scale,).cdf(x, )
 fig, axs = plt.subplots(1, 1)
 axs.plot(x, pdf, marker='o', markersize = 10, linestyle='-', label = "pdf")
 axs.plot(x, cdf, marker='*', markersize = 10, linestyle='-', label = "cdf")
-axs.plot(x, frozenpdf,   linestyle='--', label = "frozen pdf")
-axs.plot(x, frozencdf,  linestyle='--', label = "frozen cdf")
+# axs.plot(x, frozenpdf,   linestyle='--', label = "frozen pdf")
+# axs.plot(x, frozencdf,  linestyle='--', label = "frozen cdf")
 #axs.vlines(x, 0, pmf, colors='g')
 
 # # 设置图例legend
@@ -779,6 +783,10 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 plt.xlabel('x')
 plt.ylabel('概率')
 plt.title("rayleigh distribution")
+
+out_fig = plt.gcf()
+
+out_fig.savefig("/home/jack/snap/rayleigh.eps")
 plt.show()
 
 #===========================================================================================================================
@@ -852,7 +860,7 @@ p = stats.poisson( mu = 8).cdf(9,)
 print("喝9杯水以下的概率：",p)
 
 
- 
+
 
 #泊松分布概率密度函数和累计概率绘图
 import numpy as np
@@ -898,11 +906,11 @@ print('p(8<x<20)时的概率：{}'.format(stats.poisson.cdf(k=20, mu=15) - stats
 
 
 # https://mp.weixin.qq.com/s?__biz=MjM5NzEyMzg4MA==&mid=2649458753&idx=1&sn=64f42fe483c1a187f2f1d9c245b13023&chksm=bec1ea0689b663101816ec28acee7b32399ebbea9dcb4eb4b0d7fed9dd480fda09c2dab89e28&mpshare=1&scene=24&srcid=0808KJeTjjiPTE0GaH9zxydA&sharer_sharetime=1659939715371&sharer_shareid=8d8081f5c3018ad4fbee5e86ad64ec5c&exportkey=Aah%2Bw9Caj8%2B5NR4%2BcfuMr8Q%3D&acctmode=0&pass_ticket=CHQxjWvuBtwuL7rNWpEvCckUzLIEX0zizW%2B0hwsg1jJCO3y22VXGvJRUekW%2FEi9z&wx_header=0#rd
-X = stats.poisson.rvs(mu=3, size=500) 
- 
-plt.subplots(figsize=(8, 5)) 
-plt.hist(X, density=True, edgecolor="black", bins = 10) 
-plt.title("Poisson Distribution") 
+X = stats.poisson.rvs(mu=3, size=500)
+
+plt.subplots(figsize=(8, 5))
+plt.hist(X, density=True, edgecolor="black", bins = 10)
+plt.title("Poisson Distribution")
 plt.show()
 
 
@@ -1006,11 +1014,11 @@ print(b)
 
 
 
-p = 0.7 
+p = 0.7
 #平均值, 方差, 偏度, 峰度
 mean, var, skew, kurt = stats.bernoulli.stats(p , moments='mvsk')
 print(f"{mean}, {var}, {skew}, {kurt} ")
-# 0.7, 0.21000000000000002, -0.8728715609439702, -1.2380952380952361 
+# 0.7, 0.21000000000000002, -0.8728715609439702, -1.2380952380952361
 
 #=================================================================================
 #  https://blog.csdn.net/sinat_39620217/article/details/117410871
@@ -1106,7 +1114,7 @@ p = 0.3
 #平均值, 方差, 偏度, 峰度
 mean, var, skew, kurt = stats.binom.stats(n = n, p = p, moments='mvsk')
 print(f"{mean}, {var}, {skew}, {kurt} ")
-# 2.4, 1.68, 0.3086066999241839, -0.15476190476190463 
+# 2.4, 1.68, 0.3086066999241839, -0.15476190476190463
 
 
 #随机数生成：
@@ -1202,14 +1210,14 @@ plt.plot(['0','0','1','1',' '], [0, 0.4, 0.4, 1.0,1.0])
 plt.title("二点分布CDF")
 
 plt.subplot(223)
-b = stats.binom.pmf(range(0, n+1), n, 0.6) 
+b = stats.binom.pmf(range(0, n+1), n, 0.6)
 plt.bar([str(i) for i in range(0, n+1)], b)
 plt.title('二项分布PMF')
 
 plt.subplot(224)
 plt.title("二项分布CDF")
-c =  range(0, n+1) 
-d =  stats.binom.cdf(range(0, n+1), n, p1) 
+c =  range(0, n+1)
+d =  stats.binom.cdf(range(0, n+1), n, p1)
 plt.plot(c,d)
 
 
@@ -1221,7 +1229,7 @@ plt.show()
 n=10   # 十次试验
 p=0.3
 plt.rcParams['font.sans-serif'] = ['SimHei']
-b = stats.binom.pmf(range(0, n+1), n, p) 
+b = stats.binom.pmf(range(0, n+1), n, p)
 plt.bar(range(0, len(b)), b)
 plt.title('X~B({},{})二项分布PMF'.format(n,p))
 plt.show()
@@ -1243,7 +1251,7 @@ p=0.5
 plt.title('X~B({},{})二项分布CDF'.format(n,p))
 c =   range(0, n)
 
-d = stats.binom.cdf(range(0, n), n, p) 
+d = stats.binom.cdf(range(0, n), n, p)
 
 plt.plot(c,d)
 plt.show()
@@ -1330,7 +1338,7 @@ import numpy as np
 mpl.rcParams['font.sans-serif'] = [u'SimHei']
 mpl.rcParams['axes.unicode_minus'] = False
 fig,ax = plt.subplots(1,1)
-n = 10 
+n = 10
 p = 0.5
 #平均值, 方差, 偏度, 峰度
 mean,var,skew,kurt = binom.stats(n, p, moments='mvsk')

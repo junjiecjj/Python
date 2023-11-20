@@ -4,6 +4,11 @@
 Created on Sun Mar 20 19:19:04 2022
 
 @author: jack
+
+https://numpy.org/doc/stable/reference/random/legacy.html
+
+https://numpy.org/doc/1.14/reference/generated/numpy.random.RandomState.html
+
 """
 
 import numpy as np
@@ -175,7 +180,7 @@ numpy.random.RandomState.binomial(n, p, size=None)
 """
 
 
-n, p = 2, .5            
+n, p = 2, .5
 sum(np.random.binomial(n, p, size=20000)==2)/20000.
 # 0.24605        # 和我们的精确概率值相接近
 
@@ -183,7 +188,7 @@ sum(np.random.binomial(n, p, size=20000)==2)/20000.
 sum(np.random.binomial(n, p, size=20000)==1)/20000.
 # 0.5075
 
-# 两个都是反面 
+# 两个都是反面
 n, p = 2, .5
 sum(np.random.binomial(n, p, size=20000)==0)/20000.
 # 0.257
@@ -280,6 +285,22 @@ sns.distplot(random.poisson(lam=10, size=1000), hist=False, label='poisson')
 plt.show()
 
 #===========================================================================================================================
+#                                             numpy 模块   gamma分布
+#===========================================================================================================================
+shape, scale = 2., 2.  # mean=4, std=2*sqrt(2)
+s = np.random.gamma(shape, scale, 1000)
+
+
+
+#===========================================================================================================================
+#                                             numpy 模块   几何分布
+#===========================================================================================================================
+
+
+z = np.random.geometric(p=0.35, size=10000)
+
+
+#===========================================================================================================================
 #                                              逻辑斯谛分布
 #===========================================================================================================================
 
@@ -345,7 +366,7 @@ print(x)
 
 
 # 2、帕累托分布的可视化
-# 例如： 
+# 例如：
 
 from numpy import random
 import matplotlib.pyplot as plt
@@ -378,7 +399,7 @@ print(x)
 
 
 # 2、卡方分布的可视化
-# 例如： 
+# 例如：
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -441,7 +462,7 @@ plt.show()
 #===========================================================================================================================
 #                                              # 瑞利分布
 #===========================================================================================================================
-
+# https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.rayleigh.html#numpy.random.RandomState.rayleigh
 
 
 #绘制一个样本，用于瑞利分布，比例为2，大小为2x3：
@@ -455,6 +476,25 @@ import seaborn as sns
 sns.distplot(random.rayleigh(scale=1, size=10000), hist=False)
 plt.show()
 
+
+
+print("当一个随机二维向量的两个分量呈独立的、有着相同的方差、均值为0的正态分布时，这个向量的模呈瑞利分布。例如，当随机复数的实部和虚部独立同分布于0均值，同方差的正态分布时，该复数的绝对值服从瑞利分布。\
+    \n瑞利分布的概率函数为：")
+from IPython.display import Latex
+Latex(r'$ f(x;\sigma)=\frac{x}{\sigma ^2} e^{-\frac{x^2}{2\sigma^2}}  $')
+Latex(r'$ f(x;\sigma)=\frac{x}{scale ^2} e^{-\frac{x^2}{2 * scale^2}}  $')
+
+
+
+from matplotlib.pyplot import hist
+
+a = np.random.rayleigh(3, size = 100000)
+
+a = np.random.rayleigh(3, size = (4, 5))
+
+
+scale = 2
+s = np.random.rayleigh(scale, 1000000)
 
 #===========================================================================================================================
 #                                              numpy 模块计算均值、方差、标准差

@@ -107,7 +107,7 @@ mark  = ['s','v','*', 'o', 'd', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4'
 
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -176,6 +176,19 @@ axs[1].plot([1,2,3],[1,2,13],linestyle='dotted', color='#1661ab', linewidth=5, l
 axs[1].plot([0.8,0.9,1.5],[0.8,0.9,21.5],linestyle=(0,(3, 1, 1, 1, 1, 1)), color='#ec2d7a', linewidth=5, label='元组型线性：(0,(3, 1, 1, 1, 1, 1)')
 
 
+# linestyle_tuple = [
+# ('loosely dotted', (0, (1, 10))),
+# ('dotted', (0, (1, 1))),
+# ('densely dotted', (0, (1, 2))),
+# ('loosely dashed', (0, (5, 10))),
+# ('dashed', (0, (5, 5))),
+# ('densely dashed', (0, (5, 1))),
+# ('loosely dashdotted', (0, (3, 10, 1, 10))),
+# ('dashdotted', (0, (3, 5, 1, 5))),
+# ('densely dashdotted', (0, (3, 1, 1, 1))),
+# ('dashdotdotted', (0, (3, 5, 1, 5, 1, 5))),
+# ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
+# ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
 
 #自定义inestyle
 axs[1].plot([1.5,2.5,3.5],[1,2,13],linestyle=(0,(1,2,3,4,2,2)), color='black', linewidth=5, label='自定义线性：(0,(1,2,3,4,2,2)))')

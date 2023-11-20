@@ -168,18 +168,18 @@ print(i_expr)
 
 
 #===========
-x, a, t = sy.symbols('x, a, t')
+x, a, s, t = sy.symbols('x, a, s, t')
 expr = (x-a)**2 * (1/sy.sqrt(2 * sy.pi)) * sy.exp(-x**2/2)
-i_expr=sy.integrate(expr, (x, -sy.oo, t))
+i_expr=sy.integrate(expr, (x, s, t))
 print(i_expr)
 
 display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))
 sy.simplify(i_expr)
 
 #===========
-x,   t = sy.symbols('x,  t')
+x, s,  t = sy.symbols('x, s, t')
 expr = x**2 * (1/sy.sqrt(2 * sy.pi)) * sy.exp(-x**2/2)
-i_expr=sy.integrate(expr,(x, -sy.oo, t))
+i_expr=sy.integrate(expr,(x, s, t))
 print(i_expr)
 
 display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))
@@ -190,6 +190,20 @@ print(sy.simplify(i_expr))
 #===========
 x, t = sy.symbols('x,  t')
 expr =  (1/sy.sqrt(2 * sy.pi)) * sy.exp(-x**2/2)
+i_expr = sy.integrate(expr,(x, -sy.oo, t))
+# print(i_expr)
+display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))
+
+
+sy.simplify(i_expr)
+print(sy.simplify(i_expr))
+
+display(Latex(f"$$f_1(x,y)={sy.latex(f1)}$$"))
+
+
+#===========
+x, t = sy.symbols('x,  t')
+expr =  sy.sin(x) /x
 i_expr = sy.integrate(expr,(x, -sy.oo, t))
 # print(i_expr)
 display(Latex(f"$$f(x)={sy.latex(i_expr)}$$"))

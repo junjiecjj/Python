@@ -29,10 +29,10 @@ print(f"a.dtype = {a.dtype}") # 查看a的dtype
 # a.dtype = int64
 
 b = np.fromfile("/home/jack/公共的/MLData/TrashFile/a.bin", dtype=np.int64) # 按照int32类型读入数据
-print(f"b  = {b}") 
+print(f"b  = {b}")
 b.shape = 3, 4 # 按照a的shape修改b的shape
 
-print(f"b  = {b}") 
+print(f"b  = {b}")
 
 #============================================================================
 #  1 np.savetxt()和np.loadtxt()
@@ -76,14 +76,14 @@ print(f"ar2_load.dtype = \n{ar2_load.dtype}")
 
 # 保存2个1维数组为txt,
 path1 = '/home/jack/公共的/MLData/TrashFile/test1.txt'
-ar1 =  np.arange(0.0,5.0,1.0)
-ar2 = np.arange(0.0,  6.0,1.0)*2
+ar1 =  np.arange(0.0, 5.0, 1.0)
+ar2 = np.arange(0.0, 6.0, 1.0)*2
 np.savetxt(path1, (ar1,ar2), fmt='%.2f', delimiter=',',)#使用默认分割符（空格），保留两位小数
 
 ar_load = np.loadtxt(path1, delimiter=',')
 
 # ar_load
-# Out[60]: 
+# Out[60]:
 # array([[0., 1., 2., 3., 4.],
 #        [0., 2., 4., 6., 8.]])
 
@@ -170,7 +170,7 @@ Alldata.files
 # 保存一个二维数组为npy
 import numpy as np
 path1 = '/home/jack/公共的/MLData/TrashFile/test1.npy'
-ar1 =  np.arange(24).reshape(4,6)
+ar1 =  np.arange(24).reshape(4,6)*1.1
 
 print(f"ar1 = \n{ar1}")
 np.save(path1, ar1)      #如果文件路径末尾没有扩展名.npy，该扩展名会被自动加上。
@@ -180,12 +180,12 @@ ar_load = np.load(path1)
 print(f"ar_load = \n{ar_load}")
 
 
-# ar1 = 
+# ar1 =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-# ar_load = 
+# ar_load =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
@@ -212,26 +212,26 @@ print(f"ar_load[0] = \n{ar_load[0]}")
 print(f"ar_load[1] = \n{ar_load[1]}")
 
 
-# ar1 = 
+# ar1 =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-# ar2 = 
+# ar2 =
 # [[8 7 7 3]
 #  [5 7 5 7]]
-# ar_load = 
+# ar_load =
 # [array([[ 0,  1,  2,  3,  4,  5],
 #         [ 6,  7,  8,  9, 10, 11],
 #         [12, 13, 14, 15, 16, 17],
 #         [18, 19, 20, 21, 22, 23]]) array([[8, 7, 7, 3],
 #                                           [5, 7, 5, 7]])]
-# ar_load[0] = 
+# ar_load[0] =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-# ar_load[1] = 
+# ar_load[1] =
 # [[8 7 7 3]
 #  [5 7 5 7]]
 
@@ -251,41 +251,45 @@ print(f"ar2_load.item() = \n{ar2_load.item()}")
 print(f"ar2_load[()][\"Hello\"] = \n{ar2_load[()]['Hello']}")
 print(f"ar2_load[()]['Jack'] = \n{ar2_load[()]['Jack']}")
 
+print(f"ar2_load.item()['Hello'] = \n{ar2_load.item()['Hello']}")
+print(f"ar2_load.item()['Jack'] = \n{ar2_load.item()['Jack']}")
+
 # ar1 = {'Hello': array([[3, 2, 4, 4],
 #        [4, 2, 4, 3],
 #        [3, 3, 4, 2],
 #        [3, 2, 1, 4]]), 'Jack': array([[2, 1, 2, 1],
 #        [2, 2, 1, 2]])}
-# ar2_load[()] = 
+# ar2_load[()] =
 # {'Hello': array([[3, 2, 4, 4],
 #        [4, 2, 4, 3],
 #        [3, 3, 4, 2],
 #        [3, 2, 1, 4]]), 'Jack': array([[2, 1, 2, 1],
 #        [2, 2, 1, 2]])}
-# ar2_load.item() = 
+# ar2_load.item() =
 # {'Hello': array([[3, 2, 4, 4],
 #        [4, 2, 4, 3],
 #        [3, 3, 4, 2],
 #        [3, 2, 1, 4]]), 'Jack': array([[2, 1, 2, 1],
 #        [2, 2, 1, 2]])}
-# ar2_load[()]["Hello"] = 
+# ar2_load[()]["Hello"] =
 # [[3 2 4 4]
 #  [4 2 4 3]
 #  [3 3 4 2]
 #  [3 2 1 4]]
-# ar2_load[()]['Jack'] = 
+# ar2_load[()]['Jack'] =
 # [[2 1 2 1]
 #  [2 2 1 2]]
 
 
 import numpy as np
 	# define
-dict = {'a' : {1,2,3}, 'b': {4,5,6}}
+path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
+dict1 = {'a' : {1,2,3}, 'b': {4,5,6}}
 	# save
-np.save(path1,dict)
+np.save(path1,dict1)
 	# load
 dict_load=np.load(path1, allow_pickle=True)
-	
+
 print("dict =",dict_load.item())
 print("dict['a'] =",dict_load.item()['a'])
 
@@ -317,13 +321,13 @@ print(f"Dic_load[()]['name'] = \n{Dic_load[()]['name']}")
 #  [3 3 2 2]]
 # ar2 = [[2 1 2 1]
 #  [1 1 1 2]]
-# Dic = 
+# Dic =
 # {'first': [12, 21, 33], 'name': 'jack'}
-# Dic_load[()] = 
+# Dic_load[()] =
 # {'first': [12, 21, 33], 'name': 'jack'}
-# Dic_load[()]['first'] = 
+# Dic_load[()]['first'] =
 # [12, 21, 33]
-# Dic_load[()]['name'] = 
+# Dic_load[()]['name'] =
 # jack
 
 #In [101]: Dic_load
@@ -343,23 +347,23 @@ print(f"Data[0]['name'] = \n{Data[0]['name']}")
 print(f"Data[1]  = \n{Data[1] }")
 print(f"Data[2]  = \n{Data[2] }")
 
-# Data = 
+# Data =
 # [{'first': [12, 21, 33], 'name': 'jack'} array([[4, 4, 1, 3],
 #                                                 [4, 2, 4, 4],
 #                                                 [4, 1, 3, 2],
 #                                                 [1, 4, 1, 1]])
 #  array([[2, 2, 1, 1],
 #         [1, 2, 2, 1]])]
-# Data[0]['first'] = 
+# Data[0]['first'] =
 # [12, 21, 33]
-# Data[0]['name'] = 
+# Data[0]['name'] =
 # jack
-# Data[1]  = 
+# Data[1]  =
 # [[4 4 1 3]
 #  [4 2 4 4]
 #  [4 1 3 2]
 #  [1 4 1 1]]
-# Data[2]  = 
+# Data[2]  =
 # [[2 2 1 1]
 #  [1 2 2 1]]
 
@@ -381,7 +385,7 @@ print(f"Data[2]  = \n{Data[2] }")
 print(f"Data[3]['first'] = \n{Data[3]['first']}")
 print(f"Data[3]['name'] = \n{Data[3]['name']}")
 
-# Data = 
+# Data =
 # [{'first': [12, 21, 33], 'name': 'jack'} array([[1, 4, 3, 2],
 #                                                 [1, 1, 2, 4],
 #                                                 [2, 4, 4, 1],
@@ -389,22 +393,22 @@ print(f"Data[3]['name'] = \n{Data[3]['name']}")
 #  array([[2, 1, 1, 1],
 #         [1, 1, 1, 2]]) {'first': array([[0, 1, 2],
 #                               [3, 4, 5]]), 'name': 'David'}]
-# Data[0]['first'] = 
+# Data[0]['first'] =
 # [12, 21, 33]
-# Data[0]['name'] = 
+# Data[0]['name'] =
 # jack
-# Data[1]  = 
+# Data[1]  =
 # [[1 4 3 2]
 #  [1 1 2 4]
 #  [2 4 4 1]
 #  [2 3 2 2]]
-# Data[2]  = 
+# Data[2]  =
 # [[2 1 1 1]
 #  [1 1 1 2]]
-# Data[3]['first'] = 
+# Data[3]['first'] =
 # [[0 1 2]
 #  [3 4 5]]
-# Data[3]['name'] = 
+# Data[3]['name'] =
 # David
 
 #============================================================================
@@ -464,22 +468,22 @@ print(f"DATA.files = {DATA.files}")
 print(f"DATA['A'] = \n{DATA['A']}\nDATA['B'] = \n{DATA['B']}")
 
 # ============================================================
-# ar1 = 
+# ar1 =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-#  ar2 = 
+#  ar2 =
 # [[ 0 11 22]
 #  [33 44 55]]
 # DATA = <numpy.lib.npyio.NpzFile object at 0x7f24c1853fd0>
 # DATA.files = ['A', 'B']
-# DATA['A'] = 
+# DATA['A'] =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-# DATA['B'] = 
+# DATA['B'] =
 # [[ 0 11 22]
 #  [33 44 55]]
 
@@ -498,7 +502,7 @@ print(f"DATA.files = {DATA.files}")
 print(f"DATA['A'] = \n{DATA['A']}")
 
 # DATA.files = ['A']
-# DATA['A'] = 
+# DATA['A'] =
 # {'a': 1, 'b': 2}
 
 
@@ -520,26 +524,26 @@ print(f"DATA['A2'] = \n{DATA['A2']}")
 
 
 # DATA.files = ['D1', 'D2', 'A1', 'A2']
-# DATA['D1'] = 
+# DATA['D1'] =
 # {'first': array([[ 0,  1,  2,  3],
 #        [ 4,  5,  6,  7],
 #        [ 8,  9, 10, 11]]), 'name': 'jack'}
-# DATA['D1'][()] = 
+# DATA['D1'][()] =
 # {'first': array([[ 0,  1,  2,  3],
 #        [ 4,  5,  6,  7],
 #        [ 8,  9, 10, 11]]), 'name': 'jack'}
-# DATA['D2'] = 
+# DATA['D2'] =
 # {'fam': array([[3, 9, 1, 9, 5, 8, 9, 5],
 #        [8, 8, 2, 6, 1, 5, 1, 6]]), 'host': '129.20.1.12'}
-# DATA['D2'][()] = 
+# DATA['D2'][()] =
 # {'fam': array([[3, 9, 1, 9, 5, 8, 9, 5],
 #        [8, 8, 2, 6, 1, 5, 1, 6]]), 'host': '129.20.1.12'}
-# DATA['A1'] = 
+# DATA['A1'] =
 # [[ 0  1  2  3  4  5  6  7]
 #  [ 8  9 10 11 12 13 14 15]
 #  [16 17 18 19 20 21 22 23]
 #  [24 25 26 27 28 29 30 31]]
-# DATA['A2'] = 
+# DATA['A2'] =
 # [[32 33 34 35 36 37]
 #  [38 39 40 41 42 43]]
 
@@ -591,21 +595,21 @@ print(f"DATA['A'] = \n{DATA['A']}\nDATA['B'] = \n{DATA['B']}")
 
 
 # ============================================================
-# ar1 = 
+# ar1 =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-#  ar2 = 
+#  ar2 =
 # [[ 0 11 22]
 #  [33 44 55]]
 # <numpy.lib.npyio.NpzFile object at 0x7f24c240afa0>
-# DATA['A'] = 
+# DATA['A'] =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-# DATA['B'] = 
+# DATA['B'] =
 # [[ 0 11 22]
 #  [33 44 55]]
 
@@ -647,69 +651,69 @@ print(f"DATA['A3'] = \n{DATA['A3']}")
 
 
 # ============================================================
-# ar1 = 
+# ar1 =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-#  ar2 = 
+#  ar2 =
 # [[ 0 11 22]
 #  [33 44 55]]
-#  ar3 = 
+#  ar3 =
 # [[18  2 17 15]
 #  [13 12 18 16]
 #  [11  8  1 13]
 #  [16 17 14  4]]
-# dic1 = 
+# dic1 =
 # {'Hello': array([[18,  2, 17, 15],
 #        [13, 12, 18, 16],
 #        [11,  8,  1, 13],
 #        [16, 17, 14,  4]]), 'jack': array([[5, 5, 4, 2],
 #        [8, 8, 2, 4]])}
-# dic2 = 
+# dic2 =
 # {'fam': array([[5, 4, 8, 3, 4, 2, 9, 3],
 #        [4, 1, 9, 6, 7, 9, 4, 8]]), 'host': '129.20.1.12'}
 # DATA.files = ['A1', 'A2', 'A3', 'D1', 'D2']
-# DATA['D1'] = 
+# DATA['D1'] =
 # {'Hello': array([[18,  2, 17, 15],
 #        [13, 12, 18, 16],
 #        [11,  8,  1, 13],
 #        [16, 17, 14,  4]]), 'jack': array([[5, 5, 4, 2],
 #        [8, 8, 2, 4]])}
-# DATA['D1'][()] = 
+# DATA['D1'][()] =
 # {'Hello': array([[18,  2, 17, 15],
 #        [13, 12, 18, 16],
 #        [11,  8,  1, 13],
 #        [16, 17, 14,  4]]), 'jack': array([[5, 5, 4, 2],
 #        [8, 8, 2, 4]])}
-# DATA['D1'][()]['Hello'] = 
+# DATA['D1'][()]['Hello'] =
 # [[18  2 17 15]
 #  [13 12 18 16]
 #  [11  8  1 13]
 #  [16 17 14  4]]
-# DATA['D1'][()]['jack'] = 
+# DATA['D1'][()]['jack'] =
 # [[5 5 4 2]
 #  [8 8 2 4]]
-# DATA['D2'] = 
+# DATA['D2'] =
 # {'fam': array([[5, 4, 8, 3, 4, 2, 9, 3],
 #        [4, 1, 9, 6, 7, 9, 4, 8]]), 'host': '129.20.1.12'}
-# DATA['D2'][()] = 
+# DATA['D2'][()] =
 # {'fam': array([[5, 4, 8, 3, 4, 2, 9, 3],
 #        [4, 1, 9, 6, 7, 9, 4, 8]]), 'host': '129.20.1.12'}
-# DATA['D2'][()]['fam'] = 
+# DATA['D2'][()]['fam'] =
 # [[5 4 8 3 4 2 9 3]
 #  [4 1 9 6 7 9 4 8]]
-# DATA['D2'][()]['host'] = 
+# DATA['D2'][()]['host'] =
 # 129.20.1.12
-# DATA['A1'] = 
+# DATA['A1'] =
 # [[ 0  1  2  3  4  5]
 #  [ 6  7  8  9 10 11]
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
-# DATA['A2'] = 
+# DATA['A2'] =
 # [[ 0 11 22]
 #  [33 44 55]]
-# DATA['A3'] = 
+# DATA['A3'] =
 # [[18  2 17 15]
 #  [13 12 18 16]
 #  [11  8  1 13]

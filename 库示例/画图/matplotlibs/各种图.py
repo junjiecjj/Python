@@ -107,6 +107,7 @@ cnames = {
 'darkgoldenrod':        '#B8860B',
 'darkgray':             '#A9A9A9',
 'darkgreen':            '#006400',
+'darkgreen':            '#4ea142',
 'darkkhaki':            '#BDB76B',
 'darkmagenta':          '#8B008B',
 'darkolivegreen':       '#556B2F',
@@ -125,7 +126,7 @@ cnames = {
 'dodgerblue':           '#1E90FF',
 'firebrick':            '#B22222',
 'floralwhite':          '#FFFAF0',
-'forestgreen':          '#228B22',
+'forestgreen':          '#28a428',
 'fuchsia':              '#FF00FF',
 'gainsboro':            '#DCDCDC',
 'ghostwhite':           '#F8F8FF',
@@ -202,7 +203,7 @@ cnames = {
 'sandybrown':           '#FAA460',
 'seagreen':             '#2E8B57',
 'seashell':             '#FFF5EE',
-'sienna':               '#A0522D',
+'sienna':               '#bc6035',
 'silver':               '#C0C0C0',
 'skyblue':              '#87CEEB',
 'slateblue':            '#6A5ACD',
@@ -305,6 +306,12 @@ pad	float	标记和标签之间的点距离。
 labelsize	float或str	标记的字体大小以点表示或以字符串形式表示(e.g;,“大”)。
 
 
+
+matplotlib 绘制曲线时如果数据点较多， 添加 marker 后会出现 marker 重叠或太密集的现象， 可以用 markevery 来控制 marker 的间距。
+
+plt.plot(x, y, marker='o', markevery=10)
+markevery 可以设置整数，也可以设为数组格式。
+
 '''
 
 
@@ -320,11 +327,11 @@ t1 = np.arange(-1, 1.1, 0.1)
 s4 = np.arcsin(t1)
 
 
+
 fig, axs = plt.subplots(4, 1, figsize=(10, 16))
 ############################################## 0 #############################################
 
-
-axs[0].plot(t, s1, color='b', linestyle='-', label='sin(x)正弦',)
+axs[0].plot(t, s1, color='b', linestyle='-', label='sin(x)正弦',  marker='o', markevery=10)
 axs[0].plot(t, s3, color='r', linestyle='-', label='tan(x)',)
 axs[0].axvline(x=1, ymin=0.4, ymax=0.6, ls='-', linewidth=4, color='b', label='tan(x)',)
 
@@ -362,7 +369,9 @@ axs[0].spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
 axs[0].spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
 axs[0].spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
 axs[0].spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
-
+axs[0].spines['left'].set_color('m') ## 设置边框线颜色
+axs[0].spines['bottom'].set_color('red') ## 设置边框线颜色
+axs[0].spines['bottom'].set_linestyle("--") ## 设置边框线线型
 
 axs[0].set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
 axs[0].set_ylim(-3, 3)  #拉开坐标轴范围显示投影
@@ -760,13 +769,16 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 # labelsize——标签大小：float 或 str 刻度标签字体大小（以磅为单位）或字符串（例如，“大”）。
 # width——宽度：刻度线宽度（以磅为单位）。
 # 参数axis的值为’x’、‘y’、‘both’，分别代表设置X轴、Y轴以及同时设置，默认值为’both’。
-ax1.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=3, labelcolor = "red", colors='blue', rotation=25,)
+ax1.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=13, labelcolor = "red", colors='blue', rotation=25,)
 # axs[0,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=26, width=3,)
 labels = ax1.get_xticklabels() + ax1.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
-
+ax1.spines['left'].set_linewidth(2.5)  ###设置右边坐标轴的粗细
+ax1.spines['left'].set_color('m') ## 设置边框线颜色
+ax1.spines['right'].set_linewidth(2.5)  ###设置右边坐标轴的粗细
+ax1.spines['right'].set_color('green') ## 设置边框线颜色
 ax1.set_xticks([0, 1, 2, 3, 4, 5,6,7,8,9]) # 设置刻度
 xlabels = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
 ax1.set_xticklabels(xlabels)
@@ -1630,7 +1642,7 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
-fig = plt.figure(figsize=(5, 5), dpi=200)
+fig = plt.figure(figsize=(5, 5), dpi = 200)
 #===================================================================
 # 画第1个图：折线图
 #===================================================================
@@ -1763,7 +1775,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-fig, ax=plt.subplots(2,2)
+fig, ax = plt.subplots(2,2)
 # 画第1个图：折线图
 x=np.arange(1,100)
 ax[0][0].plot(x,x*x)
@@ -1775,6 +1787,18 @@ ax[1][0].pie(x=[15,30,45,10],labels=list('ABCD'),autopct='%.0f',explode=[0,0.05,
 ax[1][1].bar([20,10,30,25,15],[25,15,35,30,20],color='b')
 plt.show()
 
+## or
+fig, ax = plt.subplots(2,2)
+# 画第1个图：折线图
+x=np.arange(1,100)
+ax[0,0].plot(x,x*x)
+# 画第2个图：散点图
+ax[0,1].scatter(np.arange(0,10), np.random.rand(10))
+# 画第3个图：饼图
+ax[1,0].pie(x=[15,30,45,10],labels=list('ABCD'),autopct='%.0f',explode=[0,0.05,0,0])
+# 画第4个图：条形图
+ax[1,1].bar([20,10,30,25,15],[25,15,35,30,20],color='b')
+plt.show()
 
 
 

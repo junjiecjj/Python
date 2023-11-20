@@ -26,7 +26,7 @@ Created on Tue Jul  4 14:48:00 2023
     1-范数： 列和范数，即所有矩阵列向量绝对值之和的最大值，matlab调用函数norm(A, 1)。
     2-范数： 谱范数，即A'A矩阵的最大特征值的开平方。matlab调用函数norm(x, 2)。
     ∞-范数： 行和范数，即所有矩阵行向量绝对值之和的最大值，matlab调用函数norm(A, inf)。
-    F-范数： Frobenius范数，它通常也叫做矩阵的L2范数, 即矩阵元素绝对值的平方和再开平方，matlab调用函数norm(A, ’fro‘)。
+    F-范数： Frobenius 范数，它通常也叫做矩阵的L2范数, 即矩阵元素绝对值的平方和再开平方，matlab调用函数norm(A, ’fro‘)。
     p-范数 : not supported,矩阵没有所谓的p范数，只有向量有
 
 np.linalg.norm(X):
@@ -135,7 +135,7 @@ print(A)
 # print(ret_all)
 
 
-ret_0 = np.linalg.norm(A, ord = 0,  axis = 1,keepdims = True )                          # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
+ret_0 = np.linalg.norm(A, ord = 0,  axis = 1, keepdims = True )                          # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
 print(ret_0)
 ret_0 = np.linalg.norm(A, ord = 0,  axis = 0, keepdims = True )                          # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
 print(ret_0)
@@ -536,9 +536,26 @@ print(inputs1)
 inputs2 = torch.norm(A, p=2, dim=0, keepdim=True)  ## （p = 2，dim = 0）每列的据进行2范数运算
 print(inputs2)
 
+inputs1 = torch.norm(A, p=1, dim=1, keepdim=True)  ##（p = 2，dim = 1）每行的数据进行2范数运算
+print(inputs1)
+inputs2 = torch.norm(A, p=1, dim=0, keepdim=True)  ## （p = 2，dim = 0）每列的据进行2范数运算
+print(inputs2)
+# tensor([[ 3., -4.],
+#         [-6.,  2.]])
+# tensor([[5.00000],
+#         [6.32456]])
+# tensor([[6.70820, 4.47214]])
+# tensor([[7.],
+#         [8.]])
+# tensor([[9., 6.]])
 
 
-
+A = torch.tensor([3., -4.])
+print(A)
+inputs1 = torch.norm(A, p=2,   keepdim=True)  ##（p = 2，dim = 1）每行的数据进行2范数运算
+print(inputs1)
+# tensor([ 3., -4.])
+# tensor([5.])
 
 
 

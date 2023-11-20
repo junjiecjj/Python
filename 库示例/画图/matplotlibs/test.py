@@ -39,123 +39,61 @@ font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Regular Nerd Font Complet
 
 
 
+##==========================================  2 ===================================================
 
+X = np.arange(0, 2, 0.1)
 
-import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif']=['SimHei']  # 用于显示中文
-plt.rcParams['axes.unicode_minus'] = False  # 用于显示中文
-
-
-# 可以显示的形状    marker名称
-# ϖ	\varpi
-# ϱ	\varrho
-# ς	\varsigma
-# ϑ	\vartheta
-# ξ	\xi
-# ζ	\zeta
-# Δ	\Delta
-# Γ	\Gamma
-# Λ	\Lambda
-# Ω	\Omega
-# Φ	\Phi
-# Π	\Pi
-# Ψ	\Psi
-# Σ	\Sigma
-# Θ	\Theta
-# Υ	\Upsilon
-# Ξ	\Xi
-# ℧	\mho
-# ∇	\nabla
-# ℵ	\aleph
-# ℶ	\beth
-# ℸ	\daleth
-# ℷ	\gimel
-# /	/
-# [	[
-# ⇓	\Downarrow
-# ⇑	\Uparrow
-# ‖	\Vert
-# ↓	\downarrow
-# ⟨	\langle
-# ⌈	\lceil
-# ⌊	\lfloor
-# ⌞	\llcorner
-# ⌟	\lrcorner
-# ⟩	\rangle
-# ⌉	\rceil
-# ⌋	\rfloor
-# ⌜	\ulcorner
-# ↑	\uparrow
-# ⌝	\urcorner
-# \vert
-# {	\{
-# \|
-# }	\}
-# ]	]
-# |
-# ⋂	\bigcap
-# ⋃	\bigcup
-# ⨀	\bigodot
-# ⨁	\bigoplus
-# ⨂	\bigotimes
-# ⨄	\biguplus
-# ⋁	\bigvee
-# ⋀	\bigwedge
-# ∐	\coprod
-# ∫	\int
-# ∮	\oint
-# ∏	\prod
-# ∑	\sum
-
-fig, axs = plt.subplots(2, 1, figsize=(8, 13))
-#=============================== 0 ===========================================
-#常规marker使用
-axs[0].plot([1,2,3],[1,2,3],marker=4, markersize=15, color='lightblue',label='常规marker')
-axs[0].plot([1.8,2.8,3.8],[1,2,3],marker='2', markersize=15, color='#ec2d7a',label='常规marker')
-
-#非常规marker使用
-#注意使用两个$符号包围名称
-axs[0].plot([1,2,3],[4,5,6],marker='$\circledR$', markersize=15, color='r', alpha=0.5,label='非常规marker')
-axs[0].plot([1.5,2.5,3.5],[1.25,2.1,6.5],marker='$\heartsuit$', markersize=15, color='#f19790', alpha=0.5,label='非常规marker')
-axs[0].plot([1,2,3],[2.5,6.2,8],marker='$\clubsuit$', markersize=15, color='g', alpha=0.5,label='非常规marker')
-
-#自定义marker
-axs[0].plot([1.2,2.2,3.2],[1,2,3],marker='$666$', markersize=15, color='#2d0c13',label='自定义marker')
-axs[0].legend(loc='upper left')
-
-
-#=============================== 1 ===========================================
-#字符型linestyle使用方法
-axs[1].plot([1,2,3],[1,2,13],linestyle='dotted', color='#1661ab', linewidth=5, label='字符型线性：dotted')
-
-#元组型lintstyle使用方法
-axs[1].plot([0.8,0.9,1.5],[0.8,0.9,21.5],linestyle=(0,(3, 1, 1, 1, 1, 1)), color='#ec2d7a', linewidth=5, label='元组型线性：(0,(3, 1, 1, 1, 1, 1)')
+s1 = np.sin(2*np.pi*X)
+s2 = np.cos(2*np.pi*X)
+s3 = np.tan(2*np.pi*X)
 
 
 
-#自定义inestyle
-axs[1].plot([1.5,2.5,3.5],[1,2,13],linestyle=(0,(1,2,3,4,2,2)), color='black', linewidth=5, label='自定义线性：(0,(1,2,3,4,2,2)))')
-axs[1].plot([2.5,3.5,4.5],[1,2,13],linestyle=(2,(1,2,3,4,2,2)), color='g', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
-axs[1].legend()
+losslog = np.zeros((len(X),3))
+losslog[:,0] = s1
+losslog[:,1] = s2
+losslog[:,2] = s3
 
-#=====================================================================================================
-plt.subplots_adjust(left=None,bottom=None,right=None,top=None,wspace=0.3,hspace=0.7)
+loss = "MSE"
 
-fontt = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-#fontt  = {'family':'Times New Roman','style':'normal','size':22}
-#fontt = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
-plt.suptitle('cos and sin正弦 and tan ', fontproperties=fontt, x=0.5,y=0.96,)
+fig, axs = plt.subplots(1,1, figsize=(8, 6), constrained_layout=True)
+for i, l in enumerate(loss):
+    label = '{} Loss'.format(l)
+    # fig = plt.figure(constrained_layout=True)
+    axs.plot(X, losslog[:, i], label=label)
 
+font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs.set_xlabel('Epoch',fontproperties=font)
+axs.set_ylabel('Training loss',fontproperties=font)
+axs.set_title(label, fontproperties=font)
+#font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
+#  edgecolor='black',
+# facecolor = 'y', # none设置图例legend背景透明
+legend1 = axs.legend(loc='best',  prop=font1, bbox_to_anchor=(0.5, -0.2), ncol = 3, facecolor = 'y', edgecolor = 'b', labelcolor = 'r', borderaxespad=0,)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+# frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+
+axs.spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
+axs.spines['left'].set_color('b')  ### 设置边框线颜色
+axs.spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
+axs.spines['top'].set_color('r')  ### 设置边框线颜色
+
+axs.tick_params(direction='in',axis='both',top=True,right=True,labelsize=16, width=6, labelcolor = "red", colors='blue', rotation=25, )
+labels = axs.get_xticklabels() + axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(20) for label in labels] #刻度值字号
+
+
+filepath2 = '/home/jack/snap/'
 out_fig = plt.gcf()
-out_fig.savefig(filepath2+'hhsss.eps', format='eps', bbox_inches='tight')
-#out_fig.savefig(filepath2+'hh.svg', format='svg', dpi=1000, bbox_inches='tight')
-out_fig.savefig(filepath2+'hhsss.pdf', format='pdf',  bbox_inches='tight')
-
+out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
+#out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
-
-
-
-
 
 
 

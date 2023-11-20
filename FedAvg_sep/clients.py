@@ -90,9 +90,7 @@ class client(object):
             # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
             # return  local_parms  # self.local_model.state_dict() #  local_parms
 
-        ## 差分隐私
-        if self.args.DP == True:
-            pass
+
 
         ## 随机掩码
         if self.args.Random_Mask == True:
@@ -115,7 +113,6 @@ class client(object):
 
         # print(f"1: {local_update['conv1.bias']}")
         return  local_update  # self.local_model.state_dict() #  local_parms
-
 
 '''
 创建Clients群100个

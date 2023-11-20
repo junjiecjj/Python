@@ -283,6 +283,191 @@ if __name__ == '__main__':
 
 
 #*************************************************
+## 多进程产生随机数的正确用法1
+
+from multiprocessing import Process
+import os,time
+import random
+import numpy as np
+
+def work(r, i, ):
+    # print(f'{os.getpid()} is running')
+    np.random.seed()
+    # a = RDM.binomial(n = 1, p = 0.5, size = 20)
+    a = np.random.binomial(n = 1, p = 0.5, size = 10)
+    print(f"round {r}, client {i}, {a}")
+    # time.sleep(np.random.random())
+    #注意，这里如果是sleep(1)则看不出来错乱；但是如果是sleep(random.randrange(0,2))则看得出错乱
+    # print(f'{os.getpid()} is done')
+
+if __name__ == '__main__':
+    for r in range(3):
+        ps=[]
+        n = 4
+        for i in range(n):
+            # rdm = np.random.RandomState()
+            p=Process(target=work, args = (r, i, ))
+            p.start()
+            ps.append(p)
+
+        for i in range(n):
+            ps[i].join() #join应该这么用，千万别直接跟在start后面，这样会变成串行
+    print("end")
+# round 0, client 0, [0 1 0 1 0 1 0 1 1 1]
+# round 0, client 1, [0 0 0 0 0 0 0 0 0 0]
+# round 0, client 2, [1 1 1 0 0 0 0 0 1 1]
+# round 0, client 3, [1 0 1 1 0 1 1 1 0 1]
+# round 1, client 0, [0 1 1 0 0 0 1 1 1 0]
+# round 1, client 1, [1 1 1 0 0 0 1 1 1 1]
+# round 1, client 2, [0 1 0 0 0 0 1 1 0 1]
+# round 1, client 3, [1 1 0 0 0 0 1 0 1 0]
+# round 2, client 0, [0 0 1 1 1 1 0 1 0 1]
+# round 2, client 1, [0 0 1 0 0 1 1 1 1 1]
+# round 2, client 2, [0 1 1 1 1 1 0 0 1 0]
+# round 2, client 3, [0 0 1 1 0 0 1 0 0 0]
+# end
+
+
+#*************************************************
+## 多进程产生随机数的正确用法2
+def work(r, i, RDM):
+    # print(f'{os.getpid()} is running')
+    # np.random.seed()
+    a = RDM.binomial(n = 1, p = 0.5, size = 20)
+    a = np.random.binomial(n = 1, p = 0.5, size = 10)
+    print(f"round {r}, client {i}, {a}")
+    # time.sleep(1)
+    #注意，这里如果是sleep(1)则看不出来错乱；但是如果是sleep(random.randrange(0,2))则看得出错乱
+    # print(f'{os.getpid()} is done')
+
+if __name__ == '__main__':
+    for r in range(3):
+        ps=[]
+        n = 4
+        for i in range(n):
+            rdm = np.random.RandomState()
+            p=Process(target=work, args = (r, i, rdm))
+            p.start()
+            ps.append(p)
+
+        for i in range(n):
+            ps[i].join() #join应该这么用，千万别直接跟在start后面，这样会变成串行
+    print("end")
+
+# round 0, client 0, [1 0 0 1 1 1 0 0 1 1 1 1 0 1 0 0 1 1 0 1]
+# round 0, client 1, [1 0 1 1 1 1 1 1 1 1 0 1 0 0 0 0 1 0 1 0]
+# round 0, client 2, [0 0 1 1 0 0 0 1 1 1 1 1 1 0 0 1 0 1 1 0]
+# round 0, client 3, [1 0 1 0 0 0 0 0 1 1 0 0 0 1 0 0 0 0 1 1]
+# round 1, client 0, [1 1 1 1 0 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0]
+# round 1, client 1, [1 1 1 0 0 1 0 0 0 1 0 1 0 0 0 1 1 0 1 1]
+# round 1, client 2, [1 0 0 0 0 0 0 1 0 0 0 0 1 0 0 1 1 0 1 1]
+# round 1, client 3, [1 1 1 0 1 0 0 0 0 1 0 0 0 0 1 1 0 1 1 0]
+# round 2, client 0, [1 0 1 0 0 0 1 1 1 1 0 0 1 0 1 0 0 1 1 0]
+# round 2, client 1, [0 1 1 0 0 1 0 1 0 1 0 1 1 0 1 0 1 1 1 0]
+# round 2, client 2, [0 1 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 1 0 1]
+# round 2, client 3, [1 1 1 0 0 0 1 1 1 1 0 1 0 0 0 1 1 0 1 1]
+# end
+
+
+##  或者
+#*************************************************
+## 多进程产生随机数的正确用法3
+def randomGene():
+    return np.random.binomial(n = 1, p = 0.5, size = 10)
+
+
+def work(r, i):
+    # print(f'{os.getpid()} is running')
+    np.random.seed(r+i)
+    a = randomGene()
+    # a = np.random.binomial(n = 1, p = 0.5, size = 10)
+    print(f"round {r}, client {i}, {a}")
+    # time.sleep(1)
+    #注意，这里如果是sleep(1)则看不出来错乱；但是如果是sleep(random.randrange(0,2))则看得出错乱
+    # print(f'{os.getpid()} is done')
+
+if __name__ == '__main__':
+    for r in range(3):
+        ps=[]
+        n = 4
+        for i in range(n):
+            p=Process(target=work, args = (r, i))
+            p.start()
+            ps.append(p)
+
+        for i in range(n):
+            ps[i].join() #join应该这么用，千万别直接跟在start后面，这样会变成串行
+    print("end")
+# round 0, client 0, [1 1 1 1 0 1 0 1 1 0]
+# round 0, client 1, [0 1 0 0 0 0 0 0 0 1]
+# round 0, client 2, [0 0 1 0 0 0 0 1 0 0]
+# round 0, client 3, [1 1 0 1 1 1 0 0 0 0]
+# round 1, client 0, [0 1 0 0 0 0 0 0 0 1]
+# round 1, client 1, [0 0 1 0 0 0 0 1 0 0]
+# round 1, client 2, [1 1 0 1 1 1 0 0 0 0]
+# round 1, client 3, [1 1 1 1 1 0 1 0 0 0]
+# round 2, client 0, [0 0 1 0 0 0 0 1 0 0]
+# round 2, client 1, [1 1 0 1 1 1 0 0 0 0]
+# round 2, client 2, [1 1 1 1 1 0 1 0 0 0]
+# round 2, client 3, [0 1 0 1 0 1 1 1 0 0]
+# end
+
+np.random.seed(1)
+for i in range(3):
+    a = np.random.binomial(n = 1, p = 0.5, size = 10)
+    print(f"{a}")
+
+
+
+
+##  或者
+#*************************************************
+## 多进程产生随机数的正确用法 4
+import multiprocessing as mp
+
+def randomGene(param):
+    p = param - np.floor(param)
+    # p = torch.tensor([[0.38469, 0.55079, 0.16089, 0.40244],
+    #         [0.39679, 0.15747, 0.64622, 0.64451],
+    #         [0.46007, 0.04083, 0.31302, 0.80131]])
+    # a = torch.bernoulli(p)
+    # a = torch.bernoulli(torch.tensor(p)).numpy()
+    G =  2**(8 - 1)
+    p = (param * G + 1)/2
+    p = np.clip(p, a_min = 0, a_max = 1, )
+    f1 = np.frompyfunc(lambda x : int(np.random.binomial(1, x, 1)[0]), 1, 1)
+    a = f1(p).astype(np.int8)
+    return a
+
+
+def work(r, i):
+    # print(f'{os.getpid()} is running')
+    np.random.seed(r+i)
+    # torch.manual_seed(r+i)
+    params = np.random.rand(10,)*0.001
+    a = randomGene(params)
+    # a = np.random.binomial(n = 1, p = 0.5, size = 10)
+    print(f"round {r}, client {i}, {a}")
+    # time.sleep(1)
+    #注意，这里如果是sleep(1)则看不出来错乱；但是如果是sleep(random.randrange(0,2))则看得出错乱
+    # print(f'{os.getpid()} is done')
+
+if __name__ == '__main__':
+    for r in range(3):
+        ps=[]
+        n = 4
+        for i in range(n):
+            p = mp.Process(target=work, args = (r, i))
+            p.start()
+            ps.append(p)
+
+        for i in range(n):
+            ps[i].join() #join应该这么用，千万别直接跟在start后面，这样会变成串行
+    print("end")
+
+
+
+
 
 
 

@@ -4,6 +4,12 @@
 Created on Sun Jun 25 11:07:19 2023
 
 @author: jack
+
+
+
+(三)：查看在模型训练过程中，什么时候模型参数会改变，什么时候模型参数会产生梯度；答案是在optimizer.step()之后模型参数会改变，在loss.backward()之后会产生梯度;
+
+
 """
 
 
@@ -82,16 +88,19 @@ requires_grad属性是可以改变的
 
 a = torch.rand(10, requires_grad=True)  # 直接赋给a，所以a.is_leaf为True
 print(f"0:  a.is_leaf = {a.is_leaf}")
+# 0:  a.is_leaf = True
 
 a = torch.rand(10, requires_grad=True, device="cuda") # 直接创建赋给a的，所以为True
 print(f"1:  a.is_leaf = {a.is_leaf}")
+# 1:  a.is_leaf = True
 
 a = torch.rand(10, requires_grad=True) + 5  # 运算后赋给a，所以a.is_leaf为False
 print(f"2:  a.is_leaf = {a.is_leaf}")
-
+# 2:  a.is_leaf = False
 
 a = torch.rand(10, requires_grad=True).cuda()  # 将数据移到gpu上再赋值给a，所以也是False
 print(f"3:  a.is_leaf = {a.is_leaf}")
+# 3:  a.is_leaf = False
 
 ##==========================================================================
 ## 2.所有不需要计算梯度张量都是叶张量
@@ -99,14 +108,15 @@ print(f"3:  a.is_leaf = {a.is_leaf}")
 # all_leaf is False
 a = torch.rand(10)    # 非梯度tensor -- 总是为False
 print(f"4:  a.is_leaf = {a.is_leaf}")
+# 4:  a.is_leaf = True
 
 a = torch.rand(10) + 5
 print(f"5:  a.is_leaf = {a.is_leaf}")
-
+# 5:  a.is_leaf = True
 
 a = torch.rand(10).cuda()
 print(f"6:  a.is_leaf = {a.is_leaf}")
-
+# 6:  a.is_leaf = True
 ##==========================================================================
 ## 3.由不需要梯度的张量创建的新的需要梯度的张量是叶张量
 
@@ -163,10 +173,14 @@ y = torch.mul(a, b)
 
 y.backward()
 print(x.grad)
-
 print("requires_grad: ", x.requires_grad, a.requires_grad, b.requires_grad, y.requires_grad)
 print("is_leaf: ", x.is_leaf, a.is_leaf, b.is_leaf, y.is_leaf)
 print("grad: ", x.grad, a.grad, b.grad, y.grad)
+# tensor(7.)
+# requires_grad:  True True True True
+# is_leaf:  True False False False
+# grad:  tensor(7.) None None None
+
 
 # 使用detach()切断
 # 不会再往后计算梯度，假设有模型A和模型B，我们需要将A的输出作为B的输入，但训练时我们只训练模型B，那么可以这样做：
@@ -183,7 +197,9 @@ y.backward()
 print("requires_grad: ", x.requires_grad, a.requires_grad, b.requires_grad, y.requires_grad)
 print("is_leaf: ", x.is_leaf, a.is_leaf, b.is_leaf, y.is_leaf)
 print("grad: ", x.grad, a.grad, b.grad, y.grad)
-
+# requires_grad:  True False True True
+# is_leaf:  True True False False
+# grad:  tensor([3.]) None None None
 
 #===============================================================================================================
 #                          测试模型参数在模型训练过程中什么时候改变，结果为：在optimizer.step()之后会改变
@@ -208,24 +224,34 @@ class net(nn.Module):
         return self.fc2(self.fc1(x))
 
 model = net()
-loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-2)  # 传入的是所有的参数
-x = torch.randn((3, 8))
-label = torch.randint(0,10,[3]).long()
+
 
 
 for key, var in model.named_parameters():
-    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n{var.data}")
+    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}")  # \n{var.data}")
+# fc1.weight, True, torch.Size([4, 8]), cpu, True, torch.FloatTensor, None
+# fc1.bias  , True, torch.Size([4]), cpu, True, torch.FloatTensor, None
+# fc2.weight, True, torch.Size([10, 4]), cpu, True, torch.FloatTensor, None
+# fc2.bias  , True, torch.Size([10]), cpu, True, torch.FloatTensor, None
 
 
 for key, var in model.state_dict().items():
-    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} \n\n" )
+    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}")  ## \n  {var} \n\n" )
 # for key, var in model.named_parameters():
     # print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# 0: fc1.weight, True, torch.Size([4, 8]), cpu, False, torch.FloatTensor, None
+# 0: fc1.bias, True, torch.Size([4]), cpu, False, torch.FloatTensor, None
+# 0: fc2.weight, True, torch.Size([10, 4]), cpu, False, torch.FloatTensor, None
+# 0: fc2.bias, True, torch.Size([10]), cpu, False, torch.FloatTensor, None
 
 
-
+loss_fn   = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-2)  # 传入的是所有的参数
+x         = torch.randn((3, 8))
+label     = torch.randint(0,10,[3]).long()
 output = model(x)
+
+
 #print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
 loss = loss_fn(output, label)
 for key, var in model.state_dict().items():
