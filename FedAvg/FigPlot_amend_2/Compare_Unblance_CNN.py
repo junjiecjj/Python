@@ -64,8 +64,8 @@ class ResultPlot():
         self.home = f"{home}"
         self.savedir = os.path.join(self.home, 'FedAvg_DataResults/Figures_plot')
         os.makedirs(self.savedir, exist_ok=True)
-        ## local epoch = 5, local batchsize = 128
-        ## 2023-08-25-21:36:58_FedAvg    2023-08-25-03:19:20_FedAvg  2023-08-26-21:41:35_FedAvg
+        # local epoch = 5, local batchsize = 128
+        # 2023-08-25-21:36:58_FedAvg    2023-08-25-03:19:20_FedAvg  2023-08-26-21:41:35_FedAvg
         self.noiid_unbla  = torch.load(os.path.join(self.rootdir, "2023-08-26-21:41:35_FedAvg/MeanVarL12OfClients.pt"))
 
         ## 2023-08-24-18:19:03_FedAvg    2023-08-26-20:01:49_FedAvg   2023-09-12-11:30:18_FedAvg
@@ -192,12 +192,12 @@ class ResultPlot():
         Mean = savgol_filter(Mean, 25, 3)
         # axs.plot(X, Mean, color = color[0], label = "Non-IID, Unblance", linewidth = 3,)
 
-        S = 5
+        S = 1
         ## Non-IID, blance
         X = self.noiid_bla[:, 0][S:]
         tmp = self.noiid_bla[:, cols]
         Mean = np.mean(tmp, axis=1)[S:]
-        Mean = savgol_filter(Mean, 25, 3)
+        # Mean = savgol_filter(Mean, 25, 2)
         # Mean = savgol_filter(Mean, 25, 1)
         # Mean = savgol_filter(Mean, 25, 1)
         # Mean = savgol_filter(Mean, 25, 1)
@@ -208,7 +208,7 @@ class ResultPlot():
         X = self.iid_bla[:, 0][S:]
         tmp = self.iid_bla[:, cols]
         Mean = np.mean(tmp, axis=1)[S:]
-        Mean = savgol_filter(Mean, 25, 3)
+        Mean = savgol_filter(Mean, 25, 2)
         # Mean = savgol_filter(Mean, 25, 1)
         # Mean = savgol_filter(Mean, 25, 1)
         axs.plot(X, Mean, color = color[2], label = "IID", linewidth = 4,)
@@ -244,7 +244,7 @@ class ResultPlot():
         out_fig = plt.gcf()
 
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.eps") )
+        out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.pdf") )
         # plt.show()
         plt.close()
@@ -313,8 +313,8 @@ class ResultPlot():
 
         out_fig = plt.gcf()
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_IIDvsNonIID_perform.eps") )
-        out_fig.savefig(os.path.join(savepath, f"{model}_IIDvsNonIID_perform.pdf") )
+        out_fig.savefig(f"./figures/{model}_IIDvsNonIID_perform.eps")
+        # out_fig.savefig(os.path.join(savepath, f"{model}_IIDvsNonIID_perform.pdf") )
         # out_fig.savefig(os.path.join(savepath, f"{model}_Param_debug.pdf") )
         # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_8bitNonIID_performance.pdf") )
         plt.show()

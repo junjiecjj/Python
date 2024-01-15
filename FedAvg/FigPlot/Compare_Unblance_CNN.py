@@ -192,13 +192,13 @@ class ResultPlot():
         Mean = savgol_filter(Mean, 25, 3)
         # axs.plot(X, Mean, color = color[0], label = "Non-IID, Unblance", linewidth = 3,)
 
-        S = 5
+        S = 2
         ## Non-IID, blance
         X = self.noiid_bla[:, 0][S:]
         tmp = self.noiid_bla[:, cols]
         Mean = np.mean(tmp, axis=1)[S:]
         Mean = savgol_filter(Mean, 25, 3)
-        # Mean = savgol_filter(Mean, 25, 1)
+        Mean = savgol_filter(Mean, 25, 1)
         # Mean = savgol_filter(Mean, 25, 1)
         # Mean = savgol_filter(Mean, 25, 1)
         # Mean = savgol_filter(Mean, 25, 1)
@@ -244,7 +244,7 @@ class ResultPlot():
         out_fig = plt.gcf()
 
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.eps") )
+        out_fig.savefig(f"./{model}_NonIID_UnBlance_avg.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.pdf") )
         # plt.show()
         plt.close()

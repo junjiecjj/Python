@@ -224,6 +224,19 @@ expr=sy.sin(x**2)
 i_expr=sy.integrate(expr, (x, -np.inf, np.inf))
 print(i_expr)
 
+
+
+x  = sy.symbols('x')
+expr =  x * sy.exp(-2*x) + x * 0.25 * sy.exp(-x/2)
+i_expr = sy.integrate(expr, (x, 0, np.inf))
+print(i_expr)
+
+
+x  = sy.symbols('x')
+expr =  x**2 * sy.exp(-2*x) + x**2 * 0.25 * sy.exp(-x/2)
+i_expr = sy.integrate(expr, (x, 0, np.inf))
+print(i_expr)
+
 print("**************** https://zhuanlan.zhihu.com/p/111573239 ******************** ")
 from sympy import *
 print(sy.sin(sy.pi))

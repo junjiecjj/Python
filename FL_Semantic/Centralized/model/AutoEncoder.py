@@ -147,17 +147,17 @@ class Decoder_cnn_mnist(nn.Module):
         # print(f"4 x.shape = {x.shape}")
         # 4 x.shape = torch.Size([25, 1, 28, 28])
 
-        x = torch.sigmoid(x)
-        # x = torch.tanh(x)
+        # x = torch.sigmoid(x)
+        x = torch.tanh(x)
         # print(f"5 x.shape = {x.shape}")
         # 5 x.shape = torch.Size([25, 1, 28, 28])
         return x
 
 class AED_cnn_mnist(nn.Module):
-    def __init__(self, encoded_space_dim = 100, snr  = 3, quantize = True):
+    def __init__(self, encoded_space_dim = 100, snr  = 3, ):
         super(AED_cnn_mnist, self).__init__()
         self.snr = snr
-        self.quantize = quantize
+
         self.encoder = Encoder_cnn_mnist(encoded_space_dim)
         self.decoder = Decoder_cnn_mnist(encoded_space_dim)
 
@@ -167,16 +167,6 @@ class AED_cnn_mnist(nn.Module):
         # print(f"1 encoded.requires_grad = {encoded.requires_grad}")
         # print(f"0:    {encoded.min()}, {encoded.max()}, {encoded.mean()}")
 
-        if self.quantize == True:
-            encoded = common.Quantize(encoded)
-        else:
-            pass   # quatized = encoded
-
-        ### semantic attack
-        if attack_vector != "":
-            encoded = encoded + attack_vector
-
-        # print(f"0: {encoded.min()}, {encoded.max()}")
 
         Y =  common.Awgn(encoded, snr = self.snr)
         # print(f"2 encoded.requires_grad = {encoded.requires_grad}")

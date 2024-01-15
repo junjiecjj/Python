@@ -10,7 +10,7 @@ https://blog.51cto.com/u_15365984/4762422
 
 import random
 import numpy as np
-
+import torch
 #我这里考虑输入是 ​​torch.Tensor​​的一个 只包含0 ，1 元素的张量
 #对于输入是numpy或者0，1字符串的方法就更简单了，总之都先要将输入处理成为 0，1字符串，例如​​“1010”​​
 #首先构造一个输入：

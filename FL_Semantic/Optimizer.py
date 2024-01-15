@@ -35,12 +35,7 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
-class net(nn.Module):
-    def __init__(self):
-        super(net,self).__init__()
-        self.fc = nn.Linear(1,10)
-    def forward(self,x):
-        return self.fc(x)
+
 
 
 def make_optimizer(args, net,  compr = '', snr = ''):
@@ -130,11 +125,16 @@ def make_optimizer(args, net,  compr = '', snr = ''):
 
     return optimizer
 
-
+class net(nn.Module):
+    def __init__(self):
+        super(net,self).__init__()
+        self.fc = nn.Linear(1,10)
+    def forward(self,x):
+        return self.fc(x)
 
 # model = net()
 # LR = 0.01
-# opt = make_optimizer(args, model, "test" )
+# opt = make_optimizer(args, model,  )
 # loss = torch.nn.CrossEntropyLoss()
 
 # lr_list1 = []

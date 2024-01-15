@@ -167,9 +167,6 @@ def Quantization1bits_NP_int_NR(params, BG = 8):
     return  params
 
 
-
-
-
 def QuantizationTorch_int(params, G = None, B = 8):
     # print(f"{B} Bit quantization..")
     if G ==None:
@@ -189,7 +186,7 @@ def QuantizationTorch_int(params, G = None, B = 8):
 
 
 ##=========================================================================================
-##                             接收方的量化函数
+##                             接收方的反量化函数
 ##=========================================================================================
 
 """

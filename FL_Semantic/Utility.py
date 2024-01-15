@@ -7,13 +7,14 @@ Created on 2023/04/25
 
 """
 
-import os, sys
-import math
+import os
+# import sys
+# import math
 import datetime
-import imageio
-import cv2
-import skimage
-import glob
+# import imageio
+# import cv2
+# import skimage
+# import glob
 import random
 import numpy as np
 import torch
@@ -22,11 +23,26 @@ import matplotlib
 # matplotlib.use('TkAgg')
 matplotlib.use('Agg')
 
+# matplotlib.use('WXagg')
+import matplotlib.pyplot as plt
+
+import matplotlib
+from matplotlib.font_manager import FontProperties
+# from pylab import tick_params
+# import copy
+# from matplotlib.pyplot import MultipleLocator
+
+# matplotlib.use('Agg')
+# matplotlib.rcParams['text.usetex'] = True
+filepath2 = '/home/jack/snap/'
+font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
+fontpath = "/usr/share/fonts/truetype/windows/"
+fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
+fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 #### 本项目自己编写的库
 # sys.path.append("..")
-from  ColorPrint import ColoPrint
-color =  ColoPrint()
+
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
@@ -58,10 +74,10 @@ def set_printoption(precision = 3):
         )
 
 
-# 功能：
+## 功能：
 class checkpoint():
     def __init__(self, args ):
-        print(color.fuchsia("\n#================================ checkpoint 开始准备 =======================================\n"))
+        print( "\n#================================ checkpoint 开始准备 =======================================\n")
         self.args = args
         self.ok = True
         self.n_processes = 8
@@ -88,9 +104,12 @@ class checkpoint():
         os.makedirs(self.testResdir, exist_ok=True)
         print(f"测试结果保存目录 = {self.testResdir} ")
 
-        print(color.fuchsia("\n#================================ checkpoint 准备完毕 =======================================\n"))
-        return
+        self.cdf_pdf = os.path.join(self.savedir, "cdf_pdf")
+        os.makedirs(self.cdf_pdf, exist_ok=True)
+        print(f"cdf, pdf 结果保存目录 = {self.cdf_pdf} ")
 
+        print( "\n#================================ checkpoint 准备完毕 =======================================\n")
+        return
 
     def writeArgsLog(self, filename, open_type = 'w'):
         with open(filename, open_type) as f:
@@ -107,21 +126,6 @@ class checkpoint():
             f.write("\n################################ args end  ##################################\n")
         return
 
-    def print_parameters(self, logfile, net = None, name = ""):
-        logfile = self.getSavePath(logfile)  # logfile = 'trainLog.txt'
-        with open(logfile, 'a+') as f:
-            print("#=====================================================================================",  file = f)
-            print("                      " + self.now,  file = f)
-            if net != None:
-                print(f"#================================== {name} ====================================",  file = f)
-                print(net, file = f)
-                print(f"#============================= {name} Parameters ==============================",  file = f)
-                for name, param in  net.named_parameters():
-                    if param.requires_grad:
-                        #print(f"{name}: {param.size()}, {param.requires_grad} ")
-                        print(f"{name: <25}: size={param.size()}, requires_grad={param.requires_grad} ", file = f)
-            print("#=====================================================================================\n",  file = f)
-        return
 
     def getSavePath(self, *subdir):
         return os.path.join(self.savedir, *subdir)
@@ -151,47 +155,110 @@ class checkpoint():
 
 # <<< 测试相关函数
 
+def localUpdateCDF1(round_idx, client, para_w, round_cdf_pdf):
+    # params_float = np.empty((0, 0))
+    data = torch.Tensor()
+
+    for key, val in para_w.items():
+        if 'float' in str(val.dtype):
+            data = torch.cat((data, val.detach().clone().cpu().flatten()))
+
+    # mean = data.mean()
+    # var = data.var()
+    # print(f"    round {round_idx}, {client}, {data.numel()}, mean = {mean}, var = {var}")
+    fig, axs = plt.subplots(2,1, figsize=(8, 10), constrained_layout=True)
+    # torch.save(data, "/home/jack/snap/test.pt")
+    ##======================= subfig 1 ================================================
+    weights = np.ones_like(data)/float(len(data))
+    re = axs[0].hist(data, bins = 500, density=True, histtype='bar', color='yellowgreen', alpha=0.75, label = 'pdf')
+    torch.save(re[:2], f"{round_cdf_pdf}/round={round_idx}_{client}_pdf.pt")
+    # print(f"   {re[0].min()}, {re[0].max()}, {re[1].min()}, {re[1].max()}")
+    font1 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    #font1  = {'family':'Times New Roman','style':'normal','size':17}
+    axs[0].set_xlabel(r'值', fontproperties=font1)
+    axs[0].set_ylabel(r'概率', fontproperties=font1)
+    font1  = {'family':'Times New Roman','style':'normal','size':22}
+    axs[0].set_title('PDF', fontproperties=font1)
+    axs[0].grid()
+
+    font1 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
+    #font1  = {'family':'Times New Roman','style':'normal','size':22}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 17}
+    # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
+    legend1 = axs[0].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, framealpha=1)
+    # frame1 = legend1.get_frame()
+    # frame1.set_alpha(1)
+
+    # labelsize——标签大小：float 或 str 刻度标签字体大小（以磅为单位）或字符串（例如，“大”）。
+    # width——宽度：刻度线宽度（以磅为单位）。
+    # 参数axis的值为’x’、‘y’、‘both’，分别代表设置X轴、Y轴以及同时设置，默认值为’both’。
+    axs[0].tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=3, )
+    labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(24) for label in labels]  # 刻度值字号
+
+
+    axs[0].spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
+    axs[0].spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
+    axs[0].spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
+    axs[0].spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
+
+    ##======================= subfig 1 ================================================
+    # 我们只需更改直方图的图像类型，令histtype=‘step’，就会画出一条曲线来（Figure3，实际上就是将直方柱并在一起，除边界外颜色透明），类似于累积分布曲线。这时，我们就能很好地观察到不同数据分布曲线间的差异。
+    #cdf累计概率函数，cumulative累计。比如需要统计小于5的数的概率
+    re1 = axs[1].hist(data, bins = 500, density=True, histtype='step', facecolor='red', alpha=0.75, cumulative=True, rwidth=0.8, label = 'CDF')
+    torch.save(re1[:2], f"{round_cdf_pdf}/round={round_idx}_{client}_cdf.pt")
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size = 22)
+    #font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
+    #font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+
+    axs[1].set_xlabel(r'值', fontproperties = font2)
+    axs[1].set_ylabel(r'累计概率', fontproperties = font2)
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
+    axs[1].set_title('CDF', fontproperties = font2)
+    axs[1].grid()
+
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 17}
+    #font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
+    legend1 = axs[1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, framealpha=1 )
+    # frame1 = legend1.get_frame()
+    # frame1.set_alpha(1)
+    # frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+    # x_major_locator=MultipleLocator(5)               #把x轴的刻度间隔设置为1，并存在变量里
+    # axs[1].xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
+    axs[1].tick_params(direction='in', axis='both', top=True,right=True,labelsize=16, width=3,)
+    labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(24) for label in labels]  # 刻度值字号
+
+    axs[1].spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
+    axs[1].spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
+    axs[1].spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
+    axs[1].spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
+
+    name = f"/round={round_idx}_{client}.eps"
+    savedir =   round_cdf_pdf + name
+    out_fig = plt.gcf()
+    out_fig .savefig(savedir)
+    #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
+    plt.close()
+    return
 
 
 
 
-## 统计神经网络模型参数的均值和方差：
-def  MeanVarStatistic(param_w):
-    res = torch.Tensor()
-    for key, val in param_w.items():
-        res = torch.cat([res, val.clone().cpu().flatten()])
-    var, mean = torch.var_mean(res)
-    L1 = torch.linalg.vector_norm(res, ord = 1, )
-    L2 = torch.linalg.vector_norm(res, ord = 2, )
-    return  mean.item(), L1.item(), L2.item(), var.item()
+def localUpdateCDF(round_idx, client, para_w, round_cdf_pdf):
+    # params_float = np.empty((0, 0))
+    data = torch.Tensor()
 
+    for key, val in para_w.items():
+        if 'float' in str(val.dtype):
+            data = torch.cat((data, val.detach().clone().cpu().flatten()))
 
+    torch.save(data, f"{round_cdf_pdf}/round={round_idx}_{client}.pt")
 
-# param_W =  torch.load("/home/jack/FedAvg_DataResults/results/param.pt")
-
-# mean, L1, L2, var = MeanVarStatistic(param_W)
-# print(f"mean = {mean}\nL1 = {L1}\nL2 = {L2}\nvar = {var}")
-
-# mean = -0.0031799005810171366
-# L1 = 25322.966796875
-# L2 = 23.87314224243164
-# var = 0.00033235494629479945
-
-# res = torch.Tensor()
-# for key, val in param_W.items():
-#     res = torch.cat([res,val.clone().cpu().flatten()])
-# L1 = torch.linalg.vector_norm(res, ord = 1, )
-# var, mean = torch.var_mean(res)
-
-
-
-
-
-
-
-
-
-
+    return
 
 
 

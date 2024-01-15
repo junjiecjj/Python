@@ -90,7 +90,7 @@ class checkpoint():
         self.writeArgsLog(self.getSavePath('argsConfig.txt'))
 
         # Prepare test dir and so on:
-        self.TeMetricLog = {}
+
         self.testResdir = os.path.join(self.savedir, "test_results")
         os.makedirs(self.testResdir, exist_ok=True)
         print(f"测试结果保存目录 = {self.testResdir} \n")
@@ -143,31 +143,11 @@ class checkpoint():
             f.write(log + '\n')
         return
 
-    # 写日志
-    def write_attacklog(self, log ):
-        logfile = self.getSavePath('AttackLog.txt')
-        with open(logfile, 'a+') as f:
-            f.write(log + '\n')
-        return
-
 # >>> 测试相关函数
     # 初始化测试结果目录
     def get_testSavepath(self, *subdir):
         return os.path.join(self.testResdir, *subdir)
 
-    def SaveTestLog(self):
-        # self.plot_AllTestMetric()
-        torch.save(self.TeMetricLog, self.get_testSavepath('TestMetric_log.pt'))
-        return
-
-    def SaveTestFig(self, DaSetName, CompRatio, SnrTest, snrTrain, figname, data):
-        filename = self.get_testSavepath('results-{}'.format(DaSetName),'{}_R={}_SnrTrain={}_SnrTest={}.png'.format(figname, CompRatio,snrTrain,SnrTest))
-        #print(f"filename = {filename}\n")
-        normalized = data[0].mul(255 / self.args.rgb_range)
-        tensor_cpu = normalized.byte().permute(1, 2, 0).cpu()
-        #print(f"tensor_cpu.shape = {tensor_cpu.shape}\n")
-        imageio.imwrite(filename, tensor_cpu.numpy())
-        return
 # <<< 测试相关函数
 
 

@@ -50,20 +50,26 @@ class GetDataSet(object):
         train_data   =  train_set.data                # 训练数据 torch.Size([60000, 28, 28]), 0-255
         train_labels =  train_set.targets             # (60000)
         # 将训练集转化为（60000，28*28）矩阵
-        train_images = train_data.reshape(train_data.shape[0], train_data.shape[1] * train_data.shape[2])
+        # train_images = train_data.reshape(train_data.shape[0], train_data.shape[1] * train_data.shape[2])
 
         ## 测试集
         test_data    =  test_set.data         # 测试数据 torch.Size([10000, 28, 28]), 0-255
         test_labels  =  test_set.targets    # 10000
         # 将测试集转化为（10000，28*28）矩阵
-        test_images  = test_data.reshape(test_data.shape[0], test_data.shape[1] * test_data.shape[2])
+        # test_images  = test_data.reshape(test_data.shape[0], test_data.shape[1] * test_data.shape[2])
 
         ## ---------------------------归一化处理------------------------------
-        train_images = train_images.type(torch.float32)
+        train_images = train_data.type(torch.float32)
         train_images = torch.mul(train_images, 1.0 / 255.0)
+        train_images = (train_images - 0.5)/0.5
+        train_images = train_images.reshape(-1, 1, 28, 28)
 
-        test_images = test_images.type(torch.float32)
+        # print(f"{train_images.shape}, train_images.min() = {train_images.min()}, train_images.max() = {train_images.max()}")
+
+        test_images = test_data.type(torch.float32)
         test_images = torch.mul(test_images, 1.0 / 255.0)
+        test_images = (test_images - 0.5)/0.5
+        test_images = test_images.reshape(-1, 1, 28, 28)
         ## -------------------------------------------------------------------------
 
         if isIID:

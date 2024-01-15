@@ -1027,9 +1027,9 @@ class ResultPlot():
         plt.suptitle("non-IID MNIST, 2NN", fontproperties = fontt, )
         out_fig = plt.gcf()
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_CompareAccVsSNR.eps") )
+        out_fig.savefig(f"./figures/{model}_CompareAccVsSNR.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_8bitNonIID_performance.pdf") )
-        out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_CompareAccVsSNR.pdf") )
+        # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_CompareAccVsSNR.pdf") )
         plt.show()
         plt.close()
         return
@@ -1235,10 +1235,10 @@ model = "2nn"
 # pl.PerformanceAccVsSNR_DQ_G8(model = model)
 
 ## Paper Fig.8(c)
-# pl.AccVsSNR_withDQbit(model = model)
+pl.AccVsSNR_withDQbit(model = model)
 
 ## Paper Fig.8(a)
-pl.PerformanceSNR(model = model)
+# pl.PerformanceSNR(model = model)
 
 
 

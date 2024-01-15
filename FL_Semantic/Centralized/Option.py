@@ -43,20 +43,20 @@ parser.add_argument('--seed', type = int, default = 1, help = 'random seed')
 
 # Data specifications
 # 数据根目录
-parser.add_argument('--dir_fashionminst', type = str, default = home+'/SemanticNoise_AdversarialAttack/Data/', help = 'dataset directory')  # cjj
-parser.add_argument('--dir_minst', type = str, default = home+'/SemanticNoise_AdversarialAttack/Data/', help = 'dataset directory')  # cjj
-parser.add_argument('--dir_cifar10', type = str, default = home+'/SemanticNoise_AdversarialAttack/Data/CIFAR10', help = 'dataset directory')  # cjj
+parser.add_argument('--dir_fashionminst', type = str, default = home+'/FL_semantic/Data/', help = 'dataset directory')  # cjj
+parser.add_argument('--dir_minst', type = str, default = home+'/FL_semantic/Data/', help = 'dataset directory')  # cjj
+parser.add_argument('--dir_cifar10', type = str, default = home+'/FL_semantic/Data/CIFAR10', help = 'dataset directory')  # cjj
 
 parser.add_argument('--dir_demo', type = str, default = '../test', help = 'demo image directory')
-parser.add_argument('--tmpout', type = str, default = home+'/SemanticNoise_AdversarialAttack/tmpout/', help = 'tmpout directory')  # cjj
+parser.add_argument('--tmpout', type = str, default = home+'/FL_semantic/tmpout/', help = 'tmpout directory')  # cjj
 
 # 预训练模型地址
 parser.add_argument('--pretrain', action = 'store_true', default = False,  help = 'whether use pretrain model')  # cjj
-parser.add_argument('--save', type = str, default = home+'/SemanticNoise_AdversarialAttack/results/',  help = 'file name to save')  #cjj
+parser.add_argument('--save', type = str, default = home+'/FL_semantic/results/',  help = 'file name to save')  #cjj
 
-parser.add_argument('--ModelSave', type = str, default = home + '/SemanticNoise_AdversarialAttack/ModelSave/',  help = 'file name to save')  #cjj
-parser.add_argument('--SummaryWriteDir', type = str, default = home+'/SemanticNoise_AdversarialAttack/results/TensorBoard', help = 'demo image directory')
-parser.add_argument('--TrainImageSave', type = str, default = home + '/SemanticNoise_AdversarialAttack/results/',  help='file name to save image during train process')  #cjj
+parser.add_argument('--ModelSave', type = str, default = home + '/FL_semantic/ModelSave/',  help = 'file name to save')  #cjj
+parser.add_argument('--SummaryWriteDir', type = str, default = home+'/FL_semantic/results/TensorBoard', help = 'demo image directory')
+parser.add_argument('--TrainImageSave', type = str, default = home + '/FL_semantic/results/',  help='file name to save image during train process')  #cjj
 
 
 # Minst 数据集相关参数
@@ -70,7 +70,7 @@ parser.add_argument('--fake_label', type = int, default = 0, help = 'Weight of M
 
 
 # Training and test  specifications
-parser.add_argument('--epochs', type=int, default = 10,  help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default = 800,  help='number of epochs to train')
 parser.add_argument('--batch_size', type = int, default = 128, help = 'input batch size for training')
 parser.add_argument('--test_batch_size', type=int,  default = 128, help='input batch size for test')
 
@@ -81,51 +81,35 @@ parser.add_argument('--power', type = int,  default = 2, help='warm up多项式�
 
 
 # Optimization specifications
-parser.add_argument('--lr', type = float, default = 0.002, help = 'learning rate')
-parser.add_argument('--decay', type = str, default = '20-40-80-120',  help = 'learning rate decay type')
-parser.add_argument('--gamma',  type = float, default = 0.6, help = 'learning rate decay factor for step decay')
-parser.add_argument('--optimizer', default = 'ADAM', choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
-parser.add_argument('--momentum', type = float, default = 0.9, help = 'SGD momentum')
-parser.add_argument('--betas',  type = tuple, default = (0.5, 0.999), help = 'ADAM beta')
-parser.add_argument('--epsilon', type = float, default = 1e-8, help = 'ADAM epsilon for numerical stability')
+parser.add_argument('--lr',           type = float, default = 0.001, help = 'learning rate')
+parser.add_argument('--decay',        type = str,   default = '20-40-80-120',  help = 'learning rate decay type')
+parser.add_argument('--gamma',        type = float, default = 0.8, help = 'learning rate decay factor for step decay')
+parser.add_argument('--optimizer',    type = str,   default = 'ADAM', choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
+parser.add_argument('--momentum',     type = float, default = 0.9, help = 'SGD momentum')
+parser.add_argument('--betas',        type = tuple, default = (0.5, 0.999), help = 'ADAM beta')
+parser.add_argument('--epsilon',      type = float, default = 1e-8, help = 'ADAM epsilon for numerical stability')
 parser.add_argument('--weight_decay', type = float, default = 0, help = 'weight decay')
-parser.add_argument('--gclip', type = float, default = 0, help = 'gradient clipping threshold (0 = no clipping)')
+parser.add_argument('--gclip',        type = float, default = 0, help = 'gradient clipping threshold (0 = no clipping)')
 
 # Loss specifications
 parser.add_argument('--loss', type = str, default = '1*MSE', help = 'loss function configuration')
 
-parser.add_argument('--CompRate',  type = np.ndarray,     default = np.arange(0.1, 1, 0.1),  help = 'Compress rate for test')
-parser.add_argument('--SNRtrain',  type = str,            default = '1, 3, 10, 20',  help = 'SNR for train ')
-parser.add_argument('--SNRtest',   type = np.ndarray,     default = np.arange(-2, 21, 1),  help = 'SNR for  test')
-parser.add_argument('--metrics',   type = str,            default = 'PSNR', help = 'loss function configuration')
+parser.add_argument('--CompRate',  type = np.ndarray,     default = [0.2, 0.5, 0.9],  help = 'Compress rate for test')
+parser.add_argument('--SNRtrain',  type = np.ndarray,     default = [2, 10, 20],  help = 'SNR for train ')
+parser.add_argument('--SNRtest',   type = np.ndarray,     default = np.arange(-5, 36, 1),  help = 'SNR for  test')
+
 
 parser.add_argument('--quantize', action = 'store_true', default = False,  help = 'whether use quantize')  # cjj
 
+##====================================================
 args, unparsed = parser.parse_known_args()
+##====================================================
 
-args.SNRtest = np.append(args.SNRtest, 25)
-args.SNRtest = np.append(args.SNRtest, 30)
-args.SNRtest = np.append(args.SNRtest, 35)
-args.SNRtest = np.append(args.SNRtest, 40)
-args.SNRtest.sort()
 
 
 if args.epochs == 0:
     args.epochs = 1e8
 
-args.metrics = list(map(lambda x: x.strip(" "), args.metrics.split(',')))
-
-# args.CompRate = list(map(lambda x: float(x), args.CompRate.split(',')))
-args.SNRtrain      = list(map(lambda x: int(x), args.SNRtrain.split(',')))
-
-
-for arg in vars(args):
-    if vars(args)[arg] == 'True':
-        print(f"arg = {arg}")
-        vars(args)[arg] = True
-    elif vars(args)[arg] == 'False':
-        print(f"arg = {arg}")
-        vars(args)[arg] = False
 
 
 

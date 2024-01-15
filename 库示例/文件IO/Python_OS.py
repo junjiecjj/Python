@@ -9,6 +9,31 @@ Created on Sat Jun 11 22:46:50 2022
 
 import os
 
+
+
+
+"""
+
+os.walk()列出目录和子目录中的所有文件
+os.walk()函数返回一个生成器，该生成器创建一个值元组（current_path、current_path 中的目录、current_path 中的文件）。
+
+注意：使用该os.walk()函数，我们可以列出给定目录中的所有目录、子目录和文件。
+
+它是一个递归函数，即每次调用生成器时，它都会递归地跟随每个目录以获取文件和目录的列表，直到初始目录中没有更多的子目录可用。
+
+例如，调用os.walk('path')将为它访问的每个目录生成两个列表。第一个列表包含文件，第二个列表包含目录。
+
+
+"""
+
+pathnames = []
+for (dirpath, dirnames, filenames) in os.walk('/home/jack/FL_semantic/results/Centralized_LeNet/test_results/raw_image'):
+    for filename in filenames:
+        pathnames += [os.path.join(dirpath, filename)]
+print(pathnames)
+
+
+
 print ('***获取当前目录***')
 print( os.getcwd())
 print (os.path.abspath(os.path.dirname(__file__)))
@@ -276,9 +301,14 @@ sorted(glob.glob(os.path.join('/home/jack/图片/Wallpapers', '*' + '.jpg')))
 
 
 
+# os.scandir()获取目录的文件
+# 该scandir()函数返回目录条目以及文件属性信息，为许多常见用例提供更好的性能。
 
+# 它返回对象的迭代器os.DirEntry，其中包含文件名。
 
-
+for path in os.scandir('/home/jack/FL_semantic/results/Centralized_LeNet/test_results/raw_image/'):
+    if path.is_file():
+        print(path.name)
 
 
 

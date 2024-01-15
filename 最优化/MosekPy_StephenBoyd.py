@@ -147,41 +147,41 @@ except:
 from mosek.fusion import *
 def main1( ):
     # constraint的系数，每行指代一个不等式
-	A = [[50.0, 31.0],
-		 [3.0, -2.0]]
-	# cost的系数
-	c = [1.0, 0.64]
-	with Model('milo1') as M:
-		# 1.设置变量，名称x，数量为2，限制为非负整数。greaterThan和lessThan都是包含了“=”
-		x = M.variable('x', 2, Domain.integral(Domain.greaterThan(0.0)))
+    A = [[50.0, 31.0],
+         [3.0, -2.0]]
+    # cost的系数
+    c = [1.0, 0.64]
+    with Model('milo1') as M:
+        # 1.设置变量，名称x，数量为2，限制为非负整数。greaterThan和lessThan都是包含了“=”
+        x = M.variable('x', 2, Domain.integral(Domain.greaterThan(0.0)))
 
-		# 2.设置constraints
-		# 50.0 x[0] + 31.0 x[1] <= 250.0
-		# 3.0 x[0] - 2.0 x[1] >= -4.0
-		M.constraint('c1', Expr.dot(A[0], x), Domain.lessThan(250.0))
-		M.constraint('c2', Expr.dot(A[1], x), Domain.greaterThan(-4.0))
+        # 2.设置constraints
+        # 50.0 x[0] + 31.0 x[1] <= 250.0
+        # 3.0 x[0] - 2.0 x[1] >= -4.0
+        M.constraint('c1', Expr.dot(A[0], x), Domain.lessThan(250.0))
+        M.constraint('c2', Expr.dot(A[1], x), Domain.greaterThan(-4.0))
 
-		# 3.设置求解器terminate的条件约束，
-		# 3.1 time-out时间为60（单位未知，maybe60ms，超时会返回目前suboptimal的答案）
-		# Set max solution time
-		M.setSolverParam('mioMaxTime', 60.0)
-		# 3.2 类似精度的约束，详见FusionAPI13.4.5
-		# Set max relative gap (to its default value)
-		M.setSolverParam('mioTolRelGap', 1e-4)
-		# Set max absolute gap (to its default value)
-		M.setSolverParam('mioTolAbsGap', 0.0)
+        # 3.设置求解器terminate的条件约束，
+        # 3.1 time-out时间为60（单位未知，maybe60ms，超时会返回目前suboptimal的答案）
+        # Set max solution time
+        M.setSolverParam('mioMaxTime', 60.0)
+        # 3.2 类似精度的约束，详见FusionAPI13.4.5
+        # Set max relative gap (to its default value)
+        M.setSolverParam('mioTolRelGap', 1e-4)
+        # Set max absolute gap (to its default value)
+        M.setSolverParam('mioTolAbsGap', 0.0)
 
-		# 4.键入目标函数cost为Maximize或者Minimize
-		# Set the objective function to (c^T * x)
-		M.objective('obj', ObjectiveSense.Maximize, Expr.dot(c, x))
+        # 4.键入目标函数cost为Maximize或者Minimize
+        # Set the objective function to (c^T * x)
+        M.objective('obj', ObjectiveSense.Maximize, Expr.dot(c, x))
 
-		# Solve the problem
-		M.solve()
+        # Solve the problem
+        M.solve()
 
-		# x.level()返回求解情况即x值为多少的list，其余的也是求解精度
-		print('[x0, x1] = ', x.level())
-		print("MIP rel gap = %.2f (%f)" % (M.getSolverDoubleInfo(
-		"mioObjRelGap"), M.getSolverDoubleInfo("mioObjAbsGap")))
+        # x.level()返回求解情况即x值为多少的list，其余的也是求解精度
+        print('[x0, x1] = ', x.level())
+        print("MIP rel gap = %.2f (%f)" % (M.getSolverDoubleInfo(
+        "mioObjRelGap"), M.getSolverDoubleInfo("mioObjAbsGap")))
 
 
 main1()

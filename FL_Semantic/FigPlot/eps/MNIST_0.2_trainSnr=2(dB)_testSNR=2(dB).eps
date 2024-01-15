@@ -1,0 +1,3467 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title: MNIST_0.2_trainSnr=2(dB)_testSNR=2(dB).eps
+%%Creator: Matplotlib v3.5.2, https://matplotlib.org/
+%%CreationDate: Wed Jan 10 10:16:46 2024
+%%Orientation: portrait
+%%BoundingBox: -54 72 666 720
+%%HiResBoundingBox: -54.000000 72.000000 666.000000 720.000000
+%%EndComments
+%%BeginProlog
+/mpldict 12 dict def
+mpldict begin
+/_d { bind def } bind def
+/m { moveto } _d
+/l { lineto } _d
+/r { rlineto } _d
+/c { curveto } _d
+/cl { closepath } _d
+/ce { closepath eofill } _d
+/box {
+      m
+      1 index 0 r
+      0 exch r
+      neg 0 r
+      cl
+    } _d
+/clipbox {
+      box
+      clip
+      newpath
+    } _d
+/sc { setcachedevice } _d
+%!PS-Adobe-3.0 Resource-Font
+%%Creator: Converted from TrueType to Type 3 by Matplotlib.
+10 dict begin
+/FontName /UNAVAILABLE def
+/PaintType 0 def
+/FontMatrix [0.00048828125 0 0 0.00048828125 0 0] def
+/FontBBox [0 -409 2048 1638] def
+/FontType 3 def
+/Encoding [/uni00001090 /uni00000047 /uni0000002c /uni0000004d /uni000012d0 /uni00000d93 /uni00000e55 /uni00000b09 /uni000008c5 /uni000009db /uni00000f6e /uni000011f1] def
+/CharStrings 13 dict dup begin
+/.notdef 0 def
+/uni00001090{2048 0 103 -202 1928 1516 sc
+357 780 m
+377 775 l
+377 758 377 744 377 733 c
+378 722 378 706 377 683 c
+375 644 372 594 368 534 c
+365 474 359 413 350 350 c
+341 288 319 240 282 206 c
+245 173 210 157 176 159 c
+153 160 135 166 123 178 c
+112 191 105 204 104 217 c
+103 231 112 250 131 274 c
+203 353 l
+248 405 280 458 298 512 c
+317 567 329 610 334 641 c
+353 765 l
+357 780 l
+357 780 l
+
+1477 343 m
+1478 302 1480 249 1483 182 c
+1487 115 1497 72 1513 51 c
+1529 31 1558 11 1599 -9 c
+1581 -62 1562 -101 1541 -127 c
+1521 -153 1485 -171 1433 -180 c
+1382 -190 1285 -196 1142 -198 c
+998 -201 885 -198 802 -189 c
+719 -180 673 -161 662 -130 c
+652 -100 647 -74 647 -53 c
+647 882 l
+635 1144 l
+819 1052 l
+836 1043 845 1036 846 1031 c
+847 1026 836 1016 813 1000 c
+765 967 l
+765 1 l
+765 -52 819 -77 927 -76 c
+1100 -78 l
+1205 -79 1277 -75 1318 -68 c
+1359 -61 1386 -51 1397 -38 c
+1408 -25 1417 1 1422 41 c
+1428 81 1433 122 1436 164 c
+1441 254 l
+1446 343 l
+1477 343 l
+
+848 1488 m
+864 1516 l
+929 1475 991 1432 1049 1387 c
+1107 1342 1145 1308 1163 1285 c
+1182 1262 1193 1241 1197 1222 c
+1202 1203 1202 1182 1198 1158 c
+1191 1123 1178 1095 1157 1076 c
+1137 1057 1120 1051 1105 1057 c
+1096 1060 1089 1065 1084 1074 c
+1079 1083 1075 1101 1070 1126 c
+1065 1152 1055 1183 1039 1220 c
+1023 1257 1005 1293 984 1327 c
+964 1362 919 1415 848 1488 c
+
+1488 861 m
+1503 888 l
+1511 881 1517 876 1522 873 c
+1671 775 l
+1726 737 1774 697 1816 654 c
+1858 611 1887 577 1902 550 c
+1917 524 1925 500 1926 477 c
+1927 454 1923 430 1914 405 c
+1905 380 1892 358 1876 340 c
+1861 323 1847 315 1835 316 c
+1829 316 1821 319 1812 325 c
+1803 331 1794 352 1785 389 c
+1776 426 1766 462 1753 496 c
+1741 531 1722 571 1695 618 c
+1669 665 1643 704 1616 734 c
+1589 765 1547 807 1488 861 c
+
+ce} _d
+/uni00000047{1303 0 64 -58 1225 1382 sc
+91 1322 m
+73 1333 64 1346 64 1360 c
+64 1375 73 1382 91 1382 c
+1177 1382 l
+1222 1023 l
+1224 1003 1218 991 1205 986 c
+1192 982 1181 988 1172 1004 c
+1144 1052 l
+1118 1096 1092 1134 1067 1165 c
+1042 1196 1013 1223 982 1245 c
+951 1268 915 1286 873 1300 c
+832 1315 790 1322 749 1322 c
+589 1322 l
+499 1322 446 1312 431 1292 c
+416 1273 409 1249 409 1220 c
+409 712 l
+677 713 l
+696 713 712 716 727 721 c
+742 727 755 737 765 751 c
+776 765 784 786 791 813 c
+798 840 802 865 802 886 c
+802 951 l
+802 971 812 982 832 983 c
+852 985 862 974 862 951 c
+862 430 l
+862 404 852 392 832 393 c
+812 394 802 405 802 424 c
+802 498 l
+802 518 800 539 795 560 c
+790 581 782 599 771 613 c
+760 627 746 638 729 645 c
+713 653 695 657 674 657 c
+409 657 l
+409 130 l
+409 88 415 59 427 44 c
+439 29 456 19 479 13 c
+502 7 534 4 575 4 c
+633 4 l
+656 4 666 -6 665 -27 c
+664 -48 654 -58 633 -58 c
+105 -58 l
+86 -58 75 -48 74 -27 c
+73 -6 84 4 105 4 c
+146 4 l
+172 4 193 8 208 15 c
+224 22 236 32 244 45 c
+253 58 257 85 257 125 c
+257 1187 l
+257 1215 253 1239 246 1259 c
+239 1280 227 1295 209 1306 c
+192 1317 169 1322 141 1322 c
+91 1322 l
+
+ce} _d
+/uni0000002c{1291 0 141 93 1160 1136 sc
+141 562 m
+141 666 l
+587 665 l
+587 1136 l
+704 1136 l
+704 666 l
+1160 666 l
+1160 562 l
+704 562 l
+704 93 l
+587 93 l
+587 563 l
+141 562 l
+
+ce} _d
+/uni0000004d{1277 0 58 -55 1214 1378 sc
+1169 -55 m
+99 -55 l
+82 -55 73 -45 73 -25 c
+74 -6 84 4 105 4 c
+149 4 l
+172 4 192 8 209 15 c
+226 23 240 33 250 45 c
+260 58 265 83 265 122 c
+265 1220 l
+265 1243 261 1261 254 1274 c
+247 1287 235 1297 218 1306 c
+201 1315 178 1319 149 1319 c
+91 1319 l
+69 1319 58 1329 58 1348 c
+58 1368 69 1378 91 1378 c
+587 1378 l
+606 1378 617 1368 620 1348 c
+623 1329 612 1319 587 1319 c
+529 1319 l
+502 1319 482 1315 467 1306 c
+453 1298 442 1287 433 1273 c
+424 1259 420 1244 420 1228 c
+420 122 l
+420 93 427 70 441 53 c
+455 36 474 23 498 15 c
+523 8 564 4 623 4 c
+765 4 l
+812 4 857 9 902 19 c
+947 30 985 47 1016 71 c
+1047 95 1073 124 1093 159 c
+1113 194 1129 229 1142 264 c
+1167 334 l
+1172 349 1181 356 1194 357 c
+1207 358 1213 350 1212 334 c
+1169 -55 l
+
+ce} _d
+/uni000012d0{2048 0 294 -333 1854 1560 sc
+450 1115 m
+952 1115 l
+952 1236 l
+936 1560 l
+1135 1479 l
+1159 1473 l
+1135 1455 l
+1078 1410 l
+1078 1115 l
+1604 1115 l
+1698 1225 l
+1837 1113 l
+1848 1104 1854 1097 1853 1093 c
+1853 1090 1847 1084 1836 1075 c
+1769 1025 l
+1769 637 l
+1779 425 l
+1754 408 1731 396 1712 388 c
+1693 380 1667 372 1633 364 c
+1633 508 l
+1078 508 l
+1078 6 l
+1089 -256 l
+1064 -277 1043 -291 1026 -299 c
+983 -316 l
+940 -333 l
+952 26 l
+952 508 l
+429 508 l
+429 383 l
+391 359 346 344 294 337 c
+303 550 l
+303 1016 l
+294 1203 l
+450 1115 l
+
+429 555 m
+952 555 l
+952 1068 l
+429 1068 l
+429 555 l
+
+1078 555 m
+1633 555 l
+1633 1068 l
+1078 1068 l
+1078 555 l
+
+ce} _d
+/uni00000d93{2048 0 70 -340 1899 1594 sc
+70 348 m
+187 564 264 740 302 875 c
+341 1010 371 1132 393 1241 c
+336 1241 l
+258 1241 196 1231 151 1211 c
+74 1292 l
+176 1288 l
+650 1288 l
+743 1398 l
+874 1272 l
+884 1262 888 1254 886 1249 c
+884 1244 873 1241 854 1241 c
+533 1241 l
+487 1092 455 996 438 952 c
+389 825 l
+410 808 l
+606 808 l
+666 894 l
+779 821 l
+798 808 808 800 808 799 c
+809 798 799 788 779 770 c
+743 738 l
+743 255 l
+752 49 l
+708 23 667 3 629 -10 c
+629 105 l
+395 105 l
+395 -64 l
+386 -71 367 -81 338 -94 c
+309 -107 291 -115 283 -117 c
+295 151 l
+295 641 l
+234 534 194 468 175 443 c
+94 331 l
+70 348 l
+
+395 151 m
+629 151 l
+629 761 l
+395 761 l
+395 151 l
+
+519 -315 m
+568 -287 628 -246 698 -192 c
+768 -139 818 -82 848 -23 c
+878 36 898 99 909 166 c
+920 233 927 318 930 423 c
+933 528 935 637 936 750 c
+937 839 937 900 936 932 c
+934 1014 l
+905 987 854 939 783 870 c
+764 891 l
+845 995 902 1071 936 1118 c
+971 1165 1014 1240 1065 1341 c
+1117 1443 1145 1501 1149 1515 c
+1173 1594 l
+1335 1515 l
+1353 1506 1362 1500 1361 1497 c
+1361 1494 1351 1488 1332 1479 c
+1276 1452 l
+1168 1299 l
+1486 1299 l
+1573 1387 l
+1714 1272 l
+1727 1261 1732 1253 1731 1248 c
+1730 1243 1720 1239 1702 1235 c
+1653 1224 l
+1626 1218 1596 1202 1562 1177 c
+1528 1152 1466 1086 1376 979 c
+1685 979 l
+1752 1070 l
+1878 986 l
+1891 977 1898 970 1898 965 c
+1899 961 1890 953 1873 942 c
+1828 912 l
+1828 -141 l
+1828 -166 1824 -189 1815 -210 c
+1806 -232 1789 -252 1764 -270 c
+1739 -288 1700 -302 1649 -313 c
+1646 -291 1642 -273 1637 -258 c
+1633 -244 1621 -226 1602 -205 c
+1583 -184 1534 -165 1455 -147 c
+1464 -119 l
+1577 -136 1645 -143 1668 -139 c
+1685 -137 1696 -132 1701 -125 c
+1706 -118 1709 -103 1709 -80 c
+1709 292 l
+1414 292 l
+1414 58 l
+1426 -156 l
+1413 -163 1399 -170 1384 -177 c
+1370 -184 1362 -188 1359 -189 c
+1318 -205 l
+1288 -219 l
+1300 77 l
+1300 292 l
+1033 292 l
+1029 254 1025 216 1020 178 c
+1015 141 1003 95 982 40 c
+962 -14 921 -71 860 -131 c
+799 -191 691 -261 536 -340 c
+519 -315 l
+
+962 1042 m
+1066 979 l
+1330 979 l
+1357 1022 1377 1054 1390 1077 c
+1447 1186 l
+1483 1253 l
+1135 1253 l
+1078 1178 1021 1108 962 1042 c
+
+1033 339 m
+1300 339 l
+1300 610 l
+1045 610 l
+1033 339 l
+
+1045 657 m
+1300 657 l
+1300 933 l
+1052 933 l
+1050 858 1049 813 1049 799 c
+1045 657 l
+1045 657 l
+
+1414 339 m
+1709 339 l
+1709 610 l
+1414 610 l
+1414 339 l
+
+1414 657 m
+1709 657 l
+1709 933 l
+1414 933 l
+1414 657 l
+
+ce} _d
+/uni00000e55{2048 0 138 -307 1946 1582 sc
+138 -29 m
+289 -10 391 7 442 20 c
+592 58 l
+592 639 l
+434 638 l
+419 637 394 635 359 632 c
+324 629 301 626 292 621 c
+254 603 l
+171 693 l
+351 686 l
+845 686 l
+941 804 l
+1078 670 l
+1085 663 1087 655 1084 648 c
+1081 641 1073 638 1060 638 c
+707 638 l
+707 85 l
+912 134 1079 177 1208 216 c
+1217 185 l
+1162 162 1112 142 1065 123 c
+1019 105 892 61 683 -10 c
+474 -81 352 -129 315 -153 c
+235 -202 l
+138 -29 l
+
+148 1115 m
+329 1107 l
+1137 1107 l
+1134 1162 1132 1212 1130 1256 c
+1129 1300 1127 1338 1125 1370 c
+1110 1582 l
+1294 1502 l
+1313 1493 1323 1486 1323 1480 c
+1324 1475 1315 1467 1298 1457 c
+1255 1432 l
+1249 1317 1247 1243 1248 1209 c
+1251 1107 l
+1667 1107 l
+1782 1236 l
+1929 1095 l
+1940 1084 1945 1075 1943 1068 c
+1941 1062 1933 1059 1920 1059 c
+1251 1059 l
+1253 1000 1255 953 1258 919 c
+1261 885 1265 839 1272 781 c
+1279 723 1287 670 1296 623 c
+1305 576 1321 512 1344 433 c
+1367 354 1403 276 1451 200 c
+1499 124 1558 56 1627 -4 c
+1696 -65 1738 -93 1751 -90 c
+1764 -87 1774 -74 1780 -49 c
+1786 -24 1796 12 1809 60 c
+1835 158 l
+1858 230 l
+1879 223 l
+1872 173 1866 129 1861 92 c
+1856 55 1853 23 1852 -5 c
+1851 -33 1854 -69 1859 -112 c
+1864 -162 1874 -199 1887 -224 c
+1901 -249 1909 -268 1911 -283 c
+1913 -298 1900 -306 1873 -306 c
+1831 -307 1786 -290 1738 -257 c
+1690 -224 1633 -179 1568 -121 c
+1503 -63 1448 0 1401 68 c
+1355 137 1319 196 1294 245 c
+1269 295 1248 354 1229 421 c
+1211 489 1195 562 1181 639 c
+1168 717 1160 774 1158 809 c
+1137 1059 l
+449 1059 l
+446 1059 420 1058 373 1055 c
+326 1052 299 1049 290 1044 c
+244 1021 l
+148 1115 l
+
+1401 1465 m
+1413 1483 l
+1444 1472 1468 1463 1485 1456 c
+1502 1449 1528 1438 1563 1421 c
+1598 1404 1625 1387 1643 1368 c
+1661 1350 1670 1324 1671 1289 c
+1672 1255 1664 1229 1645 1210 c
+1626 1192 1611 1184 1600 1185 c
+1589 1187 1579 1198 1568 1218 c
+1539 1292 l
+1530 1313 1516 1336 1498 1361 c
+1481 1386 1448 1420 1401 1465 c
+
+ce} _d
+/uni00000b09{2048 0 33 -245 1971 1512 sc
+33 876 m
+183 871 l
+1699 871 l
+1813 983 l
+1943 871 l
+1962 854 1969 843 1965 836 c
+1962 830 1956 827 1947 827 c
+261 827 l
+210 827 160 818 109 801 c
+33 876 l
+
+93 -172 m
+217 -176 l
+959 -176 l
+959 1 l
+450 1 l
+413 1 374 -8 335 -26 c
+236 53 l
+374 47 l
+959 47 l
+959 235 l
+547 235 l
+547 171 l
+536 164 528 160 523 158 c
+488 149 l
+458 137 l
+414 126 l
+428 333 l
+428 581 l
+419 766 l
+575 687 l
+1456 687 l
+1520 769 l
+1643 687 l
+1656 678 1663 671 1664 668 c
+1665 665 1658 658 1643 646 c
+1598 609 l
+1598 325 l
+1608 213 l
+1571 186 1525 166 1472 154 c
+1472 235 l
+1080 235 l
+1080 47 l
+1509 47 l
+1598 144 l
+1699 53 l
+1723 30 1734 16 1731 10 c
+1728 4 1720 1 1705 1 c
+1080 1 l
+1080 -176 l
+1652 -176 l
+1759 -68 l
+1873 -176 l
+1897 -199 1908 -213 1905 -216 c
+1902 -219 1894 -221 1881 -221 c
+270 -221 l
+265 -221 249 -224 223 -230 c
+198 -236 179 -241 167 -245 c
+93 -172 l
+
+547 280 m
+959 280 l
+959 442 l
+547 442 l
+547 280 l
+
+547 486 m
+959 486 l
+959 642 l
+547 642 l
+547 486 l
+
+1080 280 m
+1472 280 l
+1472 442 l
+1080 442 l
+1080 280 l
+
+1080 486 m
+1472 486 l
+1472 642 l
+1080 642 l
+1080 486 l
+
+463 1512 m
+606 1430 l
+1439 1430 l
+1501 1512 l
+1625 1437 l
+1640 1427 1648 1419 1648 1413 c
+1649 1408 1641 1399 1625 1387 c
+1577 1350 l
+1577 1135 l
+1589 975 l
+1546 956 1521 946 1512 945 c
+1456 935 l
+1456 1003 l
+595 1003 l
+595 959 l
+576 950 561 943 550 939 c
+540 936 511 929 463 920 c
+473 1107 l
+473 1365 l
+463 1512 l
+
+595 1048 m
+1456 1048 l
+1456 1199 l
+595 1199 l
+595 1048 l
+
+595 1245 m
+1456 1245 l
+1456 1384 l
+595 1384 l
+595 1245 l
+
+ce} _d
+/uni000008c5{2048 0 72 -313 1995 1560 sc
+72 492 m
+124 559 162 609 187 644 c
+212 679 260 754 331 867 c
+402 981 457 1087 498 1185 c
+539 1284 569 1358 587 1408 c
+606 1458 617 1491 621 1508 c
+634 1560 l
+815 1454 l
+820 1451 822 1445 821 1437 c
+820 1429 816 1424 808 1422 c
+740 1402 l
+542 1038 l
+642 982 l
+649 977 653 972 652 967 c
+651 962 645 956 634 947 c
+589 911 l
+589 -62 l
+597 -250 l
+577 -262 532 -283 461 -313 c
+474 -20 l
+474 929 l
+392 812 328 725 281 670 c
+234 615 172 548 95 470 c
+72 492 l
+
+644 207 m
+685 234 715 254 736 268 c
+873 357 l
+945 404 1015 455 1083 509 c
+1083 1256 l
+1067 1555 l
+1257 1459 l
+1271 1452 1278 1445 1279 1438 c
+1280 1431 1272 1423 1257 1414 c
+1196 1375 l
+1197 608 l
+1313 722 1392 800 1433 842 c
+1475 884 1518 931 1562 983 c
+1606 1035 1651 1094 1697 1161 c
+1836 1010 l
+1845 999 1848 991 1846 986 c
+1844 981 1839 979 1831 980 c
+1758 984 l
+1612 847 1504 747 1434 685 c
+1364 624 1285 557 1196 486 c
+1197 46 l
+1197 -20 1201 -62 1209 -80 c
+1218 -98 1231 -110 1248 -117 c
+1254 -120 1291 -122 1360 -124 c
+1429 -127 1486 -128 1529 -127 c
+1670 -126 1748 -118 1764 -101 c
+1780 -85 1791 -67 1796 -47 c
+1802 -28 1806 -6 1808 17 c
+1811 40 1822 140 1843 317 c
+1872 317 l
+1873 254 1873 199 1874 152 c
+1875 106 1880 70 1890 43 c
+1900 17 1911 -2 1924 -14 c
+1937 -26 1960 -41 1995 -58 c
+1979 -89 1959 -122 1934 -157 c
+1910 -192 1871 -215 1818 -227 c
+1765 -239 1655 -245 1487 -245 c
+1320 -246 1216 -239 1177 -225 c
+1138 -212 1112 -193 1100 -168 c
+1089 -143 1083 -108 1083 -62 c
+1083 411 l
+920 315 780 238 661 179 c
+644 207 l
+
+ce} _d
+/uni000009db{2048 0 45 -339 1996 1566 sc
+1409 1314 m
+1697 1314 l
+1784 1420 l
+1902 1309 l
+1919 1292 1927 1282 1926 1277 c
+1925 1273 1913 1271 1890 1271 c
+1409 1271 l
+1409 1080 l
+1597 1080 l
+1685 1172 l
+1795 1067 l
+1807 1055 1813 1046 1812 1040 c
+1811 1035 1804 1032 1789 1032 c
+1409 1032 l
+1409 826 l
+1743 826 l
+1846 934 l
+1969 819 l
+1987 802 1995 790 1994 785 c
+1993 780 1979 778 1954 778 c
+1108 778 l
+1041 778 977 768 916 747 c
+869 787 l
+569 787 l
+569 678 l
+679 617 751 569 784 532 c
+817 495 835 470 838 456 c
+841 443 840 428 837 413 c
+832 392 821 370 803 348 c
+785 326 770 318 757 324 c
+750 327 743 337 736 356 c
+715 417 l
+707 438 691 471 666 515 c
+642 560 620 591 601 608 c
+569 637 l
+569 -73 l
+581 -298 l
+552 -311 508 -325 450 -339 c
+461 -16 l
+461 576 l
+398 458 339 358 282 276 c
+225 195 157 108 78 15 c
+53 35 l
+131 159 186 249 217 305 c
+248 361 282 428 317 505 c
+352 583 389 677 426 787 c
+263 787 l
+208 787 157 777 111 758 c
+45 841 l
+252 835 l
+461 835 l
+461 1332 l
+452 1561 l
+618 1491 l
+633 1484 640 1478 641 1472 c
+642 1466 635 1459 620 1452 c
+570 1427 l
+569 903 l
+634 1000 687 1095 727 1187 c
+789 1328 l
+914 1250 l
+929 1240 936 1232 935 1227 c
+934 1222 925 1218 907 1214 c
+869 1205 l
+770 1078 670 961 569 855 c
+569 835 l
+669 835 l
+764 942 l
+888 826 l
+1291 826 l
+1291 1032 l
+1154 1032 l
+1095 1032 1040 1022 990 1003 c
+919 1085 l
+1110 1080 l
+1291 1080 l
+1291 1271 l
+1165 1271 l
+1094 1271 1035 1262 987 1243 c
+926 1319 l
+1073 1314 l
+1291 1314 l
+1291 1427 l
+1281 1566 l
+1449 1507 l
+1468 1500 1478 1494 1477 1489 c
+1477 1485 1471 1479 1460 1471 c
+1410 1437 l
+1409 1314 l
+
+140 1321 m
+160 1337 l
+177 1320 208 1291 251 1249 c
+294 1207 329 1167 354 1129 c
+379 1092 392 1060 393 1033 c
+394 1006 387 979 371 950 c
+355 921 337 908 318 909 c
+299 910 286 916 279 927 c
+273 938 270 956 269 980 c
+269 1004 265 1035 258 1073 c
+251 1112 239 1148 223 1183 c
+207 1218 179 1264 140 1321 c
+
+975 689 m
+1099 617 l
+1619 617 l
+1687 707 l
+1804 633 l
+1827 618 1839 608 1838 605 c
+1838 602 1833 596 1823 589 c
+1771 551 l
+1771 -134 l
+1771 -163 1768 -188 1761 -208 c
+1754 -229 1745 -245 1733 -256 c
+1722 -267 1704 -280 1679 -295 c
+1654 -310 1624 -321 1589 -329 c
+1584 -310 1577 -293 1570 -276 c
+1563 -259 1547 -243 1523 -227 c
+1500 -211 1481 -200 1466 -195 c
+1451 -190 1411 -181 1344 -167 c
+1349 -134 l
+1435 -148 1513 -154 1583 -153 c
+1606 -153 1622 -150 1631 -143 c
+1640 -136 1646 -129 1649 -121 c
+1652 -114 1654 -87 1654 -42 c
+1654 110 l
+1099 110 l
+1099 -295 l
+1054 -315 1011 -328 972 -333 c
+984 -117 l
+984 483 l
+975 689 l
+
+1099 158 m
+1654 158 l
+1654 353 l
+1099 353 l
+1099 158 l
+
+1099 400 m
+1654 400 l
+1654 569 l
+1099 569 l
+1099 400 l
+
+ce} _d
+/uni00000f6e{2048 0 263 -342 1856 1505 sc
+669 207 m
+817 190 943 173 1048 156 c
+1153 139 1217 115 1240 86 c
+1263 57 1276 26 1279 -7 c
+1282 -40 1279 -61 1268 -69 c
+1258 -77 1250 -81 1245 -81 c
+1241 -82 1236 -81 1230 -78 c
+1224 -75 1211 -65 1190 -48 c
+1169 -31 1142 -12 1109 11 c
+1076 34 1026 58 959 85 c
+892 112 795 145 669 182 c
+669 207 l
+
+897 550 m
+913 564 l
+926 556 939 548 951 541 c
+963 534 983 521 1010 501 c
+1037 481 1063 458 1087 433 c
+1111 408 1123 383 1123 356 c
+1124 330 1112 304 1087 277 c
+1062 250 1044 242 1033 251 c
+1022 260 1015 270 1010 281 c
+1006 292 1001 309 996 334 c
+991 359 986 379 981 395 c
+976 412 965 435 950 464 c
+935 494 918 523 897 550 c
+
+263 -342 m
+276 -7 l
+276 1297 l
+267 1494 l
+416 1399 l
+1628 1399 l
+1709 1505 l
+1835 1420 l
+1849 1410 1856 1403 1855 1398 c
+1855 1394 1848 1388 1835 1379 c
+1788 1348 l
+1788 67 l
+1802 -243 l
+1773 -264 1729 -286 1668 -310 c
+1668 -162 l
+392 -162 l
+392 -279 l
+361 -300 318 -321 263 -342 c
+
+392 -115 m
+1668 -115 l
+1668 1352 l
+885 1352 l
+1002 1276 l
+1011 1270 1015 1264 1015 1259 c
+1016 1254 1011 1250 1002 1247 c
+943 1231 l
+918 1196 893 1163 869 1130 c
+1230 1130 l
+1311 1221 l
+1445 1101 l
+1454 1092 1458 1085 1457 1080 c
+1456 1075 1449 1070 1436 1067 c
+1360 1045 l
+1343 1028 1330 1015 1322 1007 c
+1163 840 l
+1085 762 l
+1120 737 1151 718 1176 704 c
+1202 691 1264 665 1361 628 c
+1459 591 1550 569 1635 560 c
+1635 535 l
+1576 532 1537 525 1516 512 c
+1495 499 1474 476 1453 443 c
+1394 464 1324 498 1245 547 c
+1166 596 1119 627 1104 640 c
+1020 708 l
+907 611 811 539 733 492 c
+656 445 560 402 446 362 c
+435 387 l
+641 494 814 623 954 774 c
+903 849 868 906 851 946 c
+830 998 l
+811 1045 l
+748 969 699 911 662 872 c
+625 833 570 782 497 719 c
+481 733 l
+552 824 605 893 639 939 c
+674 986 714 1053 759 1141 c
+804 1230 837 1300 858 1352 c
+392 1352 l
+392 -115 l
+
+1007 825 m
+1072 886 1146 972 1230 1083 c
+838 1083 l
+847 1060 856 1040 865 1021 c
+874 1003 891 975 916 936 c
+941 898 972 861 1007 825 c
+
+ce} _d
+/uni000011f1{2048 0 90 -328 1943 1534 sc
+325 1493 m
+476 1417 l
+1686 1417 l
+1789 1534 l
+1896 1430 l
+1927 1399 1941 1381 1936 1376 c
+1931 1371 1925 1369 1916 1369 c
+1170 1369 l
+1259 1325 l
+1283 1312 1294 1304 1292 1299 c
+1291 1295 1281 1290 1263 1284 c
+1225 1271 l
+1177 1198 1133 1127 1094 1060 c
+1532 1060 l
+1598 1153 l
+1703 1072 l
+1728 1052 1740 1040 1739 1035 c
+1738 1030 1731 1023 1716 1012 c
+1674 982 l
+1674 630 l
+1686 445 l
+1647 420 1604 402 1557 393 c
+1557 451 l
+1252 451 l
+1252 -129 l
+1252 -157 1247 -182 1237 -203 c
+1227 -224 1209 -244 1184 -263 c
+1159 -282 1114 -304 1049 -328 c
+1046 -312 1041 -290 1033 -262 c
+1026 -234 1007 -211 977 -194 c
+947 -177 879 -159 774 -138 c
+779 -107 l
+921 -122 1013 -128 1056 -127 c
+1111 -126 1138 -105 1138 -64 c
+1138 451 l
+829 451 l
+829 402 l
+792 377 750 358 703 345 c
+716 594 l
+716 943 l
+707 1137 l
+841 1060 l
+1043 1060 l
+1078 1176 1097 1247 1101 1274 c
+1116 1369 l
+468 1369 l
+465 1180 464 1010 463 859 c
+463 708 457 572 444 450 c
+431 328 398 201 344 70 c
+291 -61 211 -183 105 -298 c
+90 -280 l
+145 -191 190 -107 225 -28 c
+260 51 286 146 303 258 c
+320 371 330 471 334 558 c
+338 646 341 773 342 940 c
+344 1107 344 1210 341 1247 c
+325 1493 l
+325 1493 l
+
+829 786 m
+1557 786 l
+1557 1012 l
+829 1012 l
+829 786 l
+
+829 502 m
+1557 502 l
+1557 737 l
+829 737 l
+829 502 l
+
+341 -204 m
+446 -123 529 -48 590 21 c
+651 90 700 157 736 222 c
+783 305 l
+918 224 l
+940 210 950 201 949 197 c
+948 193 937 188 918 183 c
+875 171 l
+785 88 700 13 620 -52 c
+541 -117 453 -175 356 -225 c
+341 -204 l
+
+1443 250 m
+1454 272 l
+1549 231 1640 189 1725 147 c
+1811 105 1864 68 1885 35 c
+1906 2 1917 -25 1917 -46 c
+1918 -67 1912 -90 1899 -115 c
+1891 -130 1881 -144 1870 -155 c
+1859 -167 1849 -172 1842 -171 c
+1835 -170 1827 -164 1819 -152 c
+1811 -140 1797 -116 1778 -81 c
+1759 -46 1733 -8 1701 32 c
+1669 72 1621 116 1557 163 c
+1493 211 1455 240 1443 250 c
+
+ce} _d
+end readonly def
+
+/BuildGlyph {
+ exch begin
+ CharStrings exch
+ 2 copy known not {pop /.notdef} if
+ true 3 1 roll get exec
+ end
+} _d
+
+/BuildChar {
+ 1 index /Encoding get exch get
+ 1 index /BuildGlyph get exec
+} _d
+
+FontName currentdict end definefont pop
+%!PS-Adobe-3.0 Resource-Font
+%%Creator: Converted from TrueType to Type 3 by Matplotlib.
+10 dict begin
+/FontName /STIXGeneral-Regular def
+/PaintType 0 def
+/FontMatrix [0.001 0 0 0.001 0 0] def
+/FontBBox [-970 -443 2000 1023] def
+/FontType 3 def
+/Encoding [/a /b /e /l /zero /one /uni2192 /two /four /seven /colon] def
+/CharStrings 12 dict dup begin
+/.notdef 0 def
+/a{444 0 37 -10 442 460 sc
+442 66 m
+442 38 l
+417 6 387 -10 352 -10 c
+314 -10 293 14 288 63 c
+287 63 l
+244 14 196 -10 142 -10 c
+111 -10 85 -1 66 17 c
+47 36 37 61 37 94 c
+37 141 60 180 107 211 c
+139 232 199 259 287 292 c
+287 346 l
+287 376 280 398 265 413 c
+251 428 232 436 209 436 c
+189 436 172 431 159 421 c
+146 412 139 400 139 387 c
+139 381 140 374 142 367 c
+144 360 145 352 145 345 c
+145 335 140 326 131 317 c
+122 308 112 304 99 304 c
+88 304 78 308 69 317 c
+60 326 56 337 56 350 c
+56 382 73 409 107 430 c
+138 450 177 460 222 460 c
+276 460 315 445 340 415 c
+352 401 360 387 363 372 c
+366 358 368 335 368 304 c
+368 113 l
+368 69 378 47 399 47 c
+412 47 427 53 442 66 c
+
+287 127 m
+287 268 l
+226 247 183 225 159 202 c
+136 181 125 156 125 125 c
+125 100 131 80 144 67 c
+157 54 173 48 194 48 c
+216 48 235 53 252 64 c
+266 74 275 83 280 92 c
+285 101 287 112 287 127 c
+
+ce} _d
+/b{500 0 3 -10 468 683 sc
+153 681 m
+153 376 l
+164 401 181 422 205 437 c
+230 452 257 460 288 460 c
+341 460 384 439 417 397 c
+451 355 468 303 468 240 c
+468 167 446 107 401 60 c
+356 13 301 -10 234 -10 c
+193 -10 156 -3 121 10 c
+86 24 69 39 69 56 c
+69 566 l
+69 591 66 606 60 613 c
+54 620 41 624 20 624 c
+15 624 10 623 3 622 c
+3 639 l
+33 648 l
+101 669 139 680 148 683 c
+153 681 l
+
+153 318 m
+153 74 l
+153 59 162 46 181 36 c
+200 27 223 22 250 22 c
+289 22 320 36 343 65 c
+368 96 380 140 380 197 c
+380 262 367 313 341 350 c
+319 381 289 397 252 397 c
+225 397 202 389 182 373 c
+163 358 153 339 153 318 c
+
+ce} _d
+/e{444 0 25 -10 424 460 sc
+408 164 m
+424 157 l
+384 46 314 -10 215 -10 c
+156 -10 110 10 76 51 c
+42 92 25 148 25 217 c
+25 288 44 347 82 392 c
+120 437 170 460 232 460 c
+292 460 338 437 371 391 c
+390 364 402 326 405 277 c
+97 277 l
+100 235 104 203 109 181 c
+115 159 126 137 143 114 c
+171 77 208 59 254 59 c
+287 59 314 67 336 83 c
+359 99 383 126 408 164 c
+
+99 309 m
+303 309 l
+297 351 287 381 273 398 c
+260 415 237 424 205 424 c
+177 424 154 414 135 394 c
+116 375 104 346 99 309 c
+
+ce} _d
+/l{278 0 19 0 257 683 sc
+257 0 m
+21 0 l
+21 15 l
+52 18 73 24 83 34 c
+93 45 98 64 98 92 c
+98 561 l
+98 585 95 602 89 611 c
+83 620 72 625 56 625 c
+42 625 30 624 19 623 c
+19 639 l
+82 654 135 669 177 683 c
+182 679 l
+182 87 l
+182 59 187 40 196 31 c
+205 22 226 17 257 15 c
+257 0 l
+
+ce} _d
+/zero{500 0 24 -14 476 676 sc
+476 330 m
+476 285 472 243 463 203 c
+454 164 441 127 424 94 c
+407 61 384 34 354 15 c
+324 -4 289 -14 250 -14 c
+209 -14 174 -4 143 17 c
+112 38 89 65 72 100 c
+55 135 43 172 35 211 c
+28 250 24 292 24 336 c
+24 398 32 454 47 503 c
+62 553 88 594 123 627 c
+159 660 203 676 254 676 c
+319 676 373 644 414 580 c
+455 516 476 433 476 330 c
+
+380 325 m
+380 430 369 511 346 566 c
+324 622 291 650 248 650 c
+207 650 175 622 153 566 c
+131 510 120 431 120 329 c
+120 226 131 148 153 93 c
+175 39 207 12 250 12 c
+292 12 324 39 346 93 c
+369 148 380 225 380 325 c
+
+ce} _d
+/one{500 0 111 0 394 676 sc
+394 0 m
+118 0 l
+118 15 l
+155 17 180 24 193 35 c
+206 47 213 67 213 95 c
+213 544 l
+213 577 203 593 183 593 c
+174 593 159 589 138 581 c
+111 571 l
+111 585 l
+290 676 l
+299 673 l
+299 76 l
+299 54 306 38 319 29 c
+332 20 357 15 394 15 c
+394 0 l
+
+ce} _d
+/uni2192{926 0 70 57 856 448 sc
+856 258 m
+856 248 l
+779 215 700 152 618 57 c
+598 76 l
+617 103 644 135 680 172 c
+689 181 694 191 694 200 c
+694 213 685 220 668 220 c
+70 220 l
+70 286 l
+669 286 l
+674 286 680 288 686 293 c
+692 298 695 303 695 308 c
+695 315 690 324 681 333 c
+647 366 620 398 599 429 c
+619 448 l
+702 353 781 289 856 258 c
+
+ce} _d
+/two{500 0 29 0 474 676 sc
+474 137 m
+420 0 l
+29 0 l
+29 12 l
+207 201 l
+254 250 287 294 307 335 c
+327 376 337 418 337 461 c
+337 506 325 540 300 565 c
+275 590 241 602 198 602 c
+162 602 133 593 112 574 c
+91 555 71 521 51 472 c
+30 477 l
+41 539 64 588 98 623 c
+133 658 179 676 238 676 c
+293 676 338 659 372 626 c
+406 593 423 551 423 500 c
+423 425 380 342 295 252 c
+130 76 l
+364 76 l
+386 76 403 80 416 89 c
+429 98 444 116 460 143 c
+474 137 l
+
+ce} _d
+/four{500 0 12 0 473 676 sc
+473 167 m
+370 167 l
+370 0 l
+292 0 l
+292 167 l
+12 167 l
+12 231 l
+326 676 l
+370 676 l
+370 231 l
+473 231 l
+473 167 l
+
+292 231 m
+292 574 l
+52 231 l
+292 231 l
+
+ce} _d
+/seven{500 0 20 -8 449 662 sc
+449 646 m
+237 -8 l
+172 -8 l
+370 588 l
+155 588 l
+126 588 105 583 91 573 c
+77 563 59 541 38 506 c
+20 515 l
+80 662 l
+449 662 l
+449 646 l
+
+ce} _d
+/colon{278 0 81 -11 192 459 sc
+175 442 m
+186 431 192 418 192 403 c
+192 388 187 375 176 364 c
+165 353 152 348 137 348 c
+122 348 108 353 97 364 c
+86 375 81 388 81 403 c
+81 419 86 432 97 443 c
+108 454 121 459 137 459 c
+152 459 164 453 175 442 c
+
+192 44 m
+192 29 187 16 176 5 c
+165 -6 152 -11 137 -11 c
+122 -11 108 -6 97 5 c
+86 16 81 29 81 44 c
+81 60 86 73 97 84 c
+108 95 121 100 137 100 c
+152 100 164 94 175 83 c
+186 72 192 59 192 44 c
+
+ce} _d
+end readonly def
+
+/BuildGlyph {
+ exch begin
+ CharStrings exch
+ 2 copy known not {pop /.notdef} if
+ true 3 1 roll get exec
+ end
+} _d
+
+/BuildChar {
+ 1 index /Encoding get exch get
+ 1 index /BuildGlyph get exec
+} _d
+
+FontName currentdict end definefont pop
+end
+%%EndProlog
+mpldict begin
+-54 72 translate
+720 648 0 0 clipbox
+gsave
+0 0 m
+720 0 l
+720 648 l
+0 648 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+31.28149 494.150193 m
+160.82476 494.150193 l
+160.82476 623.693463 l
+31.28149 623.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 31.281 494.15 clipbox
+
+31.281490 494.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 129.9999999999999] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9d9d9d0101013b3b3bf6f6f6ffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffff9d9d9d0101010101012a2a2aeaeaeaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffdadada0f0f0f010101010101e1e1e1ffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8f8f8f010101010101e1e1e1ffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffff0f0f0232323010101a5a5a5fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffebebeb010101010101cdcdcdffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd4141410101012a2a2aedededff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffff6f6f62828280101016c6c6cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfcfcf040404111111ddddddffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9797970101015b5b5bffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffafafa3e3e3e080808ddddddffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8f8f8f010101565656fcfcfcffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdcdcdc060606010101dadada
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffff949494010101131313e7e7e7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff4f4f4191919000000c8c8c8ffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc8c8c8020202383838f6
+f6f6fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f7f7d7d7d7f8f8f8d6d6
+d6d6d6d6d6d6d6dcdcdcf5f5f5161616010101b0b0b0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6d6d6a6a6a6
+d1d1d1a6a6a66f6f6f2020200101012222220101010101010101010505051e1e1e010101010101888888ffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffff262626010101010101010101010101101010484848484848484848484848484848484848484848484848686868e1e1e1ffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc7c7c75858587373737c7c7cdbdbdbedededffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+/UNAVAILABLE 22.000 selectfont
+gsave
+
+20.000240 536.921828 translate
+90.000000 rotate
+0.000000 0 m /uni000011f1 glyphshow
+22.000000 0 m /uni00000f6e glyphshow
+grestore
+0.800 setlinewidth
+0 setlinejoin
+2 setlinecap
+[] 0 setdash
+gsave
+31.28149 494.150193 m
+31.28149 623.693463 l
+stroke
+grestore
+gsave
+160.82476 494.150193 m
+160.82476 623.693463 l
+stroke
+grestore
+gsave
+31.28149 494.150193 m
+160.82476 494.150193 l
+stroke
+grestore
+gsave
+31.28149 623.693463 m
+160.82476 623.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+44.053125 629.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/seven glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/seven glyphshow
+grestore
+gsave
+170.32524 494.150193 m
+299.86851 494.150193 l
+299.86851 623.693463 l
+170.32524 623.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 170.325 494.15 clipbox
+
+170.325240 494.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa1
+a1a19b9b9b9b9b9b9b9b9b6c6c6c0202020202020202027777779b9b9b9b9b9be9e9e9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff636363020202020202020202020202020202020202020202020202020202020202020202060606090909090909696969
+a2a2a2a2a2a2ddddddffffffffffffffffffffffffffffffffffffffffffffffffffffff0808080202020202020202020202020202020202020202026a6a6a84
+84846c6c6c0202020202020202020202020202020202020202029b9b9bffffffffffffffffffffffffffffffffffffffffffffffffffffff0808080202020202
+02e7e7e7f5f5f5f5f5f5f5f5f5f5f5f5fcfcfcfffffffcfcfcf5f5f5f5f5f5ececec7d7d7d7d7d7d7d7d7d808080fafafaffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff080808020202020202f3f3f3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8e8e8e020202020202646464f9f9f9ffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6f6f6454545020202020202
+878787ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffcccccc080808020202545454f9f9f9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff484848020202020202878787ffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff3f3f318181802020219
+1919edededffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffff6161610a0a0a020202737373f9f9f9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff959595020202020202838383ffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcecece0909090202
+021b1b1bd9d9d9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffa2a2a2090909020202484848fafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffff0f0f0f6f6f6ffffffffffffffffffffffff383838020202020202d7d7d7ffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcdcdcd040404373737f3f3f3ffffffffffffffffff9c9c9c080808
+020202d7d7d7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe1e1e105050502
+0202373737efefeff9f9f9fffffffcfcfc3d3d3d020202888888ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff6969690202020202020202023333338686866161610202020202029c9c9cffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6969690202020202020202020202020202020202022c2c2cf0
+f0f0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa4a4
+a49999996666660000000000007d7d7dbfbfbfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+170.32524 494.150193 m
+170.32524 623.693463 l
+stroke
+grestore
+gsave
+299.86851 494.150193 m
+299.86851 623.693463 l
+stroke
+grestore
+gsave
+170.32524 494.150193 m
+299.86851 494.150193 l
+stroke
+grestore
+gsave
+170.32524 623.693463 m
+299.86851 623.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+183.096875 629.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/two glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/two glyphshow
+grestore
+gsave
+309.36899 494.150193 m
+438.91226 494.150193 l
+438.91226 623.693463 l
+309.36899 623.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 309.369 494.15 clipbox
+
+309.368990 494.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfcfc484848616161fafafaffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffafafa3030300101019d9d9dffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffff8787870101013e3e3efdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdadada040404010101d7d7d7ffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffff1f1f1f010101d7d7d7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffff7c7c7c010101868686ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9f9f9f010101737373ffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+f3f3f31a1a1a303030ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffff666666010101c9c9c9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9a9a9a0000006d6d6dffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdd
+dddd1414143e3e3efbfbfbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffff888888010101cdcdcdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbdbdbd0101014c4c4cffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefef
+ef0101012f2f2fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffff424242252525f9f9f9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc7c7c7010101d9d9d9ffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe6e6e6
+0c0c0c7d7d7dffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffff8d8d8d101010ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc4c4c4030303c8c8c8ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffebebeb01
+0101acacacffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+309.36899 494.150193 m
+309.36899 623.693463 l
+stroke
+grestore
+gsave
+438.91226 494.150193 m
+438.91226 623.693463 l
+stroke
+grestore
+gsave
+309.36899 494.150193 m
+438.91226 494.150193 l
+stroke
+grestore
+gsave
+309.36899 623.693463 m
+438.91226 623.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+322.140625 629.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/one glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/one glyphshow
+grestore
+gsave
+448.41274 494.150193 m
+577.95601 494.150193 l
+577.95601 623.693463 l
+448.41274 623.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 448.413 494.15 clipbox
+
+448.412740 494.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 129.9999999999999] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd1d1d1636363040404646464d2d2d2d1d1d1
+f0f0f0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdadada86
+8686020202040404040404040404040404020202afafafffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffff0f0f01d1d1d0404040202020404040404040404040404040202021d1d1d545454edededfafafaffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa7a7a704040404040402020204040404040404040404040402020204040404
+0404040404808080ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff2c2c2c020202020202d0d0
+d0d0d0d01f1f1f020202020202000000020202020202020202020202ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffff2d2d2d040404040404ffffffffffffffffffffffffffffff5b5b5b2828280404040404040404045d5d5dffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff2d2d2d040404040404ffffffffffffffffffffffffffffffffffff8383830404040404
+04040404282828dadadaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff2d2d2d040404040404ffffffffffff
+fffffffffffffffffffffffff5f5f5d9d9d91b1b1b0404040202021d1d1df0f0f0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffff888888040404040404ffffffffffffffffffffffffffffffffffffffffffffffffacacac040404020202040404edededffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffececec020202020202ffffffffffffffffffffffffffffffffffffffffffffffffefefef424242
+0000000202026e6e6effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffececec040404040404444444f0f0f0ffffffff
+fffffffffffffffffffffffffffff0f0f0454545020202040404edededffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffececec040404040404020202555555f5f5f5ffffffffffffffffffffffffffffffacacac040404020202040404edededffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffefefef1b1b1b0404040202020404042929298b8b8bfafafafffffffffffff0f0f01d1d1d0404040d0d0da7
+a7a7fcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd9d9d92828280202020404040404040404048080
+80cdcdcddadada959595040404040404b1b1b1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffff5b5b5b000000020202020202020202020202181818262626020202020202020202ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffff020202040404040404040404040404020202040404040404292929e2e2e2ffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffababab535353040404040404040404020202
+696969acacacdadadaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffff5f5f5494949040404040404020202afafafffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffececec040404040404020202afafafffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9f9f97d7d7d020202424242f0f0f0ff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+448.41274 494.150193 m
+448.41274 623.693463 l
+stroke
+grestore
+gsave
+577.95601 494.150193 m
+577.95601 623.693463 l
+stroke
+grestore
+gsave
+448.41274 494.150193 m
+577.95601 494.150193 l
+stroke
+grestore
+gsave
+448.41274 623.693463 m
+577.95601 623.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+461.184375 629.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/zero glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/zero glyphshow
+grestore
+gsave
+587.45649 494.150193 m
+716.99976 494.150193 l
+716.99976 623.693463 l
+587.45649 623.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 587.456 494.15 clipbox
+
+587.456490 494.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5e5e5ed7d7d7ffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+1a1a1a161616aaaaaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffff8d8d8d0303030c0c0cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff969696030303030303ffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff95959502
+0202020202ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff969696030303030303e6e6e6ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffe3e3e3c7c7c7c7c7c7c7c7c7c7c7c7ffffffffffff717171030303030303ffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe9e9e96868680b0b0b0303030303030303030303031a1a1a1b1b1b0404040303030303
+03fafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff696969030303474747c6c6c6c6c6c6
+c6c6c6c6c6c69494946e6e6e4c4c4c030303030303b0b0b0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffafafa404040383838f6f6f6fffffffffffffffffffffffffffffffffffff4f4f4020202020202afafafffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffff4f4f40303036e6e6effffffffffffffffffffffffffffffffffffffffffffffff6969690303036b6b6b
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f7f7222222030303ffffffffffffffffffffffffff
+ffffffffffffffffffffff8e8e8e030303363636ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ff696969030303b0b0b0ffffffffffffffffffffffffffffffffffffffffffefefef1a1a1a050505d7d7d7ffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffc7c7c70f0f0f363636ffffffffffffffffffffffffffffffffffffffffffffffff878787020202545454fc
+fcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6a6a6a090909e0e0e0ffffffffffffffffffffff
+fffffffffffffffffffff6f6f6000000020202f5f5f5ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+e6e6e61616162d2d2df9f9f9ffffffffffffffffffffffffffffffffffffffffff505050030303f5f5f5ffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffd4d4d40303038e8e8effffffffffffffffffffffffffffffffffffffffffa6a6a6030303f5f5f5ffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd4c4c4c1b1b1bffffffffffffffffffffffff
+ffffffffffffffffffbcbcbc373737f9f9f9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffff9d9d9d1b1b1bffffffffffffffffffffffffffffffffffffffffff7f7f7f6a6a6affffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffe2e2e2232323ffffffffffffffffffffffffffffffffffffffffffd3d3d3f1f1f1ffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+587.45649 494.150193 m
+587.45649 623.693463 l
+stroke
+grestore
+gsave
+716.99976 494.150193 m
+716.99976 623.693463 l
+stroke
+grestore
+gsave
+587.45649 494.150193 m
+716.99976 494.150193 l
+stroke
+grestore
+gsave
+587.45649 623.693463 m
+716.99976 623.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+600.228125 629.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/four glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/four glyphshow
+grestore
+gsave
+31.28149 332.150193 m
+160.82476 332.150193 l
+160.82476 461.693463 l
+31.28149 461.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 31.281 332.15 clipbox
+
+31.281490 332.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fffffffffffffffffffffffffffffffffffffefefefefefefcfcfcfafafaf8f8f8e8e8e8f7f7f7fbfbfbfdfdfdfefefefffffffefefefefefeffffffffffffff
+fffffffffffffffffffffffffffffffffffdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffdfdfdf7f7f7b8b8b83e3e3e727272edededfdfd
+fdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fefefefbfbfbc4c4c4171717101010c0c0c0fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdff
+fffffffffffffffffffffffffffffffffffffffffffffffefefef7f7f7343434050505383838fafafaffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefec8c8c80c0c0c040404c1c1c1fefefe
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffbfbfb585858010101262626fbfbfbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefee7e7e70f0f0f050505bcbcbcffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd8a8a8a0808081e1e1efcfcfcff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffefefeececec0d0d0d010101c1c1c1fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffefefefbfbfb707070000000191919f0f0f0fefefefefefefefefeffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefef3f3f3161616020202626262fcfc
+fcfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffefefec6c6c60d0d0d111111ebebebfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffafafa494949020202565656fdfdfdffffffffffffffffffffffffffffffffffffffff
+fffefefefefefefffffffffffffffffffffffffffffffefefefefefefefefefefefefefefefffffffffffffffffffffffffefefedddddd090909080808e3e3e3
+fffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffefefefefefefdfdfdfdfdfdfdfdfdfefefefefefeffffffff
+fffffffffffffffffbfbfb5656560303032c2c2cf8f8f8fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefe
+fefdfdfdfcfcfcfdfdfdfefefefefefefffffffffffffffffffffffffefefee8e8e81f1f1f0a0a0a717171fbfbfbfefefeffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffefefefefefefcfcfcfcfcfcfdfdfdfdfdfdfdfdfdfdfdfdfefefefefefefefefefefefefefefefbfbfbc1c1c1141414131313c0
+c0c0fdfdfdfffffffffffffffffffffffffefefefffffffffffffffffffffffffefefefdfdfdf6f6f6f3f3f3f7f7f7f3f3f3d8d8d8d6d6d6dadadadddddde1e1
+e1eaeaeaeeeeeef5f5f5f3f3f35d5d5d0c0c0c3d3d3df1f1f1fefefefffffffffffffffffffefefefffffffffffffffffffefefefcfcfcf3f3f3bebebe848484
+8c8c8c7777773b3b3b2525252323231d1d1d1f1f1f1b1b1b2d2d2d5757579797974c4c4c0f0f0f1f1f1fd7d7d7fdfdfdffffffffffffffffffffffffffffffff
+fffffffffffefefef9f9f9bababa3b3b3b2525252f2f2f3e3e3e2d2d2d4242426262626363636e6e6e5050504444443a3a3a3e3e3e4444443a3a3a555555e7e7
+e7fcfcfcfffffffffffffffffffffffffffffffffffffffffffefefef8f8f8dcdcdc7d7d7d6e6e6e8f8f8fc1c1c1d1d1d1f3f3f3fbfbfbfdfdfdfefefefdfdfd
+fdfdfdfbfbfbf9f9f9f4f4f4f7f7f7f7f7f7fdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefcfcfcf9f9f9f7f7f7fbfbfbfc
+fcfcfefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+
+20.000240 363.921828 translate
+90.000000 rotate
+0.000000 0 m /uni000012d0 glyphshow
+22.000000 0 m /uni00001090 glyphshow
+44.000000 0 m /uni00000e55 glyphshow
+grestore
+gsave
+31.28149 332.150193 m
+31.28149 461.693463 l
+stroke
+grestore
+gsave
+160.82476 332.150193 m
+160.82476 461.693463 l
+stroke
+grestore
+gsave
+31.28149 332.150193 m
+160.82476 332.150193 l
+stroke
+grestore
+gsave
+31.28149 461.693463 m
+160.82476 461.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+44.053125 467.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/seven glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/seven glyphshow
+grestore
+gsave
+170.32524 332.150193 m
+299.86851 332.150193 l
+299.86851 461.693463 l
+170.32524 461.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 170.325 332.15 clipbox
+
+170.325240 332.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfdfdfdfdfdfdfcfcfcfbfbfbfdfdfdfdfdfd
+fdfdfdfefefefdfdfdfefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdf0f0f0aa
+aaaa6868685555554848482121213333335555557a7a7a8e8e8e7c7c7cb0b0b0c8c8c8f3f3f3fcfcfcfdfdfdfdfdfdfefefefffffffefefeffffffffffffffff
+fffffffffffffffffffffefefef2f2f27676761818180909090505050303030000000000000202020505050808080808080c0c0c131313181818696969838383
+d3d3d3fafafafefefefefefefffffffffffffffffffffffffffffffffffffefefee3e3e33030300505050404040f0f0f1717171e1e1e20202017171713131316
+16161e1e1e2020201919190808080808081d1d1d767676f5f5f5fefefefefefefffffffffffffffffffffffffffffffffffffffffff0f0f02c2c2c0202020404
+045c5c5ce2e2e2ededede5e5e5c3c3c38686868a8a8aacacacc5c5c5bdbdbd6464643030303333337f7f7ff2f2f2fefefefefefeffffffffffffffffffffffff
+fffffffffffffffffffbfbfb9191910606060b0b0b8f8f8ffafafafdfdfdfcfcfcfafafaf1f1f1e9e9e9f4f4f4f9f9f9fbfbfbf7f7f7eaeaead7d7d7cfcfcff6
+f6f6fdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffefefeededed1e1e1e060606404040f6f6f6fefefefefefefdfdfdfcfcfcfbfbfbfcfc
+fcfdfdfdfefefefefefefefefefdfdfdfcfcfcfbfbfbfefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffafafa6b6b6b0a0a0a1d1d1d
+ebebebfefefefffffffefefefefefefefefefefefefefefefffffffffffffffffffffffffefefefefefefefefefefefeffffffffffffffffffffffffffffffff
+fffffffffffffffffefefee0e0e01e1e1e0c0c0c7e7e7ef9f9f9fefefefffffffffffffffffffefefefefefefefefefffffffffffffffffffffffffefefefefe
+fefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefafafa7777770f0f0f171717b6b6b6fafafafefefeffffffffffffffffffffffff
+fefefefefefefffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef1f1f15454540f0f0f3b
+3b3be1e1e1fcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffcfcfce2e2e2414141252525929292f9f9f9fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefbfbfbcecece1a1a1a262626ecececfefefeffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefdfdfdf4f4f43838380a0a
+0ab1b1b1fdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefbfbfb
+f7f7f7fbfbfbfdfdfdfdfdfdfbfbfb9b9b9b131313565656f7f7f7fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffff
+fffffffffffffffffffffffffffffdfdfdefefefabababd5d5d5f7f7f7fdfdfdfdfdfdeaeaea424242424242e7e7e7fefefeffffffffffffffffffffffffffff
+fffffffffefefefefefefffffffefefefffffffffffffffffffffffffffffffffffff9f9f9afafaf2d2d2d5c5c5cd1d1d1f9f9f9fcfcfcfafafad7d7d75e5e5e
+acacacefefeffcfcfcfdfdfdfefefefefefefefefefffffffffffffefefefefefefefefefffffffffffffffffffffffffffffffffffffafafa9c9c9c1919191a
+1a1a5e5e5ec7c7c7f3f3f3f5f5f5e1e1e18484846868688f8f8fd7d7d7f6f6f6fdfdfdfefefefefefefffffffffffffefefefefefefefefeffffffffffffffff
+fffffffffffffffffffffbfbfbc6c6c62626260b0b0b101010202020505050646464545454454545575757606060999999f1f1f1fdfdfdfefefeffffffffffff
+fefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffefefef0f0f08888882020201010100c0c0c0b0b0b0909090a0a0a1818183d3d3d8b
+8b8be7e7e7fbfbfbfefefefffffffffffffffffffefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffefefefcfcfcf2f2f2bcbcbc6f6f
+6f4e4e4e3d3d3d4e4e4e6a6a6a939393e7e7e7fcfcfcfffffffffffffffffffffffffffffffffffffffffffefefefefefefefefeffffffffffffffffffffffff
+fffffffffffffffffffefefefdfdfdfcfcfcfbfbfbfbfbfbfbfbfbfcfcfcfefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefeffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+170.32524 332.150193 m
+170.32524 461.693463 l
+stroke
+grestore
+gsave
+299.86851 332.150193 m
+299.86851 461.693463 l
+stroke
+grestore
+gsave
+170.32524 332.150193 m
+299.86851 332.150193 l
+stroke
+grestore
+gsave
+170.32524 461.693463 m
+299.86851 461.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+183.096875 467.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/two glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/two glyphshow
+grestore
+gsave
+309.36899 332.150193 m
+438.91226 332.150193 l
+438.91226 461.693463 l
+309.36899 461.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 309.369 332.15 clipbox
+
+309.368990 332.150193 translate
+[130.0 0.0 0.0 -130.00000000000003 0.0 130.00000000000006] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffefefefefefefdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffefefefbfbfbfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1f1f12c2c2c6e6e6efafafaffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffff0f0f0080808060606c5c5c5fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffcfcfc4b4b4b050505535353fcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefed8d8d80d0d0d181818f4f4f4fefefeffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffededed141414030303c4c4c4fdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+fefefefffffffffffffffffffffffffffffffffffff9f9f93a3a3a050505898989fbfbfbfefefeffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffdfdfd898989000000313131f7f7f7fefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+e3e3e30a0a0a161616e5e5e5fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffafafa4747470f0f0fb2b2b2fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeacacac060606383838fafafafefefeffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1
+f1f10f0f0f0f0f0ff3f3f3fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffcfcfc595959080808c1c1c1fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefebebebe040404656565fcfcfcffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeefef
+ef121212454545f9f9f9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffefefef6f6f62626261d1d1deaeaeafefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbfbfb545454101010aaaaaafdfdfdffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffefefe959595
+0a0a0a424242f9f9f9fffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefeff
+ffffffffffffffffffffffffffffffffffe4e4e4161616212121efefeffefefefffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f7f7202020161616f3f3f3fefefeffffffffffffffffffffffff
+fffffffefefefefefefefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd8080804b
+4b4bfbfbfbfffffffffffffffffffffffffffffffefefefefefefdfdfdfdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffefefefcfcfcfcfcfcfffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfcfcfcffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffefefefefefefefefeffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+309.36899 332.150193 m
+309.36899 461.693463 l
+stroke
+grestore
+gsave
+438.91226 332.150193 m
+438.91226 461.693463 l
+stroke
+grestore
+gsave
+309.36899 332.150193 m
+438.91226 332.150193 l
+stroke
+grestore
+gsave
+309.36899 461.693463 m
+438.91226 461.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+322.140625 467.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/one glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/one glyphshow
+grestore
+gsave
+448.41274 332.150193 m
+577.95601 332.150193 l
+577.95601 461.693463 l
+448.41274 461.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 448.413 332.15 clipbox
+
+448.412740 332.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfdfdfdfdfdfdfefefefefefeffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefcfcfce0e0e08080804242424242425c5c5c929292dfdfdf
+f8f8f8fdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdd2d2d22a
+2a2a090909030303020202030303060606202020737373e7e7e7fcfcfcfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffe2e2e2202020040404020202030303030303010101010101050505121212585858ecececfdfdfdffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd6161610505050505051b1b1b3737372a2a2a1010100808080606060505050c
+0c0c707070f7f7f7fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5f5f51f1f1f030303191919bdbd
+bdebebebe1e1e1a1a1a14f4f4f2020200a0a0a020202101010c4c4c4fdfdfdfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffefefef0f0f0f0404042f2f2ff1f1f1fbfbfbfbfbfbf7f7f7e6e6e6bdbdbd454545030303010101313131f0f0f0fefefeffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffefefeededed1a1a1a0505052d2d2df4f4f4fefefefefefefefefefcfcfcf8f8f8d7d7d72020200101
+01080808888888f4f4f4fdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef3f3f32c2c2c0606061e1e1eeeeeeefefefe
+fffffffefefefefefefdfdfdf8f8f89f9f9f0f0f0f0404042020209f9f9ff0f0f0fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffbfbfb555555040404090909bbbbbbfcfcfcfefefefefefefefefefdfdfdf8f8f8e2e2e2545454060606090909373737d1d1d1f9f9f9fefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffefefe9393930404040303034c4c4ceeeeeefdfdfdfdfdfdfdfdfdfdfdfdf7f7f7e0e0e0828282111111
+060606141414888888f7f7f7fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd8d8d8090909000000131313c4c4c4fafafafd
+fdfdfdfdfdfdfdfdf8f8f8dfdfdf7272721010100606061a1a1a9b9b9bf9f9f9ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff7f7f7373737010101060606757575f0f0f0fcfcfcfdfdfdfdfdfdfafafadfdfdf5e5e5e0a0a0a040404262626d2d2d2fcfcfcffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffdfdfd8787870606060202021d1d1da2a2a2efefeffafafafafafaf6f6f6d5d5d53434340505050b0b0b8a
+8a8af7f7f7fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefee0e0e01717170202020606062a2a2a5e5e5ea2a2
+a2c8c8c8b6b6b6727272131313050505383838f1f1f1fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fbfbfb7575750505050202020a0a0a1111111414141010102020201f1f1f0b0b0b181818b5b5b5fcfcfcffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffefefeececec2a2a2a0404040202020404040303030101010a0a0a2525254040408f8f8ff3f3f3fefefeffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdbfbfbf141414020202010101010101020202
+191919949494dadadaf1f1f1fbfbfbfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffff9f9f9646464080808020202030303090909505050d4d4d4f9f9f9fdfdfdfefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffefefeeaeaea3636360a0a0a0808082d2d2dccccccf8f8f8fdfdfdfefefeffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfddadada656565373737b6b6b6fbfbfbfe
+fefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffdfdfdfafafafafafafefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+448.41274 332.150193 m
+448.41274 461.693463 l
+stroke
+grestore
+gsave
+577.95601 332.150193 m
+577.95601 461.693463 l
+stroke
+grestore
+gsave
+448.41274 332.150193 m
+577.95601 332.150193 l
+stroke
+grestore
+gsave
+448.41274 461.693463 m
+577.95601 461.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+461.184375 467.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/zero glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/zero glyphshow
+grestore
+gsave
+587.45649 332.150193 m
+716.99976 332.150193 l
+716.99976 461.693463 l
+587.45649 461.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 587.456 332.15 clipbox
+
+587.456490 332.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefeffffffffffffff
+fffffffffffefefefffffffffffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfdfdfdfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefef8f8f8d8d8d8c0c0c0f1f1f1fefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffefefefcfcfc
+d1d1d1292929333333e5e5e5fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffefefefffffffefefefbfbfbadadad080808252525efefeffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffcfcfcaaaaaa0202023d3d3df9f9f9ffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeb2b2b203
+03034b4b4bfcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfdfdfdfdfd
+fdfefefefefefefffffffffffffdfdfdafafaf060606616161fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffefefef6f6f6c1c1c18c8c8c888888c0c0c0e3e3e3f9f9f9fdfdfdf7f7f7838383060606686868fdfdfdffffffffffffffffffffffffffffffff
+fffffffffffefefefffffffffffffffffffffffffffffffefefef8f8f88a8a8a1212120303030909090c0c0c1414142222227777779292923d3d3d0101015e5e
+5efbfbfbfffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffefefeeaeaea4e4e4e0606060c0c0c3e3e3e5b5b5b
+4545452828283030304e4e4e292929020202525252f5f5f5fffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffe
+fefeeaeaea3b3b3b131313848484f0f0f0f9f9f9f8f8f8f3f3f3eaeaead8d8d88080800b0b0b161616c8c8c8fefefeffffffffffffffffffffffffffffffffff
+fffefefefffffffffffffffffffffffffffffffefefef4f4f4535353303030ddddddfdfdfdfefefefefefefefefefefefefdfdfdededed444444020202494949
+fcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef7f7f75d5d5d2a2a2addddddfefefeffffffffffffff
+fffffffffffffffffdfdfdb0b0b0050505101010f4f4f4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbfb
+fb979797313131c8c8c8fdfdfdfffffffffffffffffffffffffffffffefefeececec252525090909c8c8c8fefefeffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffefefededede373737555555f8f8f8fffffffffffffffffffefefefefefefefefef7f7f7494949000000878787fe
+fefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfcfc717171111111b2b2b2fdfdfdfffffffffffffefe
+fefefefefefefefcfcfc959595030303606060fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+f0f0f0121212313131f1f1f1fefefefffffffffffffefefefffffffefefedddddd0505052a2a2afbfbfbffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffdfdfd6c6c6c121212a6a6a6fbfbfbfefefefffffffffffffffffffefefef2f2f21d1d1d252525f7f7f7ffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe2e2e21616162d2d2de7e7e7fdfdfdfefefeffffff
+fffffffffffffdfdfd5c5c5c1f1f1ff0f0f0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc
+fcfc666666161616959595fcfcfcfffffffffffffffffffffffffefefea5a5a5181818d7d7d7fefefeffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffefefee9e9e93333334e4e4ef7f7f7fffffffffffffffffffffffffefefeb7b7b7222222bbbbbbfefefeffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfddddddd8f8f8ff3f3f3fefefeffffffffffffff
+fffffdfdfde5e5e59c9c9ce6e6e6fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffefefefdfdfdfefefefffffffffffffffffffffffffffffffdfdfdfdfdfdfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+587.45649 332.150193 m
+587.45649 461.693463 l
+stroke
+grestore
+gsave
+716.99976 332.150193 m
+716.99976 461.693463 l
+stroke
+grestore
+gsave
+587.45649 332.150193 m
+716.99976 332.150193 l
+stroke
+grestore
+gsave
+587.45649 461.693463 m
+716.99976 461.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+600.228125 467.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/four glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/four glyphshow
+grestore
+gsave
+31.28149 170.150193 m
+160.82476 170.150193 l
+160.82476 299.693463 l
+31.28149 299.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 31.281 170.15 clipbox
+
+31.281490 170.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefefefefefefefefefefefefefefefefefefefcfcfcf7f7f7efefeff5f5f5fafafafcfcfcfefefefefefefefefefefefefefefefefefefe
+fefefffffffffffffffffffffffffffffffcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffefefee8e8e87f7f7fa2a2a2f3f3f3fefe
+feffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffefefec3c3c31616160909098b8b8bfcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffefefee2e2e21a1a1a000000202020f1f1f1fefefeffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffff8f8f88c8c8c0f0f0f0606068b8b8bfcfcfc
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffcfcfcf2f2f2707070080808161616dbdbdbfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefefefefefefefdfdfdefefef313131030303343434f7f7f7fefefeffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefdfdfdfdfdfdfefefefbfbfbc0c0c0101010090909adadadfc
+fcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefefbfbfbf7f7f7f7f7
+f7fcfcfcfcfcfcececec4b4b4b0303032f2f2fedededfefefefffffffffffffffffffffffffefefefefefefffffffffffffefefeffffffffffffffffffffffff
+fffffffffffffffffffdfdfdf7f7f7f3f3f3f5f5f5fafafafcfcfcf8f8f8b5b5b51313130c0c0ca6a6a6fcfcfcfefefeffffffffffffffffffffffffffffffff
+fffffffffffefefefdfdfdfefefefefefefffffffffffffffffffffffffdfdfdfafafafafafafdfdfdfefefefefefefdfdfdf2f2f2696969121212383838f1f1
+f1fefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffefefefffffffffffffffffffffffffefefefcfcfcfefefefefefeffffff
+fffffffefefefbfbfbe2e2e2595959171717787878fbfbfbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefefefefefefefffffffffffffffffffffffffefefefcfcfcc9c9c9191919181818cfcfcffdfdfdffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef4f4f4494949060606535353
+f4f4f4fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffcfcfcbababa0d0d0d101010ccccccfdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef4f4f4565656080808414141f6f6f6fefefefffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefafafab2b2b20d0d0d131313d7
+d7d7fefefefffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefefcfcfcfbfbfbf9f9f9f1f1f1e4e4e4eaeaeaecececdfdf
+dfe3e3e3ebebebe0e0e0b7b7b71616160505058e8e8efcfcfcfffffffffffffffffffffffffefefefffffffffffffffffffffffffefefefbfbfbeaeaea888888
+6565655656562d2d2d0c0c0c0d0d0d0606060808080303030c0c0c141414202020030303020202656565fcfcfcfffffffffffffffffffffffffefefeffffffff
+fffffefefefefefefafafad7d7d75f5f5f1111110c0c0c1818182929291d1d1d1d1d1d1818182828281818181111111b1b1b1313130a0a0a171717acacacfdfd
+fdfffffffffffffffffffffffffefefefffffffffffffffffffefefefafafad8d8d86464643b3b3b5b5b5b9d9d9ddddddde6e6e6f1f1f1f5f5f5f8f8f8f4f4f4
+eeeeeef1f1f1ecececd1d1d1cdcdcdf8f8f8fffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefcfcfcf4f4f4f2f2f2f9f9f9fc
+fcfcfefefefefefefffffffffffffffffffffffffffffffffffffffffffefefefefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefefffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+
+20.000240 192.124953 translate
+90.000000 rotate
+0.000000 0 m /uni00000047 glyphshow
+13.997070 0 m /uni0000004d glyphshow
+27.714844 0 m /uni0000002c glyphshow
+41.583008 0 m /uni000009db glyphshow
+63.583008 0 m /uni00000d93 glyphshow
+grestore
+gsave
+31.28149 170.150193 m
+31.28149 299.693463 l
+stroke
+grestore
+gsave
+160.82476 170.150193 m
+160.82476 299.693463 l
+stroke
+grestore
+gsave
+31.28149 170.150193 m
+160.82476 170.150193 l
+stroke
+grestore
+gsave
+31.28149 299.693463 m
+160.82476 299.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+44.053125 305.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/seven glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/seven glyphshow
+grestore
+gsave
+170.32524 170.150193 m
+299.86851 170.150193 l
+299.86851 299.693463 l
+170.32524 299.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 170.325 170.15 clipbox
+
+170.325240 170.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.00000000000006] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefdfdfdfdfdfdfcfcfc
+fbfbfbfcfcfcfcfcfcfcfcfcfdfdfdfefefefefefefefefefffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefef8
+f8f8c1c1c19c9c9c6868685959595b5b5b6161616d6d6d7c7c7c7575756d6d6db0b0b0dadadae7e7e7fafafafefefefefefefefefefefefeffffffffffffffff
+fffffffffffffffffffffffffffefefef4f4f47575751313130808080202020202020909090808081010101212121212120808080a0a0a1f1f1f606060bdbdbd
+f0f0f0fdfdfdfefefefefefefffffffffffffffffffffffffffffffffffffffffffcfcfcbababa1f1f1f0808080d0d0d1e1e1e3434345454544545453a3a3a52
+52524545452020200f0f0f0f0f0f1e1e1e6e6e6edededefbfbfbfefefefefefefffffffffffffffffffffffffffffffffffffefefef7f7f77c7c7c0b0b0b0a0a
+0a656565dededef6f6f6f9f9f9f6f6f6f1f1f1eaeaead0d0d08a8a8a5656565454545252528f8f8fe4e4e4fcfcfcfffffffefefeffffffffffffffffffffffff
+fffffffffffffefefef6f6f67171710505050b0b0ba1a1a1fafafafefefefefefefefefefefefefdfdfdf7f7f7dcdcdccfcfcfdadadae0e0e0e9e9e9f3f3f3fd
+fdfdfffffffefefefffffffffffffffffffffffffffffffffffffffffffdfdfdd0d0d01212120505055c5c5cf9f9f9fefefefffffffffffffffffffefefefbfb
+fbf7f7f7f5f5f5fafafafbfbfbfcfcfcfdfdfdfefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffefefef9f9f9616161060606101010
+d5d5d5fdfdfdfffffffffffffefefefefefefdfdfdfdfdfdfdfdfdfefefefefefefefefefffffffefefefefefefdfdfdffffffffffffffffffffffffffffffff
+fffffffffffffffffdfdfddbdbdb262626030303363636f2f2f2fefefefefefefefefefefefefefefefefefeffffffffffffffffffffffffffffffffffffffff
+fffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefef8f8f8ababab080808080808919191f8f8f8fdfdfdfefefefefefeffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefefefef3f3f33838380404041b
+1b1bccccccfafafafdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffefefefcfcfcbfbfbf161616040404313131d4d4d4f9f9f9fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefef8f8f87171710b0b0b080808494949e6e6e6fdfdfdffffffffffffffffffff
+fffffffffffffffffefefefffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefefefefefdfdfdfdfdfdfdfdfdededed5e5e5e0f0f
+0f1212129d9d9dfafafafffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffcfcfc
+fafafafbfbfbfdfdfdfefefefcfcfce0e0e03333330404043a3a3af0f0f0fefefefffffffffffffffffffffffffffffffefefefefefefffffffefefeffffffff
+fffffffffffffffffffffffffffffefefefafafaf4f4f4fafafafefefefefefefefefefbfbfb9a9a9a030303050505a6a6a6fcfcfcffffffffffffffffffffff
+fffefefefefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffefefef2f2f2dadadaedededfdfdfdfefefefefefefefefedddddd090909
+0000005e5e5ef8f8f8fffffffffffffffffffffffffffffffefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffefefef3f3f3a5a5a569
+6969cbcbcbf5f5f5fbfbfbf9f9f9cccccc1111110303035d5d5dfafafafffffffffffffffffffffffffffffffefefefefefefefefefefefeffffffffffffffff
+fffffffffffffffffffffefefef8f8f8b1b1b12d2d2d1616163131316262626060603d3d3d161616212121d1d1d1fdfdfdffffffffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefefbfbfbececec8282821414140606060505050202020b0b0b262626c0c0c0fc
+fcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefefdfdfdfcfcfcf6f6f6c3c3
+c35454542828281a1a1a4e4e4ecfcfcffcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffefefefffffffffffffffffffffffffefefefdfdfdf9f9f9f6f6f6fafafafefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffefefefefefeffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffefefefefefeffffffffffffffffffffffffffffffffffff
+fffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffefefe
+grestore
+0.000 setgray
+gsave
+170.32524 170.150193 m
+170.32524 299.693463 l
+stroke
+grestore
+gsave
+299.86851 170.150193 m
+299.86851 299.693463 l
+stroke
+grestore
+gsave
+170.32524 170.150193 m
+299.86851 170.150193 l
+stroke
+grestore
+gsave
+170.32524 299.693463 m
+299.86851 299.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+183.096875 305.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/two glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/two glyphshow
+grestore
+gsave
+309.36899 170.150193 m
+438.91226 170.150193 l
+438.91226 299.693463 l
+309.36899 299.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 309.369 170.15 clipbox
+
+309.368990 170.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefeff
+fffffffffffffffffffffffffffffffffffcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffefefefefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffff7f7f7ccccccdfdfdffbfbfbfefefeffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefedbdbdb252525343434d7d7d7fdfdfdffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffe
+fefeececec1f1f1f0b0b0b838383fafafafefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffafafa5c5c5c0303033a3a3af8f8f8fefefeffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdbebebe0b0b0b0d0d0de7e7e7fefefeffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffefefefefefeffffffffffffffffffffffffffffffffff
+fff4f4f41e1e1e000000b8b8b8fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefefefe
+fffffffffffffffffffffffffffffffffffffffffffdfdfd7272720303037c7c7cfdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffefefed7d7d70505052f2f2ffafafaffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffefefe
+eeeeee1010100f0f0fe7e7e7fefefefffffffffffffefefefefefefefefefefefefffffffffffffffffffffffffefefefefefefffffffefefefefefeffffffff
+fffffffffffffffffffffffffffffffffffffffff9f9f92d2d2d030303a2a2a2fefefefffffffffffffefefefafafafdfdfdfefefeffffffffffffffffffffff
+fffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd8686860404043d3d3df9f9f9fefefefffffffefefe
+fcfcfcfefefefffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffefefeeb
+ebeb0909090a0a0aeaeaeafefefefffffffffffffefefefefefefffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffff
+fffffffffefefefefefefefefefffffffffffffdfdfd5b5b5b060606abababfdfdfdfffffffffffffffffffffffffefefefffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefffffffefefec9c9c9050505474747f9f9f9fefefeffffffffffffff
+fffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffefefef1f1
+f1161616131313eaeaeafefefefffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffefefefffffffffffffffffffbfbfb4c4c4c0a0a0a9f9f9ffdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffefefefefefeff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfda0a0a0191919696969f8f8f8ffffffffffffffffffffff
+fffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfdfdfdfefefefffffffffffffffffffefefedddddd
+1616162a2a2af0f0f0fffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffefefefefefefffffffffffffefefefefefefcfcfcfd
+fdfdfefefefffffffffffffffffffefefef3f3f32323230b0b0bc8c8c8fefefefffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffff
+fffefefefffffffffffffffffffefefefefefefefefefffffffffffffffffffffffffffffffcfcfc6c6c6c1010108b8b8bfcfcfcffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeefefef8e
+8e8ecfcfcffdfdfdfffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+fffffffdfdfdfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefffffffffffffffffffffffffffffffefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffefefefefefefefefefffffffefefefefefefefefe
+fefefefefefefffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+309.36899 170.150193 m
+309.36899 299.693463 l
+stroke
+grestore
+gsave
+438.91226 170.150193 m
+438.91226 299.693463 l
+stroke
+grestore
+gsave
+309.36899 170.150193 m
+438.91226 170.150193 l
+stroke
+grestore
+gsave
+309.36899 299.693463 m
+438.91226 299.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+322.140625 305.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/one glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/one glyphshow
+grestore
+gsave
+448.41274 170.150193 m
+577.95601 170.150193 l
+577.95601 299.693463 l
+448.41274 299.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 448.413 170.15 clipbox
+
+448.412740 170.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdf4f4f4d6d6d6a4a4a4ddddddf4f4f4fcfcfc
+fdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdefefef70
+70701d1d1d0b0b0b0404040909091818185f5f5fafafaff5f5f5fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffdfdfdd0d0d0333333040404010101000000000000000000020202060606131313616161f2f2f2fefefeffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8f8f858585808080801010102020203030303030304040402020201010102020205
+05052c2c2ce9e9e9fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeefefef2020200404040808081e1e
+1e6262626e6e6e5d5d5d2525250f0f0f040404010101030303252525e4e4e4fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffefefee8e8e81111110303032c2c2cdadadaf8f8f8fdfdfdfbfbfbf3f3f3d5d5d55050500c0c0c040404060606505050f3f3f3fefefeffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffe5e5e5101010040404454545f5f5f5fefefefffffffffffffefefefdfdfdefefef8c8c8c1717
+170303030f0f0faaaaaafdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1f1f1131313040404363636f0f0f0fefefe
+fffffffffffffffffffefefef9f9f9f1f1f18b8b8b080808030303343434f5f5f5ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffbfbfb303030030303101010d9d9d9fefefefffffffffffffffffffefefefafafaf1f1f1a4a4a40d0d0d020202141414e3e3e3ffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffdfdfd5a5a5a030303030303595959fbfbfbfffffffffffffffffffffffffcfcfcf4f4f4a1a1a1171717
+030303101010e3e3e3fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefecbcbcb0909090000000b0b0bdadadafdfdfdff
+fffffffffffffffffdfdfdf7f7f79d9d9d0f0f0f0505052d2d2df6f6f6ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fff4f4f42c2c2c010101020202424242eeeeeefdfdfdfffffffefefefefefef9f9f97f7f7f0909090f0f0fafafaffdfdfdfffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffdfdfd8f8f8f040404010101060606616161f0f0f0fcfcfcfdfdfdfcfcfcf1f1f14b4b4b0f0f0f373737f0
+f0f0fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeeeeeee2020200303030101010b0b0b6e6e6ec9c9
+c9dddddddcdcdc7b7b7b141414101010898989fafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fdfdfda2a2a20a0a0a0000000202021111114848485050502c2c2c2020201414142c2c2cd8d8d8fdfdfdffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffefefef5f5f55e5e5e0303030000000101010808081313131414141919193e3e3ea0a0a0f5f5f5fefefeffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef0f0f02323230202020000000101010a0a0a
+313131868686d9d9d9f1f1f1fbfbfbfefefefffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffefefed7d7d71414140101010101010a0a0a626262eaeaeafbfbfbfdfdfdfefefefffffffffffffffffffffffffffffffffffffefefeffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffdfdfda4a4a40f0f0f0303030a0a0a7b7b7bf7f7f7fefefefefefeffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9f9f9aaaaaa1f1f1f141414868686f9
+f9f9fefefefefefefffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffefefefbfbfbdfdfdfdadadaf8f8f8fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+448.41274 170.150193 m
+448.41274 299.693463 l
+stroke
+grestore
+gsave
+577.95601 170.150193 m
+577.95601 299.693463 l
+stroke
+grestore
+gsave
+448.41274 170.150193 m
+577.95601 170.150193 l
+stroke
+grestore
+gsave
+448.41274 299.693463 m
+577.95601 299.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+461.184375 305.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/zero glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/zero glyphshow
+grestore
+gsave
+587.45649 170.150193 m
+716.99976 170.150193 l
+716.99976 299.693463 l
+587.45649 299.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 587.456 170.15 clipbox
+
+587.456490 170.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfcfcfcfefefefefefefe
+fefefffffffffffffffffffffffffffffffdfdfdfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffdfdfdfbfbfbfefefefffffffffffffffffffffffffffffffffffffffffffffffffdfdfdfefefeffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffefefef1f1f1cdcdcdfbfbfbfefefefffffffffffffffffffffffffffffffffffffffffffefefeff
+fffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffcfcfcadadad505050f5f5f5fefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefffffffffffffffffffffffffefefe
+f7f7f73b3b3b141414f2f2f2fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+fefefefefefffffffffffffffffffffffffefefef2f2f21e1e1e0f0f0febebebffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffefefeeaeaea171717131313efefefffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffefefefefefeebebeb18
+18181b1b1bedededfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfafa
+faf2f2f2edededf8f8f8fbfbfbfcfcfce9e9e9232323212121edededfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffcfcfcf4f4f4cfcfcf5e5e5e2d2d2d505050919191ddddddd8d8d8363636383838e9e9e9fefefeffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdedededa8a8a86161612323231212121717173030307272728383831414143030
+30e9e9e9fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef6f6f69c9c9c6a6a6a7c7c7ca4a4a4
+d9d9d9e3e3e3d7d7d7c1c1c16464640c0c0c232323e5e5e5fefefefffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffff
+fffffbfbfbc1c1c1545454808080dadadaf7f7f7fdfdfdfefefefefefefbfbfbd6d6d6181818131313d2d2d2fefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffafafa7373732929298d8d8df3f3f3fdfdfdfffffffffffffefefefefefef8f8f8414141050505949494
+fdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfcfc8a8a8a1111117b7b7bf9f9f9fefefeffffffff
+fffffffffffffffffdfdfd9494940000004e4e4efcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfd
+fdb8b8b8121212474747f4f4f4fefefefffffffffffffffffffffffffefefedfdfdf0d0d0d202020f7f7f7fffffffffffffffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffefefef0f0f02121211b1b1be1e1e1fcfcfcfefefefefefefefefefefefefefefef2f2f2202020101010e7e7e7fe
+fefefffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffcfcfc7777770f0f0f7f7f7ff5f5f5fdfdfdfefefefefe
+fefefefefefefef9f9f9616161121212c1c1c1fefefefffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffff
+f2f2f2343434131313d0d0d0fcfcfcfefefefffffffefefefefefefcfcfca4a4a4131313868686fcfcfcffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffbfbfb9696960f0f0f646464f7f7f7fefefefffffffffffffefefefdfdfdc8c8c82121216f6f6ffcfcfcffff
+fffffffffffffffffffffffffffffffffdfdfdfefefefffffffffffffffffffffffffffffffffffffefefeededed3b3b3b282828c4c4c4f9f9f9fefefefefefe
+fefefefdfdfddadada363636686868fcfcfcfffffffffffffffffffffffffffffffffffffbfbfbfafafafefefefefefefffffffffffffffffffffffffefefefc
+fcfcadadad4141417b7b7becececfdfdfdfefefefefefefcfcfcd8d8d86f6f6fc5c5c5fdfdfdfffffffffffffffffffffffffffffffffffffefefefefefefefe
+fefefefefffffffffffffffffffffffffffffffefefefafafad1d1d1b2b2b2e9e9e9fbfbfbfcfcfcfefefefcfcfcf4f4f4ebebebf9f9f9fefefeffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdf5f5f5f8f8f8fcfcfcfdfdfdfefefefe
+fefefefefefefefefefefefffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefe
+fefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+587.45649 170.150193 m
+587.45649 299.693463 l
+stroke
+grestore
+gsave
+716.99976 170.150193 m
+716.99976 299.693463 l
+stroke
+grestore
+gsave
+587.45649 170.150193 m
+716.99976 170.150193 l
+stroke
+grestore
+gsave
+587.45649 299.693463 m
+716.99976 299.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+600.228125 305.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/four glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/four glyphshow
+grestore
+gsave
+31.28149 8.150193 m
+160.82476 8.150193 l
+160.82476 137.693463 l
+31.28149 137.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 31.281 8.15 clipbox
+
+31.281490 8.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefffffffffffffffffffefefefefefefdfdfdf8f8f8f0f0f0f0f0f0f5f5f5fcfcfcfdfdfdfefefefefefefefefefefefefefefefefefefe
+fefefffffffffffffffffffffffffffffffbfbfbfffffffffffffffffffffffffffffffffffffffffffffffffefefef7f7f7b5b5b5959595e0e0e0fcfcfcfefe
+feffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fefefef9f9f97272721010102d2d2deaeaeafefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffefefee5e5e51616160a0a0a919191fbfbfbffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffbfbfb7e7e7e0c0c0c282828edededffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffff
+fffffefefeefefef2a2a2a040404656565fcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffefefefefefefffffffffffffdfdfdd2d2d20c0c0c050505c8c8c8fefefeffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefcfcfc707070000000303030f7f7f7fe
+fefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffefefeededed191919000000717171fbfbfbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffefefefefefefefefefcfcfcc1c1c10303030c0c0ce3e3e3fefefeffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefdfdfdf6f6f6525252050505545454f8f8
+f8fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefe
+fdfdfdfdfdfdf9f9f9cfcfcf1a1a1a090909b5b5b5fbfbfbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffefefefefefefefefefefefefefefef8f8f87f7f7f0606062d2d2de7e7e7fefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef1f1f12d2d2d0808087c7c7c
+fafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffcfcfc919191040404141414ebebebfefefefffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffefefefefefefffffffffffffffffffffffffefefeeaeaea212121050505808080fcfcfcfffffffffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfafafafbfbfbfefefefefefefefefefdfdfdf5f5f5717171030303212121ee
+eeeefefefefffffffffffffffffffffffffefefefffffffffffffffffffffffffefefefefefefefefefdfdfdfdfdfdfdfdfdf8f8f8d8d8d8afafafb2b2b2d0d0
+d0e1e1e1e0e0e0cecece929292060606060606939393fafafafffffffffffffffffffffffffefefefffffffffffffffffffefefefdfdfdfafafaf1f1f1d9d9d9
+abababbebebe9d9d9d3636360f0f0f0202020606060f0f0f1f1f1f2a2a2a313131030303080808696969f4f4f4fefefefffffffffffffffffffefefeffffffff
+fffffefefefdfdfdfbfbfbf2f2f2afafaf6f6f6f2929291f1f1f3030302525252323231010101111111b1b1b2525254848484b4b4b333333595959c3c3c3f9f9
+f9fefefefffffffffffffffffffefefefffffffffffffffffffefefefbfbfbf3f3f3d7d7d79797976d6d6d8c8c8cc2c2c2c8c8c8e3e3e3edededf2f2f2f5f5f5
+f8f8f8f9f9f9f9f9f9f3f3f3f5f5f5fcfcfcfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefdfdfdfafafaf7f7f7fc
+fcfcfefefefefefefefefefffffffffffffffffffffffffffffffffffffefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+
+20.000240 30.124953 translate
+90.000000 rotate
+0.000000 0 m /uni00000047 glyphshow
+13.997070 0 m /uni0000004d glyphshow
+27.714844 0 m /uni0000002c glyphshow
+41.583008 0 m /uni00000b09 glyphshow
+63.583008 0 m /uni000008c5 glyphshow
+grestore
+gsave
+31.28149 8.150193 m
+31.28149 137.693463 l
+stroke
+grestore
+gsave
+160.82476 8.150193 m
+160.82476 137.693463 l
+stroke
+grestore
+gsave
+31.28149 8.150193 m
+160.82476 8.150193 l
+stroke
+grestore
+gsave
+31.28149 137.693463 m
+160.82476 137.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+44.053125 143.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/seven glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/seven glyphshow
+grestore
+gsave
+170.32524 8.150193 m
+299.86851 8.150193 l
+299.86851 137.693463 l
+170.32524 137.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 170.325 8.15 clipbox
+
+170.325240 8.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.00000000000006] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdf7f7f7f5f5f5f2f2f2eaeaea
+e7e7e7d7d7d7c6c6c6ddddddecececf9f9f9fefefefefefefefefefefefefffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefef6
+f6f6c8c8c86060601e1e1e1919191a1a1a2c2c2c3333331d1d1d0d0d0d101010262626474747acacace7e7e7f5f5f5fbfbfbfefefefefefeffffffffffffffff
+fffffffffffffffffffffffffffbfbfbcccccc3131310f0f0f0606060505050b0b0b1010101a1a1a3a3a3a4040403737371b1b1b1313130808080d0d0d444444
+a8a8a8eaeaeafdfdfdfcfcfcfffffffffffffffffffffffffffffffffffffefefeececec3a3a3a050505101010313131828282b7b7b7afafafaaaaaac9c9c9db
+dbdbe4e4e4dbdbdbc1c1c17575752a2a2a4c4c4c9a9a9ae6e6e6fbfbfbfafafafffffffffffffffffffffffffffffffffffffdfdfdc5c5c51616160808084b4b
+4bd0d0d0f7f7f7fcfcfcfcfcfcfafafafbfbfbfdfdfdfefefefdfdfdfdfdfdfafafae6e6e6b6b6b6c0c0c0f1f1f1fcfcfcfbfbfbffffffffffffffffffffffff
+fffffffffffffdfdfdb5b5b50f0f0f080808686868e7e7e7fcfcfcfefefefefefefdfdfdfefefefefefefffffffffffffffffffefefefcfcfcf1f1f1dededef7
+f7f7fdfdfdfbfbfbfffffffffffffffffffffffffffffffffffffefefeefefef2d2d2d0606061b1b1b8d8d8df7f7f7fdfdfdfefefefefefefefefefefefeffff
+fffffffffffffffffffffefefef9f9f9e8e8e8f7f7f7fdfdfdfcfcfcfffffffffffffffffffffffffffffffffffffefefefcfcfcb8b8b81b1b1b050505181818
+c0c0c0f8f8f8fdfdfdfdfdfdfefefefefefefffffffffffffffffffffffffefefefcfcfcf6f6f6fbfbfbfefefefcfcfcffffffffffffffffffffffffffffffff
+fffffffffffefefef8f8f87e7e7e0d0d0d010101383838e5e5e5fbfbfbfefefefefefefffffffffffffffffffffffffffffffffffffefefefdfdfdfefefeffff
+fffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefeeeeeee3838380000000a0a0a8d8d8df4f4f4fdfdfdfefefefefefeffffffffffff
+fffffffffffffffffffffffffefefefffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdc5c5c51313130303031b
+1b1bb1b1b1f3f3f3fafafafcfcfcfefefefefefefffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffefefef6f6f67575750d0d0d0404042626269c9c9ce7e7e7f6f6f6fcfcfcfefefefefefefefefefffffffffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfde7e7e74444440d0d0d1010102929297e7e7ed7d7d7f7f7f7fcfcfcfefefefe
+fefefefefefffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefdfdfdf6f6f69595953a3a3a1818
+180f0f0f313131848484dfdfdff8f8f8fdfdfdfefefefefefefefefefffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefe
+fcfcfcfbfbfbfbfbfbfafafae7e7e7a4a4a43b3b3b0c0c0c101010474747cfcfcff8f8f8fefefefefefefefefefefefefefefefffffffffffffefefeffffffff
+fffffffffffffffffffffffffffffefefefdfdfdf9f9f9f3f3f3f6f6f6fbfbfbf9f9f9ececec7a7a7a131313060606191919c9c9c9fbfbfbffffffffffffffff
+fffefefefefefefffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffdfdfdf1f1f1d3d3d3d6d6d6f5f5f5fafafaf5f5f5a4a4a4171717
+030303262626e6e6e6fefefefffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffdfdfdeaeaea8a
+8a8a5050508f8f8fdedededadada7f7f7f0f0f0f0505056d6d6dfbfbfbfffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffff
+fffffffffffffffffffffffffffefefef3f3f3a7a7a73434341e1e1e262626373737222222090909232323e3e3e3fefefeffffffffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefefcfcfcf3f3f39999992c2c2c0909090808080c0c0c131313b6b6b6fd
+fdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefbfb
+fbe2e2e28e8e8e7272728c8c8ce4e4e4fdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffefefefdfdfdfdfdfdfefefefefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+grestore
+0.000 setgray
+gsave
+170.32524 8.150193 m
+170.32524 137.693463 l
+stroke
+grestore
+gsave
+299.86851 8.150193 m
+299.86851 137.693463 l
+stroke
+grestore
+gsave
+170.32524 8.150193 m
+299.86851 8.150193 l
+stroke
+grestore
+gsave
+170.32524 137.693463 m
+299.86851 137.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+183.096875 143.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/two glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/two glyphshow
+grestore
+gsave
+309.36899 8.150193 m
+438.91226 8.150193 l
+438.91226 137.693463 l
+309.36899 137.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 309.369 8.15 clipbox
+
+309.368990 8.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefefefefefefefffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefe
+fefefffffffffffffffffffffffffffffffbfbfbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffff
+fffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeff
+fffffefefefffffffffffffffffffffffffffffffffffffffffffdfdfddadadad8d8d8fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffff4f4f4343434232323ebebebfefefeffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffff
+fffff8f8f8383838080808bcbcbcfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffcfcfc818181040404626262fdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdc7c7c70f0f0f202020f9f9f9ffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefe
+fef2f2f21e1e1e090909ebebebfffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffefefefffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffbfbfb4e4e4e090909c3c3c3fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd939393020202575757fcfcfcffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefefefefffffffffffffffffffffffffffffffffffffffffffdfdfd
+c1c1c10606061a1a1af1f1f1fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffefefeffffffff
+fffffffffffffffffffffffffffffffffffefefed5d5d51010100b0b0bd7d7d7fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefef1f1f1565656090909767676fcfcfcffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdd7
+d7d70f0f0f0f0f0ff0f0f0fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffbfbfb4c4c4c010101868686fdfdfdfffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeababab000000212121f5f5f5fefefeffffffffffffff
+fffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeeaea
+ea0f0f0f0a0a0ad7d7d7fefefefffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffff9f9f94e4e4e0a0a0abfbfbffefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefefefeff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbfbfb999999222222a1a1a1fdfdfdfffffffffffffffffffefe
+fefefefefefefefffffffffffffefefefdfdfdfefefefdfdfdfdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdd7d7d7
+191919606060fbfbfbfefefefffffffffffffffffffefefefefefefffffffffffffefefefffffffffffffffffffefefefffffffffffffffffffffffffffffffe
+fefefefefefffffffffffffffffffefefef1f1f1252525313131f1f1f1fdfdfdfffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefefefefefefefefefefffffffffffffefefef7f7f7474747282828dcdcdcfdfdfdffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefffffffffffffefefefcfcfcc6c6c693
+9393f4f4f4fefefefffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefe
+fefefefefffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+fffffffffffffefefefffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefefffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffefefefdfdfdffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefefdfdfdfffffffffffffefefefdfdfd
+f8f8f8fcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+309.36899 8.150193 m
+309.36899 137.693463 l
+stroke
+grestore
+gsave
+438.91226 8.150193 m
+438.91226 137.693463 l
+stroke
+grestore
+gsave
+309.36899 8.150193 m
+438.91226 8.150193 l
+stroke
+grestore
+gsave
+309.36899 137.693463 m
+438.91226 137.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+322.140625 143.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/one glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/one glyphshow
+grestore
+gsave
+448.41274 8.150193 m
+577.95601 8.150193 l
+577.95601 137.693463 l
+448.41274 137.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 448.413 8.15 clipbox
+
+448.412740 8.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffdfdfdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffefefefbfbfbf8f8f8fdfdfdfefefeffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefbfbfbd2d2d25b5b5b1e1e1e1717171e1e1e5a5a5adadada
+f8f8f8fefefefefefefffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffdfdfdcccccc1d
+1d1d0303030101010000000000000000000a0a0a4c4c4cd0d0d0f7f7f7fefefefffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffff
+fffffffffffffffffffffffffff2f2f23d3d3d040404020202020202010101010101000000010101050505181818828282f7f7f7fefefeffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefedfdfdf1212120101010909091f1f1f2d2d2d1e1e1e0f0f0f05050500000000
+00000606067c7c7cf7f7f7fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefebebebe0808080202021919
+19a5a5a5ddddddbbbbbb7272722929290505050000000101010a0a0a7e7e7ef7f7f7fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffefefe969696020202040404484848eaeaeafbfbfbf7f7f7e3e3e3a8a8a82f2f2f060606010101010101161616bbbbbbfbfbfbffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd888888030303080808737373f7f7f7fefefefdfdfdfbfbfbf4f4f4a4a4a43030300505
+050101010404043a3a3aefefeffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfcfc7b7b7b0808080a0a0a575757f3f3f3
+fefefefefefefdfdfdfcfcfcf4f4f4bdbdbd2a2a2a0303030101010c0c0ca7a7a7fcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffdfdfda2a2a20c0c0c050505222222ddddddfcfcfcfefefefefefefefefefdfdfdf5f5f58383830b0b0b010101050505767676fbfbfbffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffdfdfdbdbdbd1010100404040f0f0fa8a8a8f9f9f9fdfdfdfefefefffffffdfdfdf8f8f8bababa131313
+010101090909949494fcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefed3d3d31414140303030a0a0a777777f2f2f2fb
+fbfbfefefefefefefcfcfcefefef7676760b0b0b030303161616cacacafdfdfdfffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefe
+feededed2020200202020404043b3b3bc8c8c8f5f5f5fdfdfdfefefefafafad0d0d02d2d2d020202040404484848edededfefefefffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffffffff7f7f74545450202020000000606063d3d3ddadadaf7f7f7f9f9f9dddddd4b4b4b0a0a0a0101010b0b0bd1
+d1d1fdfdfdfffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffbfbfb7676760505050000000000000505054949499f9f
+9fc0c0c07272721111110404040505056e6e6efbfbfbfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd
+d0d0d01e1e1e0202020000000000000808081717172929291717171111112222227e7e7ef9f9f9fefefeffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffefefef4f4f47d7d7d1919190404040101010101010202020808080c0c0c1818188f8f8ff7f7f7ffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefcfcfce8e8e8777777171717040404010101000000040404
+161616626262eaeaeafefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdf9
+f9f9dddddd6161611616160404040202020404042c2c2cd3d3d3fbfbfbfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefdfdfdf8f8f8c8c8c85a5a5a0f0f0f020202040404545454f3f3f3fefefeffffffffffffffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefdfdfdf6f6f6d7d7d76666661919191e1e1eacacacfb
+fbfbfefefefffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffefefefefefefcfcfcfdfdfdfefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+grestore
+0.000 setgray
+gsave
+448.41274 8.150193 m
+448.41274 137.693463 l
+stroke
+grestore
+gsave
+577.95601 8.150193 m
+577.95601 137.693463 l
+stroke
+grestore
+gsave
+448.41274 8.150193 m
+577.95601 8.150193 l
+stroke
+grestore
+gsave
+448.41274 137.693463 m
+577.95601 137.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+461.184375 143.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/zero glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/zero glyphshow
+grestore
+gsave
+587.45649 8.150193 m
+716.99976 8.150193 l
+716.99976 137.693463 l
+587.45649 137.693463 l
+cl
+1.000 setgray
+fill
+grestore
+gsave
+129.543 129.543 587.456 8.15 clipbox
+
+587.456490 8.150193 translate
+[130.0 0.0 0.0 -130.0 0.0 130.0] concat
+1.000000 1.000000 scale
+/DataString 28 string def
+28 28 8 [ 28 0 0 -28 0 28 ]
+{
+currentfile DataString readhexstring pop
+} bind false 3 colorimage
+fefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefdfdfdfcfcfcfbfbfbfbfbfbfcfcfcfdfdfdfe
+fefefefefefffffffffffffffffffffffffafafaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffefefefdfdfdfbfbfbfbfbfbfefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffefefef7f7f7c1c1c1cbcbcbf9f9f9fefefeffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffefefefefefefffffffefefefefefefffffffffffffffffffffffffefefeeaeaea444444595959f4f4f4fefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffefefe
+dddddd121212232323f1f1f1fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffefefed9d9d90808080a0a0ae7e7e7fefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefed7d7d7030303050505e3e3e3fefefeffffffffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdcecece02
+0202131313e3e3e3fefefefffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffdfdfdfbfbfbfafa
+fafbfbfbfcfcfcfefefefefefefdfdfddadada050505101010e8e8e8fefefefffffffffffffffffffffffffffffffffffffefefeffffffffffffffffffffffff
+fffffffffffffffffffcfcfcdddddd8c8c8c6464646a6a6a939393e3e3e3f6f6f6f6f6f6e0e0e02f2f2f363636efefeffefefeffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffefefecccccc1313130404041010100808080a0a0a2121216e6e6ec9c9c9cdcdcd4545456464
+64f6f6f6fefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8f8f85f5f5f050505292929bebebeb8b8b8
+7f7f7f5353533a3a3a6a6a6a7f7f7f3030305e5e5ef7f7f7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffe8e8e82a2a2a1f1f1fdadadafcfcfcfdfdfdfcfcfcf6f6f6dfdfdf9a9a9a5e5e5e1414142a2a2addddddfefefeffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffefefee1e1e11b1b1b3d3d3df4f4f4fefefefefefefffffffefefefcfcfcefefefb5b5b53d3d3d1212128a8a8a
+f9f9f9fefefefffffffffffffefefefffffffffffffefefeffffffffffffffffffffffffffffffffffffededed1b1b1b181818e0e0e0fefefeffffffffffffff
+fffffefefefbfbfbefefef9191910d0d0d343434f1f1f1fefefefffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffff8f8
+f83b3b3b0101016b6b6bf9f9f9fefefefefefefefefefefefefcfcfcf7f7f7d5d5d51e1e1e0f0f0fc6c6c6fefefefffffffffffffffffffffffffffffffefefe
+fffffffffffffffffffffffffffffffffffffdfdfd9d9d9d010101181818e0e0e0fbfbfbfdfdfdfdfdfdfcfcfcf9f9f9f8f8f8f2f2f2626262000000555555fc
+fcfcfffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffefefef2f2f21d1d1d050505969696f7f7f7fdfdfdfdfdfdfcfc
+fcf8f8f8fbfbfbfbfbfbcfcfcf1010101e1e1ef4f4f4fffffffffffffffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffefefe
+c0c0c01d1d1d262626c6c6c6f9f9f9fbfbfbfbfbfbfbfbfbfdfdfdfefefef5f5f5424242161616e4e4e4fefefeffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffff7f7f77272720b0b0b212121adadade2e2e2f5f5f5fbfbfbfefefefefefefbfbfb939393252525d9d9d9fefe
+fefffffffffffffffffffffffffffffffffffffffffffefefefefefefffffffffffffffffffffffffdfdfddfdfdf424242131313363636979797e3e3e3f9f9f9
+fefefefefefefcfcfcaaaaaa2a2a2ae1e1e1fefefefffffffffffffffffffffffffffffffffffffefefefefefefefefefffffffffffffffffffffffffefefefb
+fbfbe0e0e0adadadaaaaaae0e0e0f6f6f6fcfcfcfefefefdfdfdf7f7f7b6b6b6616161efefeffefefefffffffffffffffffffffffffffffffefefeffffffffff
+fffffffffffffffffffffffffffffffffffffffefefefcfcfcfbfbfbfbfbfbfdfdfdfefefefefefefffffffefefefbfbfbebebebd5d5d5f9f9f9ffffffffffff
+fffffffffffffffffffefefefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefefefefefefeffffffffffffffffffffffffff
+fffffefefefcfcfcf9f9f9fdfdfdfefefefffffffffffffffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefefffffffffffffffffffefefefefefefefefefcfcfcffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+fefefefefefcfcfcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffffffffffffffffffffffffffffffffefefefffffffffffffefefeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fefefefffffffffffffffffffffffffffffffffffffffffffefefefefefefefefefefefefefefefefefefffffffefefe
+grestore
+0.000 setgray
+gsave
+587.45649 8.150193 m
+587.45649 137.693463 l
+stroke
+grestore
+gsave
+716.99976 8.150193 m
+716.99976 137.693463 l
+stroke
+grestore
+gsave
+587.45649 8.150193 m
+716.99976 8.150193 l
+stroke
+grestore
+gsave
+587.45649 137.693463 m
+716.99976 137.693463 l
+stroke
+grestore
+0.000 0.000 1.000 setrgbcolor
+gsave
+600.228125 143.693463 translate
+0.000000 rotate
+/STIXGeneral-Regular 22.0 selectfont
+0.000000 0.968750 moveto
+/l glyphshow
+6.115997 0.968750 moveto
+/a glyphshow
+15.884003 0.968750 moveto
+/b glyphshow
+26.884003 0.968750 moveto
+/e glyphshow
+36.652008 0.968750 moveto
+/l glyphshow
+45.944806 0.968750 moveto
+/colon glyphshow
+55.237604 0.968750 moveto
+/four glyphshow
+69.414404 0.968750 moveto
+/uni2192 glyphshow
+92.963214 0.968750 moveto
+/four glyphshow
+grestore
+
+end
+showpage

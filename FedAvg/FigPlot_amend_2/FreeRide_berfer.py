@@ -209,11 +209,11 @@ def SNR_berfer( ):  ## E = 10, B = 128
 
     # out_fig.savefig(os.path.join("/home/jack/FedAvg_DataResults/results/", f"SNR_berfer.eps") )
     if cols == 2:
-        out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", "SNR_fer.pdf") )
-        out_fig.savefig(os.path.join("/home/jack/FedAvg_DataResults/Figures_plot/", "SNR_fer.eps") )
+        # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", "SNR_fer.pdf") )
+        out_fig.savefig("./figures/SNR_fer.eps")
     elif cols == 1:
-        out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", "SNR_ber.pdf") )
-        out_fig.savefig(os.path.join("/home/jack/FedAvg_DataResults/Figures_plot/", "SNR_ber.eps") )
+        # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", "SNR_ber.pdf") )
+        out_fig.savefig("./figures/SNR_ber.eps")
     plt.show()
     plt.close()
     return

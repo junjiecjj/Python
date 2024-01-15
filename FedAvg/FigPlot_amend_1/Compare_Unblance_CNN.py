@@ -244,7 +244,7 @@ class ResultPlot():
         out_fig = plt.gcf()
 
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.eps") )
+        out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.pdf") )
         # plt.show()
         plt.close()

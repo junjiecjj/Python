@@ -25,7 +25,7 @@ from LDPC import utility
 from LDPC.argsLDPC import arg as topargs
 from LDPC.ldpc_coder import LDPC_Coder_llr
 from LDPC.quantiation import  QuantizationNP_uint, deQuantizationNP_uint
-from LDPC.quantiation import  QuantizationNP_int, deQuantizationNP_int
+from LDPC.quantiation import  QuantizationBbits_NP_int, deQuantizationBbits_NP_int
 from LDPC.quantiation import  QuantizationTorch_int
 
 # utility.set_random_seed()
@@ -148,7 +148,7 @@ def  Quant_LDPC_BPSK_AWGN_Pipe(com_round = 1, client = '', param_W = '', snr = 2
         # print(key, val.shape)
 
     ##================================================= 量化 ===========================================================
-    binary_send = QuantizationNP_int(params_float, B = quantBits)
+    binary_send = QuantizationBbits_NP_int(params_float, B = quantBits)
     assert binary_send.size == num_sum * quantBits
 
     ##================== 将发送信息补齐为信息位的整数倍 ====================
@@ -189,7 +189,7 @@ def  Quant_LDPC_BPSK_AWGN_Pipe(com_round = 1, client = '', param_W = '', snr = 2
     source.FLPerformance(snr = snr,  Cround = com_round, client = client)
 
     ##================================================= 反量化 =========================================================
-    param_recv = deQuantizationNP_int(binary_recv[:-patch_len], B = quantBits)
+    param_recv = deQuantizationBbits_NP_int(binary_recv[:-patch_len], B = quantBits)
 
     ##============================================= 将反量化后的实数序列 变成字典形式 =======================================
     param_recover = {}
@@ -239,7 +239,7 @@ def  Quant_BitFlipping( param_W = '', err_rate = 0.0001, quantBits = 8, com_roun
     binary_recv = binary_recv ^ binary_send
     err_rate = (binary_recv != binary_send).sum()/binary_recv.size
     ##================================================= 反量化 =========================================================
-    param_recv = deQuantizationNP_int(binary_recv , B = quantBits)
+    param_recv = deQuantizationBbits_NP_int(binary_recv , B = quantBits)
 
     ##============================================= 将反量化后的实数序列 变成字典形式 =======================================
     param_recover = {}

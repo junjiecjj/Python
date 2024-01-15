@@ -12,6 +12,7 @@ import os, sys
 import time
 import datetime
 import torch
+import torchvision
 import numpy as np
 from scipy import stats
 import matplotlib
@@ -67,13 +68,13 @@ def data_inv_tf_mlp_mnist(x):
 
 def data_tf_cnn_mnist_batch(x):
     # ## 1
-    # x = transforms.ToTensor()(x)
+    # x = torchvision.transforms.ToTensor()(x)
     # x = (x - 0.5) / 0.5
     # x = x.reshape((-1, 1, 28, 28))
 
-    # 2
+    ### 2
     x = np.array(x, dtype='float32') / 255
-    # x = (x - 0.5) / 0.5
+    x = (x - 0.5) / 0.5
     # x = x.reshape((-1,))  # (-1, 28*28)
     x = x.reshape((-1, 1, 28, 28))  # ( 1, 28, 28)
     x = torch.from_numpy(x)
@@ -88,8 +89,8 @@ def data_inv_tf_cnn_mnist_batch_3D(x):
     :param x:
     :return:
     """
-    # recover_data = x * 0.5 + 0.5
-    recover_data = x
+    # recover_data = x
+    recover_data = x * 0.5 + 0.5
     recover_data = recover_data * 255
     recover_data = recover_data.reshape(( -1, 1, 28, 28))  # (-1, 28, 28)
     # recover_data = np.around(recover_data.detach().numpy() ).astype(np.uint8)
@@ -103,7 +104,8 @@ def data_inv_tf_cnn_mnist_batch_2D(x):
     :return:
     """
     # recover_data = x * 0.5 + 0.5
-    recover_data = x
+    # recover_data = x
+    recover_data = x * 0.5 + 0.5
     recover_data = recover_data * 255
     recover_data = recover_data.reshape((-1, 28, 28))  # (-1, 28, 28)
     recover_data = np.around(recover_data.numpy()).astype(np.uint8)
@@ -659,54 +661,7 @@ def draw_images1(tmpout, generated_images, epoch, iters, H = 28, W = 28, example
 
 
 
-# 画出高斯分布的生成曲线和实际曲线
-def GAN_GeneGauss_plot(mean, std, generated_data, savepath, savename):
-    x = np.arange(stats.norm(loc = mean, scale = std,).ppf(0.0001, ), stats.norm.ppf(0.9999, loc = mean, scale = std,), 0.1)
-    pdf = stats.norm.pdf(x, loc = mean, scale = std,)
 
-    fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True )
-
-    counts, bins = np.histogram(generated_data, bins = 220, density = True)
-    axs.stairs(counts, bins,  linestyle='-', linewidth = 2,  color = "blue", label = 'Generated Distribution',)
-    # axs.hist(values, bins=220, density = True, color = "blue", label = 'Generated Distribution', )
-
-    axs.plot(x, pdf, linestyle='-', linewidth = 2, color = 'r', label = r"$\mathrm{f(x)} = \frac{1}{\sqrt{2 \pi} \sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$" )
-
-    font3 = FontProperties(fname=fontpath + "simsun.ttf", size=18)
-    font3 = {'family': 'Times New Roman', 'style': 'normal', 'size': 18}
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font3,)
-    frame1 = legend1.get_frame()
-    frame1.set_alpha(1)
-    frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-    axs.tick_params(direction='in', axis='both',top=True,right=True, labelsize=16, width=3,)
-    labels = axs.get_xticklabels() + axs.get_yticklabels()
-    [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-    axs.spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
-    axs.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
-    axs.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
-    axs.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
-
-    #font2 = FontProperties(fname=fontpath+"simsun.ttf", size = 22)
-    font3 = {'family': 'Times New Roman', 'style': 'normal', 'size': 24}
-    #font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-    axs.set_xlabel('Value', fontproperties = font3)
-    axs.set_ylabel('Probility', fontproperties = font3)
-
-    # fontt = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    fontt  = {'family':'Times New Roman','style':'normal','size':26}
-    #fontt = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
-    plt.suptitle('Histogram of Generated Distribution', fontproperties = fontt, )
-
-    out_fig = plt.gcf()
-    out_fig.savefig(savepath + savename + '.pdf', format='pdf', bbox_inches = 'tight')
-    out_fig.savefig(savepath + savename + '.eps', format='eps', bbox_inches = 'tight')
-
-    plt.show()
-
-    return
 
 
 # use this general fun, images可以是tensor可以是numpy, 可以是(batchsize, 28, 28) 可以是(batchsize, 1/3, 28, 28)

@@ -38,45 +38,7 @@ plt.rc('font', family='Times New Roman')
 mark  = ['s','v','*', 'o', 'd', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4', '8', 'H', '+', 'x', 'D',  '_']
 color = ['#1E90FF','#FF6347', '#800080', '#008000', '#FFA500', '#C71585', '#7FFF00', '#EE82EE' ,'#00CED1','#CD5C5C','#7B68EE', '#0000FF', '#FF0000','#808000' ]
 
-#============================================================================================================================
-#                                                   统计 正确率
-#============================================================================================================================
-class Recorder(object,):
-    def __init__(self, Len = 2,  metname = "MSE loss_ Acc"):
-        self.metrics = [i.strip() for i in metname.split("/")]
-        self.len = Len
-        if len(self.metrics) != self.len:
-            print(f"[file:{os.path.realpath(__file__)}, line:{sys._getframe().f_lineno}, fun:{sys._getframe().f_code.co_name} ]")
-            raise ValueError("len is inconsistent")
-        self.data = np.empty((0,  self.len))
-        return
 
-    def addline(self, firstcol):
-        self.data = np.append(self.data , np.zeros( (1, self.len) ), axis = 0 )
-        self.data[-1, 0] = firstcol
-        return
-
-    def assign(self, met):
-        if len(met) != self.len - 1:
-            print(f"[file:{os.path.realpath(__file__)}, line:{sys._getframe().f_lineno}, fun:{sys._getframe().f_code.co_name} ]")
-            raise ValueError("len is inconsistent")
-        self.data[-1, 1:] = met
-        return
-
-    def __getitem__(self, idx):
-        return self.data[-1, idx]
-
-    def save(self, path, name):
-        torch.save(self.data, os.path.join(path, name))
-        return
-
-
-# acc = Recorder(3, metname='eps/acc/psnr')
-# print(f"acc.metrics = {acc.metrics}")
-
-# for i in range(10):
-#     acc.addline(i)
-#     acc.assign([i+1, i+2])
 
 #============================================================================================================================
 #                                        记录当前每个epcoh的 相关指标, 但是不记录历史
@@ -408,56 +370,6 @@ class TesRecorder(object):
 
 # print(f"ts.TeMetricLog = {ts.TeMetricLog}")
 # print(f"ts[0.1, 1, 1] = {ts[0.1, 1, 1]}")
-
-#============================================================================================================================
-#                                                AttackRecorder 统计 PSNR 和 MSE
-#============================================================================================================================
-
-class AttackRecorder(object):
-    def __init__(self,  Len = 2,  name = "Attack"):
-        self.name =  name
-        self.len = Len
-        self.AttackLog = {}
-        self.cn = self.__class__.__name__
-        return
-
-    # 增加 某个压缩率和信噪比下训练的模型的测试结果条目
-    def add_item(self,  tra_compr = 0.1, tra_snr = 1, tes_snr = 1):
-        #tmpS = "TestMetricLog:Dataset={},CompRatio={}".format(dataset,comprateTmp)
-        tmpS = "Attack:Compr={:.1f},SNRtrain={}(dB),SNRtest={}(dB)".format(  tra_compr, tra_snr, tes_snr)
-        if tmpS not in self.AttackLog.keys():
-            self.AttackLog[tmpS] = torch.Tensor()
-        else:
-            pass
-        return
-
-    def add_eps(self, tra_compr = 0.1, tra_snr = 1, tes_snr = 1, epsilon = 0.1):
-        tmpS = "Attack:Compr={:.1f},SNRtrain={}(dB),SNRtest={}(dB)".format(  tra_compr, tra_snr, tes_snr)
-        # 第一列为snr, 后面各列为各个指标, 每一行第一列是测试snr, 其他列是在该 snr 下测试数据集的指标.
-        self.AttackLog[tmpS] = torch.cat([self.AttackLog[tmpS], torch.zeros(1, self.len )], dim=0)
-        self.AttackLog[tmpS][-1, 0] = epsilon
-        return
-
-    # assign 是直接赋值，而add_metric 和 avg 是联合起来赋值
-    def assign(self,  tra_compr = 0.1, tra_snr = 1, tes_snr = 1, met = ''):
-        if len(met) != self.len - 1:
-            print(f"[file:{os.path.realpath(__file__)}, line:{sys._getframe().f_lineno}, fun:{sys._getframe().f_code.co_name} ]")
-            raise ValueError("len is inconsistent")
-        tmpS = "Attack:Compr={:.1f},SNRtrain={}(dB),SNRtest={}(dB)".format( tra_compr, tra_snr, tes_snr)
-        self.AttackLog[tmpS][-1, 1:] = met
-        return
-
-    def __getitem__(self, pox):
-        tra_compr, tra_snr, tes_snr, idx = pox
-        tmpS = "Attack:Compr={:.1f},SNRtrain={}(dB),SNRtest={}(dB)".format( tra_compr, tra_snr, tes_snr)
-        return self.AttackLog[tmpS][-1, idx]
-
-    def save(self, path, ):
-        basename = f"{self.cn}_Log"
-        torch.save(self.AttackLog, os.path.join(path, basename + '.pt'))
-        # self.plot(path, compr = compr, snr = snr)
-        return
-
 
 
 

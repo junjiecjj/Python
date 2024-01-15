@@ -184,7 +184,6 @@ class ResultPlot():
         idx = 2
         cols = [1 + idx + L*j for j in range(num_clients)]
 
-
         ## Non-IID, Unblance
         # X = self.noiid_unbla[:, 0]
         # tmp = self.noiid_unbla[:, cols]
@@ -192,7 +191,7 @@ class ResultPlot():
         # Mean = savgol_filter(Mean, 21, 3)
         # # axs.plot(X, Mean, color = color[0], label = "Non-IID, Unblance", linewidth = 2,)
 
-        s = 1
+        s = 2
         ## Non-IID, blance
         X = self.noiid_bla[:, 0][s:]
         tmp = self.noiid_bla[:, cols]
@@ -250,7 +249,7 @@ class ResultPlot():
         out_fig = plt.gcf()
 
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.eps") )
+        out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.pdf") )
         # plt.show()
         plt.close()
@@ -322,7 +321,7 @@ class ResultPlot():
 
         out_fig = plt.gcf()
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_IIDvsNonIID_perform.eps") )
+        out_fig.savefig(f"./figures/{model}_IIDvsNonIID_perform.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_IIDvsNonIID_perform.pdf") )
         # out_fig.savefig(os.path.join(savepath, f"{model}_Param_debug.pdf") )
         # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_8bitNonIID_performance.pdf") )

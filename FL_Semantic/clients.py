@@ -46,48 +46,62 @@ class client(object):
         # print(f"{self.client_name} 0: {global_parameters['fc2.bias']}")
         # print(f"{self.client_name} 0: {self.local_model.state_dict()['fc2.bias']}")
         self.local_model.train()
-
+        # self.local_model.state_dict()['encoder.encoder_cnn.3.num_batches_tracked'].copy_(torch.tensor(count))
+        # self.local_model.state_dict()['decoder.decoder_conv.1.num_batches_tracked'].copy_(torch.tensor(count))
+        # self.local_model.state_dict()['decoder.decoder_conv.4.num_batches_tracked'].copy_(torch.tensor(count))
         ## 载入Client自有数据集, 加载本地数据
         self.train_dataloader = DataLoader(self.train_ds, batch_size = localBatchSize, shuffle = True, )
         ## 设置迭代次数
-        if not self.args.isBalance:
-            if self.datasize >= 999:
-                localEpoch = self.args.moreEpoch
+        # print(f"{self.client_name}, count = {count}")
         for epoch in range(localEpoch):
-            for data, label in self.train_dataloader:
+            # print(f" {epoch}")
+            for X, y in self.train_dataloader:
                 # 加载到GPU上
-                data, label = data.to(self.device), label.to(self.device)
+                X, y = X.to(self.device), y.to(self.device)
                 # 模型上传入数据
-                preds = self.local_model(data)
+                X_hat = self.local_model(X)
                 # 计算损失函数
-                loss = lossFun(preds, label)
+                loss = lossFun(X_hat, X)
                 # 将梯度归零，初始化梯度
                 opti.zero_grad()
                 # 反向传播
                 loss.backward()
                 # 计算梯度，并更新梯度
                 opti.step()
+                # print(f"    {self.local_model.state_dict()['encoder.encoder_cnn.3.num_batches_tracked']}")
         ## print(f"{self.client_name} 1: {global_parameters['fc2.bias']}")
         ## print(f"{self.client_name} 1: {self.local_model.state_dict()['fc2.bias']}")
         local_update = {}
         ## 如果传输的是模型参数差值
         # if self.args.transmit_diff:
         for key, var in self.local_model.state_dict().items():
+            # if var.dtype != torch.int64:
             local_update[key] = var - global_parameters[key]
+
+        # for key, params in  local_update.items():
+        #     if params.dtype != torch.float32:
+        #         print(f"      {self.client_name}:  {key}, {params},         param.dtype = {params.dtype} ")
+
+            # else:
+                # local_update[key] = var.clone()
         # else: ## 直接传递模型参数
         #     for key, var in self.local_model.state_dict().items():
         #         local_update[key] = var.clone()
-            # 返回当前Client基于自己的数据训练得到的新的模型参数,  返回 self.local_model.state_dict() 或 local_parms都可以。
+        # 返回当前Client基于自己的数据训练得到的新的模型参数, 返回 self.local_model.state_dict() 或 local_parms都可以。
         # print(f"{self.client_name} 0: {local_update['fc2.bias']}")
-        ## print(f"{self.client_name} 2: {local_update['fc2.bias']}")
+        # print(f"{self.client_name} 2: {local_update['fc2.bias']}")
         # if 1:
-        #     print("使用量化\n")
+        #     print(f"    {self.client_name}, 使用量化...")
         #     for key in local_update:
-        #         # local_update[key] = QuantilizeMean(local_update[key])
-        #         local_update[key] = SR1Bit_torch(local_update[key], BG = 8) ## B = self.args.OneBitB)
-        #         # local_update[key] = QuantilizeBbits_torch(local_update[key], B = 4, rounding = 'nr')
+        #         if local_update[key].dtype != torch.float32:
+        #             # print(f"    {self.client_name},  {key},  {local_update[key].dtype}")
+        #             pass
+        #         else:
+        #             # local_update[key] = QuantilizeMean(local_update[key])
+        #             # local_update[key] = SR1Bit_torch(local_update[key], BG = 8) ## B = self.args.OneBitB)
+        #             local_update[key] = QuantilizeBbits_torch(local_update[key], B = 6, rounding = 'nr')
         # #### print(f"{self.client_name} 3: {local_update['fc2.bias']}")
-        return  local_update  # self.local_model.state_dict() #  local_parms
+        return  local_update   # self.local_model.state_dict() #  local_parms
 
 
 '''
@@ -115,10 +129,10 @@ class ClientsGroup(object):
         self.test_data_loader  = None
         self.test_bs           = args.test_batchsize
         self.args              = args
-        if args.isBalance:
-            self.dataSetAllocation_balance()
-        else:
-            self.dataSetAllocation_Unblance1()
+        # if args.isBalance:
+        self.dataSetAllocation_balance()
+        # else:
+            # self.dataSetAllocation_Unblance1()
         return
 
     def dataSetAllocation_balance(self):
@@ -159,6 +173,7 @@ class ClientsGroup(object):
 
             # local_data, local_label = np.vstack((data_shards1, data_shards2)), np.hstack((label_shards1, label_shards2))
             local_data, local_label = torch.cat([data_shards1, data_shards2], axis = 0 ), torch.cat([label_shards1, label_shards2], axis = 0 )
+            # print(f"{local_data.shape}, {local_label.shape}, local_data.min() = {local_data.min()}, local_data.max() = {local_data.max()}")
 
             ##  创建一个客户端
             someone = client(self.local_model, TensorDataset(local_data, local_label), self.args, f"client{i}", datasize = local_data.shape[0])
@@ -166,77 +181,6 @@ class ClientsGroup(object):
             self.clients_set[f"client{i}"] = someone
         return
 
-    def dataSetAllocation_Unblance1(self):
-        # 得到已经被重新分配的数据
-        mnistDataSet = GetDataSet(self.dataset_name, self.is_iid, self.data_root)
-
-        test_data    =  mnistDataSet.test_data
-        test_label   =  mnistDataSet.test_label
-
-        # 加载测试数据
-        self.test_data_loader = DataLoader(TensorDataset(test_data, test_label), batch_size = self.test_bs, shuffle = False)
-
-        train_data  = mnistDataSet.train_data
-        train_label = mnistDataSet.train_label
-        # print(f"1: {train_data.shape}, {train_label.shape}")
-
-        ''' 客户端0-49：每个客户端1000个数据，第50-99个客户端每个人200个数据 '''
-        avg = 2 * mnistDataSet.train_data_size // self.num_of_clients
-        more = self.args.more
-        less = avg - more
-        idx_split = [range(i*more, (i+1)*more) if i < 50 else  range(50*more + (i-50)*less,   50*more + (i+1-50)*less) for i in range(self.num_of_clients)]
-        for i in range(self.num_of_clients):
-            ## 将数据以及的标签分配给该客户端
-            data_shards = train_data[idx_split[i]]
-            label_shards = train_label[idx_split[i]]
-
-            # 创建一个客户端
-            someone = client(self.local_model, TensorDataset(data_shards, label_shards), self.args, f"client{i}", datasize = data_shards.shape[0])
-            # 为每一个clients 设置一个名字
-            self.clients_set[f"client{i}"] = someone
-        return
-
-    def dataSetAllocation_Unblance2(self):
-        # 得到已经被重新分配的数据
-        mnistDataSet = GetDataSet(self.dataset_name, self.is_iid, self.data_root)
-
-        test_data    =  mnistDataSet.test_data
-        test_label   =  mnistDataSet.test_label
-
-        # 加载测试数据
-        self.test_data_loader = DataLoader(TensorDataset(test_data, test_label), batch_size = self.test_bs, shuffle = False)
-
-        train_data  = mnistDataSet.train_data
-        train_label = mnistDataSet.train_label
-        # print(f"1: {train_data.shape}, {train_label.shape}")
-
-        ''' 客户端0-49：每个客户端 1000 个数据，第50-99个客户端每个人200个数据 '''
-        ''' 然后将其划分为200组大小为300的数据切片,然后分给每个Client两个切片 '''
-        base_size = 100
-        # 将序列进行随机排序
-        total_slice = mnistDataSet.train_data_size // base_size  # 600
-        Ar = np.random.permutation(total_slice)
-        avg = total_slice * 2 // self.num_of_clients
-        more = 10
-        less = avg - more
-        idx_split = [Ar[range(i*more, (i+1)*more)] if i < 50 else  Ar[range(50*more + (i-50)*less, 50*more + (i+1-50)*less)] for i in range(self.num_of_clients)]
-        Ct_idx = []
-        for slic in idx_split:
-            tmp = []
-            for s in slic:
-                tmp.extend(list(range(s*base_size, (s+1)*base_size)))
-            Ct_idx.append(tmp)
-
-        for i in range(self.num_of_clients):
-            ## shards_id1, shards_id2 是所有被分得的两块数据切片
-            data_shards = train_data[Ct_idx[i]]
-            label_shards = train_label[Ct_idx[i]]
-
-            # 创建一个客户端
-            someone = client(self.local_model, TensorDataset(data_shards, label_shards), self.args, f"client{i}", datasize = data_shards.shape[0])
-            # 为每一个clients 设置一个名字
-            self.clients_set[f"client{i}"] = someone
-        return
 
 
 

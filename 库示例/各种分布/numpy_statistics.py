@@ -22,8 +22,8 @@ import random
 np.random.uniform(low, high ,size)  作用于从一个均匀分布的区域中随机采样。
 
 其形成的均匀分布区域为[low, high)  注意定义域是左闭右开，即包含low，不包含high.
-    low：采样区域的下界，float类型或者int类型或者数组类型或者迭代类型，默认值为0
-    high：采样区域的上界，float类型或者int类型或者数组类型或者迭代类型，默认值为1
+    low：采样区域的下界，float类型或者int类型或者数组类型或者迭代类型，默认值为0.
+    high：采样区域的上界，float类型或者int类型或者数组类型或者迭代类型，默认值为1.
     size：输出样本的数目(int类型或者tuple类型或者迭代类型)
     返回对象：ndarray类型，形状和size中的数值一样
 

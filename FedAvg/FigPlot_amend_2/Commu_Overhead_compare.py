@@ -399,9 +399,9 @@ class ResultPlot():
         plt.suptitle("non-IID MNIST, 2NN", fontproperties = fontt, )
         out_fig = plt.gcf()
         savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_1SNR_commu_overhead.eps") )
+        out_fig.savefig(f"./figures/{model}_1SNR_commu_overhead.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_8bitNonIID_performance.pdf") )
-        out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_1SNR_commu_overhead.pdf") )
+        # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_1SNR_commu_overhead.pdf") )
         plt.show()
         plt.close()
         return

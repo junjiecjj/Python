@@ -43,12 +43,6 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
-class net(nn.Module):
-    def __init__(self):
-        super(net,self).__init__()
-        self.fc = nn.Linear(1,10)
-    def forward(self,x):
-        return self.fc(x)
 
 
 def make_optimizer(args, net,  compr = '', snr = ''):
@@ -98,8 +92,23 @@ def make_optimizer(args, net,  compr = '', snr = ''):
         def schedule(self):
             self.scheduler.step()
 
+
+        def get_last_lr(self):
+            return self.scheduler.get_last_lr()[0] ## 返回最近一次 scheduler.step()后的学习率
+            # return self.param_groups[0]['lr']
+
         def get_lr(self):
-            return self.scheduler.get_lr()[0]
+            ## return optimizer.state_dict()['param_groups'][0]['lr']
+            return self.param_groups[0]['lr']
+
+        def set_lr(self, lr):
+            # self.scheduler.get_last_lr()[0] = lr
+            for param_group in self.param_groups:
+                param_group["lr"] = lr
+
+        # def get_lr(self):
+        #     # return self.scheduler.get_lr()[0]
+        #     return self.scheduler.get_last_lr()[0]
 
         def get_last_epoch(self):
             return self.scheduler.last_epoch
@@ -119,23 +128,6 @@ def make_optimizer(args, net,  compr = '', snr = ''):
             self.plot_lr(self.lr, path, compr = compr, snr = tra_snr)
             return
 
-        def reset_state(self):
-            self.state = collections.defaultdict(dict)
-            self.scheduler.last_epoch = 0
-            #self.scheduler._last_lr = 0
-            for param_group in self.param_groups:
-                param_group["lr"] = args.lr
-
-            milestones = list(map(lambda x: int(x), args.decay.split('-')))  #  [20, 40, 60, 80, 100, 120]
-            kwargs_scheduler = {'milestones': milestones, 'gamma': args.gamma}  # args.gamma =0.5
-            self.scheduler = scheduler_class(self, **kwargs_scheduler)
-
-            # kwargs_warmup = {"num_warmup_steps":args.warm_up_ratio*total_steps, "num_training_steps":total_steps,"power":args.power,"lr_end":args.lr_end}
-            # self.scheduler = warmup_class(self, **kwargs_warmup)
-            return
-
-        # 在不同的画布中画各个损失函数的结果.
-        def plot_lr(self, Lr, savepath, compr = '', snr = ''):
             if compr != '' :
                 basename = f"_{self.cn}_compr={compr:.1f}_trainSnr={snr}(dB)"
                 title = r'$\mathrm{{R}}={:.1f},\mathrm{{SNR}}_\mathrm{{train}} = {}\mathrm{{(dB)}}$'.format(compr, snr)
@@ -189,15 +181,25 @@ def make_optimizer(args, net,  compr = '', snr = ''):
     return optimizer
 
 
+# class net(nn.Module):
+#     def __init__(self):
+#         super(net,self).__init__()
+#         self.fc = nn.Linear(1,10)
+#     def forward(self,x):
+#         return self.fc(x)
 
 # model = net()
 # LR = 0.01
+# args.decay = '1-2-3-4-5-6-7-8'
 # opt = make_optimizer(args, model, "test" )
 # loss = torch.nn.CrossEntropyLoss()
 
+# lr_list = []
 # lr_list1 = []
 # lr_list2 = []
-# for epoch in range(200):
+# for epoch in range(10):
+#       lr_list2.append(opt.get_last_lr())
+#       lr_list1.append(opt.state_dict()['param_groups'][0]['lr'])
 #       for i in range(20):
 #           y = torch.randint(0, 9, (10,10))*1.0
 #           opt.zero_grad()
@@ -207,8 +209,8 @@ def make_optimizer(args, net,  compr = '', snr = ''):
 #           lss.backward()
 #           opt.step()
 #       opt.schedule()
-#       lr_list2.append(opt.get_lr())
-#       lr_list1.append(opt.state_dict()['param_groups'][0]['lr'])
+#       lr_list.append(opt.state_dict()['param_groups'][0]['lr'])
+
 
 # fig, axs = plt.subplots(1,1, figsize=(6,6))
 # axs.plot(range(len(lr_list1)),lr_list1,color = 'r')

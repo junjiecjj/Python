@@ -96,7 +96,7 @@ def data_tf_cnn_mnist(x):
     # x = torch.from_numpy(x)
     return x
 
-trainset = torchvision.datasets.MNIST(root = home+'/SemanticNoise_AdversarialAttack/Data/',          # 表示 MNIST 数据的加载的目录
+trainset = torchvision.datasets.MNIST(root = home+'/FL_semantic/Data/',          # 表示 MNIST 数据的加载的目录
                                       train = True,                                                    # 表示是否加载数据库的训练集，false的时候加载测试集
                                       download = True,                                                 # 表示是否自动下载 MNIST 数据集
                                       transform = data_tf_cnn_mnist)                                   # 表示是否需要对数据进行预处理，none为不进行预处理
@@ -105,7 +105,7 @@ trainloader = torch.utils.data.DataLoader( trainset,
                                            shuffle = True,
                                            pin_memory = 0,
                                            num_workers=  6, )
-testset = torchvision.datasets.MNIST(root = home+'/SemanticNoise_AdversarialAttack/Data/',      # 表示 MNIST 数据的加载的目录
+testset = torchvision.datasets.MNIST(root = home+'/FL_semantic/Data/',      # 表示 MNIST 数据的加载的目录
                                     train = False,                                              # 表示是否加载数据库的训练集，false的时候加载测试集
                                     download = True,                                            # 表示是否自动下载 MNIST 数据集
                                     transform = data_tf_cnn_mnist)                              # 表示是否需要对数据进行预处理，none为不进行预处理
@@ -119,7 +119,7 @@ testloader = torch.utils.data.DataLoader(  testset,
 device = torch.device('cuda' if torch.cuda.is_available()  else "cpu")
 model =  LeNet_3().to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.002, betas=(0.9, 0.999), eps=1e-08,)
-milestone = list(np.arange(1,1000,10))
+milestone = list(np.arange(10,1000,10))
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones = milestone, gamma = 0.96)
 lossfn = torch.nn.CrossEntropyLoss(reduction='sum')
 
@@ -136,11 +136,12 @@ class LeNetMinst_PreTrain(object):
         return
 
     def train(self):
-        epochs = 1000
+        epochs = 50
         for epoch in range(epochs):
             metric = Accumulator(3)
             self.net.train()
-            print(f"\nEpoch : {epoch+1}/{epochs}({100.0*(epoch+1)/epochs:0>5.2f}%)")
+            lr = scheduler.get_last_lr()
+            print(f"\nEpoch : {epoch+1}/{epochs}({100.0*(epoch+1)/epochs:0>5.2f}%), lr = {lr}")
             for batch, (X, y) in enumerate(self.trainloader):
                 self.net.zero_grad()
                 # print(f"1 {X.min()}, {X.max()}, {y.shape}, ")
@@ -172,7 +173,7 @@ class LeNetMinst_PreTrain(object):
             test_acc = self.validata(self.net, self.testloader, device =  device)
             print(f"  Epoch: {epoch+1}/{epochs}({(epoch+1)*100.0/epochs:5.2f}%) | loss = {epoch_avg_loss:.4f} | train acc: {epoch_train_acc:.3f}, test acc: {test_acc:.3f} | \n")
         ### 保存网络中的参数, 速度快，占空间少
-        # torch.save(model.state_dict(), f"/home/jack/SemanticNoise_AdversarialAttack/LeNet_AlexNet/LeNet_Minst_classifier_{tm.start_str}.pt")   # 训练和测试都归一化
+        torch.save(model.state_dict(), "/home/jack/FL_semantic/LeNet_model/LeNet_Minst_classifier.pt")   # 训练和测试都归一化
 
         print("\n#============ 训练完毕,  =================\n")
 

@@ -998,14 +998,14 @@ plt.show()
 #伯努利分布随机数生成
 p=0.7#发生概率
 
-b=stats.bernoulli.rvs(p = p, size=14, random_state=None)#random_state=None每次生成随机
+b = stats.bernoulli.rvs(p = p, size=14, random_state=None)#random_state=None每次生成随机
 print(b)
-b=stats.bernoulli(p = p,).rvs( size=14, random_state=None)#random_state=None每次生成随机
+b = stats.bernoulli(p = p,).rvs( size=14, random_state=None)#random_state=None每次生成随机
 print(b)
 
 
 #伯努利分布随机数生成
-p=0.7#发生概率
+p = 0.7#发生概率
 
 b = stats.bernoulli.rvs(p=p, random_state=None, size=(2, 7))#random_state=None每次生成随机
 print(b)

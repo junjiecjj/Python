@@ -170,29 +170,47 @@ axs[0].legend(loc='upper left')
 
 #=============================== 1 ===========================================
 #字符型linestyle使用方法
-axs[1].plot([1,2,3],[1,2,13],linestyle='dotted', color='#1661ab', linewidth=5, label='字符型线性：dotted')
-
-#元组型lintstyle使用方法
-axs[1].plot([0.8,0.9,1.5],[0.8,0.9,21.5],linestyle=(0,(3, 1, 1, 1, 1, 1)), color='#ec2d7a', linewidth=5, label='元组型线性：(0,(3, 1, 1, 1, 1, 1)')
+axs[1].plot([1,2,3],[1,2,13],linestyle='-', color='#1661ab', linewidth=5, label='字符型线性：-')
+axs[1].plot([1,3,4],[1,2,13],linestyle='-.', color='#1231ab', linewidth=5, label='字符型线性：-.')
+axs[1].plot([2,4,5],[1,2,13],linestyle=':', color='#16abab', linewidth=5, label='字符型线性：:')
+axs[1].plot([2,5,6],[1,2,13],linestyle='--', color='#166134', linewidth=5, label='字符型线性：--')
 
 
 # linestyle_tuple = [
-# ('loosely dotted', (0, (1, 10))),
+# ('loosely dotted', (0, (1, 10)),
 # ('dotted', (0, (1, 1))),
-# ('densely dotted', (0, (1, 2))),
-# ('loosely dashed', (0, (5, 10))),
-# ('dashed', (0, (5, 5))),
-# ('densely dashed', (0, (5, 1))),
-# ('loosely dashdotted', (0, (3, 10, 1, 10))),
-# ('dashdotted', (0, (3, 5, 1, 5))),
-# ('densely dashdotted', (0, (3, 1, 1, 1))),
-# ('dashdotdotted', (0, (3, 5, 1, 5, 1, 5))),
-# ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
+# ('densely dotted', (0, (1, 2)),
+# ('loosely dashed', (0, (5, 10)),
+# ('dashed', (0, (5, 5)),
+# ('densely dashed', (0, (5, 1)),
+# ('loosely dashdotted', (0, (3, 10, 1, 10)),
+# ('dashdotted', (0, (3, 5, 1, 5)),
+# ('densely dashdotted', (0, (3, 1, 1, 1)),
+# ('dashdotdotted', (0, (3, 5, 1, 5, 1, 5)),
+# ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10)),
 # ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
 
-#自定义inestyle
-axs[1].plot([1.5,2.5,3.5],[1,2,13],linestyle=(0,(1,2,3,4,2,2)), color='black', linewidth=5, label='自定义线性：(0,(1,2,3,4,2,2)))')
-axs[1].plot([2.5,3.5,4.5],[1,2,13],linestyle=(2,(1,2,3,4,2,2)), color='g', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+#元组型lintstyle使用方法
+# axs[1].plot([0.8,0.9,1.5],[0.8,0.9,21.5],linestyle=(0,(3, 1, 1, 1, 1, 1)), color='#ec2d7a', linewidth=5, label='元组型线性：(0,(3, 1, 1, 1, 1, 1)')
+
+# axs[1].plot([1.5,2.5,3.5],[1,2,13],linestyle=(0,(1,2,3,4,2,2)), color='b', linewidth=5, label='自定义线性：(0,(1,2,3,4,2,2)))')
+
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (1, 10)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (1, 1)), color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (1, 2)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (5, 10)),  color='b', linewidth=5, label='自定义线性：(0, (5, 10))')
+axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (5, 5)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (5, 1)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 10, 1, 10)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 5, 1, 5)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 1, 1, 1)), color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 5, 1, 5, 1, 5)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 10, 1, 10, 1, 10)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 1, 1, 1, 1, 1)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+# axs[1].plot([1,2,3,4, 5, 6],[1,2,3,6,9,12],linestyle=(0, (3, 5, 1, 5, 1, 5)),  color='b', linewidth=5, label='自定义线性：(1,(1,2,3,4,2,2)))')
+
+
+
 axs[1].legend()
 
 #=====================================================================================================
@@ -206,7 +224,7 @@ plt.suptitle('cos and sin正弦 and tan ', fontproperties=fontt, x=0.5,y=0.96,)
 out_fig = plt.gcf()
 out_fig.savefig(filepath2+'hhsss.eps', format='eps', bbox_inches='tight')
 #out_fig.savefig(filepath2+'hh.svg', format='svg', dpi=1000, bbox_inches='tight')
-out_fig.savefig(filepath2+'hhsss.pdf', format='pdf',  bbox_inches='tight')
+# out_fig.savefig(filepath2+'hhsss.pdf', format='pdf',  bbox_inches='tight')
 
 plt.show()
 

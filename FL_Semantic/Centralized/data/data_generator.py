@@ -45,16 +45,16 @@ def data_tf_mlp_mnist(x):
     return x
 
 def data_tf_cnn_mnist(x):
-    # ## 1
-    # x = transforms.ToTensor()(x)
-    # x = (x - 0.5) / 0.5
-    # x = x.reshape((-1, 28, 28))
+    ## 1
+    x = torchvision.transforms.ToTensor()(x)
+    x = (x - 0.5) / 0.5
+    x = x.reshape((-1, 28, 28))
 
     # 2
-    x = np.array(x, dtype='float32') / 255
+    # x = np.array(x, dtype='float32') / 255
     # x = (x - 0.5) / 0.5
-    x = x.reshape((1, 28, 28))  # ( 1, 28, 28)
-    x = torch.from_numpy(x)
+    # x = x.reshape((1, 28, 28))  # ( 1, 28, 28)
+    # x = torch.from_numpy(x)
     return x
 
 

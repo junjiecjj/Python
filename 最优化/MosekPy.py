@@ -10,7 +10,7 @@ pip install Mosek
 conda install -c mosek mosek
 
 手动安装：
-1. 下载Mosek的安装包，然后将安装包放在家目录下；
+1. 下载 Mosek 的安装包，然后将安装包放在家目录下；
 2. 下载 mosek.lic放在1中的mosek目录下；
 3. cd  /home/jack/mosek/10.0/tools/platform/linux64x86/python/3
 4. python setup.py install --user

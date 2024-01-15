@@ -68,10 +68,10 @@ ax4.set_zlabel('Z')
 ax4.set_zlim(-3, 3)
 
 
-# out_fig = plt.gcf()
+out_fig = plt.gcf()
 
-# filepath2 = '/home/jack/snap/'
-# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 
 plt.show()
 
@@ -92,6 +92,11 @@ Z = np.sin(X)+np.cos(Y)
 #作图
 ax3.plot_surface(X,Y,Z,cmap='rainbow')
 ax3.contour(X,Y,Z, zdim='z',offset=-2,cmap='rainbow')   #等高线图，要设置offset，为Z的最小值
+out_fig = plt.gcf()
+
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+
 plt.show()
 
 
@@ -115,6 +120,9 @@ u=1-(1-np.mod(3.6*t,2*np.pi)/np.pi)**4/2
 y=2*(x**2-x)**2*np.sin(p)
 r=u*(x*np.sin(p)+y*np.cos(p))
 surf=ax.plot_surface(r*np.cos(t),r*np.sin(t),u*(x*np.cos(p)-y*np.sin(p)),rstride=1,cstride=1,cmap=cm.gist_rainbow_r, linewidth=0,antialiased=True)
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 plt.show()
 
 
@@ -139,6 +147,10 @@ z = 10 * np.outer(np.ones(np.size(u)), np.cos(v))
 # Plot the surface
 #ax.plot_surface(x, y, z, color='b')
 ax.plot_surface(x, y, z,cmap='rainbow')
+out_fig = plt.gcf()
+
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 
 plt.show()
 
@@ -159,7 +171,10 @@ Z = np.sin(X)+np.cos(Y)
 #作图
 ax3.plot_surface(X,Y,Z,cmap='rainbow')
 ax3.contour(X,Y,Z,  offset=-2, cmap='rainbow')   #等高线图，要设置offset，为Z的最小值
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 #===============================================================================
 # 1 表面图（Surface plots）
@@ -198,8 +213,10 @@ Z = X*Y**2
 #作图
 #ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1)
 ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1,cmap='rainbow')
-# plt.savefig('1.png',dpi=80)
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 
 #===============================================================================
@@ -223,8 +240,10 @@ ax3.plot_surface(X,Y,Z,cmap='rainbow')
 #如果加入渲染时的步长，会得到更加清晰细腻的图像：
 ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1,cmap='rainbow')
 # ,其中的row和cloum_stride为横竖方向的绘图采样步长，越小绘图越精细。
-
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 #===============================================================================
 # 1 表面图（Surface plots）
@@ -304,8 +323,10 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_zlabel('z')
 ax.set_title('3D contour')
-plt.show()
-
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 
 #===============================================================================
@@ -319,7 +340,7 @@ import matplotlib.pyplot as plt
 #求向量积(outer()方法又称外积)
 x = np.outer(np.linspace(-2, 2, 30), np.ones(30))
 #矩阵转置
-y = x.copy().T 
+y = x.copy().T
 #数据z
 z = np.cos(x ** 2 + y ** 2)
 #绘制曲面图
@@ -328,7 +349,14 @@ ax = plt.axes(projection='3d')
 #调用plot_surface()函数
 ax.plot_surface(x, y, z,cmap='viridis', edgecolor='none')
 ax.set_title('Surface plot')
-plt.show()
+
+
+
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
+plt.close()
+
 
 
 #===============================================================================
@@ -414,7 +442,10 @@ ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
 ax.set_zlabel('Z Label')
 
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 #===============================================================================
 #3D散点图
@@ -433,8 +464,11 @@ y = z * np.cos(20 * z)
 c = x + y
 ax.scatter3D(x, y, z, c=c)
 ax.set_title('3d Scatter plot')
-plt.show()
 
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 #===============================================================================
 # 3 np.meshgrid使用方法
@@ -443,7 +477,7 @@ plt.show()
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-fig = plt.figure(figsize=(8,6)) 
+fig = plt.figure(figsize=(8,6))
 ax3 = plt.axes(projection='3d')
 
 xx = np.arange(-20,20,0.5)
@@ -453,7 +487,11 @@ X, Y = np.meshgrid(xx, yy)
 Z=X**2+Y**2#Change Here
 
 ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1,cmap='rainbow')
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
+
 
 
 
@@ -477,7 +515,11 @@ X, Y, Z = axes3d.get_test_data(0.05)
 # Plot a basic wireframe.
 ax.plot_wireframe(X, Y, Z, rstride=10, cstride=10)
 
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
+
 
 #===============================================================================
 #  四、3D线框图
@@ -502,7 +544,12 @@ ax = plt.axes(projection='3d')
 #调用绘制线框图的函数plot_wireframe()
 ax.plot_wireframe(X, Y, Z, color='black')
 ax.set_title('wireframe')
-plt.show()
+
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
+plt.close()
+
 
 #===============================================================================
 # 五、表面图（Surface plots）
@@ -528,8 +575,7 @@ R = np.sqrt(X**2 + Y**2)
 Z = np.sin(R)
 
 # Plot the surface.
-surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
-                       linewidth=0, antialiased=False)
+surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
 
 
@@ -541,7 +587,12 @@ ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 # Add a color bar which maps values to colors.
 fig.colorbar(surf, shrink=0.5, aspect=5)
 
-plt.show()
+
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
+plt.close()
+
 
 
 #===============================================================================
@@ -711,7 +762,10 @@ ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 
-
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 #===============================================================================
 # 九、子图绘制（subplot）
@@ -752,7 +806,10 @@ ax = fig.add_subplot(2,1,2, projection='3d')
 X, Y, Z = axes3d.get_test_data(0.05)
 ax.plot_wireframe(X, Y, Z, rstride=10, cstride=10)
 
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 
 
@@ -833,7 +890,10 @@ fontt = FontProperties(fname=fontpath+"simsun.ttf", size=22)
 #fontt = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 plt.suptitle('cos and sin正弦 and tan ', fontproperties=fontt, x=0.5,y=0.96,)
 
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.close()
 
 
 #===============================================================================
@@ -861,7 +921,10 @@ xd = 5*np.sin(zd)
 yd = 5*np.cos(zd)
 ax1.scatter3D(xd,yd,zd, cmap='Blues')  #绘制散点图
 ax1.plot3D(x,y,z,'gray')    #绘制空间曲线
-plt.show()
+out_fig = plt.gcf()
+filepath2 = '/home/jack/snap/'
+out_fig .savefig(filepath2+'plotfig.eps',  bbox_inches = 'tight')
+plt.close()
 
 #方法二，利用三维轴方法
 from matplotlib import pyplot as plt

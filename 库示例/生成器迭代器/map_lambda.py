@@ -102,6 +102,34 @@ print(list(lengths))
 # [7,2,8]
 
 
+
+name = ['0_7.png',
+ '1_2.png',
+ '10_0.png',
+ '11_6.png',
+ '12_9.png',
+ '13_0.png',
+ '14_1.png',
+ '15_5.png',
+ '16_9.png',
+ '17_7.png',
+ '18_3.png',
+ '19_4.png',
+ '2_1.png',
+ '3_0.png',
+ '4_4.png',
+ '5_1.png',
+ '6_4.png',
+ '7_9.png',
+ '8_5.png',
+ '9_9.png',
+ 'raw_grid_images.png']
+name.remove('raw_grid_images.png')
+
+na = sorted(name, key=lambda x: int(x.split('_')[0]))
+
+
+
 def increment(n):
     return lambda x:x+n
 
