@@ -28,14 +28,13 @@ def optimal_power(n, a_val, b_val, P_tot=1.0, W_tot=1.0):
     alpha.value = np.array(a_val)
     beta.value = np.array(b_val)
 
-    # 这个函数将被用作目标函数，因此必须是 DCP 的；
-    # 即，内部的元素乘法必须发生在 kl_div 内部，
-    # 而不是外部，否则求解器无法知道它是 DCP 的...
+    # 这个函数将被用作目标函数，因此必须是 DCP 的；即，内部的元素乘法必须发生在 kl_div 内部， 而不是外部，否则求解器无法知道它是 DCP 的...
+    ## 尽管这是一个凸优化问题，但由于 和是变量，必须将其重新写成 DCP 形式，因为 DCP 禁止直接将一个变量除以另一个变量。为了将问题重写为 DCP 格式，我们利用 CVXPY 中的函数来计算 Kullback-Leibler 散度。
     R = cp.kl_div(cp.multiply(alpha, W), cp.multiply(alpha, W + cp.multiply(beta, P))) - cp.multiply(alpha, cp.multiply(beta, P))
 
     objective = cp.Minimize(cp.sum(R))
-    constraints = [ P>=0.0,
-                    W>=0.0,
+    constraints = [ P >= 0.0,
+                    W >= 0.0,
                     cp.sum(P) - P_tot == 0.0,
                     cp.sum(W) - W_tot == 0.0]
 
@@ -47,11 +46,11 @@ def optimal_power(n, a_val, b_val, P_tot=1.0, W_tot=1.0):
 
 
 
-np.set_printoptions(precision=3)
+np.set_printoptions(precision = 5)
 n = 5               # 系统中接收器的数量
 
-a_val = np.arange(10,n+10)/(1.0*n)  # α
-b_val = np.arange(10,n+10)/(1.0*n)  # β
+a_val = np.arange(10, n+10)/(1.0*n)  # α
+b_val = np.arange(10, n+10)/(1.0*n)  # β
 P_tot = 0.5
 W_tot = 1.0
 status, utility, power, bandwidth = optimal_power(n, a_val, b_val, P_tot, W_tot)

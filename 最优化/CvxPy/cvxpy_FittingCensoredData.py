@@ -83,17 +83,33 @@ def plot_fit(fit, fit_label):
     plt.show()
 
 
-
+#%% 使用lstsq拟合全部数据
 c_ols = np.linalg.lstsq(X_ordered, y_censored, rcond=None)[0]
 fit_ols = X_ordered@c_ols
-plot_fit(fit_ols, 'OLS fit')
+# plot_fit(fit_ols, 'OLS fit')
+
+#%% 使用lstsq拟合截断数据
+c_ols_uncensored = np.linalg.lstsq(X_ordered[:M], y_censored[:M], rcond=None)[0]
+fit_ols_uncensored = X_ordered.dot(c_ols_uncensored)
+plot_fit(fit_ols_uncensored, 'OLS fit with uncensored data only')
+
+bad_predictions = (fit_ols_uncensored<=D) & (np.arange(K)>=M)
+# plt.plot(np.arange(K)[bad_predictions], fit_ols_uncensored[bad_predictions], color='orange', marker='o', lw=0);
 
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# 使用CVX拟合
+import cvxpy as cp
+X_uncensored = X_ordered[:M, :]
+c = cp.Variable(shape=n)
+objective = cp.Minimize(cp.sum_squares(X_uncensored@c - y_ordered[:M]))
+constraints = [ X_ordered[M:,:]@c >= D]
+prob = cp.Problem(objective, constraints)
+result = prob.solve()
 
-
-
-
-
+c_cvx = np.array(c.value).flatten()
+fit_cvx = X_ordered.dot(c_cvx)
+plot_fit(fit_cvx, 'CVX fit')
 
 
 
