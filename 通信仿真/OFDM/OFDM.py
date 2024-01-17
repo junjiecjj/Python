@@ -144,8 +144,7 @@ for b3 in [0, 1]:
                 B = (b3, b2, b1, b0)
                 Q = mapping_table[B]
                 plt.plot(Q.real, Q.imag, 'bo')
-                plt.text(Q.real, Q.imag+0.2, "".join(str(x)
-                         for x in B), ha='center')
+                plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')
 plt.grid(True)
 plt.xlim((-4, 4))
 plt.ylim((-4, 4))
