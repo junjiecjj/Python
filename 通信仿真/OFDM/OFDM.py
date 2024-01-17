@@ -36,22 +36,22 @@ from scipy import interpolate
 import commpy as cpy
 
 
-## 1 初始化参数
-K = 64 # OFDM子载波数量
-CP = K//4  #25%的循环前缀长度
-P = 8  # 导频数
-pilotValue = 3+3j  # 导频格式
-Modulation_type = 'QAM16' #调制方式，可选BPSK、QPSK、8PSK、QAM16、QAM64
-channel_type ='random' # 信道类型，可选awgn
-SNRdb = 25  # 接收端的信噪比（dB）
-allCarriers = np.arange(K)  # 子载波编号 ([0, 1, ... K-1])
+#%% 1 初始化参数
+K = 64            # OFDM子载波数量
+CP = K//4         # 25%的循环前缀长度
+P = 8             # 导频数
+pilotValue = 3+3j                   # 导频格式
+Modulation_type = 'QAM16'           # 调制方式，可选BPSK、QPSK、8PSK、QAM16、QAM64
+channel_type ='random'              # 信道类型，可选awgn
+SNRdb = 25                          # 接收端的信噪比（dB）
+allCarriers = np.arange(K)          # 子载波编号 ([0, 1, ... K-1])
 pilotCarrier = allCarriers[::K//P]  # 每间隔P个子载波一个导频
 # 为了方便信道估计，将最后一个子载波也作为导频
 pilotCarriers = np.hstack([pilotCarrier, np.array([allCarriers[-1]])])
-P = P+1 # 导频的数量也需要加1
+P = P + 1                  # 导频的数量也需要加1
 
 
-##  2 可视化导频插入的方式
+#%%  2 可视化导频插入的方式
 
 # 可视化数据和导频的插入方式
 dataCarriers = np.delete(allCarriers, pilotCarriers)
@@ -67,7 +67,7 @@ plt.grid(True)
 plt.savefig('carrier.png')
 
 
-## 3 定义调制和解调方式
+#%% 3 定义调制和解调方式
 m_map = {"BPSK": 1, "QPSK": 2, "8PSK": 3, "QAM16": 4, "QAM64": 6}
 mu = m_map[Modulation_type]
 dataCarriers = np.delete(allCarriers, pilotCarriers)
@@ -167,7 +167,7 @@ plt.xlim(0, K-1)
 plt.savefig('channelresponse.png')
 
 
-## 4 定义信道
+#%% 4 定义信道
 def add_awgn(x_s, snrDB):
     data_pwr = np.mean(abs(x_s**2))
     noise_pwr = data_pwr/(10**(snrDB/10))
@@ -220,7 +220,7 @@ def equalize(OFDM_demod, Hest):
 def get_payload(equalized):
     return equalized[dataCarriers]
 
-##  5 OFDM通信仿真
+#%%  5 OFDM通信仿真
 def OFDM_simulation():
     # 5.1 产生比特流
     bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
