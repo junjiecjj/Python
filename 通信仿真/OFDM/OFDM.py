@@ -74,47 +74,50 @@ dataCarriers = np.delete(allCarriers, pilotCarriers)
 payloadBits_per_OFDM = len(dataCarriers)*mu  # 每个 OFDM 符号的有效载荷位数
 # 定义制调制方式
 def Modulation(bits):
-    if Modulation_type == "QPSK":
+    if Modulation_type == "BPSK":
+        BPSK = cpy.PSKModem(2)
+        symbol = BPSK.modulate(bits)
+        return symbol
+    elif Modulation_type == "QPSK":
         PSK4 = cpy.PSKModem(4)
         symbol = PSK4.modulate(bits)
-        return symbol
-    elif Modulation_type == "QAM64":
-        QAM64 = cpy.QAMModem(64)
-        symbol = QAM64.modulate(bits)
-        return symbol
-    elif Modulation_type == "QAM16":
-        QAM16 = cpy.QAMModem(16)
-        symbol = QAM16.modulate(bits)
         return symbol
     elif Modulation_type == "8PSK":
         PSK8 = cpy.PSKModem(8)
         symbol = PSK8.modulate(bits)
         return symbol
-    elif Modulation_type == "BPSK":
-        BPSK = cpy.PSKModem(2)
-        symbol = BPSK.modulate(bits)
+    elif Modulation_type == "QAM16":
+        QAM16 = cpy.QAMModem(16)
+        symbol = QAM16.modulate(bits)
         return symbol
+    elif Modulation_type == "QAM64":
+        QAM64 = cpy.QAMModem(64)
+        symbol = QAM64.modulate(bits)
+        return symbol
+
+
+
 # 定义解调方式
 def DeModulation(symbol):
     if Modulation_type == "QPSK":
         PSK4 = cpy.PSKModem(4)
         bits = PSK4.demodulate(symbol, demod_type='hard')
         return bits
-    elif Modulation_type == "QAM64":
-        QAM64 = cpy.QAMModem(64)
-        bits = QAM64.demodulate(symbol, demod_type='hard')
-        return bits
-    elif Modulation_type == "QAM16":
-        QAM16 = cpy.QAMModem(16)
-        bits = QAM16.demodulate(symbol, demod_type='hard')
+    elif Modulation_type == "BPSK":
+        BPSK = cpy.PSKModem(2)
+        bits = BPSK.demodulate(symbol, demod_type='hard')
         return bits
     elif Modulation_type == "8PSK":
         PSK8 = cpy.PSKModem(8)
         bits = PSK8.demodulate(symbol, demod_type='hard')
         return bits
-    elif Modulation_type == "BPSK":
-        BPSK = cpy.PSKModem(2)
-        bits = BPSK.demodulate(symbol, demod_type='hard')
+    elif Modulation_type == "QAM16":
+        QAM16 = cpy.QAMModem(16)
+        bits = QAM16.demodulate(symbol, demod_type='hard')
+        return bits
+    elif Modulation_type == "QAM64":
+        QAM64 = cpy.QAMModem(64)
+        bits = QAM64.demodulate(symbol, demod_type='hard')
         return bits
 
 
