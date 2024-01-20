@@ -29,7 +29,7 @@ https://zhuanlan.zhihu.com/p/637862608
 """
 
 
-
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
@@ -40,7 +40,7 @@ import commpy as cpy
 K = 64            # OFDM子载波数量
 CP = K//4         # 25%的循环前缀长度
 P = 8             # 导频数
-pilotValue = 3+3j                   # 导频格式
+pilotValue = 3 + 3j                 # 导频格式
 Modulation_type = 'QAM16'           # 调制方式，可选BPSK、QPSK、8PSK、QAM16、QAM64
 channel_type ='random'              # 信道类型，可选awgn
 SNRdb = 25                          # 接收端的信噪比（dB）
@@ -48,7 +48,7 @@ allCarriers = np.arange(K)          # 子载波编号 ([0, 1, ... K-1])
 pilotCarrier = allCarriers[::K//P]  # 每间隔P个子载波一个导频
 # 为了方便信道估计，将最后一个子载波也作为导频
 pilotCarriers = np.hstack([pilotCarrier, np.array([allCarriers[-1]])])
-P = P + 1                  # 导频的数量也需要加1
+P = P + 1                           # 导频的数量也需要加1
 
 
 #%%  2 可视化导频插入的方式
@@ -95,8 +95,6 @@ def Modulation(bits):
         symbol = QAM64.modulate(bits)
         return symbol
 
-
-
 # 定义解调方式
 def DeModulation(symbol):
     if Modulation_type == "QPSK":
@@ -121,7 +119,7 @@ def DeModulation(symbol):
         return bits
 
 
-## 举例16QAM调制方式，画出星座图
+#%% 举例16QAM调制方式，画出星座图
 mapping_table = {
     (0, 0, 0, 0): -3-3j,
     (0, 0, 0, 1): -3-1j,
