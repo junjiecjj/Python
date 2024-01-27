@@ -19,7 +19,7 @@ import commpy as cpy
 
 
 ## 调制
-bits = np.random.binomial(n=1,p=0.5,size=(128))
+bits = np.random.binomial(n=1, p=0.5, size=(128))
 Modulation_type ="BPSK"
 if Modulation_type=="BPSK":
     bpsk = cpy.PSKModem(2)

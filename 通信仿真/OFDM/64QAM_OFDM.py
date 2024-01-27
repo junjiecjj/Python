@@ -378,11 +378,6 @@ for i in img_binary:
     img_en.append(encodeData(i, key))
 
 
-
-
-
-
-
 #transmit image
 img_en = np.array(img_en)
 img_for_trans1 = []

@@ -2,20 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Dec 11 00:50:20 2022
-
 @author: jack
 
 pip install gurobipy
-
 conda install -c gurobi gurobi
-
-
-
 
 1. 去 gurobi 官网注册下载Linux版本的压缩包，解压缩放在家目录下：/home/jack/gurobi1000/
 2. 添加环境变量
     首先打开~/.bashrc，我这里用vim打开vim ~/.bashrc，之后在文件中添加(第一行的路径为gurobi存放路径，也就是你解压时候的位置)：
-
     export GUROBI_HOME="/home/jack/gurobi811/linux64"
     export PATH="${PATH}:${GUROBI_HOME}/bin"
     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
@@ -24,10 +18,8 @@ conda install -c gurobi gurobi
 4.验证是否安装成功:cd  bin
                 gurobi.sh
 
-
 Gurobi的simplex比较强，解混合整数规划比较好。
-
-MOSEK的interior point比较好，解锥优化比较好，如SOCP, SDP.
+MOSEK 的interior point比较好，解锥优化比较好，如SOCP, SDP.
 """
 
 
@@ -53,7 +45,7 @@ price_jk = [[60, 60, 65, 60, 65, 90, 60, 65],
             [60, 65, 65, 80, 75, 75, 80, 75],
             [60, 60, 75, 80, 75, 70, 60, 75]]
 # 一行为一个时段,一列为一部电影
-rate_ik = [ [0.50, 0.55, 0.45, 0.50, 0.60, 0.46, 0.55, 0.45],
+rate_ik =  [[0.50, 0.55, 0.45, 0.50, 0.60, 0.46, 0.55, 0.45],
             [0.42, 0.43, 0.41, 0.43, 0.45, 0.30, 0.53, 0.36],
             [0.58, 0.63, 0.67, 0.64, 0.70, 0.64, 0.54, 0.57],
             [0.62, 0.67, 0.70, 0.65, 0.75, 0.64, 0.53, 0.66],
@@ -102,4 +94,80 @@ print('最佳排片方法:')
 print('\n影厅j|', J)
 print('-'*28)
 for idx,l in enumerate(result) :
-    print(f'时段{idx}|',l)
+    print(f'时段{idx}|', l)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

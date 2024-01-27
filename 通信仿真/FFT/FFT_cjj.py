@@ -254,7 +254,7 @@ x =  np.cos(2*np.pi*f1*t+np.pi/4)
 X = FFT(x)  # 或者用自己编写的，与fft完全一致
 
 # 消除相位混乱
-X[np.abs(X)<1e-8]=0;   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+X[np.abs(X)<1e-8]=0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
 X=X/N;            # 将频域序列 X 除以序列的长度 N
@@ -513,8 +513,7 @@ axs[1,1].set_ylabel(r'幅度', fontproperties=font3)
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
 font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,1].legend(loc='best', borderaxespad=0,
-                        edgecolor='black', prop=font2,)
+legend1 = axs[1,1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明

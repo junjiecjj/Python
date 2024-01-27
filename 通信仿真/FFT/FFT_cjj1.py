@@ -66,7 +66,7 @@ with the elements:
 [y(0),y(1),..,y(n/2),y(1-n/2),...,y(-1)]         n为偶数
 [y(0),y(1),..,y((n-1)/2),y(-(n-1)/2),...,y(-1)]  n为奇数
 where:
-y(j) = sum[k=0..n-1] x[k] * exp(-sqrt(-1)*j*k* 2*pi/n), j = 0..n-
+y(j) = sum[k=0..n-1] x[k] * exp(-sqrt(-1)*j*k* 2*pi/n), j = 0..n-1
 
 1）fft函数返回的fft结果序列的前半部分对应[0, fs/2]是正频率的结果,后半部分对应[ -fs/2, 0]是负频率的结果。
 2）如果要让实信号fft的结果与[-fs/2, fs/2]对应，则要fft后fftshift一下即可，fftshift的操作是将fft结果以fs/2为中心左右互换
@@ -327,7 +327,7 @@ Pha1 = np.angle(Y1,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
 R1 = np.real(Y1);	                # 计算频域序列 Y 的实部
 I1 = np.imag(Y1);	                # 计算频域序列 Y 的虚部
 
-# 方法三                   
+# 方法三
 f1 =  np.fft.fftfreq(N,1/Fs)    # 频率刻度
 
 

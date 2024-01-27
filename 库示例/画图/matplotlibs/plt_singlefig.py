@@ -133,7 +133,7 @@ axs.spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
 axs.spines['top'].set_color('r')  ### 设置边框线颜色
 
-axs.tick_params(direction='in',axis='both',top=True,right=True,labelsize=16, width=6, labelcolor = "red", colors='blue', rotation=25, )
+axs.tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6, labelcolor = "red", colors='blue', rotation=25, )
 labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(20) for label in labels] #刻度值字号
@@ -144,16 +144,3 @@ out_fig = plt.gcf()
 out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-

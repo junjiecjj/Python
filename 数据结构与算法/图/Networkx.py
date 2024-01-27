@@ -19,7 +19,7 @@ nx.draw(G, with_labels=True)
 plt.show()
 
 # 2、添加各节点之间的边
-G=nx.Graph()
+G = nx.Graph()
 #导入所有边，每条边分别用tuple表示
 G.add_edges_from([(1,2),(1,3),(2,4),(2,5),(3,6),(4,8),(5,8),(3,7)])
 nx.draw(G, with_labels=True, edge_color='b', node_color='g', node_size=1000)
@@ -33,7 +33,7 @@ plt.show()
 import networkx as nx
 import matplotlib.pyplot as plt
 #画图！
-G=nx.Graph()
+G = nx.Graph()
 G.add_node(1)
 G.add_nodes_from([2,3,4,5])
 for i in range(5):
@@ -93,10 +93,8 @@ pos = nx.spring_layout(G)  # positions for all nodes
 nx.draw_networkx_nodes(G, pos, node_size=700)
 
 # edges
-nx.draw_networkx_edges(G, pos, edgelist=elarge,
-                       width=6)
-nx.draw_networkx_edges(G, pos, edgelist=esmall,
-                       width=6, alpha=0.5, edge_color='b', style='dashed')
+nx.draw_networkx_edges(G, pos, edgelist=elarge, width=6)
+nx.draw_networkx_edges(G, pos, edgelist=esmall, width=6, alpha=0.5, edge_color='b', style='dashed')
 
 # labels
 nx.draw_networkx_labels(G, pos, font_size=20, font_family='sans-serif')

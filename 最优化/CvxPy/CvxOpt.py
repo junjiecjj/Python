@@ -7,7 +7,7 @@ Created on Sun Dec  4 22:32:26 2022
 """
 
 
-from cvxopt import solvers,matrix
+from cvxopt import solvers, matrix
 
 #=======================================================================
 # CVXOPT 解 二次规划问题
