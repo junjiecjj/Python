@@ -55,22 +55,17 @@ def mod2div(divident, divisor):
     while pick < len(divident):
 
         if tmp[0] == '1':
-
             # replace the divident by the result
             # of XOR and pull 1 bit down
             tmp = xor(divisor, tmp) + divident[pick]
-
         else:   # If leftmost bit is '0'
-
             # If the leftmost bit of the dividend (or the
             # part used in each step) is 0, the step cannot
             # use the regular divisor; we need to use an
             # all-0s divisor.
             tmp = xor('0'*pick, tmp) + divident[pick]
-
         # increment pick to move further
         pick += 1
-
     # For the last n bits, we have to carry it out
     # normally as increased value of pick will cause
     # Index Out of Bounds.
@@ -109,12 +104,7 @@ def split(word):
 def PS_FIXED(bits):
     return bits.reshape((-1,))
 
-
-
 # *Channel Function*
-
-
-
 def group_bits(bitc):
     bity = []
     x = 0
@@ -349,7 +339,7 @@ def pro_bits(SNR_X, bit):
 
 
 
-# Main
+## Main
 
 #Drop image url
 # url = input("Enter your url :")

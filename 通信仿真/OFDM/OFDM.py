@@ -20,11 +20,24 @@ https://zhuanlan.zhihu.com/p/424962237
 
 https://github.com/berndporr/py_ofdm
 
-https://github.com/AnalogArsonist/qpsk_ofdm_system
-
+## 集成包
 https://github.com/darcamo/pyphysim
 
 https://zhuanlan.zhihu.com/p/637862608
+
+## OFDM循环前缀及其作用（矩阵视角解释）
+https://blog.csdn.net/weixin_43413559/article/details/125218797
+https://blog.csdn.net/weixin_43413559/article/details/125227419
+
+
+## 信道估计---LS、MMSE、LMMSE准则
+信道估计主要分为非盲信道估计和盲信道估计。顾名思义，非盲信道估计需要使用基站和接收机均已知的导频序列进行信道估计，并使用不同的时频域插值技术来估计导频之间或者符号之间的子载波上的信道响应。目前主要使用的非盲信道估计包括最小二乘（LS）信道估计、最小均方误差（MMSE）信道估计、基于DFT的信道估计以及基于判决反馈信道估计等；而盲信道估计不需要已经已知的导频序列，主要包括基于最大期望的信道估计、基于子空间的信道估计技术等。
+https://blog.csdn.net/ddatalent/article/details/121132095
+
+## 添加循环前缀cp的作用:一方面在于充当保护间隔，对抗频率选择性；另一方面，使得发射信号与信道响应的线性卷积变为循环卷积，接收端使用单抽头均衡器即可恢复发射的符号（详情见书籍《MIMO-OFDM无线通信技术及matlab实现》第4章）。
+循环前缀（CP）:OFDM中的循环前缀是指在每个OFDM符号的开头添加一段与该符号结尾相同的信号，以形成一个循环结构。循环前缀的作用是在时域上对信号进行加窗，以减小信号在频域上的泄漏。循环前缀主要充当连续符号之间的保护带，以克服符号间干扰ISI。
+
+导频符号:OFDM中的导频符号是指在OFDM符号中插入的一些特殊符号，用于信道估计和同步。导频符号可以安插在OFDM的时间和频率二维结构内，只要在两个方向的导频密度满足二维Nyquist定理，就可以精确估计信道的时变和衰落特性，因此能够适应快衰落信道。
 
 """
 
@@ -269,82 +282,104 @@ def get_payload(equalized):
 
 #%%  5 OFDM通信仿真
 def OFDM_simulation():
-    # 5.1 产生比特流
-    bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
-    # 5.2 比特信号调制
-    QAM_s = Modulation(bits)
-    print(QAM_s)
-    # 5.3 插入导频和数据，生成OFDM符号
-    OFDM_data = OFDM_symbol(QAM_s)
-    # 5.4 快速傅里叶逆变换
-    OFDM_time = IDFT(OFDM_data)
-    # 5.5 添加循环前缀, 频域上消除符号间干扰(ISI)。
-    OFDM_withCP = addCP(OFDM_time)
+    ##
+    SNRs = np.arange(0, 21, 0.5)
+    BERs = []
+    for SNRdb in SNRs:
+        # 5.1 产生比特流
+        bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
+        # 5.2 比特信号调制
+        QAM_s = Modulation(bits)
+        # print(QAM_s)
+        # 5.3 插入导频和数据，生成OFDM符号
+        OFDM_data = OFDM_symbol(QAM_s)
+        # 5.4 快速傅里叶逆变换
+        OFDM_time = IDFT(OFDM_data)
+        # 5.5 添加循环前缀, 频域上消除符号间干扰(ISI)。
+        OFDM_withCP = addCP(OFDM_time)
 
-    # 5.6 经过信道
-    OFDM_TX = OFDM_withCP
-    OFDM_RX = channel(OFDM_TX, SNRdb, "awgn")[0]
+        # 5.6 经过信道
+        OFDM_TX = OFDM_withCP
+        OFDM_RX = channel(OFDM_TX, SNRdb, "awgn")[0]
 
-    ### 画出发送信号和过信道后的信号
-    # fig, axs = plt.subplots(1, 1, figsize = (8, 4), constrained_layout = True)
-    # axs.plot(abs(OFDM_TX),'g-', label = 'TX signal', )
-    # axs.plot(abs(OFDM_RX), 'r-', label = 'RX signal', )
+        # 5.7 接收端，去除循环前缀
+        OFDM_RX_noCP = removeCP(OFDM_RX)
+        # 5.8 快速傅里叶变换
+        OFDM_demod = DFT(OFDM_RX_noCP)
+        # 5.9 信道估计
+        Hest = channelEstimate(OFDM_demod)
+        # 5.10 均衡
+        equalized_Hest = equalize(OFDM_demod, Hest)
+        # 5.10 获取数据位置的数据
+        QAM_est = get_payload(equalized_Hest)
+        # 5.11 反映射，解调
+        bits_est = DeModulation(QAM_est)
+        # print(bits_est)
+        ber = np.sum(abs(bits-bits_est))/len(bits)
+        # print(f"{SNRdb} 误比特率BER：{ber}", )
+        BERs.append(ber)
+    return SNRs, np.array(BERs)
 
-    # font1 = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 20)
-    # legend1 = axs.legend(loc = 'best', borderaxespad=0, edgecolor='black', prop=font1, ncol = 2)
-    # frame1 = legend1.get_frame()
-    # frame1.set_alpha(1)
-    # frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-    # axs.tick_params(direction = 'in', axis='both', top=True, right=True, labelsize=24, width=3, )
-    # labels = axs.get_xticklabels() + axs.get_yticklabels()
-    # [label.set_fontname('Times New Roman') for label in labels]
-
-    # font = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 25)
-    # axs.set_xlabel('Time', fontproperties = font)
-    # axs.set_ylabel('|X(t)|', fontproperties = font)
-    # axs.grid(True)
-    # filepath2 = '/home/jack/snap/'
-    # out_fig = plt.gcf()
-    # out_fig.savefig(filepath2 + 'TxRx.eps', bbox_inches = 'tight')
-    # plt.close()
-
-    # 5.7 接收端，去除循环前缀
-    OFDM_RX_noCP = removeCP(OFDM_RX)
-    # 5.8 快速傅里叶变换
-    OFDM_demod = DFT(OFDM_RX_noCP)
-    # 5.9 信道估计
-    Hest = channelEstimate(OFDM_demod)
-    # 5.10 均衡
-    equalized_Hest = equalize(OFDM_demod, Hest)
-    # 5.10 获取数据位置的数据
-    QAM_est = get_payload(equalized_Hest)
-    # 5.11 反映射，解调
-    bits_est = DeModulation(QAM_est)
-    # print(bits_est)
-    print("误比特率BER： ", np.sum(abs(bits-bits_est))/len(bits))
-if __name__ == '__main__':
-    OFDM_simulation()
+# if __name__ == '__main__':
+    # OFDM_simulation()
 
 
 
+# SNRdb, BERs_QAM64 = OFDM_simulation()
+
+# SNRdb, BERs_QAM16 = OFDM_simulation()
+
+
+
+# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+# axs.plot(SNRdb, BERs_QAM64,'g-', label = 'OFDM, QAM64', )
+# axs.plot(SNRdb, BERs_QAM16, 'r-', label = 'OFDM, QAM16', )
+
+# font1 = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 20)
+# legend1 = axs.legend(loc = 'best', borderaxespad=0, edgecolor='black', prop=font1,  )
+# frame1 = legend1.get_frame()
+# frame1.set_alpha(1)
+# frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+# axs.tick_params(direction = 'in', axis='both', top=True, right=True, labelsize=24, width=3, )
+# labels = axs.get_xticklabels() + axs.get_yticklabels()
+# [label.set_fontname('Times New Roman') for label in labels]
+
+# font = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 25)
+# axs.set_xlabel('SNR (dB)', fontproperties = font)
+# axs.set_ylabel('BER', fontproperties = font)
+# # axs.grid(True)
+# filepath2 = '/home/jack/snap/'
+# out_fig = plt.gcf()
+# out_fig.savefig(filepath2 + 'OFDM_QAM.png', bbox_inches = 'tight')
+# plt.close()
 
 
 
 
+### 画出发送信号和过信道后的信号
+# fig, axs = plt.subplots(1, 1, figsize = (8, 4), constrained_layout = True)
+# axs.plot(abs(OFDM_TX),'g-', label = 'TX signal', )
+# axs.plot(abs(OFDM_RX), 'r-', label = 'RX signal', )
 
+# font1 = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 20)
+# legend1 = axs.legend(loc = 'best', borderaxespad=0, edgecolor='black', prop=font1, ncol = 2)
+# frame1 = legend1.get_frame()
+# frame1.set_alpha(1)
+# frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+# axs.tick_params(direction = 'in', axis='both', top=True, right=True, labelsize=24, width=3, )
+# labels = axs.get_xticklabels() + axs.get_yticklabels()
+# [label.set_fontname('Times New Roman') for label in labels]
 
-
-
-
-
-
-
-
-
-
-
+# font = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 25)
+# axs.set_xlabel('Time', fontproperties = font)
+# axs.set_ylabel('|X(t)|', fontproperties = font)
+# axs.grid(True)
+# filepath2 = '/home/jack/snap/'
+# out_fig = plt.gcf()
+# out_fig.savefig(filepath2 + 'TxRx.eps', bbox_inches = 'tight')
+# plt.close()
 
 
 

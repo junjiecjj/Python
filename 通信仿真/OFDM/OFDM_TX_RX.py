@@ -1,12 +1,13 @@
+
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Sun Jan  7 17:48:09 2024
-
 @author: jack
 
 https://github.com/Niroman/OFDM-Transmitter-and-Receiver
-
 
 """
 
@@ -29,48 +30,44 @@ t=np.linspace(-0.02,0.05,1000)
 plt.plot(t, 325 * np.sin(2*np.pi*50*t))
 #plt.show()
 
-sampling_freq=3.84 #in Mhz
-carrier_freq=3.4 #in Ghz
-subcarrier_space=15 #in Khz
-OFDM_symbol=256 # Number of samples
-active_sub=179
-bandwidth=2.7 #Mhz
-cyclic_prefix=18
+sampling_freq = 3.84 #in Mhz
+carrier_freq = 3.4 #in Ghz
+subcarrier_space = 15 #in Khz
+OFDM_symbol = 256 # Number of samples
+active_sub = 179
+bandwidth = 2.7 #Mhz
+cyclic_prefix = 18
 #Data information bits are randomly generated. Payload is QPSk
 
 #preamble follows Zadoff-chu seq
-Nzc=839
-u=2
-cv=0
-Ncs=0
+Nzc = 839
+u = 2
+cv = 0
+Ncs = 0
 '''
 
 # Pilot Generation
-pilotSymbol = np.zeros(4200,dtype=np.complex)
+pilotSymbol = np.zeros(4200, dtype = np.complex128)
 pilotSymbolNumber = 0
 
 for slotNumber in range(0, 20):
     for symNumber in range(0, 7):
-
         # 1st initialized sequence m
         x1_init = np.zeros((31))
         x1_init[0] = 1
-
         # Second Initial Condition of the polynomail x2() depending on the sequence
         x2_init = np.zeros((31))
-        x1_init[0] = 1
+        x2_init[0] = 1
         x2_init[10] = 7 * (slotNumber + 1) + symNumber + 1
 
         # Mpn is the length of the final sequence c()
         Mpn = 4500
-
         # Nc is given
         Nc = 1600
 
         # Create a vector(array) for x1 and x2() all initialized with 0
         x1 = np.zeros(Nc + Mpn + 31)
         x2 = np.zeros(Nc + Mpn + 31)
-
         # Create a vector for c() all initialized with 0
         c = np.zeros(Mpn)
 
@@ -103,7 +100,7 @@ for slotNumber in range(0, 20):
                 complex_number = complex(real_num, imag_num)
 
             pilotSymbol[pilotSymbolNumber] = complex_number
-            pilotSymbolNumber+=1
+            pilotSymbolNumber += 1
 
 # print("Printing the Final Pilot Symbols for every Resource Blocks.",pilotSymbol)
 
@@ -111,25 +108,20 @@ for slotNumber in range(0, 20):
 
 # Modulation of Payload Bits
 # 50000 Payload bits randomly generated.
-payloadBits = np.random.choice([0,1],size=50000)
+payloadBits = np.random.choice([0,1], size = 50000)
 
-dataSymbol = np.zeros(int(len(payloadBits)/2),dtype=complex)
+dataSymbol = np.zeros(int(len(payloadBits)/2), dtype = np.complex128)
 dataSymBitNo = 0
 
 for data_bit in range(0, len(payloadBits), 2):
-
     if ( payloadBits[data_bit] == 0 and payloadBits[data_bit + 1] == 0):
         dataSymbol[dataSymBitNo] = cmath.exp(1 * math.pi / 4j)
-
     elif ( payloadBits[data_bit] == 1 and payloadBits[data_bit + 1] == 0):
         dataSymbol[dataSymBitNo] = cmath.exp(1 * 3 * math.pi / 4j)
-
     elif ( payloadBits[data_bit] == 0 and payloadBits[data_bit + 1] == 1):
         dataSymbol[dataSymBitNo] = cmath.exp(1 * 7 * math.pi / 4j)
-
     elif ( payloadBits[data_bit] == 1 and payloadBits[data_bit + 1] == 1):
         dataSymbol[dataSymBitNo] = cmath.exp(1 * 5 * math.pi / 4j)
-
     dataSymBitNo +=1
 
 # print("Printing the Modulated Data Symbols ",dataSymbol)
@@ -199,8 +191,7 @@ Extra_bit_gen = np.random.randint(2000,5000) # To generate a currupt signal
 
 
 # Sending 140 OFDM Symbols
-for ofdm_sym in range(0,140):
-
+for ofdm_sym in range(0, 140):
     '''
     Transmitter Block
     '''
@@ -212,28 +203,22 @@ for ofdm_sym in range(0,140):
     if ofdm_sym < 2:
         for preamble_data in range(0,180):
             mux_input[preamble_data] = Tx_preamble[preamble_data]
-
     else:
         for muxBit in range(0,180):
-
             # Pilot Subcarriers assignment
             if muxBit == pilot_6subcarrier_counter:
                 mux_input[muxBit] = pilotSymbol[pilot_symbol_counter]
                 pilot_symbol_counter +=1
                 pilot_6subcarrier_counter +=6
-
             # Dc Subcarrier Assignment
             elif muxBit == 128:
                 mux_input[muxBit] = 0
-
             # Data Subcarriers Assignment
             else:
                 mux_input[muxBit] = dataSymbol[data_symbol_counter]
                 data_symbol_counter +=1
 
-
     # Feeding the Mux outputs to IDFT block
-
     mux_Input_IDFT = np.zeros(256,dtype=complex)
     mux_Input_counter = 0
 
@@ -307,8 +292,6 @@ for ofdm_sym in range(0,140):
         plt_arr[1,1].set_xlabel('Time in Microseconds')
         plt_arr[1,1].set_ylabel('Angle')
         plt.show()
-
-
     Tx_signal_channel = Output_IFFT_CP_added
 
 
@@ -551,3 +534,21 @@ for final_bit in range(len(Final_Payload_at_RX)):
 BER = np.abs((np.sum(Final_Payload_at_RX - Final_Payload_at_TX))/len(demuxOutput))
 
 print("Bit Error Rate after passing through the Channel : ",BER)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
