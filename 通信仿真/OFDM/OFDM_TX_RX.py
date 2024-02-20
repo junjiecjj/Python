@@ -46,7 +46,7 @@ cv = 0
 Ncs = 0
 '''
 
-# Pilot Generation
+#%% Pilot Generation, 生成导频
 pilotSymbol = np.zeros(4200, dtype = np.complex128)
 pilotSymbolNumber = 0
 
@@ -79,7 +79,7 @@ for slotNumber in range(0, 20):
         for n in range(0, Mpn + Nc):
             x1[n + 31] = (x1[n + 3] + x1[n]) % 2
         # Generate the m-sequence : x2()
-        for n in range(0,Mpn + Nc):
+        for n in range(0, Mpn + Nc):
             x2[n + 31] = (x2[n + 3] + x2[n + 2] + x2[n + 1] + x2[n]) % 2
 
         # Genereating the resulting Gold Sequence :c ()
@@ -98,7 +98,6 @@ for slotNumber in range(0, 20):
                 real_num = (1 / (np.sqrt(2)))
                 imag_num = ((1 * (1 - (2 * c[1])))/ (np.sqrt(2)))
                 complex_number = complex(real_num, imag_num)
-
             pilotSymbol[pilotSymbolNumber] = complex_number
             pilotSymbolNumber += 1
 
@@ -106,7 +105,7 @@ for slotNumber in range(0, 20):
 
 # Checkpoint must generate the modulation of Payload Bits.
 
-# Modulation of Payload Bits
+#%% Modulation of Payload Bits
 # 50000 Payload bits randomly generated.
 payloadBits = np.random.choice([0,1], size = 50000)
 
@@ -127,7 +126,7 @@ for data_bit in range(0, len(payloadBits), 2):
 # print("Printing the Modulated Data Symbols ",dataSymbol)
 
 
-# Plotting QPSK Modulation
+#%% Plotting QPSK Modulation
 plt.figure(1)
 plt.plot(dataSymbol.real,dataSymbol.imag,'*')
 plt.xlabel('Real Part')
@@ -137,7 +136,7 @@ plt.xlim(-2, 2)
 plt.ylim(-2, 2)
 plt.show()
 
-# Generating Modulator Output after FFT
+#%% Generating Modulator Output after FFT
 Num_fft = 256
 Subcarrier_Space = 15*1000 # 15Khz
 Sampling_Frequency = Num_fft * Subcarrier_Space
@@ -148,7 +147,7 @@ Length_FFT_Data = len(Sampled_data)
 Time_FFT = Sampling_Frequency/Length_FFT_Data
 Sampled_Time = np.arange(0,Sampling_Frequency,Time_FFT) - Sampling_Frequency/2
 
-# Plotting Frequency Response of Modulator
+#%% Plotting Frequency Response of Modulator
 plt.figure(2)
 plt.plot(Sampled_Time,np.abs(Shifted_Data))
 plt.title('Frequency Response of QPSK modulated data bits')
@@ -156,7 +155,7 @@ plt.xlabel('Frequency')
 plt.ylabel('Magnitude of Frequency Response of QPSK modulated data bits')
 plt.show()
 
-# Plotting Time Response of Modulator
+#%% Plotting Time Response of Modulator
 plt.figure(3)
 plt.stem(np.abs(Shifted_Data),use_line_collection=True)
 plt.title('Time Domain of QPSK modulated data bits')
@@ -164,7 +163,7 @@ plt.xlabel('Time')
 plt.ylabel('Magnitude of Time Domain of QPSK modulated data bits')
 plt.show()
 
-# Preamble Generation
+#%% Preamble Generation
 Tx_preamble = np.zeros(839,dtype=complex)
 Rx_preamble = np.zeros(181,dtype=complex)
 for Nzc in range(len(Tx_preamble)):
@@ -172,7 +171,7 @@ for Nzc in range(len(Tx_preamble)):
     if Nzc < 181:
         Rx_preamble[Nzc] = Tx_preamble[Nzc]
 
-# Multiplexing Preambles, Pilots and Payload Symbols
+#%% Multiplexing Preambles, Pilots and Payload Symbols
 # Declaration of Variables
 
 pilot_symbol_counter = 0 # To increment in generated Pilot Symbols one by one
@@ -190,7 +189,7 @@ equalPlotBitNo = 0
 Extra_bit_gen = np.random.randint(2000,5000) # To generate a currupt signal
 
 
-# Sending 140 OFDM Symbols
+#%% Sending 140 OFDM Symbols
 for ofdm_sym in range(0, 140):
     '''
     Transmitter Block
@@ -509,7 +508,7 @@ plt.ylim(-3, 3)
 plt.show()
 
 
-# Demodulation of Payload
+#%% Demodulation of Payload
 Final_Payload_at_RX = np.zeros(2* len(demuxOutput))
 for demodBitNo in range(len(demuxOutput)-1):
     # I Value
@@ -525,12 +524,12 @@ for demodBitNo in range(len(demuxOutput)-1):
         Final_Payload_at_RX[2 * demodBitNo] = 1
 
 
-# Final Payload
+#%% Final Payload
 Final_Payload_at_TX = np.zeros(len(Final_Payload_at_RX))
 for final_bit in range(len(Final_Payload_at_RX)):
     Final_Payload_at_TX[final_bit] = payloadBits[final_bit]
 
-# Bit Error Calculation
+#%% Bit Error Calculation
 BER = np.abs((np.sum(Final_Payload_at_RX - Final_Payload_at_TX))/len(demuxOutput))
 
 print("Bit Error Rate after passing through the Channel : ",BER)
