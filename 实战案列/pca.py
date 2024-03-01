@@ -56,3 +56,16 @@ def replacenanwithmean():
 def draw1(eigvals):
     plt.axis([0,20,0,50000000])
     plt.plot(eigvals)
+
+
+
+
+
+
+
+
+
+
+
+
+

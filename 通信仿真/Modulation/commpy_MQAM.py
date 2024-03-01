@@ -53,7 +53,7 @@ modem = cpy.QAMModem(16)
 modem.plot_constellation()
 
 signal = modem.modulate(bits)
-rec_bits = modem.demodulate(signal, 'hard')
+rec_bits = modem.demodulate(signal, 'soft', noise_var = 40)
 
 
 print(f"bits = \n {bits}")

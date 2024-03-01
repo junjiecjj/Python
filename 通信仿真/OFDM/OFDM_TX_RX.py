@@ -89,7 +89,7 @@ for slotNumber in range(0, 20):
 
         # Reference symbol for each pilot
         #r = np.zeros(30)
-        for max_RB in range(0,30):
+        for max_RB in range(0, 30):
             if max_RB > 0:
                 real_num = ((1 / (np.sqrt(2))) * (1 - (2 * c[2 * max_RB])))
                 imag_num = ((1 / (np.sqrt(2))) * (1 - (2 * c[2 * max_RB + 1])))
