@@ -18,16 +18,16 @@ def loaddata2(filename):#方法二，np自带的
 
 #此处的datamat每行是一个样本，每列是一个特征，m×d
 def pca(datamat,topnfeat=9999999):
-    meanvals=np.mean(datamat,axis=0)#对每列求均值
-    meanremoved=datamat-meanvals
-    covmat=np.cov(meanremoved,rowvar=0)#以每列为一个特征求协方差矩阵,d×d
-    eigvals,eigvects=np.linalg.eig(np.mat(covmat))
+    meanvals = np.mean(datamat,axis=0)#对每列求均值
+    meanremoved = datamat - meanvals
+    covmat = np.cov(meanremoved, rowvar = 0) #以每列为一个特征求协方差矩阵,d×d
+    eigvals, eigvects = np.linalg.eig(np.mat(covmat))
     #eigvals的每个值分别为协方差矩阵covmat的特征值，eigvects的每列分别为与eigvals对应的特征向量
-    valssort=np.argsort(eigvals)#对特征值从小到大排序，依次返回最小的特征值的索引，第二小特征值的索引……
-    valssorts=valssort[:-(topnfeat+1):-1]#对valssort进行逆序，变为从大到小，取前topfeat个特征值
-    redvects=eigvects[:,valssorts]
-    lowddatamat=meanremoved*redvects  #lowddatamat是m×k
-    reconmat=(lowddatamat*redvects.T)+meanvals#这一步是重构，m×k,k×d=m×d
+    valssort = np.argsort(eigvals)#对特征值从小到大排序，依次返回最小的特征值的索引，第二小特征值的索引……
+    valssorts = valssort[:-(topnfeat+1):-1]#对valssort进行逆序，变为从大到小，取前topfeat个特征值
+    redvects = eigvects[:,valssorts]
+    lowddatamat = meanremoved*redvects  #lowddatamat是m×k
+    reconmat = (lowddatamat*redvects.T) + meanvals#这一步是重构，m×k,k×d=m×d
     return lowddatamat,reconmat
 
 #此pca是调用python内部模块from sklearn.decomposition import PCA完成的，不同于17行的那个
