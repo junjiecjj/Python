@@ -30,26 +30,23 @@ h_array = generate_rayleigh_channels(num_channels)
 #h~CN( 0 , 1)为第K个用户的瑞利衰落系数，N0为噪声功率谱密度。
 def large_small(K,d,p,W): #
     N0_dBm = 3.981e-21  # -174dBm==3.981e-21
-    path_loss=128.1 + 37.6*np.log10(d/1000) #dB    小区半径为500m
+    path_loss = 128.1 + 37.6*np.log10(d/1000) #dB    小区半径为500m
     # the shadowing factor is set as 6 dB.
-    shadow_factor=6 #dB
+    shadow_factor = 6 #dB
     h_large=10** (-(path_loss + shadow_factor) / 10)
 
     sigma = np.sqrt(1 / 2)
     h_small=sigma * np.random.randn(K) + 1j * sigma * np.random.randn(K)
 
-    h=abs(h_small)**2
-    snr=h_large*h*p/(N0_dBm*W)
+    h = abs(h_small)**2
+    snr = h_large*h*p / (N0_dBm*W)
     return snr
 
 if __name__ == '__main__':
-    snr=large_small(1,200, 0.1, 180000) # W设置为180KHz
-    snr_dB=10*np.log10(snr/10)
+    snr  = large_small(1,200, 0.1, 10000000) # W设置为180KHz
+    snr_dB  = 10*np.log10(snr/10)
     print(snr)
-    print("dB:",snr_dB)
-
-
-
+    print( snr_dB)
 
 
 

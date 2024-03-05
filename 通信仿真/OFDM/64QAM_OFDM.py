@@ -499,7 +499,7 @@ bitx = group_bits(img_rft)
 ## in this part, we demonstate selecting only 1 frame to send. ##
 
 demapping_table = {v : k for k, v in mapping_table.items()}
-channelResponse = np.array([1,0,0.1+0.1j]) # the impulse response of the wireless channel
+channelResponse = np.array([1, 0, 0.1+0.1j]) # the impulse response of the wireless channel
 H_exact = np.fft.fft(channelResponse, K)
 plt.plot(allCarriers, abs(H_exact))
 

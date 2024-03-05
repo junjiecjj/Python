@@ -56,7 +56,6 @@ def BPSK_AWGN_Simulation(args):
             # cc_hat = polar.reverse(cc_hat)
             # uu_hat = cc_hat[np.where(polar.frozenbook == 0)]
 
-
             uu_hat, cc_hat = polar.decoderSCL_withoutCRC(yy)
 
             source.CntErr(uu, uu_hat)
