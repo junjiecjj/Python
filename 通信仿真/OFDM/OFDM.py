@@ -5,6 +5,12 @@ Created on Fri Nov 17 17:07:13 2023
 
 @author: jack
 
+https://zhuanlan.zhihu.com/p/438568996
+
+https://zhuanlan.zhihu.com/p/678429235#:~:text=%E4%B8%BA%E4%BA%86%E5%85%8B%E6%9C%8D%E9%A2%91%E7%8E%87%E9%80%89%E6%8B%A9,%E6%9C%BA%E5%8F%91%E5%B0%84%E6%9C%BA%E7%9A%84%E8%AE%BE%E8%AE%A1%E3%80%82
+## OFDM循环前缀及其作用（矩阵视角解释）
+https://blog.csdn.net/weixin_43413559/article/details/125218797
+https://blog.csdn.net/weixin_43413559/article/details/125227419
 
 !pip install scikit-commpy
 
@@ -25,9 +31,7 @@ https://github.com/darcamo/pyphysim
 
 https://zhuanlan.zhihu.com/p/637862608
 
-## OFDM循环前缀及其作用（矩阵视角解释）
-https://blog.csdn.net/weixin_43413559/article/details/125218797
-https://blog.csdn.net/weixin_43413559/article/details/125227419
+
 
 
 ## 信道估计---LS、MMSE、LMMSE准则
@@ -57,11 +61,12 @@ from matplotlib.pyplot import MultipleLocator
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
-np.random.seed(1)
+# np.random.seed(1)
 
 #%% 1 初始化参数
 K = 64            # OFDM子载波数量
-CP = K//4         # 25%的循环前缀长度
+channelResponse = np.array([1, 0, 0.3+0.3j])  # 随意仿真信道冲击响应
+CP = channelResponse.size - 1       # 25%的循环前缀长度, 实际上只需要取 >= len(H) -1  = L-1 就够了，
 P = 8             # 导频数
 pilotValue = 3 + 3j                 # 导频格式
 Modulation_type = 'QAM16'           # 调制方式，可选BPSK、QPSK、8PSK、QAM16、QAM64
@@ -230,7 +235,7 @@ def add_awgn(x_s, snrDB):
     return x_s + noise, noise_pwr
 
 def channel(in_signal, SNRdb, channel_type="awgn"):
-    channelResponse = np.array([1, 0, 0.3+0.3j])  # 随意仿真信道冲击响应
+    # channelResponse = np.array([1, 0, 0.3+0.3j])  # 随意仿真信道冲击响应
     if channel_type == "random":
         convolved = np.convolve(in_signal, channelResponse)
         out_signal, noise_pwr = add_awgn(convolved, SNRdb)
@@ -256,7 +261,8 @@ def addCP(OFDM_time):
 
 ## 接收端，去除循环前缀
 def removeCP(signal):
-    return signal[CP:(CP + K)]
+    # 这里很关键，原始信号长度为N，cp的长度为 CP =  L - 1 = Len(h) - 1，其中h为信道冲击相应，则过信道后的信号y的长度为N+(L-1)+(L-1)。取y的区间为[L-1, N+L-2]的信号，这样会保证加cp的效果和圆卷积的一样,python是右开的，所以为：[L-1: N+L-1]，区间错了性能会差很多。
+    return signal[CP : (CP + K)]
 
 ## 快速傅里叶变换
 def DFT(OFDM_RX):
@@ -278,6 +284,42 @@ def equalize(OFDM_demod, Hest):
 ## 获取数据位置的数据
 def get_payload(equalized):
     return equalized[dataCarriers]
+
+
+
+
+
+# 5.1 产生比特流
+bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
+# 5.2 比特信号调制
+QAM_s = Modulation(bits)
+# print(QAM_s)
+# 5.3 插入导频和数据，生成OFDM符号
+OFDM_data = OFDM_symbol(QAM_s)
+# 5.4 快速傅里叶逆变换
+OFDM_time = IDFT(OFDM_data)
+# 5.5 添加循环前缀, 频域上消除符号间干扰(ISI)。
+OFDM_withCP = addCP(OFDM_time)
+
+# 5.6 经过信道
+OFDM_TX = OFDM_withCP
+OFDM_RX = channel(OFDM_TX, SNRdb, "random")[0]
+
+# 5.7 接收端，去除循环前缀
+OFDM_RX_noCP = removeCP(OFDM_RX)
+# 5.8 快速傅里叶变换
+OFDM_demod = DFT(OFDM_RX_noCP)
+# 5.9 信道估计
+Hest = channelEstimate(OFDM_demod)
+# 5.10 均衡
+equalized_Hest = equalize(OFDM_demod, Hest)
+# 5.10 获取数据位置的数据
+QAM_est = get_payload(equalized_Hest)
+# 5.11 反映射，解调
+bits_est = DeModulation(QAM_est)
+# print(bits_est)
+ber = np.sum(abs(bits-bits_est))/len(bits)
+print(f"{SNRdb} 误比特率BER：{ber}", )
 
 
 #%%  5 OFDM通信仿真

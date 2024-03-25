@@ -74,3 +74,22 @@ def Rice_channel( L, Tx_data, Tx_data_power = None, SNR_dB = 5, K_dB = 30):
     return Rx_data
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
