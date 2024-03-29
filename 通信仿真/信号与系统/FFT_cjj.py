@@ -22,18 +22,15 @@ numpy和scipy中 都有 fft, fftshift，fftfreq, 测试它们的区别；
 
 #================================ Numpy.fft.fftshift ==================================
 
-a
-Out[135]: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
+a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 fftshift(a)
 Out[136]: array([6, 7, 8, 9, 1, 2, 3, 4, 5])
 
 b = [1, 2, 3, 4, 5, 6, 7, 8,]
-
 fftshift(b)
 Out[138]: array([5, 6, 7, 8, 1, 2, 3, 4])
 
-a = [1,2,3,...n]
+a = [1, 2, 3, ... n]
 fftshift(a):
 [(n+2)/2,...,n-1,n, 1,2,...,n/2]           n为偶数
 [(n+3)/2,...,n-1,n, 1,2,...,(n+1)/2]       n为基数
@@ -45,7 +42,10 @@ np.fft.fft(x, n=None, axis=- 1, norm=None)
 scipy.fftpack.fft(x, n=None, axis=- 1, overwrite_x=False)
 两者返回如下：
 The returned complex array contains y(0), y(1),..., y(n-1), where
-y(j) = (x * exp(-2*pi*sqrt(-1)*j*np.arange(n)/n)).sum().
+y(k) = (x * exp(-2*pi*sqrt(-1)*k*np.arange(n)/n)).sum().
+
+x = {x[0], x[1], x[2],..., x[N-1]}
+y[k] = \sum_{n=0}^{N-1} x[n]e^{-j*2*pi*k*n /N}
 
 Parameters
 x:
@@ -66,7 +66,7 @@ with the elements:
 [y(0),y(1),..,y(n/2),y(1-n/2),...,y(-1)]         n为偶数
 [y(0),y(1),..,y((n-1)/2),y(-(n-1)/2),...,y(-1)]  n为奇数
 where:
-y(j) = sum[k=0..n-1] x[k] * exp(-sqrt(-1)*j*k* 2*pi/n), j = 0..n-
+y(j) = sum[k=0..n-1] x[k] * exp(-sqrt(-1)*j*k* 2*pi/n), j = 0..n-1
 
 1）fft函数返回的fft结果序列的前半部分对应[0, fs/2]是正频率的结果,后半部分对应[ -fs/2, 0]是负频率的结果。
 2）如果要让实信号fft的结果与[-fs/2, fs/2]对应，则要fft后fftshift一下即可，fftshift的操作是将fft结果以fs/2为中心左右互换
@@ -77,8 +77,8 @@ fft.fftfreq(n, d=1.0)
 返回离散傅里叶变换采样频率。也就是返回与fft返回结果对应的频率值，长度n应该与fft后的序列长度一样，
 返回的浮点数组 f 包含频率 bin 中心，以每单位样本间隔的周期为单位(开头为零)。例如，如果样本间隔以秒为单位，则频率单位为周期/秒。
 给定窗口长度 n 和样本间距 d：
-f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   n为偶数
-f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   n为奇数
+f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   n为偶数，如n=10, f = [0,1,2,3,4,-5,-4,-3,-2,-1]
+f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   n为奇数，如n=9,  f = [0,1,2,3,4,-4,-3,-2,-1]
 参数：
 n：int，窗口长度。
 d：标量，可选,采样间隔(采样率的倒数)。默认为 1。
@@ -139,13 +139,13 @@ f = np.fft.fftfreq(N,1/Fs) 作为横轴
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
-import math
-import matplotlib
+# import math
+# import matplotlib
 from matplotlib.font_manager import FontProperties
-from pylab import tick_params
-import copy
-from matplotlib.pyplot import MultipleLocator
-import scipy
+# from pylab import tick_params
+# import copy
+# from matplotlib.pyplot import MultipleLocator
+# import scipy
 from scipy.fftpack import fft,ifft,fftshift,fftfreq
 
 
@@ -254,32 +254,32 @@ x =  np.cos(2*np.pi*f1*t+np.pi/4)
 X = FFT(x)  # 或者用自己编写的，与fft完全一致
 
 # 消除相位混乱
-X[np.abs(X)<1e-8]=0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+X[np.abs(X) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X=X/N;            # 将频域序列 X 除以序列的长度 N
+X = X/N;            # 将频域序列 X 除以序列的长度 N
 
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
-if N%2==0:
-     Y=X[0:int(N/2)+1]                # 提取 X 里正频率的部分,N为偶数
-     Y[1:int(N/2)] = 2*Y[1:int(N/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+if N%2 == 0:
+     Y = X[0 : int(N/2)+1]                # 提取 X 里正频率的部分,N为偶数
+     Y[1 : int(N/2)] = 2*Y[1 : int(N/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
 else: #奇数时下面的有问题
-     Y=X[0:int(N/2)+1]                # 提取 X 里正频率的部分,N为奇数
-     Y[1:int(N/2)+1] = 2*Y[1:int(N/2)+1]   # 将 X 里负频率的部分合并到正频率,N为奇数
+     Y = X[0 : int(N/2)+1]                # 提取 X 里正频率的部分,N为奇数
+     Y[1 : int(N/2)+1] = 2*Y[1:int(N/2)+1]   # 将 X 里负频率的部分合并到正频率,N为奇数
 
 # 计算频域序列 Y 的幅值和相角
-A=abs(Y);                       # 计算频域序列 Y 的幅值
-Pha=np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
+A = abs(Y);                       # 计算频域序列 Y 的幅值
+Pha = np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
 R = np.real(Y);	                # 计算频域序列 Y 的实部
 I = np.imag(Y);	                # 计算频域序列 Y 的虚部
 
 #  定义序列 Y 对应的频率刻度
-df=Fs/N;                           # 频率间隔
+df = Fs/N;                           # 频率间隔
 if N%2==0:
      f=np.arange(0,int(N/2)+1)*df;     # 频率刻度,N为偶数
      #f = np.fft.fftfreq(N, d=1/Fs)[0:int(N/2)+1]
 else:#奇数时下面的有问题
-     f=np.arange(0,int(N/2)+1)*df;    # 频率刻度,N为奇数
+     f = np.arange(0,int(N/2)+1)*df;    # 频率刻度,N为奇数
 
 
 #==================================================
@@ -291,10 +291,10 @@ X1 = FFT(x) # 或者用自己编写的
 
 
 # 消除相位混乱
-X1[np.abs(X)<1e-8]=0;   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+X1[np.abs(X)<1e-8] = 0;   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X1=X1/N;            # 将频域序列 X 除以序列的长度 N
+X1 = X1/N;            # 将频域序列 X 除以序列的长度 N
 
 # 方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
 Y1 = fftshift(X1,)      # 新的频域序列 Y
@@ -334,7 +334,7 @@ else:#奇数时下面的有问题
 
 
 IX = ifft(X)
-IX = IFFT(X) # 自己写的，和ifft完全一样
+IX = IFFT(X)*N # 自己写的，和ifft完全一样
 
 #====================================== 开始画图 ===============================================
 width = 6

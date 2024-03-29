@@ -7,9 +7,10 @@
 Created on Sun Jan  7 17:48:09 2024
 @author: jack
 
-https://github.com/Niroman/OFDM-Transmitter-and-Receiver
-
 这套代码有错误，很严重的错误，别看了。
+
+
+https://github.com/Niroman/OFDM-Transmitter-and-Receiver
 
 """
 
@@ -128,16 +129,6 @@ for data_bit in range(0, len(payloadBits), 2):
 # print("Printing the Modulated Data Symbols ",dataSymbol)
 
 
-#%% Plotting QPSK Modulation
-plt.figure(1)
-plt.plot(dataSymbol.real, dataSymbol.imag, '*')
-plt.xlabel('Real Part')
-plt.ylabel('Imaginary Part')
-plt.title('QPSK Modulation')
-plt.xlim(-2, 2)
-plt.ylim(-2, 2)
-plt.show()
-
 #%% Generating Modulator Output after FFT
 Num_fft = 256
 Subcarrier_Space = 15*1000 # 15Khz
@@ -149,23 +140,7 @@ Length_FFT_Data = len(Sampled_data)
 Time_FFT = Sampling_Frequency/Length_FFT_Data
 Sampled_Time = np.arange(0, Sampling_Frequency, Time_FFT) - Sampling_Frequency/2
 
-#%% Plotting Frequency Response of Modulator
-plt.figure(2)
-plt.plot(Sampled_Time, np.abs(Shifted_Data))
-plt.title('Frequency Response of QPSK modulated data bits')
-plt.xlabel('Frequency')
-plt.ylabel('Magnitude of Frequency Response of QPSK modulated data bits')
-plt.show()
-
-#%% Plotting Time Response of Modulator
-plt.figure(3)
-plt.stem(np.abs(Shifted_Data), use_line_collection = True)
-plt.title('Time Domain of QPSK modulated data bits')
-plt.xlabel('Time')
-plt.ylabel('Magnitude of Time Domain of QPSK modulated data bits')
-plt.show()
-
-#%% Preamble Generation； 前导符号（Preamble）
+#%% Preamble Generation; 前导符号（Preamble）
 # 由于终端的移动性，终端和网络之间的距离是不确定的，所以如果终端需要发送消息到网络，则必须实时进行上行同步的维持管理。PRACH的目的就是为达到上行同步,建立和网络上行同步关系以及请求网络分配给终端专用资源，进行正常的业务传输。
 Tx_preamble = np.zeros(839,dtype=complex)
 Rx_preamble = np.zeros(181,dtype=complex)
@@ -183,13 +158,13 @@ data_symbol_counter = 0 # To increment in generated Data Symbols one by one
 Average_equi_value = 0
 phaseDelay = 2 + 3*random.random() # Generating Constant Phase Delay
 
-demuxOutput = np.zeros(22000, dtype=complex) # Generating the Demultiplexed Output
+demuxOutput = np.zeros(22000, dtype = complex) # Generating the Demultiplexed Output
 demuxInBitNo = 0
-fftPlotBits = np.zeros(len(payloadBits), dtype=complex) # To plot the data points, 50000
+fftPlotBits = np.zeros(len(payloadBits), dtype = complex) # To plot the data points, 50000
 fftPlotBitNo = 0
-equalPlotBits = np.zeros(len(payloadBits), dtype=complex) # To plot the equalizer points, 50000
+equalPlotBits = np.zeros(len(payloadBits), dtype = complex) # To plot the equalizer points, 50000
 equalPlotBitNo = 0
-Extra_bit_gen = np.random.randint(2000,5000) # To generate a currupt signal,
+Extra_bit_gen = 3287 # To generate a currupt signal,
 
 
 #%% Sending 140 OFDM Symbols
@@ -201,7 +176,7 @@ for ofdm_sym in range(0, 140):
     pilot_6subcarrier_counter = 0 # To assign pilots to every 6th Sub Carrier
     mux_input = np.zeros(180, dtype = complex)
 
-    ## Sending Preambles for Synchronization from the diagram, 前两个OFDM符号为preamble,用于同步和信道估计；
+    ## Sending Preambles for Synchronization from the diagram
     if ofdm_sym < 2:
         for preamble_data in range(0, 180):
             mux_input[preamble_data] = Tx_preamble[preamble_data]
@@ -218,7 +193,7 @@ for ofdm_sym in range(0, 140):
             ## Data Subcarriers Assignment
             else:
                 mux_input[muxBit] = dataSymbol[data_symbol_counter] # 180
-                data_symbol_counter +=1
+                data_symbol_counter += 1
 
     ## Feeding the Mux outputs to IDFT block
     mux_Input_IDFT = np.zeros(256, dtype = complex)
@@ -228,163 +203,39 @@ for ofdm_sym in range(0, 140):
         mux_Input_IDFT[mux_Input_IDFT_bit] = mux_input[mux_Input_counter]
         mux_Input_counter += 1
 
-    # Applying IDFT to the Mux data and plotting in time domain signal
-    Sampling_Frequency_IDFT = 3.84
-    Sampling_Period_IDFT = 1/Sampling_Frequency_IDFT
-    Output_IFFT = np.fft.ifft(mux_Input_IDFT)
-    Step_IFFT = Sampling_Period_IDFT/len(mux_Input_IDFT)
-    Stop_IFFT = Sampling_Period_IDFT
-    Sampled_Time_IFFT = np.arange(0, Stop_IFFT, Step_IFFT)
+    ## Applying IDFT to the Mux data and plotting in time domain signal
+    ## Sampling_Frequency_IDFT = 3.84
+    Output_IFFT = np.fft.ifft(mux_Input_IDFT)   ## 256
 
-    if ofdm_sym == 2:
-        plt.figure(4)
-        # Plotting the magintude of output IFFT
-        plt.stem(Sampled_Time_IFFT, np.abs(Output_IFFT), use_line_collection = True)
-        plt.title('Plot of the IFFT output - "Magnitude"')
-        plt.xlabel('Time in Microseconds')
-        plt.ylabel('Magnitude of the IFFT output in time domain')
-        plt.show()
-
-        plt.figure(5)
-        # Plotting the Angle Output of IFFT
-        plt.stem(Sampled_Time_IFFT, np.angle(Output_IFFT), use_line_collection = True)
-        plt.title('Plot of the IFFT output - "Angle"')
-        plt.xlabel('Time in Microseconds')
-        plt.ylabel('Angle of the IFFT output in time domain')
-        plt.show()
-
-    # Adding Cyclic Prefix to avoid ISI by taking the last 17 Values from IFFT
+    ## Adding Cyclic Prefix to avoid ISI by taking the last 17 Values from IFFT
     Cyclic_Prefix = Output_IFFT[len(Output_IFFT) - 17 : ]
     Output_IFFT_CP_added = np.hstack((Cyclic_Prefix, Output_IFFT))  # 273 = 256 + 17
 
-    # Cyclic Prefix alone
-    Step_IFFT_CP = Sampling_Period_IDFT / len(Cyclic_Prefix)
-    Stop_IFFT_CP = Sampling_Period_IDFT
-    Sampled_Time_IFFT_CP= np.arange(0, Stop_IFFT_CP, Step_IFFT_CP)
-
-    # Signal + Cyclic Prefix
-    Step_IFFT_CP_added = Sampling_Period_IDFT / len(Output_IFFT_CP_added)
-    Stop_IFFT_CP_added = Sampling_Period_IDFT
-    Sampled_Time_IFFT_CP_added = np.arange(0, Stop_IFFT_CP_added, Step_IFFT_CP_added)
-
-    if ofdm_sym == 2:
-        f, plt_arr = plt.subplots(2,2, sharex = True, sharey = True, num = '6')
-        f.suptitle('Cyclic Prefic + Signal')
-        # Plotting the magintude of Cyclic Prefix
-        plt_arr[0,0].stem(Sampled_Time_IFFT_CP, np.abs(Cyclic_Prefix),use_line_collection = True)
-        plt_arr[0,0].set_title('Plot of the Cyclic Prefix - "Magnitude"')
-        plt_arr[0,0].set_xlabel('Time in Microseconds')
-        plt_arr[0,0].set_ylabel('Magnitude')
-
-        # Plotting the Angle of Cyclic Prefix
-        plt_arr[0,1].stem(Sampled_Time_IFFT_CP, np.angle(Cyclic_Prefix),use_line_collection = True)
-        plt_arr[0,1].set_title('Plot of the Cyclic Prefix - "Angle"')
-        plt_arr[0,1].set_xlabel('Time in Microseconds')
-        plt_arr[0,1].set_ylabel('Angle')
-
-        # Plotting the Magnitude of Cyclic Prefix and Signal
-        plt_arr[1,0].stem(Sampled_Time_IFFT_CP_added, np.abs(Output_IFFT_CP_added),use_line_collection = True)
-        plt_arr[1,0].set_title('Plot of the Cyclic Prefix and Signal - "Magnitude"')
-        plt_arr[1,0].set_xlabel('Time in Microseconds')
-        plt_arr[1,0].set_ylabel('Magnitude')
-
-        # Plotting the Angle of Cyclic Prefix and Signal
-        plt_arr[1,1].stem(Sampled_Time_IFFT_CP_added, np.angle(Output_IFFT_CP_added),use_line_collection = True)
-        plt_arr[1,1].set_title('Plot of the Cyclic Prefix and Signal - "Angle"')
-        plt_arr[1,1].set_xlabel('Time in Microseconds')
-        plt_arr[1,1].set_ylabel('Angle')
-        plt.show()
     Tx_signal_channel = Output_IFFT_CP_added
-
 
     '''
     Channel Block
     '''
-
     Delay_Signal_channel = Tx_signal_channel * np.exp(phaseDelay*1j) # Adding Constant Phase Delay to thr transmitted signal
 
-    # Plotting the Delay Signal
-    if ofdm_sym == 2:
-        f_ch, plt_arr_ch = plt.subplots(2, sharex = True, sharey = True ,num = '7')
-        f_ch.suptitle('Phase Delay + Signal')
-        # Plotting the Phase Delay added Signal's Magnitude
-        plt_arr_ch[0].stem(Sampled_Time_IFFT_CP_added, np.abs(Delay_Signal_channel),use_line_collection = True)
-        plt_arr_ch[0].set_title('Plot of the Phase Delay - "Magnitude"')
-        plt_arr_ch[0].set_xlabel('Time in Microseconds')
-        plt_arr_ch[0].set_ylabel('Magnitude')
-
-        # Plotting the Phase Delay added Signal's Magnitude
-        plt_arr_ch[1].stem(Sampled_Time_IFFT_CP_added, np.angle(Delay_Signal_channel),use_line_collection = True)
-        plt_arr_ch[1].set_title('Plot of the Phase Delay - "Angle"')
-        plt_arr_ch[1].set_xlabel('Time in Microseconds')
-        plt_arr_ch[1].set_ylabel('Angle')
-        plt.show()
-
     # AWGN Generation
-    Target_SNR = 100  # 15dB
+    Target_SNR = 0.001  # 15dB
     Energy_of_Signal_beforeNoise = (np.sum(np.square(np.abs(Delay_Signal_channel))))/len(Delay_Signal_channel)
 
     # Finding the Noise Spectral Density of the Signal
     noiseSigma = np.sqrt((Energy_of_Signal_beforeNoise)/(2*Target_SNR))
 
     # AWGN Noise Generation to add to the generated signal
-    AWGN_Noise = noiseSigma*((np.random.randn(len(Delay_Signal_channel)))+np.random.randn(len(Delay_Signal_channel))*1j)
+    AWGN_Noise = noiseSigma*((np.random.randn(len(Delay_Signal_channel))) + np.random.randn(len(Delay_Signal_channel))*1j)
 
     # Adding Noise to the Signal
     Output_Signal_after_noise = Delay_Signal_channel + AWGN_Noise # 273
-
-    # Power of signal
-    Power_of_Signal_After_Noise = np.sqrt((np.sum(np.square(np.abs(Output_Signal_after_noise)))) / len(Output_Signal_after_noise))
-
-    # Power of Noise
-    Power_of_Noise = np.sqrt((np.sum(np.abs(np.square(AWGN_Noise)))) / len(AWGN_Noise))
-
-    if 0:
-        print("\nEnergy of the Signal Before Noise :",Energy_of_Signal_beforeNoise)
-        print("\nSpectral Density of Signal :", noiseSigma)
-        print("\nPrinting Generated AWGN Noise :", AWGN_Noise)
-        print("\nPrinting Output Signal With Noise :", Output_Signal_after_noise)
-        print("\n Power of the Signal with Noise :", Power_of_Signal_After_Noise)
-        print("\n Power of the Noise :", Power_of_Noise)
-
-    # Plotting Signal After Adding Noise t it
-    if ofdm_sym == 2:
-        f_ch, plt_arr_ch_no = plt.subplots(2, sharex = True, sharey = True , num = '8')
-        f_ch.suptitle('Phase Delay + Signal + AWGN Noise')
-        # Plotting the Phase Delay added Signal's Magnitude
-        plt_arr_ch_no[0].stem(Sampled_Time_IFFT_CP_added, np.abs(Output_Signal_after_noise),use_line_collection = True)
-        plt_arr_ch_no[0].set_title('Plot of the Phase Delay - "Magnitude"')
-        plt_arr_ch_no[0].set_xlabel('Time in Microseconds')
-        plt_arr_ch_no[0].set_ylabel('Magnitude after AWGN')
-
-        # Plotting the Phase Delay added Signal's Magnitude
-        plt_arr_ch_no[1].stem(Sampled_Time_IFFT_CP_added, np.angle(Output_Signal_after_noise),use_line_collection = True)
-        plt_arr_ch_no[1].set_title('Plot of the Phase Delay - "Angle"')
-        plt_arr_ch_no[1].set_xlabel('Time in Microseconds')
-        plt_arr_ch_no[1].set_ylabel('Angle after AWGN')
-        plt.show()
 
     ## Extra bit generation to corrupt the signal
     Extra_Data = 0.1 * (np.random.randn(Extra_bit_gen) + np.random.randn(Extra_bit_gen) *1j) #  3287
 
     ## Adding Currupt signal to the Payload signal and plotting
     Output_Signal_after_noise_currupt = np.hstack((Extra_Data, Output_Signal_after_noise)) #  3560 = 3287+ 273
-
-    if ofdm_sym == 2:
-        f_ch, plt_arr_ch_no = plt.subplots(2, sharex = True, sharey = True , num = '9')
-        f_ch.suptitle('Phase Delay + Signal + AWGN Noise + Corrupt Signal added')
-        # Plotting the Phase Delay added Signal's Magnitude
-        plt_arr_ch_no[0].stem(np.arange(0, Sampling_Period_IDFT, Sampling_Period_IDFT / (len(Output_Signal_after_noise_currupt))), np.abs(Output_Signal_after_noise_currupt),use_line_collection = True)
-        plt_arr_ch_no[0].set_title('Plot of the Currupt Signal - "Magnitude"')
-        plt_arr_ch_no[0].set_xlabel('Time in Microseconds')
-        plt_arr_ch_no[0].set_ylabel('Magnitude after AWGN')
-
-        ## Plotting the Phase Delay added Signal's Magnitude
-        plt_arr_ch_no[1].stem(np.arange(0, Sampling_Period_IDFT, Sampling_Period_IDFT / (len(Output_Signal_after_noise_currupt))), np.angle(Output_Signal_after_noise_currupt),use_line_collection = True)
-        plt_arr_ch_no[1].set_title('Plot of the Currupt Signal - "Angle"')
-        plt_arr_ch_no[1].set_xlabel('Time in Microseconds')
-        plt_arr_ch_no[1].set_ylabel('Angle after AWGN')
-        plt.show()
 
     '''
     Receiver Block
@@ -400,19 +251,12 @@ for ofdm_sym in range(0, 140):
         Correlator_output = sig.correlate(Output_Signal_after_noise_currupt, Output_IFFT, mode='same') #  3560
         Abs_correlator_output = np.abs(Correlator_output)
         Maximum_abs_correlator = (np.max(Abs_correlator_output))
-        Lag = np.arange(0, len(Correlator_output),1)   # Correlator_output.shape = 3560
+        # Lag = np.arange(0, len(Correlator_output), 1)   # Correlator_output.shape = 3560
         Preamble_start = np.where(Abs_correlator_output == Maximum_abs_correlator)
 
-        # Plotting Correlator O/P with Lag
-        plt.figure(10)
-        plt.stem(Lag, Correlator_output, use_line_collection = True)
-        plt.title("Correlator and Lag plot")
-        plt.xlabel("Sample Number(lag)")
-        plt.ylabel("Correlator output")
-        plt.show()
     # Removing CP and Extraneous Data
     # Must make some changes and find the error signals
-    Output_Signal_after_CP_Noise_Removal = Output_Signal_after_noise_currupt[Preamble_start[0][0]-128:]
+    Output_Signal_after_CP_Noise_Removal = Output_Signal_after_noise_currupt[Preamble_start[0][0] - 128:]
 
     '''
     Method - 2 To correlate and find the starting point of the signal from the currupt signal
@@ -429,7 +273,7 @@ for ofdm_sym in range(0, 140):
 
         # Plotting Correlator O/P with Lag
         plt.figure(10)
-        plt.stem(Lag, Correlator_output, use_line_collection=True)
+        plt.stem(Lag, Correlator_output, use_line_collection = True)
         plt.title("Correlator and Lag plot")
         plt.xlabel("Sample Number(lag)")
         plt.ylabel("Correlator output")
@@ -446,48 +290,26 @@ for ofdm_sym in range(0, 140):
         # Performing DFT
         Output_Signal_after_Rx_FFT = np.fft.fft(Output_Signal_after_CP_Noise_Removal)
 
-        for fftOutBitNo in range(38, 45):
-            fftPlotBits[fftPlotBitNo] = Output_Signal_after_Rx_FFT[fftOutBitNo]
-            fftPlotBitNo += 1
-
-        plt.figure(11)
-        plt.plot(fftPlotBits.real, fftPlotBits.imag,'.r')
-        plt.xlim(-3,3)
-        plt.ylim(-3,3)
-        plt.title("6 FFT Data bits constellation plot at the Receiver")
-        plt.xlabel("Real Part")
-        plt.ylabel("Imaginary Part")
-
-        equalizer = np.zeros(30,dtype=complex)
+        equalizer = np.zeros(30, dtype = complex)
         equiNo = 0
-        for equi in range(39,218,6):
+        for equi in range(39, 218, 6):
             equalizer[equiNo] = Output_Signal_after_Rx_FFT[equi] / mux_Input_IDFT[equi]
-            equiNo +=1
+            equiNo += 1
 
         # Average Alpha value calculation
         Average_equi_value = (np.angle(np.sum(equalizer)/len(equalizer)) + Average_equi_value)/2
 
         # Equalizer Output
-        Equalizer_output = Output_Signal_after_Rx_FFT * (cmath.exp( -1j * Average_equi_value))
-
-        # Equalizer Output for 6 Subcarriers
-        for eqOutBitNo in range(39,45):
-            equalPlotBits[equalPlotBitNo] = Equalizer_output[eqOutBitNo]
-            equalPlotBitNo +=1
-        plt.figure(12)
-        plt.plot(equalPlotBits.real, equalPlotBits.imag, '*b')
-        plt.title("6 Subcarriers Equalizers constellation plot at the Receiver")
-        plt.xlim(-3, 3)
-        plt.ylim(-3, 3)
+        Equalizer_output = Output_Signal_after_Rx_FFT * (cmath.exp( -1j * Average_equi_value))  ## 256
 
         # Removing Pilot Bits and DC Carrier
-        outQPSKPilot = np.zeros(30,dtype=complex)
+        outQPSKPilot = np.zeros(30, dtype = complex)
         pilotBitNo = 39
         pilot = 0
-        outQPSKData = np.zeros(149,dtype=complex)
+        outQPSKData = np.zeros(149, dtype = complex)
         dataBitNo = 0
 
-        for outBitNo in range(39,218):
+        for outBitNo in range(39, 218):
             if (outBitNo == pilotBitNo):
                 outQPSKPilot[pilot] = Equalizer_output[outBitNo]
                 pilotBitNo = pilotBitNo + 6
@@ -497,19 +319,9 @@ for ofdm_sym in range(0, 140):
                 dataBitNo = dataBitNo + 1
 
         # Collecting Data Bits
-        for demodInput in range (0,149):
+        for demodInput in range (0, 149):
             demuxOutput[demuxInBitNo] = outQPSKData[demodInput]
             demuxInBitNo = demuxInBitNo + 1
-
-plt.figure(13)
-plt.plot(demuxOutput.real,demuxOutput.imag,'*r')
-plt.xlabel('Real Part')
-plt.ylabel('Imaginary Part')
-plt.title('Received QPSK demodulated Signals')
-plt.xlim(-3, 3)
-plt.ylim(-3, 3)
-plt.show()
-
 
 #%% Demodulation of Payload
 Final_Payload_at_RX = np.zeros(2* len(demuxOutput))
@@ -519,7 +331,6 @@ for demodBitNo in range(len(demuxOutput)-1):
         Final_Payload_at_RX[2 * demodBitNo - 1] = 0
     else:
         Final_Payload_at_RX[2 * demodBitNo - 1] = 1
-
     # Q Value
     if (np.imag(demuxOutput[demodBitNo]) > 0):
         Final_Payload_at_RX[2 * demodBitNo] = 0

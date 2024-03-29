@@ -347,7 +347,7 @@ url = "https://sc04.alicdn.com/kf/Uc21f8e3d737e4cad81d95974852e0959I.jpg"
 # Enter your url :https://sc04.alicdn.com/kf/Uc21f8e3d737e4cad81d95974852e0959I.jpg
 
 img = covturl(url)
-img = cv2.imdecode(img,cv2.IMREAD_COLOR)
+img = cv2.imdecode(img, cv2.IMREAD_COLOR)
 # cv2.imshow("img1", img)
 # cv2.waitKey()
 # cv2.destroyAllWindows()
@@ -393,14 +393,14 @@ img_rft = img_ready_for_trans
 K = 128
 CP = K // 4
 P = 8                       # number of pilot carriers per OFDM block
-pilotValue = 7+7j           # The known value each pilot transmits
+pilotValue = 7 + 7j           # The known value each pilot transmits
 allCarriers = np.arange(K)  # indices of all subcarriers ([0, 1, ... K-1])
 pilotCarriers = allCarriers[::K//P]        # Pilots is every (K/P)th carrier.
 print(pilotCarriers)
 
 # For convenience of channel estimation, let's make the last carriers also be a pilot
 pilotCarriers = np.hstack([pilotCarriers, np.array([allCarriers[-1]])])
-P = P+1
+P = P + 1
 
 # data carriers are all remaining carriers
 dataCarriers = np.delete(allCarriers, pilotCarriers)
@@ -657,266 +657,6 @@ cv2.waitKey()
 cv2.destroyAllWindows()
 
 ##We can change SNR to see another quality of the image after passing the channel
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
