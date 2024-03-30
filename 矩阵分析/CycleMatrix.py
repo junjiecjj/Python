@@ -11,15 +11,6 @@ Created on Thu Mar 21 20:43:25 2024
 import numpy as np
 
 
-
-
-generateVec = []
-
-
-H = np.array([[1,2,3,4,5,6]])
-
-
-
 # 产生傅里叶矩阵
 def FFTmatrix(row,col):
      mat = np.zeros((row,col),dtype=complex)

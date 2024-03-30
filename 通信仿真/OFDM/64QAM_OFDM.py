@@ -26,17 +26,14 @@ import math as math
 
 # *Miscellaneous Function*
 def xor(a, b):
-
     # initialize result
     result = []
-
     # same, then XOR is 0, else 1
     for i in range(1, len(b)):
         if a[i] == b[i]:
             result.append('0')
         else:
             result.append('1')
-
     return ''.join(result)
 
 def covturl(urls):
@@ -53,7 +50,6 @@ def mod2div(divident, divisor):
     tmp = divident[0 : pick]
 
     while pick < len(divident):
-
         if tmp[0] == '1':
             # replace the divident by the result
             # of XOR and pull 1 bit down
@@ -73,7 +69,6 @@ def mod2div(divident, divisor):
         tmp = xor(divisor, tmp)
     else:
         tmp = xor('0'*pick, tmp)
-
     checkword = tmp
     return checkword
 
@@ -111,7 +106,7 @@ def group_bits(bitc):
     for i in range((len(bitc)//payloadBits_per_OFDM)+1):
         bity.append(bitc[x:x+payloadBits_per_OFDM])
         x = x+payloadBits_per_OFDM
-    k = i-1
+
     pp = np.zeros(714, dtype = int)
     bity[-1] = pp
     return bity
@@ -163,13 +158,16 @@ def channelEstimate(OFDM_demod):
     Hest_phase = scipy.interpolate.interp1d(pilotCarriers, np.angle(Hest_at_pilots), kind='linear')(allCarriers)
     Hest = Hest_abs * np.exp(1j*Hest_phase)
 
-    plt.plot(allCarriers, abs(H_exact), label='Correct Channel')
-    plt.stem(pilotCarriers, abs(Hest_at_pilots), label='Pilot estimates')
-    plt.plot(allCarriers, abs(Hest), label='Estimated channel via interpolation')
-    plt.grid(True); plt.xlabel('Carrier index'); plt.ylabel(''); plt.legend(fontsize=10)
+    plt.plot(allCarriers, abs(H_exact), 'g-', label='Correct Channel')
+    plt.stem(pilotCarriers, abs(Hest_at_pilots), 'r--', label='Pilot estimates')
+    plt.plot(allCarriers, abs(Hest), 'b-.', label='Estimated channel via interpolation')
+    plt.grid(True)
+    plt.xlabel('Carrier index')
+    plt.ylabel('')
+    plt.legend(fontsize=10)
     plt.ylim(0,2)
-
     return Hest
+
 def equalize(OFDM_demod, Hest):
     return OFDM_demod / Hest
 
@@ -216,26 +214,26 @@ def SNR_return(num_snr):
         # Generate complex noise with given variance
         noise = np.sqrt(sigma2/2) * (np.random.randn(*convolved.shape)+1j*np.random.randn(*convolved.shape))
         return convolved + noise
-    SNR_Array = np.arange(0,num_snr,0.05)
+    SNR_Array = np.arange(0, num_snr, 0.05)
     bitsnr = bitx[10]
     ber = []
     for i in SNR_Array:
         SNRdb = i
-        bits_SP = SP(bitsnr)
-        QAM = Mapping(bits_SP)
-        OFDM_data = OFDM_symbol(QAM)
-        OFDM_time = IDFT(OFDM_data)
-        OFDM_withCP = addCP(OFDM_time)
-        OFDM_Tx = OFDM_withCP
-        OFDM_Rx = channel_V(OFDM_withCP)
-        OFDM_RX_noCP = OFDM_Rx[(CP):(CP+K)]
-        OFDM_demod = DFT(OFDM_RX_noCP)
-        Hest = channelEstimate_FIXED(OFDM_demod)
-        equalized_Hest = equalize(OFDM_demod, Hest)
-        QAM_est = get_payload(equalized_Hest)
-        PS_est, hardDecision = Demapping(QAM_est)
-        bits_est = PS_FIXED(PS_est)
-        ber.append(np.sum(abs(bitsnr-bits_est))/len(bitsnr))
+        bits_SP = SP(bitsnr)           #  (119, 6)
+        QAM = Mapping(bits_SP)         #  (119,)
+        OFDM_data = OFDM_symbol(QAM)   #  (128,)
+        OFDM_time = IDFT(OFDM_data)    #  (128,)
+        OFDM_withCP = addCP(OFDM_time) #  (160,)
+        OFDM_Tx = OFDM_withCP          # (160,)
+        OFDM_Rx = channel_V(OFDM_withCP)              #  (162,)
+        OFDM_RX_noCP = OFDM_Rx[(CP):(CP+K)]           #  (128,)
+        OFDM_demod = DFT(OFDM_RX_noCP)                #  (128,)
+        Hest = channelEstimate_FIXED(OFDM_demod)      #  (128,)
+        equalized_Hest = equalize(OFDM_demod, Hest)   #  (128,)
+        QAM_est = get_payload(equalized_Hest)         #  (119,)
+        PS_est, hardDecision = Demapping(QAM_est)     # (119, 6)  (119,)
+        bits_est = PS_FIXED(PS_est)                   #  (714,)
+        ber.append(np.sum(abs(bitsnr-bits_est))/len(bitsnr))  #
     return SNR_Array, ber
 
 def bit_plot(bit_x, a ,b):
@@ -249,17 +247,17 @@ def bit_plot(bit_x, a ,b):
     fd = 0
     fc = 24e9
     s = np.zeros(len(t), dtype = float)
-    bits_SP = SP(bitx[bit_x])
-    QAM = Mapping(bits_SP)
-    OFDM_data = OFDM_symbol(QAM)
-    OFDM_time_V = IDFT(OFDM_data)
+    bits_SP = SP(bitx[bit_x])     # (119, 6)
+    QAM = Mapping(bits_SP)        # (119,)
+    OFDM_data = OFDM_symbol(QAM)  # (128,)
+    OFDM_time_V = IDFT(OFDM_data)  # (128,)
     for i in OFDM_time_V:
         sin_time.append(abs(i)*np.sin(((2*np.pi)*(fc+fd)*t) + math.atan(i.imag/i.real)))
         fd += 1e9
     for j in range(len(t)):
         for i in sin_time:
             s[j] += i[j]
-    plt.plot(t,s)
+    plt.plot(t, s)
     plt.grid(True)
     plt.xlabel("Time(s)")
     plt.ylabel("Amplitude(V)")
