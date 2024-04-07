@@ -1238,7 +1238,7 @@ model = "2nn"
 pl.AccVsSNR_withDQbit(model = model)
 
 ## Paper Fig.8(a)
-# pl.PerformanceSNR(model = model)
+pl.PerformanceSNR(model = model)
 
 
 

@@ -12,7 +12,7 @@ import scipy.stats as st
 import scipy.stats as stats
 import matplotlib
 # matplotlib.get_backend()
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np

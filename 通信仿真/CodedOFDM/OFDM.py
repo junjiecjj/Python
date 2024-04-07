@@ -4,14 +4,10 @@
 Created on Fri Nov 17 17:07:13 2023
 
 @author: jack
-https://zhuanlan.zhihu.com/p/139381223
-https://zhuanlan.zhihu.com/p/57967971
+
+https://zhuanlan.zhihu.com/p/438568996
 https://cloud.tencent.com/developer/article/2351718
 https://blog.csdn.net/qq_34070723/article/details/88926168
-https://zhuanlan.zhihu.com/p/438568996
-
-
-
 
 https://zhuanlan.zhihu.com/p/678429235#:~:text=%E4%B8%BA%E4%BA%86%E5%85%8B%E6%9C%8D%E9%A2%91%E7%8E%87%E9%80%89%E6%8B%A9,%E6%9C%BA%E5%8F%91%E5%B0%84%E6%9C%BA%E7%9A%84%E8%AE%BE%E8%AE%A1%E3%80%82
 ## OFDM循环前缀及其作用（矩阵视角解释）
@@ -24,7 +20,7 @@ https://commpy.readthedocs.io/en/latest/
 
 https://zhuanlan.zhihu.com/p/434928660
 https://github.com/BetterBench/OFDM-simulation-Python
-
+https://github.com/BetterBench/OFDM-simulation-Python/blob/main/ofdm_simulation.py
 
 https://blog.csdn.net/AlphalzZ/article/details/130173613
 

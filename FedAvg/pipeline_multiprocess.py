@@ -306,10 +306,6 @@ def acc2Qbits1(acc):
         lr = 0.001
     return bits, lr
 
-
-
-
-
 # def acc2Qbits(acc):
 #     if acc <= 0.8:
 #         bits = 8

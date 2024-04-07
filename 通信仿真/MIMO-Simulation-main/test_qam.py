@@ -6,7 +6,7 @@ from qam_modulator import qam_mod, draw_mod_constellation, qam_mapper, draw_trx_
 # Settings
 seed = 0  # random seed
 np.random.seed(seed)
-M = 16  # modulation order
+M = 64  # modulation order
 snr = 20  # signal-to-noise ratio
 snr_range = np.arange(0, 20, 0.1)  # test SNR range
 channel = 'rician'  # channel type

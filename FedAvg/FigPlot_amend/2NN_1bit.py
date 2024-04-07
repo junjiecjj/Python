@@ -857,8 +857,8 @@ class ResultPlot1bit():
         # if self.title != '':
         #     plt.suptitle(self.title, fontproperties = fontt, )
         out_fig = plt.gcf()
-        savepath = self.savedir
-        out_fig.savefig(os.path.join(savepath, f"{model}_1bit_G8.eps") )
+        # savepath = self.savedir
+        out_fig.savefig( f"{model}_1bit_G8.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_Param_debug.pdf") )
         # out_fig.savefig(os.path.join("/home/jack/文档/中山大学/00 我的论文/Federate_learning_Com/Figures", f"{model}_8bitNonIID_performance.pdf") )
         plt.show()
@@ -875,7 +875,7 @@ model = "2nn"
 
 # pl.compare_1bit_SR_7(model = model)
 
-pl.Onebit_G7(model = model)
+# pl.Onebit_G7(model = model)
 
 pl.Onebit_G8(model = model)
 

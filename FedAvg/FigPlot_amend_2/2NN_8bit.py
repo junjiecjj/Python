@@ -322,8 +322,8 @@ class ResultPlot():
         fig, axs = plt.subplots(1, 1, figsize=(width, high), constrained_layout = True)# constrained_layout=True
 
         ##======================= son =====================================
-        axins = axs.inset_axes((0.7, 0.62, 0.25, 0.2))
-
+        # axins = axs.inset_axes((0.7, 0.62, 0.25, 0.2))
+        axins = axs.inset_axes((0.62, 0.52, 0.35, 0.3))
         ##================ baseline =========================================
         lb = "Error-free"
         data     = torch.load(os.path.join(self.rootdir, "2023-09-05-22:14:00_FedAvg/TraRecorder.pt"))
@@ -342,17 +342,6 @@ class ResultPlot():
         axs.plot(data[:, 0], Y2, label = lb, color = color[1], linestyle = '-',  linewidth = 2)
         axins.plot(data[:, 0], Y2,   color = color[1], linestyle = '-',  linewidth = 2)
 
-        # ##================ 8bit, 0.0001 error =============================
-        # ## 2023-09-06-22:10:48_FedAvg  2023-09-07-21:27:54_FedAvg
-        # data = torch.load(os.path.join(self.rootdir, "2023-09-07-21:27:54_FedAvg/TraRecorder.pt"))   ## P_error = 0.005
-        # lb = "8-bit, "+ r"$\epsilon = 1e^{-4}$"
-        # Y3 = data[:, 2]
-        # # Y = savgol_filter(Y, 25, 3)
-        # Y3 = savgol_filter(Y3, 25, 3)
-        # # Y = savgol_filter(Y, 25, 1)
-        # Y3 = savgol_filter(Y3, 25, 1)
-        # axs.plot(data[:, 0], Y3, label = lb, color = color[2], linestyle = '-',  linewidth = 2)
-        # axins.plot(data[:, 0], Y3,  color = color[2], linestyle = '-',  linewidth = 2)
 
         ##================ 8bit, 0.001 error =============================
         ##  2023-09-06-20:45:05_FedAvg   2023-09-07-10:06:47_FedAvg
@@ -506,6 +495,181 @@ class ResultPlot():
         return
 
 
+    # 画出 JSCC (包括在指定信噪比 tra_test_snr 训练) 在指定测试信噪比 tra_test_snr, 指定压缩率 Rlist下训练完后, 不同攻击强度 epslist,PSNR 随 压缩率 Rlist 的曲线. 每条曲线对应一个 tra_test_snr
+    def compare_8bit2(self, model = '2nn', ):  ## E = 10, B = 50
+        color = ['#1E90FF','#FF6347','#00FF00','#0000FF','#4ea142','#FF00FF','#FFA500','#800080','#FF0000','#EE82EE','#00FFFF','#9932CC','#00CED1','#CD5C5C',  '#7B68EE','#808000']
+
+        ##======================= mother ===================================
+        lw = 2
+        width = 10
+        high  = 8.5
+        fig, axs = plt.subplots(1, 1, figsize=(width, high), constrained_layout = True)# constrained_layout=True
+
+        ##======================= son =====================================
+        axins = axs.inset_axes((0.7, 0.45, 0.25, 0.2))
+        i = 0
+        ##================ baseline =========================================
+        lb = "Error-free"
+        data     = torch.load(os.path.join(self.rootdir, "2023-09-05-22:14:00_FedAvg/TraRecorder.pt"))
+        Y0 = data[:, 2]
+        Y0 = savgol_filter(Y0, 25, 3)
+        axs.plot(data[:, 0], Y0, label = lb, color = 'k', linestyle = '-', linewidth = 4)
+        axins.plot(data[:, 0], Y0, color = 'k', linestyle = '-', linewidth = 2)
+        i += 1
+        ##================ 8bit, 0 error =============================
+        lb = "8-bit, "+ r"$\epsilon = 0$"
+        # ##  2023-09-06-09:28:32_FedAvg   2023-09-18-20:16:16_FedAvg
+        data = torch.load(os.path.join(self.rootdir, "2023-09-06-09:28:32_FedAvg/TraRecorder.pt"))
+        Y1 = data[:, 2]
+        Y1 = savgol_filter(Y1, 25, 3)
+        Y1 = savgol_filter(Y1, 25, 2)
+        axs.plot(data[:, 0], Y1, label = lb, color = color[i], linestyle = '-',  linewidth = 2)
+        axins.plot(data[:, 0], Y1,   color = color[i], linestyle = '-',  linewidth = 2)
+        i += 1
+
+        ##================ 8bit, 0.001 error =============================
+        ##  2023-09-06-20:45:05_FedAvg   2023-09-07-10:06:47_FedAvg
+        data = torch.load(os.path.join(self.rootdir, "2023-09-07-10:06:47_FedAvg/TraRecorder.pt"))   ## P_error = 0.005
+        lb = "8-bit, "+ r"$\epsilon = 0.001$"
+        Y2 = data[:, 2]
+        # Y = savgol_filter(Y, 25, 3)
+        Y2 = savgol_filter(Y2, 25, 3)
+        Y2 = savgol_filter(Y2, 25, 1)
+        # Y = savgol_filter(Y, 25, 1)
+        axs.plot(data[:, 0], Y2, label = lb, color = color[i], linestyle = '-',  linewidth = 2)
+        axins.plot(data[:, 0], Y2,   color = color[i], linestyle = '-',  linewidth = 2)
+        i += 1
+        ##================ 8bit, 0.005 error =============================
+        ##  2023-09-06-19:24:52_FedAvg   2023-09-07-11:33:29_FedAvg
+        data = torch.load(os.path.join(self.rootdir, "2023-09-07-11:33:29_FedAvg/TraRecorder.pt"))   ## P_error = 0.005
+        lb = "8-bit, "+ r"$\epsilon = 0.005$"
+        Y3 = data[:, 2]
+        # Y = savgol_filter(Y, 25, 3)
+        Y3 = savgol_filter(Y3, 25, 3)
+        # Y = savgol_filter(Y, 25, 1)
+        Y3 = savgol_filter(Y3, 25, 1)
+        axs.plot(data[:, 0], Y3, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        axins.plot(data[:, 0], Y3, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        i += 1
+        ##================ 8bit, 0.01 error =============================
+        lb = "8-bit, "+ r"$\epsilon = 0.01$"
+        ##  2023-09-06-17:51:22_FedAvg      2023-09-07-13:03:40_FedAvg
+        data   = torch.load(os.path.join(self.rootdir, "2023-09-07-13:03:40_FedAvg/TraRecorder.pt"))   ## P_error = 0.01
+        Y4 = data[:, 2]
+        Y4 = savgol_filter(Y4, 25, 3)
+        # Y = savgol_filter(Y, 25, 3)
+        Y4 = savgol_filter(Y4, 25, 1)
+        # Y = savgol_filter(Y, 25, 1)
+        axs.plot(data[:, 0], Y4, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        axins.plot(data[:, 0], Y4, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        i += 1
+        ##================ 8bit, 0.05 error =============================
+        lb = "8-bit, "+ r"$\epsilon = 0.05$"
+        ##  2023-09-06-10:49:16_FedAvg   2023-09-06-12:08:18_FedAvg
+        data  = torch.load(os.path.join(self.rootdir, "2023-09-06-10:49:16_FedAvg/TraRecorder.pt"))   ## P_error = 0.05
+        Y5 = data[:, 2]
+        # Y = savgol_filter(Y, 25, 3)
+        Y5 = savgol_filter(Y5, 25, 3)
+        # Y = savgol_filter(Y, 25, 1)
+        Y5 = savgol_filter(Y5, 25, 1)
+        # Y = savgol_filter(Y, 25, 1)
+        axs.plot(data[:, 0], Y5, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        axins.plot(data[:, 0], Y5, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        i += 1
+
+        ##================ 8bit, 0.1 error =============================
+        lb = "8-bit, "+ r"$\epsilon = 0.1$"
+        ##  2023-09-06-16:16:35_FedAvg   2023-09-07-19:36:10_FedAvg
+        data  = torch.load(os.path.join(self.rootdir, "2023-09-06-16:16:35_FedAvg/TraRecorder.pt"))  ## P_error = 0.1
+        Y6 = data[:, 2]
+        # Y = savgol_filter(Y, 25, 3)
+        Y6 = savgol_filter(Y6, 25, 3)
+        # Y = savgol_filter(Y, 25, 1)
+        Y6 = savgol_filter(Y6, 25, 1)
+        # Y = savgol_filter(Y, 25, 1)
+        axs.plot(data[:, 0], Y6, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        axins.plot(data[:, 0], Y6, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        i += 1
+        ##================ 8bit, 0.15 error =============================
+        lb = "8-bit, "+ r"$\epsilon = 0.15$"
+        ##  2023-09-06-14:54:27_FedAvg  2023-09-07-17:44:15_FedAvg
+        data    = torch.load(os.path.join(self.rootdir, "2023-09-07-17:44:15_FedAvg/TraRecorder.pt"))  ## P_error = 0.15
+        Y7 = data[:, 2]
+        Y7 = savgol_filter(Y7, 25, 3)
+        # Y = savgol_filter(Y, 25, 3)
+        # Y = savgol_filter(Y, 25, 1)
+        Y7 = savgol_filter(Y7, 25, 1)
+        # Y = savgol_filter(Y, 25, 1)
+        axs.plot(data[:, 0], Y7, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        axins.plot(data[:, 0], Y7, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        i += 1
+        ##================ 8bit, 0.2 error =============================
+        lb = "8-bit, "+ r"$\epsilon = 0.2$"
+        ##  2023-09-06-13:26:03_FedAvg   2023-09-07-14:38:05_FedAvg
+        data  = torch.load(os.path.join(self.rootdir, "2023-09-07-14:38:05_FedAvg/TraRecorder.pt"))  ## P_error = 0.2
+        Y8 = data[:, 2]
+        # Y = savgol_filter(Y, 25, 3)
+        Y8 = savgol_filter(Y8, 25, 3)
+        # Y = savgol_filter(Y, 25, 1)
+        Y8 = savgol_filter(Y8, 25, 1)
+        axs.plot(data[:, 0], Y8, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        axins.plot(data[:, 0], Y8, label = lb, color = color[i], linestyle = '-',  linewidth = lw)
+        i += 1
+        ##===========================================================
+        ## xlabel
+        axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+        font = {'family':'Times New Roman','style':'normal','size':35 }
+        axs.set_xlabel("Communication Round", fontproperties=font)
+        axs.set_ylabel( "Test Accuracy",      fontproperties = font )# , fontdict = font1
+
+        ## legend
+        font1 = {'family':'Times New Roman','style':'normal','size':25, }
+        # legend1 = axs.legend(loc='lower left', bbox_to_anchor = (0.16, 0.02, 0.2, 0.5), borderaxespad = 0, edgecolor = 'black', prop = font1, facecolor = 'none',) ## loc = 'lower left',
+        legend1 = axs.legend(loc='lower left', bbox_to_anchor = (0.2, 0.02, 0.2, 0.5), borderaxespad = 0, edgecolor = 'black', prop = font1, facecolor = 'white',labelspacing = 0.2) ## loc = 'lower left',
+        frame1 = legend1.get_frame()
+        frame1.set_alpha(1)
+        frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+        ## lindwidth
+        bw = 2.5
+        axs.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+        axs.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+        axs.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+        axs.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+        ## xtick
+        axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 32, width = 2)
+        labels = axs.get_xticklabels() + axs.get_yticklabels()
+        [label.set_fontname('Times New Roman') for label in labels]
+        # [label.set_fontsize(35) for label in labels] #刻度值字号
+
+        ##==================== mother and son ==================================
+        ### 局部显示并且进行连线,方法3
+        zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y0, Y1, Y2,  Y3, Y4,], 'bottom', x_ratio = 0.2, y_ratio = 0.2)
+
+        ## linewidth
+        bw = 1
+        axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+        axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+        axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+        axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+        axins.tick_params(direction = 'in', axis = 'both', top=True, right = True,  width = 1)
+        labels = axins.get_xticklabels() + axins.get_yticklabels()
+        [label.set_fontname('Times New Roman') for label in labels]
+        [label.set_fontsize(16) for label in labels] #刻度值字号
+
+        ##===================== mother =========================================
+        fontt = {'family':'Times New Roman','style':'normal','size':30}
+        plt.suptitle("non-IID MNIST, 2NN", fontproperties = fontt, )
+        out_fig = plt.gcf()
+        # savepath = self.savedir
+        out_fig.savefig( f"{model}_8bitNonIID_performance.eps")
+        out_fig.savefig( f"{model}_8bitNonIID_performance.pdf")
+        plt.show()
+        plt.close()
+        return
+
 
 # def main():
 pl = ResultPlot( ) # 1: '2022-10-12-17:38:12'  2:'2022-10-14-09:56:05'
@@ -514,7 +678,10 @@ pl = ResultPlot( ) # 1: '2022-10-12-17:38:12'  2:'2022-10-14-09:56:05'
 model = "2nn"
 
 
-pl.compare_8bit1(model = model)
+# pl.compare_8bit1(model = model)
+
+
+pl.compare_8bit2(model = model)
 
 # pl.compare_dynamicQuantize(model = model)
 

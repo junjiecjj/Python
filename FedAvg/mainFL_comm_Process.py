@@ -123,17 +123,22 @@ def main():
         weight = []
         weigh_dict = {}
 
-        P_bitflip = 0.01
-        quantbits, learn_rate = err2Qbits(acc, P_bitflip)
-        # quantbits = 1
-        # learn_rate = Qbits2Lr_1(quantbits)
+        ## (1) 研究固定量化比特在不同的翻转概率下的性能，
+        quantbits = 1
+        P_bitflip = 0.5
+        learn_rate = 0.003
+        optim.set_lr(learn_rate)
 
-        # quantbits, learn_rate = acc2Qbits1(acc)
+
+        ## (2) 动态量化, : 根据当前比特翻转概率和性能调整量化比特数和学习率; 研究不同翻转概率下，根据当前性能调整量化比特数; 当P_bitflip = 0时, 为无错下的动态量化;
+        # P_bitflip = 0.3
+        # quantbits, learn_rate = err2Qbits(acc, P_bitflip)
         # optim.set_lr(learn_rate)
 
+        ## (3) 动态量化, : 根据当前信噪比和性能调整量化比特数和学习率，研究不同信噪比下，根据当前性能调整量化比特；
         # snr = 2
         # quantbits, learn_rate = acc2Qbits(acc, snr)
-        optim.set_lr(learn_rate)
+        # optim.set_lr(learn_rate)
 
         comm_cost += data_valum * quantbits
         # print(f"   num_bits =  {quantbits}, ")
@@ -144,12 +149,14 @@ def main():
         m = mp.Manager()
         dict_param  = m.dict()
         dict_berfer = m.dict()
-        lock = mp.Lock()  ## 这个一定要定义为全局
+        # lock = mp.Lock()  ## 这个一定要定义为全局
         jobs = []
 
         for client in candidates:
             # rdm = np.random.RandomState()
-            client_dtsize = myClients.clients_set[client].datasize; weight.append(client_dtsize); weigh_dict[client] = client_dtsize
+            client_dtsize = myClients.clients_set[client].datasize
+            weight.append(client_dtsize)
+            weigh_dict[client] = client_dtsize
 
             ## 获取当前Client训练得到的参数
             local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, loss_func, optim, global_parameters,)

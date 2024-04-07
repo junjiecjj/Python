@@ -90,8 +90,7 @@ class Modem:
             Modulated complex symbols.
 
         """
-        mapfunc = vectorize(lambda i:
-                            self._constellation[bitarray2dec(input_bits[i:i + self.num_bits_symbol])])
+        mapfunc = vectorize(lambda i:  self._constellation[bitarray2dec(input_bits[i:i + self.num_bits_symbol])])
 
         baseband_symbols = mapfunc(arange(0, len(input_bits), self.num_bits_symbol))
 
@@ -142,10 +141,14 @@ class Modem:
 
     def plot_constellation(self):
         """ Plot the constellation """
+        plt.figure(figsize=(10, 10)) # 6，8分别对应宽和高
         plt.scatter(self.constellation.real, self.constellation.imag)
 
+        # bin(i)[2:].rjust(nbits, '0')
         for symb in self.constellation:
-            plt.text(symb.real + .2, symb.imag, self.demodulate(symb, 'hard'))
+            # print(len(self.demodulate(symb, 'hard')))
+            plt.text(symb.real, symb.imag + .2, "".join([str(i) for i in self.demodulate(symb, 'hard')]), ha='center')
+            plt.text(symb.real, symb.imag - .3, symb, ha='center')
 
         plt.title('Constellation')
         plt.grid()

@@ -133,8 +133,8 @@ def main():
             ## 获取当前Client训练得到的参数
             local_parameters = myClients.clients_set[client].localUpdate(args.loc_epochs, args.local_batchsize, loss_func, optim, global_parameters,)
             ## 量化、编码、信道、解码、反量化;
-            local_parameters, ber, fer, avg_iter = Quant_LDPC_BPSK_AWGN_Pipe(com_round = round_idx, client = client, param_W = local_parameters, snr = 2.0 , quantBits = 8, device = args.device)
-            print(f"  {client}: ber = {ber}, fer = {fer}, avg_iter = {avg_iter}")
+            # local_parameters, ber, fer, avg_iter = Quant_LDPC_BPSK_AWGN_Pipe(com_round = round_idx, client = client, param_W = local_parameters, snr = 2.0 , quantBits = 8, device = args.device)
+            # print(f"  {client}: ber = {ber}, fer = {fer}, avg_iter = {avg_iter}")
             ## 对所有的Client返回的参数累加（最后取平均值）
             for key, params in server.global_model.state_dict().items():
                 # sum_parameters[key].add_(local_parameters[key])
