@@ -4,20 +4,6 @@
 
 
 """
-https://github.com/ZJU-IICNS-AICOMM/MIMO-Simulation
-
-https://www.cnblogs.com/MayeZhang/p/12374196.html
-https://www.zhihu.com/question/28698472#!
-https://blog.csdn.net/weixin_39274659/article/details/111477860
-https://zhuyulab.blog.csdn.net/article/details/104434934
-https://blog.csdn.net/UncleWa/article/details/123780502
-
-
-线性天线阵列（Uniform Linear Array，ULA）
-方形天线阵列（Uniform Planar Array，UPA）：
-方位角(azimuth angle)，仰角 (elevation angle)
-
-2D MIMO 通信系统发射天线是线性天线，它形成的波束较宽，只有水平维度的方向，没有垂直维度的方向。这样每条子径包含发射端的出发角AoD（Angle of Departure），接收端的到达角AoA（Angle of Arrival）以及时延三个特征变量。
 
 """
 
@@ -39,28 +25,25 @@ def SVD_Precoding(hmat, power, d):
         ----------
         U: array(Nr, Nr). SVD decoding matrix.
         D: array(*, ). Singular value of hmat.
-        W_svd: array(Nt, d). SVD precoding matrix.
+        V: array(Nt, d). SVD precoding matrix.
     """
     U, D, VH = np.linalg.svd(hmat, full_matrices = True)
     V = VH.conj().T[:, :d]
     V_norm = np.linalg.norm(V, ord = 'fro', ) # np.sqrt(np.trace(V.dot(V.conj().T)))
-    print(V_norm)
+    # print(V_norm)
     V = V * math.sqrt(power) # / V_norm  # power normalization
     return U, D, V
 
 
-def SignalNorm(signal, M, mod_type='qam', denorm=False):
+def SignalNorm(signal, M, mod_type='qam', denorm = False):
     """
         Signal power normalization and de-normalization.
-
         Parameters
-        ----------
-        signal: array(*, ). Signal to be transmitted or received.
-        M: int. Modulation order.
-        mod_type: str, default 'qam'. Type of modulation technique.
-        denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
+            signal: array(*, ). Signal to be transmitted or received.
+            M: int. Modulation order.
+            mod_type: str, default 'qam'. Type of modulation technique.
+            denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
         Returns
-        ----------
     """
     if mod_type == 'qam':
         if M == 8:
@@ -77,21 +60,17 @@ def SignalNorm(signal, M, mod_type='qam', denorm=False):
 
 
 class MIMO_Channel():
-    def __init__(self, Nr = 2, Nt = 4, d = 2, K = 1, P = 1, M = 16, mod_type='qam', Tw = None, Th = None, Rw = None, Rh = None, ):
+    def __init__(self, Nr = 2, Nt = 4, d = 2, P = 1, Tw = None, Th = None, Rw = None, Rh = None, mod_type='qam', ):
         # Base configs
         self.Nt = Nt  # transmit antenna
-        self.K = K  # users
+        # self.K = K  # users
         self.Nr = Nr  # receive antenna
         self.d = d  # data streams, d <= min(Nt/K, Nr)
         self.P = P  # power
-        self.M = M  # modulation order
+        # self.M = M  # modulation order
         self.mod_type = mod_type  # modulation type
 
         # mmWave configs, 发射和接收为ULA
-        # Nt = 32         # T antennas
-        # Nr = 16         # R antennas
-        # self.NtRF = 4  # RF chains at the transmitter
-        # self.NrRF = 4  # RF chains at the receiver
         # 假设有 N_cl 个散射簇，每个散射簇中包含 N_ray 条传播路径
         self.Ncl = 4  # clusters, 族群数目
         self.Nray = 6  # ray, 每个族中的路径数
@@ -100,58 +79,18 @@ class MIMO_Channel():
         self.fd = 3  # maximum Doppler shift
 
         # mmWave configs, 发射和接收为UPA
-        # 假设有 N_cl 个散射簇，每个散射簇中包含 N_ray 条传播路径
-        # self.Ncl = 4   # clusters, 族群数目
-        # self.Nray = 6  # ray, 每个族中的路径数
         ##  Nt == Tw x Th
         self.Tw = Tw    # 发射阵面的天线长度
         self.Th = Th    # 发射阵面的天线宽度
         ##  Nr == Rw x Rh
         self.Rw = Rw    # 接收阵面的天线长度
         self.Rh = Rh    # 接收阵面的天线宽度
+
+        self.H = None
         return
 
-    def trans_procedure(self, Tx_sig, H, V, D, U, snr = 20):
-        """
-            MIMO transmission procedure.
-
-            Parameters
-            ----------
-            Tx_sig: array(num_symbol, ). Modulated symbols.
-            H: array(Nr, Nt). MIMO Channel matrix.
-            V: array(Nt, d). Precoding matrix.
-            D: array(*, ). Singular value of H.
-            U: array(Nr, Nr). decoding matrix.
-            snr: int. SNR at the receiver side.
-            Returns
-            ----------
-            symbol_y: array(num_symbol, ). Decoded symbol at the receiver side.
-        """
-        sigma2 = self.P * 10 ** (-snr / 10)
-        total_num = len(Tx_sig)
-        if total_num % self.d != 0:
-            Tx_sig = np.pad(Tx_sig, (0, self.d - total_num % self.d), constant_values=(0, 0)) # (6668,)
-        tx_times = np.ceil(total_num / self.d).astype(int) # 3334
-        symbol_group = Tx_sig.reshape(self.d, tx_times)  # (2, 3334)
-        print(f"symbol_group power = {np.mean(np.abs(symbol_group)**2)}")
-        symbol_x = SignalNorm(symbol_group, self.M, mod_type=self.mod_type, denorm = False) # (2, 3334)
-        print(f"symbol_x power = {np.mean(np.abs(symbol_x)**2)}")
-
-        noise = np.sqrt(sigma2 / 2) * (np.random.randn(self.Nr, tx_times) + 1j * np.random.randn(self.Nr, tx_times))
-        print(f"noise power = {np.mean(np.abs(noise)**2)}, {sigma2}")
-        y = H.dot(V).dot(symbol_x) + noise  # y = HVx+n, (Nr, tx_times)
-        print(f"y power = {np.mean(np.abs(y)**2)}")
-        y_de = np.diag(1 / D).dot(U.conj().T).dot(y) / np.sqrt(self.P)
-        # print(f"{np.diag(1 / D).shape}, {U.conj().T.shape}")
-        y_de = y_de[:self.d]
-        print(f"y_de power = {np.mean(np.abs(y_de)**2)}")
-        symbol_y = SignalNorm(y_de, self.M, mod_type=self.mod_type, denorm=True).flatten()[:total_num]
-        print(f"symbol_y power = {np.mean(np.abs(symbol_y)**2)}")
-        return symbol_y
-
-
     ## 5G 毫米波通信的信道模型, 发射和接收为 ULA
-    def mmwave_MIMO_ULA2ULA(self, Tx_sig, snr = 10):
+    def mmwave_MIMO_ULA2ULA(self, ):
         """
             MIMO transmission procedure.
             Parameters
@@ -194,17 +133,15 @@ class MIMO_Channel():
                     l += 1
             H = np.sqrt(self.Nt * self.Nr / self.Ncl * self.Nray) * H
             return H
-        H =  H_gen()  # Nr * Nt
-        U, D, V = SVD_Precoding(H, self.P, self.d)
-        print(f"V power = {np.mean(np.abs(V)**2)}")
-        Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
-        return Rx_sig
-
+        self.H =  H_gen()  # Nr * Nt
+        # U, D, V = SVD_Precoding(H, self.P, self.d)
+        # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
+        return
 
     ## 普通的瑞丽衰落信道模型，
     ## 当为ULA到ULA时，self.Nr为接收天线数，self.Nt为发射天线数，
     ## 当为UPA到UPA时，self.Nr为接收阵面的天线总数，self.Nt为发射阵面的总天线数，
-    def circular_gaussian(self, Tx_sig, snr=10):
+    def circular_gaussian(self, ):
         """
             Circular gaussian MIMO channel.
 
@@ -216,27 +153,24 @@ class MIMO_Channel():
             ----------
             Rx_sig: array(num_symbol, ). Decoded symbol at the receiver side.
         """
-        H = 1 / math.sqrt(2) * (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt))
-        U, D, V = SVD_Precoding(H, self.P, self.d)
-        Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
-        return Rx_sig
+        self.H = 1 / math.sqrt(2) * (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt))
+        # U, D, V = SVD_Precoding(H, self.P, self.d)
+        # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
+        return
 
 
-    def mmwave_MIMO_UPA2UPA(self, Tx_sig, snr = 10):
+    def mmwave_MIMO_UPA2UPA(self, ):
         """
             MIMO transmission procedure.
             Parameters
-            ----------
             Tx_sig: array(num_symbol, ). Modulated symbols.
             snr: int. SNR at the receiver side.
             Returns
-            ----------
             symbol_y: array(num_symbol, ). Decoded symbol at the receiver side.
         """
         def theta(W, H, Seed = 100):
             """
             Parameters
-            ----------
             W : int
                 阵面的天线长度.
             H : int
@@ -245,15 +179,12 @@ class MIMO_Channel():
                 DESCRIPTION. The default is 100.
 
             Returns
-            -------
             a: 不同传播路径的空间特征。L x (W*H)
             PHI :
-
             """
             ## 方位角 (azimuth angle) 和 仰角 (elevation angle)
             azimuth   = np.random.uniform(-np.pi / 2, np.pi / 2, size = (int(self.Ncl * self.Nray), ))   # 一共有L = Ncl*Nray条路径, (24,)
             elevation = np.random.uniform(-np.pi / 8, np.pi / 8, size = (int(self.Ncl * self.Nray), ))   # 一共有L = Ncl*Nray条路径, (24,)
-
             a = np.zeros((self.Ncl * self.Nray, int(W*H), 1), dtype=complex)  # (24, 8, 1)
 
 
@@ -286,12 +217,72 @@ class MIMO_Channel():
             H = np.sqrt(self.Tw * self.Th * self.Rw * self.Rh / self.Ncl * self.Nray) * H
             return H
 
+        self.H =  H_gen()  # Nr * Nt
+        # U, D, V = SVD_Precoding(H, self.P, self.d)
+        # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
+        # return H
 
-        H =  H_gen()  # Nr * Nt
-        U, D, V = SVD_Precoding(H, self.P, self.d)
-        Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
+
+    def forward(self, Tx_sig, Tx_data_power = None, SNR_dB = 5,):
+        """
+        Parameters
+        ----------
+        Tx_sig : 二维数组：Nt X 长度L
+            DESCRIPTION.
+        Tx_data_power : 发送功率
+        SNR_dB :
+
+        Returns
+        -------
+        Rx_sig : 接收信号
+
+        """
+        if Tx_data_power == None:
+            Tx_data_power = np.mean(abs(Tx_sig)**2)
+        noise_pwr = Tx_data_power*(10**(-1*SNR_dB/10))
+        # noise = np.sqrt(noise_pwr/2.0) * ( np.random.randn((self.Nr, Tx_sig.shape[-1])) + 1j * np.random.randn((self.Nr, Tx_sig.shape[-1])) )
+        noise = np.sqrt(noise_pwr/2) * (np.random.normal(loc=0.0, scale=1.0, size = (self.Nr, Tx_sig.shape[-1])) + 1j * np.random.normal(loc=0.0, scale=1.0,  size = (self.Nr, Tx_sig.shape[-1])))
+        Rx_sig = self.H @ Tx_sig + noise
         return Rx_sig
-        return
+
+    def SVD_Precoding_transceiver(self, Tx_sig, P, snr = 3):
+        def trans_procedure( Tx_sig, H, V, D, U, snr = 20):
+            """
+                MIMO transmission procedure.
+                Parameters
+                    Tx_sig: array(num_symbol, ). Modulated symbols.
+                    H: array(Nr, Nt). MIMO Channel matrix.
+                    V: array(Nt, d). Precoding matrix.
+                    D: array(*, ). Singular value of H.
+                    U: array(Nr, Nr). decoding matrix.
+                    snr: int. SNR at the receiver side.
+                Returns
+                    symbol_y: array(num_symbol, ). Decoded symbol at the receiver side.
+            """
+            sigma2 = self.P * 10 ** (-snr / 10)
+            total_num = len(Tx_sig)   # 480
+            if total_num % self.d != 0:
+                Tx_sig = np.pad(Tx_sig, (0, self.d - total_num % self.d), constant_values=(0, 0)) # (6668,)
+            tx_times = np.ceil(total_num / self.d).astype(int) # 240
+            symbol_group = Tx_sig.reshape(self.d, tx_times)  # (2, 240)
+            symbol_x = SignalNorm(symbol_group, self.M, mod_type=self.mod_type, denorm = False) # (2, 240)
+
+            noise = np.sqrt(sigma2 / 2) * (np.random.randn(self.Nr, tx_times) + 1j * np.random.randn(self.Nr, tx_times))
+            y = H@V@symbol_x + noise  # y = HVx+n, (Nr, tx_times)  (6, 240)
+
+
+            DigD = np.zeros(self.H.T.shape, dtype = complex)  # (4, 6)
+            DigD[np.diag_indices(self.Nr)] = 1/D    # (4, 6)
+            # y_de = DigD.dot(U.conj().T).dot(y) / np.sqrt(self.P)
+            y_de = DigD@(U.conj().T)@y / np.sqrt(self.P)   # (4, 240))
+            y_de = y_de[:self.d]                           # (2, 240)
+            symbol_y = SignalNorm(y_de, self.M, mod_type=self.mod_type, denorm = True).flatten()[:total_num]
+            return symbol_y
+
+        U, D, V = SVD_Precoding(self.H, self.P, self.d)
+        Rx_sig =  trans_procedure(Tx_sig, self.H, V, D, U, snr)
+        return Rx_sig
+
 
 
 

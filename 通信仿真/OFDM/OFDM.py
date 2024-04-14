@@ -9,7 +9,7 @@ https://zhuanlan.zhihu.com/p/57967971
 https://cloud.tencent.com/developer/article/2351718
 https://blog.csdn.net/qq_34070723/article/details/88926168
 https://zhuanlan.zhihu.com/p/438568996
-
+https://zhuanlan.zhihu.com/p/451929845
 
 
 
@@ -149,23 +149,23 @@ def Modulation(bits):
 def DeModulation(symbol):
     if Modulation_type == "QPSK":
         PSK4 = cpy.PSKModem(4)
-        bits = PSK4.demodulate(symbol, demod_type='hard')
+        bits = PSK4.demodulate(symbol, demod_type = 'hard')
         return bits
     elif Modulation_type == "BPSK":
         BPSK = cpy.PSKModem(2)
-        bits = BPSK.demodulate(symbol, demod_type='hard')
+        bits = BPSK.demodulate(symbol, demod_type = 'hard')
         return bits
     elif Modulation_type == "8PSK":
         PSK8 = cpy.PSKModem(8)
-        bits = PSK8.demodulate(symbol, demod_type='hard')
+        bits = PSK8.demodulate(symbol, demod_type = 'hard')
         return bits
     elif Modulation_type == "QAM16":
         QAM16 = cpy.QAMModem(16)
-        bits = QAM16.demodulate(symbol, demod_type='hard')
+        bits = QAM16.demodulate(symbol, demod_type = 'hard')
         return bits
     elif Modulation_type == "QAM64":
         QAM64 = cpy.QAMModem(64)
-        bits = QAM64.demodulate(symbol, demod_type='hard')
+        bits = QAM64.demodulate(symbol, demod_type = 'hard')
         return bits
 
 

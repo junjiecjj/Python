@@ -162,17 +162,6 @@ fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=20)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Light Nerd Font Complete Mono.otf", size=20)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove SemiLight Nerd Font Complete.otf", size=20)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Regular Nerd Font Complete Mono.otf", size=20)
-
-
-fontt = {'family': 'Times New Roman', 'style': 'normal', 'size': 17}
-fonttX = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
-fonttY = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
-fonttitle = {'style': 'normal', 'size': 17}
-fontt2 = {'style': 'normal', 'size': 19, 'weight': 'bold'}
-fontt3 = {'style': 'normal', 'size': 16, }
 
 
 # FFT变换，慢的版本
@@ -196,7 +185,7 @@ def IFFT(XX):
      return x_p
 
 
-#%%======================================================
+#======================================================
 # ===========  定义时域采样信号 cos(x)
 #======================================================
 
@@ -208,7 +197,7 @@ def IFFT(XX):
 # f1 = 2                             # 第一个余弦信号的频率
 # x =  np.cos(2*np.pi*f1*t)
 
-#%%======================================================
+#======================================================
 # ===========  定义时域采样信号 cos(x + theta)
 #======================================================
 
@@ -221,7 +210,7 @@ def IFFT(XX):
 # x =  np.cos(2*np.pi*f1*t+np.pi/4)
 
 
-#%% ======================================================
+# ======================================================
 # ===========  定义时域采样信号 sin(x) = cos(pi/2 - x)
 # ======================================================
 
@@ -234,54 +223,27 @@ def IFFT(XX):
 # x =  np.sin(2*np.pi*f1*t )
 
 
-#%%======================================================
-# ## ===========  定义时域采样信号 sin(x + np.pi/4)
-# ## ======================================================
+## ======================================================
+## ===========  定义时域采样信号 sin(x + np.pi/4)
+## ======================================================
 
-# Fs = 10                          # 信号采样频率
-# Ts = 1/Fs                        # 采样时间间隔
-# N = 100                           # 采样信号的长度
-# t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
-
-# f1 = 2                             # 第一个余弦信号的频率
-# x =  np.sin(2*np.pi*f1*t + np.pi/4) # = cos(pi/4 - x) = sin(x - pi/4)
-
-
-#%%======================================================
-# ===========  定义时域采样信号 x
-#======================================================
-# Fs = 100                      # 信号采样频率,Hz
-# Ts = 1/Fs                     # 采样时间间隔
-# N = 200                       # 采样信号的长度, N为偶数
-# #N = 201                        # 采样信号的长度, N为奇数
-# t = np.linspace(0, N-1, N)*Ts   # 定义信号采样的时间点 t.
-
-# f1 = 16               # 第一个余弦信号的频率,Hz
-# f2 = 45               # 第二个余弦信号的频率,Hz
-# x = 4.5 + 2.7*np.cos(2*np.pi*f1*t - np.pi/4) + 8.2*np.cos(2*np.pi*f2*t-np.pi/6)      # 定义时域采样信号 x
-
-#%%======================================================
-## ===========  定义时域采样信号 x
-##======================================================
-## 定义时域采样信号 x
-Fs = 1400                     # 信号采样频率
-Ts = 1/Fs                     # 采样时间间隔
-N = 1400                      # 采样信号的长度
+Fs = 10                          # 信号采样频率
+Ts = 1/Fs                        # 采样时间间隔
+N = 100                           # 采样信号的长度
 t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 
-f1 = 200
-f2 = 400
-f3 = 600
-x=  7*np.sin(2*np.pi*f1*t - np.pi/4) + 5*np.sin(2*np.pi*f2*t - np.pi/6) + 3*np.sin(2*np.pi*f3*t - np.pi/3) + 4.5 # (4.5是直流)
+f1 = 2                             # 第一个余弦信号的频率
+x =  np.sin(2*np.pi*f1*t + np.pi/4) # = cos(pi/4 - x) = sin(x - pi/4)
 
-#%%=====================================================
+
+#=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-X = scipy.fftpack.fft(x)
-# X = FFT(x)  # 或者用自己编写的，与 fft 一致
+# X = scipy.fftpack.fft(x)
+X = FFT(x)  # 或者用自己编写的，与 fft 一致
 
 #%% IFFT
-IX = scipy.fftpack.ifft(X)
-# IX = IFFT(X)*N # 自己写的，和 ifft 一样
+# IX = scipy.fftpack.ifft(X)
+IX = IFFT(X)*N # 自己写的，和 ifft 一样
 
 #==================================================
 # 半谱图
@@ -295,25 +257,26 @@ X = X/N               # 将频域序列 X 除以序列的长度 N
 
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if N%2 == 0:
-     Y = X[0 : int(N/2)+1]                 # 提取 X 里正频率的部分,N为偶数
+     Y = X[0 : int(N/2)+1]                # 提取 X 里正频率的部分,N为偶数
      Y[1 : int(N/2)] = 2*Y[1 : int(N/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
 else: #奇数时下面的有问题
-     Y = X[0 : int(N/2)+1]                   # 提取 X 里正频率的部分,N为奇数
+     Y = X[0 : int(N/2)+1]                # 提取 X 里正频率的部分,N为奇数
      Y[1 : int(N/2)+1] = 2*Y[1:int(N/2)+1]   # 将 X 里负频率的部分合并到正频率,N为奇数
 
 # 计算频域序列 Y 的幅值和相角
-A = abs(Y)                        # 计算频域序列 Y 的幅值
-Pha = np.angle(Y,deg=True)        # 计算频域序列 Y 的相角 (弧度制)
+A = abs(Y);                       # 计算频域序列 Y 的幅值
+Pha = np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
 R = np.real(Y)                    # 计算频域序列 Y 的实部
 I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
 #  定义序列 Y 对应的频率刻度
-df = Fs/N                         # 频率间隔
+df = Fs/N;                           # 频率间隔
 if N%2==0:
-     f = np.arange(0, int(N/2)+1)*df      # 频率刻度,N为偶数
+      f = np.arange(0, int(N/2)+1)*df      # 频率刻度,N为偶数
       # f = scipy.fftpack.fftfreq(N, d=1/Fs)[0:int(N/2)+1]
 else:#奇数时下面的有问题
-     f = np.arange(0, int(N/2)+1)*df       # 频率刻度,N为奇数
+     f = np.arange(0, int(N/2)+1)*df     # 频率刻度,N为奇数
+
 
 #==================================================
 # 全谱图
@@ -323,10 +286,10 @@ X1 = scipy.fftpack.fft(x)
 # X1 = FFT(x) # 或者用自己编写的
 
 # 消除相位混乱
-X1[np.abs(X1)<1e-8] = 0   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+X1[np.abs(X1)<1e-8] = 0;   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X1 = X1/N                 # 将频域序列 X 除以序列的长度 N
+X1 = X1/N;            # 将频域序列 X 除以序列的长度 N
 
 #%% 方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
 Y1 = scipy.fftpack.fftshift(X1,)      # 新的频域序列 Y
@@ -346,7 +309,7 @@ if N%2 == 0:
     #或者如下， 方法二：
     f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(N, 1/Fs))
 else:#奇数时下面的有问题
-    f1 = np.arange(-int(N/2),int(N/2)+1)*df    # 频率刻度,N为奇数
+    f1 = np.arange(-int(N/2),int(N/2)+1)*df      # 频率刻度,N为奇数
 
 # #%% 方法三
 # # 将 X 不重新排列,
@@ -384,7 +347,6 @@ df = Fs/N                           # 频率间隔
 if N%2 == 0:
     # 方法一
     f2 = np.arange(0, N)*df      # 频率刻度,N为偶数
-
 
 #====================================== 开始画图 ===============================================
 width = 4

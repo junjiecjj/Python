@@ -13,7 +13,7 @@ https://blog.csdn.net/m0_46303328/article/details/121092456
 import  numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('Agg')
+# matplotlib.use('TkAgg')
 from matplotlib.font_manager import FontProperties
 
 
@@ -73,8 +73,8 @@ for i in ['0','1']:
                  spots.update(tempspot)#存入点的集合
 
 out_fig = plt.gcf()
-out_fig.savefig('/home/jack/snap/16QAM.eps',   bbox_inches = 'tight')
-plt.close()
+# out_fig.savefig('/home/jack/snap/16QAM.eps',   bbox_inches = 'tight')
+plt.show()
 
 
 
@@ -102,7 +102,7 @@ for i in ['0', '1']:
                 tempSpot = {strs: complexSpot}  # 获得数字组合和点
                 spots.update(tempSpot)  # 存入点的集合
 
-fig, axs = plt.subplots(2,1, figsize=(30, 12), constrained_layout=True)
+fig, axs = plt.subplots(2,1, figsize=(12, 6), constrained_layout=True)
 t = np.arange(0, 12.0, 0.5)  # 设置基带信号10的坐标轴，每隔0.5的距离绘制一个基带的二进制信号，一共16个比特
 
 # input
@@ -144,8 +144,8 @@ axs[1].set_xlim(-0.3, 12.5)
 axs[1].set_ylim(-5, 5)
 
 out_fig = plt.gcf()
-out_fig.savefig('/home/jack/snap/16QAM_wave.eps',   bbox_inches = 'tight')
-plt.close()
+# out_fig.savefig('/home/jack/snap/16QAM_wave.eps',   bbox_inches = 'tight')
+plt.show()
 
 
 

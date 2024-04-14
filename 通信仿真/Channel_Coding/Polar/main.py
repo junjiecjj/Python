@@ -33,7 +33,8 @@ polar = Polar(args)
 coderargs = {'codedim':polar.codedim,
              'codelen':polar.codelen,
              'codechk':polar.codechk,
-             'coderate':polar.coderate,}
+             'coderate':polar.coderate
+             }
 source = SourceSink()
 source.InitLog(promargs = args, codeargs = coderargs )
 

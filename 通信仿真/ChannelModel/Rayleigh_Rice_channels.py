@@ -40,19 +40,12 @@ Created on Mon Mar  4 11:56:49 2024
 import numpy as np
 
 def generate_Rayleigh_model(num_channels):
-# 生成实部和虚部
+    # 生成实部和虚部
     real_parts = np.random.normal(0, 1, num_channels)
     imag_parts = np.random.normal(0, 1, num_channels)
     # 合成复数衰落系数数组
     h = np.sqrt(1.0/2.0) * (real_parts + 1j * imag_parts)
     return h
-
-def generate_Rice_model(K_dB, L):
-    K = 10**(K_dB/10.0)
-    # LoS分量：sqrt(K / (K + 1))；NLoS分量：sqrt(1 / (K + 1)) * Ray_model(N)
-    H = (np.sqrt(K) + generate_Rayleigh_model(L))/(np.sqrt(K+1))
-    return H
-
 
 def Rayleigh_channel( L, Tx_data, Tx_data_power = None, SNR_dB = 5, ):
     if Tx_data_power == None:
@@ -62,6 +55,13 @@ def Rayleigh_channel( L, Tx_data, Tx_data_power = None, SNR_dB = 5, ):
     # noise = np.sqrt(1/2) * (np.random.normal(loc=0.0, scale=1.0,  size = (L, )) + 1j * np.random.normal(loc=0.0, scale=1.0,  size = (L, )))
     Rx_data = generate_Rayleigh_model( L ) * Tx_data + noise
     return Rx_data
+
+
+def generate_Rice_model(K_dB, L):
+    K = 10**(K_dB/10.0)
+    # LoS分量：sqrt(K / (K + 1))；NLoS分量：sqrt(1 / (K + 1)) * Ray_model(N)
+    H = (np.sqrt(K) + generate_Rayleigh_model(L))/(np.sqrt(K+1))
+    return H
 
 
 def Rice_channel( L, Tx_data, Tx_data_power = None, SNR_dB = 5, K_dB = 30):

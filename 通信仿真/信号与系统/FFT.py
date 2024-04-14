@@ -12,7 +12,7 @@ import scipy.stats as st
 import scipy.stats as stats
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,7 +25,7 @@ from matplotlib.pyplot import MultipleLocator
 
 
 
-L, N = 10, 100
+L, N = 100, 100
 x = np.ones(L) # 时域离散信号
 X = np.zeros(N) + np.zeros(N)*1j # 频域频谱
 
@@ -40,6 +40,13 @@ x_p = np.zeros(L)
 for n in range(L):
     for k in range(N):
         x_p[n] = x_p[n] + 1/N*X[k]*np.exp(1j*n*k/N*2*np.pi)
+
+
+
+
+
+
+
 
 
 fig = plt.figure(figsize=(10, 10))
