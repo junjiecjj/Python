@@ -102,8 +102,6 @@ sample = stats.norm(loc = loc, scale = scale).rvs(size = [2 ,3], random_state=1)
 print(sample)
 
 
-
-
 #=========================================================================
 # 画出 pdf, cdf
 loc = 1
@@ -151,9 +149,9 @@ print("stats.norm.pdf(np.arange(3),loc = 0,scale = 1) = \n{}".format(stats.norm.
 
 
 # 求累计分布函数指定点的函数值
-print("stats.norm.cdf(0,loc=3,scale=1) = \n{}".format(stats.norm.cdf(0, loc=3, scale=1)))
+print("stats.norm.cdf(0,loc=3,scale=1) = \n{}".format(stats.norm.cdf(0, loc=3, scale = 1)))
 
-print("stats.norm.cdf(0,loc=3,scale=1) = \n{}".format(stats.norm(loc=3, scale=1).cdf(0)))
+print("stats.norm.cdf(0,loc=3,scale=1) = \n{}".format(stats.norm(loc = 3, scale = 1).cdf(0)))
 
 print("stats.norm.cdf(0,0,1) = \n{}".format(stats.norm.cdf(0, 0, 1)))
 
@@ -174,15 +172,15 @@ import matplotlib.pyplot as plt
 s=np.random.normal(1, 2, 50000)
 # 最大最小值
 s_fit = np.linspace(s.min(), s.max(), 100)
-plt.plot(s_fit, stats.norm(1, 2).pdf(s_fit), lw=2, c='b')
+plt.plot(s_fit, stats.norm(1, 2).pdf(s_fit), lw = 2, c='b')
 plt.show()
 
 
 # 通过np生成正太分布
 s=np.random.normal(1, 2, 50000)
 # 最大最小值
-s_fit = np.linspace(s.min(), s.max(),100)
-plt.plot(s_fit, stats.norm.pdf(s_fit, loc=1, scale=2), lw=2, c='r')
+s_fit = np.linspace(s.min(), s.max(), 100)
+plt.plot(s_fit, stats.norm.pdf(s_fit, loc = 1, scale = 2), lw = 2, c = 'r')
 plt.show()
 
 from scipy import stats
