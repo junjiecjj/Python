@@ -522,7 +522,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 plt.xlabel('x')
 plt.ylabel('概率')
 plt.title('卡方分布概率密度函数')
