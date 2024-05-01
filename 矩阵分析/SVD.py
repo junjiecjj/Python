@@ -18,8 +18,8 @@ import numpy as np
 
 
 
-A = np.array([[1,2],[0,0],[0,0]])
-U,S,VH = np.linalg.svd(A)
+A = np.array([[1, 2], [4, 3], [6, 7]])
+U, S, VH = np.linalg.svd(A)
 
 
 
