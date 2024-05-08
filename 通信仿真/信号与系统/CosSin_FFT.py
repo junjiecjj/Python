@@ -243,7 +243,7 @@ X = FFT(x)  # 或者用自己编写的，与 fft 一致
 
 #%% IFFT
 # IX = scipy.fftpack.ifft(X)
-IX = IFFT(X)*N # 自己写的，和 ifft 一样
+IX = IFFT(X) # 自己写的，和 ifft 一样
 
 #==================================================
 # 半谱图

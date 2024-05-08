@@ -88,7 +88,7 @@ X = X/N_sample               # 将频域序列 X 除以序列的长度 N
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if FFTN%2 == 0:
      Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
-     Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+     # Y[1 : int(FFTN/2)] =  Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
 else: #奇数时下面的有问题
      Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为奇数
      Y[1 : int(FFTN/2)+1] = 2*Y[1:int(FFTN/2)+1]   # 将 X 里负频率的部分合并到正频率,N为奇数
@@ -333,12 +333,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 1,1 =========================================
 axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
@@ -357,13 +355,12 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[1,1].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
+# axs[1,1].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
 #======================================= 1,2 =========================================
 axs[1,2].plot(f1, Pha1, color='g', linestyle='-', label='相位',)
 
@@ -382,12 +379,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,2].get_xticklabels() + axs[1,2].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 1,3 =========================================
 axs[1,3].plot(f1, R1, color='cyan', linestyle='-', label='实部',)
@@ -438,7 +433,7 @@ labels = axs[1,4].get_xticklabels() + axs[1,4].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[1,4].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
+# axs[1,4].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
 #%% 频率刻度错位
 #======================================= 2,0 =========================================
 
@@ -466,7 +461,7 @@ labels = axs[2,1].get_xticklabels() + axs[2,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[2,1].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
+# axs[2,1].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
 #======================================= 2,2 =========================================
 axs[2,2].plot(f2, Pha2, color='g', linestyle='-', label='相位',)
 
@@ -514,7 +509,7 @@ labels = axs[2,3].get_xticklabels() + axs[2,3].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[2,3].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
+# axs[2,3].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
 #======================================= 2,4 =========================================
 axs[2,4].plot(f2, I2, color='#FF8C00', linestyle='-', label='虚部',)
 
@@ -537,7 +532,7 @@ labels = axs[2,4].get_xticklabels() + axs[2,4].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[2,4].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
+# axs[2,4].set_xlim(1.8, 2.2)  #拉开坐标轴范围显示投影
 #================================= super ===============================================
 out_fig = plt.gcf()
 #out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
