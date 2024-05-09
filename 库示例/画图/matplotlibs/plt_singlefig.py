@@ -24,11 +24,8 @@ filepath2 = '/home/jack/snap/'
 font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
 
 fontpath = "/usr/share/fonts/truetype/windows/"
-
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-
 ##==========================================  1 ===================================================
 
 X = np.arange(0, 2, 0.1)
@@ -36,8 +33,6 @@ X = np.arange(0, 2, 0.1)
 s1 = np.sin(2*np.pi*X)
 s2 = np.cos(2*np.pi*X)
 s3 = np.tan(2*np.pi*X)
-
-
 
 losslog = np.zeros((len(X),3))
 losslog[:,0] = s1

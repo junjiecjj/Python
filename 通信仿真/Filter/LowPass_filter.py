@@ -68,16 +68,16 @@ ea = np.sqrt(10**(0.1*Rs)-1)
 order  = np.ceil(np.log10(ea/na)/np.log10(Fc/lf))  #巴特沃兹阶数
 Wn = lf*2/Fs
 #---------------------- 低通滤波  -----------------------------
-# 方法1
+### 方法1
 [Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
 # ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
 y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 
-# 方法2
+# ###方法2
 # h = scipy.signal.firwin(int(16), lf, fs = Fs, )
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
-# 方法3
+# ## 方法3
 # h = scipy.signal.firwin(int(20), Wn,  pass_zero = "lowpass" )
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 

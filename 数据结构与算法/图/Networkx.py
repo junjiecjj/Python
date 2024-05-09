@@ -103,7 +103,6 @@ plt.axis('off')
 plt.show()
 
 # 7、多层感知机
-
 import matplotlib.pyplot as plt
 import networkx as nx
 left, right, bottom, top, layer_sizes = .1, .9, .1, .9, [4, 7, 7, 2]

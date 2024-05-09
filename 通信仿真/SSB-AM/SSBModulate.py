@@ -18,7 +18,7 @@ import numpy as np
 import scipy.fftpack as fftp
 import matplotlib
 # matplotlib.use('TkAgg')
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 # from mpl_toolkits.axes_grid1.inset_locator import inset_axes
@@ -85,8 +85,8 @@ plt.ylim(-0.5, 1.5)
 plt.xlabel('时间/(s)')
 plt.ylabel('振幅')
 plt.title('一个周期内的矩形波信号')
-plt.savefig('图1.jpg', dpi=600)
-plt.close()
+# plt.savefig('图1.jpg', dpi=600)
+plt.show()
 
 # 绘制已调信号
 plt.figure(num=2, constrained_layout = True)
@@ -96,8 +96,8 @@ plt.ylim(-1.5, 1.5)
 plt.xlabel('时间/(s)')
 plt.ylabel('振幅')
 plt.title('已调信号')
-plt.savefig('图2.jpg', dpi=600)
-plt.close()
+# plt.savefig('图2.jpg', dpi=600)
+plt.show()
 
 # 绘制基带信号与已调信号的频谱
 plt.figure(num=3, constrained_layout = True)
@@ -107,8 +107,8 @@ plt.legend(('基带信号的频谱', '已调信号的频谱'), loc='upper right'
 plt.xlabel('频率/(Hz)')
 plt.ylabel('振幅')
 plt.title('基带信号和已调信号的归一化频谱')
-plt.savefig('图3.jpg', dpi=600)
-plt.close()
+# plt.savefig('图3.jpg', dpi=600)
+plt.show()
 
 # 绘制基带信号与解调信号
 plt.figure(num=4, constrained_layout = True)
@@ -119,5 +119,5 @@ plt.ylim(-0.5, 1.5)
 plt.xlabel('时间/(s)')
 plt.ylabel('振幅')
 plt.title('基带信号和解调信号')
-plt.savefig('图4.jpg', dpi=600)
-plt.close()
+# plt.savefig('图4.jpg', dpi=600)
+plt.show()
