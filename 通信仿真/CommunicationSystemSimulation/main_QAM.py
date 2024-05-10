@@ -44,105 +44,105 @@ f0 = 20                          # 正弦波的频率
 f1 = 60
 # f2 = 40
 
-t = np.arange(0, 10/f0, Ts) # 定义信号采样的时间点 t
+t = np.arange(0, 1/f0, Ts) # 定义信号采样的时间点 t
 x = 1/3 * np.sin(2*np.pi*f0*t ) + 2/3 * np.sin(2*np.pi*f1*t )
 
-#%% 原始信号的频谱
-# FFTN = x.size
-FFTN = 1000000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-X = scipy.fftpack.fft(x, n = FFTN)
+if 1:
+    #%% 原始信号的频谱
+    # FFTN = x.size
+    FFTN = 1000000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+    # 对时域采样信号, 执行快速傅里叶变换 FFT
+    X = scipy.fftpack.fft(x, n = FFTN)
 
-#============
-# 半谱
-#============
+    #============
+    # 半谱
+    #============
 
-# 消除相位混乱
-X[np.abs(X) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+    # 消除相位混乱
+    X[np.abs(X) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X = X/x.size               # 将频域序列 X 除以序列的长度 N
+    # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+    X = X/x.size               # 将频域序列 X 除以序列的长度 N
 
-# 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
-if FFTN%2 == 0:
-     Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
-     Y[1 : int(FFTN/2)] = 2 * Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+    # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
+    if FFTN%2 == 0:
+          Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
+          Y[1 : int(FFTN/2)] = 2 * Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
 
-# 计算频域序列 Y 的幅值和相角
-A = abs(Y);                       # 计算频域序列 Y 的幅值
-Pha = np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
-R = np.real(Y)                    # 计算频域序列 Y 的实部
-I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+    # 计算频域序列 Y 的幅值和相角
+    A = abs(Y);                       # 计算频域序列 Y 的幅值
+    Pha = np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
+    R = np.real(Y)                    # 计算频域序列 Y 的实部
+    I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
-#  定义序列 Y 对应的频率刻度
-df = Fs/FFTN                           # 频率间隔
-if FFTN%2==0:
-      f = np.arange(0, int(FFTN/2)+1)*df      # 频率刻度,N为偶数
-      # f = scipy.fftpack.fftfreq(N, d=1/Fs)[0:int(N/2)+1]
+    #  定义序列 Y 对应的频率刻度
+    df = Fs/FFTN                           # 频率间隔
+    if FFTN%2==0:
+          f = np.arange(0, int(FFTN/2)+1)*df      # 频率刻度,N为偶数
+          # f = scipy.fftpack.fftfreq(N, d=1/Fs)[0:int(N/2)+1]
 
-width = 6
-high = 5
-horvizen = 2
-vertical = 1
-fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
+    width = 6
+    high = 5
+    horvizen = 2
+    vertical = 1
+    fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
 
-## s(t)
-axs[0].plot(t, x, label = 'transmit', linewidth = 2, color = 'b',  )
+    ## s(t)
+    axs[0].plot(t, x, label = 'transmit', linewidth = 2, color = 'b',  )
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-axs[0].set_xlabel('Time(s)',fontproperties=font)
-axs[0].set_ylabel('Wave',fontproperties=font)
-# axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
-frame1 = legend1.get_frame()
-frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
+    font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+    axs[0].set_xlabel('Time(s)',fontproperties=font)
+    axs[0].set_ylabel('Wave',fontproperties=font)
+    # axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
+    font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+    #  edgecolor='black',
+    # facecolor = 'y', # none设置图例legend背景透明
+    legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
+    axs[0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
+    axs[0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
+    axs[0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
+    axs[0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
 
-axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(25) for label in labels] #刻度值字号
-axs[0].grid( linestyle = '--', linewidth = 0.5, )
+    axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
+    labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels] #刻度值字号
+    axs[0].grid( linestyle = '--', linewidth = 0.5, )
 
-##  FFT s(t)
-axs[1].plot(f, A, label = 'Amplitude', linewidth = 2, color = 'b',  )
+    ##  FFT s(t)
+    axs[1].plot(f, A, label = 'Amplitude', linewidth = 2, color = 'b',  )
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-axs[1].set_xlabel('Frequancy(Hz)',fontproperties=font)
-axs[1].set_ylabel('|Amp|',fontproperties=font)
+    font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+    axs[1].set_xlabel('Frequancy(Hz)',fontproperties=font)
+    axs[1].set_ylabel('|Amp|',fontproperties=font)
 
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0,)
-frame1 = legend1.get_frame()
-frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
+    font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+    #  edgecolor='black',
+    # facecolor = 'y', # none设置图例legend背景透明
+    legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0,)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
+    axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
+    axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
+    axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
+    axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
 
-axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(25) for label in labels] #刻度值字号
-axs[1].grid( linestyle = '--', linewidth = 0.5, )
+    axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
+    labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels] #刻度值字号
+    axs[1].grid( linestyle = '--', linewidth = 0.5, )
 
-
-out_fig = plt.gcf()
-out_fig.savefig('RawSig.eps', )
-out_fig.savefig('RawSig.png', dpi=1000,)
-plt.show()
+    out_fig = plt.gcf()
+    out_fig.savefig('RawSig.eps', )
+    out_fig.savefig('RawSig.png', dpi=1000,)
+    plt.show()
 
 
 
@@ -178,95 +178,95 @@ h = rcosdesign(beta, span, sps, 'sqrt')
 ## 脉冲成型
 s_t = scipy.signal.lfilter(h, 1, I_n) # 进行滤波
 
-#%% 基带信号 s(t) 频谱
-t_st = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
-# FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-FFTs_t = scipy.fftpack.fft(s_t)
-# 消除相位混乱
-FFTs_t[np.abs(FFTs_t) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+if 1:
+    #%% 基带信号 s(t) 频谱
+    t_st = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
+    # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+    # 对时域采样信号, 执行快速傅里叶变换 FFT
+    FFTs_t = scipy.fftpack.fft(s_t)
+    # 消除相位混乱
+    FFTs_t[np.abs(FFTs_t) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-FFTN = FFTs_t.size
-# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-FFTs_t = FFTs_t/FFTN               # 将频域序列 X 除以序列的长度 N
+    FFTN = FFTs_t.size
+    # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+    FFTs_t = FFTs_t/FFTN               # 将频域序列 X 除以序列的长度 N
 
-assert FFTs_t.size %2 == 0
-Y = FFTs_t[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
-Y[1 : int(FFTN/2)] =  2 * FFTs_t[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+    assert FFTs_t.size %2 == 0
+    Y = FFTs_t[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
+    Y[1 : int(FFTN/2)] =  2 * FFTs_t[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
 
-# 计算频域序列 Y 的幅值和相角
-A = abs(Y);                       # 计算频域序列 Y 的幅值
-Pha = np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
-R = np.real(Y)                    # 计算频域序列 Y 的实部
-I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+    # 计算频域序列 Y 的幅值和相角
+    A = abs(Y);                       # 计算频域序列 Y 的幅值
+    Pha = np.angle(Y,deg=True);       # 计算频域序列 Y 的相角 (弧度制)
+    R = np.real(Y)                    # 计算频域序列 Y 的实部
+    I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
-#  定义序列 Y 对应的频率刻度
-df = symbol_rate * sps/FFTN                           # 频率间隔
-f = np.arange(0, int(FFTN/2)+1)*df      # 频率刻度,N为偶数
+    #  定义序列 Y 对应的频率刻度
+    df = symbol_rate * sps/FFTN                           # 频率间隔
+    f = np.arange(0, int(FFTN/2)+1)*df      # 频率刻度,N为偶数
 
-width = 6
-high = 5
-horvizen = 2
-vertical = 1
-fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
+    width = 6
+    high = 5
+    horvizen = 2
+    vertical = 1
+    fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
 
-## s(t)
-axs[0].plot(t_st, s_t, label = 'transmit', linewidth = 2, color = 'b',  )
+    ## s(t)
+    axs[0].plot(t_st, s_t, label = 'x(t)', linewidth = 2, color = 'b',  )
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-axs[0].set_xlabel('Time(s)',fontproperties=font)
-axs[0].set_ylabel('s(t)',fontproperties=font)
-# axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
-frame1 = legend1.get_frame()
-frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
+    font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+    axs[0].set_xlabel('Time(s)',fontproperties=font)
+    axs[0].set_ylabel('s(t)',fontproperties=font)
+    # axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
+    font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+    #  edgecolor='black',
+    # facecolor = 'y', # none设置图例legend背景透明
+    legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
+    axs[0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
+    axs[0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
+    axs[0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
+    axs[0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
 
-axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(25) for label in labels] #刻度值字号
-axs[0].grid( linestyle = '--', linewidth = 0.5, )
+    axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
+    labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels] #刻度值字号
+    axs[0].grid( linestyle = '--', linewidth = 0.5, )
 
-##  FFT s(t)
-axs[1].plot(f, A, label = 'Amp of s(t)', linewidth = 2, color = 'b',  )
+    ##  FFT s(t)
+    axs[1].plot(f, A, label = 'Amp of s(t)', linewidth = 2, color = 'b',  )
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-axs[1].set_xlabel('Frequancy(Hz)',fontproperties=font)
-axs[1].set_ylabel('|Amp|',fontproperties=font)
-# axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0,)
-frame1 = legend1.get_frame()
-frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
+    font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+    axs[1].set_xlabel('Frequancy(Hz)',fontproperties=font)
+    axs[1].set_ylabel('|Amp|',fontproperties=font)
+    # axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
+    font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+    #  edgecolor='black',
+    # facecolor = 'y', # none设置图例legend背景透明
+    legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0,)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
+    axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
+    axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
+    axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
+    axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
 
-axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(25) for label in labels] #刻度值字号
-axs[1].grid( linestyle = '--', linewidth = 0.5, )
+    axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
+    labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels] #刻度值字号
+    axs[1].grid( linestyle = '--', linewidth = 0.5, )
 
-
-out_fig = plt.gcf()
-out_fig.savefig('BaseBand.eps', )
-out_fig.savefig('BaseBand.png', dpi=1000,)
-plt.show()
+    out_fig = plt.gcf()
+    out_fig.savefig('BaseBand.eps', )
+    out_fig.savefig('BaseBand.png', dpi=1000,)
+    plt.show()
 
 
 
@@ -277,7 +277,7 @@ s_RF = s_t * np.exp(1j * 2 * np.pi * fc * time / fs)
 source = SourceSink()
 source.InitLog( )
 #%% 信道
-ebn0  = np.arange(-10, 12)
+ebn0  = np.arange(-10, 4)
 SNR = ebn0 - 10 * np.log10(0.5*16);
 # SNR = np.arange(-10, 1)
 for idx, snr in enumerate(SNR):

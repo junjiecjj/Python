@@ -53,7 +53,7 @@ def IFFT(XX):
      x_p = np.zeros(N, dtype = complex)
      for n in range(N):
           for k in range(N):
-               x_p[n] = x_p[n] + 1/N*X[k]*np.exp(1j*2*np.pi*n*k/N)
+               x_p[n] = x_p[n] + 1/N*XX[k]*np.exp(1j*2*np.pi*n*k/N)
      return x_p
 
 
@@ -69,33 +69,33 @@ t = np.linspace(0, N_sample-1, N_sample)*Ts    # 定义信号采样的时间点 
 
 x =  np.zeros(10001)
 
-N = x.size
+N_sample = x.size
 
-x[x.size//2] = 1
+x[x.size//2] = 10
 
 
 #=====================================================
+FFTN = 20000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-X = scipy.fftpack.fft(x)
+# X = scipy.fftpack.fft(x, n = FFTN)
 # X = FFT(x)  # 或者用自己编写的，与 fft 一致
 
 #%% IFFT
-IX = scipy.fftpack.ifft(X)
-# IX = IFFT(X)*N # 自己写的，和 ifft 一样
-
-
+IX = scipy.fftpack.ifft(scipy.fftpack.fft(x))
+# IX = IFFT(X)*N
+# 自己写的，和 ifft 一样
 #==================================================
 # 全谱图
 #==================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-X1 = scipy.fftpack.fft(x)
+X1 = scipy.fftpack.fft(x, n = FFTN)
 # X1 = FFT(x) # 或者用自己编写的
 
 # 消除相位混乱
 X1[np.abs(X1)<1e-8] = 0;   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X1 = X1/N            # 将频域序列 X 除以序列的长度 N
+X1 = X1/N_sample            # 将频域序列 X 除以序列的长度 N
 
 #%% 方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
 Y1 = scipy.fftpack.fftshift(X1,)      # 新的频域序列 Y
@@ -108,14 +108,14 @@ R1 = np.real(Y1)                    # 计算频域序列 Y 的实部
 I1 = np.imag(Y1)                    # 计算频域序列 Y 的虚部
 
 ###  定义序列 Y 对应的频率刻度
-df = Fs/N                           # 频率间隔
-if N%2 == 0:
+df = Fs/FFTN                           # 频率间隔
+if FFTN%2 == 0:
     # 方法一
-    f1 = np.arange(-int(N/2),int(N/2))*df      # 频率刻度,N为偶数
+    f1 = np.arange(-int(FFTN/2),int(FFTN/2))*df      # 频率刻度,N为偶数
     #或者如下， 方法二：
     # f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(N, 1/Fs))
 else:#奇数时下面的有问题
-    f1 = np.arange(-int(N/2),int(N/2)+1)*df      # 频率刻度,N为奇数
+    f1 = np.arange(-int(FFTN/2),int(FFTN/2)+1)*df      # 频率刻度,N为奇数
 
 
 

@@ -233,12 +233,12 @@ N = 100                           # 采样信号的长度
 t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 
 f1 = 2                             # 第一个余弦信号的频率
-x =  np.sin(2*np.pi*f1*t + np.pi/4) # = cos(pi/4 - x) = sin(x - pi/4)
+x =  np.cos(2*np.pi*f1*t + np.pi/4) # = cos(x) = sin(pi/2 - x)
 
 
 #=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+FFTN = N        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 X = scipy.fftpack.fft(x, n = FFTN)
 # X = FFT(x, n = FFTN)  # 或者用自己编写的，与 fft 一致
 

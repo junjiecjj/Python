@@ -106,8 +106,6 @@ f=np.arange(0,int(N/2)+1)*df;      # 频率刻度
 np.fft.fftfreq(N, d=1/Fs)的前半段作为横轴
 产生f作为横轴，画图;
 
-
-
 在画全谱图时:
 第一种方法：
 将fft结果序列/N(除以N)，然后fftshift后作为纵轴, 然后：
@@ -272,7 +270,7 @@ t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 f1 = 200
 f2 = 400
 f3 = 600
-x=  7*np.sin(2*np.pi*f1*t - np.pi/4) + 5*np.sin(2*np.pi*f2*t - np.pi/6) + 3*np.sin(2*np.pi*f3*t - np.pi/3) + 4.5 # (4.5是直流)
+x=  7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.sin(2*np.pi*f3*t + np.pi/3) #+ 4.5 # (4.5是直流)
 
 #%%=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
@@ -303,7 +301,7 @@ else: #奇数时下面的有问题
 
 # 计算频域序列 Y 的幅值和相角
 A = abs(Y)                        # 计算频域序列 Y 的幅值
-Pha = np.angle(Y,deg=True)        # 计算频域序列 Y 的相角 (弧度制)
+Pha = np.angle(Y, deg=1)        # 计算频域序列 Y 的相角 (弧度制)
 R = np.real(Y)                    # 计算频域序列 Y 的实部
 I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
