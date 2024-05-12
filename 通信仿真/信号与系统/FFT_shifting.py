@@ -41,11 +41,9 @@ t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 ## 基带信号
 x = 7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.cos(2*np.pi*f3*t + np.pi/3) #+ 4.5 # (4.5是直流)
 ## 载波
-# s = np.exp(1j * 2 * np.pi * fs * t)
-s = np.cos(2 * np.pi * fs * t)
+s = np.exp(1j * 2 * np.pi * fs * t)
+# s = np.cos(2 * np.pi * fs * t)
 h = x * s
-
-
 
 #%%======================= x ==============================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
@@ -56,52 +54,47 @@ X = scipy.fftpack.fft(x)
 IX = scipy.fftpack.ifft(X)
 # IX = IFFT(X)*N # 自己写的，和 ifft 一样
 
-
 # 消除相位混乱
 X[np.abs(X) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
 X = X/N               # 将频域序列 X 除以序列的长度 N
 
-
 #==================================================
 # 半谱图
 #==================================================
 
-
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if N%2 == 0:
-     Y = X[0 : int(N/2)+1]                 # 提取 X 里正频率的部分,N为偶数
-     Y[1 : int(N/2)] = 2*Y[1 : int(N/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+     Y = X[0 : int(N/2)+1].copy()                 # 提取 X 里正频率的部分,N为偶数
+     Y[1 : int(N/2)] = 2*Y[1 : int(N/2)].copy()   # 将 X 里负频率的部分合并到正频率,N为偶数
 
 # 计算频域序列 Y 的幅值和相角
 A = abs(Y)                        # 计算频域序列 Y 的幅值
-Pha = np.angle(Y, deg=1)        # 计算频域序列 Y 的相角 (弧度制)
+Pha = np.angle(Y, deg = 1)        # 计算频域序列 Y 的相角 (弧度制)
 R = np.real(Y)                    # 计算频域序列 Y 的实部
 I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
 #  定义序列 Y 对应的频率刻度
 df = Fs/N                         # 频率间隔
-if N%2==0:
+if N%2 == 0:
      f = np.arange(0, int(N/2)+1)*df      # 频率刻度,N为偶数
       # f = scipy.fftpack.fftfreq(N, d=1/Fs)[0:int(N/2)+1]
 
 #==================================================
 # 全谱图
 #==================================================
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-X1 = scipy.fftpack.fft(x)
-# X1 = FFT(x) # 或者用自己编写的
+# # 对时域采样信号, 执行快速傅里叶变换 FFT
+# X1 = scipy.fftpack.fft(x)
 
-# 消除相位混乱
-X1[np.abs(X1)<1e-8] = 0   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+# # 消除相位混乱
+# X1[np.abs(X1)<1e-8] = 0   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X1 = X1/N                 # 将频域序列 X 除以序列的长度 N
+# # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+# X1 = X1/N                 # 将频域序列 X 除以序列的长度 N
 
 #  方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
-Y1 = scipy.fftpack.fftshift(X1,)      # 新的频域序列 Y
-#Y1=X1
+Y1 = scipy.fftpack.fftshift(X,)      # 新的频域序列 Y
 
 # 计算频域序列 Y 的幅值和相角
 A1 = abs(Y1);                       # 计算频域序列 Y 的幅值
@@ -117,8 +110,6 @@ if N%2 == 0:
     #或者如下， 方法二：
     f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(N, 1/Fs))
 
-
-
 #%%======================= s ==============================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
 S = scipy.fftpack.fft(s)
@@ -127,21 +118,19 @@ S = scipy.fftpack.fft(s)
 #  IFFT
 IS = scipy.fftpack.ifft(s)
 # IX = IFFT(X)*N # 自己写的，和 ifft 一样
-
-#==================================================
-# 半谱图
-#==================================================
-
 # 消除相位混乱
 S[np.abs(S) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
 S = S/N               # 将频域序列 X 除以序列的长度 N
 
+#==================================================
+# 半谱图
+#==================================================
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if N%2 == 0:
-     SY = S[0 : int(N/2)+1]                 # 提取 X 里正频率的部分,N为偶数
-     # SY[1 : int(N/2)] = 2*SY[1 : int(N/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+     SY = S[0 : int(N/2)+1].copy()                 # 提取 X 里正频率的部分,N为偶数
+     # SY[1 : int(N/2)] = 2*SY[1 : int(N/2)].copy()   # 将 X 里负频率的部分合并到正频率,N为偶数
 
 # 计算频域序列 Y 的幅值和相角
 AS = abs(SY)                        # 计算频域序列 Y 的幅值
@@ -158,18 +147,9 @@ if N%2==0:
 #==================================================
 # 全谱图
 #==================================================
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-S1 = scipy.fftpack.fft(s)
-# X1 = FFT(x) # 或者用自己编写的
-
-# 消除相位混乱
-S1[np.abs(S1)<1e-8] = 0   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
-
-# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-S1 = S1/N                 # 将频域序列 X 除以序列的长度 N
 
 #  方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
-SY1 = scipy.fftpack.fftshift(S1,)      # 新的频域序列 Y
+SY1 = scipy.fftpack.fftshift(S,)      # 新的频域序列 Y
 #Y1=X1
 
 # 计算频域序列 Y 的幅值和相角
@@ -207,8 +187,8 @@ H = H/N               # 将频域序列 X 除以序列的长度 N
 
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if N%2 == 0:
-     HY = H[0 : int(N/2)+1]                 # 提取 X 里正频率的部分,N为偶数
-     # SY[1 : int(N/2)] = 2*SY[1 : int(N/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+     HY = H[0 : int(N/2)+1].copy()                 # 提取 X 里正频率的部分,N为偶数
+     # SY[1 : int(N/2)] = 2*SY[1 : int(N/2)].copy()   # 将 X 里负频率的部分合并到正频率,N为偶数
 
 # 计算频域序列 Y 的幅值和相角
 AH = abs(HY)                        # 计算频域序列 Y 的幅值
@@ -388,8 +368,8 @@ font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
 #font3  = {'family':'Times New Roman','style':'normal','size':22}
 #font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
 axs[1,0].set_xlabel(r'时间(s)', fontproperties=font3)
-axs[1,0].set_ylabel(r'逆傅里叶变换信号值', fontproperties=font3)
-axs[1,0].set_title('s信号值', fontproperties=font3)
+axs[1,0].set_ylabel(r'载波', fontproperties=font3)
+# axs[1,0].set_title('s信号值', fontproperties=font3)
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
 font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
@@ -506,8 +486,8 @@ font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
 #font3  = {'family':'Times New Roman','style':'normal','size':22}
 #font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
 axs[2,0].set_xlabel(r'时间(s)', fontproperties=font3)
-axs[2,0].set_ylabel(r'逆傅里叶变换信号值', fontproperties=font3)
-axs[2,0].set_title('s信号值', fontproperties=font3)
+axs[2,0].set_ylabel(r'已调信号', fontproperties=font3)
+# axs[2,0].set_title('已调信号', fontproperties=font3)
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
 font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)

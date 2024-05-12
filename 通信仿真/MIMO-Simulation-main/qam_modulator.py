@@ -237,7 +237,7 @@ def draw_ber_curve(tx_bits, M, snr_range, channel='all'):
     for snr in snr_range:
         if channel == 'awgn' or channel == 'all':
             rx_awgn = qam_demapper(channel_Awgn(tx_symbols, snr=snr), demapping_table)
-            ber_awgn.append(bit_error_rate(tx_bits, rx_awgn))
+            ber_awgn.append(bit_error_rate(tx_bits, rx_awgn[: len(tx_bits)]))
             ber_awgn_the.append(4*(1-1./math.sqrt(M))*q_func(math.sqrt(3*(10**(snr/10.))/(M-1)))/math.log2(M))
         if channel == 'rayleigh' or channel == 'all':
             rx_rayleigh = qam_demapper(channel_Rayleigh(tx_symbols, snr=snr), demapping_table)
@@ -282,14 +282,14 @@ def draw_ber_curve_smooth(tx_bits, M, snr_range, channel='all'):
     for snr in snr_range:
         if channel == 'awgn' or channel == 'all':
             rx_awgn = qam_demapper(channel_Awgn(tx_symbols, snr=snr), demapping_table)
-            ber_awgn.append(bit_error_rate(tx_bits, rx_awgn))
+            ber_awgn.append(bit_error_rate(tx_bits, rx_awgn[: len(tx_bits)]))
             ber_awgn_the.append(4*(1-1./math.sqrt(M))*q_func(math.sqrt(3*(10**(snr/10.))/(M-1)))/math.log2(M))
         if channel == 'rayleigh' or channel == 'all':
             rx_rayleigh = qam_demapper(channel_Rayleigh(tx_symbols, snr=snr), demapping_table)
-            ber_rayleigh.append(bit_error_rate(tx_bits, rx_rayleigh))
+            ber_rayleigh.append(bit_error_rate(tx_bits, rx_rayleigh[: len(tx_bits)]))
         if channel == 'rician' or channel == 'all':
             rx_rician = qam_demapper(channel_Rician(tx_symbols, snr=snr), demapping_table)
-            ber_rician.append(bit_error_rate(tx_bits, rx_rician))
+            ber_rician.append(bit_error_rate(tx_bits, rx_rician[: len(tx_bits)]))
     if channel == 'awgn' or channel == 'all':
         ber_awgn = gaussian_filter1d(ber_awgn, sigma=15)
         ber_awgn_the = gaussian_filter1d(ber_awgn_the, sigma=15)
