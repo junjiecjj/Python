@@ -233,8 +233,8 @@ def draw_trx_constellation(syms, map_table, tx = True, snr = None, channel = Non
         name = f"transmit_constellation_{modu_type}"
     else:
         name = f"recv_constellation_{modu_type}_snr={snr}_{channel}"
-    out_fig.savefig(f'./figures/{modu_type}/{name}.eps', )
-    out_fig.savefig(f'./figures/{modu_type}/{name}.png', dpi = 1000,)
+    # out_fig.savefig(f'./figures/{modu_type}/{name}.eps', )
+    # out_fig.savefig(f'./figures/{modu_type}/{name}.png', dpi = 1000,)
     plt.show()
 
     return

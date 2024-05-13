@@ -5,9 +5,29 @@ Created on Wed May  8 21:15:04 2024
 
 @author: jack
 
-上变频和脉冲成型是分离的，下变频和匹配滤波也是分离的.
+上变频和脉冲成型是一起的，下变频和匹配滤波也是一起的, upfirdn
+
+Eb/N0-> SNR:
+    https://wenku.csdn.net/answer/7umbbeqdrq#:~:text=%E5%B0%86SNR%E8%BD%AC%E6%8D%A2%E4%B8%BAEb%2FN0%EF%BC%8C%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E4%BB%A5%E4%B8%8B%E5%85%AC%E5%BC%8F%EF%BC%9A%20Eb%2FN0%20%3D%20SNR,%2F%20%28log2%20%28M%29%20%2A%20R%29
+
+https://blog.csdn.net/fengshao1370/article/details/106059388
+
+转换为dB单位则为：
+对于复信号： Es/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB);
+对于实信号：Es/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB);
+    N0:噪声的单边功率谱密度
+    Rb：比特率，即每秒传输多少个bit的二进制数
+    Rs：符号率，每秒传输多少个符号的数据
+    K：每个符号所承载的二进制bit数。
+    Tsym：符号周期，每个符号持续的时间，易知Tsym = 1/Rs，单位秒。
+    Tsamp：采样周期，每个采样点持续的时间，Tsamp = 1/Fs，其中Fs为采样率。
+    Bn：噪声带宽，单位赫兹，对于awgn噪声，有 Bn=Fs=1/Tsamp 。
+    sps：每个符号的采样个数，显然sps = Fs/Rs
+
+Tsym/Tsamp = Fs/Rs = sps
 
 """
+
 ## 系统库
 import numpy as np
 import scipy
@@ -29,7 +49,7 @@ fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
-Modulation_type = 'QAM16'
+Modulation_type = 'BPSK'
 savedir = f"./figures/{Modulation_type}/"
 os.makedirs(savedir, exist_ok = True)
 
@@ -66,9 +86,6 @@ if isplot:
     # 对时域采样信号, 执行快速傅里叶变换 FFT
     X = scipy.fftpack.fft(x, n = FFTN)
 
-    #============
-    # 半谱
-    #============
     # 消除相位混乱
     X[np.abs(X) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
@@ -150,8 +167,8 @@ if isplot:
     axs[1].grid( linestyle = '--', linewidth = 0.5, )
 
     out_fig = plt.gcf()
-    out_fig.savefig(savedir + 'RawSig.eps', )
-    out_fig.savefig(savedir + 'RawSig.png', dpi=1000,)
+    # out_fig.savefig(savedir + 'RawSig.eps', )
+    # out_fig.savefig(savedir + 'RawSig.png', dpi=1000,)
     plt.show()
 
 
@@ -177,34 +194,37 @@ elif Modulation_type == "QAM64":
 map_table = {}
 for idx, posi in enumerate(modem.constellation):
     map_table[idx] = posi
-draw_mod_constellation(map_table, modu_type = Modulation_type)
+# draw_mod_constellation(map_table, modu_type = Modulation_type)
 
 symbol = modem.modulate(Tx_bits)
 
 ## 发送符号的星座图
-draw_trx_constellation(symbol, map_table, tx = 1, modu_type = Modulation_type)
+# draw_trx_constellation(symbol, map_table, tx = 1, modu_type = Modulation_type)
 
-#%% 插值
-I_n = np.zeros(sps * symbol.size, dtype = complex)
-I_n[::sps] = symbol
 
-#%% 脉冲成型滤波器
-beta = 0.5        #   滚降因子,可调整
+#%% 设置脉冲成型滤波器
+beta = 0.5        # 滚降因子,可调整
 span = 6
 h = rcosdesign(beta, span, sps, 'sqrt')
-## 脉冲成型
-s_t = scipy.signal.lfilter(h, 1, I_n) # 进行滤波
+
+## 脉冲成型 + 上变频-> 基带信号
+s_t = scipy.signal.upfirdn(h, symbol, sps)
 
 #%% 基带信号 s(t) 频谱
 if isplot:
+    if s_t.size % 2 == 1:
+        FFTN = s_t.size + 1        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+    else:
+        FFTN = s_t.size
+    # FFTN = 1000000
     t_st = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
-    # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+
     # 对时域采样信号, 执行快速傅里叶变换 FFT
-    FFTs_t = scipy.fftpack.fft(s_t)
+    FFTs_t = scipy.fftpack.fft(s_t, n = FFTN)
     # 消除相位混乱
     FFTs_t[np.abs(FFTs_t) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-    FFTN = FFTs_t.size
+    # FFTN = FFTs_t.size
     # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
     FFTs_t = FFTs_t/FFTN               # 将频域序列 X 除以序列的长度 N
 
@@ -219,7 +239,7 @@ if isplot:
     I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
     # 定义序列 Y 对应的频率刻度
-    df = symbol_rate * sps /FFTN             # 频率间隔
+    # df = symbol_rate * sps /FFTN             # 频率间隔
     # 方法一
     # f = np.arange(-int(FFTN/2), int(FFTN/2))*df      # 频率刻度,N为偶数
     #或者如下， 方法二：
@@ -282,8 +302,8 @@ if isplot:
     axs[1].grid(linestyle = '--', linewidth = 0.5, )
 
     out_fig = plt.gcf()
-    out_fig.savefig(savedir + f's(t)_{Modulation_type}.eps', )
-    out_fig.savefig(savedir + f's(t)_{Modulation_type}.png', dpi = 1000,)
+    # out_fig.savefig(savedir + f's(t)_{Modulation_type}.eps', )
+    # out_fig.savefig(savedir + f's(t)_{Modulation_type}.png', dpi = 1000,)
     plt.show()
 
 #%% 载波
@@ -291,17 +311,22 @@ time = np.arange(s_t.size)/ fs
 s_fc = np.exp(1j * 2 * np.pi * fc * time)
 s_RF = s_t * s_fc
 
+
 #%% 载波频谱
 if isplot:
     ##========================================== 载波 ===========================================
     # t_st = np.arange(0, s_RF.size) * (1/(symbol_rate * sps))
-    # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+    if s_fc.size % 2 == 1:
+        FFTN = s_fc.size + 1        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+    else:
+        FFTN = s_fc.size
+    # FFTN = 1000000
     # 对时域采样信号, 执行快速傅里叶变换 FFT
-    FFTs_fc = scipy.fftpack.fft(s_fc)
+    FFTs_fc = scipy.fftpack.fft(s_fc, n = FFTN)
     # 消除相位混乱
     FFTs_fc[np.abs(FFTs_fc) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-    FFTN = FFTs_fc.size
+    # FFTN = FFTs_fc.size
     # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
     FFTs_fc = FFTs_fc/FFTN               # 将频域序列 X 除以序列的长度 N
 
@@ -328,7 +353,7 @@ if isplot:
     fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
 
     ## fc(t)
-    axs[0].plot(time, s_fc, label = 's(t)', linewidth = 2, color = 'b',  )
+    axs[0].plot(t_st, s_fc, label = 's(t)', linewidth = 2, color = 'b',  )
 
     font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
     axs[0].set_xlabel('Time(s)',fontproperties=font)
@@ -380,8 +405,8 @@ if isplot:
     axs[1].grid(linestyle = '--', linewidth = 0.5, )
 
     out_fig = plt.gcf()
-    out_fig.savefig(savedir + 'Carrier.eps', )
-    out_fig.savefig(savedir + 'Carrier.png', dpi = 1000,)
+    # out_fig.savefig(savedir + 'Carrier.eps', )
+    # out_fig.savefig(savedir + 'Carrier.png', dpi = 1000,)
     plt.show()
 
 
@@ -390,11 +415,16 @@ if isplot:
 if isplot:
     ##========================================== 已调信号 ===========================================
     # 对时域采样信号, 执行快速傅里叶变换 FFT
-    FFTs_rf = scipy.fftpack.fft(s_RF)
+    if s_RF.size % 2 ==1:
+        FFTN = s_RF.size + 1
+    else:
+        FFTN = s_RF.size
+    # FFTN = 1000000
+    FFTs_rf = scipy.fftpack.fft(s_RF, n = FFTN)
     # 消除相位混乱
     FFTs_rf[np.abs(FFTs_rf) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-    FFTN = FFTs_rf.size
+    # FFTN = FFTs_rf.size
     # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
     FFTs_rf = FFTs_rf/FFTN               # 将频域序列 X 除以序列的长度 N
 
@@ -409,7 +439,7 @@ if isplot:
     I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
     # 定义序列 Y 对应的频率刻度
-    df = fs /FFTN             # 频率间隔
+    # df = fs /FFTN             # 频率间隔
     # 方法一
     # f = np.arange(-int(FFTN/2), int(FFTN/2))*df      # 频率刻度,N为偶数
     #或者如下， 方法二：
@@ -421,7 +451,7 @@ if isplot:
     fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
 
     ## s(t)
-    axs[0].plot(time, s_RF, label = 's(t)', linewidth = 2, color = 'b',  )
+    axs[0].plot(t_st, s_RF, label = 's(t)', linewidth = 2, color = 'b',  )
 
     font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
     axs[0].set_xlabel('Time(s)',fontproperties=font)
@@ -474,13 +504,15 @@ if isplot:
     axs[1].set_xscale('log', base = 10)
     axs[1].set_xlim(10**4, 10**6)  #拉开坐标轴范围显示投影
     out_fig = plt.gcf()
-    out_fig.savefig(savedir + f'RF(t)_{Modulation_type}.eps', )
-    out_fig.savefig(savedir + f'RF(t)_{Modulation_type}.png', dpi = 1000,)
+    # out_fig.savefig(savedir + f'RF(t)_{Modulation_type}.eps', )
+    # out_fig.savefig(savedir + f'RF(t)_{Modulation_type}.png', dpi = 1000,)
     plt.show()
 
-source = SourceSink()
-source.InitLog( )
 #%% 信道
+source = SourceSink()
+source.InitLog()
+
+ebn0  = np.arange(-10, 11, 1)
 ebn0  = np.arange(-20, 90, 10)
 SNR = ebn0 - 10 * np.log10(sps)
 # SNR = np.arange(-10, 1)
@@ -491,20 +523,24 @@ for idx, snr in enumerate(SNR):
     signal_pwr = np.mean(abs(s_RF)**2)
     noise_pwr = signal_pwr/(10**(snr/10))
     noise = 1/np.sqrt(2) * (np.random.randn(len(s_RF)) + 1j * np.random.randn(len(s_RF))) * np.sqrt(noise_pwr)
-    # noise =  np.random.randn(len(s_RF)) * np.sqrt(noise_pwr)
     y = s_RF + noise
 
     #%% 过信道后信号的频谱
     if isplot:
         if idx == ebn0.size - 1:
-            t_lp = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
-            # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+            if y.size % 2 == 1:
+                FFTN = y.size + 1
+            else:
+                FFTN = y.size
+            # FFTN = 1000000
+            t_y = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
+
             # 对时域采样信号, 执行快速傅里叶变换 FFT
-            FFT_y = scipy.fftpack.fft(y)
+            FFT_y = scipy.fftpack.fft(y, n = FFTN)
             # 消除相位混乱
             FFT_y[np.abs(FFT_y) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-            FFTN = FFT_y.size
+            # FFTN = FFT_y.size
             # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
             FFT_y = FFT_y/FFTN               # 将频域序列 X 除以序列的长度 N
 
@@ -519,7 +555,7 @@ for idx, snr in enumerate(SNR):
             I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
             # 定义序列 Y 对应的频率刻度
-            df = fs /FFTN             # 频率间隔
+            # df = fs /FFTN             # 频率间隔
             # 方法一
             # f = np.arange(-int(FFTN/2), int(FFTN/2))*df      # 频率刻度,N为偶数
             #或者如下， 方法二：
@@ -530,8 +566,8 @@ for idx, snr in enumerate(SNR):
             vertical = 1
             fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
 
-            ## s_hat(t)
-            axs[0].plot(t_lp, s_t, label = 'channel(t)', linewidth = 2, color = 'b',  )
+            ## y(t)
+            axs[0].plot(t_y, y, label = 'channel(t)', linewidth = 2, color = 'b',  )
 
             font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
             axs[0].set_xlabel('Time(s)',fontproperties=font)
@@ -585,29 +621,32 @@ for idx, snr in enumerate(SNR):
             axs[1].set_xlim(10**4, 10**6)  #拉开坐标轴范围显示投影
 
             out_fig = plt.gcf()
-            out_fig.savefig(savedir + f'channel_{Modulation_type}_snr={int(snr)}(dB).eps', )
-            out_fig.savefig(savedir + f'channel_{Modulation_type}_snr={int(snr)}(dB).png', dpi = 1000,)
+            # out_fig.savefig(savedir + f'channel_{Modulation_type}_snr={int(snr)}(dB).eps', )
+            # out_fig.savefig(savedir + f'channel_{Modulation_type}_snr={int(snr)}(dB).png', dpi = 1000,)
             plt.show()
 
     #%%===============================================================================
     ###          接受机
     ###===============================================================================
     ## 相干解调
-    time = np.arange(s_t.size)/ fs
+    # time = np.arange(s_t.size)/fs
     y_coherent = y * np.exp(-1j * 2 * np.pi * fc * time )
-
 
     #%% 相干解调后信号的频谱
     if isplot:
         if idx == ebn0.size - 1:
-            t_lp = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
+            if y_coherent.size % 2 == 1:
+                FFTN = y_coherent.size + 1
+            else:
+                FFTN = y_coherent.size
+            # FFTN = 1000000
+            t_coherent = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
             # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
             # 对时域采样信号, 执行快速傅里叶变换 FFT
-            FFT_coherent = scipy.fftpack.fft(y_coherent)
+            FFT_coherent = scipy.fftpack.fft(y_coherent, n = FFTN)
             # 消除相位混乱
             FFT_coherent[np.abs(FFT_coherent) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
-            FFTN = FFT_coherent.size
             # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
             FFT_coherent = FFT_coherent/FFTN               # 将频域序列 X 除以序列的长度 N
 
@@ -626,15 +665,15 @@ for idx, snr in enumerate(SNR):
             # 方法一
             # f = np.arange(-int(FFTN/2), int(FFTN/2))*df      # 频率刻度,N为偶数
             #或者如下， 方法二：
-            f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/(symbol_rate * sps) ))
+            f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/fs ))
             width = 6
             high = 5
             horvizen = 2
             vertical = 1
             fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
 
-            ## s_lp(t)
-            axs[0].plot(t_lp, s_t, label = 'coherent demod', linewidth = 2, color = 'b',  )
+            ##  coherent(t)
+            axs[0].plot(t_coherent, y_coherent, label = 'coherent demod', linewidth = 2, color = 'b',  )
 
             font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
             axs[0].set_xlabel('Time(s)',fontproperties=font)
@@ -659,7 +698,7 @@ for idx, snr in enumerate(SNR):
             [label.set_fontsize(25) for label in labels] #刻度值字号
             axs[0].grid( linestyle = '--', linewidth = 0.5, )
 
-            ##  FFT s_lp(t)
+            ##  FFT y_coherent(t)
             axs[1].plot(f, A, label = 'FFT|coherent|', linewidth = 2, color = 'b',  )
 
             font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
@@ -683,223 +722,26 @@ for idx, snr in enumerate(SNR):
             [label.set_fontname('Times New Roman') for label in labels]
             [label.set_fontsize(25) for label in labels] #刻度值字号
             axs[1].grid(linestyle = '--', linewidth = 0.5, )
+            # axs[1].set_xscale('log', base = 10)
 
             out_fig = plt.gcf()
-            out_fig.savefig(savedir + f'coherent{Modulation_type}_snr={int(snr)}(dB).eps', )
-            out_fig.savefig(savedir + f'coherent_{Modulation_type}_snr={int(snr)}(dB).png', dpi = 1000,)
+            # out_fig.savefig(savedir + f'coherent{Modulation_type}_snr={int(snr)}(dB).eps', )
+            # out_fig.savefig(savedir + f'coherent_{Modulation_type}_snr={int(snr)}(dB).png', dpi = 1000,)
             plt.show()
+        pass
 
-    #%% 低通滤波
-    # Wn = 2 * lf / fs
-    Wn = 0.2 #  截止频率为0.2*(fs/2)
-    numtaps = 128
-    ###### 方法1
-    # [Bb, Ba] = scipy.signal.butter(numtaps, Wn, 'low')
-    # y_lowpass = scipy.signal.lfilter(Bb, Ba, y_coherent) # 进行滤波
+    #%% 下采样 + 匹配滤波 -> 恢复的基带信号
+    s_t_hat = scipy.signal.upfirdn(h, y_coherent, 1, sps)
 
-    ###### 方法2
-    h = scipy.signal.firwin(numtaps, Wn )
-    y_lowpass = scipy.signal.lfilter(h, 1, y_coherent) # 进行滤波
-
-    #%% 下变频后信号的频谱
-    if isplot:
-        if idx == ebn0.size - 1:
-            t_lp = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
-            # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
-            # 对时域采样信号, 执行快速傅里叶变换 FFT
-            FFT_lp = scipy.fftpack.fft(y_lowpass)
-            # 消除相位混乱
-            FFT_lp[np.abs(FFT_lp) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
-
-            FFTN = FFT_lp.size
-            # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-            FFT_lp = FFT_lp/FFTN               # 将频域序列 X 除以序列的长度 N
-
-            assert FFT_lp.size %2 == 0
-            ## 将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
-            Y = scipy.fftpack.fftshift(FFT_lp, )
-
-            # 计算频域序列 Y 的幅值和相角
-            A = abs(Y);                       # 计算频域序列 Y 的幅值
-            Pha = np.angle(Y,deg = True)      # 计算频域序列 Y 的相角 (弧度制)
-            R = np.real(Y)                    # 计算频域序列 Y 的实部
-            I = np.imag(Y)                    # 计算频域序列 Y 的虚部
-
-            # 定义序列 Y 对应的频率刻度
-            df = symbol_rate * sps /FFTN             # 频率间隔
-            # 方法一
-            # f = np.arange(-int(FFTN/2), int(FFTN/2))*df      # 频率刻度,N为偶数
-            #或者如下， 方法二：
-            f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/(symbol_rate * sps) ))
-            width = 6
-            high = 5
-            horvizen = 2
-            vertical = 1
-            fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
-
-            ## s_lp(t)
-            axs[0].plot(t_lp, s_t, label = 's_lp(t)', linewidth = 2, color = 'b',  )
-
-            font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-            axs[0].set_xlabel('Time(s)',fontproperties=font)
-            axs[0].set_ylabel('s_lp(t)',fontproperties=font)
-            axs[0].set_title(f'{Modulation_type}, SNR = {int(snr)}(dB)',  fontproperties=font )
-            font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-            #  edgecolor='black',
-            # facecolor = 'y', # none设置图例legend背景透明
-            legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
-            frame1 = legend1.get_frame()
-            frame1.set_alpha(1)
-            frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-            axs[0].spines['bottom'].set_linewidth(2)    ###设置底部坐标轴的粗细
-            axs[0].spines['left'].set_linewidth(2)      ###设置左边坐标轴的粗细
-            axs[0].spines['right'].set_linewidth(2)     ###设置右边坐标轴的粗细
-            axs[0].spines['top'].set_linewidth(2)       ###设置上部坐标轴的粗细
-
-            axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6, pad = 2 )
-            labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
-            [label.set_fontname('Times New Roman') for label in labels]
-            [label.set_fontsize(25) for label in labels] #刻度值字号
-            axs[0].grid( linestyle = '--', linewidth = 0.5, )
-
-            ##  FFT s_lp(t)
-            axs[1].plot(f, A, label = 'FFT|s_lp(t)|', linewidth = 2, color = 'b',  )
-
-            font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-            axs[1].set_xlabel('Frequancy(Hz)',fontproperties=font)
-            axs[1].set_ylabel('|FFT(s_lp(t))|',fontproperties=font)
-            # axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
-            font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-
-            legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0, facecolor = 'none')
-            frame1 = legend1.get_frame()
-            frame1.set_alpha(1)
-            frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-            axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-            axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-            axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-            axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-            axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6, pad = 2 )
-            labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
-            [label.set_fontname('Times New Roman') for label in labels]
-            [label.set_fontsize(25) for label in labels] #刻度值字号
-            axs[1].grid(linestyle = '--', linewidth = 0.5, )
-
-            out_fig = plt.gcf()
-            out_fig.savefig(savedir + f'lowpass_{Modulation_type}_snr={int(snr)}(dB).eps', )
-            out_fig.savefig(savedir + f'lowpass_{Modulation_type}_snr={int(snr)}(dB).png', dpi = 1000,)
-            plt.show()
-
-
-    #%% 匹配滤波
-    beta = 0.5        # 滚降因子,可调整
-    h = rcosdesign(beta, span, sps, 'sqrt')
-    s_t_hat = scipy.signal.lfilter(h, 1, y_lowpass) # 进行滤波
-
-    #%% 匹配滤波后信号的频谱
-    if isplot:
-        if idx == ebn0.size - 1:
-            t_lp = np.arange(0, s_t.size) * (1/(symbol_rate * sps))
-            # FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
-            # 对时域采样信号, 执行快速傅里叶变换 FFT
-            FFT_rcos = scipy.fftpack.fft(s_t_hat)
-            # 消除相位混乱
-            FFT_rcos[np.abs(FFT_rcos) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
-
-            FFTN = FFT_rcos.size
-            # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-            FFT_rcos = FFT_rcos/FFTN               # 将频域序列 X 除以序列的长度 N
-
-            assert FFT_rcos.size %2 == 0
-            ## 将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
-            Y = scipy.fftpack.fftshift(FFT_rcos, )
-
-            # 计算频域序列 Y 的幅值和相角
-            A = abs(Y)/4                       # 计算频域序列 Y 的幅值
-            Pha = np.angle(Y,deg = True)      # 计算频域序列 Y 的相角 (弧度制)
-            R = np.real(Y)                    # 计算频域序列 Y 的实部
-            I = np.imag(Y)                    # 计算频域序列 Y 的虚部
-
-            # 定义序列 Y 对应的频率刻度
-            df = symbol_rate * sps /FFTN             # 频率间隔
-            # 方法一
-            # f = np.arange(-int(FFTN/2), int(FFTN/2))*df      # 频率刻度,N为偶数
-            #或者如下， 方法二：
-            f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/(symbol_rate * sps) ))
-            width = 6
-            high = 5
-            horvizen = 2
-            vertical = 1
-            fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*high, vertical*width), constrained_layout = True)
-
-            ## s_hat(t)
-            axs[0].plot(t_lp, s_t, label = 's_hat(t)', linewidth = 2, color = 'b',  )
-
-            font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-            axs[0].set_xlabel('Time(s)',fontproperties=font)
-            axs[0].set_ylabel('s_hat(t)',fontproperties=font)
-            axs[0].set_title(f'{Modulation_type}, SNR = {int(snr)}(dB)',  fontproperties=font )
-            font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-            #  edgecolor='black',
-            # facecolor = 'y', # none设置图例legend背景透明
-            legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
-            frame1 = legend1.get_frame()
-            frame1.set_alpha(1)
-            frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-            axs[0].spines['bottom'].set_linewidth(2)    ###设置底部坐标轴的粗细
-            axs[0].spines['left'].set_linewidth(2)      ###设置左边坐标轴的粗细
-            axs[0].spines['right'].set_linewidth(2)     ###设置右边坐标轴的粗细
-            axs[0].spines['top'].set_linewidth(2)       ###设置上部坐标轴的粗细
-
-            axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6, pad = 2 )
-            labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
-            [label.set_fontname('Times New Roman') for label in labels]
-            [label.set_fontsize(25) for label in labels] #刻度值字号
-            axs[0].grid( linestyle = '--', linewidth = 0.5, )
-
-            ##  FFT s_hat(t)
-            axs[1].plot(f, A, label = 'FFT|s_hat(t)|', linewidth = 2, color = 'b',  )
-
-            font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-            axs[1].set_xlabel('Frequancy(Hz)',fontproperties=font)
-            axs[1].set_ylabel('|FFT(s_hat(t))|',fontproperties=font)
-            # axs.set_title(f'{Modulation_type}, Eb/N0 = {ebn0[-1]}(dB)',  fontproperties=font )
-            font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-
-            legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0, facecolor = 'none')
-            frame1 = legend1.get_frame()
-            frame1.set_alpha(1)
-            frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-            axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-            axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-            axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-            axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-            axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6, pad = 2 )
-            labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
-            [label.set_fontname('Times New Roman') for label in labels]
-            [label.set_fontsize(25) for label in labels] #刻度值字号
-            axs[1].grid(linestyle = '--', linewidth = 0.5, )
-
-            out_fig = plt.gcf()
-            out_fig.savefig(savedir + f'rcosdesig_{Modulation_type}_snr={int(snr)}(dB).eps', )
-            out_fig.savefig(savedir + f'rcosdesig_{Modulation_type}_snr={int(snr)}(dB).png', dpi = 1000,)
-            plt.show()
-
-    #%%选取最佳采样点,延迟采样点个数=（成形滤波器阶数+低通滤波器阶数+匹配滤波器阶数）/2
-    decision_site = int((span*sps + numtaps + span*sps)/2)  # (96+128+96)/2 =160 三个滤波器的延迟 96 128 96, 96 = span * sps
+    #%%选取最佳采样点,
+    decision_site = int((s_t_hat.size - symbol.size) / 2)
 
     ## 每个符号选取一个点作为判决
-    I_n_hat = s_t_hat[decision_site - 1 :: sps]
+    I_n_hat = s_t_hat[decision_site:decision_site + symbol.size]
     # 涉及到三个滤波器，固含有滤波器延迟累加
 
     ## 恢复符号的星座图
-    draw_trx_constellation(I_n_hat, map_table, tx = 0, snr = int(snr), channel='awgn', modu_type = Modulation_type)
+    # draw_trx_constellation(I_n_hat, map_table, tx = 0, snr = int(snr), channel='awgn', modu_type = Modulation_type)
 
     ## 解调
     Rx_bits = modem.demodulate(I_n_hat, demod_type = 'hard')
@@ -908,7 +750,7 @@ for idx, snr in enumerate(SNR):
     # BER.append(ber)
     # source.SaveToFile(snr = ebn0[idx])
     # print("  *** *** *** *** ***")
-    # source.PrintScreen(snr = snr)
+    source.PrintScreen(snr = snr)
     # print("  *** *** *** *** ***\n")
 # print(BER)
 #%% 反量化
@@ -953,8 +795,8 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 axs.grid( linestyle = '--', linewidth = 0.5, )
 
 out_fig = plt.gcf()
-out_fig.savefig(savedir + f'wave_{Modulation_type}_EbN0={ebn0[-1]}(dB).eps', )
-out_fig.savefig(savedir + f'wave_{Modulation_type}_EbN0={ebn0[-1]}(dB).png', dpi=1000,)
+# out_fig.savefig(savedir + f'wave_{Modulation_type}_EbN0={ebn0[-1]}(dB).eps', )
+# out_fig.savefig(savedir + f'wave_{Modulation_type}_EbN0={ebn0[-1]}(dB).png', dpi=1000,)
 plt.show()
 
 
