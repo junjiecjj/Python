@@ -481,7 +481,7 @@ if isplot:
 source = SourceSink()
 source.InitLog( )
 #%% 信道
-ebn0  = np.arange(-20, 90, 10)
+ebn0  = np.arange(5, 7, 1)
 SNR = ebn0 - 10 * np.log10(sps)
 # SNR = np.arange(-10, 1)
 for idx, snr in enumerate(SNR):
@@ -899,7 +899,7 @@ for idx, snr in enumerate(SNR):
     # 涉及到三个滤波器，固含有滤波器延迟累加
 
     ## 恢复符号的星座图
-    draw_trx_constellation(I_n_hat, map_table, tx = 0, snr = int(snr), channel='awgn', modu_type = Modulation_type)
+    # draw_trx_constellation(I_n_hat, map_table, tx = 0, snr = int(snr), channel='awgn', modu_type = Modulation_type)
 
     ## 解调
     Rx_bits = modem.demodulate(I_n_hat, demod_type = 'hard')
@@ -908,7 +908,7 @@ for idx, snr in enumerate(SNR):
     # BER.append(ber)
     # source.SaveToFile(snr = ebn0[idx])
     # print("  *** *** *** *** ***")
-    # source.PrintScreen(snr = snr)
+    source.PrintScreen(snr = snr)
     # print("  *** *** *** *** ***\n")
 # print(BER)
 #%% 反量化
@@ -923,7 +923,7 @@ vertical = 1
 fig, axs = plt.subplots(horvizen, vertical, figsize = (horvizen*width, vertical*high), constrained_layout = True)
 labelsize = 20
 
-N = 30
+N = 50
 axs.plot(t[:N], x[:N], label = 'transmit', linewidth = 2, color = 'b',  )
 t1 = t[x.size - x_hat.size:]
 axs.plot(t1[:N], x_hat[:N], label = 'receive', linewidth = 2, color = 'r', linestyle = '-' )
