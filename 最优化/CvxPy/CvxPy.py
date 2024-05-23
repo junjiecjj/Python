@@ -11,15 +11,10 @@ https://www.cvxpy.org/examples/index.html
 https://www.wuzao.com/document/cvxpy/index.html
 
 
-
-
 与matlab中cvx的工具包类似，用于求解凸优化问题。cvx与cvxpy都是由CIT的Stephen Boyd教授课题组开发。
 cvx用于matlab的包，cvxpy是用于python的包。下载、安装及学习地址如下：
-
 cvxpy是解决凸优化问题的，在使用之前要确保目标函数是一个凸优化问题(包括其中的变量范围设置，参数设置等)
-
 https://blog.csdn.net/geekwill/article/details/78836054
-
 
 CVXPY
 CVX是由Michael Grant和Stephen Boyd开发的用于构造和解决严格的凸规划(DCP)的建模系统，建立在Löfberg (YALMIP)， Dahl和Vandenberghe (CVXOPT)的工作上。
@@ -30,19 +25,15 @@ Quadratic programs (QPs)
 Second-order cone programs (SOCPs)
 Semidefinite programs (SDPs)
 还可以解决更复杂的凸优化问题，包括
-
-不可微函数，如L1范数
-使用CVX方便地表述和解决约束范数最小化、熵最大化、行列式最大化，etc.
+    不可微函数，如L1范数
+    使用CVX方便地表述和解决约束范数最小化、熵最大化、行列式最大化，etc.
 支持求解mixed integer
 disciplined convex programs (MIDCPs)
 CVX使用的注意事项
 CVX不是用来检查你的问题是否凸的工具。如果在将问题输入CVX之前不能确定问题是凸的，那么您使用工具的方法不正确，您的努力很可能会失败。
 CVX不是用来解决大规模问题的。它是一个很好的工具，用于试验和原型化凸优化问题。
 CVX本身并不解决任何优化问题。它只将问题重新表述成一种形式(SDP和SOCP)，需要搭配solver求解。
-在CVX中，目标函数必须是凸的，约束函数必须是凸的或仿射的，diag 和trace 是仿射函数。 CVX使用了扩展值函数(即凸函数在其域外取值为
-∞ \infin∞ ，凹函数取值为− ∞ -\infin−∞)。
-
-
+在CVX中，目标函数必须是凸的，约束函数必须是凸的或仿射的，diag 和trace 是仿射函数。 CVX使用了扩展值函数(即凸函数在其域外取值为∞ \infin∞ ，凹函数取值为− ∞ -\infin−∞)。
 
 https://blog.csdn.net/qq_21747841/article/details/78457395
 
@@ -168,7 +159,6 @@ print(x.value) # x就是对应最优解的x
 # The optimal Lagrange multiplier for a constraint is stored in
 # `constraint.dual_value`.
 print(constraints[0].dual_value)
-
 
 
 

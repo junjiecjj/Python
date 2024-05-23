@@ -4,7 +4,12 @@
 
 
 """
-
+https://www.cnblogs.com/MayeZhang/p/12374196.html
+https://www.zhihu.com/question/28698472#
+https://blog.csdn.net/weixin_39274659/article/details/111477860
+https://zhuyulab.blog.csdn.net/article/details/104434934
+https://blog.csdn.net/UncleWa/article/details/123780502
+https://zhuanlan.zhihu.com/p/627524436
 """
 
 
@@ -102,11 +107,11 @@ class MIMO_Channel():
             symbol_y: array(num_symbol, ). Decoded symbol at the receiver side.
         """
         def theta(N, Seed=100):
-            phi = np.zeros(self.Ncl * self.Nray)   # 一共有L = Ncl*Nray条路径, (24,)
+            # phi = np.zeros(self.Ncl * self.Nray)   # 一共有L = Ncl*Nray条路径, (24,)
             a = np.zeros((self.Ncl * self.Nray, N, 1), dtype = complex)  # (24, 8, 1)
 
-            for i in range(self.Ncl * self.Nray):
-                phi[i] = np.random.uniform(-np.pi / 2, np.pi / 2)  # 为每条路径产生随机的到达角 AoA 或出发角 AoD
+            # for i in range(self.Ncl * self.Nray):
+            phi = np.random.uniform(-np.pi / 2, np.pi / 2, self.Ncl * self.Nray)  # 为每条路径产生随机的到达角 AoA 或出发角 AoD
 
             for j in range(self.Ncl * self.Nray):
                 for z in range(N):  # N为发射天线数或者接收天线数
@@ -136,7 +141,7 @@ class MIMO_Channel():
         self.H =  H_gen()  # Nr * Nt
         # U, D, V = SVD_Precoding(H, self.P, self.d)
         # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
-        return
+        # return self.H
 
     ## 普通的瑞丽衰落信道模型，
     ## 当为ULA到ULA时，self.Nr为接收天线数，self.Nt为发射天线数，
@@ -187,11 +192,10 @@ class MIMO_Channel():
             elevation = np.random.uniform(-np.pi / 8, np.pi / 8, size = (int(self.Ncl * self.Nray), ))   # 一共有L = Ncl*Nray条路径, (24,)
             a = np.zeros((self.Ncl * self.Nray, int(W*H), 1), dtype=complex)  # (24, 8, 1)
 
-
             for i in range(self.Ncl * self.Nray):
-                for w in range(W):
-                    for h in range(H):
-                        k = w*H + h
+                for h in range(H):
+                    for w in range(W):
+                        k = h*W + w
                         ## 如果你看到的指数项是类似于e^{j*2*pi*d/λ}之类的形式，其实是一样的，因为这里d = λ/2。
                         a[i][k] = np.exp(1j * np.pi * (w * np.sin(azimuth[i]) * np.cos(elevation[i]) + h*np.sin(elevation[i])))
             Azimuth = azimuth.reshape(self.Ncl * self.Nray)
@@ -220,7 +224,7 @@ class MIMO_Channel():
         self.H =  H_gen()  # Nr * Nt
         # U, D, V = SVD_Precoding(H, self.P, self.d)
         # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
-        # return H
+        # return self.H
 
 
     def forward(self, Tx_sig, Tx_data_power = None, SNR_dB = 5,):
@@ -284,7 +288,9 @@ class MIMO_Channel():
         return Rx_sig
 
 
-
+# channel = MIMO_Channel(Nr = 24, Nt = 24, d = 2, P = 1, Tw = 4, Th = 6, Rw = 6, Rh = 4)
+# # ula = channel.mmwave_MIMO_ULA2ULA()
+# upa = channel.mmwave_MIMO_UPA2UPA()
 
 
 
