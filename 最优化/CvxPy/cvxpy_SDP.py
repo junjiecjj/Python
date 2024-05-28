@@ -11,10 +11,11 @@ Created on Sat Jan 13 22:07:35 2024
 # https://www.cvxpy.org/examples/basic/sdp.html
 # cvxpy  Semidefinite program, SDP 半定规划问题
 #=================================================================
-
+# https://www.wuzao.com/document/cvxpy/tutorial/advanced/index.html
+# 许多凸优化问题涉及将矩阵约束为正定或负定（例如，SDP问题）。 在CVXPY中，有两种方法可以实现这一点
 # 创建一个正定矩阵的两种方式：
 # (1)  # 创建一个100x100的对称且正定 变量。
-#      X = cp.Variable((100, 100), PSD=True)
+#      X = cp.Variable((100, 100), PSD = True)
 
 
 # (2) 下面的代码演示了如何将矩阵表达式约束为正定或负定（但不一定是对称的）。

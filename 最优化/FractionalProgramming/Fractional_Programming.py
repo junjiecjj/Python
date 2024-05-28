@@ -4,16 +4,20 @@
 Created on Thu May 23 10:16:10 2024
 
 @author: jack
-https://www.zhihu.com/tardis/zm/art/599204238?source_id=1005
-https://www.cnblogs.com/hjd21/p/16608461.html
 
 
 "Deng R, Di B, Zhang H, et al. Reconfigurable Holographic Surface Enabled Multi-User Wireless Communications: Amplitude-Controlled Holographic Beamforming[J]. IEEE Transactions on Wireless Communications, 2022."
 Fractional programming for communication systems—Part I: Power control and beamforming
 Fractional programming for communication systems—Part II: Uplink scheduling via matching
+https://www.cnblogs.com/hjd21/p/16608461.html
+https://www.zhihu.com/tardis/zm/art/599204238?source_id=1005
 
+
+" Weighted Sum-Rate Optimization for Intelligent Reflecting Surface Enhanced Wireless Networks 本文应该是第一篇以速率为优化目标的IRS波束成形文章"
+https://blog.csdn.net/weixin_39274659/article/details/121148894
+https://zhuyulab.blog.csdn.net/article/details/121192360?spm=1001.2014.3001.5502
+https://github.com/guohuayan/WSR_maximization_for_RIS_system?utm_source=catalyzex.com
 """
-
 
 
 

@@ -303,11 +303,8 @@ print (a.ravel(order = 'A'))
 print ('以 K 风格顺序调用 ravel 函数之后：')
 print (a.ravel(order = 'K'))
 
-
 print ('以 F 风格顺序调用 ravel 函数之后：')
 print (a.ravel(order = 'F'))
-
-
 
 
 
@@ -352,8 +349,6 @@ print ('\n')
 
 print ('对换数组：')
 print (np.transpose(a))
-
-
 
 a = np.arange(12).reshape(3,4)
 print ('原数组：')

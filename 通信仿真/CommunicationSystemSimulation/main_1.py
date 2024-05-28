@@ -26,6 +26,11 @@ https://blog.csdn.net/fengshao1370/article/details/106059388
 
 Tsym/Tsamp = Fs/Rs = sps
 
+对于复信号： Es/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB) - 2log2(M);
+对于实信号：Es/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB) - 2log2(M);
+对于复信号： Es/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB) - 10log10(M);
+对于实信号：Es/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB) - 10log10(M);
+https://www.docin.com/p-1557770101.html
 """
 
 ## 系统库

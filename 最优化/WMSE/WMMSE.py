@@ -5,12 +5,13 @@ Created on Thu May 23 09:51:09 2024
 
 @author: jack
 https://zhuanlan.zhihu.com/p/588715673
-https://zhuanlan.zhihu.com/p/586660620
-https://github.com/guohuayan/WSR_maximization_for_RIS_system?utm_source=catalyzex.com
-https://blog.csdn.net/weixin_39274659/article/details/121148894
 
+
+https://zhuanlan.zhihu.com/p/586660620
 《 An iteratively weighted MMSE approach to distributed sum-utility maximization for a MIMO interfering broadcast channel》
+
 《Weighted Sum-Rate Maximization using Weighted MMSE for MIMO-BC Beamforming Design》
+
 """
 
 
