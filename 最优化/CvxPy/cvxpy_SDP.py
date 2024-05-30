@@ -107,6 +107,3 @@ print(X.value)
 
 
 
-
-
-

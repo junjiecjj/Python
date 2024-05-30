@@ -747,13 +747,13 @@ print("x={},y={},z={}".format(C[0],C[1],C[2]))
 
 
 '''-------------------矩阵求特征值和特征向量np.linalg.eigvals()/np.linalg.eig()-------------------'''
-
+# https://www.guanjihuan.com/archives/17789
 
 vector = np.mat("3 -2;1 0")
 print(vector)
 #求向量的特征值
-eigenvalues = np.linalg.eigvals(vector)
-print("向量的特征值：",eigenvalues)
+# eigenvalues = np.linalg.eigvals(vector)
+# print("向量的特征值：",eigenvalues)
 #同时求向量的特征值和特征向量
 eigenvalues,eigvector = np.linalg.eig(vector)
 print("特征值：",eigenvalues)

@@ -282,9 +282,9 @@ print(ret_2)
 ret_2 = torch.linalg.norm(A, ord = -2, dim = None, keepdim = True)                         #  谱范数，即A'A矩阵的最小特征值的开平方。matlab调用函数norm(x, 2)。
 print(ret_2)
 
-ret_3 = torch.linalg.norm(A, ord = 3, axis = None)                                                # linalg.matrix_norm: Order 3 not supported.
+ret_3 = torch.linalg.norm(A, ord = 3, axis = None)                                   # linalg.matrix_norm: Order 3 not supported.
 print(ret_3)
-ret_3 = torch.linalg.norm(A, ord = -3, axis = None)                                                # RuntimeError: linalg.matrix_norm: Order 3 not supported.
+ret_3 = torch.linalg.norm(A, ord = -3, axis = None)                                 # RuntimeError: linalg.matrix_norm: Order 3 not supported.
 print(ret_3)
 
 ret_nuc = torch.linalg.norm(A, ord = 'nuc', dim = None)                    # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
@@ -441,9 +441,9 @@ print(ret_2)
 ret_2 = torch.linalg.matrix_norm(A, ord = -2,  keepdim = True)                         #  谱范数，即A'A矩阵的最小特征值的开平方。matlab调用函数norm(x, 2)。
 print(ret_2)
 
-# ret_3 = np.linalg.norm(A, ord = 3, axis = None)                                                # ret_3 返回的是  ValueError: Invalid norm order for matrices.
+# ret_3 = np.linalg.norm(A, ord = 3, axis = None)            # ret_3 返回的是  ValueError: Invalid norm order for matrices.
 # print(ret_3)
-# ret_3 = np.linalg.norm(A, ord = -3, axis = None)                                                # ret_3 返回的是  ValueError: Invalid norm order for matrices.
+# ret_3 = np.linalg.norm(A, ord = -3, axis = None)               # ret_3 返回的是  ValueError: Invalid norm order for matrices.
 # print(ret_3)
 
 ret_nuc = torch.linalg.matrix_norm(A, ord = 'nuc', )                    # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，

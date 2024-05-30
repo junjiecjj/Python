@@ -19,8 +19,8 @@ import numpy as np
 import torch
 
 import matplotlib
-# matplotlib.use('TkAgg')
-matplotlib.use('Agg')
+# # matplotlib.use('TkAgg')
+# matplotlib.use('Agg')
 
 
 #### 本项目自己编写的库
