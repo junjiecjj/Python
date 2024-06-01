@@ -48,7 +48,7 @@ elif Modulation_type == "QAM256":
     modem = cpy.QAMModem(256)
 
 
-
+# 接收方估计
 def main_ZF_MMSE_SIC():
     for snr in SNR:
         # channel = AWGN(snr, polar.coderate)
@@ -65,7 +65,7 @@ def main_ZF_MMSE_SIC():
             # 调制
             tx_symbol = modem.modulate(tx_bits)
             tx_data = tx_symbol.reshape(Nt, -1)
-
+            ## 符号能量归一化
             tx_data = SignalNorm(tx_data, M )
 
             # 信道
@@ -74,7 +74,7 @@ def main_ZF_MMSE_SIC():
             #%%============================================
             ##                  ZF
             ###============================================
-            # pinvH = scipy.linalg.pinv (channel.H)
+            # pinvH = scipy.linalg.pinv(channel.H)
             # rx_data_zf = pinvH @ rx_data
             # rx_symb_zf = rx_data_zf.reshape(-1)
             # rx_symb_zf = SignalNorm(rx_symb_zf, M, denorm=True)
@@ -125,7 +125,7 @@ def main_ZF_MMSE_SIC():
         source.SaveToFile(snr = snr)
     return
 
-
+# 预编码
 def main_SVD():
     for snr in SNR:
         # channel = AWGN(snr, polar.coderate)
@@ -136,10 +136,8 @@ def main_SVD():
             channel.mmwave_MIMO_ULA2ULA()
 
             tx_bits = source.GenerateBitStr(1920)
-
             # 编码
             # tx_bits = encoder(tx_bits)
-
             # 调制
             tx_symbol = modem.modulate(tx_bits)
             ## tx_data = tx_symbol.reshape(Nt, -1)
@@ -181,9 +179,15 @@ def main_SVD():
     return
 
 
+def main_MMSE_precoding():
+
+
+
+    return
+
 # main_ZF_MMSE_SIC
 
-main_SVD()
+# main_SVD()
 
 
 

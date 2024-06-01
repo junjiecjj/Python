@@ -24,7 +24,7 @@ Wavenumber = 2 * np.pi/Wavelength
 #%% Array Parameters
 N = 12
 A = np.ones(N)
-theta0 = math.radians(30)
+theta0 = math.radians(50)
 # wt = A * np.ones(N, )   # 权重向量
 wt = A * np.exp(-1j * (np.pi * np.arange(N) * np.sin(theta0)) )
 alpha = np.zeros(N, )
@@ -56,21 +56,21 @@ peaks, _ =  scipy.signal.find_peaks(dbP)
 
 
 #%% 画图
-fig, axs = plt.subplots(1, 1, figsize=(10, 8))
+fig, axs = plt.subplots(1, 1, figsize=(10, 8),)
 axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label='',  )
 axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
-# font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
+font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel( r"$\theta(^\circ)$", fontproperties=font2,   ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
 axs.set_ylabel('Amplitude(dB)', fontproperties=font2,  )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 17}
-#font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
-# legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
-# frame1 = legend1.get_frame()
-# frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
 x_major_locator = MultipleLocator(20)               #把x轴的刻度间隔设置为1，并存在变量里
 axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
@@ -85,49 +85,37 @@ axs.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
 axs.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
 
-
-# plt.show()
-
+plt.show()
 
 
+#%% 画图
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), subplot_kw={'projection': 'polar'})
+axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label='',  )
+axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+
+plt.show()
+
+
+
+
+#%%
+
+import  numpy as np
+from    matplotlib import pyplot as plt
+
+N = 8      #天线数量
+
+theta = np.arange(0.000001,2*np.pi-0.0000001,0.01)
+
+psi = np.pi * np.cos(theta)
+
+r = np.abs(np.sin(N * psi/2)/np.sin(psi/2))/N
+
+plt.figure()
+plt.polar(theta,r)
+plt.show()
 
 #%% https://blog.csdn.net/qq_23176133/article/details/120056777
-import math
-import cmath
-import matplotlib.pyplot as plt
-import numpy as np
-class Pattern:
-    def radiation(self):
-        # 单元数量，频率（GHz），位置（mm），幅度，相位（°）
-        n_cell = 9
-        f = 1.575
-        position = [0, 94, 206, 281, 393, 475, 587, 683, 785]
-        power = [0.2, 0.8, 0.4, 0.3, 1, 0.9, 0.2, 0.7, 0.4]
-        phase = [0, 82, 165, 201, 247, 229, 262, 305, 334]
-        # 单元方向图
-        data_x = np.arange(-180,180,1)
-        data_y = np.cos(data_x/180*np.pi)
-        mini_a = 1e-5
-        # 2*pi/lamuda
-        k = 2 * math.pi * f / 300
-        data_new = []
-        # 方向图乘积定理
-        for i in range(0, len(data_x)):
-            a = complex(0, 0)
-            k_d = k * math.sin(data_x[i] * math.pi / 180)
-            for j in range(0, n_cell):
-                a = a + power[j] * data_y[i] * cmath.exp(complex(0,(phase[j] * math.pi / 180 + k_d * position[j])))
-            data_new.append(10*math.log10(abs(a)+mini_a))
-        plt.plot(data_x, data_new,"y")
-        plt.show()
-def main(argv=None):
-    pattern = Pattern()
-    pattern.radiation()
-
-# if __name__ == '__main__':
-#     main( )
-
-
 
 
 
