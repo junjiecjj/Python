@@ -32,7 +32,7 @@ A = np.ones(N)
 theta_aim = math.radians(30)
 phi_aim = math.radians(45)
 # wt = A * np.ones(N, )   # 权重向量
-wt = A * np.exp(-1j * (np.pi * np.arange(N) * np.sin(theta0)) )
+wt = A * np.exp(-1j * (np.pi * np.arange(N) * np.sin(theta_aim)) )
 alpha = np.zeros(N, )
 
 

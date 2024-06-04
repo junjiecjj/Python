@@ -28,7 +28,7 @@ from matplotlib.pyplot import MultipleLocator
 
 sys.path.append("../")
 from Solver import SDRsolver, AU_MRT, AI_MRT, AlternatingOptim
-from Utility import set_random_seed
+from Utility import set_random_seed, set_printoption
 
 filepath2 = '/home/jack/snap/'
 fontpath = "/usr/share/fonts/truetype/windows/"
@@ -48,7 +48,7 @@ sigmaK2 = 10**(sigmaK2/10.0)  # 噪声功率
 gamma = 10             # dB
 gamma = 10**(gamma/10.0)    #  信干噪比约束10dB
 M = 4     # AP天线数量
-N = 30    # RIS天线数量
+# N = 30    # RIS天线数量
 L = 1000  # Gaussian随机化次数
 frame = 500
 
@@ -60,37 +60,41 @@ alpha_Au = 3.5    # AP 和 User 之间path loss exponent
 # beta_Au = 0   # IRS到User考虑瑞利衰落信道，AP和IRS之间为纯LoS信道
 # beta_Iu = 0   # IRS到User考虑瑞利衰落信道，AP和IRS之间为纯LoS信道
 
-set_random_seed(1)
+set_random_seed(10000)
+set_printoption()
 
-D = np.arange(20, 51, 5) # user到AP-RIS连线的垂线距离AP的距离
+N = np.arange(20, 81, 10) # user到AP-RIS连线的垂线距离AP的距离
 
-SDR = np.zeros(len(D))
-AO = np.zeros(len(D))
-AuMRT = np.zeros(len(D))
-AIMRT = np.zeros(len(D))
-LowBound = np.zeros(len(D))
-RANDOMphase = np.zeros(len(D))
-WithoutRIS = np.zeros(len(D))
+SDR = np.zeros(len(N))
+AO = np.zeros(len(N))
+AuMRT = np.zeros(len(N))
+AIMRT = np.zeros(len(N))
+LowBound = np.zeros(len(N))
+RANDOMphase = np.zeros(len(N))
+WithoutRIS = np.zeros(len(N))
+
 
 #%%
-G = np.sqrt(C0 * ((d0/D0)**(-alpha_AI))) * np.ones((N, M))
-for i, d in enumerate(D):
-    print(f"distance = {d}")
-    dAu = np.sqrt(d**2 + dv**2)
-    dIu = np.sqrt((d0-d)**2 + dv**2)
-    ## h_r
-    Iu_large_fading = C0 * ((dIu/D0)**(-alpha_Iu))
-    ## h_d
-    Au_large_fading = C0 * ((dAu/D0)**(-alpha_Au))
+d = 15  # 50 41 15
+dAu = np.sqrt(d**2 + dv**2)
+dIu = np.sqrt((d0-d)**2 + dv**2)
+## h_r
+Iu_large_fading = C0 * ((dIu/D0)**(-alpha_Iu))
+## h_d
+Au_large_fading = C0 * ((dAu/D0)**(-alpha_Au))
 
+
+for i, n in enumerate(N):
+    print(f"n = {n}")
     for j in range(frame):
         if (j + 1) % 100 == 0: print(f"  {j+1} ", end = "  ")
 
-        hr = np.sqrt(Iu_large_fading) * np.sqrt(1 / (2 * sigmaK2)) * ( np.random.randn(1,N) + 1j * np.random.randn(1,N) )
+        G = np.sqrt(C0 * ((d0/D0)**(-alpha_AI))) * np.ones((n, M))
+        hr = np.sqrt(Iu_large_fading) * np.sqrt(1 / (2 * sigmaK2)) * ( np.random.randn(1,n) + 1j * np.random.randn(1,n) )
         hd = np.sqrt(Au_large_fading) * np.sqrt(1 / (2 * sigmaK2)) * ( np.random.randn(1,M) + 1j * np.random.randn(1,M) )
 
         #%% SDR and Lowbound
-        lowbound, v = SDRsolver(G, hr, hd, N, L)
+        lowbound, v = SDRsolver(G, hr, hd, n, L)
         opti = gamma/(np.linalg.norm(v.T.conjugate() @ (np.diag(hr.flatten()) @ G) + hd, ord = 2)**2 )
         SDR[i] = SDR[i] + opti
         LowBound[i] += gamma/lowbound
@@ -112,7 +116,7 @@ for i, d in enumerate(D):
         AIMRT[i] += P_aimrt;
 
         #%% RANDOMphase
-        theta = 2 * np.pi * np.random.rand(1, N)
+        theta = 2 * np.pi * np.random.rand(1, n)
         Theta = np.diag(np.exp(1j * theta.flatten()))
         P_rand = gamma/(np.linalg.norm(hr @ Theta @ G + hd, 2)**2)
         RANDOMphase[i] += P_rand
@@ -128,7 +132,7 @@ for i, d in enumerate(D):
     AIMRT[i] = 10 * np.log10(AIMRT[i]/frame)
     RANDOMphase[i] = 10 * np.log10(RANDOMphase[i]/frame)
     WithoutRIS[i] = 10 * np.log10(WithoutRIS[i]/frame)
-    print(f"  SDR = {SDR[i]}, LowBound = {LowBound[i]}, AO = {AO}, AuMRT = {AuMRT}, AIMRT = {AIMRT}, RANDOMphase = {RANDOMphase}, WithoutRIS = {WithoutRIS}")
+    print(f"  SDR = {SDR}, \n  LowBound = {LowBound}, \n  AO = {AO}, \n  AuMRT = {AuMRT}, \n  AIMRT = {AIMRT}, \n  RANDOMphase = {RANDOMphase}, \n  WithoutRIS = {WithoutRIS}")
 
 
 # SDR = 10 * np.log10(SDR/frame )
@@ -142,19 +146,20 @@ for i, d in enumerate(D):
 
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
-axs.plot(D, LowBound, color = 'k', linestyle='none',  marker = "o", markerfacecolor='white',markersize = 20, label = 'Lower Bound',  )
-axs.plot(D, SDR, color='b', linestyle='-',  lw = 3, marker = "d", markersize = 12, label = 'SDR',  )
+axs.plot(N, LowBound, color = 'k', linestyle='none',  marker = "o", markerfacecolor='white', markersize = 20, label = 'Lower Bound',  )
+axs.plot(N, SDR, color='b', linestyle='-',  lw = 3, marker = "d", markersize = 12, label = 'SDR',  )
 
-axs.plot(D, AO, color='r', linestyle='--', lw = 3, marker = "*", markersize = 12, label = 'AO',  )
-axs.plot(D, AuMRT, color='#28a428', linestyle='--', lw = 3, marker = "v", markersize = 12, label = 'AP-User MRT',  )
-axs.plot(D, AIMRT, color='#FF00FF', linestyle='-', lw = 3, marker = "^", markersize = 12, label = 'AP_RIS MRT',  )
-axs.plot(D, RANDOMphase, color='k', linestyle='--', lw = 3, marker = "P", markersize = 12, label = 'Random Phase',  )
-axs.plot(D, WithoutRIS, color='k', linestyle='--', lw = 3, marker = "s", markersize = 14, markerfacecolor='none',  label = 'Without RIS',  )
+axs.plot(N, AO, color='r', linestyle='--', lw = 3, marker = "*", markersize = 12, label = 'AO',  )
+axs.plot(N, AuMRT, color='#28a428', linestyle='--', lw = 3, marker = "v", markersize = 12, label = 'AP-User MRT',  )
+axs.plot(N, AIMRT, color='#FF00FF', linestyle='-', lw = 3, marker = "^", markersize = 12, label = 'AP_RIS MRT',  )
+axs.plot(N, RANDOMphase, color='k', linestyle='--', lw = 3, marker = "P", markersize = 12, label = 'Random Phase',  )
+axs.plot(N, WithoutRIS, color='k', linestyle='--', lw = 3, marker = "s", markersize = 14, markerfacecolor='none',  label = 'Without RIS',  )
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs.set_xlabel( "AP-User horizonal distance(m)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_xlabel( "Number of reflecting elements, N", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
 axs.set_ylabel('Transmit power at the AP(dBm)', fontproperties=font2, )
+axs.set_title(f'd = {d}(m)', fontproperties=font2)
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 20}
 # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
@@ -177,7 +182,7 @@ axs.spines['right'].set_linewidth(1.5)     ###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-# out_fig.savefig('fig4a.eps' )
+out_fig.savefig('fig4c.eps' )
 plt.show()
 
 

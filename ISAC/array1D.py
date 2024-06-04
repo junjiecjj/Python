@@ -21,27 +21,27 @@ Lightspeed = CONSTANTS.c
 Wavelength = Lightspeed/Frequency
 Wavenumber = 2 * np.pi/Wavelength
 
-#%% Array Parameters
+### Array Parameters
 N = 12
 A = np.ones(N)
-theta0 = math.radians(50)
+theta0 = math.radians(30)
 # wt = A * np.ones(N, )   # 权重向量
 wt = A * np.exp(-1j * (np.pi * np.arange(N) * np.sin(theta0)) )
 alpha = np.zeros(N, )
 
 
-#%% cheb array
+### cheb array
 ## https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.chebwin.html
 # A = np.ones(N)
 # wt = A * scipy.signal.windows.chebwin(N, 46)
 
-#%% taylor array
+### taylor array
 ## https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.taylor.html
 # wt = A * scipy.signal.windows.taylor(N, nbar = 4, sll = 10,)
 
-#%% ArrayFactor Samping
+### ArrayFactor Samping
 Ns = 1000                  # Sampling number
-theta = np.linspace(-90, 90, Ns)
+theta = np.linspace(-180, 180, Ns)
 Ptheta = np.zeros(Ns, )
 mini_a = 1e-5
 for num in range(Ns):
@@ -55,8 +55,8 @@ peaks, _ =  scipy.signal.find_peaks(dbP)
 
 
 
-#%% 画图
-fig, axs = plt.subplots(1, 1, figsize=(10, 8),)
+### 画图
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), )
 axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label='',  )
 axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
@@ -72,8 +72,8 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-x_major_locator = MultipleLocator(20)               #把x轴的刻度间隔设置为1，并存在变量里
-axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
+# x_major_locator = MultipleLocator(20)               #把x轴的刻度间隔设置为1，并存在变量里
+# axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
 axs.tick_params(direction='in', axis='both', top=True, right=True,labelsize=16, width=3,)
 labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
@@ -86,38 +86,6 @@ axs.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
 
 plt.show()
-
-
-#%% 画图
-fig, axs = plt.subplots(1, 1, figsize=(10, 8), subplot_kw={'projection': 'polar'})
-axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label='',  )
-axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
-
-plt.show()
-
-
-
-
-#%%
-
-import  numpy as np
-from    matplotlib import pyplot as plt
-
-N = 8      #天线数量
-
-theta = np.arange(0.000001,2*np.pi-0.0000001,0.01)
-
-psi = np.pi * np.cos(theta)
-
-r = np.abs(np.sin(N * psi/2)/np.sin(psi/2))/N
-
-plt.figure()
-plt.polar(theta,r)
-plt.show()
-
-#%% https://blog.csdn.net/qq_23176133/article/details/120056777
-
-
 
 
 

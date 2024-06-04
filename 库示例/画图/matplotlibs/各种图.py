@@ -47,6 +47,18 @@ label=r'$sin(x)$是给曲线打上标签，但是只当一副子图中画出多�
 marker='*'是设置标志字符, * . o v ^ < > 1 2 3 4 8 s p P h H + x X D d | _
 markerfacecolor='red'是设置标志颜色
 markersize=12是设置标志大小
+https://matplotlib.org/stable/gallery/lines_bars_and_markers/marker_reference.html
+1、颜色、点标记与线型设置
+1）常用的参数名：小括号中都是简写
+color ：线条颜色。
+linestyle(ls)：线条形状。
+linewidth(lw)：线宽。
+marker：点标记形状。
+markersize(ms)：点标记的大小。
+markeredgecolor(mec)：点边缘颜色。
+markeredgewidth(mew)：点边缘宽度。
+markerfacecolor(mfc)：点的颜色。
+
 ax1.set_title('sin(x)')给子图打上标题
 ax2.annotate()是给子图中某处打上箭头并给出描述
 plt.suptitle('cos and sin')给整个画布打上大标题

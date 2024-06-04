@@ -54,16 +54,7 @@ def SDRsolver(G, hr, hd, N, L = 200):
         optim_v = np.exp(1j * np.angle(max_v/max_v[-1]))
     except Exception as e:
         print(f"!!!!!!!!!!!!!!! {e} !!!!!!!!!!!!!!!!!!!!!!")
-        # print(f"V = {V.value}")
-        print(f"Sigma = {Sigma}")
-        # print(f"U = {U}")
-        # print(f"v = {v}")
-        print(f"v^H @ R @ v = {v.T.conjugate() @ R @ v}, max_F = {max_F}")
-
     optim_v = optim_v[:-1]
-
-    #%% Method 2
-    #%% Method 3
 
     return low_bound, optim_v
 

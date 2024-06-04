@@ -43,8 +43,8 @@ dv = 2                 # user到AP-RIS垂直距离
 D0 = 1.0
 C0 = -30               # dB
 C0 = 10**(C0/10.0)     # 参考距离的路损
-sigmaK2 = -80          # dB
-sigmaK2 = 10**(sigmaK2/10.0)  # 噪声功率
+sigmaK2 = -80          # dBm
+sigmaK2 = 10**(sigmaK2/10.0) / 1000  # 噪声功率
 gamma = 10             # dB
 gamma = 10**(gamma/10.0)    #  信干噪比约束10dB
 M = 4     # AP天线数量
@@ -78,10 +78,10 @@ for i, d in enumerate(D):
     print(f"distance = {d}")
     dAu = np.sqrt(d**2 + dv**2)
     dIu = np.sqrt((d0-d)**2 + dv**2)
-    ## h_r
-    Iu_large_fading = C0 * ((dIu/D0)**(-alpha_Iu))
     ## h_d
-    Au_large_fading = C0 * ((dAu/D0)**(-alpha_Au))
+    Au_large_fading = C0 / ((dAu/D0)**(alpha_Au))
+    ## h_r
+    Iu_large_fading = C0 / ((dIu/D0)**(alpha_Iu))
 
     for j in range(frame):
         if (j + 1) % 100 == 0: print(f"  {j+1} ", end = "  ")
@@ -121,14 +121,14 @@ for i, d in enumerate(D):
         WithoutRIS[i] += gamma/(np.linalg.norm(hd, 2)**2)
 
     print("\n")
-    SDR[i] = 10 * np.log10(SDR[i]/frame)
-    LowBound[i] = 10 * np.log10(LowBound[i]/frame)
-    AO[i] = 10 * np.log10(AO[i]/frame)
-    AuMRT[i] = 10 * np.log10(AuMRT[i]/frame)
-    AIMRT[i] = 10 * np.log10(AIMRT[i]/frame)
-    RANDOMphase[i] = 10 * np.log10(RANDOMphase[i]/frame)
-    WithoutRIS[i] = 10 * np.log10(WithoutRIS[i]/frame)
-    print(f"  SDR = {SDR[i]}, LowBound = {LowBound[i]}, AO = {AO}, AuMRT = {AuMRT}, AIMRT = {AIMRT}, RANDOMphase = {RANDOMphase}, WithoutRIS = {WithoutRIS}")
+    SDR[i] = 10 * np.log10(SDR[i]*1000/frame)
+    LowBound[i] = 10 * np.log10(LowBound[i]*1000/frame)
+    AO[i] = 10 * np.log10(AO[i]*1000/frame)
+    AuMRT[i] = 10 * np.log10(AuMRT[i]*1000/frame)
+    AIMRT[i] = 10 * np.log10(AIMRT[i]*1000/frame)
+    RANDOMphase[i] = 10 * np.log10(RANDOMphase[i]*1000/frame)
+    WithoutRIS[i] = 10 * np.log10(WithoutRIS[i]*1000/frame)
+    print(f"  SDR = {SDR}, \n  LowBound = {LowBound}, \n  AO = {AO}, \n  AuMRT = {AuMRT}, \n  AIMRT = {AIMRT}, \n  RANDOMphase = {RANDOMphase}, \n  WithoutRIS = {WithoutRIS}")
 
 
 # SDR = 10 * np.log10(SDR/frame )
@@ -145,9 +145,9 @@ fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(D, LowBound, color = 'k', linestyle='none',  marker = "o", markerfacecolor='white',markersize = 20, label = 'Lower Bound',  )
 axs.plot(D, SDR, color='b', linestyle='-',  lw = 3, marker = "d", markersize = 12, label = 'SDR',  )
 
-axs.plot(D, AO, color='r', linestyle='--', lw = 3, marker = "*", markersize = 12, label = 'AO',  )
+axs.plot(D, AO, color='#FF00FF', linestyle=':', lw = 3, marker = "*", markersize = 12, label = 'AO',  )
 axs.plot(D, AuMRT, color='#28a428', linestyle='--', lw = 3, marker = "v", markersize = 12, label = 'AP-User MRT',  )
-axs.plot(D, AIMRT, color='#FF00FF', linestyle='-', lw = 3, marker = "^", markersize = 12, label = 'AP_RIS MRT',  )
+axs.plot(D, AIMRT, color='#CD853F', linestyle='-', lw = 3, marker = "^", markersize = 12, label = 'AP-RIS MRT',  )
 axs.plot(D, RANDOMphase, color='k', linestyle='--', lw = 3, marker = "P", markersize = 12, label = 'Random Phase',  )
 axs.plot(D, WithoutRIS, color='k', linestyle='--', lw = 3, marker = "s", markersize = 14, markerfacecolor='none',  label = 'Without RIS',  )
 
