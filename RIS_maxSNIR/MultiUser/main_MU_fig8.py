@@ -36,7 +36,7 @@ fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
-set_random_seed(10000)
+# set_random_seed(10000)
 # set_printoption()
 
 #%%
@@ -46,19 +46,19 @@ d0 = 51
 dv = 2                          # user到AP-RIS垂直距离
 D0 = 1.0
 
-d1 = 20                         # AP半径
-d2 = 3                          # RIS半径
-C0 = -30                        # dB
-C0 = 10**(C0/10.0)              # 参考距离的路损
-sigmaK2 = -80                   # dBm
+d1 = 20                              # AP半径
+d2 = 3                               # RIS半径
+C0 = -30                             # dB
+C0 = 10**(C0/10.0)                   # 参考距离的路损
+sigmaK2 = -80                        # dBm
 sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
-GammaDB = np.arange(-4, 25, 4)    # dB
-Gamma = 10**(GammaDB/10.0)        #  信干噪比约束10dB
-M = 4                           # AP天线数量
+GammaDB = np.arange(-4, 41, 4)       # dB
+Gamma = 10**(GammaDB/10.0)           #  信干噪比约束10dB
+M = 4                                # AP天线数量
 Nx = 5
 Ny = 6
-N = Nx * Ny                     # RIS天线数量
-L = 1000                        # Gaussian随机化次数
+N = Nx * Ny                          # RIS天线数量
+L = 1000                             # Gaussian随机化次数
 frame = 500
 
 #%% 路损参数
@@ -69,7 +69,7 @@ beta_AI = 10**(3/10)     # IRS到User考虑瑞利衰落信道，AP和IRS之间�
 beta_Iu = 10**(3/10)     # IRS到User考虑瑞利衰落信道，AP和IRS之间为纯LoS信道
 beta_Au = 0              #  AP和 User 之间为Rayleigh信道
 
-Uk = 2                   # 4个用户，图7仿真，假设U_k, k=1,2,3,4是活跃用户
+Uk = 2                   # 2个用户，图8仿真，假设U_k, k=1,2 是活跃用户
 
 #%% AP-User和RIS-User之间的距离和角度
 d_Au = [d1, np.sqrt((d2*np.cos(pi/5))**2 + (d0 - d2*np.sin(pi/5))**2), ]
@@ -77,17 +77,26 @@ theta_Au = [-pi/4, 2*pi - np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), ]
 d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2,  ]
 theta_Iu = [pi + np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), 3*pi/2 - pi/5, ]
 
+# #%% AP-User和RIS-User之间的距离和角度
+# d_Au = [d1, np.sqrt((d2*np.cos(pi/5))**2 + (d0 - d2*np.sin(pi/5))**2), ]
+# theta_Au = [-pi/4, 2*pi - np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), ]
+# d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2,  ]
+# theta_Iu = [pi + np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), 3*pi/2 - pi/5, ]
+
+
 ## results
 TwoStage = np.zeros(Gamma.size)
 AO = np.zeros(Gamma.size)
 RANDOMphase = np.zeros(Gamma.size)
 ZeroForce = np.zeros(Gamma.size)
+ZeroForce1 = np.zeros(Gamma.size)
 MMSE = np.zeros(Gamma.size)
 
 for i, gamma in enumerate(Gamma):
-    print(f"gamma = {GammaDB[i]}")
+    print(f"gamma = {GammaDB[i]}(dB)")
     for j in range(frame):
-        if (j + 1) % 25 == 0: print(f"  {j+1} ", end = "  ")
+        print("\r   " + "▇"*int(j/frame*100) + f"{j/frame*100:.5f}%", end="")
+        # if (j + 1) % 50 == 0: print(f"  {j+1} ", end = "  ")
         #%% AP-RIS 信道G
         AI_large_fading = C0 * ((d0/D0)**(-alpha_AI))
         GLos = ULA2UPA_Los(M = M, Nx = Nx, Ny = Ny, azi_AP = 0, ele_AP = 0, azi_RIS = -np.pi, ele_RIS = 0)
@@ -98,58 +107,68 @@ for i, gamma in enumerate(Gamma):
         Hr = np.zeros((N, Uk), dtype = complex)
         Hd = np.zeros((M, Uk), dtype = complex)
         for k in range(Uk):
-            ## h_r
+            # RIS-User channel
             Iu_large_fading = C0 * ((d_Iu[k]/D0)**(-alpha_Iu))
-            ## h_d
-            Au_large_fading = C0 * ((d_Au[k]/D0)**(-alpha_Au))
-
-            # RIS-User
             IULos = RIS2UserSteerVec(Nx = Nx, Ny = Ny, azi = theta_Iu[k], ele = 0)
             IUNLos = np.sqrt(1/2) * ( np.random.randn(N, ) + 1j * np.random.randn(N, ) )
             Hr[:,k] = np.sqrt(Iu_large_fading/sigmaK2) * (np.sqrt(beta_Iu/(beta_Iu+1)) * IULos + np.sqrt(1/(beta_Iu+1)) * IUNLos)
-            # AP-User
+            # AP-User channel
+            Au_large_fading = C0 * ((d_Au[k]/D0)**(-alpha_Au))
             AU_NLos = np.sqrt(1/2) * ( np.random.randn(M, ) + 1j * np.random.randn(M, ))
             Hd[:,k] = np.sqrt(Au_large_fading/sigmaK2) * AU_NLos
 
         #%% 交替优化
-        iternum, Pow = AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
+        iternum, Pow, AOW, AOv = AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
         AO[i] = AO[i] + Pow[-1]
 
-        #%% 两阶段优化
-        Pow2, W2 = TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
-        TwoStage[i] = TwoStage[i] + Pow2
+        # #%% 两阶段优化
+        # Pow2, W2, v2 = TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
+        # TwoStage[i] = TwoStage[i] + Pow2
 
-        #%% MMSE
-        pow_mmse, Wmmse = SOCPforW(Hd.T.conjugate(), Uk, M, gamma)
-        MMSE[i] = MMSE[i] + pow_mmse
+        # #%% MMSE
+        # pow_mmse, Wmmse = SOCPforW(Hd.T.conjugate(), Uk, M, gamma)
+        # MMSE[i] = MMSE[i] + pow_mmse
 
-        #%% ZF
-        ZFpow = np.trace(np.diag([gamma]*Uk) @ np.linalg.inv(Hd.T.conjugate() @ Hd) )
-        ZeroForce[i] += 10 * np.log10(np.real(ZFpow)*1000)
+        # #%% RANDOMphase
+        # theta = 2 * np.pi * np.random.rand(1, N)
+        # Theta = np.diag(np.exp(1j * theta.flatten()))
+        # H = Hr.T.conjugate() @ Theta @ G + Hd.T.conjugate()
+        # pow_random, Wrandom = SOCPforW(Hd.T.conjugate(), Uk, M, gamma)
+        # RANDOMphase[i] = RANDOMphase[i] + pow_random
 
-        #%% RANDOMphase
-        theta = 2 * np.pi * np.random.rand(1, N)
-        Theta = np.diag(np.exp(1j * theta.flatten()))
-        H = Hr.T.conjugate() @ Theta @ G + Hd.T.conjugate()
-        H_norm_2 = np.power(np.linalg.norm(H, ord = 2,  axis = 1, ), 2)
-        P_rand = np.sum(gamma/H_norm_2)
-        RANDOMphase[i] +=  10 * np.log10(P_rand * 1000)
+        # #%% ZF
+        # ZFpow = np.trace(np.diag([gamma]*Uk) @ np.linalg.inv(Hd.T.conjugate() @ Hd) )
+        # ZeroForce[i] = ZeroForce[i] + 10 * np.log10(np.real(ZFpow) * 1000)
 
+        # #%% ZF 1
+        # Hd_norm2 = np.power(np.linalg.norm(Hd, ord=2, axis = 0), 2)
+        # ZFpow1 = np.sum(gamma/Hd_norm2)
+        # ZeroForce1[i] = ZeroForce1[i] + 10 * np.log10(ZFpow1 * 1000)
     print("\n")
+    #%%
     AO[i] =  AO[i]/ frame
-    TwoStage[i] =  TwoStage[i] / frame
-    MMSE[i] =  MMSE[i] / frame
-    RANDOMphase[i] = RANDOMphase[i] / frame
-    ZeroForce[i] =  ZeroForce[i] / frame
+    # TwoStage[i] =  TwoStage[i] / frame
+    # MMSE[i] =  MMSE[i] / frame
+    # RANDOMphase[i] = RANDOMphase[i] / frame
+    # ZeroForce[i] =  ZeroForce[i] / frame
+    # ZeroForce1[i] =  ZeroForce1[i] / frame
+    print(f"  AO = {AO}, \n  TwoStage = {TwoStage}, \n  RANDOMphase = {RANDOMphase}, \n  ZF = {ZeroForce}, \n  ZF1 = {ZeroForce1}, \n  MMSE = {MMSE}")
 
-    print(f"  AO = {AO}, \n  TwoStage = {TwoStage}, \n  RANDOMphase = {RANDOMphase}, \n  ZF = {ZeroForce}, \n  MMSE = {MMSE}")
+#%%
+AO = [-2.46535545, 1.93878181, 6.04849505, 10.07296359, 14.15455237, 18.17975045, 22.27915541, 26.35492098, 30.32645068, 34.43267689, 38.85323807 , 43.10801133 ]
+TwoStage = [-2.45957593,  1.87441314,  6.22308638, 10.53897572, 14.53465951, 18.58035581, 22.42511978, 26.60407906, 30.62036829, 34.51892523, 38.54231977, 42.58981213]
+RANDOMphase = [ 0.43882408,  4.83165267,  9.14724278, 13.40362809, 17.5235341,  21.46933286, 25.44072484, 29.58986592, 33.55320286, 37.34172848, 41.4640042,  45.43216941]
+ZeroForce = [1.48961809, 5.55398508, 9.5309239, 13.56851075, 17.58811179, 21.497851, 25.45134962, 29.59426802, 33.55501507, 37.34241275, 41.46428137, 45.43227274]
+ZeroForce1 = [ 0.07607782, 4.10930934, 8.02231265, 12.10279649, 16.20379635, 19.96336874, 24.03503418, 28.08929561, 32.01075627, 35.92163021, 39.97754864, 44.07540832]
+MMSE = [ 0.43882408, 4.83165267, 9.14724278, 13.40362809, 17.5235341 , 21.46933286, 25.44072484, 29.58986592, 33.55320286, 37.34172848, 41.4640042, 45.43216941]
 
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
-axs.plot(GammaDB, AO, color = 'b', linestyle='-',  marker = "o", markerfacecolor='white',markersize = 12, label = "AO", )
-axs.plot(GammaDB, TwoStage, color='r', linestyle='-', lw = 3,  label = 'Two Stage', )
-axs.plot(GammaDB, MMSE, color = 'b', linestyle='--',  marker = "o", markerfacecolor='white',markersize = 12, label = "MMSE w/o RIS", )
-axs.plot(GammaDB, ZeroForce, color='r', linestyle='--', lw = 3, label = 'ZF w/o RIS', )
+axs.plot(GammaDB, AO , color = 'b', linestyle='none', lw = 3, marker = "o", mfc='white',ms = 12,mew = 3, label = "AO", )
+axs.plot(GammaDB, TwoStage , color='r', linestyle='--', lw = 3,  label = 'Two Stage', )
+axs.plot(GammaDB, MMSE, color = '#00FA9A', linestyle='--', lw = 3, marker = "o", markerfacecolor='white',markersize = 12, label = "MMSE w/o RIS", )
+axs.plot(GammaDB, ZeroForce, color='k', linestyle='--', lw = 3, marker = "o", markerfacecolor='none',markersize = 12,  label = 'ZF w/o RIS', )
+# axs.plot(GammaDB, ZeroForce1, color='#DAA520', linestyle='--', lw = 3, marker = "d", markerfacecolor='none',markersize = 12,  label = 'ZF1 w/o RIS', )
 axs.plot(GammaDB, RANDOMphase, color = 'k', linestyle='-',  marker = "*", markerfacecolor='white',markersize = 12, label = "Random Phase", )
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
@@ -178,7 +197,7 @@ axs.spines['right'].set_linewidth(1.5)     ###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-# out_fig.savefig('fig8.eps' )
+out_fig.savefig('fig8.eps' )
 plt.show()
 
 

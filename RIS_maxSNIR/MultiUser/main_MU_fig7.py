@@ -76,6 +76,15 @@ theta_Au = [-pi/4, 2*pi - np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), p
 d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2, np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2]
 theta_Iu = [pi + np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), 3*pi/2 - pi/5, pi - np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), pi+pi/10]
 
+
+# #%% AP-User和RIS-User之间的距离和角度
+# d_Au = [d1, np.sqrt((d2*np.cos(pi/5))**2 + (d0 - d2*np.sin(pi/5))**2), d1, np.sqrt((d2*np.sin(pi/10))**2 + (d0 - d2*np.cos(pi/10))**2)]
+# theta_Au = [pi/4, np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), -pi/4, np.arctan(d2*np.sin(pi/10) / (d0 - d2*np.cos(pi/10)))]
+# d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2, np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2]
+# theta_Iu = [-np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), -3*pi/10, np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), -pi/10]
+
+
+
 #%% AP-RIS 信道G
 AI_large_fading = C0 * ((d0/D0)**(-alpha_AI))
 GLos = ULA2UPA_Los(M = M, Nx = Nx, Ny = Ny, azi_AP = 0, ele_AP = 0, azi_RIS = -np.pi, ele_RIS = 0)
@@ -100,10 +109,10 @@ for i in range(Uk):
     Hd[:,i] = np.sqrt(Au_large_fading/sigmaK2) * AU_NLos
 
 #%% Alternating Optim
-iternum,  Pow = AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
+iternum,  Pow, _, _ = AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
 
 #%% TwoStage Algorithm
-Pow2, W = TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
+Pow2, W, v = TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
 
 
 #%% 画图
@@ -138,7 +147,7 @@ axs.spines['right'].set_linewidth(1.5)     ###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig7.eps' )
+# out_fig.savefig('fig7.eps' )
 plt.show()
 
 

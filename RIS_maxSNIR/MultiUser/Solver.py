@@ -29,11 +29,11 @@ import math
 import cvxpy as cp
 
 ### 对约束不等式的两边同时加了不等式左边的约束.这样方便写约束
-def SOCPforW1(H, Uk, M, gamma):
+def SOCPforW_1(H, Uk, M, gamma):
     a = np.sqrt(1+1/gamma)
 
     W = cp.Variable((M, Uk), complex = True)
-    obj = cp.Minimize(cp.norm(W, 'fro'))
+    obj = cp.Minimize(cp.norm(W, 'fro')**2)
     constraints = [ cp.imag(cp.diag(H@W)) == 0,] + [a * cp.real(H[i,:]@W[:,i]) >= cp.norm(cp.hstack([H[i,:]@W, 1.0])) for i in range(Uk)]
 
     prob = cp.Problem(obj, constraints)
@@ -54,10 +54,10 @@ def SOCPforW(H, Uk, M, gamma):
     for i in range(Uk):
         a = list(np.arange(Uk))
         a.remove(i)
-        idxsum[i, :] = a
+        idxsum[i, :] = a[:]
 
     W = cp.Variable((M, Uk), complex = True)
-    obj = cp.Minimize(cp.norm(W, 'fro'))
+    obj = cp.Minimize(cp.norm(W, 'fro')**2)
     constraints = [ cp.imag(cp.diag(H@W)) == 0,] + [cp.real(H[k,:]@W[:,k]) >= np.sqrt(gamma)*cp.norm(cp.hstack([H[k,:]@W[:, idxsum[k]], 1.0])) for k in range(Uk)]
 
     prob = cp.Problem(obj, constraints)
@@ -79,7 +79,7 @@ def SDPforV(W, Hr, Hd, G, N, Uk, gamma, L = 1000):
         for j in range(Uk):
             a_kj = np.diag(Hr[:,k].conjugate()) @ G @ (W[:, j].reshape(-1,1))
             A = a_kj @ (a_kj.T.conjugate())
-            B = a_kj * b[k,j].conjugate()
+            B = a_kj * (b[k,j].conjugate())
             C = (a_kj.T.conjugate()) * b[k,j]
             C = np.append(C, 0).reshape(1, -1)
             tmp = np.concatenate((A, B), axis = 1)
@@ -157,10 +157,13 @@ def AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon = 1e-4, L = 1000):
     ## random init theta
     theta = np.random.rand(N) * np.pi * 2
     Theta = np.diag(np.exp(1j * theta))
+
+    # theta = SDRsolver(Hr, Hd, G, N)
+    # Theta = np.diag(theta.flatten().conjugate())
     Pow = []
     while np.abs(P_new - P0) > epsilon and iternum < maxIter:
         iternum += 1
-        # print(f"  iternum = {iternum}")
+        # print(f"  iternum = {iternum}, eps = {np.abs(P_new - P0)}")
         H = Hr.T.conjugate() @ Theta @ G + Hd.T.conjugate()
         pow_optim, W = SOCPforW(H, Uk, M, gamma)
         Pow.append(pow_optim)
@@ -170,7 +173,7 @@ def AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon = 1e-4, L = 1000):
         v, _ = SDPforV(W, Hr, Hd, G, N, Uk, gamma)
         Theta = np.diag(v.flatten().conjugate())
 
-    return iternum, Pow
+    return iternum, Pow, W, v
 
 #%% Stage 1: find V
 def SDRsolver(Hr, Hd, G, N, Uk = 4, L = 200, gamma = 1):
@@ -196,7 +199,6 @@ def SDRsolver(Hr, Hd, G, N, Uk = 4, L = 200, gamma = 1):
     # obj = cp.Maximize(cp.real( cp.sum([t[k]*(RV[k]+Hd_norm_2[k]) for k in range(Uk)]) ))
     ## Or use following obj.
     obj = cp.Maximize(cp.real(np.sum(t * (RV + Hd_norm_2)) ))
-
     constraints = [
         0 << V,
         cp.diag(V) == 1,
@@ -218,20 +220,16 @@ def SDRsolver(Hr, Hd, G, N, Uk = 4, L = 200, gamma = 1):
         r = np.sqrt(1/2) * ( np.random.randn(N+1, 1) + 1j * np.random.randn(N+1, 1) )
         v = U @ (np.diag(Sigma)**(1/2)) @ r
         vRv = 0
-        vRv = np.sum([v.T.conjugate() @ R[k] @ v for k in range(Uk)])
+        vRv = np.sum([t[k] * (v.T.conjugate() @ R[k] @ v + Hd_norm_2[k] ) for k in range(Uk)])
         if np.real(vRv) > max_F:
             max_v = v
-            max_F = vRv
-    try:
-        optim_v = np.exp(1j * np.angle(max_v/max_v[-1]))
-    except Exception as e:
-        print(f"!!!!!!!!!!!!!!! {e} !!!!!!!!!!!!!!!!!!!!!!")
+            max_F = np.real(vRv)
+    optim_v = np.exp(1j * np.angle(max_v/max_v[-1]))
     optim_v = optim_v[:-1]
-
     return  optim_v
 
 
-#%% Multiuser system: Two-Stage Algorithm
+### Multiuser system: Two-Stage Algorithm
 def TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L):
     ## Stage 1: find V
     v = SDRsolver(Hr, Hd, G, N, Uk, L)
@@ -241,7 +239,7 @@ def TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L):
     H = Hr.T.conjugate() @ Theta @ G + Hd.T.conjugate()
     pow_optim, W = SOCPforW(H, Uk, M, gamma)
 
-    return pow_optim, W
+    return pow_optim, W, v
 
 
 
