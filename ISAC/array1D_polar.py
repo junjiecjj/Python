@@ -78,10 +78,15 @@ peaks, _ =  scipy.signal.find_peaks(Ptheta)
 ### 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8), subplot_kw={'projection': 'polar'})
 axs.plot(theta, Ptheta, color='b', linestyle='-', lw = 3, label='',  )
-axs.plot(theta[peaks], Ptheta[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+# axs.plot(theta[peaks], Ptheta[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
 
+out_fig = plt.gcf()
+out_fig.savefig('array1D_polar.eps' )
 plt.show()
+
+
+
 
 
 

@@ -41,7 +41,7 @@ alpha = np.zeros(N, )
 
 ### ArrayFactor Samping
 Ns = 1000                  # Sampling number
-theta = np.linspace(-180, 180, Ns)
+theta = np.linspace(-90, 90, Ns)
 Ptheta = np.zeros(Ns, )
 mini_a = 1e-5
 for num in range(Ns):
@@ -57,16 +57,16 @@ peaks, _ =  scipy.signal.find_peaks(dbP)
 
 ### 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8), )
-axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label='',  )
-axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label = 'Beampattern',  )
+# axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
 font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel( r"$\theta(^\circ)$", fontproperties=font2,   ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
 axs.set_ylabel('Amplitude(dB)', fontproperties=font2,  )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 17}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 20}
+# font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
 legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
@@ -85,7 +85,12 @@ axs.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
 axs.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
 
+out_fig = plt.gcf()
+out_fig.savefig('array1D.eps' )
 plt.show()
+
+
+
 
 
 
