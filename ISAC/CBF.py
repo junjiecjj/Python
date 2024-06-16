@@ -57,31 +57,23 @@ noise_pwr = SigPow/(10**(snr/10))
 noise = np.sqrt(noise_pwr ) *  np.random.randn(*(X.shape))
 X1 = X + noise                  # 将白色高斯噪声添加到信号中
 # 计算协方差矩阵
-Rxx = X1 @ X1.T.conjugate() / K
-# 特征值分解
-eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
-idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
-eigvector = eigvector[:, idx]
-eigvector = eigvector[:,::-1]                          # 对应特征矢量排序
-
-Un = eigvector[:,M:N]
-UnUnH = Un @ Un.T.conjugate()
+Rxx = X1 @ X1.T.conjugate()
 
 angle = np.deg2rad(np.arange(-90, 90.1, 0.5))
-Pmusic = np.zeros(angle.size)
+Pcbf = np.zeros(angle.size)
 for i, ang in enumerate(angle):
     a = np.exp(-1j * pi * d * np.sin(ang))
-    Pmusic[i] = 1/np.real(a.T.conjugate() @ UnUnH @ a)[0,0]
+    Pcbf[i] = np.real(a.T.conjugate() @ Rxx @ a)[0,0]
 
-Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
-Pmusic = 10 * np.log10(Pmusic)
-peaks, _ =  scipy.signal.find_peaks(Pmusic, threshold = 3)
+Pcbf = np.abs(Pcbf) / np.abs(Pcbf).max()
+Pcbf = 10 * np.log10(Pcbf)
+peaks, _ =  scipy.signal.find_peaks(Pcbf, )
 
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
-axs.plot(np.arange(-90, 90.1, 0.5), Pmusic , color = 'b', linestyle='-', lw = 3, label = "MUSIC", )
+axs.plot(np.arange(-90, 90.1, 0.5), Pcbf , color = 'b', linestyle='-', lw = 3, label = "CBF", )
 Theta = np.arange(-90, 90.1, 0.5)
-axs.plot(Theta[peaks], Pmusic[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.plot(Theta[peaks], Pcbf[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
@@ -111,7 +103,7 @@ axs.spines['right'].set_linewidth(1.5)     ###设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-# out_fig.savefig('music.eps' )
+# out_fig.savefig('cbf.eps' )
 plt.show()
 
 
