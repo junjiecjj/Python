@@ -1,96 +1,140 @@
-"""
-==================
-Words/Ladder Graph
-==================
 
-Generate  an undirected graph over the 5757 5-letter words in the datafile
-`words_dat.txt.gz`.  Two words are connected by an edge if they differ in one
-letter, resulting in 14,135 edges. This example is described in Section 1.1 of
 
-    Donald E. Knuth, "The Stanford GraphBase: A Platform for Combinatorial
-    Computing", ACM Press, New York, 1993.
-    http://www-cs-faculty.stanford.edu/~knuth/sgb.html
-
-The data file can be found at:
-
-- https://github.com/networkx/networkx/blob/main/examples/graph/words_dat.txt.gz
-"""
-
-import gzip
-from string import ascii_lowercase as lowercase
+###############
+# Authored by Weisheng Jiang
+# Book 5  |  From Basic Arithmetic to Machine Learning
+# Published and copyrighted by Tsinghua University Press
+# Beijing, China, 2022
+###############
 
 import matplotlib.pyplot as plt
-import networkx as nx
+from numpy.random import multivariate_normal as multi_norm
+import numpy as np
+from matplotlib.patches import Rectangle
 
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
+np.random.seed(2)
 
-def generate_graph(words):
-    G = nx.Graph(name="words")
-    lookup = {c: lowercase.index(c) for c in lowercase}
+rho = -0.9
 
-    def edit_distance_one(word):
-        for i in range(len(word)):
-            left, c, right = word[0:i], word[i], word[i + 1 :]
-            j = lookup[c]  # lowercase.index(c)
-            for cc in lowercase[j + 1 :]:
-                yield left + cc + right
+mu_X = 0
+mu_Y = 0
 
-    candgen = (
-        (word, cand)
-        for word in sorted(words)
-        for cand in edit_distance_one(word)
-        if cand in words
-    )
-    G.add_nodes_from(words)
-    for word, cand in candgen:
-        G.add_edge(word, cand)
-    return G
+MU = [mu_X, mu_Y]
 
+sigma_X = 1
+sigma_Y = 1
 
-def words_graph():
-    """Return the words example graph from the Stanford GraphBase"""
-    fh = gzip.open("words_dat.txt.gz", "r")
-    words = set()
-    for line in fh.readlines():
-        line = line.decode()
-        if line.startswith("*"):
-            continue
-        w = str(line[0:5])
-        words.add(w)
-    return generate_graph(words)
+# covariance
+SIGMA = [[sigma_X**2, sigma_X*sigma_Y*rho],
+         [sigma_X*sigma_Y*rho, sigma_Y**2]]
+
+num = 500
+
+X, Y = multi_norm(MU, SIGMA, num).T
+
+center_X = np.mean(X)
+center_Y = np.mean(Y)
+
+fig, ax = plt.subplots(figsize=(8, 8))
+
+# plot center of data
+plt.plot(X,Y,'.', color = '#00448A',
+         alpha = 0.25, markersize = 10)
+
+ax.axvline(x = 0, color = 'k', linestyle = '--')
+ax.axhline(y = 0, color = 'k', linestyle = '--')
+
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_xlim((-3,3))
+ax.set_ylim((-3,3))
+plt.show()
+ax.xaxis.set_ticks([])
+ax.yaxis.set_ticks([])
 
 
-G = words_graph()
-print("Loaded words_dat.txt containing 5757 five-letter English words.")
-print("Two words are connected if they differ in one letter.")
-print(G)
-print(f"{nx.number_connected_components(G)} connected components")
+from scipy.stats import multivariate_normal
 
-for source, target in [("chaos", "order"), ("nodes", "graph"), ("pound", "marks")]:
-    print(f"Shortest path between {source} and {target} is")
-    try:
-        shortest_path = nx.shortest_path(G, source, target)
-        for n in shortest_path:
-            print(n)
-    except nx.NetworkXNoPath:
-        print("None")
+X_grid = np.linspace(-3,3,200)
+Y_grid = np.linspace(-3,3,200)
 
+XX, YY = np.meshgrid(X_grid, Y_grid)
 
-# draw a subset of the graph
-boundary = list(nx.node_boundary(G, shortest_path))
-G.add_nodes_from(shortest_path, color="red")
-G.add_nodes_from(boundary, color="blue")
-H = G.subgraph(shortest_path + boundary)
-colors = nx.get_node_attributes(H, "color")
-options = {"node_size": 1500, "alpha": 0.3, "node_color": colors.values()}
-pos = nx.kamada_kawai_layout(H)
-nx.draw(H, pos, **options)
-nx.draw_networkx_labels(H, pos, font_weight="bold")
+XXYY = np.dstack((XX, YY))
+bi_norm = multivariate_normal(MU, SIGMA)
+
+# visualize PDF
+
+pdf_fine = bi_norm.pdf(XXYY)
+
+# 3D visualization
+
+fig, ax = plt.subplots(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+
+ax.plot_wireframe(XX,YY, pdf_fine,
+                  cstride = 10, rstride = 10,
+                  color = [0.7,0.7,0.7],
+                  linewidth = 0.25)
+
+ax.contour3D(XX,YY,pdf_fine,15,
+             cmap = 'RdYlBu_r')
+
+ax.set_proj_type('ortho')
+ax.view_init(azim=-120, elev=30)
+ax.xaxis.set_ticks([])
+ax.yaxis.set_ticks([])
+ax.zaxis.set_ticks([])
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('PDF')
+ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim3d([-3,3])
+ax.set_ylim3d([-3,3])
+ax.set_zlim3d([0,0.3])
+
+plt.show()
+
+# 2D visualization
+
+fig, ax = plt.subplots(figsize=(8, 8))
+
+ax.contour(XX,YY,pdf_fine,15,
+           cmap = 'RdYlBu_r')
+ax.axvline(x = 0, color = 'k', linestyle = '--')
+ax.axhline(y = 0, color = 'k', linestyle = '--')
+ax.xaxis.set_ticks([])
+ax.yaxis.set_ticks([])
+ax.set_aspect('equal')
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+plt.show()
+
+def draw_vector(vector,RBG):
+    array = np.array([[0, 0, vector[0], vector[1]]])
+    X, Y, U, V = zip(*array)
+    plt.quiver(X, Y, U, V,angles='xy', scale_units='xy',scale=1,color = RBG)
+
+theta = np.arccos(rho)
+
+fig, ax = plt.subplots()
+
+draw_vector([1,0],np.array([0,112,192])/255)
+draw_vector([np.cos(theta), np.sin(theta)],np.array([255,0,0])/255)
+
+circle_theta = np.linspace(0, 2*np.pi, 100)
+
+circle_X = np.cos(circle_theta)
+circle_Y = np.sin(circle_theta)
+
+ax.plot(circle_X, circle_Y, color = 'k', linestyle = '--')
+
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+plt.axis('scaled')
+ax.set_xlim([-1.5, 1.5])
+ax.set_ylim([-1.5, 1.5])
+ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 plt.show()
