@@ -231,7 +231,7 @@ ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('$f(x_1,x_2)$')
 plt.tight_layout()
-
+plt.show()
 
 # 2D visualization
 fig, ax = plt.subplots()
