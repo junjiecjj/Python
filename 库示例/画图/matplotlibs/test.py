@@ -1,85 +1,96 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Jun 13 14:16:14 2023
+==================
+Words/Ladder Graph
+==================
 
-@author: jack
+Generate  an undirected graph over the 5757 5-letter words in the datafile
+`words_dat.txt.gz`.  Two words are connected by an edge if they differ in one
+letter, resulting in 14,135 edges. This example is described in Section 1.1 of
+
+    Donald E. Knuth, "The Stanford GraphBase: A Platform for Combinatorial
+    Computing", ACM Press, New York, 1993.
+    http://www-cs-faculty.stanford.edu/~knuth/sgb.html
+
+The data file can be found at:
+
+- https://github.com/networkx/networkx/blob/main/examples/graph/words_dat.txt.gz
 """
 
-import matplotlib
-# matplotlib.get_backend()
-matplotlib.use('TkAgg')
-# matplotlib.use('WXagg')
+import gzip
+from string import ascii_lowercase as lowercase
+
 import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib
-from matplotlib.font_manager import FontProperties
-from pylab import tick_params
-import copy
-from matplotlib.pyplot import MultipleLocator
+import networkx as nx
 
-# matplotlib.use('Agg')
-# matplotlib.rcParams['text.usetex'] = True
-filepath2 = '/home/jack/snap/'
-font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
+p = plt.rcParams
+p["font.sans-serif"] = ["Roboto"]
+p["font.weight"] = "light"
+p["ytick.minor.visible"] = True
+p["xtick.minor.visible"] = True
+p["axes.grid"] = True
+p["grid.color"] = "0.5"
+p["grid.linewidth"] = 0.5
 
-fontpath = "/usr/share/fonts/truetype/windows/"
-# fname =  "/usr/share/fonts/truetype/arphic/SimSun.ttf",
-font = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+def generate_graph(words):
+    G = nx.Graph(name="words")
+    lookup = {c: lowercase.index(c) for c in lowercase}
 
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
-fonte1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=24)
+    def edit_distance_one(word):
+        for i in range(len(word)):
+            left, c, right = word[0:i], word[i], word[i + 1 :]
+            j = lookup[c]  # lowercase.index(c)
+            for cc in lowercase[j + 1 :]:
+                yield left + cc + right
 
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=20)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Light Nerd Font Complete Mono.otf", size=20)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove SemiLight Nerd Font Complete.otf", size=20)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Regular Nerd Font Complete Mono.otf", size=20)
-
-
-
-##==========================================  2 ===================================================
-import numpy as np
-# loadtxt()中的dtype参数默认设置为float
-# 这里设置为str字符串便于显示
-a = np.loadtxt('tmp.txt', )
-
+    candgen = (
+        (word, cand)
+        for word in sorted(words)
+        for cand in edit_distance_one(word)
+        if cand in words
+    )
+    G.add_nodes_from(words)
+    for word, cand in candgen:
+        G.add_edge(word, cand)
+    return G
 
 
-
-res = a[:, 0:-3].mean(axis = 1) * 0.2  + a[:, -2]*0.2 + a[:, -1]*0.6
-
-
-res = np.ceil(res)
-
-
-import openpyxl as op
-
-num_list = [1,2,3,4,5,6]
-L = 59
-# p = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.1, 0.1, 0.02, 0.01, 0.01, 0.01])
-# p = p/sum(p)
-# num_list = np.random.choice([100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90], size = L, replace=True, p = p)
+def words_graph():
+    """Return the words example graph from the Stanford GraphBase"""
+    fh = gzip.open("words_dat.txt.gz", "r")
+    words = set()
+    for line in fh.readlines():
+        line = line.decode()
+        if line.startswith("*"):
+            continue
+        w = str(line[0:5])
+        words.add(w)
+    return generate_graph(words)
 
 
-bg = op.load_workbook("/home/jack/snap/res.xlsx")      	# 应先将excel文件放入到工作目录下
-sheet = bg["Sheet1"]                          		 	# “Sheet1”表示将数据写入到excel文件的sheet1下
-for i in range(1, len(res)+1):
-    sheet.cell(i , 1, res[i - 1])					# sheet.cell(1,1,num_list[0])表示将num_list列表的第0个数据1写入到excel表格的第一行第一列
-bg.save("/home/jack/snap/res.xlsx")            			# 对文件进行保存
+G = words_graph()
+print("Loaded words_dat.txt containing 5757 five-letter English words.")
+print("Two words are connected if they differ in one letter.")
+print(G)
+print(f"{nx.number_connected_components(G)} connected components")
+
+for source, target in [("chaos", "order"), ("nodes", "graph"), ("pound", "marks")]:
+    print(f"Shortest path between {source} and {target} is")
+    try:
+        shortest_path = nx.shortest_path(G, source, target)
+        for n in shortest_path:
+            print(n)
+    except nx.NetworkXNoPath:
+        print("None")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# draw a subset of the graph
+boundary = list(nx.node_boundary(G, shortest_path))
+G.add_nodes_from(shortest_path, color="red")
+G.add_nodes_from(boundary, color="blue")
+H = G.subgraph(shortest_path + boundary)
+colors = nx.get_node_attributes(H, "color")
+options = {"node_size": 1500, "alpha": 0.3, "node_color": colors.values()}
+pos = nx.kamada_kawai_layout(H)
+nx.draw(H, pos, **options)
+nx.draw_networkx_labels(H, pos, font_weight="bold")
+plt.show()
