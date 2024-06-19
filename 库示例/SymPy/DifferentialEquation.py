@@ -93,14 +93,14 @@ sympy.solvers.ode.dsolve(eq, func=None, hint='default', simplify=True, ics=None,
 
 """
 
-##  二阶微分方程
+##  二阶常系数微分方程
 # https://zhuanlan.zhihu.com/p/111573239
 f = sy.symbols('f', cls = sy.Function)
 diffeq = sy.Eq(f(x).diff(x, 2) - 2*f(x).diff(x) + f(x), sy.sin(x))
 print(diffeq)
 print(sy.dsolve(diffeq, f(x)))
 
-
+##  二阶常系数齐次微分方程
 ## https://blog.csdn.net/m0_37816922/article/details/135424455
 from sympy import Function, dsolve, Derivative
 from sympy.abc import x
@@ -110,6 +110,7 @@ ff = dsolve(Derivative(f(x), x, x) + 9*f(x), f(x))
 # print_latex(ff)
 display(Latex(f"$$ {sy.latex(ff)}$$"))
 
+##  二阶常系数微分方程
 ## https://blog.csdn.net/m0_37816922/article/details/135424455
 from sympy import Function, dsolve, Derivative
 from sympy.abc import x
@@ -129,9 +130,9 @@ f2 = dsolve(eq, hint='almost_linear')
 
 
 
-
+# 一阶微分方程（一阶）
 # https://blog.csdn.net/2302_76305195/article/details/135869216
-## 带初值的一阶常微分方程
+## 带初值的一阶 （非齐次）线性微分方程
 import sympy as sp
 x=sp.var('x')
 y=sp.Function('y')
@@ -141,7 +142,7 @@ s=sp.simplify(s)
 print(s)
 
 # https://blog.csdn.net/2302_76305195/article/details/135869216
-## 带初值的二阶微分方程
+## 带初值的二阶常系数非齐次微分方程
 import sympy as sp
 x=sp.var('x')
 y=sp.Function('y')
@@ -150,7 +151,7 @@ con={y(0):1,y(x).diff(x).subs(x,0):-1}
 s=sp.dsolve(eq, ics=con)
 print(s)
 
-# 带初值的二阶微分方程
+# 带初值的高阶常系数微分方程（n 阶）
 import sympy as sp
 t=sp.var('t')
 y=sp.Function('y')
