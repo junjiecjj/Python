@@ -9,7 +9,7 @@ Created on Thu Dec 14 13:58:26 2023
 
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,7 +19,7 @@ from pylab import tick_params
 import copy
 from matplotlib.pyplot import MultipleLocator
 from mpl_toolkits.mplot3d import art3d
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 from mpl_toolkits import mplot3d
 
 filepath2 = '/home/jack/snap/'
@@ -142,8 +142,8 @@ add_borders(ax, edgecolor=(0, 0, 0, 1), linewidth=0.3)  # 添加边框
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
+plt.show()
 
 
 

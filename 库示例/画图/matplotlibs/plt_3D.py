@@ -8,7 +8,7 @@ Created on Sun May 21 11:52:23 2023
 
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -71,7 +71,7 @@ ax4.set_zlim(-3, 3)
 out_fig = plt.gcf()
 
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 
 plt.show()
 
@@ -95,7 +95,7 @@ ax3.contour(X,Y,Z, zdim='z',offset=-2,cmap='rainbow')   #等高线图，要设�
 out_fig = plt.gcf()
 
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 
 plt.show()
 
@@ -114,15 +114,15 @@ fig=plt.figure(figsize=(5, 5))
 ax = plt.axes(projection='3d')
 
 
-[x,t]=np.meshgrid(np.array(range(25))/24.0,np.arange(0,575.5,0.5)/575*17*np.pi-2*np.pi)
-p=(np.pi/2)*np.exp(-t/(8*np.pi))
-u=1-(1-np.mod(3.6*t,2*np.pi)/np.pi)**4/2
-y=2*(x**2-x)**2*np.sin(p)
-r=u*(x*np.sin(p)+y*np.cos(p))
-surf=ax.plot_surface(r*np.cos(t),r*np.sin(t),u*(x*np.cos(p)-y*np.sin(p)),rstride=1,cstride=1,cmap=cm.gist_rainbow_r, linewidth=0,antialiased=True)
+[x,t] = np.meshgrid(np.array(range(25))/24.0, np.arange(0,575.5,0.5)/575*17*np.pi-2*np.pi)
+p = (np.pi/2)*np.exp(-t/(8*np.pi))
+u = 1-(1-np.mod(3.6*t,2*np.pi)/np.pi)**4/2
+y = 2*(x**2-x)**2*np.sin(p)
+r = u*(x*np.sin(p)+y*np.cos(p))
+surf = ax.plot_surface(r*np.cos(t), r*np.sin(t), u*(x*np.cos(p)-y*np.sin(p)), rstride=1, cstride=1, cmap=cm.gist_rainbow_r, linewidth=0, antialiased=True)
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 plt.show()
 
 
@@ -150,7 +150,7 @@ ax.plot_surface(x, y, z,cmap='rainbow')
 out_fig = plt.gcf()
 
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 
 plt.show()
 
@@ -173,8 +173,8 @@ ax3.plot_surface(X,Y,Z,cmap='rainbow')
 ax3.contour(X,Y,Z,  offset=-2, cmap='rainbow')   #等高线图，要设置offset，为Z的最小值
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 #===============================================================================
 # 1 表面图（Surface plots）
@@ -215,8 +215,8 @@ Z = X*Y**2
 ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1,cmap='rainbow')
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 
 #===============================================================================
@@ -242,8 +242,8 @@ ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1,cmap='rainbow')
 # ,其中的row和cloum_stride为横竖方向的绘图采样步长，越小绘图越精细。
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 #===============================================================================
 # 1 表面图（Surface plots）
@@ -325,8 +325,8 @@ ax.set_zlabel('z')
 ax.set_title('3D contour')
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 
 #===============================================================================
@@ -350,19 +350,14 @@ ax = plt.axes(projection='3d')
 ax.plot_surface(x, y, z,cmap='viridis', edgecolor='none')
 ax.set_title('Surface plot')
 
-
-
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
-plt.close()
-
-
+# out_fig.savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
+plt.show()
 
 #===============================================================================
 # 2 三维曲线和散点
 #===============================================================================
-
 
 #方法一，利用关键字
 from matplotlib import pyplot as plt
@@ -372,7 +367,6 @@ from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax1 = plt.axes(projection='3d')
 #ax = fig.add_subplot(111,projection='3d')  #这种方法也可以画多个子图
-
 
 """
 #方法二，利用三维轴方法
@@ -444,8 +438,8 @@ ax.set_zlabel('Z Label')
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 #===============================================================================
 #3D散点图
@@ -467,8 +461,8 @@ ax.set_title('3d Scatter plot')
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 #===============================================================================
 # 3 np.meshgrid使用方法
@@ -489,8 +483,8 @@ Z=X**2+Y**2#Change Here
 ax3.plot_surface(X,Y,Z,rstride = 1, cstride = 1,cmap='rainbow')
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 
 
@@ -517,8 +511,8 @@ ax.plot_wireframe(X, Y, Z, rstride=10, cstride=10)
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 
 #===============================================================================
@@ -590,8 +584,8 @@ fig.colorbar(surf, shrink=0.5, aspect=5)
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
-plt.close()
+# out_fig .savefig(filepath2+'plotfig.eps',bbox_inches = 'tight')
+plt.show()
 
 
 
@@ -764,8 +758,8 @@ ax.set_zlabel('Z')
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig.savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 #===============================================================================
 # 九、子图绘制（subplot）
@@ -808,8 +802,8 @@ ax.plot_wireframe(X, Y, Z, rstride=10, cstride=10)
 
 out_fig = plt.gcf()
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
-plt.close()
+# out_fig.savefig(filepath2+'hh3D.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+plt.show()
 
 
 

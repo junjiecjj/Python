@@ -4,6 +4,9 @@
 Created on Thu May 23 17:32:05 2024
 
 @author: jack
+https://zhuanlan.zhihu.com/p/627524436
+
+
 """
 
 import numpy as np
