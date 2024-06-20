@@ -17,13 +17,13 @@
 
 (三) 使用  sympy.vector 中的 CoordSys3D, 然后利用sympy.vector.Del(cross,gradient,dot) 或 sympy.vector.gradient, curl, divergence等自动化简，但是化简后是sympy的符号公式，怎么转为numpy并画图还未解决.
 
-这里主要是验证方法(二).
 
     sympy中计算梯度、散度和旋度主要有两种方式：
     一个是使用∇算子，sympy提供了类Del()，该类的方法有：cross、dot和gradient，cross就是叉乘，计算旋度的，dot是点乘，用于计算散度，gradient自然就是计算梯度的。
     另一种方法就是直接调用相关的API：curl、divergence和gradient，这些函数都在模块sympy.vector 下面。
 
     使用sympy计算梯度、散度和旋度之前，首先要确定坐标系，sympy.vector模块里提供了构建坐标系的类，常见的是笛卡尔坐标系， CoordSys3D，根据下面的例子可以了解到相应应用。
+
 
 """
 import matplotlib
@@ -181,36 +181,7 @@ ax2.set_title('等值面')
 plt.show()
 
 
-#%% https://pythonjishu.com/msbslecbjsqhgcg/
 
-from sympy import symbols, Function, diff
-
-# 定义变量和函数
-x, y, z = symbols('x y z')
-f = Function('f')(x, y, z)
-
-# 计算梯度
-grad = [diff(f, var) for var in [x, y, z]]
-print(grad)
-
-
-## 2
-from sympy import symbols, Function, diff
-from sympy.vector import CoordSys3D, gradient, curl, divergence
-
-# 定义坐标系和向量场
-N = CoordSys3D('N')
-f = N.x*N.y*N.z*N.i + N.x*N.y*N.z*N.j + N.x*N.y*N.z*N.k
-
-# 计算梯度、散度和旋度
-# grad_f = gradient(f)
-div_f = divergence(f)
-curl_f = curl(f)
-
-# 输出结果
-# print(grad_f)
-print(div_f)
-print(curl_f)
 
 #%% https://blog.csdn.net/ouening/article/details/80712269
 from sympy.vector import CoordSys3D, Del, gradient, curl, divergence
@@ -230,12 +201,58 @@ f = C.x**2*C.y - C.x*C.y
 # # res = delop(f).doit()
 # print(res)
 
-res = gradient(f) # 直接使用gradient
-print(res) # (2*C.x*C.y - C.y)*C.i + (C.x**2 - C.x)*C.j
+grad_f = gradient(f) # 直接使用gradient
+print(grad_f) # (2*C.x*C.y - C.y)*C.i + (C.x**2 - C.x)*C.j
+
+
+#定义三维数据
+xx = np.arange(-5,5,0.5)
+yy = np.arange(-5,5,0.5)
+X, Y = np.meshgrid(xx, yy)
+
+
+grad_f.subs([(x, 1), (y, 2)])
 
 
 
-### （2）计算散度
+
+
+
+
+
+
+import numpy as np
+from scipy import optimize
+
+def func(x):
+    return x[0]**2 + x[1]**2
+
+x0 = np.array([3.0, 4.0])
+res = optimize.minimize(func, x0, method='BFGS', jac=True, tol=1e-10)
+# print(res['jac'])
+
+
+##
+import numpy as np
+f = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+f = np.arange(48).reshape(6,8)
+fx = np.gradient(f, axis=0)
+fy = np.gradient(f, axis=1)
+grad = np.sqrt(fx ** 2 + fy ** 2)
+print(grad)
+
+
+
+
+
+
+
+
+
+
+
+
+#%% （2）计算散度
 C = CoordSys3D('C')
 delop = Del() # nabla算子
 
@@ -249,7 +266,7 @@ res = divergence(f)
 print(res)  # 2*C.x*C.y - C.x，即2xy-x，向量场的散度是标量
 
 
-# （3）计算旋度
+#%% （3）计算旋度
 ## curl
 C = CoordSys3D('C')
 delop = Del() # nabla算子

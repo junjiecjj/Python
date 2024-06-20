@@ -8,7 +8,7 @@ Created on Wed Aug 23 11:39:20 2023
 
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -68,15 +68,15 @@ ax.spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
 ax.spines['top'].set_color('m')  ### 设置边框线颜色
 ax.spines['right'].set_color('r')  ### 设置边框线颜色
 
-plt.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=6, labelcolor = "red", colors='blue', rotation=25,)
+plt.tick_params(direction='in', axis='both', top=True, right=True, width=10, color='blue', labelsize=20, labelcolor = "red",  rotation=25,)
 labels = ax.get_xticklabels() + ax.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
+# [label.set_fontsize(20) for label in labels] #刻度值字号
 
 
 filepath2 = '/home/jack/snap/'
 out_fig = plt.gcf()
-out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
 

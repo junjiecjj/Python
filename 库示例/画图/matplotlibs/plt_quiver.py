@@ -92,7 +92,7 @@ ax = fig.add_subplot(111, projection='3d')
 
 Ax, Ay, Az = np.meshgrid(np.linspace(-10, 10, 20), np.linspace(-10, 10, 20), np.linspace(-10, 10, 20))
 
-ax.quiver(Ax, Ay, Az, curl_x, curl_y, curl_z, length=3, arrow_length_ratio=0.3, pivot='middle', color=cm.jet(curl_z))
+ax.quiver(Ax, Ay, Az, curl_x, curl_y, curl_z,  length=3, arrow_length_ratio=0.3, pivot='middle', )
 ax.set_xlim(-10, 10)
 ax.set_ylim(-10, 10)
 ax.set_zlim(-10, 10)
@@ -357,23 +357,40 @@ plt.show()
 
 
 #%%================================================================================================
+# https://krajit.github.io/sympy/vectorFields/vectorFields.html
+import numpy as np
+import matplotlib.pyplot as plt
+# %matplotlib inline
+
+x,y = np.meshgrid(np.linspace(-5,5,10),np.linspace(-5,5,10))
+
+u = -y/np.sqrt(x**2 + y**2)
+v = x/np.sqrt(x**2 + y**2)
+
+plt.quiver(x,y,u,v)
+plt.show()
 
 
 
 
+import matplotlib.pyplot as plt
+import numpy as np
 
+ax = plt.figure().add_subplot(projection='3d')
 
+# Make the grid
+x, y, z = np.meshgrid(np.arange(-0.8, 1, 0.2),
+                      np.arange(-0.8, 1, 0.2),
+                      np.arange(-0.8, 1, 0.8))
 
+# Make the direction data for the arrows
+u = np.sin(np.pi * x) * np.cos(np.pi * y) * np.cos(np.pi * z)
+v = -np.cos(np.pi * x) * np.sin(np.pi * y) * np.cos(np.pi * z)
+w = (np.sqrt(2.0 / 3.0) * np.cos(np.pi * x) * np.cos(np.pi * y) * np.sin(np.pi * z))
 
+ax.quiver(x, y, z, u, v, w, length=0.1, normalize=True)
 
-
-
-
-
-
-
-
-
+plt.show()
 
 
 

@@ -4,6 +4,10 @@
 Created on Sun May 21 11:52:23 2023
 
 @author: jack
+
+https://matplotlib.org/stable/gallery/mplot3d/index.html
+
+
 """
 
 import matplotlib
@@ -53,7 +57,7 @@ X, Y = np.meshgrid(xx, yy)
 Z = np.sin(np.sqrt(X**2+Y**2))
 
 #作图 同时还可以将等高线投影到不同的面上：
-ax4.plot_surface(X,Y,Z,alpha=0.3, cmap='winter')     #生成表面， alpha 用于控制透明度
+ax4.plot_surface(X,Y,Z, alpha=0.3, cmap='winter')     #生成表面， alpha 用于控制透明度
 ax4.contour(X,Y,Z,zdir='z', offset=-3, cmap="rainbow")  #生成z方向投影，投到x-y平面
 ax4.contour(X,Y,Z,zdir='x', offset=-6, cmap="rainbow")  #生成x方向投影，投到y-z平面
 ax4.contour(X,Y,Z,zdir='y', offset=6, cmap="rainbow")   #生成y方向投影，投到x-z平面
@@ -515,6 +519,33 @@ filepath2 = '/home/jack/snap/'
 plt.show()
 
 
+
+import matplotlib.pyplot as plt
+
+from mpl_toolkits.mplot3d import axes3d
+
+fig, axs = plt.subplots(1, 3, subplot_kw={'projection': '3d'})
+
+# Get the test data
+X, Y, Z = axes3d.get_test_data(0.05)
+
+# Plot the data
+for ax in axs:
+    ax.plot_wireframe(X, Y, Z, rstride=10, cstride=10)
+
+# Set the orthographic projection.
+axs[0].set_proj_type('ortho')  # FOV = 0 deg
+axs[0].set_title("'ortho'\nfocal_length = ∞", fontsize=10)
+
+# Set the perspective projections
+axs[1].set_proj_type('persp')  # FOV = 90 deg
+axs[1].set_title("'persp'\nfocal_length = 1 (default)", fontsize=10)
+
+# axs[2].set_proj_type('persp', focal_length=0.2)  # FOV = 157.4 deg
+axs[2].set_title("'persp'\nfocal_length = 0.2", fontsize=10)
+
+plt.show()
+
 #===============================================================================
 #  四、3D线框图
 #===============================================================================
@@ -656,6 +687,18 @@ cset = ax.contour(X, Y, Z, zdir='z', offset=-100, cmap=cm.coolwarm)
 cset = ax.contour(X, Y, Z, zdir='x', offset=-40, cmap=cm.coolwarm)
 cset = ax.contour(X, Y, Z, zdir='y', offset=40, cmap=cm.coolwarm)
 
+# 设置投影类型为正交投影 (orthographic projection)
+# ax.set_proj_type('ortho')
+
+# 设置投影类型为透视投影 (perspective projection)
+# ax.set_proj_type('persp')
+
+# 设置观察者的仰角为30度，方位角为30度，即改变三维图形的视角
+# ax.view_init(azim=30, elev=30, )
+
+# 设置观察者的仰角为30度，方位角为30度，即改变三维图形的视角
+# ax.view_init(azim=-60, elev=30, )
+
 ax.set_xlabel('X')
 ax.set_xlim(-40, 40)
 ax.set_ylabel('Y')
@@ -688,7 +731,6 @@ ax.set_zlabel('Z')
 ax.set_zlim(-100, 100)
 
 plt.show()
-
 
 
 
@@ -1004,3 +1046,45 @@ ax4.scatter(X,Y,Z,alpha=0.3,c=np.random.random(400),s=np.random.randint(10,20, s
 #设定显示范围
 
 plt.show()
+
+
+
+
+
+#=======================================================
+import matplotlib.pyplot as plt
+import numpy as np
+
+ax = plt.figure().add_subplot(projection='3d')
+
+# Make the grid
+x, y, z = np.meshgrid(np.arange(-0.8, 1, 0.2),
+                      np.arange(-0.8, 1, 0.2),
+                      np.arange(-0.8, 1, 0.8))
+
+# Make the direction data for the arrows
+u = np.sin(np.pi * x) * np.cos(np.pi * y) * np.cos(np.pi * z)
+v = -np.cos(np.pi * x) * np.sin(np.pi * y) * np.cos(np.pi * z)
+w = (np.sqrt(2.0 / 3.0) * np.cos(np.pi * x) * np.cos(np.pi * y) * np.sin(np.pi * z))
+
+ax.quiver(x, y, z, u, v, w, length=0.1, normalize=True)
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
