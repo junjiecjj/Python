@@ -26,6 +26,7 @@
 
 
 """
+import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
@@ -39,150 +40,6 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
-
-#%%==================================== 根据sympy的求导 diff 和 lambdify 手动生成梯度并画图 ======================================
-import numpy as np
-import sympy as sy
-# from sympy import symbols, Function, diff
-from sympy.vector import CoordSys3D, gradient
-
-
-#定义三维数据
-xx = np.arange(-3, 3, 0.1)
-yy = np.arange(-3, 3, 0.1)
-X, Y = np.meshgrid(xx, yy)
-
-# 定义变量和函数
-x, y = sy.symbols('x y')
-f = sy.Function('f')(x, y)
-f = x*sy.exp(-x**2 - y**2)
-# 计算梯度
-Fx = sy.diff(f, x)
-Fy = sy.diff(f, y)
-
-# 将表达式转为numpy函数
-fn = sy.lambdify([x,y], f, 'numpy')
-fx = sy.lambdify([x,y], Fx, 'numpy')
-fy = sy.lambdify([x,y], Fy, 'numpy')
-
-## 计算在网格中的值
-Z = fn(X, Y)
-gx = fx(X, Y)
-gy = fy(X, Y)
-
-## 画三维图
-fig, axs = plt.subplots(1, 1,  figsize=(12, 10), subplot_kw={'projection': '3d'})
-# fig = plt.figure(figsize=(12, 10),)  #定义新的三维坐标轴
-# axs = plt.axes(projection='3d')
-
-## 1
-axs.plot_surface(X,Y,Z, alpha=0.4,  cmap='winter')     #生成表面， alpha 用于控制透明度
-axs.contour(X, Y, Z,  levels = 30, linewidths = 2, cmap = "RdYlBu_r")   # 3维等高线
-CS = axs.contour(X, Y, Z, zdir='z', offset= Z.min(), levels = 30, linewidths = 2, cmap = "RdYlBu_r")  # 生成z方向投影，投到x-y平面
-
-## colorbar
-cb = fig.colorbar(CS, ax = axs, fraction = 0.025, pad = 0.02, label = "color bar", )
-cb.ax.tick_params(labelsize=22)  #设置色标刻度字体大小。
-font2  = {'family':'Times New Roman','style':'normal','size':26,  }
-cb.set_label('colorbar', fontdict=font2) #设置colorbar的标签字体及其大小
-
-
-# ## 2
-# axs.plot_wireframe(X, Y, Z, rstride=2, cstride=2, color = [0.5, 0.5, 0.5], linewidth = 1)
-# axs.contour(X, Y, Z,  levels = 30, linewidths = 2, cmap = "RdYlBu_r")   # 3维等高线
-# axs.contour(X, Y, Z, levels = [0.2],  colors = 'green', linestyles = '-', linewidths = 4)
-# CS = axs.contour(X, Y, Z, zdir='z', offset= Z.min(), levels = 30, linewidths = 2, cmap = "RdYlBu_r")  # 生成z方向投影，投到x-y平面
-
-# ## colorbar
-# cb = fig.colorbar(CS, ax = axs, fraction = 0.03, pad = 0.06, label = "color bar", )
-# cb.ax.tick_params(labelsize=22)  #设置色标刻度字体大小。
-# font2  = {'family':'Times New Roman','style':'normal','size':26,  }
-# cb.set_label('colorbar', fontdict=font2) #设置colorbar的标签字体及其大小
-
-# 设置观察者的仰角为30度，方位角为30度，即改变三维图形的视角
-axs.view_init(azim=-60, elev=30, )
-
-#设定显示范围
-font2  = {'family':'Times New Roman','style':'normal','size':22,  }
-axs.set_xlabel('X', fontdict = font2, labelpad=12.5)
-axs.set_ylabel('Y', fontdict = font2, labelpad=12.5)
-axs.set_zlabel('$f(x,y)$', fontdict = font2, labelpad=12.5)
-
-axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=3,  )
-labels = axs.get_xticklabels() + axs.get_yticklabels() +  axs.get_zticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(24) for label in labels]  # 刻度值字号
-axs.set_proj_type('ortho')
-axs.grid(False)
-
-
-out_fig = plt.gcf()
-out_fig.savefig('grad3D.pdf', bbox_inches = 'tight')
-out_fig.savefig('grad3D.eps', bbox_inches = 'tight')
-plt.show()
-
-##================= 画2D图，展示梯度与等高线垂直 ========================
-fig, axs = plt.subplots(1, 1,  figsize=(12, 10), )
-
-CS = axs.contour(X, Y, Z, levels = 20, cmap = 'RdYlBu_r', linewidths = 2)  #生成z方向投影，投到x-y平面
-axs.contour(X, Y, Z, levels = [0.2],  colors = 'green', linestyles = '-', linewidths = 4)
-# 绘制等高线数据, 等高线的描述
-axs.clabel(CS, inline = True, fontsize = 16)
-
-## colorbar
-cb = fig.colorbar(CS, ax = axs, fraction = 0.05, pad = 0.02, label = "color bar", )
-cb.ax.tick_params(labelsize=22)  #设置色标刻度字体大小。
-font2  = {'family':'Times New Roman','style':'normal','size':26,  }
-cb.set_label('colorbar', fontdict=font2) #设置colorbar的标签字体及其大小
-
-
-C = np.hypot(gx, gy)
-axs.quiver(X, Y, gx, gy, C,  pivot='tail',)
-
-#设定显示范围
-font2  = {'family':'Times New Roman','style':'normal','size':26,  }
-axs.set_xlabel('X', fontdict = font2, labelpad=12.5)
-axs.set_ylabel('Y', fontdict = font2, labelpad=12.5)
-
-axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=24, width=3,  )
-labels = axs.get_xticklabels() + axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-# [label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-
-out_fig = plt.gcf()
-# out_fig.savefig('grad2D.eps', bbox_inches = 'tight')
-plt.show()
-
-
-
-#%% https://deepinout.com/numpy/numpy-questions/136_numpy_compute_divergence_of_vector_field_using_python.html#google_vignette
-import numpy as np
-import matplotlib.pyplot as plt
-
-x, y, z = np.mgrid[0:4, 0:4, 0:4]  # 定义网格
-F = np.sin(x) * np.cos(y) + np.cos(z)  # 定义矢量场
-
-F_x, F_y, F_z = np.gradient(F)  # 计算矢量场在每个维度的偏导数
-div_F = F_x + F_y + F_z  # 计算散度
-
-fig = plt.figure(figsize=(10, 5))
-
-# 绘制散点图
-ax1 = fig.add_subplot(121, projection='3d')
-ax1.scatter(x.flatten(), y.flatten(), z.flatten(), c=div_F.flatten())
-ax1.set_title('散点图')
-
-# 绘制等值面
-ax2 = fig.add_subplot(122, projection='3d')
-ax2.contour(x, y, z, div_F, cmap='RdBu')
-ax2.set_title('等值面')
-
-plt.show()
-
-
-
-
 #%% https://blog.csdn.net/ouening/article/details/80712269
 from sympy.vector import CoordSys3D, Del, gradient, curl, divergence
 from sympy import init_printing
@@ -191,15 +48,18 @@ init_printing()
 
 ### （1）计算梯度
 #  gradient
+
+
+
 C = CoordSys3D('C')
 delop = Del() # nabla算子
 
 # 标量场 f = x**2*y-xy
 f = C.x**2*C.y - C.x*C.y
 
-# res = delop.gradient(f, doit=True) # 使用nabla算子
+res = delop.gradient(f, doit=True) # 使用nabla算子
 # # res = delop(f).doit()
-# print(res)
+print(res)
 
 grad_f = gradient(f) # 直接使用gradient
 print(grad_f) # (2*C.x*C.y - C.y)*C.i + (C.x**2 - C.x)*C.j
@@ -209,12 +69,6 @@ print(grad_f) # (2*C.x*C.y - C.y)*C.i + (C.x**2 - C.x)*C.j
 xx = np.arange(-5,5,0.5)
 yy = np.arange(-5,5,0.5)
 X, Y = np.meshgrid(xx, yy)
-
-
-grad_f.subs([(x, 1), (y, 2)])
-
-
-
 
 
 

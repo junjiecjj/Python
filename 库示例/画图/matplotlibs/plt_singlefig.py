@@ -139,3 +139,22 @@ out_fig = plt.gcf()
 out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
+
+
+
+##==========================================  2 ===================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

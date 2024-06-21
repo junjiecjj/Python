@@ -27,7 +27,7 @@ import os, time, math
 import scipy
 import sympy as sy
 from IPython.display import display, Latex
-sy.init_printing()  #  这里我们还调用了 sympy.init_printing 函数，它用于配置 SymPy 打印系统以显示良好格式化的数学表达式。在 IPython 中，它会使用 MathJax JavaScript 库来渲染 SymPy 表达式。
+sy.init_printing("mathjax")  #  这里我们还调用了 sympy.init_printing 函数，它用于配置 SymPy 打印系统以显示良好格式化的数学表达式。在 IPython 中，它会使用 MathJax JavaScript 库来渲染 SymPy 表达式。
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ##                                        基础
@@ -482,6 +482,22 @@ print(expr.diff(x, 2))
 expr = sy.exp(x*y*z)
 print(sy.diff(expr, x))
 
+# 求多阶导数，依次展开
+x, y, z = sy.symbols('x y z')
+expr = sy.exp(x*y*z)
+print(sy.diff(expr, x, y, y, z, z, z, z))
+
+print(sy.diff(expr, x, y, 2, z, 4))
+
+print(expr.diff(x, y, y, z, 4))
+
+deriv = sy.Derivative(expr, x, y, y, z, 4)
+deriv.doit()
+
+
+m, n, a, b = sy.symbols('m n a b')
+expr = (a*x + b)**m
+expr.diff((x, n))
 
 #**************** 求不定积分 ********************c
 
@@ -698,33 +714,45 @@ Derivative(g, r, 1).doit()
 #%% https://zhuanlan.zhihu.com/p/83822118
 print("**************** 求解二元一次方程组 ******************** ")
 
-import sympy as sym
+import sympy as sy
 from sympy import sin,cos
-x,y = sym.symbols('x, y')
-print(sym.solve([x + y - 1,x - y -3],[x,y]))
+x,y = sy.symbols('x, y')
+print(sy.solve([x + y - 1,x - y -3],[x,y]))
 
 print("**************** 测试不定积分 ******************** ")
-x = sym.symbols('x')
-a = sym.Integral(cos(x))
+x = sy.symbols('x')
+a = sy.Integral(sy.cos(x))
 # 积分之后的结果
 a.doit()
 # 显示等式
-sym.Eq(a, a.doit())
+sy.Eq(a, a.doit())
 
+integral = sy.Integral(sy.sqrt(2)*x, (x, 0, 1))
+integral.evalf()
+
+sy.Integral(1 / sy.sqrt(x), (x, 0, 1)).evalf()
 
 
 print("**************** 测试定积分 ******************** ")
-e = sym.Integral(cos(x), (x, 0, sym.pi/2))
+e = sy.Integral(cos(x), (x, 0, sym.pi/2))
 e
 # 计算得到结果
 e.doit()
 
 print("**************** 求极限 ******************** ")
-n = sym.Symbol('n')
+n = sy.Symbol('n')
 s = ((n+3)/(n+2))**n
 
 #无穷为两个小写o
-sym.limit(s, x, sym.oo)
+sy.limit(s, x, sym.oo)
+
+
+sy.limit(sy.sin(x)/x, x, 0)
+
+
+expr = sy.Limit((sy.cos(x) - 1)/x, x, 0)
+expr.doit()
+expr.evalf()
 
 
 print("**************** 测试三角函数合并 ******************** ")

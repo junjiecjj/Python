@@ -694,10 +694,11 @@ cset = ax.contour(X, Y, Z, zdir='y', offset=40, cmap=cm.coolwarm)
 # ax.set_proj_type('persp')
 
 # 设置观察者的仰角为30度，方位角为30度，即改变三维图形的视角
-# ax.view_init(azim=30, elev=30, )
+# ax.view_init(azim = 30, elev = 30, )
 
 # 设置观察者的仰角为30度，方位角为30度，即改变三维图形的视角
-# ax.view_init(azim=-60, elev=30, )
+# ax.view_init(azim = -60, elev = 30, )
+# ax.view_init(azim = -120, elev = 30)
 
 ax.set_xlabel('X')
 ax.set_xlim(-40, 40)
@@ -1046,9 +1047,6 @@ ax4.scatter(X,Y,Z,alpha=0.3,c=np.random.random(400),s=np.random.randint(10,20, s
 #设定显示范围
 
 plt.show()
-
-
-
 
 
 #=======================================================
