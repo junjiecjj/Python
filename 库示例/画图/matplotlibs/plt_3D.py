@@ -207,7 +207,7 @@ surf.set_facecolor((0,0,0,0)) # 网格面填充为空
 colorbar = ax.contour(xx,yy, ff, 20,  cmap = 'hsv')
 fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
 
-# 2维等高线
+# 二维等高线
 ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
 
 ax.set_proj_type('ortho')
@@ -237,9 +237,8 @@ ax.plot_wireframe(xx,yy, ff, color = [0.5,0.5,0.5], linewidth = 0.25)
 colorbar = ax.contour(xx,yy, ff, 20,  cmap = 'hsv')
 # fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
 
-# 2维等高线
+# 二维等高线
 ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
-
 
 fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
 ax.set_proj_type('ortho')
