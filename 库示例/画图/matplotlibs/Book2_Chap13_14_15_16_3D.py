@@ -1479,6 +1479,30 @@ ax.grid(False)
 plt.show()
 
 
+#6  用冷暖色表示函数的不同高度取值
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (12, 12))
+
+surf = ax.plot_surface(xx,yy, ff,
+                cmap=cm.RdYlBu_r,
+                rstride=5, cstride=5,
+                linewidth = 0.25,
+                edgecolors = [0.5,0.5,0.5],
+                ) # 删除阴影 shade = False
+# surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+
+ax.set_proj_type('ortho')
+
+ax.set_xlabel('$x$')
+ax.set_ylabel('$y$')
+ax.set_zlabel('$f(x,y)$')
+ax.set_xlim(xx.min(), xx.max())
+ax.set_ylim(yy.min(), yy.max())
+ax.view_init(azim=-135, elev=30)
+plt.tight_layout()
+ax.grid(False)
+plt.show()
+
+
 #%% 绘制网格曲面
 # 导入包
 import math

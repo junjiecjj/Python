@@ -169,6 +169,13 @@ print(expr)
 # pi =  pi.evalf(3) # pi 保留 3 位有效数字
 
 
+##################### 泰勒展开 ##########################
+
+x = sy.symbols('x')
+f_x = sy.exp(x)
+x_0 = 0
+f_series = f_x.series(x, x_0, 6 + 1).removeO()
+
 #**************** 数学符号与表达式 ********************
 print(math.sqrt(8))
 print(sy.sqrt(8))
