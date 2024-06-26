@@ -262,19 +262,18 @@ f_ab = f_xy_fcn(x_a, y_b)
 #%% constant approximation, 用常数函数估计二元高斯函数
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=num_stride, cstride=num_stride, linewidth = 0.25)
 
-approx_zero_order = f_ab + xx_local*0
-
-ax.plot_wireframe(xx_local, yy_local, approx_zero_order, color = [1,0,0], rstride = num_stride, cstride = num_stride, linewidth = 0.25)
-
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=num_stride, cstride=num_stride, linewidth = 0.6)
 ax.plot(x_a, y_b, f_ab, marker = 'x', color = 'r', markersize = 12)
+approx_zero_order = f_ab + xx_local*0
+ax.plot_wireframe(xx_local, yy_local, approx_zero_order, color = [1,0,0], rstride = num_stride, cstride = num_stride, linewidth = 0.6)
+
 
 ax.set_proj_type('ortho')
 
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
-ax.set_zlabel('$f(x_1,x_2)$')
+ax.set_zlabel('$f(x_1,x_2) = e^{-x^2-y^2}$')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -299,7 +298,7 @@ df_dy_a_b = df_dy_fcn(x_a, y_b)
 
 approx_first_order = approx_zero_order + df_dx_a_b*(xx_local - x_a) + df_dy_a_b*(yy_local - y_b)
 
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
 ax.plot_wireframe(xx,yy, f_xy_zz,  color = [0.5,0.5,0.5],  rstride=num_stride, cstride=num_stride, linewidth = 0.25)
 
@@ -311,7 +310,7 @@ ax.set_proj_type('ortho')
 
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
-ax.set_zlabel('$f(x_1,x_2)$')
+ax.set_zlabel('$f(x_1,x_2)$ ')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -340,11 +339,11 @@ d2f_dydy_a_b = d2f_dydy_fcn(x_a,y_b)
 
 approx_second_order = approx_first_order + (d2f_dxdx_a_b*(xx_local - x_a)**2 + 2*d2f_dxdy_a_b*(xx_local - x_a)*(yy_local - y_b) + d2f_dydy_a_b*(yy_local - y_b)**2)/2
 
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-ax.plot_wireframe(xx,yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=num_stride, cstride=num_stride, linewidth = 0.25)
+ax.plot_wireframe(xx,yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=num_stride, cstride=num_stride, linewidth = 0.5)
 
-ax.plot_wireframe(xx_local,yy_local, approx_second_order, color = [1,0,0], rstride=num_stride, cstride=num_stride, linewidth = 0.25)
+ax.plot_wireframe(xx_local,yy_local, approx_second_order, color = [1,0,0], rstride=num_stride, cstride=num_stride, linewidth = 0.5)
 
 ax.plot(x_a,y_b,f_ab, marker = 'x', color = 'r', markersize = 12)
 
@@ -373,9 +372,7 @@ import matplotlib.pyplot as plt
 from sympy.abc import x
 from sympy import latex, lambdify, diff, sin, log, exp
 
-
-def num_diff(f,a,method,dx):
-
+def num_diff(f, a, method, dx):
     # f: function handle
     # a: expansion point
     # method: 'forward', 'backward', and 'central'
@@ -391,24 +388,22 @@ def num_diff(f,a,method,dx):
         raise ValueError("Method must be 'central', 'forward' or 'backward'.")
 
 f_x = exp(-x**2)
-x_array = np.linspace(-3,3,100)
-a_array = np.linspace(-2.5,2.5,11)
+x_array = np.linspace(-3, 3, 100)
+a_array = np.linspace(-2.5, 2.5, 11)
 
-f_x_fcn = lambdify(x,f_x)
+f_x_fcn = lambdify(x, f_x)
 f_x_array = f_x_fcn(x_array)
 
-f_x_1_diff = diff(f_x,x)
-f_x_1_diff_fcn = lambdify(x,f_x_1_diff)
+f_x_1_diff = diff(f_x, x)
+f_x_1_diff_fcn = lambdify(x, f_x_1_diff)
 f_x_1_diff_array = f_x_1_diff_fcn(x_array)
 
 #%% visualization
-
-fig = plt.figure(figsize=plt.figaspect(0.5))
+fig = plt.figure( figsize = (10, 10))
 ax = fig.add_subplot(2, 1, 1)
 
 ax.plot(x_array, f_x_array, '#0070C0', linewidth = 1.5)
-ax.set_ylim(np.floor(f_x_array.min()),
-            np.ceil(f_x_array.max()))
+ax.set_ylim(np.floor(f_x_array.min()), np.ceil(f_x_array.max()))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
@@ -417,7 +412,6 @@ ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 
 ax = fig.add_subplot(2, 1, 2)
-
 ax.plot(x_array, f_x_1_diff_array, '#0070C0', linewidth = 1.5)
 
 ax.set_xlabel('x')
@@ -426,29 +420,22 @@ ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 ax.set_xlim((x_array.min(),x_array.max()))
 plt.show()
+
+
 #%% numerical methods
-
 dx = 0.2
-
 diff_central  = num_diff(f_x_fcn,a_array,'central', dx)
 diff_forward  = num_diff(f_x_fcn,a_array,'forward', dx)
 diff_backward = num_diff(f_x_fcn,a_array,'backward',dx)
 
-fig, ax = plt.subplots()
-
+fig, ax = plt.subplots( figsize = (10, 10))
 ax.plot(x_array, f_x_1_diff_array, '#0070C0', linewidth = 1.5)
 
-ax.plot(a_array, diff_central, marker = '.',
-        markersize = 12, linestyle = 'none',
-        label = 'central')
+ax.plot(a_array, diff_central, marker = '.', markersize = 12, linestyle = 'none', label = 'central')
 
-ax.plot(a_array, diff_forward, marker = '>',
-        markersize = 12, linestyle = 'none',
-        label = 'forward')
+ax.plot(a_array, diff_forward, marker = '>', markersize = 12, linestyle = 'none', label = 'forward')
 
-ax.plot(a_array, diff_backward, marker = '<',
-        markersize = 12, linestyle = 'none',
-        label = 'backward')
+ax.plot(a_array, diff_backward, marker = '<', markersize = 12, linestyle = 'none', label = 'backward')
 
 ax.set_xlabel('x')
 ax.set_ylabel('f\'(x)')
@@ -458,31 +445,26 @@ ax.set_xlim((x_array.min(),x_array.max()))
 plt.axhline(y=0, color='k', linestyle='--', linewidth = 0.25)
 plt.legend()
 plt.show()
+
+
 #%% varying step size
-
 dx_array = np.linspace(0.01,0.2,20)
-
 a = 1
-
 diff_central  = num_diff(f_x_fcn,a,'central', dx_array)
 diff_forward  = num_diff(f_x_fcn,a,'forward', dx_array)
 diff_backward = num_diff(f_x_fcn,a,'backward',dx_array)
 
 f_x_1_diff_a = f_x_1_diff_fcn(a)
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = (10, 10))
 
-ax.plot(dx_array, diff_central, linewidth = 1.5,
-        marker = '.',label = 'central')
+ax.plot(dx_array, diff_central, linewidth = 1.5, marker = '.',label = 'central')
 
-ax.plot(dx_array, diff_forward, linewidth = 1.5,
-        marker = '>',label = 'forward')
+ax.plot(dx_array, diff_forward, linewidth = 1.5, marker = '>',label = 'forward')
 
-ax.plot(dx_array, diff_backward, linewidth = 1.5,
-        marker = '<',label = 'backward')
+ax.plot(dx_array, diff_backward, linewidth = 1.5, marker = '<',label = 'backward')
 
-plt.axhline(y=f_x_1_diff_a, color='k', linestyle='--',
-            linewidth = 0.25,label = 'analytical')
+plt.axhline(y=f_x_1_diff_a, color='k', linestyle='--', linewidth = 0.25,label = 'analytical')
 
 ax.set_xlim((dx_array.min(),dx_array.max()))
 ax.spines['right'].set_visible(False)
