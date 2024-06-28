@@ -3,7 +3,80 @@
 
 
 
+# Bk4_Ch2_11.py
 
+import numpy as np
+a = np.array([-2, 1, 1])
+b = np.array([1, -2, -1])
+# a = [-2, 1, 1]
+# b = [1, -2, -1]
+
+# calculate cross product of row vectors
+a_cross_b = np.cross(a, b)
+print(f"a_cross_b = {a_cross_b}")
+
+a_col = np.array([[-2], [1], [1]])
+b_col = np.array([[1], [-2], [-1]])
+
+# calculate cross product of column vectors
+a_cross_b_col = np.cross(a_col, b_col, axis=0)
+print(f"a_cross_b_col = {a_cross_b_col}")
+
+
+#%% Bk4_Ch2_12.py
+
+import numpy as np
+a = np.array([-2, 1, 1])
+b = np.array([1, -2, -1])
+# a = [-2, 1, 1]
+# b = [1, -2, -1]
+
+
+# calculate element-wise product of row vectors
+a_times_b = np.multiply(a, b)
+a_times_b_2 = a*b
+
+a_col = np.array([[-2], [1], [1]])
+b_col = np.array([[1], [-2], [-1]])
+
+# calculate element-wise product of column vectors
+a_times_b_col = np.multiply(a_col, b_col)
+a_times_b_col_2 = a_col*b_col
+
+
+
+#%% Bk4_Ch2_13.py
+
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+def plot_heatmap(x,title):
+
+    fig, ax = plt.subplots()
+    ax = sns.heatmap(x,
+                     cmap='RdYlBu_r',
+                     cbar_kws={"orientation": "horizontal"}, vmin=-1, vmax=1)
+    ax.set_aspect("equal")
+    plt.title(title)
+
+a = np.array([[0.5],[-0.7],[1],[0.25],[-0.6],[-1]])
+b = np.array([[-0.8],[0.5],[-0.6],[0.9]])
+
+a_outer_b = np.outer(a, b)
+a_outer_a = np.outer(a, a)
+b_outer_b = np.outer(b, b)
+
+# Visualizations
+plot_heatmap(a,'a')
+
+plot_heatmap(b,'b')
+
+plot_heatmap(a_outer_b,'a outer b')
+
+plot_heatmap(a_outer_a,'a outer a')
+
+plot_heatmap(b_outer_b,'b outer b')
 
 
 
