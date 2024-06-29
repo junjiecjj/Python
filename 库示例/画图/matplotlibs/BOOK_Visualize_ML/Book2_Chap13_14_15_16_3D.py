@@ -1461,7 +1461,7 @@ ax.plot_wireframe(xx,yy, ff,
                   rstride=5, cstride=5,
                   linewidth = 0.25)
 
-ax.scatter(xx.ravel(), yy.ravel(), ff, c = ff, s = 10, cmap = 'RdYlBu_r')
+ax.scatter(xx, yy, ff, c = ff, s = 10, cmap = 'RdYlBu_r')
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -1484,7 +1484,7 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (12, 12))
 
 surf = ax.plot_surface(xx,yy, ff,
                 cmap=cm.RdYlBu_r,
-                rstride=5, cstride=5,
+                rstride=2, cstride=2,
                 linewidth = 0.25,
                 edgecolors = [0.5,0.5,0.5],
                 ) # 删除阴影 shade = False
@@ -1835,7 +1835,7 @@ plt.show()
 
 
 
-#%% 将第四维数据映射到三维网格曲面
+#%% 将第四维数据映射到三维网格曲面, Bk_2_Ch15_02
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
@@ -2403,7 +2403,6 @@ if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
 def mesh(num = 101):
-
     # number of mesh grids
     x_array = np.linspace(-3,3,num)
     y_array = np.linspace(-3,3,num)
@@ -2427,14 +2426,11 @@ PDF_ff = bivariate_normal.pdf(points)
 # 2. 指定 x1 具体值
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx1, xx2, PDF_ff,
-                  color = [0.5,0.5,0.5],
-                  rstride=0, cstride=2,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1, xx2, PDF_ff, color = [0.5,0.5,0.5], rstride=0, cstride=2, linewidth = 0.25)
 
 x1 = np.linspace(-3,3,101)
 x2 = np.linspace(-3,3,101)
-x1_loc_array = np.arange(0,len(x1),10)
+x1_loc_array = np.arange(0, len(x1), 10)
 facecolors = cm.rainbow(np.linspace(0, 1, len(x1_loc_array)))
 
 for idx in range(len(x1_loc_array)):
@@ -2443,16 +2439,11 @@ for idx in range(len(x1_loc_array)):
     x_i_array = x2*0 + x_idx
     z_array = PDF_ff[:,x_loc]
 
-    ax.plot(x_i_array, x2, z_array, color=facecolors[idx,:],
-            linewidth = 1.5)
+    ax.plot(x_i_array, x2, z_array, color=facecolors[idx,:], linewidth = 1.5)
 
-    ax.add_collection3d(plt.fill_between(x2, 0*z_array, z_array,
-                                         color=facecolors[idx,:],
-                                         alpha=0.2),
-                        # 给定填充对象
+    ax.add_collection3d(plt.fill_between(x2, 0*z_array, z_array, color=facecolors[idx,:], alpha=0.2), # 给定填充对象
                         zs=x_idx, # 指定位置
                         zdir='x') # 指定方向
-
 
 ax.set_proj_type('ortho')
 
@@ -2941,19 +2932,12 @@ for idx,level_idx in enumerate(level_array,1):
     ax = fig.add_subplot(5,3,idx, projection = '3d')
 
     # 绘制剖面
-    ax.plot_surface(yy_*0 + level_idx, yy_, zz_,
-                    color = 'b', alpha = 0.1)
-    ax.plot_wireframe(yy_*0 + level_idx, yy_, zz_,
-                      color = 'b', lw = 0.2)
+    ax.plot_surface(yy_*0 + level_idx, yy_, zz_, color = 'b', alpha = 0.1)
+    ax.plot_wireframe(yy_*0 + level_idx, yy_, zz_, color = 'b', lw = 0.2)
 
-    ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+    ax.plot_wireframe(xx,yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5,  linewidth = 0.25)
 
-    ax.contour(xx, yy, ff,
-               zdir='x',
-               levels = [level_idx])
+    ax.contour(xx, yy, ff, zdir='x', levels = [level_idx])
 
     ax.set_proj_type('ortho')
     # 另外一种设定正交投影的方式
@@ -2976,16 +2960,8 @@ plt.show()
 # 3. 空间等高线，x = 3
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
-ax.contour(xx, yy, ff,
-           zdir='x', offset=3,
-           levels = level_array,
-           cmap='rainbow')
-
+ax.plot_wireframe(xx,yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5, linewidth = 0.25)
+ax.contour(xx, yy, ff, zdir='x', offset=3, levels = level_array, cmap='rainbow')
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -3078,32 +3054,17 @@ plt.show()
 
 
 
-xx_, zz_ = np.meshgrid(np.linspace(-3, 3, 2),
-                       np.linspace(-8, 8, 2))
-
-fig = plt.figure(figsize = (6,10))
-
+xx_, zz_ = np.meshgrid(np.linspace(-3, 3, 2), np.linspace(-8, 8, 2))
+fig = plt.figure(figsize = (18, 8), constrained_layout=True)
 level_array = np.arange(-2.25,2.25,0.3)
-
-for idx,level_idx in enumerate(level_array,1):
-
-    ax = fig.add_subplot(5,3,idx, projection = '3d')
-
+for idx, level_idx in enumerate(level_array,1):
+    ax = fig.add_subplot(5, 3, idx, projection = '3d', )
     # 绘制剖面
-    ax.plot_surface(xx_, xx_*0 + level_idx, zz_,
-                    color = 'b', alpha = 0.1)
-    ax.plot_wireframe(xx_, xx_*0 + level_idx, zz_,
-                      color = 'b', lw = 0.2)
+    ax.plot_surface(xx_, xx_*0 + level_idx, zz_, color = 'b', alpha = 0.1)
+    ax.plot_wireframe(xx_, xx_*0 + level_idx, zz_, color = 'red', lw = 0.2)
 
-    ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
-    ax.contour(xx, yy, ff,
-               zdir='y',
-               levels = [level_idx])
-
+    ax.plot_wireframe(xx,yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5, linewidth = 0.25)
+    ax.contour(xx, yy, ff, zdir='y', levels = [level_idx])
     ax.set_proj_type('ortho')
     # 另外一种设定正交投影的方式
 
@@ -3115,7 +3076,7 @@ for idx,level_idx in enumerate(level_array,1):
     ax.set_zticks([])
     ax.set_xlim(xx.min(), xx.max())
     ax.set_ylim(yy.min(), yy.max())
-    ax.set_zlim(-8,8)
+    # ax.set_zlim(-8,8)
     ax.view_init(azim=-120, elev=30)
     ax.grid(False)
 plt.show()
