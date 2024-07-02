@@ -27,7 +27,6 @@ ax.axvline(x = iris_sns.sepal_length.mean(), color = 'r', ls = '--')
 # 增加均值位置竖直参考线
 
 
-
 # 绘制花萼长度样本数据直方图，考虑鸢尾花分类
 fig, ax = plt.subplots(figsize = (8,6))
 # 纵轴为概率密度
@@ -50,8 +49,7 @@ sns.barplot(data=iris_sns, x="species", y="sepal_length",  )
 # 绘制花萼长度样本数据，高斯核密度估计
 fig, ax = plt.subplots(figsize = (8,6))
 
-sns.kdeplot(data=iris_sns, x="sepal_length",
-            bw_adjust=0.3, fill = True)
+sns.kdeplot(data=iris_sns, x="sepal_length", bw_adjust=0.3, fill = True)
 sns.rugplot(data=iris_sns, x="sepal_length")
 
 
@@ -59,23 +57,20 @@ sns.rugplot(data=iris_sns, x="sepal_length")
 # 绘制花萼长度样本数据，高斯核密度估计，考虑鸢尾花类别
 fig, ax = plt.subplots(figsize = (8,6))
 
-sns.kdeplot(data=iris_sns, x="sepal_length", hue = 'species',
-            bw_adjust=0.5, fill = True)
+sns.kdeplot(data=iris_sns, x="sepal_length", hue = 'species', bw_adjust=0.5, fill = True)
 sns.rugplot(data=iris_sns, x="sepal_length", hue = 'species')
 
 
 # 绘制花萼长度样本数据，高斯核密度估计，考虑鸢尾花类别，堆叠
 fig, ax = plt.subplots(figsize = (8,6))
 
-sns.kdeplot(data=iris_sns, x="sepal_length", hue="species",
-            multiple="stack", bw_adjust=0.5)
+sns.kdeplot(data=iris_sns, x="sepal_length", hue="species", multiple="stack", bw_adjust=0.5)
 
 
 # 绘制后验概率 (成员值)
 
 fig, ax = plt.subplots(figsize = (8,6))
-sns.kdeplot(data=iris_sns, x="sepal_length",
-            hue="species", bw_adjust=0.5, multiple = 'fill')
+sns.kdeplot(data=iris_sns, x="sepal_length", hue="species", bw_adjust=0.5, multiple = 'fill')
 
 # 第二种方法
 # sns.displot(
@@ -91,8 +86,7 @@ sns.kdeplot(data=iris_sns, x="sepal_length",
 #%% 分散图
 # 绘制鸢尾花花萼长度分散点图
 fig, ax = plt.subplots(figsize = (8,6))
-sns.stripplot(data=iris_sns, x="sepal_length", y="species",
-              hue="petal_length", palette="RdYlBu_r", ax = ax)
+sns.stripplot(data=iris_sns, x="sepal_length", y="species", hue="petal_length", palette="RdYlBu_r", ax = ax)
 
 
 sns.stripplot(
@@ -110,8 +104,7 @@ sns.violinplot(data=iris_sns, x="sepal_length", ax = ax)
 
 # 绘制花萼长度样本数据，小提琴图，考虑分类
 fig, ax = plt.subplots(figsize = (8,4))
-sns.violinplot(data=iris_sns, x="sepal_length",
-               y="species", ax = ax)
+sns.violinplot(data=iris_sns, x="sepal_length", y="species", ax = ax)
 
 sns.violinplot(data=iris_sns, x="sepal_length", y="species", inner = 'stick')
 

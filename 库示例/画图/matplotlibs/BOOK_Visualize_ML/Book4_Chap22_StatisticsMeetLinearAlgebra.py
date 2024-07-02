@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 # Bk4_Ch22_01_A
 
 import numpy as np
@@ -38,11 +33,7 @@ X = X_df.to_numpy();
 # Visualize the heatmap of X
 
 fig, ax = plt.subplots()
-ax = sns.heatmap(X,
-                 cmap='RdYlBu_r',
-                 xticklabels=list(X_df.columns),
-                 cbar_kws={"orientation": "vertical"},
-                 vmin=-1, vmax=9)
+ax = sns.heatmap(X, cmap='RdYlBu_r', xticklabels=list(X_df.columns), cbar_kws={"orientation": "vertical"}, vmin=-1, vmax=9)
 plt.title('X')
 
 #%%
@@ -61,11 +52,7 @@ X_demean = X_df.sub(X_df.mean())
 
 
 fig, ax = plt.subplots()
-ax = sns.heatmap(X_demean,
-                 cmap='RdYlBu_r',
-                 xticklabels=list(X_df.columns),
-                 cbar_kws={"orientation": "vertical"},
-                 vmin=-3, vmax=3)
+ax = sns.heatmap(X_demean, cmap='RdYlBu_r', xticklabels=list(X_df.columns), cbar_kws={"orientation": "vertical"}, vmin=-3, vmax=3)
 plt.title('$X_{demean}$')
 
 #%% SSD
@@ -81,18 +68,11 @@ SSD = (np.linalg.norm(X - E_X, axis = 1)**2).sum()
 # distribution of column features of X
 
 fig, ax = plt.subplots()
-sns.kdeplot(data=X_demean,fill=True,
-            common_norm=False,
-            alpha=.3, linewidth=1,
-            palette = "viridis")
+sns.kdeplot(data=X_demean,fill=True, common_norm=False, alpha=.3, linewidth=1, palette = "viridis")
 plt.title('Distribution of $X_{demean}$ columns')
 
-#%%
-
-# Bk4_Ch22_01_D
-
-#%% covariance matrix
-
+#%% Bk4_Ch22_01_D
+# covariance matrix
 SIGMA = X_df.cov()
 
 fig, axs = plt.subplots()

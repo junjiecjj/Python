@@ -156,8 +156,7 @@ class MIMO_Channel():
 
         def H_gen(Seed=100):
             # complex gain
-            alpha_h = np.random.normal(0, self.sigma_h, (self.Ncl * self.Nray)) \
-                      + 1j * np.random.normal(0, self.sigma_h, (self.Ncl * self.Nray))
+            alpha_h = np.random.normal(0, self.sigma_h, (self.Ncl * self.Nray)) + 1j * np.random.normal(0, self.sigma_h, (self.Ncl * self.Nray))
             # receive and transmit array response vectors
             ar, ThetaR = theta(self.Nr, Seed + 10000)
             at, ThetaT = theta(self.Nt, Seed)
