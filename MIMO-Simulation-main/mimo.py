@@ -59,7 +59,7 @@ def SignalNorm(signal, M, mod_type='qam', denorm=False):
 
 
 class MIMO_Channel():
-    def __init__(self, Nr=2, Nt=4, d=2, K=1, P=1, M=16, mod_type='qam'):
+    def __init__(self, Nr = 2, Nt = 4, d = 2, K = 1, P = 1, M = 16, mod_type = 'qam'):
         # Base configs
         self.Nt = Nt  # transmit antenna
         self.K = K  # users
@@ -80,7 +80,7 @@ class MIMO_Channel():
         self.Tao = 0.001  # delay
         self.fd = 3  # maximum Doppler shift
 
-    def trans_procedure(self, Tx_sig, H, V, D, U, snr=20):
+    def trans_procedure(self, Tx_sig, H, V, D, U, snr = 20):
         """
             MIMO transmission procedure.
 
@@ -111,7 +111,7 @@ class MIMO_Channel():
         symbol_y = SignalNorm(y_de, self.M, mod_type=self.mod_type, denorm=True).flatten()[:total_num]
         return symbol_y
 
-    def circular_gaussian(self, Tx_sig, snr=10):
+    def circular_gaussian(self, Tx_sig, snr = 10):
         """
             Circular gaussian MIMO channel.
 
@@ -128,7 +128,7 @@ class MIMO_Channel():
         Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
         return Rx_sig
 
-    def mmwave_MIMO(self, Tx_sig, snr=10):
+    def mmwave_MIMO(self, Tx_sig, snr = 10):
         """
             MIMO transmission procedure.
 
@@ -140,9 +140,9 @@ class MIMO_Channel():
             ----------
             symbol_y: array(num_symbol, ). Decoded symbol at the receiver side.
         """
-        def theta(N, Seed=100):
+        def theta(N, Seed = 100):
             phi = np.zeros(self.Ncl * self.Nray)  # azimuth AoA and AoD
-            a = np.zeros((self.Ncl * self.Nray, N, 1), dtype=complex)
+            a = np.zeros((self.Ncl * self.Nray, N, 1), dtype = complex)
 
             for i in range(self.Ncl * self.Nray):
                 phi[i] = np.random.uniform(-np.pi / 3, np.pi / 3)
@@ -154,7 +154,7 @@ class MIMO_Channel():
             PHI = phi.reshape(self.Ncl * self.Nray)
             return a / np.sqrt(N), PHI
 
-        def H_gen(Seed=100):
+        def H_gen(Seed = 100):
             # complex gain
             alpha_h = np.random.normal(0, self.sigma_h, (self.Ncl * self.Nray)) + 1j * np.random.normal(0, self.sigma_h, (self.Ncl * self.Nray))
             # receive and transmit array response vectors
@@ -164,8 +164,8 @@ class MIMO_Channel():
             fff = 0
             for i in range(self.Ncl):
                 for j in range(self.Nray):
-                    H += alpha_h[fff] * np.dot(ar[fff], np.conjugate(at[fff]).T)
-                    # H += alpha_h[fff] * np.dot(ar[fff], np.conjugate(at[fff]).T)*np.exp(1j*2*np.pi*self.Tao*self.fd*np.cos(ThetaR[fff]))    # channel with delay
+                    # H += alpha_h[fff] * np.dot(ar[fff], np.conjugate(at[fff]).T)
+                    H += alpha_h[fff] * np.dot(ar[fff], np.conjugate(at[fff]).T)*np.exp(1j*2*np.pi*self.Tao*self.fd*np.cos(ThetaR[fff]))    # channel with delay
                     fff += 1
             H = np.sqrt(self.Nt * self.Nr / self.Ncl * self.Nray) * H
             return H

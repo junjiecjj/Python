@@ -30,13 +30,9 @@ ax.axvline(x = iris_sns.sepal_length.mean(), color = 'r', ls = '--')
 # 绘制花萼长度样本数据直方图，考虑鸢尾花分类
 fig, ax = plt.subplots(figsize = (8,6))
 # 纵轴为概率密度
-sns.histplot(data=iris_sns, x="sepal_length",
-             hue = 'species', binwidth=0.2, ax = ax,
-             element="step", stat = 'density')
+sns.histplot(data = iris_sns, x = "sepal_length", hue = 'species', binwidth = 0.2, ax = ax, element = "step", stat = 'density')
 
-sns.histplot(
-    iris_sns, x="sepal_length", y="species", hue="species", legend=True
-)
+sns.histplot( iris_sns, x = "sepal_length", y = "species", hue = "species", legend = True)
 
 
 

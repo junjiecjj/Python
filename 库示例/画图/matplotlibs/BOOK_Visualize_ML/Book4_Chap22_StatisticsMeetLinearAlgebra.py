@@ -17,8 +17,7 @@ iris = load_iris()
 X = iris.data
 y = iris.target
 
-feature_names = ['Sepal length, x1','Sepal width, x2',
-                 'Petal length, x3','Petal width, x4']
+feature_names = ['Sepal length, x1','Sepal width, x2', 'Petal length, x3','Petal width, x4']
 
 # Convert X array to dataframe
 X_df = pd.DataFrame(X, columns=feature_names)
@@ -96,38 +95,26 @@ h.set_title('$\u03A1$')
 
 f,(ax1,ax2,ax3) = plt.subplots(1,3,sharey=True)
 
-g1 = sns.heatmap(X_df[y==0].cov(),cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax1,square=True,
-                 vmax = 0.4, vmin = 0)
+g1 = sns.heatmap(X_df[y==0].cov(),cmap="RdYlBu_r", annot=True,cbar=False,ax=ax1,square=True, vmax = 0.4, vmin = 0)
 ax1.set_title('Y = 0, setosa')
 
-g2 = sns.heatmap(X_df[y==1].cov(),cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax2,square=True,
-                 vmax = 0.4, vmin = 0)
+g2 = sns.heatmap(X_df[y==1].cov(),cmap="RdYlBu_r", annot=True,cbar=False,ax=ax2,square=True, vmax = 0.4, vmin = 0)
 ax2.set_title('Y = 1, versicolor')
 
-g3 = sns.heatmap(X_df[y==2].cov(),cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax3,square=True,
-                 vmax = 0.4, vmin = 0)
+g3 = sns.heatmap(X_df[y==2].cov(),cmap="RdYlBu_r", annot=True,cbar=False,ax=ax3,square=True, vmax = 0.4, vmin = 0)
 ax3.set_title('Y = 2, virginica')
 
 #%% compare correlation matrices
 
 f,(ax1,ax2,ax3) = plt.subplots(1,3,sharey=True)
 
-g1 = sns.heatmap(X_df[y==0].corr(),cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax1,square=True,
-                 vmax = 1, vmin = 0.15)
+g1 = sns.heatmap(X_df[y==0].corr(),cmap="RdYlBu_r", annot=True,cbar=False,ax=ax1,square=True, vmax = 1, vmin = 0.15)
 ax1.set_title('Y = 0, setosa')
 
-g2 = sns.heatmap(X_df[y==1].corr(),cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax2,square=True,
-                 vmax = 1, vmin = 0.15)
+g2 = sns.heatmap(X_df[y==1].corr(),cmap="RdYlBu_r", annot=True,cbar=False,ax=ax2,square=True, vmax = 1, vmin = 0.15)
 ax2.set_title('Y = 1, versicolor')
 
-g3 = sns.heatmap(X_df[y==2].corr(),cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax3,square=True,
-                 vmax = 1, vmin = 0.15)
+g3 = sns.heatmap(X_df[y==2].corr(),cmap="RdYlBu_r", annot=True,cbar=False,ax=ax3,square=True, vmax = 1, vmin = 0.15)
 ax3.set_title('Y = 2, virginica')
 
 

@@ -223,7 +223,7 @@ fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 for j in [0, 1, 2, 3]:
     X_j = S[j,j]*U[:,j][:, None]@V[:,j][None, :];
     plt.sca(axs[j])
-    ax = sns.heatmap(X_j,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax = sns.heatmap(X_j, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
     ax.set_aspect("equal")
     title_txt = '$s_'+ str(j+1) + 'u_'+ str(j+1) + 'v_'+ str(j+1) + '^T$'
     plt.title(title_txt)
@@ -231,7 +231,6 @@ for j in [0, 1, 2, 3]:
 #  projection,  X 向 v_j 映射结果为 s_j u_j
 for j in [0, 1, 2, 3]:
     fig, axs = plt.subplots(1, 7, figsize=(12, 3))
-
     v_j = V[:,j]
     v_j = np.matrix(v_j).T
     s_j = S[j,j]
@@ -281,7 +280,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 PRECISION = 3
 
-def svd(X,full_matrices):
+def svd(X, full_matrices):
     U, s, Vt = np.linalg.svd(X, full_matrices = full_matrices)
     # Put the vector singular values into a padded matrix
     if full_matrices:
@@ -305,7 +304,7 @@ all_max = 2
 all_min = -2
 
 #%% full, 数据 X 完全型 SVD 分解矩阵热图
-
+print("数据 X 完全型 SVD 分解矩阵热图")
 U, S, V = svd(X, full_matrices = True)
 
 fig, axs = plt.subplots(1, 4, figsize=(12, 3))
@@ -332,8 +331,8 @@ plt.title('$V^T$')
 
 
 #%%Bk4_Ch16_01_B
-
 #  Economy-size, thin, 数据 X 经济型 SVD 分解热图
+print("Economy-size, thin, 数据 X 经济型 SVD 分解热图")
 
 U, S, V = svd(X, full_matrices = False)
 fig, axs = plt.subplots(1, 4, figsize=(12, 3))
@@ -360,7 +359,7 @@ plt.title('$V^T$')
 
 #%% Bk4_Ch16_01_C,
 # Compact, 数据 X 紧凑型 SVD 分解热图
-
+print("数据 X 紧凑型 SVD 分解热图")
 import copy
 
 X_rank_3 = copy.deepcopy(X);
@@ -394,7 +393,7 @@ plt.title('$V^T$')
 
 #%% Bk4_Ch16_01_D
 # Truncated,  采用截断型 SVD 分解还原数据运算热图
-
+print("采用截断型 SVD 分解还原数据运算热图")
 num_p = 2;
 U_truc = U[:,0:num_p]
 S_truc = S[0:num_p,0:num_p]
