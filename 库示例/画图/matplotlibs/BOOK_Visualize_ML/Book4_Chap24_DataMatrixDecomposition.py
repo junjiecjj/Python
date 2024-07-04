@@ -28,13 +28,11 @@ X_df = pd.DataFrame(X, columns=feature_names)
 X = X_df.to_numpy();
 
 #%% Gram matrix, G
-
 G = X.T@X
 
 #%% Cosine similarity matrix, C
-
-# from sklearn.metrics.pairwise import cosine_similarity
-# C = cosine_similarity(X)
+from sklearn.metrics.pairwise import cosine_similarity
+C = cosine_similarity(X.T)
 from numpy.linalg import inv
 
 S_norm = np.diag(np.sqrt(np.diag(G)))
@@ -43,7 +41,6 @@ S_norm = np.diag(np.sqrt(np.diag(G)))
 C = inv(S_norm)@G@inv(S_norm)
 
 #%% centroid of data matrix, E(X)
-
 E_X = X_df.mean().to_frame().T
 
 #%% Demean, centralize, X_c
@@ -53,10 +50,19 @@ X_c = X_df.sub(X_df.mean())
 #%% covariance matrix, Sigma
 
 SIGMA = X_df.cov()
+# 计算协方差矩阵
+cov_x = np.cov(X)
+cov_xt = np.cov(X.T)
+
+
 
 #%% correlation matrix, P
 
 RHO = X_df.corr()
+
+# 计算相关性系数矩阵
+corr_x = np.corrcoef(X)
+corr_xt = np.corrcoef(X.T)
 
 #%% Normalize data, Z_X
 
@@ -64,9 +70,7 @@ from scipy.stats import zscore
 
 Z_X = zscore(X_df)
 
-#%%
-
-# Bk4_Ch24_01_B
+#%% Bk4_Ch24_01_B
 
 #%% QR decomposition
 
@@ -112,9 +116,7 @@ Lambs_sigma = np.diag(Lambs_sigma)
 Lambs_P,V_P = eig(RHO)
 Lambs_P = np.diag(Lambs_P)
 
-#%%
-
-# Bk4_Ch24_01_E
+#%% Bk4_Ch24_01_E
 
 #%% SVD, original data X
 

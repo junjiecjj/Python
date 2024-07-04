@@ -110,7 +110,7 @@ def svd(X):
 def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
     # Run SVD, as defined above
     U, S, V = svd(X)
-    all_ = np.r_[X.flatten(order='C'), U.flatten(order='C'), S.flatten(order='C'), V.flatten(order='C')]
+    # all_ = np.r_[X.flatten(order='C'), U.flatten(order='C'), S.flatten(order='C'), V.flatten(order='C')]
 
     # all_max = max(all_.max(),all_.min())
     # all_min = -max(all_.max(),all_.min())
