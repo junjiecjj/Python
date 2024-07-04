@@ -125,7 +125,7 @@ def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
     plt.title(title_X)
 
     plt.sca(axs[1])
-    plt.title('@')
+    plt.title('=')
     plt.axis('off')
 
     plt.sca(axs[2])
