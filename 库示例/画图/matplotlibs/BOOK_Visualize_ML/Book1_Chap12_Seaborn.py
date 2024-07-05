@@ -31,14 +31,8 @@ ax.axvline(x = iris_sns.sepal_length.mean(), color = 'r', ls = '--')
 fig, ax = plt.subplots(figsize = (8,6))
 # 纵轴为概率密度
 sns.histplot(data = iris_sns, x = "sepal_length", hue = 'species', binwidth = 0.2, ax = ax, element = "step", stat = 'density')
-
 sns.histplot( iris_sns, x = "sepal_length", y = "species", hue = "species", legend = True)
-
-
-
 sns.barplot(data=iris_sns, x="species", y="sepal_length",  )
-
-
 
 
 #%% 核密度估计KDE
@@ -59,22 +53,16 @@ sns.rugplot(data=iris_sns, x="sepal_length", hue = 'species')
 
 # 绘制花萼长度样本数据，高斯核密度估计，考虑鸢尾花类别，堆叠
 fig, ax = plt.subplots(figsize = (8,6))
-
 sns.kdeplot(data=iris_sns, x="sepal_length", hue="species", multiple="stack", bw_adjust=0.5)
 
 
 # 绘制后验概率 (成员值)
-
 fig, ax = plt.subplots(figsize = (8,6))
 sns.kdeplot(data=iris_sns, x="sepal_length", hue="species", bw_adjust=0.5, multiple = 'fill')
 
 # 第二种方法
-# sns.displot(
-#     data=iris_sns,
-#     x="sepal_length", hue="species",
-#     kind="kde", bw_adjust=0.3,
-#     multiple="fill")
-
+fig, ax = plt.subplots(figsize = (8,6))
+sns.displot( data=iris_sns, x="sepal_length", hue="species", kind="kde", bw_adjust=0.3, multiple="fill")
 
 
 
@@ -260,18 +248,17 @@ plt.grid()
 sns.heatmap(iris_sns.iloc[:,:-1], cmap = 'RdYlBu_r', vmin = 0, vmax = 8)
 
 # 聚类热图
-sns.clustermap(iris_sns.iloc[:,:-1], cmap = 'RdYlBu_r',
-               vmin = 0, vmax = 8)
+sns.clustermap(iris_sns.iloc[:,:-1], cmap = 'RdYlBu_r', vmin = 0, vmax = 8)
 
 # 成对特征散点图
 sns.pairplot(iris_sns)
-
 
 # 绘制成对特征散点图
 sns.pairplot(iris_sns, hue = 'species')
 
 g = sns.pairplot(iris_sns, hue = 'species')
 g.map_lower(sns.kdeplot, levels=8, color=".2")
+
 
 
 
