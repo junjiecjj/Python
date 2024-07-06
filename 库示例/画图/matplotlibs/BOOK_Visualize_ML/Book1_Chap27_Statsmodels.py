@@ -219,26 +219,20 @@ X1_df = X_df.iloc[:,0]
 # 自定义可视化函数
 def visualize(x1,pdf,color):
     fig, ax = plt.subplots(figsize = (8,3))
-    ax.fill_between(x1, pdf,
-                    facecolor = color,alpha = 0.2)
+    ax.fill_between(x1, pdf, facecolor = color,alpha = 0.2)
     ax.plot(x1, pdf,color = color)
-
     ax.set_ylim([0,1.4])
     ax.set_xlim([4,8])
     ax.set_ylabel('PDF')
     ax.set_xlabel('Sepal length, $x_1$')
 
-
 # 不考虑标签
 KDE = sm.nonparametric.KDEUnivariate(X1_df)
-KDE.fit(bw=0.1)
+KDE.fit(bw = 0.1)
 
-
-x1 = np.linspace(4,8,101)
+x1 = np.linspace(4, 8, 101)
 f_x1 = KDE.evaluate(x1)
-
-visualize(x1,f_x1,'#00448A')
-
+visualize(x1, f_x1, '#00448A')
 
 
 # 考虑鸢尾花标签，用KDE描述样本数据花萼长度分布
@@ -265,24 +259,17 @@ import scipy.stats as st
 
 # 定义可视化函数
 def plot_surface(xx1, xx2, surface, x1_s, x2_s,  z_height, color, title_txt):
-
     fig = plt.figure(figsize=(8,3))
-
     ax = fig.add_subplot(1, 2, 1, projection='3d')
-    ax.plot_wireframe(xx1, xx2, surface,
-                      cstride = 8, rstride = 8,
-                      color = [0.7,0.7,0.7],
-                      linewidth = 0.25)
-    ax.scatter(x1_s, x2_s, x2_s*0, c=color)
-    ax.contour(xx1, xx2, surface,20,
-                 cmap = 'RdYlBu_r')
+    ax.plot_wireframe(xx1, xx2, surface, cstride = 8, rstride = 8, color = [0.7,0.7,0.7], linewidth = 0.25)
+    ax.scatter(x1_s, x2_s, x2_s*0, c = color)
+    ax.contour(xx1, xx2, surface, 20, cmap = 'RdYlBu_r')
 
     ax.set_proj_type('ortho')
     ax.set_xlabel('Sepal length, $x_1$')
     ax.set_ylabel('Sepal width, $x_2$')
     ax.set_zlabel('PDF')
-    ax.set_xticks([]); ax.set_yticks([])
-    ax.set_zticks([])
+    ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
     ax.set_xlim(x1.min(), x1.max())
     # ax.set_ylim(x2.min(), x2.max())
     ax.set_zlim([0,z_height])
@@ -304,21 +291,17 @@ def plot_surface(xx1, xx2, surface, x1_s, x2_s,  z_height, color, title_txt):
 
 # 导入鸢尾花数据
 iris = load_iris()
-X_1_to_4 = iris.data; y = iris.target
-feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$',
-                 'Petal length, $X_3$','Petal width, $X_4$']
+X_1_to_4 = iris.data
+y = iris.target
+feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
 
 X_df = pd.DataFrame(X_1_to_4)
 X1_2_df = X_df.iloc[:,[0,1]]
-
-
-
 
 x1 = np.linspace(4,8,161); x2 = np.linspace(1,5,161)
 xx1, xx2 = np.meshgrid(x1,x2)
 positions = np.vstack([xx1.ravel(), xx2.ravel()])
 colors = ['#FF3300','#0099FF','#8A8A8A']
-
 
 KDE = st.gaussian_kde(X1_2_df.values.T)
 f_x1_x2 = np.reshape(KDE(positions).T, xx1.shape)
@@ -326,19 +309,14 @@ f_x1_x2 = np.reshape(KDE(positions).T, xx1.shape)
 x1_s = X1_2_df.iloc[:,0]
 x2_s = X1_2_df.iloc[:,1]
 
-
 # 可视化证据因子
-
 z_height = 0.5
 title_txt = '$f_{X1, X2}(x_1, x_2)$, evidence'
-plot_surface(xx1, xx2, f_x1_x2,
-             x1_s, x2_s, z_height,
-             '#00448A', title_txt)
+plot_surface(xx1, xx2, f_x1_x2, x1_s, x2_s, z_height, '#00448A', title_txt)
 
 
 # 考虑不同鸢尾花分类
 for idx in range(3):
-
     KDE_idx = st.gaussian_kde(X1_2_df[y==idx].values.T)
     f_x1_x2_given_C_i = np.reshape(KDE_idx(positions).T, xx1.shape)
 
@@ -347,9 +325,7 @@ for idx in range(3):
 
     z_height = 1
     title_txt = 'Likelihood'
-    plot_surface(xx1, xx2, f_x1_x2_given_C_i,
-                 x1_s_C_i, x2_s_C_i, z_height,
-                 colors[idx], title_txt)
+    plot_surface(xx1, xx2, f_x1_x2_given_C_i, x1_s_C_i, x2_s_C_i, z_height, colors[idx], title_txt)
 
 
 

@@ -105,8 +105,25 @@ sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'hist', b
 g = sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', fill = True)
 g.plot_joint(sns.kdeplot, color="r",lw = 3, zorder=0, levels=20)
 
+#%% Categorical data
+#%% 图 14. 直方图，考虑鸢尾花分类标签
+for i in [0,1,2,3]:
+    fig, ax = plt.subplots()
+    sns.histplot(data=iris_sns, x=iris_sns.columns[i], hue="species", binwidth = 0.2, element="step")
+    ax.set_xlim([0,8])
+
+#%% classes, bivariate, 图 16. 二维数据散点图，KDE 概率密度曲面等高线，考虑鸢尾花分类标签
+sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", hue="species")
+sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', hue="species")
+sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', fill = True, hue="species")
+
+#%% Regression by classes
+sns.lmplot(data = iris_sns, x="sepal_length", y="sepal_width", hue="species")
+sns.lmplot(data = iris_sns, x="sepal_length", y="sepal_width", hue="species", col="species")
 
 
+
+#%% penguins
 penguins = sns.load_dataset("penguins")
 sns.jointplot(data=penguins, x="bill_length_mm", y="bill_depth_mm")
 
@@ -130,7 +147,6 @@ g.plot_marginals(sns.rugplot, color="r", height=-.15, clip_on=False)
 
 
 
-
 #%% multivariate pairwise
 # without class labels
 fig, ax = plt.subplots()
@@ -151,22 +167,6 @@ g.map_lower(sns.kdeplot, levels=8, color=".2")
 
 plt.show()
 plt.close('all')
-#%% Categorical data
-#%% 图 14. 直方图，考虑鸢尾花分类标签
-for i in [0,1,2,3]:
-    fig, ax = plt.subplots()
-    sns.histplot(data=iris_sns, x=iris_sns.columns[i], hue="species", binwidth = 0.2, element="step")
-    ax.set_xlim([0,8])
-
-#%% classes, bivariate, 图 16. 二维数据散点图，KDE 概率密度曲面等高线，考虑鸢尾花分类标签
-sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", hue="species")
-sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', hue="species")
-sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', fill = True, hue="species")
-
-#%% Regression by classes
-sns.lmplot(data = iris_sns, x="sepal_length", y="sepal_width", hue="species")
-sns.lmplot(data = iris_sns, x="sepal_length", y="sepal_width", hue="species", col="species")
-
 
 
 #%% pairwise

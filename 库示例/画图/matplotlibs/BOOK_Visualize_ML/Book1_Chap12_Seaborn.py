@@ -62,7 +62,7 @@ sns.kdeplot(data=iris_sns, x="sepal_length", hue="species", bw_adjust=0.5, multi
 
 # 第二种方法
 fig, ax = plt.subplots(figsize = (8,6))
-sns.displot( data=iris_sns, x="sepal_length", hue="species", kind="kde", bw_adjust=0.3, multiple="fill")
+sns.displot(data=iris_sns, x="sepal_length", hue="species", kind="kde", bw_adjust=0.3, multiple="fill")
 
 
 
