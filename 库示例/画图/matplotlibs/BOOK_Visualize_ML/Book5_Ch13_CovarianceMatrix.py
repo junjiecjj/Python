@@ -361,7 +361,7 @@ plt.title('$V$')
 
 
 #%% relationship between lambda and singular values
-
+# 图 19. 特征值和奇异值的关系
 Lambda_reproduced = S**2/(len(X_df) - 1)
 
 Lambda_reproduced - LAMBDA # for test only
