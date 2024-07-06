@@ -99,7 +99,7 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(RHO,cmap='rainbow', vmin = -1, vmax = 2, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(RHO, cmap='rainbow', vmin = -1, vmax = 2, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('P')
 
@@ -114,8 +114,8 @@ plt.title('D')
 
 
 #%% Eigen decomposition of covariance matrix
-
-LAMBDA_,V = np.linalg.eig(SIGMA)
+# 图 10. 协方差矩阵特征值分解
+LAMBDA_, V = np.linalg.eig(SIGMA)
 
 LAMBDA = np.diag(LAMBDA_)
 
@@ -191,40 +191,29 @@ h = sns.heatmap(Yc.T@Yc,cmap='rainbow', linewidths=.05)
 h.set_aspect("equal")
 
 #%% tensor products
-
 for idx in range(4):
-
     v_j = V[:,idx].reshape(-1,1)
-
     tensor_prod = v_j @ v_j.T
-
     fig, ax = plt.subplots(figsize=(6, 6))
-
     ax = sns.heatmap(tensor_prod,cmap='rainbow', cbar=False, vmax = 1,vmin = -1)
     ax.set_aspect("equal")
     plt.title('$v_' + str(idx + 1) + ' @ v_'  + str(idx + 1) + '^T$')
 
 #%% spectral decomposition layers
-
+# 图 12. 协方差矩阵谱分解展开热图
 SIGMA_reprod = np.zeros(4)
-
 for idx in range(4):
-
     v_j = V[:,idx].reshape(-1,1)
     lambda_j = LAMBDA_[idx]
-
     tensor_prod = lambda_j * v_j @ v_j.T
-
     SIGMA_reprod = SIGMA_reprod + tensor_prod
-
     fig, ax = plt.subplots(figsize=(6, 6))
-
-    ax = sns.heatmap(tensor_prod,cmap='rainbow', cbar=False, vmax = SIGMA.max().max(),vmin = SIGMA.min().min())
+    ax = sns.heatmap(tensor_prod, cmap='rainbow', cbar=False, vmax = SIGMA.max().max(),vmin = SIGMA.min().min())
     ax.set_aspect("equal")
     plt.title('$\u03BB_' + str(idx + 1) + 'v_' + str(idx + 1) + ' @ v_'  + str(idx + 1) + '^T$')
 
 #%% decomposition of covariance Matrix inverse
-
+# 图 15. 协方差矩阵的逆的特征值分解运算热图
 fig, axs = plt.subplots(1, 7, figsize=(12, 3))
 
 plt.sca(axs[0])
@@ -261,7 +250,7 @@ plt.title('$V^T$')
 
 
 #%% Eigen decomposition of correlation matrix
-
+# 图 16. 相关性系数矩阵的特征值分解
 LAMBDA_P_,V_P = np.linalg.eig(RHO)
 
 LAMBDA_P = np.diag(LAMBDA_P_)
@@ -302,7 +291,7 @@ plt.title('$V_Z^T$')
 
 
 #%% SVD, economic
-
+# 图 17. 矩阵 Xc进行经济型 SVD 分解
 X_c_df = X_df - X_df.mean()
 
 U, S_, V = np.linalg.svd(X_c_df, full_matrices = False)
@@ -344,8 +333,7 @@ ax.set_aspect("equal")
 plt.title('$V^T$')
 
 #%% projection Yc = Xc @ V
-
-
+# 图 18. 矩阵 Xc投影到 V
 Y_c_df = X_c_df @ V
 
 fig, axs = plt.subplots(1, 5, figsize=(12, 4))
@@ -414,19 +402,16 @@ plt.title('$S$')
 
 
 #%% spectral decomposition of economic SVD
-
+# 图 20. 利用矩阵乘法第二视角展开 SVD 分解
 Xc_reprod = np.zeros((150,4))
 
 for idx in range(4):
     v_j = V[:,idx].reshape(-1,1)
     u_j = U[:,idx].reshape(-1,1)
-
     s_j = S_[idx]
 
     tensor_prod = s_j * u_j @ v_j.T
-
     Xc_reprod = Xc_reprod + tensor_prod
-
     fig, ax = plt.subplots(figsize=(6, 6))
 
     ax = sns.heatmap(tensor_prod,cmap='rainbow', cbar=False, vmax = X_c_df.max().max(),vmin = X_c_df.min().min())
@@ -436,7 +421,7 @@ for idx in range(4):
 
 
 #%% SIGMA_inv to Mahal distance sq
-
+# 图 24 计算 d2的矩阵运算热图
 MU = X_df.mean()
 MU = np.array([MU]).T
 
