@@ -163,7 +163,7 @@ sns.pairplot(iris_sns)
 sns.pairplot(iris_sns, hue = 'species')
 
 g = sns.pairplot(iris_sns, hue = 'species')
-g.map_lower(sns.kdeplot, levels=8, color=".2")
+g.map_lower(sns.kdeplot, levels=4, color=".2")
 
 plt.show()
 plt.close('all')

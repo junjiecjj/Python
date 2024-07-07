@@ -136,8 +136,7 @@ for num_draws in n_array:
 
 fig, ax = plt.subplots()
 
-plt.plot(n_array,SE_array,
-         marker = 'x', markersize = 12)
+plt.plot(n_array,SE_array, marker = 'x', markersize = 12)
 plt.xlim(4,100)
 plt.ylim(0,3)
 plt.grid()
@@ -145,7 +144,7 @@ plt.grid()
 
 
 #%% Bk5_Ch16_03
-
+# 图 15. lnL(θ1, θ2) 曲面和最大值点位置
 import numpy as np
 from sympy import symbols, ln, simplify, lambdify, diff, solve, Float
 import matplotlib.pyplot as plt
@@ -172,22 +171,21 @@ print(A)
 
 lnL = -n/2*np.log(2*np.pi) - n/2*ln(theta_2) - 1/2/theta_2*A
 
-#%%
-
+####
 lnL = simplify(lnL)
 
 print(lnL)
 
-theta_1_array = np.linspace(mu-3,mu+3,40)
-theta_2_array = np.linspace(bias_var*0.8,bias_var*1.2,40)
+theta_1_array = np.linspace(mu-3, mu+3, 40)
+theta_2_array = np.linspace(bias_var*0.8, bias_var*1.2, 40)
 
-theta_11,theta_22 = np.meshgrid(theta_1_array,theta_2_array)
+theta_11,theta_22 = np.meshgrid(theta_1_array, theta_2_array)
 
 lnL_fcn = lambdify((theta_1,theta_2), lnL)
 
 lnL_matrix = lnL_fcn(theta_11,theta_22)
 
-#%%
+####
 # first-order partial differential
 df_dtheta_1 = diff(lnL, theta_1)
 print(df_dtheta_1)
@@ -196,7 +194,6 @@ df_dtheta_2 = diff(lnL, theta_2)
 print(df_dtheta_2)
 
 # solution of (theta_1,theta_2)
-
 sol = solve([df_dtheta_1, df_dtheta_2], [theta_1, theta_2])
 
 print(sol)
@@ -213,21 +210,14 @@ print(theta_2_star)
 
 lnL_min = lnL_fcn(theta_1_star,theta_2_star)
 print(lnL_min)
-
-#%%
-
+#####
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
 ax.plot_wireframe(theta_11, theta_22, lnL_matrix, color = [0.5,0.5,0.5], linewidth = 0.25)
-
 plt.plot(theta_1_star, theta_2_star, lnL_min, marker = 'x', markersize = 12)
-
 colorbar = ax.contour(theta_11, theta_22, lnL_matrix, 30, cmap = 'RdYlBu_r')
 
 fig.colorbar(colorbar, ax=ax)
-
 ax.set_proj_type('ortho')
-
 ax.set_xlabel('$\\theta_1$, $\\mu$')
 ax.set_ylabel('$\\theta_2$, $\\sigma^2$')
 
@@ -236,19 +226,16 @@ ax.set_xlim(theta_11.min(), theta_11.max())
 ax.set_ylim(theta_22.min(), theta_22.max())
 
 ax.view_init(azim=-135, elev=30)
-
 ax.grid(False)
 plt.show()
 
 fig, ax = plt.subplots()
-
 colorbar = ax.contourf(theta_11, theta_22, lnL_matrix, 30, cmap='RdYlBu_r')
 fig.colorbar(colorbar, ax=ax)
 plt.plot(theta_1_star, theta_2_star, marker = 'x', markersize = 12)
 
 ax.set_xlim(theta_11.min(), theta_11.max())
 ax.set_ylim(theta_22.min(), theta_22.max())
-
 ax.set_xlabel('$\\theta_1$, $\\mu$')
 ax.set_ylabel('$\\theta_2$, $\\sigma^2$')
 # plt.gca().set_aspect('equal', adjustable='box')
@@ -257,6 +244,7 @@ plt.show()
 
 
 #%% Bk5_Ch16_04
+# 16.6 区间估计：总体方差已知，均值估计
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
@@ -266,22 +254,20 @@ f_x = stats.norm.pdf(x) # PDF of standard normal distribution
 
 alpha = 0.05
 
-# population standard deviation is known, or large sample size
+### population standard deviation is known, or large sample size
+### Get the critical values, two-tailed
 
-#%% Get the critical values, two-tailed
-
-crit_value = stats.norm.ppf(q = 1-alpha/2)
+crit_value = stats.norm.ppf(q = 1 - alpha/2)
 
 fig, ax = plt.subplots()
 
 plt.plot(x, f_x, color = "#0070C0")
-
 plt.fill_between(x[np.logical_and(x >= -crit_value, x <= crit_value)], f_x[np.logical_and(x >= -crit_value, x <= crit_value)], color = "#DBEEF3")
 
 ax.axvline(x = crit_value,  color = 'r', linestyle = '--')
-plt.plot(crit_value, 0,marker = 'x', color = 'k', markersize = 12)
+plt.plot(crit_value, 0, marker = 'x', color = 'k', markersize = 12)
 ax.axvline(x = -crit_value, color = 'r', linestyle = '--')
-plt.plot(-crit_value,0,marker = 'x', color = 'k', markersize = 12)
+plt.plot(-crit_value, 0, marker = 'x', color = 'k', markersize = 12)
 
 plt.fill_between(x[x <= -crit_value], f_x[x <= -crit_value], color = "#FF9980")
 plt.fill_between(x[x >= crit_value],  f_x[x >= crit_value], color = "#FF9980")
@@ -292,54 +278,43 @@ ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
+plt.show()
 
-#%% left-sided
-
+### left-sided
 crit_value = stats.norm.ppf(q = 1 - alpha)
-
 fig, ax = plt.subplots()
-
 plt.plot(x, f_x, color = "#0070C0")
-
 plt.fill_between(x[x >= -crit_value], f_x[x >= -crit_value], color = "#DBEEF3")
-
 ax.axvline(x = -crit_value, color = 'r', linestyle = '--')
 plt.plot(-crit_value,0,marker = 'x', color = 'k', markersize = 12)
 
 plt.fill_between(x[x <= -crit_value], f_x[x <= -crit_value], color = "#FF9980")
-
 plt.title("Population sigma known, $\\alpha = 0.05$, left-tailed")
-
 ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
+plt.show()
 
-#%% right-sided
-
+### right-sided
 crit_value = stats.norm.ppf(q = 1 - alpha)
 
 fig, ax = plt.subplots()
-
 plt.plot(x, f_x, color = "#0070C0")
-
 plt.fill_between(x[x <= crit_value], f_x[x <= crit_value], color = "#DBEEF3")
-
 ax.axvline(x = crit_value, color = 'r', linestyle = '--')
 plt.plot(crit_value,0,marker = 'x', color = 'k', markersize = 12)
-
 plt.fill_between(x[x >= crit_value], f_x[x >= crit_value],  color = "#FF9980")
-
 plt.title("Population sigma known, $\\alpha = 0.05$, right-tailed")
-
 ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-
+plt.show()
 
 
 #%% Bk5_Ch16_05
+# 16.7 区间估计：总体方差未知，均值估计
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
@@ -353,8 +328,7 @@ f_x_norm = stats.norm.pdf(x)
 
 alpha = 0.05
 
-#%% Get the critical values, two-tailed
-
+## Get the critical values, two-tailed
 crit_value = stats.t.ppf(q = 1-alpha/2, df = n-1)
 
 fig, ax = plt.subplots()
@@ -378,12 +352,12 @@ ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-
+plt.show()
 
 
 
 #%% Bk5_Ch16_06
-
+# 16.8 区间估计：总体均值未知，方差估计
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
@@ -393,34 +367,25 @@ x   = np.linspace(start = 0, stop = 16, num = 1000)
 n = 6
 f_x_chi2 = stats.chi2.pdf(x, df = n-1)
 
-
 alpha = 0.05
 
 #%% Get the critical values, two-tailed
-
 crit_value_right = stats.chi2.ppf(q = 1-alpha/2, df = n-1)
 crit_value_left  = stats.chi2.ppf(q = alpha/2, df = n-1)
 
 fig, ax = plt.subplots()
 
 plt.plot(x, f_x_chi2, color = "#0070C0")
-
-plt.fill_between(x[np.logical_and(x >= crit_value_left, x <= crit_value_right)],
-                 f_x_chi2[np.logical_and(x >= crit_value_left, x <= crit_value_right)],
-                 color = "#DBEEF3")
+plt.fill_between(x[np.logical_and(x >= crit_value_left, x <= crit_value_right)], f_x_chi2[np.logical_and(x >= crit_value_left, x <= crit_value_right)], color = "#DBEEF3")
 
 ax.axvline(x = crit_value_right,  color = 'r', linestyle = '--')
 plt.plot(crit_value_right, 0,marker = 'x', color = 'k', markersize = 12)
 ax.axvline(x = crit_value_left, color = 'r', linestyle = '--')
 plt.plot(crit_value_left,0,marker = 'x', color = 'k', markersize = 12)
 
-plt.fill_between(x[np.logical_and(x >= 0, x <= crit_value_left)],
-                 f_x_chi2[np.logical_and(x >= 0, x <= crit_value_left)],
-                 color = "#FF9980")
+plt.fill_between(x[np.logical_and(x >= 0, x <= crit_value_left)], f_x_chi2[np.logical_and(x >= 0, x <= crit_value_left)], color = "#FF9980")
 
-plt.fill_between(x[np.logical_and(x <= x.max(), x >= crit_value_right)],
-                 f_x_chi2[np.logical_and(x <= x.max(), x >= crit_value_right)],
-                 color = "#FF9980")
+plt.fill_between(x[np.logical_and(x <= x.max(), x >= crit_value_right)], f_x_chi2[np.logical_and(x <= x.max(), x >= crit_value_right)], color = "#FF9980")
 
 ax.set_xlim(0,16)
 ax.set_ylim(0,0.2)

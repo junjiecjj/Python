@@ -473,9 +473,7 @@ def mesh(num = 101):
 
 # 定义曲面函数
 # 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
-    - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)\
-    - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x,y],f_xy)
 
@@ -488,23 +486,17 @@ ff = f_xy_fcn(xx,yy)
 #############  三维等高线
 z_level = 2
 xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
+##  切面
 zz_ = np.zeros_like(xx_) + z_level
 ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(xx_, yy_, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
 
-ax.contour(xx,yy, ff,
-           levels = [z_level],
-           colors = 'b',
-           linewidths = 1)
+## 曲面和等高线
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -525,6 +517,51 @@ ax.grid(False)
 # fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
 plt.show()
 
+
+
+#############  三维等高线
+z_level = 2
+xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
+
+norm_plt = plt.Normalize(ff.min(), ff.max())
+colors = cm.RdYlBu_r(norm_plt(ff))
+# surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
+#                         rstride = 5,
+#                         cstride = 5,
+#                         linewidth = 1, # 线宽
+#                         shade = False) # 删除阴影
+# surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+
+surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1)
+
+## 曲面和等高线
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
+
+##  切面
+zz_ = np.zeros_like(xx_) + z_level
+ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
+ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
+
+ax.set_proj_type('ortho')
+# 另外一种设定正交投影的方式
+
+ax.set_xlabel('$\it{x_1}$')
+ax.set_ylabel('$\it{x_2}$')
+ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+
+ax.set_xlim(xx.min(), xx.max())
+ax.set_ylim(yy.min(), yy.max())
+ax.set_zlim(-8, 8)
+ax.view_init(azim=-120, elev=30)
+ax.grid(False)
+# fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
+plt.show()
 
 
 

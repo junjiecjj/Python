@@ -1324,8 +1324,7 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.set_proj_type('ortho')
 #  正交投影模式
 
-surf = ax.plot_surface(xx,yy,ff, cmap=cm.RdYlBu,
-                       linewidth=0, antialiased=False)
+surf = ax.plot_surface(xx,yy,ff, cmap=cm.RdYlBu, linewidth=0, antialiased=False)
 # 使用 RdYlBu 色谱
 # 请大家试着调用其他色谱
 
@@ -1354,8 +1353,7 @@ plt.show()
 ## 2 翻转色谱
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.set_proj_type('ortho')
-surf = ax.plot_surface(xx,yy,ff, cmap='RdYlBu_r',
-                       linewidth=0, antialiased=False)
+surf = ax.plot_surface(xx,yy,ff, cmap='RdYlBu_r', linewidth=0, antialiased=False)
 
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')
@@ -1428,6 +1426,10 @@ ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, 
 
 fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
 ax.set_proj_type('ortho')
+
+ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
+ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')

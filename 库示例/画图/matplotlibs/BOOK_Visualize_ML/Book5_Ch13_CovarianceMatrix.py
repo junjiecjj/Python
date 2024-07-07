@@ -364,7 +364,9 @@ plt.title('$V$')
 # 图 19. 特征值和奇异值的关系
 Lambda_reproduced = S**2/(len(X_df) - 1)
 
-Lambda_reproduced - LAMBDA # for test only
+print(f"Σ 特征值分解和对 Xc进行 SVD 分解的关系 = {Lambda_reproduced - LAMBDA}")
+ # for test only
+Lambda_reproduced - LAMBDA
 
 fig, axs = plt.subplots(1, 7, figsize=(12, 4))
 
