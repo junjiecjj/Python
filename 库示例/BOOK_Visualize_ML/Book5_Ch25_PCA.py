@@ -162,6 +162,31 @@ axes.plot_surface(X, Y, Z, color = 'b', alpha = 0.2)
 axes.plot(x, y, z, c='k', lw=2,)
 
 
+#%% https://blog.csdn.net/soaryy/article/details/82884691
+# https://blog.csdn.net/red_stone1/article/details/70260070
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from sklearn.datasets import load_iris
+
+# Load the iris data
+iris_sns = sns.load_dataset("iris")
+# A copy from Seaborn
+iris = load_iris()
+# A copy from Sklearn
+
+X = iris.data
+y = iris.target
+feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
+# Convert X array to dataframe
+X_df = pd.DataFrame(X, columns=feature_names)
+X = X_df[y==0].iloc[:, [0,1,2]]
+
+
+
+
+
 
 
 

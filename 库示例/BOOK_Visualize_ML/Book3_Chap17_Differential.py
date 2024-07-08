@@ -14,7 +14,7 @@ from matplotlib import cm
 f_x = exp(-x**2)
 
 x_array   = np.linspace(-3, 3, 100)
-x_0_array = np.linspace(-2.5, 2.5, 10)
+x_0_array = np.linspace(-2.5, 2.5, 5)
 # f_x.evalf(subs = {x: 0})
 
 f_x_fcn = lambdify(x, f_x)
@@ -26,10 +26,10 @@ plt.close('all')
 colors = plt.cm.rainbow(np.linspace(0, 1, len(x_0_array)))
 
 f_x_1_diff = diff(f_x, x)
-f_x_1_diff_fcn = lambdify(x, f_x_1_diff)
+# f_x_1_diff_fcn = lambdify(x, f_x_1_diff)
 
 f_x_2_diff = diff(f_x, x,2)
-f_x_2_diff_fcn = lambdify(x, f_x_2_diff)
+# f_x_2_diff_fcn = lambdify(x, f_x_2_diff)
 
 fig, ax = plt.subplots(figsize = (12, 12))
 
@@ -62,7 +62,6 @@ plt.show()
 
 
 #### 高斯函数一阶导数不同点处二次近似
-
 f_x_1_diff_new = diff(f_x, x)
 print(f_x_1_diff)
 f_x_1_diff_fcn_new = lambdify(x, f_x_1_diff_new)
@@ -165,7 +164,6 @@ plt.show()
 
 
 #%% Error
-
 fig = plt.figure(figsize=plt.figaspect(0.5))
 ax = fig.add_subplot(1, 2, 1)
 
@@ -196,8 +194,8 @@ ax.set_ylim(np.floor(f_x_array.min()), np.ceil(f_x_array.max()))
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 
+## 2
 ax = fig.add_subplot(1, 2, 2)
-
 error = f_x_array - f_series_array
 ax.plot(x_array, error, 'r', linewidth = 1.5)
 ax.fill_between(x_array, error, color = '#DEEAF6')
@@ -217,8 +215,7 @@ plt.show()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ##########     Bk3_Ch17_03, 二元泰勒展开
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
+plt.close('all')
 import numpy as np
 from sympy import lambdify, diff, exp, latex, simplify
 from sympy.abc import x, y
@@ -228,19 +225,16 @@ from matplotlib import cm
 
 
 num = 301       # number of mesh grids
-x_array = np.linspace(-1.5,1.5,num)
-y_array = np.linspace(-1.5,1.5,num)
+x_array = np.linspace(-1.5, 1.5, num)  # (301,)
+y_array = np.linspace(-1.5, 1.5, num)  # (301,)
 
 # global mesh
-xx,yy = np.meshgrid(x_array,y_array)
-
+xx, yy = np.meshgrid(x_array, y_array) #  (301, 301)
 num_stride = 5
-
-plt.close('all')
 
 f_xy = exp(-x**2 - y**2)
 f_xy_fcn = lambdify([x, y], f_xy)
-f_xy_zz = f_xy_fcn(xx, yy)
+f_xy_zz = f_xy_fcn(xx, yy)  # (301, 301)
 
 # expansion point
 x_a = -0.1
@@ -250,27 +244,23 @@ y_b = -0.2
 x_a_array = np.linspace(x_a - 0.5, x_a + 0.5, 101)
 y_b_array = np.linspace(y_b - 0.5, y_b + 0.5, 101)
 
-xx_local, yy_local = np.meshgrid(x_a_array,y_b_array)
-
-f_xy_zz_local = f_xy_fcn(xx_local,yy_local)
+xx_local, yy_local = np.meshgrid(x_a_array, y_b_array)
+f_xy_zz_local = f_xy_fcn(xx_local, yy_local)  #  (101, 101)
 
 
 # expansion point
-f_ab = f_xy_fcn(x_a, y_b)
+f_ab = f_xy_fcn(x_a, y_b) # 0.9512
 
 
 #%% constant approximation, 用常数函数估计二元高斯函数
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-
 ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=num_stride, cstride=num_stride, linewidth = 0.6)
 ax.plot(x_a, y_b, f_ab, marker = 'x', color = 'r', markersize = 12)
-approx_zero_order = f_ab + xx_local*0
+approx_zero_order = f_ab + xx_local*0 # (101, 101)
 ax.plot_wireframe(xx_local, yy_local, approx_zero_order, color = [1,0,0], rstride = num_stride, cstride = num_stride, linewidth = 0.6)
 
-
 ax.set_proj_type('ortho')
-
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('$f(x_1,x_2) = e^{-x^2-y^2}$')
@@ -287,25 +277,20 @@ ax.grid(False)
 plt.show()
 
 #%% first order approximation, 用二元一次函数估计二元高斯函数
-
 df_dx = f_xy.diff(x)
 df_dx_fcn = lambdify([x,y], df_dx)
-df_dx_a_b = df_dx_fcn(x_a, y_b)
+df_dx_a_b = df_dx_fcn(x_a, y_b) # # 一个数
 
 df_dy = f_xy.diff(y)
 df_dy_fcn = lambdify([x, y], df_dy)
-df_dy_a_b = df_dy_fcn(x_a, y_b)
+df_dy_a_b = df_dy_fcn(x_a, y_b) # 一个数
 
-approx_first_order = approx_zero_order + df_dx_a_b*(xx_local - x_a) + df_dy_a_b*(yy_local - y_b)
+approx_first_order = approx_zero_order + df_dx_a_b*(xx_local - x_a) + df_dy_a_b*(yy_local - y_b) # (101, 101)
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
-
 ax.plot_wireframe(xx,yy, f_xy_zz,  color = [0.5,0.5,0.5],  rstride=num_stride, cstride=num_stride, linewidth = 0.25)
-
 ax.plot_wireframe(xx_local, yy_local, approx_first_order, color = [1,0,0], rstride=num_stride, cstride=num_stride, linewidth = 0.25)
-
 ax.plot(x_a,y_b,f_ab, marker = 'x', color = 'r', markersize = 12)
-
 ax.set_proj_type('ortho')
 
 ax.set_xlabel('$x_1$')
@@ -337,16 +322,12 @@ d2f_dydy = f_xy.diff(y,2)
 d2f_dydy_fcn = lambdify([x,y],d2f_dydy)
 d2f_dydy_a_b = d2f_dydy_fcn(x_a,y_b)
 
-approx_second_order = approx_first_order + (d2f_dxdx_a_b*(xx_local - x_a)**2 + 2*d2f_dxdy_a_b*(xx_local - x_a)*(yy_local - y_b) + d2f_dydy_a_b*(yy_local - y_b)**2)/2
+approx_second_order = approx_first_order + (d2f_dxdx_a_b*(xx_local - x_a)**2 + 2*d2f_dxdy_a_b*(xx_local - x_a)*(yy_local - y_b) + d2f_dydy_a_b*(yy_local - y_b)**2)/2 # (101, 101)
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
-
 ax.plot_wireframe(xx,yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=num_stride, cstride=num_stride, linewidth = 0.5)
-
 ax.plot_wireframe(xx_local,yy_local, approx_second_order, color = [1,0,0], rstride=num_stride, cstride=num_stride, linewidth = 0.5)
-
-ax.plot(x_a,y_b,f_ab, marker = 'x', color = 'r', markersize = 12)
-
+ax.plot(x_a, y_b, f_ab, marker = '*', color = 'g', markersize = 12, markeredgewidth = 4)
 ax.set_proj_type('ortho')
 
 ax.set_xlabel('$x_1$')
@@ -404,16 +385,15 @@ ax = fig.add_subplot(2, 1, 1)
 
 ax.plot(x_array, f_x_array, '#0070C0', linewidth = 1.5)
 ax.set_ylim(np.floor(f_x_array.min()), np.ceil(f_x_array.max()))
-
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 ax.set_xlim((x_array.min(),x_array.max()))
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 
+
 ax = fig.add_subplot(2, 1, 2)
 ax.plot(x_array, f_x_1_diff_array, '#0070C0', linewidth = 1.5)
-
 ax.set_xlabel('x')
 ax.set_ylabel('f\'(x)')
 ax.spines['right'].set_visible(False)
@@ -424,9 +404,9 @@ plt.show()
 
 #%% numerical methods
 dx = 0.2
-diff_central  = num_diff(f_x_fcn,a_array,'central', dx)
-diff_forward  = num_diff(f_x_fcn,a_array,'forward', dx)
-diff_backward = num_diff(f_x_fcn,a_array,'backward',dx)
+diff_central  = num_diff(f_x_fcn, a_array, 'central', dx)
+diff_forward  = num_diff(f_x_fcn, a_array, 'forward', dx)
+diff_backward = num_diff(f_x_fcn, a_array, 'backward', dx)
 
 fig, ax = plt.subplots( figsize = (10, 10))
 ax.plot(x_array, f_x_1_diff_array, '#0070C0', linewidth = 1.5)
@@ -450,9 +430,9 @@ plt.show()
 #%% varying step size
 dx_array = np.linspace(0.01,0.2,20)
 a = 1
-diff_central  = num_diff(f_x_fcn,a,'central', dx_array)
-diff_forward  = num_diff(f_x_fcn,a,'forward', dx_array)
-diff_backward = num_diff(f_x_fcn,a,'backward',dx_array)
+diff_central  = num_diff(f_x_fcn, a, 'central', dx_array)
+diff_forward  = num_diff(f_x_fcn, a, 'forward', dx_array)
+diff_backward = num_diff(f_x_fcn, a, 'backward',dx_array)
 
 f_x_1_diff_a = f_x_1_diff_fcn(a)
 
