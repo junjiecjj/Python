@@ -153,8 +153,8 @@ ax = sns.heatmap(V.T,cmap='rainbow', cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('$V^T$')
 
+## I = V@VT
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
-
 plt.sca(axs[0])
 ax = sns.heatmap(V@V.T,cmap='rainbow', cbar=False, vmax = 2.5,vmin = 0)
 ax.set_aspect("equal")
@@ -208,7 +208,7 @@ for idx in range(4):
     tensor_prod = lambda_j * v_j @ v_j.T
     SIGMA_reprod = SIGMA_reprod + tensor_prod
     fig, ax = plt.subplots(figsize=(6, 6))
-    ax = sns.heatmap(tensor_prod, cmap='rainbow', cbar=False, vmax = SIGMA.max().max(),vmin = SIGMA.min().min())
+    ax = sns.heatmap(tensor_prod, cmap='rainbow', cbar=False, vmax = SIGMA.max().max(), vmin = SIGMA.min().min())
     ax.set_aspect("equal")
     plt.title('$\u03BB_' + str(idx + 1) + 'v_' + str(idx + 1) + ' @ v_'  + str(idx + 1) + '^T$')
 

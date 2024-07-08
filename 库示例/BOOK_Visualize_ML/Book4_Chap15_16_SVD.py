@@ -32,8 +32,7 @@ theta = np.linspace(0, 2*np.pi, 100)
 circle_x1 = np.cos(theta)
 circle_x2 = np.sin(theta)
 
-X_vec = np.array([[1,0],
-                 [0,1]])
+X_vec = np.array([[1,0], [0,1]])
 
 X_circle = np.array([circle_x1, circle_x2]).T
 
@@ -218,7 +217,6 @@ plt.title('$I$')
 # analysis of singular value matrix
 
 fig, axs = plt.subplots(1, 4, figsize=(12, 3))
-
 # 四幅热图叠加还原原始图像
 for j in [0, 1, 2, 3]:
     X_j = S[j,j]*U[:,j][:, None]@V[:,j][None, :];
@@ -274,12 +272,10 @@ for j in [0, 1, 2, 3]:
 
 #%% Bk4_Ch16_01.py
 #%% Bk4_Ch16_01_A
-
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 PRECISION = 3
-
 def svd(X, full_matrices):
     U, s, Vt = np.linalg.svd(X, full_matrices = full_matrices)
     # Put the vector singular values into a padded matrix
@@ -288,13 +284,10 @@ def svd(X, full_matrices):
         np.fill_diagonal(S, s)
     else:
         S = np.diag(s)
-
     # Rounding for display
     return np.round(U, PRECISION), np.round(S, PRECISION), np.round(Vt.T, PRECISION)
-
 # Repeatability
 np.random.seed(1)
-
 # Generate random matrix
 X = np.random.randn(6, 4)
 
@@ -328,7 +321,6 @@ plt.sca(axs[3])
 ax = sns.heatmap(V.T,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('$V^T$')
-
 
 #%%Bk4_Ch16_01_B
 #  Economy-size, thin, 数据 X 经济型 SVD 分解热图
@@ -365,7 +357,6 @@ import copy
 X_rank_3 = copy.deepcopy(X);
 # manipulate X and reduce rank to 3, 用 X 第一、二列数据之和替代 X 矩阵第四列,即 x4 = x1 + x2。这样 X 矩阵列向量线性相关,rank(X) = 3,而 s4 = 0。
 X_rank_3[:,3] = X[:,0] + X[:,1]
-
 U_rank_3, S_rank_3, V_rank_3 = svd(X_rank_3, full_matrices = False)
 
 fig, axs = plt.subplots(1, 4, figsize=(12, 3))
@@ -396,8 +387,8 @@ plt.title('$V^T$')
 print("采用截断型 SVD 分解还原数据运算热图")
 num_p = 2;
 U_truc = U[:,0:num_p]
-S_truc = S[0:num_p,0:num_p]
-V_truc = V[:,0:num_p]
+S_truc = S[0:num_p, 0:num_p]
+V_truc = V[:, 0:num_p]
 X_hat = U_truc@S_truc@(V_truc.T)
 
 # reproduce
@@ -424,7 +415,6 @@ ax.set_aspect("equal")
 plt.title('$V^T$')
 
 
-
 ######### Error
 fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 
@@ -432,7 +422,6 @@ plt.sca(axs[0])
 ax = sns.heatmap(X,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('$X$')
-
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_hat,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
