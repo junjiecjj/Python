@@ -29,16 +29,11 @@ print(iris.feature_names)
 y = iris.target
 print(np.unique(y))
 
-
-
 # 鸢尾花文字标签
 print(iris.target_names)
 
-
-
 # 创建数据帧
-X_df = pd.DataFrame(X,
-                    columns = ['X1','X2','X3','X4'])
+X_df = pd.DataFrame(X, columns = ['X1','X2','X3','X4'])
 X_df.head()
 
 round(X_df.describe(),2)

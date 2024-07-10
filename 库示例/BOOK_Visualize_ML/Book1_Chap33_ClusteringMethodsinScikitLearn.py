@@ -14,13 +14,13 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
-
-
-
+import seaborn as sns
 
 # 导入并整理数据
 iris = datasets.load_iris()
 X = iris.data[:, :2]
+y = iris.target
+
 
 
 # 生成网格化数据
@@ -33,9 +33,13 @@ rgb = [[255, 238, 255],
        [228, 228, 228]]
 rgb = np.array(rgb)/255.
 cmap_light = ListedColormap(rgb)
+cmap_bold = [[255, 51, 0],
+             [0, 153, 255],
+             [138,138,138]]
+cmap_bold = np.array(cmap_bold)/255.0
 
 # 采用KMeans聚类
-kmeans = KMeans(n_clusters=3, n_init = 'auto')
+kmeans = KMeans(n_clusters=3, )
 cluster_labels = kmeans.fit_predict(X)
 
 
@@ -44,46 +48,35 @@ Z = kmeans.predict(np.c_[xx1.ravel(), xx2.ravel()])
 Z = Z.reshape(xx1.shape)
 
 
-fig, ax = plt.subplots()
-
+fig, ax = plt.subplots(figsize = (10,10))
 ax.contourf(xx1, xx2, Z, cmap=cmap_light)
-ax.scatter(x=X[:, 0], y=X[:, 1],
-           color=np.array([0, 68, 138])/255.,
-           alpha=1.0,
-           linewidth = 1, edgecolor=[1,1,1])
+# ax.scatter(x=X[:, 0], y=X[:, 1], color=np.array([0, 68, 138])/255., alpha=1.0, linewidth = 1, edgecolor=[1,1,1])
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=iris.target_names[y], ax = ax, palette=dict(setosa=cmap_bold[0,:], versicolor=cmap_bold[1,:], virginica=cmap_bold[2,:]), alpha=1.0, linewidth = 1, edgecolor=[1,1,1],  legend="full")
+
 # 绘制决策边界
 levels = np.unique(Z).tolist();
 ax.contour(xx1, xx2, Z, levels=levels,colors='r')
 centroids = kmeans.cluster_centers_
-ax.scatter(centroids[:, 0], centroids[:, 1],
-           marker="x", s=100, linewidths=1.5,
-           color="r")
+ax.scatter(centroids[:, 0], centroids[:, 1], marker="x", s=100, linewidths=4.5, color="k")
 
 ax.set_xlim(4, 8); ax.set_ylim(1, 5)
 ax.set_xlabel(iris.feature_names[0])
 ax.set_ylabel(iris.feature_names[1])
-ax.grid(linestyle='--', linewidth=0.25,
-        color=[0.5,0.5,0.5])
+ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 ax.set_aspect('equal', adjustable='box')
 
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 高斯混合聚类
 
-
-
-
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
 from sklearn import datasets
 from sklearn.mixture import GaussianMixture
-
 from matplotlib.patches import Ellipse
 
 K = 3
-
-
 
 # 定义可视化函数
 def make_ellipses(gmm, ax):
@@ -112,30 +105,19 @@ def make_ellipses(gmm, ax):
         angle = 180 * angle / np.pi
 
         # 多元高斯分布中心
-        ax.plot(gmm.means_[j, 0],gmm.means_[j, 1],
-                 color = 'k',marker = 'x',markersize = 10)
+        ax.plot(gmm.means_[j, 0],gmm.means_[j, 1], color = 'k',marker = 'x',markersize = 10)
 
         # 绘制半长轴向量
-        ax.quiver(gmm.means_[j,0],gmm.means_[j,1],
-                  U[0,0], U[1,0], scale = 5/major)
+        ax.quiver(gmm.means_[j,0],gmm.means_[j,1], U[0,0], U[1,0], scale = 5/major)
         # scale: Scales the length of the arrow inversely
 
         # 绘制半短轴向量
-        ax.quiver(gmm.means_[j,0],gmm.means_[j,1],
-                  U[0,1], U[1,1], scale = 5/minor)
+        ax.quiver(gmm.means_[j,0],gmm.means_[j,1], U[0,1], U[1,1], scale = 5/minor)
 
         # 绘制椭圆
         for scale in np.array([3, 2, 1]):
-
-            ell = Ellipse(gmm.means_[j, :2],
-                          scale*major,
-                          scale*minor,
-                          angle,
-                          color=rgb[j,:],
-                          alpha = 0.18)
+            ell = Ellipse(gmm.means_[j, :2], scale*major, scale*minor, angle,  color=rgb[j,:], alpha = 0.18)
             ax.add_artist(ell)
-
-
 
 # 创建色谱
 rgb = [[255, 51, 0],
@@ -143,6 +125,12 @@ rgb = [[255, 51, 0],
        [138,138,138]]
 rgb = np.array(rgb)/255.
 cmap_bold = ListedColormap(rgb)
+
+cmap_bold1 = [[255, 51, 0],
+             [0, 153, 255],
+             [138,138,138]]
+cmap_bold1 = np.array(cmap_bold1)/255.0
+
 
 # 生成网格化数据
 x1_array = np.linspace(4,8,101)
@@ -158,45 +146,36 @@ covariance_types = ['tied', 'spherical', 'diag', 'full']
 
 for covariance_type in covariance_types:
     # 采用GMM聚类
-    gmm = GaussianMixture(n_components=K,
-                          covariance_type=covariance_type)
+    gmm = GaussianMixture(n_components=K, covariance_type=covariance_type)
     gmm.fit(X)
     Z = gmm.predict(np.c_[xx1.ravel(), xx2.ravel()])
     Z = Z.reshape(xx1.shape)
 
     # 可视化
-    fig = plt.figure(figsize = (10,5))
+    fig = plt.figure(figsize = (16,8))
     ax = fig.add_subplot(1,2,1)
-    ax.scatter(x=X[:, 0], y=X[:, 1],
-               color=np.array([0, 68, 138])/255.,
-               alpha=1.0,
-               linewidth = 1, edgecolor=[1,1,1])
+    # ax.scatter(x=X[:, 0], y=X[:, 1], color=np.array([0, 68, 138])/255., alpha=1.0, linewidth = 1, edgecolor=[1,1,1])
+    sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=iris.target_names[y], ax = ax, palette=dict(setosa=cmap_bold1[0,:], versicolor=cmap_bold1[1,:], virginica=cmap_bold1[2,:]), alpha=1.0, linewidth = 1, edgecolor=[1,1,1], legend="full")
+
     # 绘制椭圆和向量
     make_ellipses(gmm, ax)
     ax.set_xlim(4, 8); ax.set_ylim(1, 5)
     ax.set_xlabel(iris.feature_names[0])
     ax.set_ylabel(iris.feature_names[1])
-    ax.grid(linestyle='--', linewidth=0.25,
-            color=[0.5,0.5,0.5])
+    ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
     ax.set_aspect('equal', adjustable='box')
 
     ax = fig.add_subplot(1,2,2)
     ax.contourf(xx1, xx2, Z, cmap=cmap_bold, alpha = 0.18)
-    ax.contour(xx1, xx2, Z, levels=[0,1,2],
-               colors=np.array([0, 68, 138])/255.)
-    ax.scatter(x=X[:, 0], y=X[:, 1],
-               color=np.array([0, 68, 138])/255.,
-               alpha=1.0,
-               linewidth = 1, edgecolor=[1,1,1])
+    ax.contour(xx1, xx2, Z, levels=[0,1,2], colors=np.array([0, 68, 138])/255.)
+    sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=iris.target_names[y], ax = ax, palette=dict(setosa=cmap_bold1[0,:], versicolor=cmap_bold1[1,:], virginica=cmap_bold1[2,:]), alpha=1.0, linewidth = 1, edgecolor=[1,1,1],  legend="full")
+    # ax.scatter(x=X[:, 0], y=X[:, 1], color=np.array([0, 68, 138])/255., alpha=1.0, linewidth = 1, edgecolor=[1,1,1])
     centroids = gmm.means_
-    ax.scatter(centroids[:, 0], centroids[:, 1],
-               marker="x", s=100, linewidths=1.5,
-               color="k")
+    ax.scatter(centroids[:, 0], centroids[:, 1], marker="x", s=100, linewidths=1.5, color="k")
     ax.set_xlim(4, 8); ax.set_ylim(1, 5)
     ax.set_xlabel(iris.feature_names[0])
     ax.set_ylabel(iris.feature_names[1])
-    ax.grid(linestyle='--', linewidth=0.25,
-            color=[0.5,0.5,0.5])
+    ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
     ax.set_aspect('equal', adjustable='box')
 
 
