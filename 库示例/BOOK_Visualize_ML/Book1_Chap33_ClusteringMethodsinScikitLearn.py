@@ -76,10 +76,9 @@ from sklearn import datasets
 from sklearn.mixture import GaussianMixture
 from matplotlib.patches import Ellipse
 
-K = 3
 
 # 定义可视化函数
-def make_ellipses(gmm, ax):
+def make_ellipses(gmm, ax, K = 3):
     # 可视化不同簇
     for j in range(0,K):
         # 四种不同的协方差矩阵
@@ -138,7 +137,8 @@ x2_array = np.linspace(1,5,101)
 xx1, xx2 = np.meshgrid(x1_array,x2_array)
 
 # 鸢尾花数据
-iris = datasets.load_iris(); X = iris.data[:, :2]
+iris = datasets.load_iris()
+X = iris.data[:, :2]
 
 K = 3 # 簇数
 # 协方差类型
@@ -146,7 +146,7 @@ covariance_types = ['tied', 'spherical', 'diag', 'full']
 
 for covariance_type in covariance_types:
     # 采用GMM聚类
-    gmm = GaussianMixture(n_components=K, covariance_type=covariance_type)
+    gmm = GaussianMixture(n_components = K, covariance_type = covariance_type)
     gmm.fit(X)
     Z = gmm.predict(np.c_[xx1.ravel(), xx2.ravel()])
     Z = Z.reshape(xx1.shape)
