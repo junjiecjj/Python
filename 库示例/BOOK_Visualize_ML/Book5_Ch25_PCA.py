@@ -169,6 +169,21 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from sklearn.datasets import load_iris
+import matplotlib
+from matplotlib.font_manager import FontProperties
+from pylab import tick_params
+import copy
+from matplotlib.pyplot import MultipleLocator
+
+font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
+fontpath = "/usr/share/fonts/truetype/windows/"
+fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
+fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
+
+x = np.linspace(2, 10, 20)
+y = np.linspace(0, 10, 20)
+XX, YY = np.meshgrid(x, y)
+Z = XX + YY - 26
 
 # Load the iris data
 iris_sns = sns.load_dataset("iris")
@@ -177,16 +192,45 @@ iris = load_iris()
 # A copy from Sklearn
 
 X = iris.data
-y = iris.target
+label = iris.target
 feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
 # Convert X array to dataframe
 X_df = pd.DataFrame(X, columns=feature_names)
-X = X_df[y==0].iloc[:, [0,1,2]]
+X = X_df.iloc[:, [0,1,2]].to_numpy()
+
+
+w = np.array([1, 1, -1]).reshape(-1,1)
+b = -26
+Xq = X.T - (w.T@X.T + b) * w/(w.T@w)
+Xq = Xq.T
 
 
 
+fig = plt.figure(figsize = (10, 10))
+ax = fig.add_subplot(projection='3d')
 
+rainbow = plt.get_cmap("rainbow")
+ax.scatter(X[:,0], X[:,1], X[:,2],  s = 15,  c = label, cmap=rainbow)
+ax.scatter(Xq[:,0], Xq[:,1], Xq[:,2],  s = 15,  c = label, cmap=rainbow)
 
+ax.plot_surface(XX, YY, Z, color = 'b', alpha = 0.2)
+
+ax.set_proj_type('ortho')
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+ax.set_xlabel('$\it{x_1}$', fontproperties=font3)
+ax.set_ylabel('$\it{x_2}$', fontproperties=font3)
+ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)', fontproperties=font3)
+
+# ax.set_xlim(X[:,0].min()-4, X[:,0].max()+4)
+# ax.set_ylim(X[:,1].min()-4, X[:,1].max()+4)
+# ax.set_zlim(X[:,2].min()-4, X[:,2].max()+4)
+
+ax.view_init(azim=-160, elev=30)
+ax.grid(False)
+plt.show()
 
 
 

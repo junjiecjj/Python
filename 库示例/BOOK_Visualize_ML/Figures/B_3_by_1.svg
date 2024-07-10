@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="144pt" height="72pt" viewBox="0 0 144 72" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2024-07-09T20:49:19.200281</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.5.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 72 
+L 144 72 
+L 144 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 18 54.42 
+L 129.6 54.42 
+L 129.6 17.22 
+L 18 17.22 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="QuadMesh_1">
+    <path d="M 18 17.22 
+L 55.2 17.22 
+L 55.2 54.42 
+L 18 54.42 
+L 18 17.22 
+" clip-path="url(#p6f01a4764e)" style="fill: #d62f27; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 55.2 17.22 
+L 92.4 17.22 
+L 92.4 54.42 
+L 55.2 54.42 
+L 55.2 17.22 
+" clip-path="url(#p6f01a4764e)" style="fill: #fffebe; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 92.4 17.22 
+L 129.6 17.22 
+L 129.6 54.42 
+L 92.4 54.42 
+L 92.4 17.22 
+" clip-path="url(#p6f01a4764e)" style="fill: #d62f27; stroke: #ffffff; stroke-width: 0.5"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <!-- 4 -->
+    <g style="fill: #ffffff" transform="translate(33.41875 38.579375)scale(0.1 -0.1)">
+     <defs>
+      <path id="DejaVuSans-34" d="M 2419 4116 
+L 825 1625 
+L 2419 1625 
+L 2419 4116 
+z
+M 2253 4666 
+L 3047 4666 
+L 3047 1625 
+L 3713 1625 
+L 3713 1100 
+L 3047 1100 
+L 3047 0 
+L 2419 0 
+L 2419 1100 
+L 313 1100 
+L 313 1709 
+L 2253 4666 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#DejaVuSans-34"/>
+    </g>
+   </g>
+   <g id="text_2">
+    <!-- 0 -->
+    <g style="fill: #262626" transform="translate(70.61875 38.579375)scale(0.1 -0.1)">
+     <defs>
+      <path id="DejaVuSans-30" d="M 2034 4250 
+Q 1547 4250 1301 3770 
+Q 1056 3291 1056 2328 
+Q 1056 1369 1301 889 
+Q 1547 409 2034 409 
+Q 2525 409 2770 889 
+Q 3016 1369 3016 2328 
+Q 3016 3291 2770 3770 
+Q 2525 4250 2034 4250 
+z
+M 2034 4750 
+Q 2819 4750 3233 4129 
+Q 3647 3509 3647 2328 
+Q 3647 1150 3233 529 
+Q 2819 -91 2034 -91 
+Q 1250 -91 836 529 
+Q 422 1150 422 2328 
+Q 422 3509 836 4129 
+Q 1250 4750 2034 4750 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#DejaVuSans-30"/>
+    </g>
+   </g>
+   <g id="text_3">
+    <!-- 4 -->
+    <g style="fill: #ffffff" transform="translate(107.81875 38.579375)scale(0.1 -0.1)">
+     <use xlink:href="#DejaVuSans-34"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p6f01a4764e">
+   <rect x="18" y="17.22" width="111.6" height="37.2"/>
+  </clipPath>
+ </defs>
+</svg>

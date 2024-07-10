@@ -22,9 +22,6 @@ import pandas_datareader as pdr
 import seaborn as sns
 
 
-
-
-
 # 下载数据
 df = pdr.data.DataReader(['DGS6MO','DGS1',
                           'DGS2','DGS5',
@@ -51,9 +48,7 @@ df = df.rename(columns={'DGS6MO': '0.5 yr',
 
 
 # 绘制利率走势线图
-df.plot(xlabel="Time", ylabel="IR level",
-        legend = True,
-        xlim = (df.index.min(), df.index.max()))
+df.plot(xlabel="Time", ylabel="IR level", legend = True, xlim = (df.index.min(), df.index.max()))
 
 # 美化线图
 
@@ -68,43 +63,27 @@ ax.set_ylabel('IR level')
 
 
 # 绘制利率走势线图，子图布置
-df.plot(subplots=True, layout=(2,4),
-        sharex = True, sharey = True,
-        xticks = [],yticks =[],
-        xlim = (df.index.min(), df.index.max()))
-
-
+df.plot(subplots=True, layout=(2,4), sharex = True, sharey = True, xticks = [],yticks =[], xlim = (df.index.min(), df.index.max()))
 
 
 # 绘制利率走势线面积图，子图布置
-df.plot.area(subplots=True, layout=(2,4),
-             sharex = True, sharey = True,
-             xticks = [],yticks =[],
-             xlim = (df.index.min(), df.index.max()),
-             ylim = (0,5), legend = False)
+df.plot.area(subplots=True, layout=(2,4), sharex = True, sharey = True, xticks = [],yticks =[], xlim = (df.index.min(), df.index.max()), ylim = (0,5), legend = False)
 
 
 # 计算日收益率
 r_df = df.pct_change()
 
-
-
 # 绘制利率日收益率，子图布置
-r_df.plot(subplots=True, layout=(2,4),
-          sharex = True, sharey = True,
-          xticks = [],yticks =[],
-          xlim = (df.index.min(), df.index.max()))
+r_df.plot(subplots=True, layout=(2,4), sharex = True, sharey = True, xticks = [],yticks =[], xlim = (df.index.min(), df.index.max()))
 
 
 
 # 绘制散点图
 fig, ax = plt.subplots(figsize = (5,5))
-r_df.plot.scatter(x="1 yr", y="2 yr",
-                  ax = ax)
+r_df.plot.scatter(x="1 yr", y="2 yr", ax = ax)
 
 ax.set_xlim(-0.1, 0.25)
 ax.set_ylim(-0.1, 0.25)
-
 
 
 # 绘制成对特征散点图

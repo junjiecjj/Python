@@ -58,7 +58,6 @@ p["grid.linewidth"] = 0.5
 
 def mesh(num = 100):
     # 偶数避免零点
-
     # number of mesh grids
     x_array = np.linspace(-2,2,num)
     y_array = np.linspace(-2,2,num)
@@ -70,24 +69,18 @@ def mesh(num = 100):
 x1, x2 = symbols('x1 x2')
 # 自定义函数计算二元瑞利商
 def Rayleigh_Q(Q, xx1, xx2):
-
-    x = np.array([[x1],
-                  [x2]])
+    x = np.array([[x1], [x2]])
 
     # 瑞利商，符号式
     f_x1x2 = x.T @ Q @ x/(x.T @ x)
-
     # 将符号函数表达式转换为Python函数
     f_x1x2_fcn = lambdify([x1, x2], f_x1x2[0][0])
-
     # 计算二元函数函数值
     ff = f_x1x2_fcn(xx1, xx2)
-
     return ff, simplify(f_x1x2[0][0])
 
 
 def visualize(Q, title):
-
     xx1, xx2 = mesh(num = 200)
     ff, f_x1x2 = Rayleigh_Q(Q, xx1, xx2)
 
@@ -109,14 +102,10 @@ def visualize(Q, title):
     ax.contourf(xx1, xx2, ff, levels = levels, cmap='RdYlBu_r')
     ax.plot(x1_circle, x2_circle, color = 'k')
     # 绘制向量 v1
-    ax.quiver(0, 0, v1[0], v1[1],
-              angles='xy', scale_units='xy', scale=1,
-              color = 'k')
+    ax.quiver(0, 0, v1[0], v1[1], angles='xy', scale_units='xy', scale=1, color = 'k')
 
     # 绘制向量 v2
-    ax.quiver(0, 0, v2[0], v2[1],
-              angles='xy', scale_units='xy', scale=1,
-              color = 'k')
+    ax.quiver(0, 0, v2[0], v2[1], angles='xy', scale_units='xy', scale=1, color = 'k')
 
     ax.set_xlim(xx1.min(), xx1.max())
     ax.set_ylim(xx2.min(), xx2.max())
@@ -129,13 +118,9 @@ def visualize(Q, title):
 
     ax = fig.add_subplot(1, 2, 2, projection='3d')
 
-    ax.plot_wireframe(xx1, xx2, ff,
-                      color = [0.5,0.5,0.5],
-                      rstride=10, cstride=10,
-                      linewidth = 0.25)
+    ax.plot_wireframe(xx1, xx2, ff, color = [0.5,0.5,0.5], rstride=10, cstride=10, linewidth = 0.25)
 
-    CS = ax.contour(xx1, xx2, ff,
-               cmap = 'RdYlBu_r', levels = levels)
+    CS = ax.contour(xx1, xx2, ff, cmap = 'RdYlBu_r', levels = levels)
     fig.colorbar(CS, ax=ax, shrink=0.8)
     f_circle, _ = Rayleigh_Q(Q, x1_circle, x2_circle)
     ax.plot(x1_circle, x2_circle, f_circle, color = 'k')
@@ -674,9 +659,7 @@ plt.show()
 fig, ax = plt.subplots()
 levels = np.linspace(Rayleigh_Q_.min(),Rayleigh_Q_.max(),18)
 
-colorbar = ax.contourf(pp_,
-                       tt_,
-                       Rayleigh_Q_, levels = levels, cmap='RdYlBu_r')
+colorbar = ax.contourf(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r')
 ax.contour(pp_,tt_, Rayleigh_Q_, levels = levels, colors = 'w')
 
 fig.colorbar(colorbar, ax=ax, shrink = 0.58)
@@ -837,9 +820,7 @@ def visualize_Q(Q, title):
     ax = fig.add_subplot(122)
     levels = np.linspace(-3,3,25)
 
-    colorbar = ax.contourf(pp_,
-                           tt_,
-                           Rayleigh_Q_, levels = levels, cmap='RdYlBu_r')
+    colorbar = ax.contourf(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r')
     ax.contour(pp_,tt_, Rayleigh_Q_, levels = levels, colors = 'w')
 
     fig.colorbar(colorbar, ax=ax, shrink = 0.38)

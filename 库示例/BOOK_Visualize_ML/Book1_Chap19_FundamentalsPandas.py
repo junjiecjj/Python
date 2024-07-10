@@ -22,7 +22,7 @@ import numpy as np
 
 # 创建数据帧
 # 定义数据帧
-# 从字典
+########### 从字典
 # 采用默认行索引，Zero-based numbering
 dict_eg = {'Positive integer': [1, 2, 3, 4, 5],
            'Greek letter': ['alpha', 'beta', 'gamma', 'delta', 'epsilon']}
@@ -42,7 +42,7 @@ df_from_dict3 = pd.DataFrame(data=dict_eg, index = ['a', 'b', 'c', 'd', 'e'])
 df_from_dict3
 
 
-# 从列表
+######### 从列表
 list_fruits = [['apple',  11],
                ['banana', 22],
                ['cherry', 33],
@@ -61,13 +61,13 @@ df_from_list1.set_axis(['Fruit', 'Number'], axis='columns')
 df_from_list2 = pd.DataFrame(list_fruits, columns=['Fruit', 'Number'], index = ['a', 'b', 'c', 'd'])
 df_from_list2
 
-# 将numpy数组转化为数据帧
+########### 将numpy数组转化为数据帧
 numpy_array = np.random.normal(size = (10,4))
 # NumPy库中的random.normal函数生成一个形状为(10, 4)的二维数组（矩阵），其中的元素是从正态分布（高斯分布）中随机抽取的数据。
 df_from_np = pd.DataFrame(numpy_array, columns=['X1', 'X2', 'X3', 'X4'])
 df_from_np
 
-# for循环生成数据帧
+######### for循环生成数据帧
 np_data = []
 # 创建一个空list
 for idx in range(10):
@@ -79,21 +79,17 @@ df_for_loop = pd.DataFrame(np_data, columns = ['X1','X2','X3','X4'])
 df_for_loop
 
 
-
+from sklearn.datasets import load_iris
 
 # 鸢尾花数据
-iris_df = sns.load_dataset("iris")
+# iris_df = sns.load_dataset("./seaborn-data/iris")
+iris_df = pd.read_csv("/home/jack/seaborn-data/iris.csv")
 # 从Seaborn中导入鸢尾花数据帧
 # iris_df.to_csv('iris_df.csv')
 
 
 fig,ax = plt.subplots(figsize = (6,8))
-sns.heatmap(iris_df.iloc[:, 0:4],
-            cmap = 'RdYlBu_r',
-            ax = ax,
-            vmax = 0, vmin = 8,
-            cbar_kws = {'orientation':'vertical'},
-            annot=False)
+sns.heatmap(iris_df.iloc[:, 0:4], cmap = 'RdYlBu_r', ax = ax, vmax = 0, vmin = 8, cbar_kws = {'orientation':'vertical'}, annot=False)
 
 # fig.savefig('鸢尾花数据dataframe.svg', format='svg')
 
@@ -122,7 +118,7 @@ iris_df.to_numpy() # 将数据帧转化为NumPy array
 iris_df.index
 
 row_index_list = list(iris_df.index)
-# row_index_list
+row_index_list
 
 
 # pandas.DataFrame.columns
@@ -186,7 +182,6 @@ iris_df.size
 iris_df.count()
 
 
-
 print(iris_df.count(axis = 1))
 
 iris_df.count() * 100 / len(iris_df)
@@ -213,21 +208,23 @@ print(len(iris_df.columns))
 print(len(iris_df.axes[1]))
 
 # 循环
-# iterate rows
+# 在 Pandas 中可以使用 iterrows() 方法来遍历 DataFrame 的行
 for idx, row_idx in iris_df.iterrows():
     print('=================')
     print('Row index =',str(idx))
     print(row_idx['sepal_length'], row_idx['sepal_width'])
 
-
-for column_idx in iris_df:
-    print(column_idx)
-    print(iris_df[column_idx])
+# 使用 iteritems() 或 items() 方法来循环 DataFrame 的列。
 for column_idx in iris_df.iteritems():
     print(column_idx)
 for column_idx in iris_df.items():
     print(column_idx)
 
+
+# ，我们还可以直接使用 for 循环来遍历 DataFrame 的列。
+for column_idx in iris_df:
+    print(column_idx)
+    print(iris_df[column_idx])
 
 # 转置
 iris_df.T
@@ -247,57 +244,47 @@ iris_df_2_array_sepal
 
 
 # 更改表头
-iris_df.rename(columns={'sepal_length': 'X1',
-                        'sepal_width':  'X2',
-                        'petal_length': 'X3',
-                        'petal_width':  'X4',
-                        'species':      'Y'})
+iris_df.rename(columns={'sepal_length': 'X1', 'sepal_width':  'X2', 'petal_length': 'X3', 'petal_width':  'X4', 'species':      'Y'})
 # 注意，函数输入增加 inplace=True，直接修改原数据帧表头
 
 # 另外两种新方法：
-iris_df.rename({'sepal_length': 'X1',
-                'sepal_width':  'X2',
-                'petal_length': 'X3',
-                'petal_width':  'X4',
-                'species':      'Y'},
-               axis = 1)
+iris_df.rename({'sepal_length': 'X1', 'sepal_width':  'X2', 'petal_length': 'X3', 'petal_width':  'X4', 'species':      'Y'}, axis = 1)
+iris_df.rename({'sepal_length': 'X1', 'sepal_width':  'X2', 'petal_length': 'X3', 'petal_width':  'X4', 'species':      'Y'}, axis = 'columns')
 
-iris_df.rename({'sepal_length': 'X1',
-                'sepal_width':  'X2',
-                'petal_length': 'X3',
-                'petal_width':  'X4',
-                'species':      'Y'},
-               axis = 'columns')
-
-# 加“根、缀”
+# 给 DataFrame 的列标签添加后缀，并返回一个新的 DataFrame，原始 DataFrame 保持不变。
 iris_df_suffix = iris_df.add_suffix('_col')
+iris_df_suffix.head()
+iris_df_suffix.rename(columns = lambda x: x.strip('_col'))
 iris_df_suffix.head()
 
 
 # 修改行索引
 iris_df.rename(lambda x: f'idx_{x}')
 iris_df.rename(lambda x: f'{x}_idx')
-iris_df_suffix.rename(columns = lambda x: x.strip('_col'))
+
+# 给 DataFrame 的列标签添加前缀，并返回一个新的 DataFrame，原始DataFrame 保持不变。
 iris_df_prefix = iris_df.add_prefix('col_').head()
 iris_df_prefix
-
 iris_df_prefix.rename(columns = lambda x: x.strip('col_'))
+iris_df_prefix
 
 
-
-# 更改列顺序
+################################# 更改列顺序
 # 当前列顺序
-iris_df.columns.tolist()
+iris_df.columns.tolist() # ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'species']
 # 顺序调转
 new_col_order = iris_df.columns.tolist()[::-1]
 new_col_order
+# ['species', 'sepal_length', 'petal_length', 'sepal_width', 'petal_width']
+
+# 自定义顺序
+new_col_order = ['species', 'sepal_length', 'petal_length', 'sepal_width', 'petal_width']
 
 iris_df[new_col_order]
 
-# 自定义顺序
-new_col_order = ['species',
-                 'sepal_length', 'petal_length',
-                 'sepal_width', 'petal_width']
+iris_df.reindex(columns = new_col_order)
+
+
 iris_df[new_col_order]
 
 iris_df.loc[:, new_col_order]
@@ -307,27 +294,18 @@ iris_df.iloc[:, [4,0,2,1,3]]
 iris_df.set_axis(new_col_order, axis=1)
 
 
-# 修改行顺序
+################################## 修改行顺序
 # 取出前5行，并修改行索引
-iris_df_ = iris_df.iloc[:5,:].rename(lambda x:
-                                     f'idx_{x}')
-
+iris_df_ = iris_df.iloc[:5,:].rename(lambda x: f'idx_{x}')
 
 new_order = ['idx_4','idx_2','idx_0','idx_3','idx_1']
 iris_df_.reindex(new_order)
-
-
 iris_df_.loc[new_order]
-
 
 new_order_int = [4, 2, 0, 3, 1]
 iris_df_.iloc[new_order_int]
 
-
-
 iris_df_.sort_index(ascending=False)
-
-
 
 # 删除特定行
 iris_df.drop(index=[0,1])
@@ -354,10 +332,7 @@ start_date = datetime.datetime(2014, 1, 1)
 end_date   = datetime.datetime(2022, 12, 31)
 
 ticker_list = ['SP500']
-df = pdr.DataReader(ticker_list,
-                    'fred',
-                    start_date,
-                    end_date)
+df = pdr.DataReader(ticker_list, 'fred', start_date, end_date)
 # df.to_csv('SP500_' + str(start_date.date()) + '_' + str(end_date.date()) + '.csv')
 # df.to_pickle('SP500_' + str(start_date.date()) + '_' + str(end_date.date()) + '.pkl')
 # pandas.read_csv
@@ -368,14 +343,12 @@ df = pdr.DataReader(ticker_list,
 # 导出数据
 # 将数据帧存成CSV文件
 csv_filename = 'iris_df.csv'
-iris_df.to_csv(csv_filename,
-               index = False)
+iris_df.to_csv(csv_filename, index = False)
 
 
 # 将数据帧存成Excel文件
 xlsx_filename = 'iris_df.xlsx'
-iris_df.to_excel(xlsx_filename,
-                 sheet_name='iris_data')
+iris_df.to_excel(xlsx_filename, sheet_name='iris_data')
 
 # 导入文件
 # 读入CSV文件
@@ -400,24 +373,24 @@ import pandas as pd
 import numpy as np
 
 
-iris_df = sns.load_dataset("iris")
+from sklearn.datasets import load_iris
+
+# 鸢尾花数据
+iris_df = pd.read_csv("/home/jack/seaborn-data/iris.csv")
+# iris_df = sns.load_dataset("iris")
 # 从Seaborn中导入鸢尾花数据帧
-
-
 
 
 # 加减乘除
 # Load the iris data
 X_df = iris_df.copy()
 
-X_df.rename(columns = {'sepal_length':'X1',
-                       'sepal_width':'X2'},
-            inplace = True)
+X_df.rename(columns = {'sepal_length':'X1', 'sepal_width':'X2'}, inplace = True)
 
 X_df_ = X_df[['X1','X2', 'species']]
 
 #%% data transformation
-
+# X_df_.loc[:, 'x3'] = X_df_['X1']*2
 X_df_['X1 - E(X1)'] = X_df_['X1'] - X_df_['X1'].mean()
 X_df_['X2 - E(X2)'] = X_df_['X2'] - X_df_['X2'].mean()
 X_df_['X1 + X2'] = X_df_['X1'] + X_df_['X2']
@@ -427,16 +400,12 @@ X_df_['X1 / X2'] = X_df_['X1'] / X_df_['X2']
 X_df_.drop(['X1','X2'], axis=1, inplace=True)
 
 # 可视化
-
 sns.pairplot(X_df_, corner=True, hue="species")
-
-
 
 # 统计汇总
 # 数据帧统计汇总
 # 注意很多统计运算只针对数值，比如自动忽略'species'一列
 iris_df.describe()
-
 
 
 # 对于特定列的汇总
@@ -483,19 +452,17 @@ iris_df['species'].nunique()
 iris_df.sort_values(['sepal_length'])
 
 
-# 分位
-
-iris_df.quantile([0.05, 0.95])
-
-
 # 根据花萼长度排序，默认从大到小
 iris_df.sort_values(['sepal_length'], ascending=False)
 
 
+iris_df = iris_df[iris_df.columns[:4]]
+
+# 分位
+iris_df.quantile([0.05, 0.95])
 
 # 样本方差
 iris_df.var()
-
 
 # 样本标准差
 iris_df.std()
@@ -511,7 +478,6 @@ iris_df.skew()
 iris_df.kurt()
 # 也可以用 iris_df.kurtosis()
 
-
 iris_df_rounded = np.ceil(iris_df[iris_df.columns[:4]])
 # 向上取整
 iris_df_rounded.sepal_length.unique()
@@ -526,27 +492,23 @@ iris_df_rounded[['sepal_length','sepal_width']].value_counts()
 iris_sepal = iris_df_rounded[['sepal_length','sepal_width']]
 iris_sepal['count'] = 1
 
-
-
-frequency_matrix =iris_sepal.groupby(['sepal_length','sepal_width']).count().unstack(level=0)
+frequency_matrix = iris_sepal.groupby(['sepal_length','sepal_width']).count().unstack(level=0)
 frequency_matrix
-
 
 ## 将连续转为分类
 pd.cut(iris_df.sepal_length, bins = 3, labels = ['short', 'medium', 'long'])
 
 
 # groupby
-iris_df = sns.load_dataset("iris")
+# iris_df = sns.load_dataset("iris")
+iris_df = pd.read_csv("/home/jack/seaborn-data/iris.csv")
+
+
 iris_df.groupby(['species']).mean()
 
 iris_df.groupby(['species']).std()
 
-
-
 iris_df.groupby(['species']).var()
-
-
 
 three_cov_matrics = iris_df.groupby(['species']).cov()
 three_cov_matrics
@@ -563,7 +525,6 @@ three_cov_matrics.index.get_level_values(0).unique().to_list()
 three_cov_matrics.index.get_level_values('species').unique().to_list()
 
 three_cov_matrics.index.get_level_values(1).unique().to_list()
-
 
 three_cov_matrics.loc['setosa']
 
@@ -603,10 +564,8 @@ iris
 
 
 # 计算鸢尾花各类花瓣平均宽度
-mean_X2_by_species = iris_df.groupby(
-    'species')['petal_width'].mean()
+mean_X2_by_species = iris_df.groupby('species')['petal_width'].mean()
 mean_X2_by_species
-
 
 
 
@@ -618,9 +577,7 @@ def map_petal_width(petal_width, species):
         return "NO"
 
 # 使用 map 方法将花瓣宽度映射为是否超过平均值
-iris_df['greater_than_mean'] = iris_df.apply(lambda
-       row: map_petal_width(row['petal_width'],
-                            row['species']), axis=1)
+iris_df['greater_than_mean'] = iris_df.apply(lambda row: map_petal_width(row['petal_width'], row['species']), axis=1)
 
 iris_df
 
@@ -649,14 +606,11 @@ iris_df
 
 
 # 使用apply和lambda函数计算每个类别中最小的花瓣宽度
-iris_df.groupby('species')['sepal_length'].apply(
-    lambda x: x.min())
+iris_df.groupby('species')['sepal_length'].apply( lambda x: x.min())
 
 
 
 iris_df.groupby('species')['sepal_length'].min()
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 从CSV读入时间序列数据
@@ -669,11 +623,8 @@ csv_file_name = 'SP500_2014-01-01_2022-12-31.csv'
 # 读入CSV文件
 df = pd.read_csv(csv_file_name)
 
-
-
 # 将输入的数据转换为日期时间对象
 df["DATE"] = pd.to_datetime(df["DATE"])
-
 
 # 将名为"DATE"的列设置为索引
 df.set_index('DATE', inplace = True)
@@ -681,17 +632,12 @@ df.set_index('DATE', inplace = True)
 df.plot()
 
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 从网页下载数据
-
-
 import pandas as pd
 import requests
 
-
 # 设置数据源的URL
 url = 'https://fred.stlouisfed.org/data/SP500.txt'
-
 
 # 发送GET请求并获取数据
 response = requests.get(url)
@@ -704,12 +650,8 @@ if response.status_code == 200:
 else:
     print("Failed to fetch data from the source")
 
-
-
 df['DATE'] = pd.to_datetime(df['DATE'])
 df.set_index('DATE', inplace=True)
-
-
 
 
 df.head()
@@ -725,13 +667,9 @@ import pandas as pd
 import datetime
 
 
-
-
 # 从FRED下载标普500 (S&P 500)
 start_date = datetime.datetime(2014, 1, 1)
 end_date   = datetime.datetime(2022, 12, 31)
-
-
 
 # 下载数据
 ticker_list = ['SP500']

@@ -186,10 +186,7 @@ plt.show()
 ## 7: 颜色分类 + 散点大小
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
-ax.scatter(x1, x2, x3,
-           s = x4*20,
-           c = labels,
-           cmap=rainbow)
+ax.scatter(x1, x2, x3, s = x4*20, c = labels, cmap=rainbow)
 
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Sepal width, $x_2$ (cm)')
@@ -212,9 +209,7 @@ plt.show()
 ## 8: 利用色谱展示第四维特征
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
-scatter_plot = ax.scatter(x1, x2, x3,
-                          c = x4,
-                          cmap=rainbow)
+scatter_plot = ax.scatter(x1, x2, x3, c = x4, cmap=rainbow)
 
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Sepal width, $x_2$ (cm)')
