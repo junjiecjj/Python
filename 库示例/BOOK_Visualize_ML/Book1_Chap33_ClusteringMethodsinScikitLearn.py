@@ -16,6 +16,14 @@ import numpy as np
 from matplotlib.colors import ListedColormap
 import seaborn as sns
 
+
+# 导入并整理数据
+X, y = datasets.load_iris(as_frame=True, return_X_y=True)
+df_iris1 = sns.load_dataset('iris')
+
+
+
+
 # 导入并整理数据
 iris = datasets.load_iris()
 X = iris.data[:, :2]
@@ -104,7 +112,7 @@ def make_ellipses(gmm, ax, K = 3):
         angle = 180 * angle / np.pi
 
         # 多元高斯分布中心
-        ax.plot(gmm.means_[j, 0],gmm.means_[j, 1], color = 'k',marker = 'x',markersize = 10)
+        ax.plot(gmm.means_[j, 0], gmm.means_[j, 1], color = 'k',marker = 'x',markersize = 10)
 
         # 绘制半长轴向量
         ax.quiver(gmm.means_[j,0],gmm.means_[j,1], U[0,0], U[1,0], scale = 5/major)
@@ -158,7 +166,7 @@ for covariance_type in covariance_types:
     sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=iris.target_names[y], ax = ax, palette=dict(setosa=cmap_bold1[0,:], versicolor=cmap_bold1[1,:], virginica=cmap_bold1[2,:]), alpha=1.0, linewidth = 1, edgecolor=[1,1,1], legend="full")
 
     # 绘制椭圆和向量
-    make_ellipses(gmm, ax)
+    make_ellipses(gmm, ax, K = K)
     ax.set_xlim(4, 8); ax.set_ylim(1, 5)
     ax.set_xlabel(iris.feature_names[0])
     ax.set_ylabel(iris.feature_names[1])
