@@ -1,15 +1,5 @@
 
 
-# https://www.osgeo.cn/networkx/auto_examples/index.html
-
-# https://networkx.org/documentation/latest/auto_examples/index.html
-
-
-
-
-
-
-
 
 
 

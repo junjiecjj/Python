@@ -374,9 +374,7 @@ iris_sns.describe()
 # 绘制样本数据散点图，不加标签
 fig, ax = plt.subplots()
 
-ax = sns.scatterplot(data=iris_sns,
-                     x="sepal_length",
-                     y="sepal_width")
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width")
 
 # 利用 seaborn.scatterplot() 绘制散点图
 # x对应横轴特征，鸢尾花数据帧列名 "sepal_length"
@@ -404,7 +402,6 @@ ax.set_ybound(lower = 1, upper = 5)
 
 # 调转横、纵轴特征
 fig, ax = plt.subplots()
-
 ax = sns.scatterplot(data=iris_sns, x="sepal_width", y="sepal_length")
 # 横轴，花萼宽度
 # 纵轴，花萼长度
@@ -423,12 +420,9 @@ ax.set_ybound(lower = 4, upper = 8)
 
 # 绘制样本数据散点图，增加鸢尾花分类标签
 fig, ax = plt.subplots()
-
-ax = sns.scatterplot(data=iris_sns, x="sepal_length",
-                     y="sepal_width", hue = "species")
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "species")
 
 # hue 用不同色调表达鸢尾花的类别
-
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
@@ -441,15 +435,8 @@ plt.show()
 
 # 利用色调hue可视化第三特征 (花瓣长度)
 fig, ax = plt.subplots()
-
-ax = sns.scatterplot(data=iris_sns,
-                     x="sepal_length",
-                     y="sepal_width",
-                     hue = "petal_length",
-                     palette = 'RdYlBu_r')
-
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "petal_length", palette = 'RdYlBu_r')
 # hue 用不同色调表达花萼长度 (连续数值）
-
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
@@ -464,16 +451,8 @@ plt.show()
 
 # 利用散点大小size可视化第四特征 (花瓣宽度)
 fig, ax = plt.subplots()
-
-ax = sns.scatterplot(data=iris_sns,
-                     x="sepal_length",
-                     y="sepal_width",
-                     hue = "petal_length",
-                     size = "petal_width",
-                     palette = 'RdYlBu_r')
-
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "petal_length", size = "petal_width", palette = 'RdYlBu_r')
 # size 用散点大小表达花瓣宽度
-
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
@@ -494,15 +473,8 @@ plt.show()
 
 
 fig, ax = plt.subplots()
-
-ax = sns.scatterplot(data=iris_sns,
-                     x="sepal_length",
-                     y="sepal_width",
-                     hue = "species",
-                     size = "petal_width")
-
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "species", size = "petal_width")
 # size 用散点大小表达花瓣宽度
-
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))

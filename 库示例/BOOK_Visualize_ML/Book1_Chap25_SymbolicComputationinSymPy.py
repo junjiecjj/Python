@@ -507,6 +507,12 @@ A.det()
 # 方阵的迹
 A.trace()
 
+A = Matrix([[a, b],
+            [b, c]])
+
+A.inv()
+
+
 
 
 ##### 方程组

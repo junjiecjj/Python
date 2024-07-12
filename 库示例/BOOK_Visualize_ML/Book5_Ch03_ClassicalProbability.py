@@ -3,10 +3,6 @@
 
 
 
-
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -30,12 +26,6 @@ ax.set_xscale('log')
 plt.xlabel('Number of tosses');
 plt.ylabel('Probability')
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
-
-
-
-
-
-
 
 
 
@@ -83,13 +73,6 @@ ax.set_xscale('log')
 plt.xlabel('Number of tosses');
 plt.ylabel('Probability')
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
-
-
-
-
-
-
-
 
 
 
