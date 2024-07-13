@@ -41,8 +41,7 @@ nx.draw_networkx_nodes(G,
                        node_color="0.8",
                        node_size=500)
 
-edge_labels = nx.get_edge_attributes(G,
-                                     "weight")
+edge_labels = nx.get_edge_attributes(G, "weight")
 
 nx.draw_networkx_edges(G,
                        pos,
@@ -56,9 +55,7 @@ nx.draw_networkx_labels(G,
                         font_family="sans-serif")
 
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
-nx.draw_networkx_edge_labels(G,
-                             pos,
-                             edge_labels=edge_labels)
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
 plt.axis("off")
 # plt.savefig('图.svg')
@@ -66,41 +63,22 @@ plt.axis("off")
 # 找到最小生成树
 T = nx.minimum_spanning_tree(G)
 
-
-
 # Visualize the graph and the minimum spanning tree
 pos = nx.spring_layout(G)
 
 # 可视化
-nx.draw_networkx_nodes(G,
-                       pos,
-                       node_color="0.8",
-                       node_size=500)
+nx.draw_networkx_nodes(G, pos, node_color="0.8", node_size=500)
 
-edge_labels = nx.get_edge_attributes(G,
-                                     "weight")
+edge_labels = nx.get_edge_attributes(G, "weight")
 
-nx.draw_networkx_edges(G,
-                       pos,
-                       edge_color=edge_labels.values(),
-                       edge_cmap=plt.cm.RdYlBu_r,
-                       width = 3)
+nx.draw_networkx_edges(G, pos, edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3)
 
-nx.draw_networkx_labels(G,
-                        pos,
-                        font_size=12,
-                        font_family="sans-serif")
+nx.draw_networkx_labels(G, pos, font_size=12, font_family="sans-serif")
 
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
-nx.draw_networkx_edge_labels(G,
-                             pos,
-                             edge_labels=edge_labels)
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
-nx.draw_networkx_edges(T,
-                       pos,
-                       style = '--',
-                       edge_color="black",
-                       width=1)
+nx.draw_networkx_edges(T, pos, style = '--', edge_color="black", width=1)
 plt.axis("off")
 # plt.savefig('最小生成树.svg')
 
@@ -135,13 +113,9 @@ stock_levels_df.round(2).head()
 daily_returns_df = stock_levels_df['Adj Close'].pct_change()
 
 
-
-
 #%% Lineplot of stock prices
 sns.set_style("whitegrid")
 sns.set_theme(font = 'Times New Roman')
-
-
 
 # normalize the initial stock price levels to 1
 normalized_stock_levels = stock_levels_df['Adj Close']/stock_levels_df['Adj Close'].iloc[0]
@@ -152,8 +126,6 @@ g.set_xlabels('Date')
 g.set_ylabels('Adjusted closing price')
 g.set_xticklabels(rotation=45)
 
-
-
 #%% Heatmap of correlation matrix
 fig, ax = plt.subplots()
 # Compute the correlation matrix
@@ -163,160 +135,10 @@ sns.heatmap(corr_P, cmap="coolwarm",
             square=True, linewidths=.05,
             annot=True)
 
-
-
 #%% Cluster map based on correlation
 g = sns.clustermap(corr_P, cmap="coolwarm",
                    annot=True)
 g.ax_row_dendrogram.remove()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

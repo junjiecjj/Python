@@ -4,7 +4,17 @@
 
 # https://networkx.org/documentation/latest/auto_examples/index.html
 
-
+# networkx.draw_networkx_nodes() 绘制节点
+# networkx.draw_networkx_labels() 添加节点标签
+# networkx.draw_networkx_edges() 绘制边
+# networkx.draw_networkx_edge_labels() 添加边标签
+# networkx.spring_layout() 使用弹簧模型算法布局节点
+# networkx.complete_bipartite_graph() 创建完全二分图
+# networkx.dodecahedral_graph() 创建十二面体图
+# networkx.greedy_color() 贪心着色算法
+# networkx.star_graph() 绘制星型图
+# sklearn.datasets.load_iris() 加载数据
+# sklearn.metrics.pairwise.euclidean_distances() 计算成对欧氏距离矩阵
 
 
 
@@ -417,7 +427,6 @@ nx.draw_networkx_edge_labels(G, pos, edge_labels)
 
 # plt.savefig('不同边权重，不同线型.svg')
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 鸢尾花样本数据到图，展示分类标签
 
 import networkx as nx
@@ -427,18 +436,14 @@ import seaborn as sns
 from sklearn.datasets import load_iris
 from sklearn.metrics.pairwise import euclidean_distances
 
-
-
 # 加载鸢尾花数据集
 iris = load_iris()
 data = iris.data[:, :2]
 label = iris.target
 
-
 # 计算欧氏距离矩阵
 D = euclidean_distances(data)
 # 用成对距离矩阵可以构造无向图
-
 
 # 创建无向图
 G = nx.Graph(D, nodetype=int)
@@ -449,14 +454,11 @@ edge_weights = [G[i][j]['weight'] for i, j in G.edges]
 # 使用鸢尾花数据的真实位置绘制图形
 pos = {i: (data[i, 0], data[i, 1]) for i in range(len(data))}
 
-
 # 选择需要保留的边
 edge_kept = [(u, v)
              for (u, v, d)
              in G.edges(data=True)
              if d["weight"] <= 0.5]
-
-
 
 # 节点颜色映射
 color_mapping = {0: '#0099FF',
@@ -466,13 +468,9 @@ color_mapping = {0: '#0099FF',
 # 完成每个节点的颜色映射
 node_color = [color_mapping[label[n]] for n in G.nodes()]
 
-
 # 绘制无向图，分别绘制边和节点
-
 fig, ax = plt.subplots(figsize = (6,6))
-
 nx.draw_networkx_edges(G, pos, edgelist=edge_kept, width = 0.2, edge_color='0.58')
-
 nx.draw_networkx_nodes(G, pos, node_size = 18, node_color=node_color)
 
 ax.set_xlim(4,8)
@@ -487,8 +485,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
 
-
-
 # 创建图
 seed = 13648
 G = nx.random_k_out_graph(10, 3, 0.5, seed=seed)
@@ -497,19 +493,13 @@ pos = nx.spring_layout(G, seed=seed)
 # 节点大小
 node_sizes = [3 + 18 * i for i in range(len(G))]
 
-
-
 # 边的颜色和透明度
 M = G.number_of_edges()
 edge_colors = range(2, M + 2)
 edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
 
-
 # 颜色映射
 cmap = plt.cm.plasma
-
-
-
 
 # 可视化
 plt.figure(figsize = (6,6))
@@ -539,20 +529,15 @@ plt.colorbar(pc, ax=ax)
 # plt.savefig('有向图.svg')
 
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 节点标签
-
 import matplotlib.pyplot as plt
 import networkx as nx
-
 
 G = nx.cubical_graph()
 pos = nx.spring_layout(G, seed=3113794652)  # positions for all nodes
 
 # nodes
 options = {"edgecolors": "tab:gray", "node_size": 800, "alpha": 0.9}
-
 
 nx.draw_networkx_nodes(G, pos, nodelist=[0, 1, 2, 3], node_color="tab:red", **options)
 nx.draw_networkx_nodes(G, pos, nodelist=[4, 5, 6, 7], node_color="tab:blue", **options)
@@ -587,7 +572,7 @@ labels[4] = r"$\alpha$"
 labels[5] = r"$\beta$"
 labels[6] = r"$\gamma$"
 labels[7] = r"$\delta$"
-nx.draw_networkx_labels(G, pos, labels, font_size=22, font_color="whitesmoke")
+nx.draw_networkx_labels(G, pos, labels, font_size=22, font_color="whitesmoke") # 添加节点标签
 
 plt.tight_layout()
 plt.axis("off")
@@ -607,12 +592,12 @@ G = nx.random_geometric_graph(400, 0.125)
 pos = nx.get_node_attributes(G, "pos")
 
 # 度数大小排序
-degree_sequence = sorted((d for n, d in G.degree()),  reverse=True)
+degree_sequence = sorted((d for n, d in G.degree()), reverse=True)
 
 # 将结果转为字典
 dict_degree = dict(G.degree())
 
-# 自定义函数，过滤dict
+# 自定义函数，从字典中提取满足特定条件 (节点度数等于给定值) 的键值对。
 def filter_value(dict_, unique):
     newDict = {}
     for (key, value) in dict_.items():
@@ -620,13 +605,11 @@ def filter_value(dict_, unique):
             newDict[key] = value
     return newDict
 
-
 unique_deg = set(degree_sequence)
 # 取出节点度数独特值
 
 colors = plt.cm.viridis(np.linspace(0, 1, len(unique_deg)))
 # 独特值的颜色映射
-
 
 # 可视化
 plt.figure(figsize=(8, 8))
@@ -634,7 +617,6 @@ nx.draw_networkx_edges(G, pos, edge_color = '0.8')
 
 # 根据度数大小渲染节点
 for deg_i, color_i in zip(unique_deg,colors):
-
     dict_i = filter_value(dict_degree,deg_i)
     nx.draw_networkx_nodes(G, pos,
                            nodelist = list(dict_i.keys()),

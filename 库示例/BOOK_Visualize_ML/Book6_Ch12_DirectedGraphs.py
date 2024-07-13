@@ -216,7 +216,7 @@ for triad_i, ax_i in zip(nx.all_triads(G), axes):
     # 绘制三元组子图
     nx.draw_networkx_nodes(G, nodelist = triad_i.nodes, node_color = 'r', ax = ax_i, pos = pos)
 
-    nx.draw_networkx_edges(G, edgelist = triad_i.edges, edge_color = 'r', width=1, ax = ax_i, pos = pos)
+    nx.draw_networkx_edges(G, edgelist = triad_i.edges, edge_color = 'r', width=1, ax = ax_i, pos = pos) #  绘制边
     ax_i.set_title(nx.triad_type(triad_i))
 # plt.savefig('有向图中4个三元组子图.svg')
 
@@ -290,7 +290,7 @@ Di_G_edge_labels = nx.get_edge_attributes(Di_G, "weight")
 # 可视化
 plt.figure(figsize = (6,6))
 nx.draw_networkx(Di_G, pos = pos, node_color = '#0058FF', with_labels = True, node_size = 188)
-nx.draw_networkx_edge_labels(Di_G, pos, Di_G_edge_labels)
+nx.draw_networkx_edge_labels(Di_G, pos, Di_G_edge_labels) #  添加边标签
 # plt.savefig('有向图.svg')
 
 
@@ -374,8 +374,8 @@ mapping = {0: "a", 1: "b", 2: "c", 3: "d"}
 G = nx.relabel_nodes(G, mapping) # 用 networkx.relabel_nodes() 修改无向图节点标签。
 
 G.nodes()
-
 G.edges()
+
 G_edge_labels = nx.get_edge_attributes(G, "weight")
 G_edge_labels
 
