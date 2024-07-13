@@ -42,61 +42,80 @@ pos = nx.spring_layout(undirected_G, pos=random_pos)
 # 使用弹簧布局算法来排列图中的节点
 # 使得节点之间的连接看起来更均匀自然
 plt.figure(figsize = (6,6))
-nx.draw_networkx(undirected_G, pos = pos,
-                 node_size = 180)
+nx.draw_networkx(undirected_G, pos = pos, node_size = 180)
 # plt.savefig('G_4顶点_5边.svg')
 
 plt.figure(figsize = (6,6))
-nx.draw_networkx(undirected_G,
-                 node_size = 180)
+nx.draw_networkx(undirected_G, node_size = 180)
 # plt.savefig('G_4顶点_5边,位置不固定.svg')
 
 # 属性
-undirected_G.order()
 # 图的阶
+undirected_G.order()
+# 4
 
-undirected_G.number_of_nodes()
 # 图的节点数
+undirected_G.number_of_nodes()
+# 4
 
-undirected_G.nodes
 # 列出图的节点
+undirected_G.nodes
+# NodeView(('a', 'b', 'c', 'd'))
 
 for node_i in undirected_G.nodes:
     print(node_i, list(undirected_G.neighbors(node_i)))
+# a ['b', 'c']
+# b ['a', 'c', 'd']
+# c ['b', 'd', 'a']
+# d ['b', 'c']
 
-
-undirected_G.size()
 # 图的大小
+undirected_G.size()
+# 5
 
-undirected_G.edges
 # 列出图的边
+undirected_G.edges
+# EdgeView([('a', 'b'), ('a', 'c'), ('b', 'c'), ('b', 'd'), ('c', 'd')])
 
 for edge_i in undirected_G.edges:
     print(edge_i)
+# ('a', 'b')
+# ('a', 'c')
+# ('b', 'c')
+# ('b', 'd')
+# ('c', 'd')
 
 for u,v in undirected_G.edges:
     print(u,v)
+# a b
+# a c
+# b c
+# b d
+# c d
 
-undirected_G.number_of_edges()
 # 图的边数
-
-undirected_G.has_edge('a', 'b')
+undirected_G.number_of_edges()
+# 5
 # 判断是否存在ab边
-
-undirected_G.has_edge('a', 'd')
+undirected_G.has_edge('a', 'b')
+# True
 # 判断是否存在ad边
+undirected_G.has_edge('a', 'd')
+# False
 
-undirected_G.degree()
 # 图的度
-
+undirected_G.degree()
+# DegreeView({'a': 2, 'b': 3, 'c': 3, 'd': 2})
 
 dict(undirected_G.degree())
+# {'a': 2, 'b': 3, 'c': 3, 'd': 2}
 
-undirected_G.degree('a')
 # 图的度
+undirected_G.degree('a')
+# 2
 
-list(undirected_G.neighbors('a'))
 # 邻居
+list(undirected_G.neighbors('a'))
 type(undirected_G.neighbors('a'))
 
 
@@ -115,19 +134,19 @@ plt.figure(figsize = (6,6))
 nx.draw_networkx(undirected_G, pos = pos, node_size = 180)
 # plt.savefig('G_4顶点_5边_a自环.svg')
 
-undirected_G.size()
 # 图的大小
+undirected_G.size()
 
-
-undirected_G.edges
 # 列出图的边
+undirected_G.edges
 
-undirected_G.degree('a')
 # 节点a的度
+undirected_G.degree('a')
 
 
-list(undirected_G.neighbors('a'))
 # 邻居
+list(undirected_G.neighbors('a'))
+
 
 
 
@@ -135,9 +154,6 @@ list(undirected_G.neighbors('a'))
 
 import networkx as nx
 import matplotlib.pyplot as plt
-
-
-
 
 # 第一幅图
 G = nx.cubical_graph()
@@ -163,13 +179,13 @@ plt.figure(figsize = (6,6))
 nx.draw_networkx(H, pos = nx.circular_layout(H), with_labels=True, node_color="orange")
 # plt.savefig('图H.svg')
 
-
-nx.is_isomorphic(G,H)
 # 判断是否同构
+nx.is_isomorphic(G,H)
 
 
-nx.vf2pp_isomorphism(G,H, node_label="label")
 # 节点对应关系
+nx.vf2pp_isomorphism(G,H, node_label="label")
+
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 多图¶
@@ -193,36 +209,27 @@ Multi_G.add_edges_from([('a','b'), # 平行边
                         ('b','d'),
                         ('c','d')])
 # 添加多条边
-
 print(Multi_G.edges)
-
-
 
 # 可视化
 plt.figure(figsize = (6,6))
 nx.draw_networkx(Multi_G, with_labels=True)
 
-adjacency_matrix = nx.to_numpy_matrix(Multi_G)
 # 获得邻接矩阵
+adjacency_matrix = nx.to_numpy_matrix(Multi_G)
 
-
-adjacency_matrix
-
-
+print(adjacency_matrix)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 子图
-
 import matplotlib.pyplot as plt
 import networkx as nx
 
 G = nx.Graph()
 # 创建无向图的实例
 
-
 G.add_nodes_from(['a', 'b', 'c', 'd'])
 # 添加多个顶点
-
 
 G.add_edges_from([('a','b'),
                   ('b','c'),
@@ -233,21 +240,17 @@ G.add_edges_from([('a','b'),
 
 # 可视化
 plt.figure(figsize = (6,6))
-nx.draw_networkx(G, with_labels=True)
-
-
+nx.draw_networkx(G, with_labels = True)
 
 # 基于节点子集的子图
-
 Sub_G_nodes = G.subgraph(['a','b','c'])
+
 # 基于节点子集的子图
-
 set(G.nodes) - set(Sub_G_nodes.nodes)
-
 
 # 可视化
 plt.figure(figsize = (6,6))
-nx.draw_networkx(Sub_G_nodes, with_labels=True)
+nx.draw_networkx(Sub_G_nodes, with_labels = True)
 
 
 # 基于边子集的子图
@@ -255,51 +258,52 @@ Sub_G_edges = G.edge_subgraph([('a','b'),
                                ('b','c'),
                                ('c','d')])
 
-
 set(G.edges) - set(Sub_G_edges.edges)
-
 
 # 可视化
 plt.figure(figsize = (6,6))
-nx.draw_networkx(Sub_G_edges, with_labels=True)
+nx.draw_networkx(Sub_G_edges, with_labels = True)
 
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%c 加权无向图
-
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  加权无向图
 import matplotlib.pyplot as plt
 import networkx as nx
 
-
-
-weighted_G = nx.Graph()
 # 创建无向图的实例
+weighted_G = nx.Graph()
 
-weighted_G.add_nodes_from(['a', 'b', 'c', 'd'])
 # 添加多个顶点
+weighted_G.add_nodes_from(['a', 'b', 'c', 'd'])
 
+# 增加一组边，并赋予权重
 weighted_G.add_edges_from([('a','b', {'weight':10}),
                            ('b','c', {'weight':20}),
                            ('b','d', {'weight':30}),
                            ('c','d', {'weight':40}),
                            ('c','a', {'weight':50})])
-# 增加一组边，并赋予权重
+# 取出节点a的邻居
+weighted_G['a']
 
+# 取出ab边的权重，结果为字典
+weighted_G['a']['b']
+
+# 取出ab边的权重，结果为数值
+weighted_G['a']['b']['weight']
 
 edge_weights = [weighted_G[i][j]['weight'] for i, j in weighted_G.edges]
-# 所有边的权重
+# [10, 50, 20, 30, 40]
 
+# 所有边的权重
 edge_labels = nx.get_edge_attributes(weighted_G, "weight")
+
 # 所有边的标签
 plt.figure(figsize = (6,6))
 pos = nx.spring_layout(weighted_G)
-nx.draw_networkx(weighted_G, pos = pos, with_labels = True, node_size = 180, edge_color=edge_weights, edge_cmap = plt.cm.RdYlBu, edge_vmin = 10, edge_vmax = 50)
+nx.draw_networkx(weighted_G, pos = pos, with_labels = True, node_size = 280, edge_color=edge_weights, edge_cmap = plt.cm.RdYlBu, edge_vmin = 10, edge_vmax = 50)
 
 nx.draw_networkx_edge_labels(weighted_G, pos = pos, edge_labels=edge_labels, font_color='k')
 
-# plt.savefig('加权无向图.svg')
 
+# plt.savefig('加权无向图.svg')
 nx.to_numpy_matrix(weighted_G)
 
 

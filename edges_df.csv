@@ -1,0 +1,6 @@
+,source,target,edge_key,weight
+0,b,a,ba,1
+1,b,d,bd,2
+2,d,c,dc,3
+3,c,b,cb,4
+4,a,c,ac,5
