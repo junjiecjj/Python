@@ -16,24 +16,19 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import seaborn as sns
-
-
-G = nx.Graph()
 # 创建无向图的实例
+G = nx.Graph()
 
-
-G.add_nodes_from(['a', 'b', 'c', 'd', 'e', 'f'])
 # 添加多个顶点
+G.add_nodes_from(['a', 'b', 'c', 'd', 'e', 'f'])
 
-
+# 增加一组边
 G.add_edges_from([('a','b'),('a','f'),
                   ('a','c'),('a','d'),
                   ('d','e'),('c','e'),
                   ('d','c'),('b','c'),
                   ('b','e'),('b','f'),
                   ('e','f'),('c','f')])
-
-# 增加一组边
 
 # 城市具体位置
 pos = {'a':(50.6463,6.5692),
@@ -45,9 +40,7 @@ pos = {'a':(50.6463,6.5692),
 
 
 plt.figure(figsize = (6,6))
-nx.draw_networkx(G,
-                 pos = pos,
-                 node_size = 180)
+nx.draw_networkx(G, pos = pos, node_size = 880)
 # plt.savefig('城市位置.svg')
 
 
@@ -61,11 +54,7 @@ sns.heatmap(A,square = True,
             yticklabels = list(G.nodes),
             linecolor = 'k', linewidths = 0.2)
 # plt.savefig('无向图的邻接矩阵A.svg')
-
-
 A @ A
-
-
 
 sns.heatmap(A @ A,square = True,
             cmap = 'Blues',
@@ -90,15 +79,11 @@ import networkx as nx
 import numpy as np
 import seaborn as sns
 
-
-
 G = nx.DiGraph()
 # 创建有向图的实例
 
-
 G.add_nodes_from(['Chicken', 'Rabbit'])
 # 添加多个顶点
-
 
 edges_with_weights = [('Chicken','Chicken', 0.7),
                       ('Chicken','Rabbit', 0.3),
@@ -109,25 +94,18 @@ for u, v, w in edges_with_weights:
     G.add_edge(u, v, weight=w)
 
 # 位置
-
-pos = {'Chicken':(-0.2,0),
-       'Rabbit': (0.2,0)}
+pos = {'Chicken':(-0.2,0), 'Rabbit': (0.2,0)}
 
 
 # 可视化
-plt.figure(figsize = (6,6))
-nx.draw_networkx(G,
-                 pos = pos,
-                 node_size = 180)
+plt.figure(figsize = (16, 16))
+nx.draw_networkx(G, pos = pos, node_size = 180, font_size = 20, )
 plt.ylim(-0.5,0.5)
 plt.xlim(-0.5,0.5)
 
 # 邻接矩阵
 A = nx.adjacency_matrix(G).todense()
 A
-
-
-
 
 sns.heatmap(A, cmap = 'Blues',
             annot = True, fmt = '.1f',
@@ -139,8 +117,6 @@ sns.heatmap(A, cmap = 'Blues',
 # plt.savefig('有向图邻接矩阵.svg')
 
 T = A.T
-
-
 sns.heatmap(T, cmap = 'Blues',
             annot = True, fmt = '.1f',
             xticklabels = list(G.nodes),
@@ -186,16 +162,13 @@ pos = {'a':(50.6463,6.5692),
 
 # 可视化
 plt.figure(figsize = (6,6))
-nx.draw_networkx(G,
-                 pos = pos,
-                 node_size = 180)
+nx.draw_networkx(G, pos = pos, node_size = 880)
 
 
 # 邻接矩阵
 A = nx.adjacency_matrix(G).todense()
 A
-
-
+plt.figure(figsize = (6,6))
 sns.heatmap(A, cmap = 'Blues',
             annot = True, fmt = '.0f',
             xticklabels = list(G.nodes),
@@ -204,23 +177,15 @@ sns.heatmap(A, cmap = 'Blues',
             linewidths = 0.2)
 # plt.savefig('有向图邻接矩阵.svg')
 
-
-
-
 A @ A
-
-
 A @ A @ A
-
 A @ A @ A @ A
 
 # 每行元素之和为1
-T_T = A /  A.sum(axis=1)[:, np.newaxis]
-
+T_T = A /  A.sum(axis=1)
 T_T
-
-sns.heatmap(T_T, cmap = 'Blues',
-            annot = True, fmt = '.1f',
+plt.figure(figsize = (6,6))
+sns.heatmap(T_T, cmap = 'Blues', annot = True, fmt = '.1f',
             xticklabels = list(G.nodes),
             yticklabels = list(G.nodes),
             linecolor = 'k', square = True,
@@ -230,10 +195,9 @@ sns.heatmap(T_T, cmap = 'Blues',
 
 # 每列元素之和为1
 A_T = A.T
-T = A_T /  A_T.sum(axis=0)
-
-sns.heatmap(T, cmap = 'Blues',
-            annot = True, fmt = '.1f',
+T = A_T / A_T.sum(axis=0)
+plt.figure(figsize = (6,6))
+sns.heatmap(T, cmap = 'Blues', annot = True, fmt = '.1f',
             xticklabels = list(G.nodes),
             yticklabels = list(G.nodes),
             linecolor = 'k', square = True,
@@ -267,13 +231,10 @@ list(G.edges())
 
 plt.figure(figsize = (6,6))
 pos = nx.spring_layout(G,seed=8)
-nx.draw_networkx(G,
-                 pos = pos,
-                 node_size = 180)
+nx.draw_networkx(G, pos = pos, node_size = 180)
 
 edge_labels = nx.get_edge_attributes(G, 'weight')
-nx.draw_networkx_edge_labels(G, pos,
-                             edge_labels=edge_labels)
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
 
 # 稳态
@@ -291,7 +252,6 @@ initial_x_3 = np.array([[1, 0, 0],
 num_iterations = 10;
 
 for i in np.arange(0,3):
-
     initial_x = initial_x_3[:,i][:, None]
 
     x_i = np.zeros_like(initial_x)
@@ -327,16 +287,12 @@ import matplotlib.pyplot as plt
 
 
 def simulate_markov_chain(T, initial_state, num_steps):
-
     states = [initial_state]
     # 初始状态
-
     current_state = initial_state
-
     for _ in range(num_steps):
         # 根据当前状态和转移矩阵决定下一状态
-        next_state = np.random.choice(np.arange(len(T)),
-                                      p=T[current_state])
+        next_state = np.random.choice(np.arange(len(T)), p=T[current_state])
         states.append(next_state)
         current_state = next_state
 
@@ -362,9 +318,7 @@ plt.figure(figsize=(8, 3))
 plt.plot(indices, states, c = '0.8')
 
 for state_i,label_i in zip([0, 1, 2],labels):
-    plt.scatter(indices[states == state_i],
-                states[states == state_i],
-                label=label_i)
+    plt.scatter(indices[states == state_i], states[states == state_i], label=label_i)
 # plt.legend()
 plt.xlabel('Iteration')
 plt.ylabel('State')
@@ -388,10 +342,6 @@ plt.legend()
 plt.grid(True)
 # plt.savefig('累积概率曲线.svg')
 plt.show()
-
-
-
-
 
 
 

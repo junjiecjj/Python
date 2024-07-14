@@ -30,23 +30,21 @@ points = np.array([[1,6],[4,6],[1,5],[6,0],
                    [9,2],[5,9],[4,9],[8,4]])
 
 # 计算成对距离矩阵
-D = np.linalg.norm(points[:, np.newaxis, :] - points, axis = 2)
-# 请尝试使用
-D =  pairwise_distances(points, points, metric='euclidean', )
+# D = np.linalg.norm(points[:, np.newaxis, :] - points, axis = 2)
+D =  pairwise_distances(points, points, metric = 'euclidean', )
 # D2 = pdist(points, 'euclidean')
 
 # 创建无向图
 G = nx.Graph()
 
+# 请思考如何避免使用 for 循环
 # 添加节点和边
 for i in range(12):
-    G.add_node(i, pos=(points[i, 0], points[i, 1]))
     # 使用pos属性保存节点的坐标信息
+    G.add_node(i, pos = (points[i, 0], points[i, 1]))
     for j in range(i + 1, 12):
-        G.add_edge(i, j, weight=D[i, j])
         # 将距离作为边的权重
-
-# 请思考如何避免使用 for 循环
+        G.add_edge(i, j, weight = D[i, j])
 
 # 增加节点/边属性
 pos = nx.get_node_attributes(G, 'pos')
@@ -54,17 +52,11 @@ labels = {i: chr(ord('a') + i) for i in range(len(G.nodes))}
 edge_labels = {(i, j): f'{D[i, j]:.2f}' for i, j in G.edges}
 edge_weights = [G[i][j]['weight'] for i, j in G.edges]
 
-
 # 可视化图
-fig, ax = plt.subplots(figsize = (6,6))
-nx.draw_networkx(G, pos, with_labels=True, labels=labels,
-                 node_size=800, font_size = 20, node_color='grey', font_color='black',
-                 edge_vmin = 0, edge_vmax = 10, edge_cmap=plt.cm.RdYlBu,
-                 edge_color=edge_weights, width=1, alpha=0.7)
+fig, ax = plt.subplots(figsize = (16, 16))
+nx.draw_networkx(G, pos, with_labels = True, labels = labels, node_size = 800, font_size = 20, node_color = 'grey', font_color = 'black', edge_vmin = 0, edge_vmax = 10, edge_cmap = plt.cm.RdYlBu, edge_color = edge_weights, width = 1, alpha = 0.7)
 
-# nx.draw_networkx_edge_labels(G, pos,
-#                              edge_labels=edge_labels,
-#                              font_color='k')
+nx.draw_networkx_edge_labels(G, pos, edge_labels = edge_labels, font_size = 20, font_color = 'k')
 
 ax.set_xlim(0,10)
 ax.set_ylim(0,10)
@@ -73,27 +65,11 @@ ax.set_aspect('equal', adjustable='box')
 # plt.savefig('成对距离矩阵_无向图.svg')
 plt.show()
 
-
-# 可视化图
-plt.figure(figsize=(6,6))
-nx.draw_networkx(G, pos, with_labels = True, labels = labels, node_size = 100, node_color = 'grey', font_color = 'black',
-                 edge_cmap = plt.cm.RdYlBu, edge_color = edge_weights, width = 1, alpha = 0.7)
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='k')
-
-ax.set_xlim(0,10)
-ax.set_ylim(0,10)
-ax.grid()
-ax.set_aspect('equal', adjustable='box')
-plt.show()
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 将成对距离矩阵转化为完全图，设定阈值
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 
 # 12个坐标点
 points = np.array([[1,6],[4,6],[1,5],[6,0],
@@ -106,9 +82,8 @@ D = np.linalg.norm(points[:, np.newaxis, :] - points, axis=2)
 # 设定阈值
 threshold = 6
 D_threshold = D
-D_threshold[D_threshold > threshold] = 0
 # 超过阈值置零
-
+D_threshold[D_threshold > threshold] = 0
 
 # 可视化成对距离矩阵
 plt.figure(figsize=(8,8))
@@ -117,10 +92,8 @@ sns.heatmap(D_threshold, square = True, cmap = 'RdYlBu', vmin = 0, vmax = 10,
             xticklabels = [], yticklabels = [])
 # plt.savefig('成对距离矩阵_heatmap, 设定阈值.svg')
 
-
-# 创建无向图
-G_threshold = nx.Graph(D_threshold, nodetype=int)
 # 用邻接矩阵创建无向图
+G_threshold = nx.Graph(D_threshold, nodetype = int)
 
 # 添加节点和边
 for i in range(12):
@@ -134,17 +107,19 @@ node_labels = {i: chr(ord('a') + i) for i in range(len(G_threshold.nodes))}
 edge_weights = [G_threshold[i][j]['weight'] for i, j in G_threshold.edges]
 
 # 可视化图
-fig, ax = plt.subplots(figsize = (6,6))
+fig, ax = plt.subplots(figsize = (16,16))
 nx.draw_networkx(G_threshold, pos,
                  with_labels=True,
                  labels=node_labels,
-                 node_size=100,
+                 node_size=800, font_size = 20,
                  edge_vmin = 0, edge_vmax = 10,
                  node_color='grey',
                  font_color='black',
                  edge_color=edge_weights,
                  edge_cmap=plt.cm.RdYlBu,
-                 width=1, alpha=0.7)
+                 width=2, )
+edge_labels = {(i, j): f'{D[i, j]:.2f}' for i, j in G.edges if D_threshold[i,j] > 0}
+nx.draw_networkx_edge_labels(G, pos, edge_labels = edge_labels, font_size = 20, font_color = 'k')
 
 ax.set_xlim(0,10)
 ax.set_ylim(0,10)
@@ -153,13 +128,12 @@ ax.set_aspect('equal', adjustable='box')
 # plt.savefig('成对距离矩阵_无向图_阈值.svg')
 plt.show()
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 将成对亲近度矩阵转化为完全图，设定阈值
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 亲近度矩阵：高斯核函数
 
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 
 # 12个坐标点
 points = np.array([[1,6],[4,6],[1,5],[6,0],
@@ -173,7 +147,6 @@ def gaussian_kernel(distance, sigma=1.0):
 # 计算成对距离矩阵
 D = np.linalg.norm(points[:, np.newaxis, :] - points, axis=2)
 
-
 K = gaussian_kernel(D,3)
 # 参数sigma设为3
 
@@ -186,13 +159,11 @@ sns.heatmap(K, square = True,
             xticklabels = [], yticklabels = [])
 # plt.savefig('亲近度矩阵_heatmap.svg')
 
-
 np.fill_diagonal(K, 0)
 # 将对角线元素置0，不画自环
 
-# 创建无向图
-G = nx.Graph(K, nodetype=int)
 # 用邻接矩阵创建无向图
+G = nx.Graph(K, nodetype=int)
 
 # 添加节点和边
 for i in range(12):
@@ -208,18 +179,17 @@ edge_labels = {(i, j): f'{K[i, j]:.2f}' for i, j in G.edges}
 
 
 # 可视化图
-fig, ax = plt.subplots(figsize = (6,6))
+fig, ax = plt.subplots(figsize = (16, 16))
 nx.draw_networkx(G, pos,
-                 with_labels=True,
-                 labels=node_labels,
-                 node_size=100,
+                 with_labels = True,
+                 labels = node_labels,
+                 node_size = 800, font_size = 20,
                  edge_vmin = 0, edge_vmax = 1,
-                 node_color='grey',
-                 font_color='black',
-                 edge_color=edge_weights,
-                 edge_cmap=plt.cm.viridis,
-                 width=1, alpha=0.7)
-
+                 node_color = 'grey',
+                 font_color = 'black',
+                 edge_color = edge_weights,
+                 edge_cmap = plt.cm.viridis,
+                 width = 1, alpha = 0.7)
 ax.set_xlim(0,10)
 ax.set_ylim(0,10)
 ax.grid()
@@ -229,11 +199,11 @@ plt.show()
 
 
 # 可视化图
-fig, ax = plt.subplots(figsize = (6,6))
+fig, ax = plt.subplots(figsize = (16,16))
 nx.draw_networkx(G, pos,
                  with_labels=True,
                  labels=node_labels,
-                 node_size=100,
+                 node_size = 800, font_size = 20,
                  edge_vmin = 0, edge_vmax = 1,
                  node_color='grey',
                  font_color='black',
@@ -241,7 +211,7 @@ nx.draw_networkx(G, pos,
                  edge_cmap=plt.cm.viridis,
                  width=1, alpha=0.7)
 
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='k')
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='k', font_size=20)
 
 ax.set_xlim(0,10)
 ax.set_ylim(0,10)
@@ -288,7 +258,7 @@ fig, ax = plt.subplots(figsize = (6,6))
 nx.draw_networkx(G_threshold, pos,
                  with_labels=True,
                  labels=node_labels,
-                 node_size=100,
+                 node_size = 800, font_size = 20,
                  edge_vmin = 0, edge_vmax = 1,
                  node_color='grey',
                  font_color='black',
@@ -319,8 +289,6 @@ from sklearn.metrics.pairwise import rbf_kernel
 def gaussian_kernel(distance, sigma=1.0):
     return np.exp(- (distance ** 2) / (2 * sigma ** 2))
 
-
-
 # 加载鸢尾花数据集
 iris = load_iris()
 data = iris.data[:, :2]
@@ -339,12 +307,9 @@ K = gaussian_kernel(D, sigma)
 # distances = euclidean_distances(data)
 # 用成对距离矩阵也可以构造无向图
 
-sns.heatmap(K, square = True, cmap = 'RdYlBu_r',
-            xticklabels = [],
-            yticklabels = [])
-
-np.fill_diagonal(K, 0)
+sns.heatmap(K, square = True, cmap = 'RdYlBu_r', xticklabels = [], yticklabels = [])
 # 对角线置0，避免自环
+np.fill_diagonal(K, 0)
 
 # 创建无向图
 G = nx.Graph()
@@ -416,7 +381,6 @@ returns_df
 
 # 计算相关性系数矩阵
 corr = returns_df.corr()
-corr
 
 # 可视化相关性系数矩阵
 sns.heatmap(corr)
