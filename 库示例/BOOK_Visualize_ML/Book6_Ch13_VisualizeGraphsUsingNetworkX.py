@@ -16,7 +16,8 @@
 # sklearn.datasets.load_iris() 加载数据
 # sklearn.metrics.pairwise.euclidean_distances() 计算成对欧氏距离矩阵
 
-
+# networkx.get_edge_attributes() 获取图中边的特定属性的字典
+# networkx.get_node_attributes() 获取图中节点的特定属性的字典
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用networkx.draw_networkx()，节点位置
 
@@ -422,7 +423,7 @@ nx.draw_networkx_edges(G, pos, edgelist=elarge, width=1)
 nx.draw_networkx_edges(G, pos, edgelist=esmall, width=1, alpha=0.5, edge_color="b", style="dashed")
 
 # 边标签
-edge_labels = nx.get_edge_attributes(G, "weight")
+edge_labels = nx.get_edge_attributes(G, "weight") #  获取图中边的特定属性的字典
 nx.draw_networkx_edge_labels(G, pos, edge_labels)
 
 # plt.savefig('不同边权重，不同线型.svg')
@@ -589,7 +590,7 @@ import numpy as np
 G = nx.random_geometric_graph(400, 0.125)
 
 # 提取节点平面坐标
-pos = nx.get_node_attributes(G, "pos")
+pos = nx.get_node_attributes(G, "pos") # 获取图中节点的特定属性的字典
 
 # 度数大小排序
 degree_sequence = sorted((d for n, d in G.degree()), reverse=True)

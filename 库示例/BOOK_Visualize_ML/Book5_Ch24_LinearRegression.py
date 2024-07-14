@@ -32,7 +32,6 @@ mu_y = iris_sns['petal_length'].mean()
 x_array = np.linspace(4,8,10)
 y_reg_array = mu_y + rho_x_y*sigma_y/sigma_x*(x_array - mu_x)
 
-
 fig, ax = plt.subplots()
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
@@ -88,24 +87,7 @@ iris_sns = sns.load_dataset("iris")
 
 g = sns.pairplot(iris_sns, kind='reg', diag_kind = 'kde', plot_kws={'line_kws':{'color':'red'}, 'scatter_kws': {'alpha': 0.5}})
 
-
 g = sns.pairplot(iris_sns, kind='reg', diag_kind = 'kde', hue="species",plot_kws={'scatter_kws': {'alpha': 0.5}})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

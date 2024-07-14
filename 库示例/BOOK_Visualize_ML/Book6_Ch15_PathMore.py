@@ -68,7 +68,6 @@ print(nx.shortest_path(G, source=0, target=3))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 节点间路径，有向图
 
-
 import matplotlib.pyplot as plt
 import networkx as nx
 import random
@@ -76,11 +75,8 @@ import random
 # 创建一个包含5个节点的无向完全图
 G_undirected = nx.complete_graph(5)
 
-
 # 创建一个新的有向图
 G_directed = nx.DiGraph()
-
-
 
 # 为每对节点随机选择方向
 random.seed(8)
@@ -96,12 +92,10 @@ pos = nx.circular_layout(G_directed)
 nx.draw_networkx(G_directed,
                  pos = pos,
                  with_labels = True,
-                 node_size = 188)
+                 node_size = 288)
 # plt.savefig('完全图，设定边方向.svg')
-
-
+##############################
 # 节点0为始点、3为终点之间所有路径
-
 all_paths_nodes = nx.all_simple_paths(G_directed, source=0, target=3)
 # 节点0为始点、3为终点所有路径上的节点
 
@@ -115,13 +109,13 @@ for nodes_i, edges_i, ax_i in zip(all_paths_nodes, all_paths_edges, axes):
                      ax = ax_i,
                      pos = pos,
                      with_labels = True,
-                     node_size = 88)
+                     node_size = 388)
 
     nx.draw_networkx_nodes(G_directed,
                            ax = ax_i,
                            nodelist = nodes_i,
                            pos = pos,
-                           node_size = 88,
+                           node_size = 388,
                            node_color = 'r')
 
     nx.draw_networkx_edges(G_directed,
@@ -135,7 +129,7 @@ for nodes_i, edges_i, ax_i in zip(all_paths_nodes, all_paths_edges, axes):
 
 # plt.savefig('节点0为始点、3为终点的所有路径，有向图.svg')
 
-
+##############################
 # 节点3为始点、0为终点之间所有路径
 all_paths_nodes = nx.all_simple_paths(G_directed, source=3, target=0)
 
@@ -171,20 +165,15 @@ for nodes_i, edges_i, ax_i in zip(all_paths_nodes, all_paths_edges, axes):
 # plt.savefig('节点3为始点、0为终点的所有路径，有向图.svg')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 环，有向图
-
 import matplotlib.pyplot as plt
 import networkx as nx
 import random
 
-
 # 创建一个包含5个节点的无向完全图
 G_undirected = nx.complete_graph(5)
 
-
 # 创建一个新的有向图
 G_directed = nx.DiGraph()
-
-
 
 # 为每对节点随机选择方向
 random.seed(8)
@@ -193,7 +182,6 @@ for u, v in G_undirected.edges():
         G_directed.add_edge(u, v)
     else:
         G_directed.add_edge(v, u)
-
 
 # 可视化图
 plt.figure(figsize = (6,6))
@@ -204,12 +192,9 @@ nx.draw_networkx(G_directed,
                  node_size = 188)
 # plt.savefig('完全图，设定边方向.svg')
 
-
 # 发现 cycle
-
 cycle = nx.find_cycle(G_directed, orientation="original")
 print(cycle)
-
 
 # 可视化图
 plt.figure(figsize = (6,6))
@@ -224,20 +209,11 @@ nx.draw_networkx_edges(G_directed, pos = pos,
 
 
 
-list_cycles = list(nx.simple_cycles(G_directed))
-# 找到有向图中所有环
-list_cycles
-
-len(list_cycles)
-
 
 # 自定义函数将节点序列转化为边序列 (闭环)
-
 def nodes_2_edges(node_list):
-
     # 使用列表生成式创建边的列表
-    list_edges = [(node_list[i], node_list[i+1])
-                  for i in range(len(node_list)-1)]
+    list_edges = [(node_list[i], node_list[i+1]) for i in range(len(node_list)-1)]
 
     # 加上一个额外的边从最后一个节点回到第一个节点，形成闭环
     closing_edge = [(node_list[-1], node_list[0])]
@@ -247,10 +223,13 @@ def nodes_2_edges(node_list):
 # 也可以用函数
 # nx.utils.pairwise(, cyclic = True)
 
+list_cycles = list(nx.simple_cycles(G_directed))
+# 找到有向图中所有环
+list_cycles
+len(list_cycles)
 
 # 可视化有向图中3个环
 fig, axes = plt.subplots(1, 3, figsize = (9,3))
-
 axes = axes.flatten()
 for nodes_i, ax_i in zip(list_cycles, axes):
     edges_i = nodes_2_edges(nodes_i)
@@ -258,13 +237,13 @@ for nodes_i, ax_i in zip(list_cycles, axes):
                      ax = ax_i,
                      pos = pos,
                      with_labels = True,
-                     node_size = 88)
+                     node_size = 388)
 
     nx.draw_networkx_nodes(G_directed,
                            ax = ax_i,
                            nodelist = nodes_i,
                            pos = pos,
-                           node_size = 88,
+                           node_size = 388,
                            node_color = 'r')
 
     nx.draw_networkx_edges(G_directed,
@@ -275,7 +254,6 @@ for nodes_i, ax_i in zip(list_cycles, axes):
 
     ax_i.set_title(' → '.join(str(node) for node in nodes_i))
     ax_i.axis('off')
-
 # plt.savefig('有向图中所有cycles.svg')
 
 
@@ -307,23 +285,19 @@ G.add_edge("H", "I", weight=7)
 pos = nx.spring_layout(G, seed = 8)
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
 
-plt.figure(figsize = (6,6))
-nx.draw_networkx(G, pos = pos,
-                 node_color = '#0058FF',
-                 node_size = 180)
-nx.draw_networkx_edge_labels(G,
-                             pos = pos,
-                             edge_labels=edge_labels)
+plt.figure(figsize = (10, 10))
+nx.draw_networkx(G, pos = pos, node_color = '#0058FF', node_size = 480)
+nx.draw_networkx_edge_labels(G, pos = pos, edge_labels=edge_labels)
+plt.axis('off')
 # plt.savefig('无向图.svg')
 
 # 指定两节点最短距离
-
 # 确定是否存在路径
-
 nx.has_path(G,
             source = "A", # 始点
             target = "E", # 终点
            )
+# True
 
 # 找到A、E节点之间的最短距离，考虑权重
 path_A_2_E = nx.shortest_path(G,
@@ -331,6 +305,7 @@ path_A_2_E = nx.shortest_path(G,
                               target = "E", # 终点
                               weight="weight")
 print(path_A_2_E)
+# ['A', 'H', 'G', 'F', 'E']
 
 
 # 最短距离值
@@ -338,73 +313,55 @@ nx.shortest_path_length(G,
                         source = "A", # 始点
                         target = "E", # 终点
                         weight="weight")
-# 最短路径的边，列表的每个元素为元组
-# 元组有两个元素，代表边的两个节点
+# 21
+
+# 最短路径的边，列表的每个元素为元组, 元组有两个元素，代表边的两个节点
 path_edges = list(zip(path_A_2_E, path_A_2_E[1:]))
 
 # 最短路径所在边：红色
 # 其他边：黑色
-edge_colors = ["#FF5800"
-               if edge in path_edges
-                       or tuple(reversed(edge)) in path_edges
-               else "black" for edge in G.edges()]
+edge_colors = ["#FF5800" if edge in path_edges or tuple(reversed(edge)) in path_edges else "black" for edge in G.edges()]
 
 # 可视化图
 plt.figure(figsize = (6,6))
 # 路径上的节点
-nx.draw_networkx_nodes(G, pos,
-                       nodelist = path_A_2_E,
-                       node_color = '#FF5800',
-                       node_size = 180)
+nx.draw_networkx_nodes(G, pos, nodelist = path_A_2_E, node_color = '#FF5800', node_size = 480)
 
 # 路径之外其他节点
 not_path_A_2_E = set(G.nodes()) - set(path_A_2_E)
-nx.draw_networkx_nodes(G, pos,
-                       nodelist = not_path_A_2_E,
-                       node_color = '#0058FF',
-                       node_size = 180)
+nx.draw_networkx_nodes(G, pos, nodelist = not_path_A_2_E, node_color = '#0058FF', node_size = 480) # 绘制节点
+nx.draw_networkx_edges(G, pos, edge_color=edge_colors) # 绘制边
 
-nx.draw_networkx_edges(G, pos,
-                       edge_color=edge_colors)
-
-nx.draw_networkx_labels(G, pos)
-nx.draw_networkx_edge_labels(
-    G, pos, edge_labels=edge_labels)
+nx.draw_networkx_labels(G, pos) # 添加节点标签
+nx.draw_networkx_edge_labels( G, pos, edge_labels=edge_labels) # 添加边标签
 
 # plt.savefig('A、E最短距离.svg')
 
-# 起点为A的所有最短路径
-path_from_A = nx.shortest_path(G,
-                               source = "A", # 起点
+#################>>>  起点为A的所有最短路径 <<<
+path_from_A = nx.shortest_path(G, source = "A", # 起点
                                weight="weight")
 print(path_from_A)
+# {'A': ['A'], 'B': ['A', 'B'], 'H': ['A', 'H'], 'C': ['A', 'B', 'C'], 'G': ['A', 'H', 'G'], 'I': ['A', 'B', 'C', 'I'], 'F': ['A', 'H', 'G', 'F'], 'D': ['A', 'B', 'C', 'D'], 'E': ['A', 'H', 'G', 'F', 'E']}
 
 # 最短距离值
-nx.shortest_path_length(G,
-                        source = "A", # 始点
+nx.shortest_path_length(G, source = "A", # 始点
                         weight="weight")
+# {'A': 0, 'B': 4, 'H': 8, 'G': 9, 'F': 11, 'C': 12, 'I': 14, 'D': 19, 'E': 21}
 
-# 终点为E的所有最短路径
-path_2_E = nx.shortest_path(G,
-                            target = "E", # 终点
-                            weight="weight")
+################>>>  终点为E的所有最短路径 <<<
+path_2_E = nx.shortest_path(G, target = "E", weight="weight")
 # nx.single_source_shortest_path()
 print(path_2_E)
-
+# {'E': ['E'], 'D': ['D', 'E'], 'F': ['F', 'E'], 'C': ['C', 'F', 'E'], 'G': ['G', 'F', 'E'], 'H': ['H', 'G', 'F', 'E'], 'I': ['I', 'C', 'F', 'E'], 'A': ['A', 'H', 'G', 'F', 'E'], 'B': ['B', 'C', 'F', 'E']}
 
 # 最短距离值
-nx.shortest_path_length(G,
-                        target = "E", # 终点
-                        weight="weight")
-# nx.single_source_shortest_path_length()
+nx.shortest_path_length(G, target = "E",  weight="weight")
+# {'E': 0, 'D': 9, 'F': 10, 'G': 12, 'H': 13, 'C': 14, 'I': 16, 'A': 21, 'B': 22}
 
-
-# 图中任意两点所有最短路径
-path_all = nx.shortest_path(G,
-                            weight="weight")
-
-
+#################>>>  图中任意两点所有最短路径 <<<
+path_all = nx.shortest_path(G, weight="weight")
 path_all['A']['E']
+# ['A', 'H', 'G', 'F', 'E']
 
 # Shortest_path_matrix
 # 最短距离值
@@ -413,17 +370,12 @@ distances_all = dict(nx.shortest_path_length(G, weight="weight"))
 # 将成对最短距离整理为矩阵
 Shortest_D_matrix = np.array([[v[j] for j in list(distances_all.keys())] for k, v in distances_all.items()])
 
-sns.heatmap(Shortest_D_matrix, cmap = 'Blues',
-            annot = True, fmt = '.0f',
-            xticklabels = list(G.nodes),
-            yticklabels = list(G.nodes),
-            linecolor = 'k', square = True,
-            cbar = False,
-            linewidths = 0.2)
-plt.savefig('Shortest_D_matrix.svg')
+sns.heatmap(Shortest_D_matrix, cmap = 'Blues', annot = True, fmt = '.0f', xticklabels = list(G.nodes), yticklabels = list(G.nodes), linecolor = 'k', square = True, cbar = True, linewidths = 0.2)
+
+# plt.savefig('Shortest_D_matrix.svg')
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 最短路径问题，有向图
-
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
@@ -452,34 +404,26 @@ G.add_edge("H", "I", weight=7)
 pos = nx.spring_layout(G, seed = 28)
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
 
-
-
 plt.figure(figsize = (6,6))
-nx.draw_networkx(G,
-                 pos = pos,
-                 node_color = '#0058FF',
-                 node_size = 180)
-nx.draw_networkx_edge_labels(G,
-                             pos = pos,
-                             edge_labels=edge_labels)
+nx.draw_networkx(G, pos = pos, node_color = '#0058FF', node_size = 180)
+nx.draw_networkx_edge_labels(G, pos = pos, edge_labels=edge_labels)
 # plt.savefig('有向图.svg')
 
 
-# 指定两节点最短距离
-# 确定是否存在路径
-
+######## 指定两节点最短距离
+# 检查两个节点是否连通
 nx.has_path(G,
             source = "A", # 始点
             target = "E", # 终点
            )
+# False
 
-
-
+# 检查两个节点是否连通
 nx.has_path(G,
             source = "E", # 始点
             target = "A", # 终点
             )
-
+# True
 
 # 找到E、A节点之间的最短距离，考虑权重
 path_E_2_A = nx.shortest_path(G,
@@ -487,14 +431,14 @@ path_E_2_A = nx.shortest_path(G,
                               target = "A", # 终点
                               weight="weight")
 print(path_E_2_A)
-
+# ['E', 'F', 'C', 'I', 'G', 'H', 'A']
 
 # 最短距离值
 nx.shortest_path_length(G,
                         source = "E", # 始点
                         target = "A", # 终点
                         weight="weight")
-
+# 31
 
 # 最短路径的边，列表的每个元素为元组
 # 元组有两个元素，代表边的两个节点
@@ -502,48 +446,34 @@ path_edges = list(zip(path_E_2_A, path_E_2_A[1:]))
 
 # 最短路径所在边：红色
 # 其他边：黑色
-edge_colors = ["#FF5800"
-               if edge in path_edges
-                       or tuple(reversed(edge)) in path_edges
-               else "black" for edge in G.edges()]
-
+edge_colors = ["#FF5800" if edge in path_edges or tuple(reversed(edge)) in path_edges else "black" for edge in G.edges()]
 
 # 可视化图
 plt.figure(figsize = (6,6))
 # 路径上的节点
-nx.draw_networkx_nodes(G, pos,
-                       nodelist = path_E_2_A,
-                       node_color = '#FF5800',
-                       node_size = 180)
+nx.draw_networkx_nodes(G, pos, nodelist = path_E_2_A, node_color = '#FF5800', node_size = 480)
 
 # 路径之外其他节点
 not_path_E_2_A = set(G.nodes()) - set(path_E_2_A)
-nx.draw_networkx_nodes(G, pos,
-                       nodelist = not_path_E_2_A,
-                       node_color = '#0058FF',
-                       node_size = 180)
+nx.draw_networkx_nodes(G, pos, nodelist = not_path_E_2_A, node_color = '#0058FF', node_size = 480)
 
-nx.draw_networkx_edges(G, pos,
-                       edge_color=edge_colors)
+nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
 
 nx.draw_networkx_labels(G, pos)
-nx.draw_networkx_edge_labels(
-    G, pos, edge_labels=edge_labels)
-
+nx.draw_networkx_edge_labels( G, pos, edge_labels=edge_labels)
 # plt.savefig('E、A最短距离，有向图.svg')
 
 
-# 起点为A的所有最短路径
-path_from_A = nx.shortest_path(G, source = "A", # 起点
-                               weight="weight")
+###################################### 起点为A的所有最短路径
+path_from_A = nx.shortest_path(G, source = "A", weight="weight")
 print(path_from_A)
+# {'A': ['A'], 'B': ['A', 'B'], 'C': ['A', 'B', 'C'], 'D': ['A', 'B', 'C', 'D'], 'I': ['A', 'B', 'C', 'I'], 'G': ['A', 'B', 'C', 'I', 'G'], 'F': ['A', 'B', 'C', 'I', 'G', 'F'], 'H': ['A', 'B', 'C', 'I', 'G', 'H']}
 
 # 最短距离值
-nx.shortest_path_length(G, source = "A", # 始点
-                        weight="weight")
+nx.shortest_path_length(G, source = "A", weight="weight")
+# {'A': 0, 'B': 4, 'C': 12, 'I': 14, 'D': 19, 'G': 20, 'H': 21, 'F': 22}
 
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 终点为E的所有最短路径
+###################################### 终点为E的所有最短路径
 
 path_2_E = nx.shortest_path(G, target = "E", # 终点
                             weight="weight")
@@ -551,14 +481,12 @@ path_2_E = nx.shortest_path(G, target = "E", # 终点
 print(path_2_E)
 
 # 最短距离值
-nx.shortest_path_length(G, target = "E", # 终点
-                        weight="weight")
-# nx.single_source_shortest_path_length()
+nx.shortest_path_length(G, target = "E", weight="weight")
 
 # 图中任意两点所有最短路径
 path_all = nx.shortest_path(G, weight="weight")
 path_all['E']['A']
-
+# ['E', 'F', 'C', 'I', 'G', 'H', 'A']
 
 # 最短距离值
 distances_all = dict(nx.shortest_path_length(G, weight="weight"))
@@ -574,13 +502,7 @@ for i,i_node in enumerate(list_nodes):
         except KeyError:
             print(i_node + ' to ' + j_node + ': no path')
 
-sns.heatmap(Shortest_D_matrix, cmap = 'Blues',
-            annot = True, fmt = '.0f',
-            xticklabels = list(G.nodes),
-            yticklabels = list(G.nodes),
-            linecolor = 'k', square = True,
-            cbar = False,
-            linewidths = 0.2)
+sns.heatmap(Shortest_D_matrix, cmap = 'Blues', annot = True, fmt = '.0f', xticklabels = list(G.nodes), yticklabels = list(G.nodes), linecolor = 'k', square = True, cbar = False, linewidths = 0.2)
 # plt.savefig('Shortest_D_matrix，有向图.svg')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 推销员问题
@@ -615,7 +537,7 @@ edge_list
 plt.figure(figsize = (8,8))
 nx.draw_networkx_edges(H, pos, edge_color="blue", width=0.5)
 
-nx.draw_networkx(G, pos, with_labels=True, edgelist=edge_list, edge_color="red", node_size=200,width=3)
+nx.draw_networkx(G, pos, with_labels=True, edgelist=edge_list, edge_color="red", node_size=500, width=3)
 
 plt.show()
 

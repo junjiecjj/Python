@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 #%% Bk5_Ch17_01
 # 图 3. 鸢尾花四个特征的高斯 KDE 曲线
 import numpy as np
@@ -237,11 +232,7 @@ ax.set_ylabel('Sepal width, $X_2$')
 plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
 
-
-
-
 #%% Bk5_Ch17_05
-
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
