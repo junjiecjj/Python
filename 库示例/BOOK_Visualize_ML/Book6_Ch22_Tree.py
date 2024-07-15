@@ -4,14 +4,19 @@
 
 # https://networkx.org/documentation/latest/auto_examples/index.html
 
-
+# networkx.all_pairs_lowest_common_ancestor() 寻找最近共同祖先
+# networkx.draw_networkx_edge_labels() 绘制边标签
+# networkx.draw_networkx_edges() 绘制图边
+# networkx.draw_networkx_labels() 绘制节点标签
+# networkx.draw_networkx_nodes() 绘制图节点
+# networkx.minimum_spanning_tree() 计算最小生成树
+# seaborn.clustermap() 绘制热图树形图
+# seaborn.heatmap() 绘制热图
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 最小生成树
 
-
 import networkx as nx
 import matplotlib.pyplot as plt
-
 
 # 构造图
 G = nx.Graph()
@@ -36,29 +41,16 @@ G.add_edges_from([(0, 1, {"weight": 4}),
 pos = nx.spring_layout(G)
 
 # 可视化
-nx.draw_networkx_nodes(G,
-                       pos,
-                       node_color="0.8",
-                       node_size=500)
-
+plt.figure(figsize = (16,16))
+nx.draw_networkx_nodes(G, pos, node_color="0.8", node_size=800)
 edge_labels = nx.get_edge_attributes(G, "weight")
-
-nx.draw_networkx_edges(G,
-                       pos,
-                       edge_color=edge_labels.values(),
-                       edge_cmap=plt.cm.RdYlBu_r,
-                       width = 3)
-
-nx.draw_networkx_labels(G,
-                        pos,
-                        font_size=12,
-                        font_family="sans-serif")
-
+nx.draw_networkx_edges(G, pos, edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3 )
+nx.draw_networkx_labels(G, pos, font_size = 22, font_family="sans-serif")
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-
+nx.draw_networkx_edge_labels(G, pos, edge_labels = edge_labels, font_size =20)
 plt.axis("off")
 # plt.savefig('图.svg')
+
 
 # 找到最小生成树
 T = nx.minimum_spanning_tree(G)
@@ -67,12 +59,11 @@ T = nx.minimum_spanning_tree(G)
 pos = nx.spring_layout(G)
 
 # 可视化
+plt.figure(figsize = (16,16))
 nx.draw_networkx_nodes(G, pos, node_color="0.8", node_size=500)
-
 edge_labels = nx.get_edge_attributes(G, "weight")
 
 nx.draw_networkx_edges(G, pos, edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3)
-
 nx.draw_networkx_labels(G, pos, font_size=12, font_family="sans-serif")
 
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
@@ -120,8 +111,7 @@ sns.set_theme(font = 'Times New Roman')
 # normalize the initial stock price levels to 1
 normalized_stock_levels = stock_levels_df['Adj Close']/stock_levels_df['Adj Close'].iloc[0]
 
-g = sns.relplot(data=normalized_stock_levels,dashes = False,
-                kind="line") # , palette="coolwarm"
+g = sns.relplot(data=normalized_stock_levels, dashes = False, kind="line") # , palette="coolwarm"
 g.set_xlabels('Date')
 g.set_ylabels('Adjusted closing price')
 g.set_xticklabels(rotation=45)
@@ -131,13 +121,10 @@ fig, ax = plt.subplots()
 # Compute the correlation matrix
 corr_P = daily_returns_df.corr()
 
-sns.heatmap(corr_P, cmap="coolwarm",
-            square=True, linewidths=.05,
-            annot=True)
+sns.heatmap(corr_P, cmap="coolwarm", square=True, linewidths=.05, annot=True)
 
 #%% Cluster map based on correlation
-g = sns.clustermap(corr_P, cmap="coolwarm",
-                   annot=True)
+g = sns.clustermap(corr_P, cmap="coolwarm", annot=True)
 g.ax_row_dendrogram.remove()
 
 
