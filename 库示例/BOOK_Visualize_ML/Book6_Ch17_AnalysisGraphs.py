@@ -429,11 +429,11 @@ nx.draw_networkx(G, pos = pos, node_color=color_map, with_labels=False)
 # plt.savefig('社区划分，spring_layout.svg')
 plt.show()
 
-
 plt.figure(figsize = (6,6))
 nx.draw_networkx(G, pos = nx.circular_layout(G), node_color=color_map, with_labels=False)
 # plt.savefig('社区划分，circular_layout.svg')
-
+plt.show()
+plt.close('all')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 基因关系
 

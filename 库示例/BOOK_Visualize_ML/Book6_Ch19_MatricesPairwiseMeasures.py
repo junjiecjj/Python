@@ -221,7 +221,7 @@ plt.show()
 
 
 
-# 设定高斯核阈值
+#################### 设定高斯核阈值
 threshold = 0.4
 K_threshold = np.copy(K)
 # 副本，非视图

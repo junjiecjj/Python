@@ -44,8 +44,10 @@ pos = nx.spring_layout(G)
 plt.figure(figsize = (16,16))
 nx.draw_networkx_nodes(G, pos, node_color="0.8", node_size=800)
 edge_labels = nx.get_edge_attributes(G, "weight")
+
 nx.draw_networkx_edges(G, pos, edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3 )
 nx.draw_networkx_labels(G, pos, font_size = 22, font_family="sans-serif")
+
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
 nx.draw_networkx_edge_labels(G, pos, edge_labels = edge_labels, font_size =20)
 plt.axis("off")
@@ -59,17 +61,16 @@ T = nx.minimum_spanning_tree(G)
 pos = nx.spring_layout(G)
 
 # 可视化
-plt.figure(figsize = (16,16))
-nx.draw_networkx_nodes(G, pos, node_color="0.8", node_size=500)
-edge_labels = nx.get_edge_attributes(G, "weight")
+plt.figure(figsize = (16, 16))
+nx.draw_networkx_nodes(T, pos, node_color="0.8", node_size=800)
+# edge_labels = nx.get_edge_attributes(G, "weight")
+edge_labels = {(u, v): d["weight"] for u, v, d in T.edges(data=True)}
+nx.draw_networkx_edges(T, pos, edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3)
 
-nx.draw_networkx_edges(G, pos, edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3)
-nx.draw_networkx_labels(G, pos, font_size=12, font_family="sans-serif")
+nx.draw_networkx_labels(T, pos, font_size=12, font_family="sans-serif")
+nx.draw_networkx_edge_labels(T, pos, edge_labels=edge_labels, font_size =20)
 
-edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-
-nx.draw_networkx_edges(T, pos, style = '--', edge_color="black", width=1)
+# nx.draw_networkx_edges(T, pos, style = '--', edge_color=edge_labels.values(), edge_cmap=plt.cm.RdYlBu_r, width = 3)
 plt.axis("off")
 # plt.savefig('最小生成树.svg')
 
