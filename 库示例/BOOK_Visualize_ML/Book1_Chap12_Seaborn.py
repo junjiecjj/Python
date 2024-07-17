@@ -66,7 +66,6 @@ sns.displot(data=iris_sns, x="sepal_length", hue="species", kind="kde", bw_adjus
 
 
 
-
 #%% 分散图
 # 绘制鸢尾花花萼长度分散点图
 fig, ax = plt.subplots(figsize = (8,6))
@@ -185,8 +184,7 @@ sns.kdeplot(data=iris_sns, x="sepal_length",
 sns.lmplot(data=iris_sns, x="sepal_length", y="sepal_width")
 
 # 可视化线性回归关系，考虑鸢尾花分类
-sns.lmplot(data=iris_sns, x="sepal_length", y="sepal_width",
-           hue = 'species')
+sns.lmplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = 'species')
 
 
 
@@ -194,17 +192,14 @@ sns.lmplot(data=iris_sns, x="sepal_length", y="sepal_width",
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width")
 
 
-
 # 散点图 + 边缘KDE
 # 联合分布、边缘分布
-sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width",
-              kind = 'kde', fill = True)
+sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', fill = True)
 
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = 'species')
 
 # 联合分布、边缘分布，考虑鸢尾花分类
-sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width",
-              hue = 'species', kind="kde")
+sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = 'species', kind="kde")
 
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind="reg")
 

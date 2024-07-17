@@ -30,11 +30,9 @@ p["grid.linewidth"] = 0.5
 # # 下载股价数据
 # y_x_df_raw = yf.download(['AAPL','GSPC'], start='2020-01-01', end='2020-12-31')
 # y_x_df_raw.head()
-
-
-
 # y_x_df_raw.to_csv('y_x_df_raw.csv')
 # y_x_df_raw.to_pickle('y_x_df_raw.pkl')
+
 # 如果不能下载，就用pandas.read_csv() 或 pandas.read_pickle() 读入
 # 建议使用 pandas.read_pickle()
 # y_x_df_raw = pd.read_csv('y_x_df_raw.csv')
@@ -60,15 +58,17 @@ y_df = y_x_df[['AAPL']]
 sns.jointplot(data=y_x_df, x="SP500", y="AAPL", kind = 'scatter', xlim = [-0.15,0.15],ylim = [-0.15,0.15])
 
 # marginal and joint KDE plots
-sns.jointplot(data=y_x_df, x="SP500", y="AAPL",
-              kind="kde", cmap = 'Blues', fill = True,
-              xlim = [-0.15,0.15],ylim = [-0.15,0.15])
+sns.jointplot(data=y_x_df, x="SP500", y="AAPL", kind="kde", cmap = 'Blues', fill = True, xlim = [-0.15,0.15],ylim = [-0.15,0.15])
+
+
+# marginal and joint KDE plots
+# sns.jointplot(data=y_x_df, x="SP500", y="AAPL", kind="reg", xlim = [-0.15,0.15],ylim = [-0.15,0.15])
+
 
 # 协方差矩阵
 SIGMA = y_x_df.cov()
 
 fig, axs = plt.subplots()
-
 h = sns.heatmap(SIGMA, annot=True,cmap='RdBu_r')
 h.set_aspect("equal")
 print(np.sqrt(np.diag(SIGMA)))
@@ -76,25 +76,22 @@ print(np.sqrt(np.diag(SIGMA)))
 
 # 相关系系数矩阵
 RHO = y_x_df.corr()
-
 fig, axs = plt.subplots()
-
 h = sns.heatmap(RHO, annot=True,cmap='RdBu_r')
 h.set_aspect("equal")
 
 # 相关系转换为角度
 Angles = np.arccos(RHO)*180/np.pi
 fig, axs = plt.subplots()
-
 h = sns.heatmap(Angles, annot=True,cmap='RdBu_r')
 h.set_aspect("equal")
 
 
 # 向量
-def draw_vector(vector,RBG):
+def draw_vector(vector, RBG):
     array = np.array([[0, 0, vector[0], vector[1]]])
     X, Y, U, V = zip(*array)
-    plt.quiver(X, Y, U, V,angles='xy', scale_units='xy',scale=1,color = RBG)
+    plt.quiver(X, Y, U, V, angles='xy', scale_units='xy', scale=1,color = RBG)
 
 angle = Angles['AAPL']['SP500']*np.pi/180
 
@@ -106,9 +103,8 @@ v_2_x = vols[0]*np.cos(angle)
 v_2_y = vols[0]*np.sin(angle)
 
 fig, ax = plt.subplots()
-
-draw_vector([v_1_x,v_1_y],np.array([0,112,192])/255)
-draw_vector([v_2_x,v_2_y],np.array([255,0,0])/255)
+draw_vector([v_1_x,v_1_y], np.array([0,112,192])/255)
+draw_vector([v_2_x,v_2_y], np.array([255,0,0])/255)
 plt.ylabel('$y, TSLA$')
 plt.xlabel('$x, S&P500$')
 plt.axis('scaled')
@@ -119,34 +115,29 @@ ax.set_ylim([-0.01, 0.03])
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 
 
-# OLS线性回归
-# 增加一列全1
-X_df = sm.add_constant(x_df)
-
-model = sm.OLS(y_df, X_df)
-results = model.fit()
-print(results.summary())
-
-
 # 无截距一元线性回归
 model_no_intercept = sm.OLS(y_df, x_df)
 results_no_intercept = model_no_intercept.fit()
 print(results_no_intercept.summary())
 
 
+
+# OLS线性回归
+# 增加一列全1
+X_df = sm.add_constant(x_df)
+model = sm.OLS(y_df, X_df)
+results = model.fit()
+print(results.summary())
+
 # 可视化
 p = model.fit().params
-
 # generate x-values for  regression line
 x = np.linspace(x_df.min(),x_df.max(),10)
 
 fig, ax = plt.subplots()
-
 # scatter-plot data
 plt.scatter(x_df, y_df, alpha = 0.5)
-
 plt.plot(x, p.const + p.SP500 * x,color = 'r')
-
 plt.axhline(y=0, color='k', linestyle='--')
 plt.axvline(x=0, color='k', linestyle='--')
 plt.axis('scaled')
@@ -155,8 +146,7 @@ plt.xlabel('S&P 500 daily log return, market')
 plt.xlim([-0.15,0.15])
 plt.ylim([-0.15,0.15])
 
-sns.jointplot(x=x_df['SP500'], y=y_df['AAPL'], kind="reg",
-              xlim = [-0.15,0.15],ylim = [-0.15,0.15])
+sns.jointplot(x=x_df['SP500'], y=y_df['AAPL'], kind="reg", xlim = [-0.15,0.15],ylim = [-0.15,0.15])
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 方差分析
@@ -170,11 +160,14 @@ import statsmodels.api as sm
 import yfinance as yf
 
 
-# 下载、处理数据
-y_x_df = yf.download(['AAPL','^GSPC'], start='2020-01-01', end='2020-12-31')
-y_x_df = y_x_df['Adj Close'].pct_change()
-y_x_df.dropna(inplace = True)
 
+
+y_x_df_raw = pd.read_pickle('y_x_df_raw.pkl')
+
+# 计算收益率
+# 收盘价，计算日回报率
+y_x_df = y_x_df_raw['Adj Close'].pct_change()
+y_x_df.dropna(inplace = True)
 y_x_df.rename(columns={"^GSPC": "SP500"},inplace = True)
 x_df = y_x_df[['SP500']]
 y_df = y_x_df[['AAPL']]
@@ -302,9 +295,7 @@ plt.scatter(x_df, y_df, alpha = 0.5)
 plt.plot(x_points,y_hat_points,'+k');
 
 plt.plot(x, p.const + p.SP500 * x,color = 'r')
-plt.plot(np.vstack((x_points,x_points)),
-     np.vstack((y_points,y_hat_points)),
-     color = [0.7,0.7,0.7], zorder = 1);
+plt.plot(np.vstack((x_points,x_points)), np.vstack((y_points,y_hat_points)), color = [0.7,0.7,0.7], zorder = 1);
 
 plt.axis('scaled')
 plt.ylabel('y')
