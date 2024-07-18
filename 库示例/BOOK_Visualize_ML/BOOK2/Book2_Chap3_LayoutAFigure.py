@@ -368,18 +368,52 @@ ax_polar = fig.add_subplot(3, 1, 3, projection = 'polar')
 
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_03  使用subplots绘制一元高斯分布概率密度函数曲线
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+import numpy as np
 
+import os
 
+# 如果文件夹不存在，创建文件夹
+if not os.path.isdir("Figures"):
+    os.makedirs("Figures")
 
+x_array = np.linspace(-5,5,200)
+mu_array = [-2, -1, 0, 1, 2]
+sigma_array  = [0.5, 0.75, 1, 1.5, 2]
+mu_array_, sigma_array_ = np.meshgrid(mu_array, sigma_array)
 
+#%% PDF of Beta Distributions
 
+fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(10, 10))
 
+for mu_idx, sigma_idx,ax in zip(mu_array_.ravel(), sigma_array_.ravel(), axs.ravel()):
 
+    title_idx = 'mu = ' + str(mu_idx) + '; sigma = ' + str(sigma_idx)
+    ax.plot(x_array, norm.pdf(x_array, mu_idx, sigma_idx),
+            color = '#0070C0')
 
+    ax.fill_between(x_array, norm.pdf(x_array, mu_idx, sigma_idx),0,color = '#DBEEF3')
 
+    ax.set_yticklabels([])
+    ax.set_yticks([])
+    ax.get_yaxis().set_visible(False)
+    ax.set(ylabel=None)
 
+    ax.set_title(title_idx)
+    ax.set_xlim(-5,5)
+    ax.set_ylim(0,1)
+    ax.set_xticks([-5,0,5])
+    ax.spines['left'].set_color('none')
 
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
 
+plt.tight_layout()
+# fig.savefig('Figures/高斯分布随mu，sigma变化.svg', format='svg')
 
 
 
@@ -387,62 +421,364 @@ ax_polar = fig.add_subplot(3, 1, 3, projection = 'polar')
 
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_04 使用subplots绘制Beta分布概率密度函数曲线
 
+from scipy.stats import beta
+import matplotlib.pyplot as plt
+import numpy as np
 
+import os
 
+# 如果文件夹不存在，创建文件夹
+if not os.path.isdir("Figures"):
+    os.makedirs("Figures")
 
 
+x_array = np.linspace(0,1,200)
+alpha_array = [0.5, 1, 2, 4, 8]
+beta_array  = [0.5, 1, 2, 4, 8]
+alpha_array_, beta_array_ = np.meshgrid(alpha_array, beta_array)
 
 
+#%% PDF of Beta Distributions
 
+fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(10, 10))
 
+for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs.ravel()):
 
+    title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
+    ax.plot(x_array, beta.pdf(x_array, alpha_idx, beta_idx),
+            color = '#0070C0')
 
+    ax.fill_between(x_array, beta.pdf(x_array, alpha_idx, beta_idx),0,color = '#DBEEF3')
 
+    ax.set_yticklabels([])
+    ax.set_yticks([])
+    ax.get_yaxis().set_visible(False)
+    ax.set(ylabel=None)
 
+    ax.set_title(title_idx)
+    ax.set_xlim(0,1)
+    ax.set_ylim(0,8)
+    ax.set_xticks([0,0.5,1])
+    ax.spines['left'].set_color('none')
 
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
 
+plt.tight_layout()
+# fig.savefig('Figures/Beta分布随alpha，beta变化.svg', format='svg')
+
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_05 使用GridSpec绘制满足二元高斯分布的随机数散点图和边缘分布直方图
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+# 如果文件夹不存在，创建文件夹
+if not os.path.isdir("Figures"):
+    os.makedirs("Figures")
+
+
+# Create some normally distributed data
+mean = [0, 0]
+cov = [[1, 1], [1, 2]]
+x, y = np.random.multivariate_normal(mean, cov, 1000).T
+
 
+# Set up the axes with gridspec
+fig = plt.figure(figsize=(6, 6))
+grid = plt.GridSpec(4, 4, hspace=0.3, wspace=0.3)
+main_ax = fig.add_subplot(grid[:-1, 1:])
+y_hist = fig.add_subplot(grid[:-1, 0], xticklabels=[])
+x_hist = fig.add_subplot(grid[-1, 1:], yticklabels=[])
+
+# scatter points on the main axes
+main_ax.plot(x, y, 'ob', markersize=3, alpha=0.2)
+main_ax.set_xticks([])
+main_ax.set_yticks([])
 
+# histogram on the attached axes
+x_hist.hist(x, 40,
+            orientation='vertical', color='b',
+            edgecolor='white', linewidth=0.5)
+x_hist.spines[['right', 'bottom']].set_visible(False)
+x_hist.invert_yaxis()
+x_hist.set_xticks([])
+x_hist.set_yticks([])
 
+y_hist.hist(y, 40,
+            orientation='horizontal', color='b',
+            edgecolor='white', linewidth=0.5)
+y_hist.spines[['left', 'top']].set_visible(False)
+y_hist.invert_xaxis()
+y_hist.set_xticks([])
+y_hist.set_yticks([])
 
+# fig.savefig('Figures/GridSpec，4 by 4，主图位于右上.svg', format='svg')
 
+# Set up the axes with gridspec
+fig = plt.figure(figsize=(6, 6))
+grid = plt.GridSpec(4, 4, hspace=0.3, wspace=0.3)
+main_ax = fig.add_subplot(grid[1:, :-1])
+x_hist = fig.add_subplot(grid[0, :-1], xticklabels=[])
+y_hist = fig.add_subplot(grid[1:, -1], yticklabels=[])
+
+# scatter points on the main axes
+main_ax.plot(x, y, 'ob', markersize=3, alpha=0.2)
+main_ax.set_xticks([])
+main_ax.set_yticks([])
 
+# histogram on the attached axes
+x_hist.hist(x, 40,
+            orientation='vertical', color='b',
+            edgecolor='white', linewidth=0.5)
+x_hist.spines[['left', 'top']].set_visible(False)
+x_hist.set_xticks([])
+x_hist.set_yticks([])
+
+y_hist.hist(y, 40,
+            orientation='horizontal', color='b',
+            edgecolor='white', linewidth=0.5)
+y_hist.spines[['right', 'bottom']].set_visible(False)
+y_hist.set_xticks([])
+y_hist.set_yticks([])
+
+# fig.savefig('Figures/GridSpec，4 by 4，主图位于左下.svg', format='svg')
 
 
 
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_06 使用GridSpec绘制的Dirichlet分布和边缘Beta分布
 
+import numpy as np
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.datasets import load_iris
+import scipy.stats as st
+import scipy.stats as stats
 
+# visualize 2D PDF contour and marginal
 
+import matplotlib.gridspec as gridspec
+import os
 
+# 如果文件夹不存在，创建文件夹
+if not os.path.isdir("Figures"):
+    os.makedirs("Figures")
 
+p = plt.rcParams
+p["font.sans-serif"] = ["Roboto"]
+p["font.weight"] = "light"
+p["ytick.minor.visible"] = True
+p["xtick.minor.visible"] = True
+p["axes.grid"] = True
+p["grid.color"] = "0.5"
+p["grid.linewidth"] = 0.5
 
 
 
+def plot_joint_marginal(xx1,xx2,surface,
+                        x1,f_x1,
+                        x2,f_x2,
+                        title_txt,color = '#0070C0'):
 
+    fig = plt.figure(figsize=(6, 6))
+    gs = gridspec.GridSpec(2, 2,
+                           width_ratios=[3, 1],
+                           height_ratios=[3, 1])
 
+    # # gs.update(wspace=0., hspace=0.)
+    # plt.suptitle('Marginal distributions', y=0.93)
 
+    # Plot surface on top left
+    ax1 = plt.subplot(gs[0])
 
+    # Plot bivariate normal
+    ax1.contour(xx1,xx2,surface, 20, cmap='RdYlBu_r')
 
+    ax1.yaxis.set_label_position('right')
+    ax1.set_xticks(np.arange(0,1.2, 0.2))
+    ax1.set_yticks(np.arange(0,1.2, 0.2))
+    ax1.set_title(title_txt)
 
+    # Plot Y marginal
+    ax2 = plt.subplot(gs[1])
 
+    ax2.plot(f_x2, x2, color = color)
 
+    ax2.fill_between(f_x2, x2,
+                     edgecolor = 'none',
+                     facecolor = color,
+                     alpha = 0.2)
 
+    ax2.set_xlabel('PDF')
+    ax2.set_ylim(0,1)
+    ax2.set_xlim(0, 5)
+    ax2.set_xticks(np.arange(6))
+    ax2.set_yticks(np.arange(0,1.2, 0.2))
+    ax2.invert_xaxis()
+    ax2.yaxis.tick_right()
 
+    # Plot X marginal
+    ax3 = plt.subplot(gs[2])
 
+    ax3.plot(x1, f_x1, color = color)
 
+    ax3.fill_between(x1, f_x1,
+                     edgecolor = 'none',
+                     facecolor = color,
+                     alpha = 0.2)
 
+    ax3.set_ylabel('PDF')
+    ax3.yaxis.set_label_position('left')
+    ax3.set_xlim(0,1)
+    ax3.set_xticks(np.arange(0,1.2, 0.2))
+    ax3.set_ylim(0, 5)
+    ax3.set_yticks(np.arange(6))
+    ax4 = plt.subplot(gs[3])
+    ax4.set_visible(False)
 
+    # fig.savefig('Figures/' + title_txt + '.svg', format='svg')
 
+    plt.show()
 
 
+x1 = np.linspace(0,1,201)
+x2 = np.linspace(0,1,201)
 
+xx1, xx2 = np.meshgrid(x1, x2)
 
+xx3 = 1.0 - xx1 - xx2
+xx3 = np.where(xx3 > 0.0, xx3, np.nan)
 
 
+
+# Dirichlet alphas
+alpha_1 = 2
+alpha_2 = 2
+alpha_3 = 2
+
+alpha_0 = alpha_1 + alpha_2 + alpha_3
+
+alphas = np.array([alpha_1, alpha_2, alpha_3])
+rv = stats.dirichlet(alphas)
+# 1-2
+PDF_ff = rv.pdf(np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])))
+
+PDF_ff = np.reshape(PDF_ff, xx1.shape)
+
+beta_dist = stats.beta
+
+theta_array = np.linspace(0, 1, 500)
+
+beta_1 = alpha_0 - alpha_1
+f_x1 = beta_dist.pdf(
+                  x1,
+                  alpha_1,
+                  beta_1)
+
+beta_2 = alpha_0 - alpha_2
+f_x2 = beta_dist.pdf(
+                  x2,
+                  alpha_2,
+                  beta_2)
+
+title_txt = 'Dirichlet(%0.0f, %0.0f, %0.0f)'%(alpha_1,alpha_2,alpha_3)
+plot_joint_marginal(xx1,xx2,PDF_ff,
+                        x1,f_x1,
+                        x2,f_x2,
+                        title_txt)
+
+
+
+# Dirichlet alphas
+alpha_1 = 1
+alpha_2 = 2
+alpha_3 = 2
+
+alpha_0 = alpha_1 + alpha_2 + alpha_3
+
+alphas = np.array([alpha_1, alpha_2, alpha_3])
+rv = stats.dirichlet(alphas)
+# 1-2
+PDF_ff = rv.pdf(np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])))
+
+PDF_ff = np.reshape(PDF_ff, xx1.shape)
+
+beta_dist = stats.beta
+
+theta_array = np.linspace(0, 1, 500)
+
+beta_1 = alpha_0 - alpha_1
+f_x1 = beta_dist.pdf(
+                  x1,
+                  alpha_1,
+                  beta_1)
+
+beta_2 = alpha_0 - alpha_2
+f_x2 = beta_dist.pdf(
+                  x2,
+                  alpha_2,
+                  beta_2)
+
+title_txt = 'Dirichlet(%0.0f, %0.0f, %0.0f)'%(alpha_1,alpha_2,alpha_3)
+plot_joint_marginal(xx1,xx2,PDF_ff,
+                        x1,f_x1,
+                        x2,f_x2,
+                        title_txt)
+
+
+
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_07 利用subgridspec函数创建嵌套子图
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import os
+
+# 如果文件夹不存在，创建文件夹
+if not os.path.isdir("Figures"):
+    os.makedirs("Figures")
+
+
+def squiggle_xy(a, b, c, d, i=np.arange(0.0, 2*np.pi, 0.05)):
+    return np.sin(i*a)*np.cos(i*b), np.sin(i*c)*np.cos(i*d)
+
+
+
+
+
+fig = plt.figure(figsize=(8, 8), constrained_layout=False)
+outer_grid = fig.add_gridspec(4, 4, wspace=0, hspace=0)
+
+for a in range(4):
+    for b in range(4):
+        # gridspec inside gridspec
+        inner_grid = outer_grid[a, b].subgridspec(3, 3, wspace=0, hspace=0)
+        axs = inner_grid.subplots()  # Create all subplots for the inner grid.
+        for (c, d), ax in np.ndenumerate(axs):
+            ax.plot(*squiggle_xy(a + 1, b + 1, c + 1, d + 1))
+            ax.set(xticks=[], yticks=[])
+
+# show only the outside spines
+for ax in fig.get_axes():
+    ss = ax.get_subplotspec()
+    ax.spines.top.set_visible(ss.is_first_row())
+    ax.spines.bottom.set_visible(ss.is_last_row())
+    ax.spines.left.set_visible(ss.is_first_col())
+    ax.spines.right.set_visible(ss.is_last_col())
+
+# fig.savefig('Figures/subgridspec嵌套子图.svg', format='svg')
+plt.show()
 
 
 

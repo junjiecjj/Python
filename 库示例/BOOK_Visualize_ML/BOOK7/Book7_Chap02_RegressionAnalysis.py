@@ -210,6 +210,7 @@ type(results)
 y_hat = results.fittedvalues
 y_hat = y_hat.to_frame()
 y_hat = y_hat.rename(columns={0: 'AAPL'})
+# y_hat.mean() == y_df.mean()
 
 # 回归平方和 (Sum of Squares for Regression, SSR)，也称 ESS (explained sum of squares)。
 SSR = ((y_hat - y_mean)**2).sum()
