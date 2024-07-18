@@ -172,8 +172,6 @@ y_x_df.rename(columns={"^GSPC": "SP500"},inplace = True)
 x_df = y_x_df[['SP500']]
 y_df = y_x_df[['AAPL']]
 
-
-
 # 线性回归
 # 增加一列全1
 X_df = sm.add_constant(x_df)
@@ -189,61 +187,51 @@ from statsmodels.stats.anova import anova_lm
 data = pd.DataFrame({'x': x_df['SP500'], 'y': y_df['AAPL']})
 model_V2 = ols("y ~ x", data).fit()
 anova_results = anova_lm(model_V2, typ=1)
-
 print(anova_results)
 
 
-# 分析方差
+# 总离差平方和 (Sum of Squares for Total, SST)，也称 TSS (total sum of squares)。
 y_mean = y_df.mean()
-
 # Sum of Squares for Total, SST
 SST = ((y_df - y_mean)**2).sum()
 print(SST)
+
+
+# 总离差自由度 DFT
 n = len(y_df)
 print(n)
-
-# degree of freedom total, DFT
-DFT = n - 1
+DFT = n - 1 # 250
 # mean square total, MST
 MST = SST/DFT
 print(MST)
-
 type(results)
 
-# predicted
+# 拟合后预测值
 y_hat = results.fittedvalues
-
 y_hat = y_hat.to_frame()
 y_hat = y_hat.rename(columns={0: 'AAPL'})
 
-# Sum of Squares for Regression, SSR
+# 回归平方和 (Sum of Squares for Regression, SSR)，也称 ESS (explained sum of squares)。
 SSR = ((y_hat - y_mean)**2).sum()
 print(SSR)
-# degrees of freedom for regression model
+# 回归自由度 (degrees of freedom for regression model, DFR)
 DFR = 1
-# MSR: mean square regression
+# 平均回归平方 (mean square regression, MSR)
 MSR = SSR/DFR
 print(MSR)
 
 
-# Sum of Squares for Error, SSE
+# 残差平方和 (Sum of Squares for Error, SSE)，也称 RSS (residual sum of squares)。
 SSE = ((y_df - y_hat)**2).sum()
 print(SSE)
-
-
-# degrees of freedom for error, DFE
-DFE = n - DFR - 1
-
-
-# mean squared error, MSE
+# 残差自由度 (degrees of freedom for error, DFE)
+DFE = n - DFR - 1  # 249
+# 残差平均值 (mean squared error, MSE)
 MSE = SSE/DFE
 print(MSE)
 
-
 # 拟合优度
-# coefficient of determination, R squared
-
-# 计算决定系数
+# 决定系数 (coefficient of determination，R2)
 R2 = SSR/SST
 
 # 计算修正决定系数
@@ -292,7 +280,7 @@ x = np.linspace(x_df.min(),x_df.max(),10)
 # 可视化
 fig, ax = plt.subplots()
 plt.scatter(x_df, y_df, alpha = 0.5)
-plt.plot(x_points,y_hat_points,'+k');
+plt.plot(x_points, y_hat_points,'+k');
 
 plt.plot(x, p.const + p.SP500 * x,color = 'r')
 plt.plot(np.vstack((x_points,x_points)), np.vstack((y_points,y_hat_points)), color = [0.7,0.7,0.7], zorder = 1);
