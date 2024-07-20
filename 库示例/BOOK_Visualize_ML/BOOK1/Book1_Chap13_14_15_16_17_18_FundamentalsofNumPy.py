@@ -207,7 +207,6 @@ def visualize_1D(array, title):
     colors = cm.RdYlBu_r(np.linspace(0,1,len(array)))
 
     for idx in range(len(array)):
-
         circle_idx = plt.Circle((idx, 0), 0.5, facecolor=colors[idx], edgecolor = 'w')
         ax.add_patch(circle_idx)
         ax.text(idx, 0, s = str(array[idx]),
@@ -369,33 +368,6 @@ A_2D[A_2D > 0, np.newaxis]
 
 
 A_2D[np.newaxis, A_2D > 0]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -10,7 +10,6 @@ Created on Sun Jun 23 16:22:49 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
-
 import os
 
 # 如果文件夹不存在，创建文件夹
@@ -19,8 +18,6 @@ if not os.path.isdir("Figures"):
 
 
 plt.rcParams
-
-
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
 p["font.weight"] = "light"
@@ -35,7 +32,6 @@ p["grid.linewidth"] = 0.5
 # 产生数据
 x_array = np.linspace(-4, 4, 200)
 y_array = x_array*np.exp(-x_array**2)
-
 
 # 图脊设置
 fig = plt.figure(figsize = (6,6), tight_layout=True)
@@ -95,12 +91,12 @@ ax.spines['bottom'].set_position(('data',0))
 ax.spines['left'].set_position(('data',0))
 ax.spines['right'].set_color('none')
 ax.spines['top'].set_color('none')
-
 # fig.savefig('Figures/修改图脊，第1组.svg', format='svg')
 
 
-fig = plt.figure(figsize = (6,6), tight_layout=True)
 
+
+fig = plt.figure(figsize = (6,6), tight_layout=True)
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
@@ -155,23 +151,18 @@ ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.spines['right'].set(edgecolor = 'r')
 ax.spines['top'].set(edgecolor = 'r')
-
 # fig.savefig('Figures/修改图脊，第2组.svg', format='svg')
 
 
 
 fig = plt.figure(figsize = (6,6), tight_layout=True)
-
-
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
 ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
-ax.spines['bottom'].set(edgecolor = 'r',
-                        linestyle = '--', linewidth = 1)
-ax.spines['left'].set(edgecolor = 'r',
-                      linestyle = '--', linewidth = 1)
-ax.tick_params(axis='x', colors='red')
+ax.spines['bottom'].set(edgecolor = 'r', linestyle = '--', linewidth = 1)
+ax.spines['left'].set(edgecolor = 'r', linestyle = '--', linewidth = 1)
+ax.tick_params(axis='x', colors='green')
 ax.tick_params(axis='y', colors='red')
 
 ax = fig.add_subplot(3, 2, 2)
@@ -206,9 +197,7 @@ ax.plot(x_array, y_array)
 ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
 ax.spines['bottom'].set_position(('outward', 10))
 # 三个选择 'outward', 'axes', 'data'
-
 # fig.savefig('Figures/修改图脊，第3组.svg', format='svg')
-
 
 
 
@@ -216,12 +205,10 @@ ax.spines['bottom'].set_position(('outward', 10))
 
 import numpy as np
 import matplotlib.pyplot as plt
-
 import os
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
-
 
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
@@ -234,57 +221,40 @@ x_array = np.linspace(-4, 4, 200)
 y_array = x_array*np.exp(-x_array**2)
 
 
-
-fig = plt.figure(figsize = (6,6), tight_layout=True)
-
+fig = plt.figure(figsize = (16,16), tight_layout=True)
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
-
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.grid(True)
 
 ax = fig.add_subplot(3, 2, 2)
 ax.plot(x_array, y_array)
-
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
-ax.grid(linestyle='-',
-        linewidth='0.5', color='red')
+ax.grid(linestyle='-', linewidth='0.5', color='red')
 
 ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
-
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.set_axisbelow(True)
 ax.minorticks_on()
-ax.grid(which='major', linestyle='-',
-        linewidth='0.5', color='red')
-ax.grid(which='minor', linestyle=':',
-        linewidth='0.5', color='black')
+ax.grid(which='major', linestyle='-', linewidth='0.5', color='red')
+ax.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
 
 ax = fig.add_subplot(3, 2, 4)
 ax.plot(x_array, y_array)
-
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.set_axisbelow(True)
 ax.minorticks_on()
-ax.grid(which='major', linestyle='-',
-        linewidth='0.5', color='red')
-ax.grid(which='minor', linestyle=':',
-        linewidth='0.5', color='black')
-
-ax.tick_params(which='both',
-               top='off',
-               left='off',
-               right='off',
-               bottom='off')
+ax.grid(which='major', linestyle='-', linewidth='0.5', color='red')
+ax.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+ax.tick_params(which='both', top='off', left='off', right='off', bottom='off')
 
 ax = fig.add_subplot(3, 2, 5)
 ax.plot(x_array, y_array)
-
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.grid(True)
@@ -296,7 +266,6 @@ for tick in ax.xaxis.get_major_ticks():
 
 ax = fig.add_subplot(3, 2, 6)
 ax.plot(x_array, y_array)
-
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.grid(True)
@@ -309,8 +278,6 @@ ax.set_facecolor("#DBEEF8")
 plt.show()
 
 # fig.savefig('Figures/背景网格.svg', format='svg')
-
-
 
 
 
@@ -339,7 +306,7 @@ y_array = np.sin(x_array)
 
 
 # 轴设置
-fig = plt.figure(figsize = (6,6), tight_layout=True)
+fig = plt.figure(figsize = (16,16), tight_layout=True)
 
 #
 ax = fig.add_subplot(3, 2, 1)
@@ -363,10 +330,8 @@ ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
 # ax.set_title('Rotated tick labels')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
-ax.tick_params(axis ='x', rotation = 45,
-               labelcolor = 'r', labelsize = 10)
-ax.tick_params(axis ='y', rotation =-45,
-               labelcolor = 'r', labelsize = 10)
+ax.tick_params(axis ='x', rotation = 45, labelcolor = 'r', labelsize = 10)
+ax.tick_params(axis ='y', rotation =-45, labelcolor = 'r', labelsize = 10)
 
 ax = fig.add_subplot(3, 2, 4)
 ax.plot(x_array, y_array)
@@ -387,76 +352,41 @@ ax.plot(x_array, y_array)
 # ax.set_title('Hide values, show ticks')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 ax.set_xticks(np.linspace(-4*np.pi, 4*np.pi, 5))
-ax.set_xticklabels([r'$-4\pi$',r'$-2\pi$',
-                    r'$0\pi$',r'$2\pi$', r'$4\pi$'])
-
+ax.set_xticklabels([r'$-4\pi$',r'$-2\pi$', r'$0\pi$',r'$2\pi$', r'$4\pi$'])
 # fig.savefig('Figures/修改图轴，第1组.svg', format='svg')
 
 
 
-fig = plt.figure(figsize = (6,6), tight_layout=True)
+fig = plt.figure(figsize = (16,16), tight_layout=True)
 
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
 # ax.set_title('Hide values, show ticks')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 ax.set_xticks(np.linspace(-9/2*np.pi, 9/2*np.pi, 7))
-ax.tick_params(axis = 'x',
-               direction = 'in',
-               color = 'b',
-               width = 1,
-               length = 10)
-ax.tick_params(axis = 'y',
-               direction = 'in',
-               color = 'b',
-               width = 1,
-               length = 10)
-ax.set_xticklabels([r'$-\frac{9\pi}{2}$',
-                    r'$-3\pi$',
-                    r'$-\frac{3\pi}{2}$',
-                    r'$0\pi$',
-                    r'$\frac{3\pi}{2}$',
-                    r'$3\pi$',
-                    r'$\frac{9\pi}{2}$'])
+ax.tick_params(axis = 'x', direction = 'in', color = 'b', width = 4, length = 10)
+ax.tick_params(axis = 'y', direction = 'in', color = 'b', width = 4, length = 10)
+ax.set_xticklabels([r'$-\frac{9\pi}{2}$', r'$-3\pi$', r'$-\frac{3\pi}{2}$', r'$0\pi$', r'$\frac{3\pi}{2}$', r'$3\pi$', r'$\frac{9\pi}{2}$'])
 
 ax = fig.add_subplot(3, 2, 2)
 ax.plot(x_array, y_array)
 # ax.set_title('Hide values, show ticks')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
-ax.tick_params(axis = 'x',
-               direction = 'inout',
-               color = 'b',
-               width = 1,
-               length = 10)
-
-ax.tick_params(axis = 'y',
-               direction = 'inout',
-               color = 'r', width = 1,
-               length = 10)
-
+ax.tick_params(axis = 'x', direction = 'inout', color = 'b', width = 4, length = 10)
+ax.tick_params(axis = 'y', direction = 'inout', color = 'r', width = 4, length = 10)
 
 ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
-ax.tick_params(bottom = False,
-               top = True,
-               left = False,
-               right = True)
+ax.tick_params(bottom = False, top = True, left = False, right = True)
 
 ax = fig.add_subplot(3, 2, 4)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
-ax.tick_params(bottom = False,
-               top = True,
-               left = False,
-               right = True)
-
-ax.tick_params(labelbottom = False,
-               labeltop = True,
-               labelleft = False,
-               labelright = True)
+ax.tick_params(bottom = False, top = True, left = False, right = True)
+ax.tick_params(labelbottom = False, labeltop = True, labelleft = False, labelright = True)
 
 ax = fig.add_subplot(3, 2, 5)
 ax.plot(x_array, y_array)
@@ -473,20 +403,18 @@ ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 minor_locator = AutoMinorLocator(5)
 ax.yaxis.set_minor_locator(minor_locator)
 plt.grid(which='minor')
-
 # fig.savefig('Figures/修改图轴，第2组.svg', format='svg')
 
 
-fig = plt.figure(figsize = (6,6), tight_layout=True)
 
+fig = plt.figure(figsize = (16,16), tight_layout=True)
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 minor_locator = AutoMinorLocator(5)
 ax.xaxis.set_minor_locator(minor_locator)
-ax.tick_params(which="minor", axis="x", direction="inout",
-               color = 'r', length = 10, width = 1)
+ax.tick_params(which="minor", axis="x", direction="inout", color = 'r', length = 10, width = 3)
 
 ax = fig.add_subplot(3, 2, 2)
 ax.plot(x_array, y_array)
@@ -494,8 +422,7 @@ ax.plot(x_array, y_array)
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 minor_locator = AutoMinorLocator(5)
 ax.yaxis.set_minor_locator(minor_locator)
-ax.tick_params(which="minor", axis="y", direction="inout",
-               color = 'r', length = 10, width = 1)
+ax.tick_params(which="minor", axis="y", direction="inout", color = 'r', length = 10, width = 3)
 
 ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
@@ -522,9 +449,9 @@ from matplotlib.ticker import FixedLocator, FixedFormatter
 
 x_formatter = FixedFormatter(["A", "B", "C"])
 y_formatter = FixedFormatter(['Bottom', 'Center', 'Top'])
-
 x_locator = FixedLocator([-8, 0, 8])
 y_locator = FixedLocator([-1, 0, 1])
+
 ax.xaxis.set_major_formatter(x_formatter)
 ax.yaxis.set_major_formatter(y_formatter)
 ax.xaxis.set_major_locator(x_locator)
@@ -545,8 +472,6 @@ ax.xaxis.set_major_locator(plt.MaxNLocator(2))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 对数坐标
 
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter, MultipleLocator
@@ -564,7 +489,7 @@ p["grid.linewidth"] = 0.5
 
 X = np.linspace(0.001, 90, 5000)
 
-fig = plt.figure(figsize=(8, 8))
+fig = plt.figure(figsize=(12, 12))
 
 # X-linear Y-linear
 # -----------------------------------------------------------------------------
@@ -731,42 +656,29 @@ ax.grid(True)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 三维网格面随视角变化
 
-
-
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 import numpy as np
-
 import os
 
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-X, Y, Z = axes3d.get_test_data(0.05)
 # 生成测试数据
+X, Y, Z = axes3d.get_test_data(0.05)
 
-
-
-fig = plt.figure(figsize = (12,12),constrained_layout=True)
-
+fig = plt.figure(figsize = (16, 16), constrained_layout = True)
 angle_array = np.linspace(0, 180, 13)
 num_grid = len(angle_array)
 gspec = fig.add_gridspec(num_grid, num_grid)
-
 nrows, ncols = gspec.get_geometry()
-
 axs = np.array([[fig.add_subplot(gspec[i, j], projection='3d') for j in range(ncols)] for i in range(nrows)])
 
 for i in range(nrows):
-
     elev = angle_array[i]
-
     for j in range(ncols):
-
         azim = angle_array[j]
-
         axs[i, j].plot_wireframe(X, Y, Z, rstride=10, cstride=10)
         # axs[i, j].quiver(0, 0, 0, u, v, w, length=0.1, normalize=True)
 
@@ -783,86 +695,6 @@ for i in range(nrows):
 
 # fig.savefig('Figures/子图，三维曲面视角.svg', format='svg')
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
 
 
 
