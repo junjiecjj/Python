@@ -14,7 +14,6 @@ from sklearn import datasets
 from sklearn.naive_bayes import GaussianNB
 
 
-
 # import the iris data
 iris = datasets.load_iris()
 

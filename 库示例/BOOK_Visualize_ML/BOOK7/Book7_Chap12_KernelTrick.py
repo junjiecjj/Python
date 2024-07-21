@@ -12,46 +12,27 @@ from sklearn.datasets import make_moons, make_circles, make_classification
 from sklearn import svm, datasets
 from matplotlib import cm
 
-
-
 def make_meshgrid(x, y, h=.02):
-
     x_min, x_max = x.min() - 1, x.max() + 1
     y_min, y_max = y.min() - 1, y.max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
     return xx, yy
 
-
-
 # Generate data
-
-X, y = make_classification(n_features=2,
-                           n_redundant=0,
-                           n_informative=2,
-                           random_state=1,
-                           n_clusters_per_class=1)
+X, y = make_classification(n_features=2, n_redundant=0, n_informative=2, random_state=1, n_clusters_per_class=1)
 rng = np.random.RandomState(2)
-X += 2 * rng.uniform(size=X.shape)
+X += 2 * rng.uniform(size=X.shape) # (100, 2)
 linearly_separable = (X, y)
-
-datasets = [linearly_separable,
-            make_moons(noise=0.3, random_state=0),
-            make_circles(noise=0.2, factor=0.5, random_state=1)]
-
+datasets = [linearly_separable, make_moons(noise=0.3, random_state=0), make_circles(noise=0.2, factor=0.5, random_state=1)]
 
 
 #%% iterate over datasets
-
 fig_name = 1
-
 for ds_cnt, ds in enumerate(datasets):
     # preprocess dataset, split into training and test part
     X, y = ds
     X = StandardScaler().fit_transform(X)
-
     C = 3  # SVM regularization parameter
-
     models = (svm.SVC(kernel='linear', C=C),
               svm.SVC(kernel='poly', degree=2, gamma='auto', C=C),
               svm.SVC(kernel='poly', degree=3, gamma='auto', C=C),
@@ -61,32 +42,25 @@ for ds_cnt, ds in enumerate(datasets):
     models = (clf.fit(X, y) for clf in models)
 
     # title for the plots
-    titles = ('linear',
-              'Polynomial, d = 2',
-              'Polynomial, d = 3',
-              'RBF',
-              'Sigmoid')
+    titles = ('linear', 'Polynomial, d = 2', 'Polynomial, d = 3', 'RBF', 'Sigmoid')
 
-    X0, X1 = X[:, 0], X[:, 1]
-    xx, yy = make_meshgrid(X0, X1)
+    X0, X1 = X[:, 0], X[:, 1] # (100,)
+    xx, yy = make_meshgrid(X0, X1) #  (319, 297)
 
     # iterate over models
     for clf, title in zip(models, titles):
-
         Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
-        Z = Z.reshape(xx.shape)
-        Z_0 = clf.decision_function(X);
+        Z = Z.reshape(xx.shape) # (319, 297)
+        Z_0 = clf.decision_function(X)  #  (100,)
 
-        fig = plt.figure(figsize = (8,4))
+        fig = plt.figure(figsize = (16, 8))
+
         ax = fig.add_subplot(1,2,1)
-
-        ax.scatter(X0, X1, c=y, cmap=plt.cm.coolwarm, s=20, edgecolors='w')
-
+        ax.scatter(X0, X1, c=y, cmap=plt.cm.coolwarm, s=80, edgecolors='w')
         x1_sp_vec = clf.support_vectors_[:, 0];
         x2_sp_vec = clf.support_vectors_[:, 1];
+        plt.scatter(x1_sp_vec, x2_sp_vec, s=100, facecolors='none', edgecolors='k')
 
-        plt.scatter(x1_sp_vec, x2_sp_vec, s=50,
-                    facecolors='none', edgecolors='k')
         plt.contour(xx, yy, -Z, levels = 30, cmap=plt.cm.RdYlBu_r,linewidths = 0.5)
         plt.contour(xx, yy, -Z, [0], alpha = 1, colors='#1B5A9C',linewidths = 1.25)
         plt.contour(xx, yy, -Z, [-1,1], alpha = 1, colors='k',linewidths = 1.25,linestyles = '--')
@@ -111,8 +85,7 @@ for ds_cnt, ds in enumerate(datasets):
         norm = plt.Normalize(-Z.max(),-Z.min())
         colors = cm.RdYlBu_r(norm(-Z))
 
-        surf = ax.plot_surface(xx, yy, -Z,linewidths = 0.25,
-                               facecolors=colors, shade=False,rstride=10,cstride=10)
+        surf = ax.plot_surface(xx, yy, -Z,linewidths = 0.25, facecolors=colors, shade=False, rstride=10,cstride=10)
         surf.set_facecolor((0,0,0,0))
 
         ax.contour(xx, yy, -Z, [0], colors='#1B5A9C',linewidths = 1.25)
@@ -138,8 +111,7 @@ for ds_cnt, ds in enumerate(datasets):
         # ax.set_proj_type('ortho')
         ax.set_title(str(fig_name))
 
-        plt.savefig(str(fig_name) + '.svg')
-
+        # plt.savefig(str(fig_name) + '.svg')
         fig_name = fig_name + 1
 
 

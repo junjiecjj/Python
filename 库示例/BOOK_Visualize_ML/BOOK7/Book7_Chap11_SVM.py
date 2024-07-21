@@ -9,28 +9,21 @@
 
 # 支持向量机，线性核¶
 
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from sklearn import svm
-
 
 # Create 20 points
 X = np.array([[0,2],[2,0],[4.5,0],[4.5,3],[3,4.5],
               [2,1],[1.5,3],[4,4],[0,3.5],[3,2.5],
               [-1,-1],[-3,-4.5],[-2,-3],[-4,-4],[0,-2.5],
               [-1,-3.5],[-3.5,-1],[0,-3.5],[-3,-1],[-4,0]])
+
 y = [1] * 10 + [-1] * 10
 
-
-
-for penalty in (1,0.1,0.05,0.01):
-
+for penalty in (1, 0.1, 0.05, 0.01):
     clf = svm.SVC(kernel='linear', C=penalty)
-
     # load data and fit the model
     clf.fit(X, y)
 
@@ -52,17 +45,13 @@ for penalty in (1,0.1,0.05,0.01):
     x2_down = -w1/w2*x1_vec - (b + 1)/w2
 
     # visualization
-
     fig, ax = plt.subplots()
     plt.plot(x1_vec, x2_decision, color=np.array([0, 68, 138])/255.)
     plt.plot(x1_vec, x2_down, 'k--')
     plt.plot(x1_vec, x2_up, 'k--')
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap = plt.cm.winter, s=80, edgecolors='w')
 
-    plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1], s=50,
-                facecolors='none', edgecolors='k')
-
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cm.get_cmap('RdBu'),
-                edgecolors='w')
+    plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1], s=100, facecolors='none', edgecolors='k', linewidths = 1,)
 
     x_1_2_min = -5
     x_1_2_max = 5
@@ -71,13 +60,11 @@ for penalty in (1,0.1,0.05,0.01):
     xy = np.vstack([XX.ravel(), YY.ravel()]).T
     Z = clf.decision_function(xy).reshape(XX.shape)
 
-    cnt = plt.contourf(XX, YY, Z, levels = 20, cmap=cm.get_cmap('RdBu'),
-                       alpha=0.5, linestyles=None)
+    cnt = plt.contourf(XX, YY, Z, levels = 20, cmap=cm.get_cmap('RdBu'), alpha=0.5, linestyles=None)
     for c in cnt.collections:
         c.set_edgecolor("face")
 
     plt.axis('scaled')
-
     ax.set_xlim(x_1_2_min, x_1_2_max)
     ax.set_ylim(x_1_2_min, x_1_2_max)
     ax.set_xlabel('$x_1$')
