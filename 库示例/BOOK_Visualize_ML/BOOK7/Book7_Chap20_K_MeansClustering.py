@@ -16,9 +16,7 @@ rgb = [[255, 238, 255],  # red
        [219, 238, 244],  # blue
        [228, 228, 228]]  # black
 rgb = np.array(rgb)/255.
-
 cmap_light = ListedColormap(rgb)
-
 
 # 导入鸢尾花数据
 iris = datasets.load_iris()
@@ -91,7 +89,6 @@ y_train = iris.target
 
 distortions = []
 for i in range(1, 11):
-
     # GK-Means
     km = KMeans( n_clusters=i, init='random', n_init=10, max_iter=300, tol=1e-04, random_state=0)
     # train the parameters
@@ -119,16 +116,12 @@ import matplotlib.cm as cm
 import numpy as np
 from matplotlib.colors import ListedColormap
 
-
-
 # Create color maps
 rgb = [[255, 238, 255],  # red
        [219, 238, 244],  # blue
        [228, 228, 228]]  # black
 rgb = np.array(rgb)/255.
-
 cmap_light = ListedColormap(rgb)
-
 
 # import the iris data
 iris = datasets.load_iris()
@@ -140,7 +133,6 @@ plot_step = 0.02
 xx, yy = np.meshgrid(np.arange(4, 8+plot_step, plot_step), np.arange(1.5, 4.5+plot_step, plot_step))
 
 range_n_clusters = [3, 4, 5]
-
 for n_clusters in range_n_clusters:
     # Create a subplot with 1 row and 2 columns
     fig, ax= plt.subplots()
@@ -166,7 +158,6 @@ for n_clusters in range_n_clusters:
     Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
 
-
     fig, ax = plt.subplots()
 
     plt.plot(centers[0,:],centers[1,:],'x')
@@ -174,7 +165,7 @@ for n_clusters in range_n_clusters:
     plt.contourf(xx, yy, Z, cmap=cmap_light)
 
     # plot sample data
-    plt.scatter(x=X[:, 0], y=X[:, 1], color=np.array([0, 68, 138])/255., alpha=1.0, linewidth = 1, edgecolor=[1,1,1])
+    plt.scatter(x=X[:, 0], y=X[:, 1], color = np.array([0, 68, 138])/255., alpha=1.0, linewidth = 1, edgecolor=[1,1,1])
 
     # plot decision boundaries
     levels = np.unique(Z).tolist();
@@ -201,12 +192,12 @@ import matplotlib as mpl
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi, voronoi_plot_2d
-
+np.random.seed(1)
 # generate data/speed values
 points = np.random.uniform(size=[30, 2])
-points = np.append(points, [[999,999], [-999,999], [999,-999], [-999,-999]], axis = 0)
+points = np.append(points, [[999,999], [-999,999], [999,-999], [-999,-999]], axis = 0) #  (34, 2)
 speed = np.random.uniform(low=0.0, high=5.0, size=50)
-
+ # (50,)
 # generate Voronoi tessellation
 vor = Voronoi(points)
 
@@ -215,19 +206,20 @@ vor = Voronoi(points)
 minima = min(speed)
 maxima = max(speed)
 
-
 # normalize chosen colormap
 norm = mpl.colors.Normalize(vmin=minima, vmax=maxima, clip=True)
+# or
+# norm = plt.Normalize(vmin=minima, vmax=maxima, clip=True)
 mapper = cm.ScalarMappable(norm=norm, cmap=cm.viridis)
 
 fig, ax = plt.subplots()
 # plot Voronoi diagram, and fill finite regions with color mapped from speed value
 voronoi_plot_2d(vor, show_points=True, show_vertices=False, s=1, ax = ax)
 for r in range(len(vor.point_region)):
-    region = vor.regions[vor.point_region[r]]
+    region = vor.regions[vor.point_region[r]] #  获取一个区域的边界点编号
     if not -1 in region:
-        polygon = [vor.vertices[i] for i in region]
-        plt.fill(*zip(*polygon), color=mapper.to_rgba(speed[r]), alpha=0.5)
+        polygon = [vor.vertices[i] for i in region] # 根据边界点编号获取边界点坐标
+        plt.fill(*zip(*polygon), color=mapper.to_rgba(speed[r]), alpha=0.5) # 根据坐标画填充区域
 ax.set_aspect('equal', 'box')
 plt.xlim(0, 1)
 plt.ylim(0, 1)

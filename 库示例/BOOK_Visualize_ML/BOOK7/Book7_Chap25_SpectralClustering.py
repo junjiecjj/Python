@@ -3,13 +3,7 @@
 
 
 
-
-
-
-
-
-# 谱聚类
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 谱聚类
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,43 +12,27 @@ from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
 
 
-
 # 生成数据
 np.random.seed(0)
-
-n_samples = 500;
 # 样本数据的数量
+n_samples = 500;
 
-dataset = datasets.make_circles(n_samples=n_samples, factor=.5,noise=.05)
 # 生成环形数据
+dataset = datasets.make_circles(n_samples=n_samples, factor=.5,noise=.05)
 
-X, y = dataset
 # X 特征数据，y 标签数据
-X = StandardScaler().fit_transform(X)
+X, y = dataset
 # 标准化数据集
+X = StandardScaler().fit_transform(X)
+# 使用SpectralClustering算法对数据进行谱聚类
+spectral = cluster.SpectralClustering(n_neighbors = 20, assign_labels = 'discretize', eigen_solver = "arpack", affinity = "nearest_neighbors", n_clusters = 2)
 
-
-
-spectral = cluster.SpectralClustering(
-    n_neighbors = 20,
-    assign_labels='discretize',
-    eigen_solver="arpack",
-    affinity="nearest_neighbors",
-    n_clusters=2)
-# 使用SpectralClustering算法对数据进行聚类
-
-y_pred = spectral.fit_predict(X)
 # 返回每个样本的聚类标签
-
-
+y_pred = spectral.fit_predict(X)
 
 # 可视化
 fig, ax = plt.subplots()
-
-colors = np.array(list(islice(cycle(['#377eb8', '#ff7f00', '#4daf4a',
-                                     '#f781bf', '#a65628', '#984ea3',
-                                     '#999999', '#e41a1c', '#dede00']),
-                              int(max(y_pred) + 1))))
+colors = np.array(list(islice(cycle(['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#999999', '#e41a1c', '#dede00']), int(max(y_pred) + 1))))
 
 plt.scatter(X[:, 0], X[:, 1], s=10, color=colors[y_pred])
 

@@ -1,6 +1,12 @@
 
 
-
+# ◄ itertools.cycle() 把一组数据循环取出
+# ◄ itertools.islice() 返回一个迭代器
+# ◄ numpy.random.seed() 设置随机数种子可以使每一次生成随机数据的时候结果相同
+# ◄ sklearn.cluster.DBSCAN() DBSCAN 聚类函数
+# ◄ sklearn.cluster.OPTICS() OPTICS 聚类函数
+# ◄ sklearn.datasets.make_circles() 创建环形样本数据
+# ◄ sklearn.preprocessing.StandardScaler().fit_transform() 标准化数据；通过减去均值然后除以标准差，处理后数据符合标准正态分布
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DBSCAN聚类
 
 
@@ -11,34 +17,21 @@ from sklearn.preprocessing import StandardScaler
 from itertools import cycle, islice
 
 
-
 np.random.seed(0)
-
 n_samples = 500
-
-dataset = datasets.make_circles(n_samples=n_samples, factor=.5,noise=.05)
-
+dataset = datasets.make_circles(n_samples = n_samples, factor = .5, noise = .05)
 X, y = dataset
-
-
-
 
 # normalize dataset
 X = StandardScaler().fit_transform(X)
-
-
-for eps in np.array([0.1,0.2,0.4,0.6]):
-
-    dbscan = cluster.DBSCAN(eps=eps,min_samples=10)
-
+# [0.1, 0.2, 0.4, 0.6]
+for eps in np.array([0.1, 0.2, 0.4, 0.6]):
+    dbscan = cluster.DBSCAN(eps=eps, min_samples = 10)
     y_pred = dbscan.fit_predict(X)
 
     fig, ax = plt.subplots()
 
-    colors = np.array(list(islice(cycle(['#377eb8', '#ff7f00', '#4daf4a',
-                                         '#f781bf', '#a65628', '#984ea3',
-                                         '#999999', '#e41a1c', '#dede00']),
-                                  int(max(y_pred) + 1))))
+    colors = np.array(list(islice(cycle(['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#999999', '#e41a1c', '#dede00']), int(max(y_pred) + 1)) ))
     # 增加黑色
     colors = np.append(colors, ["#000000"])
     # 绘制散点图

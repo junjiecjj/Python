@@ -340,7 +340,6 @@ ax.set_ybound(lower = 1, upper = 5)
 norm = plt.Normalize(log_PDF.min(), log_PDF.max())
 sm = plt.cm.ScalarMappable(cmap="RdYlBu_r", norm=norm)
 sm.set_array([])
-
 ax.figure.colorbar(sm)
 
 # 设置横纵轴取值范围

@@ -211,7 +211,7 @@ def pie_and_barh(variance_array, bar_max, PCA = True):
     else:
         labels = ['$X_' + str(index) + '$' for index in [1,2,3,4]]
     var_X2_drill_down_df = pd.DataFrame({'var':variance_array}, index = labels)
-    fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(18,9))
+    fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(12, 6))
     # var_X2_drill_down_df.sort_values('var',inplace=True)
     var_X2_drill_down_df.plot.pie(y = 'var', autopct='%1.1f%%',wedgeprops={'alpha':0.5}, legend = False, cmap='rainbow_r', ax = ax1)
 

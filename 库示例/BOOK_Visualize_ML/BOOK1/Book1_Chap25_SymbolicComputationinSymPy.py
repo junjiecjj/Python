@@ -608,13 +608,27 @@ M.eigenvects()
 M.eigenvects()[0][2]
 
 
-Matrix_2x2_abc = Matrix([[a**2, 2*a*b*c],
-                         [2*a*b*c, b**2]])
+Matrix_2x2_abc = Matrix([[a**2, 2*a*b*c], [2*a*b*c, b**2]])
 Matrix_2x2_abc
 
 Matrix_2x2_abc.eigenvals()
-
 M.eigenvects()
+
+
+####
+from sympy import lambdify, expand, simplify
+from sympy import Matrix, symbols
+from sympy.plotting import plot3d
+a, b, c = symbols('a b c')
+
+Matrix_2x2_abc = Matrix([[a**2,  a*b*c], [ a*b*c, b**2]])
+Matrix_2x2_abc
+
+Matrix_2x2_abc.eigenvals()
+Matrix_2x2_abc.eigenvects()
+
+
+
 
 ####### 奇异值分解
 from sympy import Matrix
