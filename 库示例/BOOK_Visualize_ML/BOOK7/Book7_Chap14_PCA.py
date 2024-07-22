@@ -64,17 +64,19 @@ pca = pcamodel.fit_transform(X_df)
 X_SIGMA = np.cov(X.T)
 X_RHO   = np.corrcoef(X.T)
 
-Lambda,V_eigen = np.linalg.eig(X_SIGMA)
-
+Lambda, V_eigen = np.linalg.eig(X_SIGMA)
 # V_eigen@np.diag(Lambda)@(V_eigen.T)
 # np.savetxt('X_SIGMA.csv', X_SIGMA, delimiter=',')
 
 X_sigma = np.std(X, axis=0)
+# array([0.82530129, 0.43441097, 1.75940407, 0.75969263])
 X_VAR   = np.var(X, axis=0)
+# array([0.68112222, 0.18871289, 3.09550267, 0.57713289])
 X_mu    = np.mean(X, axis=0)
+# array([5.84333333, 3.05733333, 3.758     , 1.19933333])
 
 #%% SVD decomposition
-U_SVD, S_SVD, V_T_SVD = np.linalg.svd(X,full_matrices = False)
+U_SVD, S_SVD, V_T_SVD = np.linalg.svd(X, full_matrices = False)
 #%% Heatmap of V transpose
 fig, ax = plt.subplots()
 ax = sns.heatmap(pcamodel.components_,
@@ -98,16 +100,12 @@ ax = sns.heatmap(V,
 ax.set_aspect("equal")
 plt.title('V')
 
-
 # Convert V array to dataframe
-V_df = pd.DataFrame(data=V,
-                    columns = ['PC1','PC2','PC3','PC4'],
-                    index   = ['Sepal length','Sepal width', 'Petal length','Petal width'])
-
+V_df = pd.DataFrame(data = V, columns = ['PC1','PC2','PC3','PC4'], index   = ['Sepal length','Sepal width', 'Petal length','Petal width'])
 
 fig, ax = plt.subplots()
-sns.lineplot(data=V_df,markers=True, dashes=False,palette = "husl")
-plt.axhline(y=0, color='r', linestyle='-')
+sns.lineplot(data = V_df, markers=True, dashes=False,palette = "husl")
+plt.axhline(y = 0, color='r', linestyle='-')
 
 #%% V.T @ V = I
 fig, ax = plt.subplots()
@@ -159,8 +157,11 @@ Z_SIGMA = np.cov(Z.T)
 Z_RHO   = np.corrcoef(Z.T)
 
 Z_sigma = np.std(Z, axis=0)
+# array([2.04940319, 0.49097143, 0.27872586, 0.1538707 ])
 Z_VAR   = np.var(Z, axis=0)
+# array([4.20005343, 0.24105294, 0.0776881 , 0.02367619])
 Z_mu    = np.mean(Z, axis=0)
+# array([ 5.50236513, -5.32695258, -0.63185272, -0.03335171])
 
 #%% heatmap of covariance and correlation matrices
 fig, ax = plt.subplots()

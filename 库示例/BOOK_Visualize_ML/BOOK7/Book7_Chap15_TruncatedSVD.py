@@ -32,7 +32,7 @@ np.linalg.matrix_rank(X)
 # 2714
 
 # Run SVD on Image
-U, S, V = np.linalg.svd(X)
+U, S, VT = np.linalg.svd(X)
 
 n_components = len(S) # 2714
 component_idx = range(1,  n_components + 1)
@@ -77,7 +77,7 @@ plt.ylabel('Cumulative variance explained (%)')
 # Reconstruct image with increasing number of singular vectors/values
 for rank in [1, 2, 4, 8, 16, 32, 64]:
     # Reconstructed Image
-    X_reconstruction = U[:, :rank] * S[:rank] @ V[:rank,:]
+    X_reconstruction = U[:, :rank] * S[:rank] @ VT[:rank,:]
 
     fig, axs = plt.subplots(1, 2)
     axs[0].imshow(X_reconstruction, cmap='gray')
@@ -92,7 +92,7 @@ for rank in [1, 2, 4, 8, 16, 32, 64]:
 # 秩一矩阵
 for order in np.arange(0,16):
     # Reconstructed Image
-    X_rank_1 = S[order] * U[:, [order]] @ V[[order],:]
+    X_rank_1 = S[order] * U[:, [order]] @ VT[[order],:]
 
     fig, ax = plt.subplots(1, 1)
     ax.imshow(X_rank_1, cmap='gray')

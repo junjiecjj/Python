@@ -18,25 +18,21 @@ import matplotlib.pyplot as plt
 def PCA(X, method = 'demean'):
     n = len(X)
     # number of sample data
-
     if method == 'original':
         XX = X.dropna()
         GG = (XX.T @ XX)/(n - 1)
         # devided by (n-1) to make results comparable
         variance_V, V = np.linalg.eig(GG)
-
     elif method == 'demean':
         XX = (X - X.mean()).dropna()
         GG = XX.T @ XX/(n - 1)
         variance_V, V = np.linalg.eig(GG)
-
     elif method == 'normalize':
         XX = (X - X.mean())/X.std().dropna()
         GG = XX.T @ XX/(n - 1)
         variance_V, V = np.linalg.eig(GG)
     else:
         print('Method does not exist. ' 'Choose from original, demean, and normalize')
-
     original_variance = np.diag(GG)
     explained_variance_ratio = variance_V / np.sum(variance_V)
     return [explained_variance_ratio, variance_V, V, original_variance, GG, XX]
@@ -47,20 +43,20 @@ def PCA(X, method = 'demean'):
 # ==================================================
 # Define a function for plotting vector on a plane
 # ==================================================
-def draw_vector(v,RBG,label):
-    array = np.array([[0,0,v[0],v[1]]])
+def draw_vector(v, RBG, label):
+    array = np.array([[0, 0, v[0], v[1]]])
     X,Y,U,V = zip(*array)
     plt.quiver(X,Y,U,V, angles='xy', scale_units='xy', scale = 1, color = RBG, label = label)
 
 # ==================================================
 # Define a function for plotting EVD
 # ==================================================
-def heatmap_EVD(GG,Lambdas,V):
+def heatmap_EVD(GG, Lambdas, V):
     fig,axs = plt.subplots(1,7,figsize = (18,5))
 
     plt.sca(axs[0])
     ax = sns.heatmap(GG, cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, yticklabels=False, square = 'equal')
-    plt.title('$A$')
+    plt.title('$\Sigma$')
 
     plt.sca(axs[1])
     plt.title('=')
@@ -108,7 +104,6 @@ def heatmap_GG(GG, variance_V):
     ax[0].tick_params(axis='y', rotation=90)
 
     x_axis_labels = ['$PC_' + str(index + 1) + '$' for index in range(len(X.columns))]
-
     sns.heatmap(np.diag(variance_V),
                 ax = ax[1],
                 xticklabels=x_axis_labels,
@@ -126,7 +121,7 @@ def heatmap_GG(GG, variance_V):
 # ==================================================
 # Define a function for plotting heatmap of matrix V
 # ==================================================
-def heatmap_V(V,X,title):
+def heatmap_V(V, X, title):
     fig, ax = plt.subplots(figsize=(6,6))
     x_axis_labels = ['$PC_' + str(index + 1) + '$' for index in range(len(X.columns))]
     y_axis_labels = X.columns
@@ -148,13 +143,13 @@ def heatmap_V(V,X,title):
 # ==================================================
 # Define a function of generating biplot
 # ==================================================
-def biplot(V,X,title):
+def biplot(V, X, title):
     fig, ax = plt.subplots(figsize=(6,6))
     y_axis_labels = X.columns
     RBGs = ['r','b','g','orange']
     for i, (RBG_i, label) in enumerate(zip(RBGs, y_axis_labels)):
         v = V[i,[0,1]]
-        draw_vector(v,RBG_i,label)
+        draw_vector(v, RBG_i, label)
 
     circ = plt.Circle((0, 0), radius=1, edgecolor='k', linestyle = '--', facecolor='None')
     ax.add_patch(circ)
@@ -173,18 +168,18 @@ def biplot(V,X,title):
 # Define a function of generating 6 biplots
 # lower triangle arrangment
 # ==================================================
-def six_biplots(V,X):
+def six_biplots(V, X):
     fig = plt.figure(figsize=(18,18))
     y_axis_labels = X.columns
     RBGs = ['r','b','g','orange']
     PC_combos = [[0,1],[0,2],[1,2],[0,3],[1,3],[2,3]]
 
-    for fig_i,PC_combo_i in zip([1, 4, 5, 7, 8, 9], PC_combos): # lower triangle
-        plt.subplot(3,3,fig_i)
+    for fig_i, PC_combo_i in zip([1, 4, 5, 7, 8, 9], PC_combos): # lower triangle
+        plt.subplot(3,3, fig_i)
         for i, (RBG_i, label) in enumerate(zip(RBGs, y_axis_labels)):
             # print(PC_combo_i)
-            v = V[i,PC_combo_i]
-            draw_vector(v,RBG_i,label)
+            v = V[i, PC_combo_i]
+            draw_vector(v, RBG_i, label)
         plt.legend(loc = 'best')
         plt.xticks(np.linspace(-1,1,5))
         plt.yticks(np.linspace(-1,1,5))
@@ -210,7 +205,7 @@ def six_biplots(V,X):
 # Define a function of plotting pie and bar chats of
 # diagonal elements (varainces, lambdas, etc)
 # ==================================================
-def pie_and_barh(variance_array,bar_max,PCA = True):
+def pie_and_barh(variance_array, bar_max, PCA = True):
     if PCA:
         labels = ['$PC_' + str(index) + '$' for index in [1,2,3,4]]
     else:
@@ -226,7 +221,7 @@ def pie_and_barh(variance_array,bar_max,PCA = True):
 # ==================================================
 # Define a function of generating Scree plot
 # ==================================================
-def Scree(explained_variance_ratio,variance_V):
+def Scree(explained_variance_ratio, variance_V):
     # double y plot
     PC_range = np.arange(len(explained_variance_ratio)) + 1
     labels = ['$PC_' + str(index) + '$' for index in PC_range]
@@ -253,7 +248,7 @@ def Scree(explained_variance_ratio,variance_V):
 # if p is undefined, X is only projected to tensor product
 # of PC1, the first principal component
 # ==================================================
-def error_heatmap(X_,V_,p = 1):
+def error_heatmap(X_, V_, p = 1):
     X_ = X_.to_numpy()
     X_reprod = X_*0
     for i in range(p):
@@ -291,7 +286,7 @@ def error_heatmap(X_,V_,p = 1):
     ax = sns.heatmap(X_reprod, cmap = 'RdYlBu_r', vmax = X_max, vmin = X_min, cbar_kws = {'orientation':'horizontal'}, yticklabels=False)
     plt.title('Reproduced, $\hat{X}$')
 
-def projection_heatmap(X_,V_):
+def projection_heatmap(X_, V_):
     X_ = X_.to_numpy()
     Y = X_@V_
 
@@ -338,8 +333,6 @@ X = X.rename(columns={'sepal_length': '$X_1$',
 
 
 
-
-
 # 第一条技术路线
 # ==================================================
 # Perform PCA on the demeaned data
@@ -347,29 +340,26 @@ X = X.rename(columns={'sepal_length': '$X_1$',
 # ==================================================
 explained_variance_ratio_c, variance_V_c, V_c, original_variance_c, GG_c, X_c = PCA(X, method = 'demean')
 # heatmap of EVD
-heatmap_EVD(GG_c,variance_V_c,V_c)
+heatmap_EVD(GG_c,variance_V_c, V_c)
 
 # heatmap of before and after eigen decomposition
 heatmap_GG(GG_c, variance_V_c)
 
-bar_max = np.maximum(original_variance_c, variance_V_c).max().max()
-pie_and_barh(original_variance_c,bar_max,PCA = False)
-
-pie_and_barh(variance_V_c,bar_max,PCA = True)
+bar_max = np.maximum(original_variance_c, variance_V_c).max()
+pie_and_barh(original_variance_c, bar_max, PCA = False)
+pie_and_barh(variance_V_c, bar_max, PCA = True)
 
 cov_X = X.cov()
 sum_variance = np.diag(cov_X).sum() # test only
 
-
 # The diagonal elements of covariance matrix are variances; thus each feature contributes its real variance in PCA.
 # Scree plot
-
 Scree(explained_variance_ratio_c, variance_V_c)
 heatmap_V(V_c,X,'V from eigen decomposing covariance matrix $\Sigma$')
 
 
 # biplot of the coefficients in PC1 (v1) and PC2 (v2)
-biplot(V_c,X,'Biplot of $PC_1$ and $PC_2$, covariance matrix $\Sigma$')
+biplot(V_c, X, 'Biplot of $PC_1$ and $PC_2$, covariance matrix $\Sigma$')
 
 # Note: the center of the vectors ideally should be at the centroid of the data matrix X
 # six biplots in lower triangle
@@ -382,18 +372,15 @@ error_heatmap(X_c, V_c, 1)
 
 # projection Y_c = X_c @ V_c
 # Y_c = X_c @ V_c
-projection_heatmap(X_c,V_c)
+projection_heatmap(X_c, V_c)
 
 
 
-# 第二条技术路线
-
-#%%
+#%%第二条技术路线
 # ==================================================
 # Perform PCA on the original data
 # by eigen decomposing Gram matrix G = X.T@X
 # ==================================================
-
 explained_variance_ratio, variance_V, V, original_variance, GG, X_ = PCA(X, method = 'original')
 # heatmap of EVD
 heatmap_EVD(GG,variance_V,V)
@@ -412,23 +399,17 @@ pie_and_barh(variance_V, bar_max,PCA = True)
 # Scree plot
 Scree(explained_variance_ratio,variance_V)
 
-
 # Heatmap of V
 heatmap_V(V,X,'V from eigen decomposing Gram matrix G')
 # biplot of the coefficients in PC1 (v1) and PC2 (v2)
 biplot(V,X,'Biplot of $PC_1$ and $PC_2$, Gram matrix G')
 
-
-
 # six biplots in lower triangle
 six_biplots(V,X)
-
 
 # reproduction
 # Reproduce the original data using PC1 from V only and plot error heatmap
 error_heatmap(X, V, 1)
-
-
 
 # projection Y = X @ V
 # Y = X @ V
@@ -437,56 +418,40 @@ projection_heatmap(X,V)
 
 
 
-
-# 第三条技术路线
-#%%
-
+#%% 第三条技术路线
 # ==================================================
 # Perform PCA on the normalized (or standardized) data, i.e., z-scores
 # by eigen decomposing correlation matrix
 # ==================================================
 
-explained_variance_ratio_z, variance_V_z, V_z,original_variance_z, GG_z, Z  = PCA(X, method = 'normalize')
-
+explained_variance_ratio_z, variance_V_z, V_z, original_variance_z, GG_z, Z  = PCA(X, method = 'normalize')
 # heatmap of EVD
-heatmap_EVD(GG_z,variance_V_z,V_z)
-
-
+heatmap_EVD(GG_z, variance_V_z, V_z)
 
 # heatmap of before and after eigen decomposition
-
 heatmap_GG(GG_z, variance_V_z)
-
-
 
 # The diagonal elements of correlation matrix are all 1; thus each feature only contribute 1 as variance in PCA.
 bar_max = np.maximum(original_variance_z, variance_V_z).max().max()
 pie_and_barh(original_variance_z,bar_max,PCA = False)
 
-
-
 pie_and_barh(variance_V_z,bar_max,PCA = True)
 variance_V_z.sum()
 Scree(explained_variance_ratio_z, variance_V_z)
 
-
-
-heatmap_V(V_z,X,'V from eigen decomposing correlation matrix $P$')
+heatmap_V(V_z, X, 'V from eigen decomposing correlation matrix $P$')
 # biplot of the coefficients in PC1 (v1) and PC2 (v2)
-biplot(V_z,X,'Biplot of $PC_1$ and $PC_2$, correlation matrix $P$')
-
+biplot(V_z, X, 'Biplot of $PC_1$ and $PC_2$, correlation matrix $P$')
 
 # six biplots in lower triangle
-six_biplots(V_z,X)
-
+six_biplots(V_z, X)
 
 
 # Reproduce the original data using PC1 from V_z only and plot error heatmap
 error_heatmap(Z, V_z, 1)
 
-
 # projection Y_z = Z @ V_z
-projection_heatmap(Z,V_z)
+projection_heatmap(Z, V_z)
 
 
 

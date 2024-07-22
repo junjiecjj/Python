@@ -73,8 +73,18 @@ print(pca.components_.T)
 #  [ 0.3582892  -0.07548102]]
 # 数据变换
 X_pca = pca.transform(X)
-print(X_pca.shape) # 150,2
+print(X_pca.shape) # 150, 2
 print(np.cov(X_pca.T))
+
+X_reco = pca.inverse_transform(X_pca)
+print(f"(X_reco - X).max() = {(X_reco - X).max()}, (X_reco - X).min() = {(X_reco - X).min()}")
+
+
+pcamodel = PCA(n_components=2,  svd_solver='full')
+pcamodel.fit(X)
+X_pca1 = pcamodel.transform(X)
+# X_pca1 = pcamodel.fit_transform(X)
+# X_pca1 == Zc
 
 ### 数据 X_pca 在 [v1, v2] 中散点图
 fig, ax = plt.subplots()

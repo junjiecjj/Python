@@ -31,12 +31,8 @@ p["grid.linewidth"] = 0.5
 from datetime import datetime
 startdate = datetime(2020,1,1)
 enddate = datetime(2020,12,31)
-y_levels_df = yf.download(tickers = ['AAPL'],
-                  start = startdate,
-                  end = enddate)
+y_levels_df = yf.download(tickers = ['AAPL'], start = startdate, end = enddate)
 y_levels_df.to_pickle('y_levels_df.pkl')
-
-
 
 y_levels_df.round(2).head()
 
@@ -44,18 +40,13 @@ y_df = y_levels_df['Adj Close'].pct_change()
 y_df = y_df.dropna()
 
 # x_levels_df = web.get_data_yahoo(['^GSPC'], start = '2020-01-01', end = '2020-12-31')
-x_levels_df = yf.download(tickers = ['^GSPC'],
-                  start = startdate,
-                  end = enddate)
+x_levels_df = yf.download(tickers = ['^GSPC'], start = startdate, end = enddate)
 x_levels_df.round(2).head()
-
 
 x_df = x_levels_df['Adj Close'].pct_change()
 x_df = x_df.dropna()
 
-
 # x_df = x_df.rename(columns={"^GSPC": "SP500"})
-
 x_y_df = pd.concat([x_df, y_df], axis=1, join="inner")
 
 
@@ -123,22 +114,16 @@ b1 = out.beta[1]
 # generate x-values for  regression line
 x_ = np.linspace(x_df.min(),x_df.max(),10)
 
-
-
 p
-
 
 fig, ax = plt.subplots()
 
 # scatter-plot data
-plt.scatter(x_df, y_df, alpha = 0.5,
-            s = 8,label = 'Data')
+plt.scatter(x_df, y_df, alpha = 0.5, s = 8,label = 'Data')
 
-plt.plot(x_, p.const + p['Adj Close'] * x_,
-         color = 'r', label = 'OLS')
+plt.plot(x_, p.const + p['Adj Close'] * x_, color = 'r', label = 'OLS')
 
-plt.plot(x_, b0 + b1 * x_,
-         color = 'b', label = 'TLS')
+plt.plot(x_, b0 + b1 * x_, color = 'b', label = 'TLS')
 
 plt.axhline(y=0, color='k', linestyle='--')
 plt.axvline(x=0, color='k', linestyle='--')
@@ -152,19 +137,14 @@ plt.xlim([-0.15,0.15])
 plt.ylim([-0.15,0.15])
 
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正交回归，二元
-
 
 ###patch start###
 from mpl_toolkits.mplot3d.axis3d import Axis
 
 def _get_coord_info_new(self, renderer):
     mins, maxs, cs, deltas, tc, highs = self._get_coord_info_old(renderer)
-    correction = deltas * [0.25,
-                           0.25,
-                           0.25]
+    correction = deltas * [0.25, 0.25, 0.25]
     mins += correction
     maxs -= correction
     return mins, maxs, cs, deltas, tc, highs
@@ -184,13 +164,10 @@ import scipy.stats as stats
 import yfinance as yf
 import statsmodels.api as sm
 
-
-
 X_y_df = yf.download(['AAPL','MCD','^GSPC'], start='2020-01-01', end='2020-12-31')
 X_y_df.to_pickle('X_y_df.pkl')
 X_y_df = X_y_df['Adj Close'].pct_change()
 X_y_df.dropna(inplace = True)
-
 
 
 X_y_df.rename(columns={"^GSPC": "SP500"},inplace = True)
@@ -211,7 +188,6 @@ def linear_func(b, x):
    b0 = b[0]
    b_ = b[1:]
    return b_.T@x + b0
-
 
 # Create a model for fitting
 linear_model = Model(linear_func)
@@ -266,8 +242,6 @@ model = sm.OLS(y_df, X_df)
 results = model.fit()
 print(results.summary())
 
-
-
 p = model.fit().params
 print(p)
 # generate x-values for your regression line (two is sufficient)
@@ -279,8 +253,7 @@ yy_TLS = b1_TLS*xx1 + b2_TLS*xx2 + b0_TLS
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
-ax.scatter(X_df["AAPL"], X_df["MCD"], y_df,
-           s = 8, alpha = 0.5)
+ax.scatter(X_df["AAPL"], X_df["MCD"], y_df, s = 8, alpha = 0.5)
 
 ax.plot_wireframe(xx1, xx2, yy_OLS, color = 'r', label = 'OLS')
 ax.plot_wireframe(xx1, xx2, yy_TLS, color = 'b', label = 'TLS')
@@ -295,8 +268,6 @@ ax.set_proj_type('ortho')
 plt.legend(loc='lower right')
 
 # plt.savefig('比较回归结果.svg')
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正交回归，多元
@@ -420,8 +391,7 @@ labels = ['SP500','TSLA','WMT','MCD','USB',
 # normalize the initial stock price levels to 1
 normalized_stock_levels = stock_levels_df['Adj Close']/stock_levels_df['Adj Close'].iloc[0]
 
-g = sns.relplot(data=normalized_stock_levels,dashes = False,
-                kind="line") # , palette="coolwarm"
+g = sns.relplot(data=normalized_stock_levels,dashes = False, kind="line") # , palette="coolwarm"
 g.set_xlabels('Date')
 g.set_ylabels('Normalized closing price')
 g.set_xticklabels(rotation=45)
@@ -429,11 +399,7 @@ g.set_xticklabels(rotation=45)
 
 
 fig, ax = plt.subplots()
-ax = sns.heatmap(y_X_df,
-                 cmap='RdBu_r',
-                 cbar_kws={"orientation": "vertical"},
-                 yticklabels=False,
-                 vmin = -0.2, vmax = 0.2)
+ax = sns.heatmap(y_X_df, cmap='RdBu_r', cbar_kws={"orientation": "vertical"}, yticklabels=False, vmin = -0.2, vmax = 0.2)
 plt.title('[y, X]')
 
 
@@ -451,32 +417,17 @@ sns.kdeplot(ax = axs[0,0],
 axs[0,0].set_xlim([-0.1,0.1])
 axs[0,0].set_ylim([0, 45])
 
-sns.kdeplot(ax = axs[0,1],
-            data=y_X_df[labels[4:7]],
-            fill=False,
-            common_norm=False,
-            alpha=.3, linewidth=1,
-            palette = "viridis")
+sns.kdeplot(ax = axs[0,1], data=y_X_df[labels[4:7]], fill=False, common_norm=False, alpha=.3, linewidth=1, palette = "viridis")
 
 axs[0,1].set_xlim([-0.1,0.1])
 axs[0,1].set_ylim([0, 45])
 
-sns.kdeplot(ax = axs[1,0],
-            data=y_X_df[labels[7:10]],
-            fill=False,
-            common_norm=False,
-            alpha=.3, linewidth=1,
-            palette = "viridis")
+sns.kdeplot(ax = axs[1,0], data=y_X_df[labels[7:10]], fill=False, common_norm=False, alpha=.3, linewidth=1, palette = "viridis")
 
 axs[1,0].set_xlim([-0.1,0.1])
 axs[1,0].set_ylim([0, 45])
 
-sns.kdeplot(ax = axs[1,1],
-            data=y_X_df[labels[10:]],
-            fill=False,
-            common_norm=False,
-            alpha=.3, linewidth=1,
-            palette = "viridis")
+sns.kdeplot(ax = axs[1,1], data=y_X_df[labels[10:]], fill=False, common_norm=False, alpha=.3, linewidth=1, palette = "viridis")
 
 axs[1,1].set_xlim([-0.1,0.1])
 axs[1,1].set_ylim([0, 45])
@@ -494,13 +445,7 @@ pca = pcamodel.fit_transform(X_df)
 V = pcamodel.components_.transpose()
 
 fig, ax = plt.subplots()
-ax = sns.heatmap(V,
-                 cmap='RdBu_r',
-                 xticklabels=['PC1','PC2','PC3','PC4'],
-                 yticklabels=list(X_df.columns),
-                 cbar_kws={"orientation": "vertical"},
-                 vmin=-1, vmax=1,
-                 annot = True)
+ax = sns.heatmap(V, cmap='RdBu_r', xticklabels=['PC1','PC2','PC3','PC4'], yticklabels=list(X_df.columns), cbar_kws={"orientation": "vertical"}, vmin=-1, vmax=1, annot = True)
 ax.set_aspect("equal")
 plt.title('V')
 
@@ -516,9 +461,7 @@ ax.set_aspect("equal")
 plt.title('V.T@V')
 
 # Convert V array to dataframe
-V_df = pd.DataFrame(data=V,
-                    columns = ['PC1','PC2','PC3','PC4'],
-                    index   = tickers[1:])
+V_df = pd.DataFrame(data=V, columns = ['PC1','PC2','PC3','PC4'], index   = tickers[1:])
 
 fig, ax = plt.subplots()
 sns.lineplot(data=V_df,markers=True, dashes=False,palette = "husl")
