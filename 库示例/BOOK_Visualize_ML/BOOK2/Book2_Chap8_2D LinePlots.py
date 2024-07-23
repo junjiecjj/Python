@@ -295,17 +295,13 @@ fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array, y_array, color='#0088FF')
 
-ax.hlines(y=1, xmin=np.pi/2 - 1, xmax=np.pi/2 + 1,
-          linewidth=1, color='r', ls = '--')
+ax.hlines(y=1, xmin=np.pi/2 - 1, xmax=np.pi/2 + 1, linewidth=1, color='r', ls = '--')
 
-ax.hlines(y=-1, xmin=np.pi/2*3 - 1, xmax=np.pi/2*3 + 1,
-          linewidth=1, color='r', ls = '--')
+ax.hlines(y=-1, xmin=np.pi/2*3 - 1, xmax=np.pi/2*3 + 1, linewidth=1, color='r', ls = '--')
 
-ax.hlines(y=1, xmin=np.pi/2*5 - 1, xmax=np.pi/2*5 + 1,
-          linewidth=1, color='r', ls = '--')
+ax.hlines(y=1, xmin=np.pi/2*5 - 1, xmax=np.pi/2*5 + 1, linewidth=1, color='r', ls = '--')
 
-ax.hlines(y=-1, xmin=np.pi/2*7 - 1, xmax=np.pi/2*7 + 1,
-          linewidth=1, color='r', ls = '--')
+ax.hlines(y=-1, xmin=np.pi/2*7 - 1, xmax=np.pi/2*7 + 1, linewidth=1, color='r', ls = '--')
 
 ax.set_xlim((0,4*np.pi))
 ax.set_ylim((-1.2, 1.2))
@@ -465,7 +461,6 @@ fig, ax = plt.subplots(figsize=(5,3))
 for xi, yi in isect:
     print(f'({xi}, {yi})')
     # 打印交点位置
-
     plt.scatter(xi, yi, color="k", s=100, marker = 'x')
 
 plt.plot(x_array, f1_array, label = '$f_1(x)$')
