@@ -1,0 +1,23 @@
+
+"""
+
+
+来啦！最强总结 SVM ！
+https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247483850&idx=1&sn=b626c685531d13bccaec2bd803ebbe85&chksm=c0e5db0cf792521a70da5ab4ccbe46aaa55787e227f538b86e9127719c08be315bc0197972db&mpshare=1&scene=1&srcid=0726UZiibIEqAyZ25ovR5WdG&sharer_shareinfo=fa2b30966adcb2ee7175d51192ff60ff&sharer_shareinfo_first=fa2b30966adcb2ee7175d51192ff60ff&exportkey=n_ChQIAhIQvo4pdMboK%2BXmBfEf5pXl0xKfAgIE97dBBAEAAAAAAPLjFjOFtBMAAAAOpnltbLcz9gKNyK89dVj0jFBjAv00ABV1tqk8DcRwVFwbeN%2BrqiYI32nHNiWyej5rydxUb25Da0K3XPRc7%2FkFf739rQHscgiBvBVoSlzIoanzv9WPfTtVP%2FwqvFG8ThUYSEtgfMrp6pUlV8YdHm1XcdLOiWOFXuS03ZvIZv9Eg1NMfIQ27chxytzHGtd9WcL0NVaWUu%2BQO7nG6dBd1zLXOoU5Ps1com2lgD4BB38QBh6z9JeuKfkBV5LggbuB4Q60n3V1oG%2FMrEJ7U2wl9ZjbTtHAGqLyveEG%2B8r1wWKHu7PMqYeuHgv2TxXhKOxU4Mu2L6VJ%2BT%2Bs6enNBLQLjy3F%2B%2FktqTFeUVJ3&acctmode=0&pass_ticket=Fszdv1WzEdQr0ifCZ%2FtKRSQnYvV%2BX9706sGmSPrVUuCP9U72SJ0o4M4Ir4WTcqFV&wx_header=0#rd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""

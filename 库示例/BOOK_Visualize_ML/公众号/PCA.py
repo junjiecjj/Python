@@ -1,0 +1,24 @@
+
+"""
+
+
+
+
+彻底理解一个强大算法模型，PCA ！
+https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247484012&idx=1&sn=303127452d17187692d81c06c345cfa6&chksm=c0e5d8aaf79251bc835ac04d44d7dc7231489edff7d54ff0e429b0cbaa0e9c5d2aeba01ea27b&mpshare=1&scene=1&srcid=0726u3W1rTGkCaHrTrtGpDlf&sharer_shareinfo=37b6d93d825e36b92fc0d5b51d8749a1&sharer_shareinfo_first=37b6d93d825e36b92fc0d5b51d8749a1&exportkey=n_ChQIAhIQWVyc7vZGWNYTBKvkzoaFlBKfAgIE97dBBAEAAAAAAOgdFjrjjBsAAAAOpnltbLcz9gKNyK89dVj06K7oF%2BWnsA8aj0KYaRCu%2F9DR0czrqUym1UXeWJDkr8ukqcP9bBGwqbQXGOlm0VgPmUTp9UYvmW8hU%2BxGqpA%2BKc1kuvTd6NR%2BRrATNJ68A5r2l%2Bmkq8pfMeBM7jK9I0cRYk7%2BagXTSNzob7vh9rttCTHrUpZpWtXHgKI%2BMfGdxejW25ZKfAwG8Au0QysAmRNMohFo6%2BH4j0KzImq6r9Ri9yV6Mr4DieJ%2BKq%2BYToKueu%2FhLGAkE5uB%2FNThAYWssGyrV6z9r%2BE3173rPQ4snwLXxW%2FtkMffBNYN1Y0Jd39jB%2FlIAO0UkvTOpmZ07%2BOB0lJoZ6%2BG1ENEOfn0&acctmode=0&pass_ticket=6DqkRA6Kjlb%2Fo89TSO9bfmEf5QZejlgJ9VvbMNU6Vm7QgSFelrl8RNE92WtB2u9P&wx_header=0#rd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
