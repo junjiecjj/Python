@@ -26,7 +26,10 @@ import seaborn as sns
 import matplotlib
 
 
-
+# import autograd.numpy as anp
+import pymanopt
+import pymanopt.manifolds
+import pymanopt.optimizers
 
 
 

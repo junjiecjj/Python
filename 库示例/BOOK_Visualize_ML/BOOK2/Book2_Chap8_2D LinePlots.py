@@ -1,8 +1,6 @@
 
 
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 平面线图颗粒度
 
 # 导入包
@@ -68,7 +66,7 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-fig.savefig('Figures/平面线图，合理颗粒度_2.svg', format='svg')
+# fig.savefig('Figures/平面线图，合理颗粒度_2.svg', format='svg')
 
 
 #>>>>>>>>>>>>>>>>>>>  特殊函数需要更高颗粒度
@@ -125,10 +123,10 @@ y_array_fine = np.sin(x_array_fine)
 fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array_fine, y_array_fine, '--', ms = 10, color='#888888')
-plt.step(x_array_coarse, y_array_coarse, '.-', ms = 10, color='#0088FF')
+# plt.step(x_array_coarse, y_array_coarse, '.-', ms = 10, color='#0088FF')
 # where = 'pre' 默认
 # 也可以用：
-# plt.plot(x_array_fine, y_array_fine, '--', drawstyle='steps', ms = 10, color='#888888')
+plt.plot(x_array_coarse, y_array_coarse, '.-', drawstyle='steps', ms = 10, color='#0088FF')
 
 ax.set_xlim((0,4*np.pi))
 ax.set_ylim((-1.2, 1.2))
@@ -149,9 +147,9 @@ y_array_fine = np.sin(x_array_fine)
 fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array_fine, y_array_fine, '--', ms = 10, color='#888888')
-plt.step(x_array_coarse, y_array_coarse, '.-', where = 'mid', ms = 10, color='#0088FF')
+# plt.step(x_array_coarse, y_array_coarse, '.-', where = 'mid', ms = 10, color='#0088FF')
 # 也可以用：
-# plt.plot(x_array_fine, y_array_fine, '--', drawstyle='steps-mid', ms = 10, color='#888888')
+plt.plot(x_array_coarse, y_array_coarse, '.-', drawstyle='steps-mid', ms = 10, color='#0088FF')
 # where = 'pre' 默认
 
 ax.set_xlim((0,4*np.pi))
@@ -175,7 +173,7 @@ plt.plot(x_array_fine, y_array_fine, '--', ms = 10, color='#888888')
 plt.step(x_array_coarse, y_array_coarse, '.-', where = 'post', ms = 10, color='#0088FF')
 # where = 'pre' 默认
 # 也可以用：
-# plt.plot(x_array_fine, y_array_fine, '--', drawstyle='steps-post', ms = 10, color='#888888')
+# plt.plot(x_array_coarse, y_array_coarse, '.-', drawstyle='steps-post', ms = 10, color='#0088FF')
 
 ax.set_xlim((0,4*np.pi))
 ax.set_ylim((-1.2, 1.2))
@@ -208,8 +206,6 @@ d   = 2 # 公差
 # a_n = the nth term in the sequence
 # a_1 = the first term in the sequence
 # d   = the common difference between terms
-
-
 a_n_array = a_0 + (n_array - 1) * d
 
 fig, ax = plt.subplots(figsize=(5,3))
@@ -223,7 +219,7 @@ ax.set_xticks((1, 5, 10, 15, 20))
 ax.set_xlabel('$n$')
 ax.set_ylabel('n-th term, $a_n$')
 
-fig.savefig('Figures/火柴梗图，数列.svg', format='svg')
+# fig.savefig('Figures/火柴梗图，数列.svg', format='svg')
 
 
 
@@ -261,8 +257,6 @@ import os
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
-
-
 
 #>>>>>>>>>>>>>>>>>>>  水平参考线
 x_array = np.linspace(0, 4*np.pi, 101)
@@ -375,11 +369,8 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-
 x_array = np.linspace(-3, 3, 501)
 y_array = x_array * np.exp(-x_array ** 2)
-
 
 fig, ax = plt.subplots(figsize=(5,3))
 plt.plot(x_array, y_array)
@@ -405,8 +396,6 @@ plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
 
 # fig.savefig('Figures/使用面具，删除法.svg', format='svg')
-
-
 
 
 #>>>>>>>>>>>>>>>>>>>  用 NaN 代替
@@ -438,18 +427,14 @@ plt.ylim(-0.5,0.5)
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
 # 两个函数
-
 x_array = np.linspace(0, 4*np.pi, 2000)
 # 需要有颗粒度很高的数列
 f1_array = np.sin(x_array)
 f2_array = x_array/5 - 1
 
-
-
 #>>>>>>>>>>>>>>>>>>>  绘制交点
+
 
 # 找到正负变号的位置
 loc_intersects = np.argwhere(np.diff(np.sign(f1_array - f2_array))).flatten()
@@ -473,6 +458,15 @@ ax.set_xlabel('x')
 plt.legend()
 
 # fig.savefig('Figures/交点.svg', format='svg')
+############################################################
+
+# input array
+in_arr = [[ 2, 0, 7], [ 0, 5, 9]]
+print ("Input array : ", in_arr)
+
+out_arr = np.argwhere(in_arr)
+print ("Output indices of non zero array element: \n", out_arr)
+############################################################
 
 
 
@@ -496,18 +490,16 @@ plt.plot(x_array, y_array)
 
 n_max = y_array.argmax()
 # 最大值位置
-plt.plot(x_array[n_max],y_array[n_max],'xr', ms = 10)
+plt.plot(x_array[n_max], y_array[n_max],'xr', ms = 10)
 
 n_min = y_array.argmin()
 # 最小值位置
-plt.plot(x_array[n_min],y_array[n_min],'xr', ms = 10)
+plt.plot(x_array[n_min], y_array[n_min],'xr', ms = 10)
 
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
 
 # fig.savefig('Figures/极值.svg', format='svg')
-
-
 
 
 
@@ -529,9 +521,6 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-
-
 #>>>>>>>>>>>>>>>>>>>  1. 用for循环
 x_array = np.linspace(-6, 6, 200)
 sigma_array = np.linspace(0.5,5,10)
@@ -546,7 +535,6 @@ colors = cm.RdYlBu(np.linspace(0,1,num_lines))
 fig, ax = plt.subplots(figsize = (5,4))
 
 for idx, sigma_idx in enumerate(sigma_array):
-
     pdf_idx = norm.pdf(x_array, scale = sigma_idx)
     legend_idx = '$\sigma$ = ' + str(sigma_idx)
     plt.plot(x_array, pdf_idx, color=colors[idx], label = legend_idx)
@@ -567,15 +555,15 @@ PDF_curves = [np.column_stack([x_array, norm.pdf(x_array, scale = sigma_idx)]) f
 
 fig, ax = plt.subplots(figsize = (5,4))
 
-lc = LineCollection(PDF_curves, cmap='rainbow',array=sigma_array,linewidth=1)
+lc = LineCollection(np.array(PDF_curves), cmap = 'rainbow', array = sigma_array, linewidth = 1)
 # LineCollection 可以看成是一系列线段的集合
 # 可以用色谱分别渲染每一条线段
 # 这样可以得到颜色连续变化的效果
 line = ax.add_collection(lc) #add to the subplot
-fig.colorbar(line, label='$\sigma$')
+fig.colorbar(line, label = '$\sigma$')
 # 添加色谱条
 
-plt.xlim(x_array.min(),x_array.max())
+plt.xlim(x_array.min(), x_array.max())
 plt.ylim(0,1)
 plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
@@ -584,14 +572,14 @@ plt.ylabel('PDF, $f_X(x)$')
 
 #>>>>>>>>>>>>>>>>>>>  3. 用set_prop_cycle()
 
-cmap = plt.get_cmap('Blues_r')
-colors = cmap(np.linspace(0,1,num_lines))
+cmap = plt.get_cmap('rainbow')
+colors = cmap(np.linspace(0, 1, num_lines))
 
-x = np.linspace(0,2*np.pi)
-ys = np.ones((10,50)) * np.sin(x)
-ys = np.array([ys[i,] * np.linspace(1,0.1,10)[i] for i in range(10)])
+x = np.linspace(0, 2*np.pi)
+ys = np.ones((10, 50)) * np.sin(x)
+ys = np.array([ys[i,] * np.linspace(1, 0.1, 10)[i] for i in range(10)])
 
-fig, ax = plt.subplots(figsize = (5,4))
+fig, ax = plt.subplots(figsize = (5, 4))
 ax.set_prop_cycle(color=colors)
 # 设定线图颜色
 
@@ -608,14 +596,12 @@ plt.ylabel('PDF, $f_X(x)$')
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.collections import LineCollection
 # import os
 
 # # 如果文件夹不存在，创建文件夹
 # if not os.path.isdir("Figures"):
 #     os.makedirs("Figures")
-
-
 
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
@@ -626,18 +612,14 @@ p["axes.grid"] = True
 p["grid.color"] = "0.5"
 p["grid.linewidth"] = 0.5
 
-
-
 x_array = np.linspace(0, 4*np.pi, 1001)
 # 等差数列的公差为 4*pi/100；数列有101个值
 y_array = np.sin(x_array)
 
-from matplotlib.collections import LineCollection
-points = np.array([x_array, y_array]).T.reshape(-1, 1, 2)
-segments = np.concatenate([points[:-1], points[1:]], axis=1)
+points = np.array([x_array, y_array]).T.reshape(-1, 1, 2) #  (1001, 1, 2)
+segments = np.concatenate([points[:-1], points[1:]], axis=1) # (1000, 2, 2)
 
-
-# 用y值作为渲染依据
+#>>>>>>>>>>>>>> 用y值作为渲染依据
 fig, ax = plt.subplots(figsize=(5,3))
 
 norm = plt.Normalize(y_array.min(), y_array.max())
@@ -655,7 +637,7 @@ ax.set_ylabel('f(x)')
 
 
 
-# 用x值作为渲染依据¶
+#>>>>>>>>>>>>>> 用x值作为渲染依据¶
 fig, ax = plt.subplots(figsize=(5,3))
 
 norm = plt.Normalize(x_array.min(), x_array.max())
@@ -670,10 +652,10 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-fig.savefig('2.svg')
+# fig.savefig('2.svg')
 
 
-# 用切线斜率 (一阶导数) 作为渲染依据
+#>>>>>>>>>>>>>> 用切线斜率 (一阶导数) 作为渲染依据
 fig, ax = plt.subplots(figsize=(5,3))
 slope_array = np.cos(x_array)
 
@@ -689,10 +671,10 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-fig.savefig('3.svg')
+# fig.savefig('3.svg')
 
 
-# 用凸凹性 (二阶导数) 作为渲染依据
+#>>>>>>>>>>>>>> 用凸凹性 (二阶导数) 作为渲染依据
 fig, ax = plt.subplots(figsize=(5,3))
 convex_array = -np.sin(x_array)
 
@@ -724,7 +706,6 @@ if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
 
-
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
 p["font.weight"] = "light"
@@ -734,33 +715,19 @@ p["axes.grid"] = True
 p["grid.color"] = "0.5"
 p["grid.linewidth"] = 0.5
 
-
-
 colormap = cm.get_cmap("rainbow")
 
-def plot_grid(
-    xmin: float,
-    xmax: float,
-    ymin: float,
-    ymax: float,
-    n_lines: int,
-    line_points: int,
-    map_func,
-):
-
+def plot_grid(xmin: float, xmax: float, ymin: float, ymax: float, n_lines: int, line_points: int, map_func,):
     lines = []
-
     # 水平线
     for y in np.linspace(ymin, ymax, n_lines):
         lines.append([map_func(x, y) for x in np.linspace(xmin, xmax, line_points)])
-
     # 竖直线
     for x in np.linspace(xmin, xmax, n_lines):
         lines.append([map_func(x, y) for y in np.linspace(ymin, ymax, line_points)])
 
     # 绘制所有线条
     for i, line in enumerate(lines):
-
         p = i / (len(lines) - 1)
         xs, ys = zip(*line)
         # 利用颜色映射
@@ -798,7 +765,6 @@ ax = fig.add_subplot(111)
 plot_grid(0, 5, 0, 5, 20, 20, identity)
 
 ax.axis('off')
-
 # fig.savefig('Figures/原始网格.svg', format='svg')
 
 fig = plt.figure(figsize=(8, 12))
@@ -852,8 +818,7 @@ X = np.column_stack([points_x,points_y])
 
 theta = np.deg2rad(theta)
 
-R = np.array([[np.cos(theta), -np.sin(theta)],
-              [np.sin(theta),  np.cos(theta)]])
+R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
 
 X = X @ R + t
 # X
@@ -864,11 +829,8 @@ def eq_l_tri(ax, r, theta, t, color = 'b', fill = False):
     points_y = [r, -1/2 * r, -1/2 * r, r]
 
     X = np.column_stack([points_x,points_y])
-
     theta = np.deg2rad(theta)
-
     R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
-
     X = X @ R.T
     ax.plot(X[:,0], X[:,1], color = color)
 
@@ -959,19 +921,13 @@ num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
 
 for i in range(num):
-
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
 
-    P_array_idx = np.row_stack((P_0_1_idx,
-                                P_1_2_idx,
-                                P_2_0_idx,
-                                P_0_1_idx))
+    P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
 
-    plt.plot(P_array_idx[:,0],
-             P_array_idx[:,1],
-             color=colors[i], lw = 0.25)
+    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
 
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
@@ -994,19 +950,12 @@ num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
 
 for i in range(num):
-
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
 
-    P_array_idx = np.row_stack((P_0_1_idx,
-                                P_1_2_idx,
-                                P_2_0_idx,
-                                P_0_1_idx))
-
-    plt.plot(P_array_idx[:,0],
-             P_array_idx[:,1],
-             color=colors[i], lw = 0.25)
+    P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
+    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
 
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
@@ -1034,19 +983,13 @@ num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
 
 for i in range(num):
-
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
 
-    P_array_idx = np.row_stack((P_0_1_idx,
-                                P_1_2_idx,
-                                P_2_0_idx,
-                                P_0_1_idx))
+    P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
 
-    plt.plot(P_array_idx[:,0],
-             P_array_idx[:,1],
-             color=colors[i], lw = 0.25)
+    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
 
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
@@ -1074,21 +1017,14 @@ num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
 
 for i in range(num):
-
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_3_idx = P_2_3[i, :]
     P_3_0_idx = P_3_0[i, :]
 
-    P_array_idx = np.row_stack((P_0_1_idx,
-                                P_1_2_idx,
-                                P_2_3_idx,
-                                P_3_0_idx,
-                                P_0_1_idx))
+    P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_3_idx, P_3_0_idx, P_0_1_idx))
 
-    plt.plot(P_array_idx[:,0],
-             P_array_idx[:,1],
-             color=colors[i], lw = 0.25)
+    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
 
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
