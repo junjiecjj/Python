@@ -155,15 +155,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-
 import os
+from sklearn.datasets import load_iris
+
+
+
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
 # 从seaborn中导入鸢尾花样本数据
-iris_sns = sns.load_dataset("iris")
+# iris_sns = sns.load_dataset("/home/jack/seaborn-data/iris")
 
+iris_sns = pd.read_csv("/home/jack/seaborn-data/iris.csv")
 iris_sns.head()
 # 打印数据帧前5行
 
@@ -181,7 +185,7 @@ fig, ax = plt.subplots()
 # 利用 seaborn.scatterplot() 绘制散点图
 # x对应横轴特征，鸢尾花数据帧列名 "sepal_length"
 # y对应纵轴特征，鸢尾花数据帧列名 "sepal_width"
-ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width")
+ax = sns.scatterplot(data = iris_sns, x = "sepal_length", y = "sepal_width")
 
 # 设置横纵轴标签
 ax.set_xlabel('Sepal length (cm)')
@@ -311,8 +315,10 @@ ax.legend(loc='lower left', bbox_to_anchor=(1.1, 0), ncol=1)
 ### 9. 可视化紧密程度 (分布概率密度）
 from sklearn.neighbors import KernelDensity
 kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(iris_sns[['sepal_length', 'sepal_width']])
-log_PDF = kde.score_samples(iris_sns[['sepal_length', 'sepal_width']]) # (150,)
+
 # 输出概率密度的对数值
+log_PDF = kde.score_samples(iris_sns[['sepal_length', 'sepal_width']]) # (150,)
+
 
 fig, ax = plt.subplots()
 # 利用 seaborn.scatterplot() 绘制散点图
