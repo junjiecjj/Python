@@ -3,7 +3,8 @@
 """
 Created on Wed Jul 31 18:17:27 2024
 
-@author: jack
+https://mp.weixin.qq.com/s?__biz=MzAwNTkyNTUxMA==&mid=2247489459&idx=1&sn=411d0622eef2515a374ffae3f4b74929&chksm=9b14685aac63e14c0d9c1e2cf22b749d14e47067995271dfbd2d031bb4219f084cce3ef64120&mpshare=1&scene=1&srcid=07312qyq4bW16tG5nGvCdptd&sharer_shareinfo=0dd83cdadf6ce6fbda9b3b84d49ad039&sharer_shareinfo_first=0dd83cdadf6ce6fbda9b3b84d49ad039&exportkey=n_ChQIAhIQQedOmnY8zqbq2FeaZ7Vf8hKfAgIE97dBBAEAAAAAAOTJJUqB1tEAAAAOpnltbLcz9gKNyK89dVj0vksd5gNGg8S5qikZzC1z8VodCZMNXgq0qcoiFCuWa7e4ycUJzFN%2BW2FaLRM%2Fx07VDzfuaKBIF%2FwfDoWO9sBRlH6o3R%2FQdHPc1Gt5Nu1GAjmdA3baH1gMoFpwhoE8QL836HlyeT3K7jdyFv5Q9WDzk%2F6yBHyk5fQ0WFVjAZ54kRfQ3sx7zJwQdynfdeDFhAxuKh%2FSQrBJR7HjBPYu1AdfeCTfWwy1t1cb1OIXef2ucBE9OUx3uPw4S85yujsAGDLa3yrEhUrKwJwvHwawoED0oKehX7QB%2Facd48mDhhjMIC2Fwx9lvBrcTThyQWNf4r8GQzXN0pQskWHH&acctmode=0&pass_ticket=WFl%2BKlXhQItTEvpRu5jx%2BBRlDT%2BL2a3fJfh0VBO0eHP4cADRPu1QMB8nJX2mv%2FsH&wx_header=0#rd
+
 """
 
 import numpy as np
@@ -25,7 +26,7 @@ y = mnist.target
 print("Standardizing data...")
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
-
+# (70000, 784)
 # 使用 openTSNE 进行 t-SNE 降维
 # 设定 t-SNE 参数
 tsne_params = {
@@ -42,6 +43,7 @@ print("Running t-SNE...")
 start_time = time.time()
 tsne = TSNE(**tsne_params)
 X_tsne = tsne.fit(X_scaled)
+# (70000, 2)
 end_time = time.time()
 print(f"t-SNE done! Time elapsed: {end_time - start_time} seconds")
 

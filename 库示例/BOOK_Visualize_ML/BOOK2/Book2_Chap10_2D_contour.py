@@ -198,13 +198,9 @@ f_fcn = lambdify([x,y], f)
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx1_square, xx2_square, f_fcn(xx1_square, xx2_square),
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1_square, xx2_square, f_fcn(xx1_square, xx2_square), color = [0.5,0.5,0.5], linewidth = 0.25)
 # 3D散点图
-ax.scatter(xx1_square, xx2_square, f_fcn(xx1_square, xx2_square), s = 5,
-          c = f_fcn(xx1_square, xx2_square),
-          cmap = 'RdYlBu_r')
+ax.scatter(xx1_square, xx2_square, f_fcn(xx1_square, xx2_square), s = 5, c = f_fcn(xx1_square, xx2_square), cmap = 'RdYlBu_r')
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -237,9 +233,7 @@ xx2_polar = np.sin(tt)*rr
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx1_polar, xx2_polar, xx2_polar*0,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1_polar, xx2_polar, xx2_polar*0, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax.scatter(xx1_polar, xx2_polar, xx2_polar*0, s = 5)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -262,9 +256,7 @@ plt.show()
 
 ## 1
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-ax.plot_wireframe(xx1_polar, xx2_polar, xx2_polar*0,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1_polar, xx2_polar, xx2_polar*0, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax.scatter(xx1_polar, xx2_polar, xx2_polar*0, s = 5)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -289,13 +281,8 @@ plt.show()
 ## 2
 f_fcn = lambdify([x,y], f)
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-ax.plot_wireframe(xx1_polar, xx2_polar, f_fcn(xx1_polar, xx2_polar),
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
-ax.scatter(xx1_polar, xx2_polar, f_fcn(xx1_polar, xx2_polar),
-           s = 5,
-           c = f_fcn(xx1_polar, xx2_polar),
-           cmap = 'RdYlBu_r')
+ax.plot_wireframe(xx1_polar, xx2_polar, f_fcn(xx1_polar, xx2_polar), color = [0.5,0.5,0.5], linewidth = 0.25)
+ax.scatter(xx1_polar, xx2_polar, f_fcn(xx1_polar, xx2_polar), s = 5, c = f_fcn(xx1_polar, xx2_polar), cmap = 'RdYlBu_r')
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 

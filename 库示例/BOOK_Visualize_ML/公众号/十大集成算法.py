@@ -162,8 +162,35 @@ plt.grid(True)
 plt.show()
 
 
+# https://mp.weixin.qq.com/s?__biz=MzAwNTkyNTUxMA==&mid=2247488733&idx=1&sn=1379da8b231fed0200ba18b98e08a0a8&chksm=9b146b34ac63e222f2be322e171ebfe8273bceba042abb50b242eb1718d88717160e86234a31&cur_album_id=3256084713219047427&scene=190#rd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.datasets import make_classification
+from sklearn.metrics import accuracy_score
 
+# 生成模拟数据
+X, y = make_classification(n_samples=1000, n_features=20, n_informative=2, n_redundant=10, random_state=42)
 
+# 划分训练集和测试集
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 训练Adaboost模型
+model = AdaBoostClassifier(n_estimators=50, random_state=42)
+model.fit(X_train, y_train)
+
+# 预测和评估
+y_pred = model.predict(X_test)
+print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+
+# 绘制特征重要性图
+features = model.feature_importances_
+plt.bar(range(len(features)), features)
+plt.xlabel('Feature')
+plt.ylabel('Importance')
+plt.title('Feature Importance in AdaBoost')
+plt.show()
 #%% 3. 堆叠 (Stacking)
 
 # 导入所需库
