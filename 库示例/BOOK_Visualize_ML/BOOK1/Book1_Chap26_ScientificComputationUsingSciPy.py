@@ -24,7 +24,7 @@ np.random.seed(0)
 data = np.random.randint(10 + 1, size=(num, 2))
 labels = list(string.ascii_uppercase)
 
-cmap = mpl.cm.get_cmap('RdYlBu_r')
+cmap = mpl.colormaps.get_cmap('RdYlBu_r')
 
 fig, ax = plt.subplots(figsize = (10, 10))
 # 绘制成对线段

@@ -6,6 +6,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import math
+import matplotlib as mpl
 from matplotlib import cm
 
 import os
@@ -44,7 +45,7 @@ def visualize_2D(array, title, vmax, vmin):
 # 定义绘制一元数组可视化函数
 def visualize_1D(array, title):
     fig, ax = plt.subplots()
-    colors = cm.RdYlBu_r(np.linspace(0,1,len(array)))
+    colors = mpl.colormaps.get_cmap("RdYlBu_r")(np.linspace(0,1,len(array)))
 
     for idx in range(len(array)):
         circle_idx = plt.Circle((idx, 0), 0.5, facecolor=colors[idx], edgecolor = 'w')
@@ -417,7 +418,7 @@ def visualize_2D(array, title, vmax, vmin):
 def visualize_1D(array, title, vmax, vmin):
     fig, ax = plt.subplots()
 
-    cmap = cm.get_cmap("RdYlBu")
+    cmap = mpl.colormaps.get_cmap("RdYlBu")
 
     array_norm = (array - vmin) / (vmax - vmin)
 
@@ -1137,7 +1138,7 @@ def visualize_2D(array, title, vmax, vmin):
 
 def visualize_1D(array, title, vmax, vmin):
     fig, ax = plt.subplots()
-    cmap = cm.get_cmap("RdYlBu_r")
+    cmap = mpl.colormaps.get_cmap("RdYlBu_r")
     array_norm = (array - vmin) / (vmax - vmin)
     colors = cmap(array_norm)
 
@@ -1369,7 +1370,7 @@ np.delete(arr, 1, 0)
 
 
 
-
+plt.close("all")
 
 
 

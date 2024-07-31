@@ -48,8 +48,6 @@ import numpy as np
 # numpy.random.rand(d0, d1, ..., dn)，产生d0 - d1 - ... - dn形状的在[0,1)上均匀分布的float型数。
 print("numpy.random.rand(2,3) = \n{}".format(np.random.rand(2,3)))
 
-
-
 #===========================================================================================================================
 #                                             "随机整数"
 #===========================================================================================================================
@@ -405,7 +403,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-sns.distplot(np.random.chisquare(df=1, size=1000), hist=False)
+sns.kdeplot(np.random.chisquare(df=1, size=1000), )
 
 plt.show()
 

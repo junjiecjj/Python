@@ -160,8 +160,7 @@ y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
 z_min, z_max = X[:, 2].min() - 1, X[:, 2].max() + 1
 
 # 创建网格来绘制决策边界
-xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100),
-                     np.linspace(y_min, y_max, 100))
+xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100), np.linspace(y_min, y_max, 100))
 zz = np.zeros_like(xx)  # 创建与xx相同形状的零数组
 for i in range(xx.shape[0]):
     for j in range(xx.shape[1]):
@@ -218,8 +217,7 @@ class_report = classification_report(y_test, y_pred)
 def plot_decision_boundary(clf, X, y):
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
-                         np.arange(y_min, y_max, 0.01))
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01), np.arange(y_min, y_max, 0.01))
     Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     plt.contourf(xx, yy, Z, alpha=0.3, cmap=plt.cm.Paired)
@@ -266,7 +264,7 @@ import seaborn as sns
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import confusion_matrix, classification_report, plot_confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
 
 # 生成一个二分类数据集
 X, y = make_classification(n_samples=1000, n_features=20, n_informative=15, n_redundant=5, random_state=42)
@@ -462,7 +460,7 @@ import shap
 
 # 加载数据
 data = load_breast_cancer()
-X = pd.DataFrame(data.data, columns=data.feature_names)
+X = pd.DataFrame(data.data, columns=data.feature_names) # (569, 30)
 y = pd.Series(data.target, name='target')
 
 # 划分训练集和测试集
@@ -483,7 +481,7 @@ params = {
 }
 
 # 训练模型
-gbm = lgb.train(params, train_data, num_boost_round=100, valid_sets=[test_data], early_stopping_rounds=10)
+gbm = lgb.train(params, train_data, num_boost_round=100, valid_sets=[test_data], )
 
 # 预测
 y_pred_proba = gbm.predict(X_test, num_iteration=gbm.best_iteration)

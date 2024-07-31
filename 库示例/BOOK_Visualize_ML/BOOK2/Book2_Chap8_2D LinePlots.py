@@ -693,9 +693,7 @@ ax.set_ylabel('f(x)')
 fig.savefig('4.svg')
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格
 
-
 import math
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -731,7 +729,7 @@ def plot_grid(xmin: float, xmax: float, ymin: float, ymax: float, n_lines: int, 
         p = i / (len(lines) - 1)
         xs, ys = zip(*line)
         # 利用颜色映射
-        plt.plot(xs, ys, color=colormap(p))
+        plt.plot(xs, ys, color = colormap(p))
 
 # 各种映射
 def identity(x, y):
@@ -758,20 +756,18 @@ def vortex(x: float, y: float):
     ang = math.atan2(y - 2, x - 2)
     return math.cos(ang - dst * 0.1) * dst, math.sin(ang - dst * 0.1) * dst
 
-fig = plt.figure(figsize=(4, 4))
-
 # 原图
+fig = plt.figure(figsize=(4, 4))
 ax = fig.add_subplot(111)
 plot_grid(0, 5, 0, 5, 20, 20, identity)
-
 ax.axis('off')
 # fig.savefig('Figures/原始网格.svg', format='svg')
 
 fig = plt.figure(figsize=(8, 12))
-
 ax = fig.add_subplot(3, 2, 1)
 plot_grid(0, 5, 0, 5, 20, 20, rotate_scale)
 ax.axis('off')
+
 
 ax = fig.add_subplot(3, 2, 2)
 plot_grid(0, 5, 0, 5, 20, 20, shear)
@@ -821,8 +817,6 @@ theta = np.deg2rad(theta)
 R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
 
 X = X @ R + t
-# X
-
 
 def eq_l_tri(ax, r, theta, t, color = 'b', fill = False):
     points_x = [0, np.sqrt(3)/2 * r, -np.sqrt(3)/2 * r, 0]
@@ -835,25 +829,21 @@ def eq_l_tri(ax, r, theta, t, color = 'b', fill = False):
     ax.plot(X[:,0], X[:,1], color = color)
 
     if fill:
-        plt.fill(X[:,0], X[:,1], color = color, alpha = 0.1)
+        ax.fill(X[:,0], X[:,1], color = color, alpha = 0.1)
 
 
 fig, ax = plt.subplots(figsize = (8,8))
 ax.set_aspect('equal')
 eq_l_tri(ax, r, 10, t)
-
 plt.show()
 
 
 fig, ax = plt.subplots(figsize = (8,8))
 ax.set_aspect('equal')
 ax.plot(0, 0,  color='r', marker='o', markersize=10)
-
 range_array = np.arange(100)
 delta_angle = 2 # degrees
-
 colors = plt.cm.RdYlBu(np.linspace(0, 1, len(range_array)))
-
 for i in range_array:
     deg = delta_angle * i
     r = 0.05 + i * 0.05
@@ -868,12 +858,9 @@ plt.show()
 fig, ax = plt.subplots(figsize = (8,8))
 ax.set_aspect('equal')
 ax.plot(0, 0,  color='r', marker='o', markersize=10)
-
 range_array = np.arange(100)
 delta_angle = 5 # degrees
-
 colors = plt.cm.RdYlBu(np.linspace(0, 1, len(range_array)))
-
 for i in range_array:
     deg = delta_angle * i
     r = 0.05 + i * 0.05
@@ -898,37 +885,29 @@ if not os.path.isdir("Figures"):
 
 
 def lerp(P_a, P_b, t_array):
-
     P_out = [P_a * (1 - t_idx) + P_b * t_idx for t_idx in t_array]
     P_out = np.array(P_out)
-
     return P_out
-# 三角形
+
+
+#### 三角形
 P_0 = np.array([0, 0])
 P_1 = np.array([1, 0])
 P_2 = np.array([0.5, 0.5 * np.sqrt(3)])
-
 t_array = np.linspace(0, 1, 11, endpoint = True)
-
 P_0_1 = lerp(P_0, P_1, t_array)
 P_1_2 = lerp(P_1, P_2, t_array)
 P_2_0 = lerp(P_2, P_0, t_array)
-
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(111)
-
 num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
-
 for i in range(num):
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
-
     P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
-
     plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
-
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
@@ -936,27 +915,20 @@ ax.axis('off')
 # fig.savefig('Figures/等边三角形，贝塞尔序曲_示意.svg', format='svg')
 
 
-
 t_array = np.linspace(0, 1, 101, endpoint = True)
-
 P_0_1 = lerp(P_0, P_1, t_array)
 P_1_2 = lerp(P_1, P_2, t_array)
 P_2_0 = lerp(P_2, P_0, t_array)
-
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(111)
-
 num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
-
 for i in range(num):
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
-
     P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
     plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
-
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
@@ -964,33 +936,24 @@ ax.axis('off')
 # fig.savefig('Figures/等边三角形，贝塞尔序曲t.svg', format='svg')
 
 
-# 直角三角形
+#### 直角三角形
 P_0 = np.array([0, 0])
 P_1 = np.array([1, 0])
 P_2 = np.array([1, 1])
-
 t_array = np.linspace(0, 1, 101, endpoint = True)
-
 P_0_1 = lerp(P_0, P_1, t_array)
 P_1_2 = lerp(P_1, P_2, t_array)
 P_2_0 = lerp(P_2, P_0, t_array)
-
-
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(111)
-
 num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
-
 for i in range(num):
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
-
     P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
-
     plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
-
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
@@ -998,7 +961,7 @@ ax.axis('off')
 # fig.savefig('Figures/直角三角形，贝塞尔序曲t.svg', format='svg')
 
 
-# 正方形
+#### 正方形
 P_0 = np.array([0, 0])
 P_1 = np.array([1, 0])
 P_2 = np.array([1, 1])
@@ -1021,11 +984,8 @@ for i in range(num):
     P_1_2_idx = P_1_2[i, :]
     P_2_3_idx = P_2_3[i, :]
     P_3_0_idx = P_3_0[i, :]
-
     P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_3_idx, P_3_0_idx, P_0_1_idx))
-
     plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
-
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
@@ -1033,7 +993,7 @@ ax.axis('off')
 # fig.savefig('Figures/正方形，贝塞尔序曲t.svg', format='svg')
 
 
-# 正五边形
+#### 正五边形
 angles = np.linspace(18, 360+18, 5, endpoint = False)
 angles_radian = angles * np.pi/180
 angles
@@ -1052,32 +1012,19 @@ P_2_3 = lerp(P_2, P_3, t_array)
 P_3_4 = lerp(P_3, P_4, t_array)
 P_4_0 = lerp(P_4, P_0, t_array)
 
-
-
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(111)
-
 num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
-
 for i in range(num):
-
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
     P_2_3_idx = P_2_3[i, :]
     P_3_4_idx = P_3_4[i, :]
     P_4_0_idx = P_4_0[i, :]
 
-    P_array_idx = np.row_stack((P_0_1_idx,
-                                P_1_2_idx,
-                                P_2_3_idx,
-                                P_3_4_idx,
-                                P_4_0_idx,
-                                P_0_1_idx))
-
-    plt.plot(P_array_idx[:,0],
-             P_array_idx[:,1],
-             color=colors[i], lw = 0.25)
+    P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_3_idx, P_3_4_idx, P_4_0_idx, P_0_1_idx))
+    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
 
 ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([-1, 1])

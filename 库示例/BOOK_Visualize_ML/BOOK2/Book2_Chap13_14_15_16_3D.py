@@ -156,9 +156,7 @@ plt.show()
 ## 6: 利用颜色展示分类标签
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
-scatter_h = ax.scatter(x1, x2, x3,
-                       c = labels,
-                       cmap=rainbow)
+scatter_h = ax.scatter(x1, x2, x3, c = labels, cmap=rainbow)
 
 classes = ['Setosa', 'Versicolor', 'Virginica']
 
@@ -282,16 +280,9 @@ def visualize_multinomial(p_array, num = 20):
     PMF_ff = np.where(PMF_ff > 0.0, PMF_ff, np.nan)
     PMF_ff = np.reshape(PMF_ff, xx1.shape)
 
-
     fig = plt.figure(figsize=(5, 5))
     ax = plt.axes(projection="3d")
-
-    scatter_plot = ax.scatter3D(xx1.ravel(), xx2.ravel(), xx3.ravel(),
-                 s = 50,
-                 marker = '.',
-                 alpha = 1,
-                 c = PMF_ff.ravel(),
-                 cmap = 'RdYlBu_r')
+    scatter_plot = ax.scatter3D(xx1.ravel(), xx2.ravel(), xx3.ravel(), s = 50, marker = '.', alpha = 1, c = PMF_ff.ravel(), cmap = 'RdYlBu_r')
 
     ax.set_proj_type('ortho')
     ax.set_xlabel('$x_1$')

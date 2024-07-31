@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="72pt" height="216pt" viewBox="0 0 72 216" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2024-07-29T21:41:58.344542</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 216 
+L 72 216 
+L 72 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 9 177.21 
+L 64.8 177.21 
+L 64.8 37.71 
+L 9 37.71 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="QuadMesh_1">
+    <path d="M 9 37.71 
+L 36.9 37.71 
+L 36.9 65.61 
+L 9 65.61 
+L 9 37.71 
+" clip-path="url(#p6d14b46d5a)" style="fill: #fee090; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 36.9 37.71 
+L 64.8 37.71 
+L 64.8 65.61 
+L 36.9 65.61 
+L 36.9 37.71 
+" clip-path="url(#p6d14b46d5a)" style="fill: #313695; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 9 65.61 
+L 36.9 65.61 
+L 36.9 93.51 
+L 9 93.51 
+L 9 65.61 
+" clip-path="url(#p6d14b46d5a)" style="fill: #fdad60; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 36.9 65.61 
+L 64.8 65.61 
+L 64.8 93.51 
+L 36.9 93.51 
+L 36.9 65.61 
+" clip-path="url(#p6d14b46d5a)" style="fill: #4574b3; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 9 93.51 
+L 36.9 93.51 
+L 36.9 121.41 
+L 9 121.41 
+L 9 93.51 
+" clip-path="url(#p6d14b46d5a)" style="fill: #f46d43; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 36.9 93.51 
+L 64.8 93.51 
+L 64.8 121.41 
+L 36.9 121.41 
+L 36.9 93.51 
+" clip-path="url(#p6d14b46d5a)" style="fill: #74add1; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 9 121.41 
+L 36.9 121.41 
+L 36.9 149.31 
+L 9 149.31 
+L 9 121.41 
+" clip-path="url(#p6d14b46d5a)" style="fill: #d62f27; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 36.9 121.41 
+L 64.8 121.41 
+L 64.8 149.31 
+L 36.9 149.31 
+L 36.9 121.41 
+" clip-path="url(#p6d14b46d5a)" style="fill: #aad8e9; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 9 149.31 
+L 36.9 149.31 
+L 36.9 177.21 
+L 9 177.21 
+L 9 149.31 
+" clip-path="url(#p6d14b46d5a)" style="fill: #a50026; stroke: #ffffff; stroke-width: 0.5"/>
+    <path d="M 36.9 149.31 
+L 64.8 149.31 
+L 64.8 177.21 
+L 36.9 177.21 
+L 36.9 149.31 
+" clip-path="url(#p6d14b46d5a)" style="fill: #e0f3f8; stroke: #ffffff; stroke-width: 0.5"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <!-- 1 -->
+    <g style="fill: #262626" transform="translate(20.213281 54.394375) scale(0.1 -0.1)">
+     <defs>
+      <path id="Roboto-Thin-31" d="M 2059 4563 
+L 2059 0 
+L 1891 0 
+L 1891 4338 
+L 584 3847 
+L 584 4031 
+L 2025 4563 
+L 2059 4563 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#Roboto-Thin-31"/>
+    </g>
+   </g>
+   <g id="text_2">
+    <!-- -5 -->
+    <g style="fill: #ffffff" transform="translate(46.63125 54.394375) scale(0.1 -0.1)">
+     <defs>
+      <path id="Roboto-Thin-2d" d="M 1659 2166 
+L 1659 1997 
+L 191 1997 
+L 191 2166 
+L 1659 2166 
+z
+" transform="scale(0.015625)"/>
+      <path id="Roboto-Thin-35" d="M 850 2331 
+L 722 2381 
+L 934 4550 
+L 3153 4550 
+L 3153 4384 
+L 1088 4384 
+L 903 2559 
+Q 1016 2656 1277 2759 
+Q 1538 2863 1856 2863 
+Q 2444 2863 2822 2489 
+Q 3200 2116 3200 1450 
+Q 3200 797 2903 367 
+Q 2606 -63 1919 -63 
+Q 1384 -63 1001 246 
+Q 619 556 569 1197 
+L 741 1197 
+Q 841 106 1919 106 
+Q 3028 106 3028 1444 
+Q 3028 1978 2726 2336 
+Q 2425 2694 1859 2694 
+Q 1500 2694 1264 2595 
+Q 1028 2497 850 2331 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#Roboto-Thin-2d"/>
+     <use xlink:href="#Roboto-Thin-35" x="29.638672"/>
+    </g>
+   </g>
+   <g id="text_3">
+    <!-- 2 -->
+    <g style="fill: #262626" transform="translate(20.213281 82.294375) scale(0.1 -0.1)">
+     <defs>
+      <path id="Roboto-Thin-32" d="M 3200 169 
+L 3200 0 
+L 478 0 
+L 478 169 
+L 2047 1978 
+Q 2784 2856 2784 3391 
+Q 2784 3875 2503 4159 
+Q 2222 4444 1675 4444 
+Q 1184 4444 859 4108 
+Q 534 3772 534 3266 
+L 366 3266 
+Q 366 3819 730 4216 
+Q 1094 4613 1675 4613 
+Q 2263 4613 2609 4300 
+Q 2956 3988 2956 3391 
+Q 2956 2969 2657 2536 
+Q 2359 2103 1997 1681 
+L 700 169 
+L 3200 169 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#Roboto-Thin-32"/>
+    </g>
+   </g>
+   <g id="text_4">
+    <!-- -4 -->
+    <g style="fill: #ffffff" transform="translate(46.63125 82.294375) scale(0.1 -0.1)">
+     <defs>
+      <path id="Roboto-Thin-34" d="M 256 1334 
+L 2428 4550 
+L 2631 4550 
+L 2631 1409 
+L 3419 1409 
+L 3419 1241 
+L 2631 1241 
+L 2631 0 
+L 2463 0 
+L 2463 1241 
+L 256 1241 
+L 256 1334 
+z
+M 519 1409 
+L 2463 1409 
+L 2463 4350 
+L 2200 3916 
+L 519 1409 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#Roboto-Thin-2d"/>
+     <use xlink:href="#Roboto-Thin-34" x="29.638672"/>
+    </g>
+   </g>
+   <g id="text_5">
+    <!-- 3 -->
+    <g style="fill: #ffffff" transform="translate(20.213281 110.194375) scale(0.1 -0.1)">
+     <defs>
+      <path id="Roboto-Thin-33" d="M 1303 2231 
+L 1303 2406 
+L 1663 2406 
+Q 2253 2409 2565 2704 
+Q 2878 3000 2878 3391 
+Q 2878 3819 2611 4131 
+Q 2344 4444 1763 4444 
+Q 1269 4444 928 4153 
+Q 588 3863 588 3356 
+L 419 3356 
+Q 419 3941 816 4277 
+Q 1213 4613 1763 4613 
+Q 2350 4613 2698 4283 
+Q 3047 3953 3047 3378 
+Q 3047 3019 2820 2734 
+Q 2594 2450 2197 2328 
+Q 2644 2225 2895 1939 
+Q 3147 1653 3147 1206 
+Q 3147 600 2762 268 
+Q 2378 -63 1791 -63 
+Q 1450 -63 1111 78 
+Q 772 219 547 512 
+Q 322 806 322 1266 
+L 491 1266 
+Q 491 759 862 432 
+Q 1234 106 1791 106 
+Q 2356 106 2667 395 
+Q 2978 684 2978 1194 
+Q 2978 1750 2604 1990 
+Q 2231 2231 1650 2231 
+L 1303 2231 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#Roboto-Thin-33"/>
+    </g>
+   </g>
+   <g id="text_6">
+    <!-- -3 -->
+    <g style="fill: #ffffff" transform="translate(46.63125 110.194375) scale(0.1 -0.1)">
+     <use xlink:href="#Roboto-Thin-2d"/>
+     <use xlink:href="#Roboto-Thin-33" x="29.638672"/>
+    </g>
+   </g>
+   <g id="text_7">
+    <!-- 4 -->
+    <g style="fill: #ffffff" transform="translate(20.213281 138.094375) scale(0.1 -0.1)">
+     <use xlink:href="#Roboto-Thin-34"/>
+    </g>
+   </g>
+   <g id="text_8">
+    <!-- -2 -->
+    <g style="fill: #262626" transform="translate(46.63125 138.094375) scale(0.1 -0.1)">
+     <use xlink:href="#Roboto-Thin-2d"/>
+     <use xlink:href="#Roboto-Thin-32" x="29.638672"/>
+    </g>
+   </g>
+   <g id="text_9">
+    <!-- 5 -->
+    <g style="fill: #ffffff" transform="translate(20.213281 165.994375) scale(0.1 -0.1)">
+     <use xlink:href="#Roboto-Thin-35"/>
+    </g>
+   </g>
+   <g id="text_10">
+    <!-- -1 -->
+    <g style="fill: #262626" transform="translate(46.63125 165.994375) scale(0.1 -0.1)">
+     <use xlink:href="#Roboto-Thin-2d"/>
+     <use xlink:href="#Roboto-Thin-31" x="29.638672"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p6d14b46d5a">
+   <rect x="9" y="37.71" width="55.8" height="139.5"/>
+  </clipPath>
+ </defs>
+</svg>

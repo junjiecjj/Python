@@ -37,9 +37,7 @@ xx,yy = np.meshgrid(x_array,y_array)
 # 产生网格数据
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
-    - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)\
-    - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x,y],f_xy)
 # 将符号函数表达式转换为Python函数
@@ -56,12 +54,9 @@ levels = np.linspace(-10, 10, 21)
 
 # for 循环绘制四张图片
 for cmap_idx in cmap_arrays:
-
     fig, ax = plt.subplots()
-
     colorbar = ax.contourf(xx,yy, ff, levels = levels, cmap=cmap_idx)
     # 绘制平面填充等高线
-
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
     cbar.ax.set_title('$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
@@ -84,11 +79,9 @@ for cmap_idx in cmap_arrays:
 
 # 3. 平面等高线，非填充
 for cmap_idx in cmap_arrays:
-
     fig, ax = plt.subplots()
-
-    colorbar = ax.contour(xx,yy, ff, levels = levels, cmap=cmap_idx)
     # 绘制平面等高线，非填充
+    colorbar = ax.contour(xx,yy, ff, levels = levels, cmap=cmap_idx)
 
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
@@ -104,11 +97,6 @@ for cmap_idx in cmap_arrays:
     title = 'Colormap = ' + str(cmap_idx)
     plt.title(title)
     plt.show()
-
-
-
-
-
 
 
 #===================================================================================
@@ -128,16 +116,13 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
 # 一维
 x_array = np.linspace(-3,3,20)
 y_array = np.ones_like(x_array)
 
 fig, ax = plt.subplots(figsize = (4,1))
-ax.scatter(x_array, y_array, s = 5)
-ax.plot(x_array, y_array,
-        color = [0.5,0.5,0.5],
-        linewidth = 0.25)
+ax.scatter(x_array, y_array, s = 15)
+ax.plot(x_array, y_array, color = [0.5,0.5,0.5], linewidth = 1.25)
 ax.axis('off')
 
 # fig.savefig('Figures/一维，沿横轴.svg', format='svg')
@@ -145,10 +130,8 @@ plt.show()
 
 
 fig, ax = plt.subplots(figsize = (1, 4))
-ax.scatter(y_array, x_array, s = 5)
-ax.plot(y_array, x_array,
-        color = [0.5,0.5,0.5],
-        linewidth = 0.25)
+ax.scatter(y_array, x_array, s = 15)
+ax.plot(y_array, x_array, color = [0.5,0.5,0.5], linewidth = 1.25)
 # ax.get_xaxis().set_visible(False)
 # ax.get_yaxis().set_visible(False)
 ax.axis('off')
@@ -164,13 +147,9 @@ xx1_square, xx2_square = np.meshgrid(np.linspace(-3,3,20),np.linspace(-3,3,20))
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx1_square, xx2_square, xx1_square*0,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1_square, xx2_square, xx1_square*0, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax.scatter(xx1_square, xx2_square, xx1_square*0, s = 5)
-ax.set_proj_type('ortho')
-# 另外一种设定正交投影的方式
-
+ax.set_proj_type('ortho') # 另外一种设定正交投影的方式
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')
 ax.set_zlabel('')
@@ -183,7 +162,6 @@ ax.set_ylim(xx2_square.min(), xx2_square.max())
 ax.set_box_aspect([1,1,1])
 ax.view_init(azim=90, elev=90)
 ax.grid(False)
-
 # fig.savefig('Figures/二维，平面.svg', format='svg')
 plt.show()
 
@@ -192,26 +170,20 @@ plt.show()
 xx1_square, xx2_square = np.meshgrid(np.linspace(-3,3,20),np.linspace(-3,3,20))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx1_square, xx2_square, xx1_square*0,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1_square, xx2_square, xx1_square*0, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax.scatter(xx1_square, xx2_square, xx1_square*0, s = 5)
-ax.set_proj_type('ortho')
-# 另外一种设定正交投影的方式
-
+ax.set_proj_type('ortho') # 另外一种设定正交投影的方式
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')
 ax.set_zlabel('')
 ax.set_xticks([])
 ax.set_yticks([])
 ax.set_zticks([])
-
 ax.set_xlim(xx1_square.min(), xx1_square.max())
 ax.set_ylim(xx2_square.min(), xx2_square.max())
 ax.set_box_aspect([1,1,1])
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-
 # fig.savefig('Figures/二维，空间.svg', format='svg')
 plt.show()
 

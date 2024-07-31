@@ -3,7 +3,7 @@
 
 
 
-#%% Bk5_Ch07_01.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_01.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,8 +35,7 @@ fig, ax = plt.subplots()
 # Plot empirical cumulative distribution function
 # sns.ecdfplot(random_data)
 
-sns.histplot(random_data, bins=20, fill=True,
-             cumulative=True, stat="density")
+sns.histplot(random_data, bins=20, fill=True, cumulative=True, stat="density")
 
 plt.xlabel('x')
 plt.ylabel('Empirical CDF')
@@ -48,14 +47,7 @@ plt.xlim(a,b)
 plt.xticks([0,2,4,6,8,10])
 
 
-
-
-
-
-
-
-
-#%% Bk5_Ch07_02
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_02
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -128,7 +120,7 @@ plt.legend(loc=4)
 
 
 
-#%% Bk5_Ch07_03.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_03.py
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import logistic
@@ -146,9 +138,7 @@ colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(Ss)))
 
 for i in range(0,len(Ss)):
     s = Ss[i]
-    plt.plot(x, logistic.pdf(x, loc = 0, scale = s),
-             color = colors[int(i)],
-             label = "s = %.1f" %s)
+    plt.plot(x, logistic.pdf(x, loc = 0, scale = s), color = colors[int(i)], label = "s = %.1f" %s)
 
 ax.axvline(x = 0, color = 'k', linestyle = '--')
 
@@ -165,9 +155,7 @@ fig, ax = plt.subplots()
 
 for i in range(0,len(Ss)):
     s = Ss[i]
-    plt.plot(x, logistic.cdf(x, loc = 0, scale = s),
-             color = colors[int(i)],
-             label = "s = %.1f" %s)
+    plt.plot(x, logistic.cdf(x, loc = 0, scale = s), color = colors[int(i)], label = "s = %.1f" %s)
 
 ax.axvline(x = 0, color = 'k', linestyle = '--')
 plt.ylim((0, 1))
@@ -188,7 +176,7 @@ plt.show()
 
 
 
-#%% Bk5_Ch07_04.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_04.py
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -208,9 +196,7 @@ colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(DFs)))
 
 for i in range(0,len(DFs)):
     df = DFs[i]
-    plt.plot(x, t.pdf(x, df = df, loc = 0, scale = 1),
-             color = colors[int(i)],
-             label = "\u03BD = " + str(df))
+    plt.plot(x, t.pdf(x, df = df, loc = 0, scale = 1), color = colors[int(i)], label = "\u03BD = " + str(df))
 
 ax.axvline(x = 0, color = 'k', linestyle = '--')
 # compare with normal
@@ -228,9 +214,7 @@ fig, ax = plt.subplots()
 
 for i in range(0,len(DFs)):
     df = DFs[i]
-    plt.plot(x, t.cdf(x, df = df, loc = 0, scale = 1),
-             color = colors[int(i)],
-             label = "\u03BD = " + str(df))
+    plt.plot(x, t.cdf(x, df = df, loc = 0, scale = 1), color = colors[int(i)], label = "\u03BD = " + str(df))
 
 ax.axvline(x = 0, color = 'k', linestyle = '--')
 ax.axhline(y = 0.5, color = 'k', linestyle = '--')
@@ -246,14 +230,7 @@ plt.show()
 
 
 
-
-
-
-
-
-
-
-#%% Bk5_Ch07_05.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_05.py
 
 
 import matplotlib.pyplot as plt
@@ -273,9 +250,7 @@ colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(STDs)))
 
 for i in range(0,len(STDs)):
     std = STDs[i]
-    plt.plot(x, lognorm.pdf(x, loc = 0, s = std),
-             color = colors[int(i)],
-             label = "\u03C3= %.1f" %std)
+    plt.plot(x, lognorm.pdf(x, loc = 0, s = std), color = colors[int(i)], label = "\u03C3= %.1f" %std)
 
 plt.ylim((0, 1.5))
 plt.xlim((0,10))
@@ -290,9 +265,7 @@ fig, ax = plt.subplots()
 
 for i in range(0,len(STDs)):
     std = STDs[i]
-    plt.plot(x, lognorm.cdf(x, loc = 0, s = std),
-             color = colors[int(i)],
-             label = "\u03C3= %.1f" %std)
+    plt.plot(x, lognorm.cdf(x, loc = 0, s = std), color = colors[int(i)], label = "\u03C3= %.1f" %std)
 
 plt.ylim((0, 1))
 plt.xlim((0,10))
@@ -305,7 +278,7 @@ plt.show()
 
 
 
-#%% Bk5_Ch07_06.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_06.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -314,13 +287,9 @@ from matplotlib import cm # Colormaps
 from scipy.stats import norm, lognorm
 
 def logn_pdf(x,mu,sigma):
-
     scaling = 1/x/sigma/np.sqrt(2*np.pi)
-
     exp_part = np.exp(-(np.log(x) - mu)**2/2/sigma**2)
-
     pdf = scaling*exp_part
-
     return pdf
 
 
@@ -333,18 +302,14 @@ sigma = 1
 pdf_X = norm.pdf(X, mu, sigma)
 pdf_Y = lognorm.pdf(Y,s = sigma, scale = np.exp(mu))
 
-mu_Y, var_Y, skew_Y, kurt_Y = lognorm.stats(s = sigma,
-                                      scale = np.exp(mu),
-                                      moments='mvsk')
+mu_Y, var_Y, skew_Y, kurt_Y = lognorm.stats(s = sigma, scale = np.exp(mu), moments='mvsk')
 # mu_Y = np.exp(mu + sigma**2/2)
 
 pdf_Y_2 = logn_pdf(Y,mu,sigma)
 
 # Plot the conditional distributions
 fig = plt.figure(figsize=(7, 7))
-gs = gridspec.GridSpec(2, 2,
-                       width_ratios=[3, 1],
-                       height_ratios=[3, 1])
+gs = gridspec.GridSpec(2, 2, width_ratios=[3, 1], height_ratios=[3, 1])
 
 # # gs.update(wspace=0., hspace=0.)
 # plt.suptitle('Marginal distributions', y=0.93)
@@ -378,9 +343,7 @@ ax2.plot(pdf_Y_2, Y, 'k')
 ax2.axhline(y = mu_Y, color = 'r', linestyle = '--')
 ax2.axhline(y = np.exp(mu), color = 'r', linestyle = '--')
 
-ax2.fill_between(pdf_Y,Y,
-                 edgecolor = 'none',
-                 facecolor = '#DBEEF3')
+ax2.fill_between(pdf_Y,Y, edgecolor = 'none', facecolor = '#DBEEF3')
 ax2.legend(loc=0)
 ax2.set_xlabel('PDF')
 ax2.set_ylim(Y.min(),Y.max())
@@ -394,9 +357,7 @@ ax3 = plt.subplot(gs[2])
 ax3.plot(X, pdf_X, 'b', label='$f_{X}(x)$')
 ax3.axvline(x = mu, color = 'r', linestyle = '--')
 
-ax3.fill_between(X,pdf_X,
-                 edgecolor = 'none',
-                 facecolor = '#DBEEF3')
+ax3.fill_between(X,pdf_X, edgecolor = 'none', facecolor = '#DBEEF3')
 ax3.legend(loc=0)
 ax3.set_ylabel('PDF')
 ax3.yaxis.set_label_position('left')
@@ -411,10 +372,7 @@ plt.show()
 
 
 
-
-
-
-#%% Bk5_Ch07_07.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_07.py
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -422,21 +380,13 @@ from scipy.stats import expon
 from matplotlib import cm # Colormaps
 
 x = np.linspace(start = 0, stop = 10, num = 500)
-
 # plot PDF curves
-
 fig, ax = plt.subplots()
-
 lambdas = np.arange(0.1,1.1,0.1)
-
 colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(lambdas)))
-
 for i in range(0,len(lambdas)):
     lambda_i = lambdas[i]
-    plt.plot(x, expon.pdf(x, loc = 0, scale = 1/lambda_i),
-             color = colors[int(i)],
-             label = "\u03BB= %.2f" %lambda_i)
-
+    plt.plot(x, expon.pdf(x, loc = 0, scale = 1/lambda_i), color = colors[int(i)], label = "\u03BB= %.2f" %lambda_i)
 plt.ylim((0, 1))
 plt.xlim((0,10))
 plt.title("PDF of exponential distribution")
@@ -447,13 +397,9 @@ plt.show()
 
 # plot CDF curves
 fig, ax = plt.subplots()
-
 for i in range(0,len(lambdas)):
     lambda_i = lambdas[i]
-    plt.plot(x, expon.cdf(x, loc = 0, scale = 1/lambda_i),
-             color = colors[int(i)],
-             label = "\u03BB= %.2f" %lambda_i)
-
+    plt.plot(x, expon.cdf(x, loc = 0, scale = 1/lambda_i), color = colors[int(i)], label = "\u03BB= %.2f" %lambda_i)
 plt.ylim((0, 1))
 plt.xlim((0,10))
 plt.title("CDF of exponential distribution")
@@ -462,7 +408,7 @@ plt.legend()
 plt.show()
 
 
-#%% Bk5_Ch07_08.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_08.py 卡方分布：若干 IID 标准正态分布平方和
 
 
 import matplotlib.pyplot as plt
@@ -480,10 +426,7 @@ DFs = range(1,10)
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(DFs)))
 
 for df in DFs:
-
-    plt.plot(x, chi2.pdf(x, df = df),
-             color = colors[int(df)-1],
-             label = "k = " + str(df))
+    plt.plot(x, chi2.pdf(x, df = df), color = colors[int(df)-1], label = "k = " + str(df))
 
 plt.ylim((0, 1))
 plt.xlim((0, 10))
@@ -501,10 +444,7 @@ DFs = range(1,10)
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(DFs)))
 
 for df in DFs:
-
-    plt.plot(x, chi2.cdf(x, df = df),
-             color = colors[int(df)-1],
-             label = "k = " + str(df))
+    plt.plot(x, chi2.cdf(x, df = df), color = colors[int(df)-1], label = "k = " + str(df))
 
 plt.ylim((0, 1))
 plt.xlim((0, 10))
@@ -515,7 +455,7 @@ plt.show()
 
 
 
-#%% Bk5_Ch07_09.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk5_Ch07_09.py F-分布：和两个服从卡方分布的独立随机变量有关
 
 from scipy.stats import f
 import matplotlib.pyplot as plt
@@ -528,12 +468,8 @@ dfd_array = [1, 2, 5, 20, 100]
 dfn_array_, dfd_array_ = np.meshgrid(dfn_array, dfd_array)
 
 #%% PDF of F Distributions
-
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
-
 for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel()):
-
-
     title_idx = '$d_1$ = ' + str(dfn_idx) + '; $d_2$ = ' + str(dfd_idx)
     ax.plot(x_array, f.pdf(x_array, dfn_idx, dfd_idx),
             'b', lw=1)
@@ -552,10 +488,7 @@ for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel
 #%% CDF of F Distributions
 
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
-
 for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel()):
-
-
     title_idx = '$d_1$ = ' + str(dfn_idx) + '; $d_2$ = ' + str(dfd_idx)
     ax.plot(x_array, f.cdf(x_array, dfn_idx, dfd_idx),
             'b', lw=1)
@@ -573,13 +506,7 @@ for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel
 
 
 
-
-
-
-
-
-#%% Bk5_Ch07_10.py
-
+#%% Bk5_Ch07_10.py Beta 分布：概率的概率
 
 from scipy.stats import beta
 import matplotlib.pyplot as plt
@@ -591,15 +518,10 @@ beta_array = [0.1, 0.5, 1, 2, 4]
 alpha_array_, beta_array_ = np.meshgrid(alpha_array, beta_array)
 
 #%% PDF of Beta Distributions
-
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
-
 for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs.ravel()):
-
-
     title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
-    ax.plot(x_array, beta.pdf(x_array, alpha_idx, beta_idx),
-            'b', lw=1)
+    ax.plot(x_array, beta.pdf(x_array, alpha_idx, beta_idx), 'b', lw=1)
     ax.set_title(title_idx)
     ax.set_xlim(0,1)
     ax.set_ylim(0,4)
@@ -617,11 +539,8 @@ for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
 
 for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs.ravel()):
-
-
     title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
-    ax.plot(x_array, beta.cdf(x_array, alpha_idx, beta_idx),
-            'b', lw=1)
+    ax.plot(x_array, beta.cdf(x_array, alpha_idx, beta_idx), 'b', lw=1)
     ax.set_title(title_idx)
     ax.set_xlim(0,1)
     ax.set_ylim(0,1)
@@ -635,14 +554,7 @@ for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs
     ax.tick_params(axis="y", direction='in')
 
 
-
-
-
-
-
-
-
-#%% Bk5_Ch07_11.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_11.py Dirichlet 分布：多元 Beta 分布
 
 import numpy as np
 import scipy.stats as st
@@ -650,9 +562,6 @@ import scipy.interpolate as si
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-#%% Dirichlet PDF
-
 
 # alpha = np.array([1, 1, 1])
 # alpha = np.array([2, 2, 2])
@@ -694,20 +603,15 @@ ax.contourf(xx1, xx2, PDF_ff, 20, cmap='RdYlBu_r')
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx1, xx2, PDF_ff,
-                  color = [0.7,0.7,0.7],
-                  linewidth = 0.25,
-                  rstride=10, cstride=10)
-
-ax.contour(xx1, xx2, PDF_ff,
-           levels = 20,  cmap='RdYlBu_r')
+ax.plot_wireframe(xx1, xx2, PDF_ff, color = [0.7,0.7,0.7], linewidth = 0.25, rstride=10, cstride=10)
+ax.contour(xx1, xx2, PDF_ff, levels = 20,  cmap='RdYlBu_r')
 
 ax.set_proj_type('ortho')
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 # ax.set_xticks(np.linspace(0,1,6))
 # ax.set_yticks(np.linspace(0,1,6))
 ax.set_xticks([0,1])
@@ -740,13 +644,7 @@ ax = plt.axes(projection="3d")
 
 # Creating plot
 PDF_ff_ = np.nan_to_num(PDF_ff_)
-ax.scatter3D(xx1_.ravel(),
-             xx2_.ravel(),
-             xx3_.ravel(),
-             c=PDF_ff_.ravel(),
-             marker='.',
-             cmap = 'RdYlBu_r')
-
+ax.scatter3D(xx1_.ravel(), xx2_.ravel(), xx3_.ravel(), c=PDF_ff_.ravel(), marker='.', cmap = 'RdYlBu_r')
 ax.contour(xx1_, xx2_, PDF_ff_, 15, zdir='z', offset=0, cmap='RdYlBu_r')
 
 ax.set_proj_type('ortho')
@@ -795,13 +693,9 @@ beta_array = alpha.sum() - alpha
 # PDF of Beta Distributions
 
 fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(20, 10))
-
 for alpha_idx, beta_idx, ax in zip(alpha_array.ravel(), beta_array.ravel(), axs.ravel()):
-
-
     title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
-    ax.plot(x_array, beta.pdf(x_array, alpha_idx, beta_idx),
-            lw=1)
+    ax.plot(x_array, beta.pdf(x_array, alpha_idx, beta_idx), lw=1)
 
     ax.set_xlim(0,1)
     ax.set_ylim(0,4)
@@ -823,18 +717,15 @@ random_data = np.random.dirichlet(alpha, 500).T
 fig = plt.figure(figsize=(10, 10))
 ax = plt.axes(projection="3d")
 
-ax.scatter3D(random_data[0,:],
-             random_data[1,:],
-             random_data[2,:],
-             marker='.')
+ax.scatter3D(random_data[0,:], random_data[1,:], random_data[2,:], marker='.')
 
 ax.set_proj_type('ortho')
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('$x_3$')
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 # ax.set_xticks(np.linspace(0,1,6))
 # ax.set_yticks(np.linspace(0,1,6))
 # ax.set_zticks(np.linspace(0,1,6))

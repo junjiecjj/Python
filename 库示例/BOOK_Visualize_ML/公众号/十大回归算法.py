@@ -157,8 +157,6 @@ plt.legend()
 plt.show()
 
 
-
-
 #%% 6. 支持向量回归 (Support Vector Regression, SVR)
 
 import numpy as np
@@ -208,9 +206,6 @@ plot_tree(regressor, filled=True)
 plt.title("Decision Tree Regression")
 plt.show()
 
-
-
-
 #%% 8. 随机森林回归 (Random Forest Regression)
 import numpy as np
 import matplotlib.pyplot as plt
@@ -244,9 +239,6 @@ from sklearn.tree import plot_tree
 plot_tree(estimator, filled=True, feature_names=['Feature'])
 plt.title("Example Decision Tree from Random Forest")
 plt.show()
-
-
-
 
 #%% 9. 梯度提升回归 (Gradient Boosting Regression)
 
