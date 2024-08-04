@@ -445,14 +445,12 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
 norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
-# surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
-#                         rstride = 5,
-#                         cstride = 5,
-#                         linewidth = 1, # 线宽
-#                         shade = False) # 删除阴影
-# surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
-
-surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1)
+surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
+                        rstride = 3,
+                        cstride = 3,
+                        linewidth = 1, # 线宽
+                        shade = False) # 删除阴影
+surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
 ## 曲面和等高线
 ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
@@ -483,24 +481,49 @@ ax.grid(False)
 plt.show()
 
 
+#############  三维等高线
+z_level = 2
+xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
+
+norm_plt = plt.Normalize(ff.min(), ff.max())
+colors = cm.RdYlBu_r(norm_plt(ff))
+
+## 曲面和等高线
+surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1)
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
+
+##  切面
+zz_ = np.zeros_like(xx_) + z_level
+ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
+ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
+
+ax.set_proj_type('ortho')
+# 另外一种设定正交投影的方式
+
+ax.set_xlabel('$\it{x_1}$')
+ax.set_ylabel('$\it{x_2}$')
+ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+
+ax.set_xlim(xx.min(), xx.max())
+ax.set_ylim(yy.min(), yy.max())
+ax.set_zlim(-8, 8)
+ax.view_init(azim=-120, elev=30)
+ax.grid(False)
+# fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
+plt.show()
 
 ############### 三维等高线到平面
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
-ax.contour(xx, yy, ff,
-           levels = [z_level],
-           colors = 'b',
-           linewidths = 1)
-
-ax.contour(xx, yy, ff,
-           levels = [z_level],
-           zdir='z', offset=-8,
-           colors = 'b')
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
+ax.contour(xx, yy, ff, levels = [z_level], zdir='z', offset=-8, colors = 'b')
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -525,22 +548,13 @@ plt.show()
 ################## 一系列等高线
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
-CS = ax.contour(xx, yy, ff,
-           levels = np.linspace(-8,8,17),
-           cmap = 'RdYlBu_r',
-           linewidths = 1)
+CS = ax.contour(xx, yy, ff, levels = np.linspace(-8,8,17), cmap = 'RdYlBu_r', linewidths = 1)
 
 # fig.colorbar(CS)
 # 增加色谱条
-ax.contour(xx, yy, ff,
-           levels = np.linspace(-8,8,17),
-           zdir='z', offset=-8,
-           cmap = 'RdYlBu_r')
+ax.contour(xx, yy, ff, levels = np.linspace(-8,8,17), zdir='z', offset=-8, cmap = 'RdYlBu_r')
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -564,10 +578,7 @@ plt.show()
 #################  平面等高线
 fig, ax = plt.subplots()
 
-CS = ax.contour(xx, yy, ff,
-           levels = np.linspace(-8,9,18),
-           cmap = 'RdYlBu_r',
-           linewidths = 1)
+CS = ax.contour(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r', linewidths = 1)
 fig.colorbar(CS)
 
 ax.set_xlabel('$\it{x_1}$')
@@ -586,10 +597,7 @@ plt.show()
 ############## 打印等高线数值
 fig, ax = plt.subplots()
 
-CS = ax.contour(xx, yy, ff,
-           levels = np.linspace(-8,9,18),
-           cmap = 'RdYlBu_r',
-           linewidths = 1)
+CS = ax.contour(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r', linewidths = 1)
 
 ax.clabel(CS, fmt = '%2.1f', colors = 'k', fontsize=10)
 
@@ -606,10 +614,7 @@ plt.show()
 #################### 单色等高线
 fig, ax = plt.subplots()
 
-ax.contour(xx, yy, ff,
-           levels = np.linspace(-8,9,18),
-           colors = 'k',
-           linewidths = 1)
+ax.contour(xx, yy, ff, levels = np.linspace(-8,9,18), colors = 'k', linewidths = 1)
 # 负数用虚线，默认
 
 ax.set_xlabel('$\it{x_1}$')
@@ -626,21 +631,10 @@ plt.show()
 ################### 填充等高线，空间
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
-CS = ax.contourf(xx, yy, ff,
-           levels = np.linspace(-8,9,18),
-           cmap = 'RdYlBu_r')
-
-# fig.colorbar(CS)
-ax.contourf(xx, yy, ff,
-           levels = np.linspace(-8,9,18),
-           zdir='z', offset=-8,
-           cmap = 'RdYlBu_r')
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+CS = ax.contourf(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r')
+fig.colorbar(CS)
+ax.contourf(xx, yy, ff, levels = np.linspace(-8,9,18), zdir='z', offset=-8, cmap = 'RdYlBu_r')
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -667,16 +661,9 @@ plt.show()
 
 fig, ax = plt.subplots()
 
-CS_filled = ax.contourf(xx, yy, ff,
-           levels = np.linspace(-8,9,18),
-           cmap = 'RdYlBu_r')
-
+CS_filled = ax.contourf(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r')
 fig.colorbar(CS_filled)
-
-CS = ax.contour(xx, yy, ff,
-           levels = [0],
-           colors = 'k',
-           linewidths = 1)
+CS = ax.contour(xx, yy, ff, levels = [0], colors = 'k', linewidths = 1)
 ax.clabel(CS, fmt = '%2.1f', colors = 'k', fontsize=10)
 
 ax.set_xlabel('$\it{x_1}$')
