@@ -16,6 +16,23 @@ import pandas as pd
 import scipy as sy
 import matplotlib.pyplot as plt
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% erf, erfc, Qfun %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+def Qfun(x):
+    return 0.5 * np.special.erfc(x / np.sqrt(2))
+
+def QfunUPbound1(x):
+    return
+
+
+
+def QfunUPbound2(x):
+    return
+
+
+
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gamma %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
