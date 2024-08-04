@@ -19,7 +19,6 @@ from sympy import lambdify, diff, exp, latex
 from sympy.abc import x, y
 # 导入符号变量
 import os
-
 from matplotlib import cm
 # 导入色谱模块
 
@@ -143,7 +142,7 @@ plt.show()
 
 #%%  二维
 ## 1
-xx1_square, xx2_square = np.meshgrid(np.linspace(-3,3,20),np.linspace(-3,3,20))
+xx1_square, xx2_square = np.meshgrid(np.linspace(-3,3,20), np.linspace(-3,3,20))
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
@@ -223,16 +222,14 @@ plt.show()
 
 
 #%% 极坐标网格
-
 theta = np.linspace(0, 2*np.pi, 20)
 r     = np.linspace(0, 3, 10)
-tt,rr = np.meshgrid(theta,r)
+tt, rr = np.meshgrid(theta,r)
 xx1_polar = np.cos(tt)*rr
 xx2_polar = np.sin(tt)*rr
 
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
 ax.plot_wireframe(xx1_polar, xx2_polar, xx2_polar*0, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax.scatter(xx1_polar, xx2_polar, xx2_polar*0, s = 5)
 ax.set_proj_type('ortho')
@@ -304,21 +301,15 @@ plt.show()
 
 
 #%% 三角网格
-
-points_square = np.column_stack((xx1_square.ravel(),xx2_square.ravel()))
-
+points_square = np.column_stack((xx1_square.ravel(), xx2_square.ravel()))
 triang_square_auto = mtri.Triangulation(points_square[:,0], points_square[:,1])
 
 fig, ax = plt.subplots()
-
 ax.triplot(triang_square_auto, 'o-', color = '#0070C0')
 ax.set_aspect('equal', adjustable='box')
-
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')
-
 ax.axis('off')
-
 ax.set_xlim(xx1_square.min(), xx1_square.max())
 ax.set_ylim(xx2_square.min(), xx2_square.max())
 
@@ -328,16 +319,11 @@ plt.show()
 
 ## 2
 points_polar = np.column_stack((xx1_polar.ravel(),xx2_polar.ravel()))
-
 triang_polar_auto = mtri.Triangulation(points_polar[:,0], points_polar[:,1])
-
 fig, ax = plt.subplots()
-
 # Plot the triangulation.
-
 ax.triplot(triang_polar_auto, 'o-', color = '#0070C0')
 ax.set_aspect('equal', adjustable='box')
-
 ax.set_xticks([])
 ax.set_yticks([])
 ax.axis('off')
@@ -348,61 +334,44 @@ ax.set_ylim(xx2_polar.min(), xx2_polar.max())
 plt.show()
 
 
-
 ## 3
 def circle_points(num_r, num_n):
-
     r = np.linspace(0,3,num_r)
     # print(r)
     # 极轴 [0, 3] 分成若干等份
-
     n = r*num_n + 1
     n = n.astype(int)
     # print(n)
     # 每一层散点数
-
     circles = np.empty((0,2))
     # 创建空数组
-
     for r_i, n_i in zip(r, n):
-
         t_i = np.linspace(0, 2*np.pi, n_i, endpoint=False)
         r_i = np.ones_like(t_i)*r_i
-
+        # 极坐标到直角坐标系转换
         x_i = r_i*np.cos(t_i)
         y_i = r_i*np.sin(t_i)
-        # 极坐标到直角坐标系转换
 
         circle_i = np.column_stack([x_i, y_i])
         # print(circle_i)
-        circles = np.append(circles,circle_i, axis=0)
         # 拼接极坐标点
-
+        circles = np.append(circles, circle_i, axis=0)
     return circles
 
-
 points_circles = circle_points(10, 20)
-
 triang_circles_auto = mtri.Triangulation(points_circles[:,0], points_circles[:,1])
-
 fig, ax = plt.subplots()
-
 ax.triplot(triang_circles_auto, 'o-', color = '#0070C0')
 ax.set_aspect('equal', adjustable='box')
-
 ax.set_xticks([])
 ax.set_yticks([])
-
 ax.set_xlim(xx1_polar.min(), xx1_polar.max())
 ax.set_ylim(xx2_polar.min(), xx2_polar.max())
 ax.axis('off')
 # fig.savefig('Figures/三角网格，均匀圆盘散点.svg', format='svg')
 plt.show()
 
-
-
 #%%
-
 # 导入包
 import math
 import numpy as np
@@ -412,7 +381,6 @@ from sympy.abc import x, y
 # 从SymPy库中导入符号变量 x 和 y
 from matplotlib import cm
 # 导入色谱模块
-
 import os
 
 # # 如果文件夹不存在，创建文件夹
@@ -421,26 +389,21 @@ import os
 
 # 自定义函数
 def mesh(num = 101):
-
     # number of mesh grids
     x_array = np.linspace(-3,3,num)
     y_array = np.linspace(-3,3,num)
     xx,yy = np.meshgrid(x_array,y_array)
-
     return xx, yy
-
 
 # 定义曲面函数
 # 用 sympy 库定义 MATLAB二元函数 peaks()
 f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
-
 f_xy_fcn = lambdify([x,y],f_xy)
 
 # 生成数据
 xx, yy = mesh(num = 121)
 x_array = np.linspace(-3,3,101)
 ff = f_xy_fcn(xx,yy)
-
 
 #############  三维等高线
 z_level = 2
@@ -451,7 +414,6 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 zz_ = np.zeros_like(xx_) + z_level
 ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
 ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
-
 
 ## 曲面和等高线
 ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
@@ -475,8 +437,6 @@ ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 # fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
 plt.show()
-
-
 
 #############  三维等高线
 z_level = 2

@@ -19,9 +19,9 @@ tx_symbols = qam_mapper(tx_bits, mapping_table)
 draw_trx_constellation(tx_symbols, tx=True)
 
 # Wireless Channel
-# rx_symbols = channel_Awgn(tx_symbols, snr=snr)
+rx_symbols = channel_Awgn(tx_symbols, snr=snr)
 # rx_symbols = channel_Rayleigh(tx_symbols, snr=snr)
-rx_symbols = channel_Rician(tx_symbols, snr = snr)
+# rx_symbols = channel_Rician(tx_symbols, snr = snr)
 draw_trx_constellation(rx_symbols, tx=False, snr=snr, channel=channel)
 
 # M-QAM Demodulation
@@ -39,3 +39,7 @@ draw_ber_curve(tx_bits, M, snr_range, channel='awgn')
 draw_ber_curve_smooth(tx_bits, M, snr_range, channel='awgn')
 
 print('Completed.')
+
+
+
+

@@ -66,10 +66,6 @@ labels = dbscan.fit_predict(X)
 print(labels)
 
 
-
-
-
-
 #%% 4. OPTICS（Ordering Points To Identify the Clustering Structure）
 
 from sklearn.cluster import OPTICS
@@ -98,9 +94,6 @@ print(labels)
 
 
 
-
-
-
 #%% 5. 均值漂移（Mean Shift）
 from sklearn.cluster import MeanShift
 import numpy as np
@@ -113,9 +106,6 @@ mean_shift = MeanShift()
 labels = mean_shift.fit_predict(X)
 
 print(labels)
-
-
-
 
 
 
@@ -134,10 +124,6 @@ gmm.fit(X)
 labels = gmm.predict(X)
 
 print(labels)
-
-
-
-
 
 
 #%% 7. 谱聚类（Spectral Clustering）
@@ -401,9 +387,6 @@ plt.show()
 
 #%% OPTICS（Ordering Points To Identify the Clustering Structure）
 
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import OPTICS
@@ -427,14 +410,7 @@ plt.show()
 
 
 
-
-
-
-
-
-
 #%% 自组织映射（Self-Organizing Maps，SOM）
-
 
 import numpy as np
 import matplotlib.pyplot as plt

@@ -7,15 +7,6 @@ https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247484603&idx=1&sn=077e11
 
 
 
-
-
-
-
-
-
-
-
-
 """
 #%% 1. 方差阈值法 (Variance Threshold)
 import numpy as np

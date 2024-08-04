@@ -7,8 +7,6 @@ from matplotlib import pyplot as plt
 from scipy.ndimage.filters import gaussian_filter1d
 
 
-
-
 def qam_mod(M):
     """
         Generate M-QAM mapping table and demapping table.

@@ -584,10 +584,6 @@ plt.legend(loc="lower right")
 plt.show()
 
 
-
-
-
-
 #%% 10. 半监督支持向量机（Semi-Supervised Support Vector Machine, S3VM）
 import numpy as np
 import matplotlib.pyplot as plt

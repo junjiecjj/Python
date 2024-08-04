@@ -10,6 +10,8 @@ Created on Wed May  8 21:15:04 2024
 Eb/N0-> SNR:
     https://wenku.csdn.net/answer/7umbbeqdrq#:~:text=%E5%B0%86SNR%E8%BD%AC%E6%8D%A2%E4%B8%BAEb%2FN0%EF%BC%8C%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E4%BB%A5%E4%B8%8B%E5%85%AC%E5%BC%8F%EF%BC%9A%20Eb%2FN0%20%3D%20SNR,%2F%20%28log2%20%28M%29%20%2A%20R%29
 
+https://mp.weixin.qq.com/s?__biz=MzIxNTQ1NDM2OA==&mid=2247488886&idx=1&sn=8bfa9a91c3fe937f0ab19e3347b1b63d&chksm=979952b9a0eedbafbd0d51d0812eb524d8dbbdecdc231341f15aa284d22935bb2fd6b8e36be9&mpshare=1&scene=1&srcid=0804bmYW6ucAqcCjQNVt2aym&sharer_shareinfo=b2f9db6c5b1538f2b7dce733853cd6b7&sharer_shareinfo_first=b2f9db6c5b1538f2b7dce733853cd6b7&exportkey=n_ChQIAhIQpQwYljFyQJhJ%2BQxbaK7vDBKfAgIE97dBBAEAAAAAALUCFGHtXCIAAAAOpnltbLcz9gKNyK89dVj0ag2eslKVksUO1Xb6xnEbgja6z7rRQ33hqLmK5NeF4CZBMAU%2B5iCnj%2Fo1S70hICUMnObMou%2FxaAUk0YjrERe1yTNKFHZbSSD5fD%2FwBZyWFSN4p%2FrWxxugkk3PejnGOZ%2FJTQ5c000rzQQqZRu%2BgaQqzmi%2BeagnIC4SKiKCgQOlfYx2xOFLMOjz0qqaw4x%2F%2BL1MwQ3froyZg86iMkfw68EpraZ4rnZdbvQH6110v2x1c0rIGCQ4Do8GenfH2pUishOM3xuUe28kwbOgGFVjZycM4OHzBulf2yhVax9h%2Fl%2FJXWZFeHt9J2v85f2HavShVr2bTi5EGEu1PAP2&acctmode=0&pass_ticket=Lw4FgclVXK%2FrYgor%2BcHdksv%2FYctkz7NnkkuQQZiKDMNgS8udyuWROHCjUzo7FH6H&wx_header=0#rd
+
 https://blog.csdn.net/fengshao1370/article/details/106059388
 
 转换为dB单位则为：
@@ -26,11 +28,18 @@ https://blog.csdn.net/fengshao1370/article/details/106059388
 
 Tsym/Tsamp = Fs/Rs = sps
 
-对于复信号： Es/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB) - 2log2(M);
-对于实信号：Es/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB) - 2log2(M);
-对于复信号： Es/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB) - 10log10(M);
-对于实信号：Es/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB) - 10log10(M);
+Es/N0和Eb/N0的关系: 其中Es和Eb分别是每个符号和每个比特上的能量
+    Es/N0(dB) = Eb/N0(dB) + 10log10(k)(dB), 其中k为每个符号上的信息比特数，k = log2(M),M为调制阶数
+Es/N0和SNR的关系:
+    对于复信号： Es/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB) ;
+    对于实信号：Es/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB) ;
+Eb/N0和SNR的关系:
+对于复信号： Eb/N0(dB)=10log10(Tsym/Tsamp)+SNR(dB) - 10log10(k);
+对于实信号：Eb/N0(dB)=10log10(0.5*Tsym/Tsamp)+SNR(dB) - 10log10(k);
+
+
 https://www.docin.com/p-1557770101.html
+https://www.cnblogs.com/devindd/articles/16793289.html
 """
 
 ## 系统库
@@ -59,8 +68,10 @@ savedir = f"./figures/{Modulation_type}/"
 os.makedirs(savedir, exist_ok = True)
 
 
-m_map = {"BPSK": 1, "QPSK": 2, "8PSK": 3, "QAM16": 4, "QAM64": 6}
-M = m_map[Modulation_type]   # 调制阶数
+m_map = {"BPSK": [1,2], "QPSK": [2,4], "8PSK": [3,8], "QAM16": [4,16], "QAM64": [6,64]}
+M = m_map[Modulation_type][1]
+k = m_map[Modulation_type][0]   # 调制阶数 k = log2(M)
+
 
 sps = 16                     # 每个符号的采样点数
 fc = 200000                  # 载波频率, Hz
@@ -70,7 +81,7 @@ Q = 8                            # 量化比特数
 Fs = 400 # bit_rate/Q            # 对原始基带信号的采样频率
 Ts = 1/Fs                        # 采样时间间隔
 bit_rate = Fs*Q                  # 比特率
-symbol_rate = bit_rate/M         # 符号率
+symbol_rate = bit_rate/k         # 符号率
 print(f"symbol_rate = {symbol_rate}, bit_rate = {bit_rate}\n")
 
 f0 = 20                          # 正弦波的频率
@@ -187,14 +198,19 @@ Tx_bits = QuantizationBbits_NP_int(x, Q)
 #%% 调制
 if Modulation_type == "BPSK":
     modem = cpy.PSKModem(2)
+    k = 1
 elif Modulation_type == "QPSK":
     modem = cpy.PSKModem(4)
+    k = 2
 elif Modulation_type == "8PSK":
     modem = cpy.PSKModem(8)
+    k = 3
 elif Modulation_type == "QAM16":
     modem = cpy.QAMModem(16)
+    k = 4
 elif Modulation_type == "QAM64":
     modem = cpy.QAMModem(64)
+    k = 6
 
 map_table = {}
 for idx, posi in enumerate(modem.constellation):
@@ -517,9 +533,9 @@ if isplot:
 source = SourceSink()
 source.InitLog()
 
-ebn0  = np.arange(-10, 11, 1)
-ebn0  = np.arange(-20, 90, 10)
-SNR = ebn0 - 10 * np.log10(sps)
+ebn0  = np.arange(-10, 11, 1) # dB
+ebn0  = np.arange(-20, 90, 10) # dB
+SNR = ebn0 - 10 * np.log10(sps/2) + 10 * np.log10(k)      # dB
 # SNR = np.arange(-10, 1)
 for idx, snr in enumerate(SNR):
     ext = f"_{Modulation_type}_snr={int(snr)}"
