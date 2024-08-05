@@ -149,10 +149,8 @@ plt.ylabel("PDF")
 plt.legend()
 plt.show()
 
-
 # plot CDF curves
 fig, ax = plt.subplots()
-
 for i in range(0,len(Ss)):
     s = Ss[i]
     plt.plot(x, logistic.cdf(x, loc = 0, scale = s), color = colors[int(i)], label = "s = %.1f" %s)
@@ -164,16 +162,6 @@ plt.title("CDF of logistic distribution")
 plt.ylabel("CDF")
 plt.legend()
 plt.show()
-
-
-
-
-
-
-
-
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_04.py
@@ -189,15 +177,11 @@ x = np.linspace(start = -5, stop = 5, num = 200)
 # plot PDF curves
 
 fig, ax = plt.subplots()
-
 DFs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 25, 30]
-
 colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(DFs)))
-
 for i in range(0,len(DFs)):
     df = DFs[i]
     plt.plot(x, t.pdf(x, df = df, loc = 0, scale = 1), color = colors[int(i)], label = "\u03BD = " + str(df))
-
 ax.axvline(x = 0, color = 'k', linestyle = '--')
 # compare with normal
 plt.plot(x,norm.pdf(x,loc = 0, scale = 1), color = 'k', label = 'Normal')
@@ -208,10 +192,8 @@ plt.ylabel("PDF")
 plt.legend()
 plt.show()
 
-
 # plot CDF curves
 fig, ax = plt.subplots()
-
 for i in range(0,len(DFs)):
     df = DFs[i]
     plt.plot(x, t.cdf(x, df = df, loc = 0, scale = 1), color = colors[int(i)], label = "\u03BD = " + str(df))
@@ -229,10 +211,7 @@ plt.legend()
 plt.show()
 
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_05.py
-
-
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import lognorm
@@ -273,10 +252,6 @@ plt.title("CDF of lognormal")
 plt.ylabel("CDF")
 plt.legend()
 plt.show()
-
-
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_06.py
 
@@ -537,7 +512,6 @@ for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs
 #%% CDF of Beta Distributions
 
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
-
 for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs.ravel()):
     title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
     ax.plot(x_array, beta.cdf(x_array, alpha_idx, beta_idx), 'b', lw=1)
