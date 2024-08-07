@@ -109,7 +109,7 @@ plt.legend(loc='lower right')
 plt.show()
 
 
-#%%>>>>>>>>>  gamma continuous random variable distribution %%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%>>>>>>>>>  gamma  distribution %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 a = 1.99
 mean, var, skew, kurt = sy.stats.gamma.stats(a, moments='mvsk')
@@ -234,7 +234,7 @@ for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
     ax.tick_params(axis="y", direction='in')
 
 
-#%%>>>>>>>>>> chi2 continuous random variable distribution %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%>>>>>>>>>> chi2  distribution %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 from scipy.stats import chi2
 
 df = 55
@@ -432,7 +432,7 @@ for scale, ax in zip(scale_array, axs.ravel()):
     ax.tick_params(axis="y", direction='in')
 
 
-#%%>>>>>>>>>>  X~CN(0, sigma^2) continuous random variable distribution %%%%%%%%%%%%%%%%%%%%%%%%
+#%%>>>>>>>>>>  X~CN(0, sigma^2)  distribution %%%%%%%%%%%%%%%%%%%%%%%%
 
 # X = (x1+jx2) ~ CN(0, sigma^2)
 # x1 ~ CN(0, sigma^2/2), x2 ~ CN(0, sigma^2/2)

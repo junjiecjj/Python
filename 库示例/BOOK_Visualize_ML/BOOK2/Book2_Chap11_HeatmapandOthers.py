@@ -14,7 +14,6 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
 p["font.weight"] = "light"
@@ -24,19 +23,16 @@ p["axes.grid"] = True
 p["grid.color"] = "0.5"
 p["grid.linewidth"] = 0.5
 
-
 iris = load_iris()
 # 从sklearn导入鸢尾花数据
 
 X = iris.data
 y = iris.target
 X
-feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$',
-                 'Petal length, $X_3$','Petal width, $X_4$']
+feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
 
 # Convert X array to dataframe
 X_df = pd.DataFrame(X, columns=feature_names)
-
 
 # 可视化鸢尾花四个量化特征数据
 fig, ax = plt.subplots(figsize = (3,4))
@@ -53,13 +49,7 @@ plt.title('X')
 
 
 # 聚类热图
-
-ax = sns.clustermap(X_df,
-                    cmap='RdYlBu_r',
-                    xticklabels=list(X_df.columns),
-                    yticklabels=False,
-                    figsize = (3,6),
-                    vmin=0, vmax=8)
+ax = sns.clustermap(X_df, cmap='RdYlBu_r', xticklabels=list(X_df.columns), yticklabels=False, figsize = (6,12), vmin=0, vmax=8)
 
 # plt.savefig('Figures/热图 + 树状图.svg', format='svg')
 
@@ -68,17 +58,10 @@ ax = sns.clustermap(X_df,
 G = X.T @ X
 print(G.max())
 print(G.min())
-fig,axs = plt.subplots(1,5,figsize = (8,3),
-                       gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3]})
+fig,axs = plt.subplots(1,5,figsize = (8,3), gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3]})
 
 plt.sca(axs[0])
-ax = sns.heatmap(G, cmap = 'RdYlBu_r',
-                 vmax = 5000, vmin = 0,
-                 annot = True,
-                 fmt=".0f",
-                 cbar_kws = {'orientation':'horizontal'},
-                 yticklabels=False,
-                 square = 'equal')
+ax = sns.heatmap(G, cmap = 'RdYlBu_r', vmax = 5000, vmin = 0, annot = True, fmt=".0f", cbar_kws = {'orientation':'horizontal'}, yticklabels=False, square = 'equal')
 plt.title('$G$')
 
 plt.sca(axs[1])
@@ -86,12 +69,7 @@ plt.title('=')
 plt.axis('off')
 
 plt.sca(axs[2])
-ax = sns.heatmap(X.T, cmap = 'RdYlBu_r',
-                 vmax = 0, vmin = 8,
-                 cbar_kws = {'orientation':'horizontal'},
-                 xticklabels = False,
-                 yticklabels = False,
-                 annot=False)
+ax = sns.heatmap(X.T, cmap = 'RdYlBu_r', vmax = 0, vmin = 8, cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels = False, annot=False)
 plt.title('$X^T$')
 
 plt.sca(axs[3])
@@ -99,57 +77,31 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(X, cmap = 'RdYlBu_r',
-                 vmax = 0, vmin = 8,
-                 cbar_kws = {'orientation':'horizontal'},
-                 xticklabels = False,
-                 yticklabels=False,
-                 annot=False)
+ax = sns.heatmap(X, cmap = 'RdYlBu_r', vmax = 0, vmin = 8, cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels=False, annot=False)
 plt.title('$X$')
 
 # fig.savefig('Figures/格拉姆矩阵.svg', format='svg')
 
-# 上三角
+#>>>>>>>>>>>>>>>>> 上三角
 mask_tri = np.zeros_like(G)
 mask_tri[np.triu_indices_from(mask_tri)] = True
 mask_tri = mask_tri.astype(dtype=bool)
 
 fig, axs = plt.subplots(1, 2)
 
-sns.heatmap(G, ax = axs[0],
-            vmax = 5000, vmin = 0,
-            annot = True,
-            fmt=".0f",
-            cmap = 'RdYlBu_r',
-            square = True,
-            mask = ~mask_tri,
-            cbar = False,
-            linecolor = [0.5, 0.5, 0.5])
+sns.heatmap(G, ax = axs[0], vmax = 5000, vmin = 0, annot = True, fmt=".0f", cmap = 'RdYlBu_r', square = True, mask = ~mask_tri, cbar = False, linecolor = [0.5, 0.5, 0.5])
 
-sns.heatmap(G, ax = axs[1],
-            vmax = 5000, vmin = 0,
-            cmap = 'RdYlBu_r',
-            annot = True,
-            fmt=".0f",
-            square = True,
-            mask = mask_tri,
-            cbar = False,
-            linecolor = [0.5, 0.5, 0.5])
+sns.heatmap(G, ax = axs[1], vmax = 5000, vmin = 0, cmap = 'RdYlBu_r', annot = True, fmt=".0f", square = True, mask = mask_tri, cbar = False, linecolor = [0.5, 0.5, 0.5])
 
-# Cholesky分解
+
+
+#>>>>>>>>>>>>>>>>> Cholesky分解
 L = np.linalg.cholesky(G)
 L
-fig,axs = plt.subplots(1,5,figsize = (8,3),
-                       gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3]})
+fig,axs = plt.subplots(1,5,figsize = (8,3), gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3]})
 
 plt.sca(axs[0])
-ax = sns.heatmap(G, cmap = 'RdYlBu_r',
-                 vmax = 5000, vmin = 0,
-                 cbar_kws = {'orientation':'horizontal'},
-                 yticklabels=False,
-                 annot=True,
-                 fmt=".0f",
-                 square = 'equal')
+ax = sns.heatmap(G, cmap = 'RdYlBu_r', vmax = 5000, vmin = 0, cbar_kws = {'orientation':'horizontal'}, yticklabels=False, annot=True, fmt=".0f", square = 'equal')
 plt.title('$G$')
 
 plt.sca(axs[1])
@@ -157,11 +109,7 @@ plt.title('=')
 plt.axis('off')
 
 plt.sca(axs[2])
-ax = sns.heatmap(L, cmap = 'RdYlBu_r',
-                 cbar_kws = {'orientation':'horizontal'},
-                 xticklabels = False,
-                 yticklabels = False,
-                 annot=True)
+ax = sns.heatmap(L, cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels = False, annot=True)
 plt.title('$L$')
 
 plt.sca(axs[3])
@@ -169,32 +117,21 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(L.T, cmap = 'RdYlBu_r',
-                 cbar_kws = {'orientation':'horizontal'},
-                 xticklabels = False,
-                 yticklabels=False,
-                 annot=True)
+ax = sns.heatmap(L.T, cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels=False, annot=True)
 plt.title('$L^T$')
 
 # fig.savefig('Figures/格拉姆矩阵，Chol.svg', format='svg')
 
 
-# 特征值分解
+#>>>>>>>>>>>>>>>>> 特征值分解
 Lambdas, V = np.linalg.eig(G)
 print(Lambdas)
 print(V)
 
-fig,axs = plt.subplots(1,7,figsize = (18,5),
-                       gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3, 0.5, 3]})
+fig,axs = plt.subplots(1,7,figsize = (18,5), gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3, 0.5, 3]})
 
 plt.sca(axs[0])
-ax = sns.heatmap(G, cmap = 'RdYlBu_r',
-                 cbar_kws = {'orientation':'horizontal'},
-                 annot=True,
-                 fmt=".0f",
-                 yticklabels=False,
-                 xticklabels=False,
-                 square = 'equal')
+ax = sns.heatmap(G, cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, annot=True, fmt=".0f", yticklabels=False, xticklabels=False, square = 'equal')
 plt.title('$G$')
 
 plt.sca(axs[1])
@@ -202,12 +139,7 @@ plt.title('=')
 plt.axis('off')
 
 plt.sca(axs[2])
-ax = sns.heatmap(V, cmap = 'RdYlBu_r',
-                vmax = 1, vmin = -1,
-                cbar_kws = {'orientation':'horizontal'},
-                xticklabels = False,
-                yticklabels = False,
-                square = 'equal')
+ax = sns.heatmap(V, cmap = 'RdYlBu_r', vmax = 1, vmin = -1, cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels = False, square = 'equal')
 plt.title('$V$')
 
 plt.sca(axs[3])
@@ -215,14 +147,7 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(np.diag(Lambdas), cmap = 'RdYlBu_r',
-                # vmax = D_max, vmin = D_min,
-                 cbar_kws = {'orientation':'horizontal'},
-                 xticklabels = False,
-                 yticklabels = False,
-                 annot=True,
-                 fmt=".0f",
-                square = 'equal')
+ax = sns.heatmap(np.diag(Lambdas), cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels = False, annot=True, fmt=".0f", square = 'equal')
 plt.title('$\Lambda$')
 
 plt.sca(axs[5])
@@ -230,27 +155,17 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[6])
-ax = sns.heatmap(V.T, cmap = 'RdYlBu_r',
-                vmax = 1, vmin = -1,
-                cbar_kws = {'orientation':'horizontal'},
-                yticklabels=False,
-                xticklabels=False,
-                square = 'equal')
+ax = sns.heatmap(V.T, cmap = 'RdYlBu_r', vmax = 1, vmin = -1, cbar_kws = {'orientation':'horizontal'}, yticklabels=False, xticklabels=False, square = 'equal')
 plt.title('$V^T$')
 
 # fig.savefig('Figures/格拉姆矩阵，EVD.svg', format='svg')
-# 奇异值分解
+#>>>>>>>>>>>>>>>>> 奇异值分解
 U,S,VT = np.linalg.svd(X, full_matrices = False)
 V = VT.T
-fig,axs = plt.subplots(1,7,figsize = (18,5),
-                       gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3, 0.5, 3]})
+fig,axs = plt.subplots(1,7,figsize = (18,5), gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3, 0.5, 3]})
 
 plt.sca(axs[0])
-ax = sns.heatmap(X, cmap = 'RdYlBu_r',
-                 cbar_kws = {'orientation':'horizontal'},
-                 vmin = 0, vmax = 8,
-                 yticklabels=False,
-                 xticklabels = False)
+ax = sns.heatmap(X, cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, vmin = 0, vmax = 8, yticklabels=False, xticklabels = False)
 plt.title('$X$')
 
 plt.sca(axs[1])
@@ -258,11 +173,7 @@ plt.title('=')
 plt.axis('off')
 
 plt.sca(axs[2])
-ax = sns.heatmap(U, cmap = 'RdYlBu_r',
-                vmax = 1, vmin = -1,
-                cbar_kws = {'orientation':'horizontal'},
-                xticklabels = False,
-                yticklabels=False)
+ax = sns.heatmap(U, cmap = 'RdYlBu_r', vmax = 1, vmin = -1, cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels=False)
 plt.title('$U$')
 
 plt.sca(axs[3])
@@ -270,13 +181,7 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(np.diag(S), cmap = 'RdYlBu_r',
-                # vmax = D_max, vmin = D_min,
-                cbar_kws = {'orientation':'horizontal'},
-                 xticklabels = False,
-                yticklabels=False,
-                 annot=True,
-                square = 'equal')
+ax = sns.heatmap(np.diag(S), cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels=False, annot=True, square = 'equal')
 plt.title('$S$')
 
 plt.sca(axs[5])
@@ -284,45 +189,26 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[6])
-ax = sns.heatmap(V.T, cmap = 'RdYlBu_r',
-                vmax = 1, vmin = -1,
-                cbar_kws = {'orientation':'horizontal'},
-                yticklabels=False,
-                xticklabels=False,
-                square = 'equal')
+ax = sns.heatmap(V.T, cmap = 'RdYlBu_r', vmax = 1, vmin = -1, cbar_kws = {'orientation':'horizontal'}, yticklabels=False, xticklabels=False, square = 'equal')
 plt.title('$V^T$')
 
 # fig.savefig('Figures/奇异值分解，SVD.svg', format='svg')
 # 统计
-# 协方差矩阵
+#>>>>>>>>>>>>>>>>> 协方差矩阵
 Sigma = X_df.cov()
 Corr  = X_df.corr()
 fig, ax = plt.subplots(figsize = (4,4))
 
-sns.heatmap(Sigma, ax = ax,
-            annot = True,
-            fmt=".2f",
-            cmap = 'RdYlBu_r',
-            square = True,
-            cbar_kws = {'orientation':'vertical'},
-            linecolor = [0.5, 0.5, 0.5])
+sns.heatmap(Sigma, ax = ax, annot = True, fmt=".2f",  cmap = 'RdYlBu_r', square = True, cbar_kws = {'orientation':'vertical'}, linecolor = [0.5, 0.5, 0.5])
 
 fig, ax = plt.subplots(figsize = (4,4))
 
-sns.heatmap(Corr, ax = ax,
-            cmap = 'RdYlBu_r',
-            annot = True,
-            fmt=".2f",
-            square = True,
-            cbar_kws = {'orientation':'vertical'},
-            linecolor = [0.5, 0.5, 0.5])
+sns.heatmap(Corr, ax = ax, cmap = 'RdYlBu_r', annot = True, fmt=".2f", square = True, cbar_kws = {'orientation':'vertical'}, linecolor = [0.5, 0.5, 0.5])
 
 
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图
-
-
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -354,28 +240,20 @@ z_min, z_max = -np.abs(z).max(), np.abs(z).max()
 
 
 fig, ax = plt.subplots()
-
 c = ax.pcolormesh(x, y, z, cmap='RdBu', vmin=z_min, vmax=z_max)
 # set the limits of the plot to the limits of the data
 ax.axis([x.min(), x.max(), y.min(), y.max()])
 fig.colorbar(c, ax=ax)
-
 # fig.savefig('Figures/比较_pcolormesh.svg', format='svg')
 
 
-
 fig, ax = plt.subplots()
-
 c = ax.pcolor(x, y, z, cmap='RdBu', vmin=z_min, vmax=z_max)
 # set the limits of the plot to the limits of the data
 ax.axis([x.min(), x.max(), y.min(), y.max()])
 fig.colorbar(c, ax=ax)
 
 # fig.savefig('Figures/比较_pcolor.svg', format='svg')
-
-
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% kNN分类
@@ -390,9 +268,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn import neighbors, datasets
 from matplotlib.colors import ListedColormap
-
 from sklearn.naive_bayes import GaussianNB
-
 
 
 p = plt.rcParams
@@ -409,8 +285,7 @@ cmap_light = ListedColormap(['#FFAAAA','#AAFFAA','#AAAAFF'])
 cmap_bold = ListedColormap(['#FF0000','#00FF00','#0000FF'])
 
 iris = datasets.load_iris()
-X = iris.data[:, :2]  # we only take the first two features. We could
-                      # avoid this ugly slicing by using a two-dim dataset
+X = iris.data[:, :2]  # we only take the first two features. We could avoid this ugly slicing by using a two-dim dataset
 y = iris.target
 
 x_min, x_max = 4, 8
@@ -418,19 +293,13 @@ y_min, y_max = 2, 5
 xx, yy = np.meshgrid(np.linspace(x_min, x_max, 40), np.linspace(y_min, y_max, 40))
 
 num_neighbors = [2,5]
-
 fig = plt.figure(figsize=(6, 9))
-
 for idx, n_neighbors in enumerate(num_neighbors):
     ax = fig.add_subplot(2, 1, idx + 1)
-
     knn = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors)
     knn.fit(X, y)
-
     Z = knn.predict(np.c_[xx.ravel(), yy.ravel()])
-
     Z = Z.reshape(xx.shape)
-
     plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
 
     # Plot also the training points
@@ -440,11 +309,6 @@ for idx, n_neighbors in enumerate(num_neighbors):
     plt.axis('tight')
 
 # fig.savefig('Figures/kNN分类.svg', format='svg')
-
-
-
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图可视化几何变换
@@ -493,71 +357,39 @@ fig = plt.figure(figsize=(8, 12))
 
 ax = fig.add_subplot(3, 2, 1)
 
-ax.pcolormesh(np.real(complex_zz*np.exp(np.pi/6*1j)),
-              np.imag(complex_zz*np.exp(np.pi/6*1j)),
-              zz*0 + np.nan,
-              edgecolors = colors,
-              shading='auto')
+ax.pcolormesh(np.real(complex_zz*np.exp(np.pi/6*1j)), np.imag(complex_zz*np.exp(np.pi/6*1j)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 ax = fig.add_subplot(3, 2, 2)
-
-ax.pcolormesh(np.real(2*complex_zz*np.exp(np.pi/3*1j)),
-              np.imag(2*complex_zz*np.exp(np.pi/3*1j)),
-              zz*0 + np.nan,
-              edgecolors = colors,
-              shading='auto')
+ax.pcolormesh(np.real(2*complex_zz*np.exp(np.pi/3*1j)), np.imag(2*complex_zz*np.exp(np.pi/3*1j)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 ax = fig.add_subplot(3, 2, 3)
-
-ax.pcolormesh(np.real(np.exp(complex_zz)),
-              np.imag(np.exp(complex_zz)),
-              zz*0 + np.nan,
-              edgecolors = colors,
-              shading='auto')
+ax.pcolormesh(np.real(np.exp(complex_zz)), np.imag(np.exp(complex_zz)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 ax = fig.add_subplot(3, 2, 4)
-
-ax.pcolormesh(np.real(complex_zz**3),
-              np.imag(complex_zz**3),
-              zz*0 + np.nan,
-              edgecolors = colors,
-              shading='auto')
+ax.pcolormesh(np.real(complex_zz**3), np.imag(complex_zz**3), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 ax = fig.add_subplot(3, 2, 5)
-
-ax.pcolormesh(np.real(1/complex_zz),
-              np.imag(1/complex_zz),
-              zz*0 + np.nan,
-              edgecolors = colors,
-              shading='auto')
+ax.pcolormesh(np.real(1/complex_zz), np.imag(1/complex_zz), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 ax = fig.add_subplot(3, 2, 6)
-
 ax.pcolormesh(np.real(complex_zz - 1/complex_zz),
               np.imag(complex_zz - 1/complex_zz),
-              zz*0 + np.nan,
-              edgecolors = colors,
-              shading='auto')
+              zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 # fig.savefig('Figures/pcolormesh_线性、非线性变换.svg', format='svg')
 # fig.savefig('pcolormesh_线性、非线性变换.svg', format='svg')
-
-
-
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 非矢量图片
 import matplotlib.pyplot as plt
@@ -570,10 +402,6 @@ import os
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
-
-
-
-
 
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
@@ -729,16 +557,12 @@ imgplot = plt.imshow(image_downsized)
 
 # fig.savefig('Figures/鸢尾花照片，低像素.svg', format='svg')
 
-
-
-
 # 插值，平滑
 methods = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16',
            'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
            'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos', 'blackman']
 
-fig, axs = plt.subplots(nrows=6, ncols=3, figsize=(6,8),
-                        subplot_kw={'xticks': [], 'yticks': []})
+fig, axs = plt.subplots(nrows=6, ncols=3, figsize=(6,8), subplot_kw={'xticks': [], 'yticks': []})
 
 for ax, interp_method in zip(axs.flat, methods):
     ax.imshow(image_downsized, interpolation=interp_method)
@@ -751,9 +575,7 @@ fig.savefig('Figures/鸢尾花照片，低像素，插值.svg', format='svg')
 import matplotlib.transforms as mtransforms
 
 def do_plot(ax, Z, transform):
-    im = ax.imshow(Z, interpolation='none',
-                   origin='lower',
-                   extent=[-2, 4, -3, 2], clip_on=True)
+    im = ax.imshow(Z, interpolation='none', origin='lower', extent=[-2, 4, -3, 2], clip_on=True)
 
     trans_data = transform + ax.transData
     im.set_transform(trans_data)
@@ -779,102 +601,9 @@ do_plot(ax2, img, mtransforms.Affine2D().skew_deg(30, 15))
 do_plot(ax3, img, mtransforms.Affine2D().scale(-1, .5))
 
 # everything and a translation
-do_plot(ax4, img, mtransforms.Affine2D().
-        rotate_deg(30).skew_deg(30, 15).scale(-1, .5).translate(.5, -1))
+do_plot(ax4, img, mtransforms.Affine2D().rotate_deg(30).skew_deg(30, 15).scale(-1, .5).translate(.5, -1))
 
 fig.savefig('Figures/仿射变换.svg', format='svg')
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
 
 
 

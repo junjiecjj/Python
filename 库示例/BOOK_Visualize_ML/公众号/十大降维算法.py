@@ -63,8 +63,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # 进行LDA
 lda = LDA(n_components=2)
-X_train_lda = lda.fit_transform(X_train, y_train)
-X_test_lda = lda.transform(X_test)
+X_train_lda = lda.fit_transform(X_train, y_train) # (105, 2)
+X_test_lda = lda.transform(X_test) # (45, 2)
 
 # 绘制降维后的数据分布图
 plt.figure(figsize=(12, 6))
@@ -365,7 +365,7 @@ X_mds = mds.fit_transform(distances)
 fig = plt.figure(figsize=(14, 6))
 
 ax1 = fig.add_subplot(121, projection='3d')
-ax1.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.cm.get_cmap('viridis', 5))
+ax1.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap=plt.get_cmap('viridis', 5))
 ax1.set_title('Original High-dimensional Data (First 3 Features)')
 ax1.set_xlabel('Feature 1')
 ax1.set_ylabel('Feature 2')
@@ -373,7 +373,7 @@ ax1.set_zlabel('Feature 3')
 
 # 可视化降维后的二维数据
 ax2 = fig.add_subplot(122)
-scatter = ax2.scatter(X_mds[:, 0], X_mds[:, 1], c=y, cmap=plt.cm.get_cmap('viridis', 5))
+scatter = ax2.scatter(X_mds[:, 0], X_mds[:, 1], c=y, cmap=plt.get_cmap('viridis', 5))
 ax2.set_title('MDS Reduced 2D Data')
 ax2.set_xlabel('MDS Dimension 1')
 ax2.set_ylabel('MDS Dimension 2')
@@ -392,16 +392,7 @@ print(f"Correlation between original and reduced distances: {correlation:.4f}")
 
 
 
-
-
-
-
 #%% 8. 自编码器 (Autoencoder)
-
-
-
-
-
 
 
 
@@ -471,11 +462,6 @@ df["Color"] = color
 
 sns.pairplot(df, vars=["Component 1", "Component 2"], hue="Color", palette="Spectral")
 plt.show()
-
-
-
-
-
 
 
 
