@@ -212,8 +212,6 @@ sns.heatmap(Corr, ax = ax, cmap = 'RdYlBu_r', annot = True, fmt=".2f", square = 
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-
 import os
 
 # 如果文件夹不存在，创建文件夹
@@ -263,13 +261,11 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn import neighbors, datasets
 from matplotlib.colors import ListedColormap
 from sklearn.naive_bayes import GaussianNB
-
 
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
@@ -351,12 +347,8 @@ ax.set_ylim(-3,3)
 # fig.savefig('Figures/pcolormesh_网格.svg', format='svg')
 # fig.savefig('pcolormesh_网格.svg', format='svg')
 
-
-
 fig = plt.figure(figsize=(8, 12))
-
 ax = fig.add_subplot(3, 2, 1)
-
 ax.pcolormesh(np.real(complex_zz*np.exp(np.pi/6*1j)), np.imag(complex_zz*np.exp(np.pi/6*1j)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
@@ -382,9 +374,7 @@ ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
 ax = fig.add_subplot(3, 2, 6)
-ax.pcolormesh(np.real(complex_zz - 1/complex_zz),
-              np.imag(complex_zz - 1/complex_zz),
-              zz*0 + np.nan, edgecolors = colors, shading='auto')
+ax.pcolormesh(np.real(complex_zz - 1/complex_zz), np.imag(complex_zz - 1/complex_zz), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 
@@ -430,7 +420,7 @@ imgplot = plt.imshow(img)
 fig, ax = plt.subplots(figsize=(4,8))
 imgplot = plt.imshow(img[400:400 + 10,400:400 + 10,:])
 
-fig.savefig('Figures/鸢尾花照片，部分像素.svg', format='svg')
+# fig.savefig('Figures/鸢尾花照片，部分像素.svg', format='svg')
 
 
 # 分析图片
@@ -474,7 +464,6 @@ for i, subplot in zip(range(3), axs):
     temp[:,:,i] = img[:,:,i]
     subplot.imshow(temp)
     # subplot.set_axis_off()
-
 # fig.savefig('Figures/鸢尾花照片，三色通道.svg', format='svg')
 
 
@@ -487,11 +476,7 @@ for i, subplot in zip(range(3), axs):
     temp[:,:,i] = zeros[:,:,i]
     subplot.imshow(temp)
     # subplot.set_axis_off()
-
 # fig.savefig('Figures/鸢尾花照片，保留两个通道.svg', format='svg')
-
-
-
 
 
 # 使用色谱
@@ -499,14 +484,12 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
 axs[0].imshow(img[:, :, 0], cmap = 'RdYlBu_r')
 axs[1].imshow(img[:, :, 0], cmap = 'Greys_r')
 axs[2].imshow(img[:, :, 0], cmap = 'Reds_r')
-
 # fig.savefig('Figures/鸢尾花照片，红色通道，使用色谱.svg', format='svg')
 
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
 axs[0].imshow(img[:, :, 1], cmap = 'RdYlBu_r')
 axs[1].imshow(img[:, :, 1], cmap = 'Greys_r')
 axs[2].imshow(img[:, :, 1], cmap = 'Greens_r')
-
 # fig.savefig('Figures/鸢尾花照片，绿色通道，使用色谱.svg', format='svg')
 
 
@@ -514,7 +497,6 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
 axs[0].imshow(img[:, :, 2], cmap = 'RdYlBu_r')
 axs[1].imshow(img[:, :, 2], cmap = 'Greys_r')
 axs[2].imshow(img[:, :, 2], cmap = 'Blues_r')
-
 # fig.savefig('Figures/鸢尾花照片，蓝色通道，使用色谱.svg', format='svg')
 
 
@@ -532,78 +514,55 @@ from skimage import io
 X = color.rgb2gray(io.imread('iris_photo.jpg'))
 X.shape
 fig, axs = plt.subplots(figsize=(4,8))
-
 plt.imshow(X, cmap='gray')
-
 # fig.savefig('Figures/鸢尾花照片，灰度.svg', format='svg')
 
 # 替换部分色块
 X_copy = np.copy(X)
-
 X_copy[0:500, 0:500] = 1
-
 fig, axs = plt.subplots(figsize=(4,8))
-
 plt.imshow(X_copy, cmap='gray')
-
 # fig.savefig('Figures/鸢尾花照片，灰度，替换.svg', format='svg')
 
 # 降低像素
 DOWNSAMPLE = 200
 image_downsized = img[::DOWNSAMPLE, ::DOWNSAMPLE, :]
-
 fig, ax = plt.subplots(figsize=(4,8))
 imgplot = plt.imshow(image_downsized)
-
 # fig.savefig('Figures/鸢尾花照片，低像素.svg', format='svg')
 
 # 插值，平滑
-methods = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16',
-           'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
-           'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos', 'blackman']
-
+methods = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos', 'blackman']
 fig, axs = plt.subplots(nrows=6, ncols=3, figsize=(6,8), subplot_kw={'xticks': [], 'yticks': []})
-
 for ax, interp_method in zip(axs.flat, methods):
     ax.imshow(image_downsized, interpolation=interp_method)
     ax.set_title(str(interp_method))
-
 plt.tight_layout()
-fig.savefig('Figures/鸢尾花照片，低像素，插值.svg', format='svg')
+# fig.savefig('Figures/鸢尾花照片，低像素，插值.svg', format='svg')
 # 仿射变换
 
 import matplotlib.transforms as mtransforms
-
 def do_plot(ax, Z, transform):
     im = ax.imshow(Z, interpolation='none', origin='lower', extent=[-2, 4, -3, 2], clip_on=True)
-
     trans_data = transform + ax.transData
     im.set_transform(trans_data)
-
     # display intended extent of the image
     x1, x2, y1, y2 = im.get_extent()
-    ax.plot([x1, x2, x2, x1, x1], [y1, y1, y2, y2, y1], "y--",
-            transform=trans_data)
+    ax.plot([x1, x2, x2, x1, x1], [y1, y1, y2, y2, y1], "y--", transform = trans_data)
     ax.set_xlim(-5, 5)
     ax.set_ylim(-4, 4)
 
-
 # prepare image and figure
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
-
 # image rotation
 do_plot(ax1, img, mtransforms.Affine2D().rotate_deg(30))
-
 # image skew
 do_plot(ax2, img, mtransforms.Affine2D().skew_deg(30, 15))
-
 # scale and reflection
 do_plot(ax3, img, mtransforms.Affine2D().scale(-1, .5))
-
 # everything and a translation
 do_plot(ax4, img, mtransforms.Affine2D().rotate_deg(30).skew_deg(30, 15).scale(-1, .5).translate(.5, -1))
-
-fig.savefig('Figures/仿射变换.svg', format='svg')
+# fig.savefig('Figures/仿射变换.svg', format='svg')
 
 
 

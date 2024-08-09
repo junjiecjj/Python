@@ -15,17 +15,6 @@ Created on Wed Jul 12 11:48:08 2023
     注意该方法返回了一个 total_norm，实际应用时可以通过该方法得到网络参数梯度的范数，以便确定合理的max_norm值。
 """
 
-def Quantilize(params, G = None, B = 8):
-    if type(B) != int or (G != None and type(G) != int):
-        raise ValueError("B 必须是 int, 且 G 不为None时也必须是整数!!!")
-    if G == None:
-        G =  2**B - 1
-    params = torch.clamp(torch.round(params * G), min = -2**(B-1), max = 2**(B-1) - 1, )
-    return params
-
-
-
-
 import sys,os
 import torch
 import torch.nn as nn

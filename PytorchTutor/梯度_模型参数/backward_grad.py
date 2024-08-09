@@ -26,7 +26,7 @@ import torch.optim as optim
 
 
 #===============================================================================================================
-#                                           is_leaf – 查看张量是否为叶张量
+#               is_leaf – 查看张量是否为叶张量
 # https://blog.csdn.net/hxxjxw/article/details/122281531
 # https://blog.csdn.net/zphuangtang/article/details/112788037
 # https://blog.csdn.net/m0_46653437/article/details/112934222
@@ -34,39 +34,31 @@ import torch.optim as optim
 #===============================================================================================================
 """
   在Pytorch中，默认情况下，非叶节点的梯度值在反向传播过程中使用完后就会被清除，不会被保留。只有叶节点的梯度值能够被保留下来。
-
       对于任意一个张量来说，我们可以用 tensor.is_leaf 来判断它是否是叶子张量（leaf tensor）
-
       在Pytorch神经网络中，我们反向传播backward()就是为了求叶子节点的梯度。在pytorch中，神经网络层中的权值w的tensor均为叶子节点。它们的require_grad都是True，但它们都属于用户创建的，所以都是叶子节点。而反向传播backward()也就是为了求它们的梯度
-
-       在调用backward()时，只有当requires_grad和is_leaf同时为真时，才会计算节点的梯度值
+      在调用backward()时，只有当requires_grad和is_leaf同时为真时，才会计算节点的梯度值.
 
 为什么需要叶子节点？
-        那些非叶子节点，是通过用户所定义的叶子节点的一系列运算生成的，也就是这些非叶子节点都是中间变量，一般情况下，用户不回去使用这些中间变量的导数，所以为了节省内存，它们在用完之后就被释放了
+    那些非叶子节点，是通过用户所定义的叶子节点的一系列运算生成的，也就是这些非叶子节点都是中间变量，一般情况下，用户不回去使用这些中间变量的导数，所以为了节省内存，它们在用完之后就被释放了
 
 在Pytorch的autograd机制中，当tensor的requires_grad值为True时，在backward()反向传播计算梯度时才会被计算。在所有的require_grad=True中，
-
-默认情况下，非叶子节点的梯度值在反向传播过程中使用完后就会被清除，不会被保留(即调用loss.backward() 会将计算图的隐藏变量梯度清除)。
-默认情况下，只有叶子节点的梯度值能够被保留下来。
-被保留下来的叶子节点的梯度值会存入tensor的grad属性中，在 optimizer.step()过程中会更新叶子节点的data属性值，从而实现参数的更新。
-这样可以节省很大部分的显存
+    默认情况下，非叶子节点的梯度值在反向传播过程中使用完后就会被清除，不会被保留(即调用loss.backward() 会将计算图的隐藏变量梯度清除)。
+    默认情况下，只有叶子节点的梯度值能够被保留下来。
+    被保留下来的叶子节点的梯度值会存入tensor的grad属性中，在 optimizer.step()过程中会更新叶子节点的data属性值，从而实现参数的更新。
+    这样可以节省很大部分的显存
 
 上面的话，也就是说，并不是每个requires_grad()设为True的tensor都会在backward的时候得到相应的grad.它还必须为leaf。这就说明. is_leaf=True 成为了在 requires_grad()下判断是否需要保留 grad的前提条件
 
       只有是叶张量的tensor在反向传播时才会将本身的grad传入的backward的运算中.。如果想得到当前自己创建的，requires_grad为True的tensor在反向传播时的grad, 可以用retain_grad()这个属性(或者是hook机制)
 
-detach()将节点剥离成叶子节点
-      如果需要使得某一个节点成为叶子节点，只需使用detach()即可将它从创建它的计算图中分离开来。即detach()函数的作用就是把一个节点从计算图中剥离，使其成为叶子节点
+detach()将节点剥离成叶子节点,如果需要使得某一个节点成为叶子节点，只需使用detach()即可将它从创建它的计算图中分离开来。即detach()函数的作用就是把一个节点从计算图中剥离，使其成为叶子节点
 
 什么样节点会是叶子节点
 ①所有requires_grad为False的张量，都约定俗成地归结为叶子张量
-
          就像我们训练模型的input，它们都是require_grad=False，因为他们不需要计算梯度(我们训练网络训练的是网络模型的权重，而不需要训练输入)。它们是一个计算图都是起始点，如下图的a
 
 ②requires_grad为True的张量, 如果他们是由用户创建的,则它们是叶张量(leaf Tensor)。
-
         例如各种网络层，nn.Linear(), nn.Conv2d()等, 他们是用户创建的，而且其网络参数也需要训练，所以requires_grad=True
-
 这意味着它们不是运算的结果,因此gra_fn为None
 
 
@@ -164,7 +156,6 @@ PyTorch提供两种求梯度的方法：backward() and torch.autograd.grad() ，
 
 """
 
-
 x = torch.tensor(2., requires_grad=True)
 
 a = torch.add(x, 1)
@@ -181,17 +172,14 @@ print("grad: ", x.grad, a.grad, b.grad, y.grad)
 # is_leaf:  True False False False
 # grad:  tensor(7.) None None None
 
-
 # 使用detach()切断
 # 不会再往后计算梯度，假设有模型A和模型B，我们需要将A的输出作为B的输入，但训练时我们只训练模型B，那么可以这样做：
 # input_B = output_A.detach()
 # 如果还是以前面的为例子，将a切断，将只有b一条通路，且a变为叶子节点。
 x = torch.tensor([2.], requires_grad=True)
-
 a = torch.add(x, 1).detach()
 b = torch.add(x, 2)
 y = torch.mul(a, b)
-
 y.backward()
 
 print("requires_grad: ", x.requires_grad, a.requires_grad, b.requires_grad, y.requires_grad)
@@ -218,17 +206,12 @@ class net(nn.Module):
         super(net, self).__init__()
         self.fc1 = nn.Linear(8, 4)
         self.fc2 = nn.Linear(4, num_class)
-
-
     def forward(self, x):
         return self.fc2(self.fc1(x))
-
 model = net()
 
-
-
 for key, var in model.named_parameters():
-    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}")  # \n{var.data}")
+    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n{var.data}")
 # fc1.weight, True, torch.Size([4, 8]), cpu, True, torch.FloatTensor, None
 # fc1.bias  , True, torch.Size([4]), cpu, True, torch.FloatTensor, None
 # fc2.weight, True, torch.Size([10, 4]), cpu, True, torch.FloatTensor, None
@@ -236,7 +219,7 @@ for key, var in model.named_parameters():
 
 
 for key, var in model.state_dict().items():
-    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}")  ## \n  {var} \n\n" )
+    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n  {var} \n\n" )
 # for key, var in model.named_parameters():
     # print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 # 0: fc1.weight, True, torch.Size([4, 8]), cpu, False, torch.FloatTensor, None

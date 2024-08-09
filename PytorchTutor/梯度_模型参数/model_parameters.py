@@ -23,13 +23,13 @@ from torch.autograd import Variable
 import torch.nn as nn
 import imageio
 import matplotlib
-matplotlib.use('TkAgg')
-
+# matplotlib.use('TkAgg')
+import random
 import torch.optim as optim
-
+import numpy as np
 
 """
-在使用pytorch过程中，我发现了torch中存在3个功能极其类似的方法，它们分别是model.parameters()、model.named_parameters()和model.state_dict()，下面就具体来说说这三个函数的差异
+在使用pytorch过程中，我发现了torch中存在3个功能极其类似的方法，它们分别是model.parameters()、model.named_parameters()和model.state_dict()，下面就具体来说说这三个函数的差异.
 首先，说说比较接近的model.parameters()和model.named_parameters()。这两者唯一的差别在于，named_parameters()返回的list中，每个元祖打包了2个内容，分别是layer-name和layer-param，而parameters()只有后者。后面只谈model.named_parameters()和model.state_dict()间的差别。
 
 它们的差异主要体现在3方面：
@@ -39,6 +39,19 @@ import torch.optim as optim
 
 """
 
+
+# 初始化随机数种子
+def set_random_seed(seed = 10, deterministic = False, benchmark = False):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    if deterministic:
+        torch.backends.cudnn.deterministic = True
+    if benchmark:
+        torch.backends.cudnn.benchmark = True
+    return
+set_random_seed()
 #===============================================================================================================
 #                                            打印每一层的参数名和参数值
 #===============================================================================================================
@@ -58,16 +71,17 @@ model = net()  # .to("cuda:0")
 
 print(f"模型结构为：\n{model}, \n模型参数为:")
 for name, param in  model.named_parameters():
-    # if param.requires_grad:
-        #print(f"{name}: {param.size()}, {param.requires_grad} ")
     print(f"{name: <25}: size={param.size()}, requires_grad={param.requires_grad} ")
+
+for key, var in model.state_dict().items():
+    print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
+
 
 
 #======================================== 1: state_dict ===============================================
 #打印某一层的参数名
 for name in model.state_dict():
     print(name)
-#Then  I konw that the name of target layer is '1.weight'
 
 #schemem1(recommended)
 print(f"\n\nmodel.state_dict()['fc1.weight'] = \n    {model.state_dict()['fc1.weight']}")
@@ -80,34 +94,24 @@ lc = model.state_dict()
 for key in lc:
     params[key] = lc[key] # .detach().cpu().numpy()
     print(f" {key}, {lc[key].is_leaf}, {lc[key].shape}, {lc[key].device}, {lc[key].requires_grad}, {lc[key].type()} \n  {lc[key]}")
-    # print(name)
-    # print(ae.state_dict()[name])
-
 
 params = {}
 # lc = model.state_dict().items()
 for key, var in model.state_dict().items():
     params[key] = var # .detach().cpu().numpy()
-    # print("key:"+str(key)+",var:"+str(var))
     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
-    # print(f"张量{key}的Size : "+str(var.size()))
 
 #======================================== 3: named_parameters ===============================================
-#打印每一层的参数名和参数值
+## 打印每一层的参数名和参数值
 params = list(model.named_parameters())  #get the index by debuging
 l = len(params)
 for i in range(l):
-    # print(params[i][0])              # name
-    # print(params[i][1].data)         # data
     print(f" params[{i}][0] = {params[i][0]}, \n params[{i}][1].data = \n      {params[i][1].data}")
-
 
 #======================================== 4: named_parameters ===============================================
 ## 打印每一层的参数名和参数值
-##  schemem1(recommended)
 params = {}
 for name, param in model.named_parameters():
-    # print(f"  name = {name}\n  param = \n    {param}")
     params[name] = param.data.detach()# .cpu().numpy()
     print(f"{name}, {param.data.is_leaf}, {param.size()}, {param.device}, {param.requires_grad}, {param.type()} :\n  {param.data}")
 
@@ -128,7 +132,6 @@ for parameters in model.parameters():
 #===============================================================================================================
 #                                            模型参数加载
 #===============================================================================================================
-
 # 定义一个简单的网络
 class net(nn.Module):
     def __init__(self, num_class=10):
@@ -143,17 +146,14 @@ class net(nn.Module):
 model = net().to("cuda:0")
 
 ## 加载时的参数可以是在cpu上，模型在哪加载后的参数就在哪，与加载前的参数的device无关，只与模型的device有关
-
 params = {}
 for key, var in model.state_dict().items():
     params[key] = var.clone().cpu() #.detach()
     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
 
-
 tmp_param = {}
 for i , (key, val) in enumerate(params.items()):
     tmp_param[key] = torch.ones_like(val) + i
-
 #======================================== 1 : 加载字典 ===============================================
 print(f"model.state_dict() = \n{model.state_dict()} \n\n")
 
@@ -166,10 +166,7 @@ print(f"model.state_dict() = \n{model.state_dict()} \n\n")
 for key, var in model.state_dict().items():
     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
 
-
 #======================================== 1 : 加载字典 ===============================================
-
-
 import copy
 
 print(f"model.state_dict() = \n{model.state_dict()} \n\n")
@@ -178,7 +175,6 @@ param_sd = copy.deepcopy(params)
 param_sd["fc2.bias"] += 10
 model.load_state_dict(param_sd)
 print(f"model.state_dict() = \n{model.state_dict()} \n\n")
-
 
 #======================================== 2: 加载 model.state_dict().items():" error ===============================================
 import copy
@@ -200,17 +196,13 @@ for key, param in model.state_dict().items():
     model.state_dict()[key].add_(10)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
 model.load_state_dict(sd)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-
-
-
 
 #===============================================================================================================
 #                                            改变模型参数
 #===============================================================================================================
+
 
 # 定义一个简单的网络
 class net(torch.nn.Module):
@@ -219,14 +211,10 @@ class net(torch.nn.Module):
         self.fc1 = torch.nn.Linear(8, 4)
         self.fc2 = torch.nn.Linear(4, num_class)
 
-
     def forward(self, x):
         return self.fc2(self.fc1(x))
 
 model = net().to("cuda:0")
-
-
-
 
 orig_params = {}
 for key, var in model.state_dict().items():
@@ -330,11 +318,9 @@ for key, param in model.named_parameters():
     param.data   =  param.data * mask[key]
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
 #======================================== 0: model.load_state_dict(tmp_param) 有效" ===============================================
 model.load_state_dict(tmp_param)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
-
 
 #======================================== var: 加法 有效 ===============================================
 model.load_state_dict(orig_params)
@@ -342,14 +328,6 @@ print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 for key, var in model.state_dict().items():
     var.add_(10)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-#======================================== var: 加法 无效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-for key, var in model.state_dict().items():
-    var = var + 10
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 #======================================== var: 加法 有效  ===============================================
@@ -368,20 +346,28 @@ for key, var in model.state_dict().items():
     var.add_(tmp_param[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#======================================== var: 加法: 无效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-for key, var in model.state_dict().items():
-    var = var + tmp_param[key]
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
 #======================================== var: 加法 有效  ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 for key, var in model.state_dict().items():
     var += tmp_param[key]
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== var: 加法 无效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    var = var + 10
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== var: 加法: 无效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    var = var + tmp_param[key]
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 #======================================== var: 等于 有效 ===============================================
@@ -392,6 +378,14 @@ for key, var in model.state_dict().items():
     var.copy_(tmp_param[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
+#======================================== var 等于 有效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    var.copy_(torch.ones_like(var))
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
 #======================================== var: 等于 无效  ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -400,13 +394,6 @@ for key, var in model.state_dict().items():
     var = tmp_param[key]
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#======================================== var 等于 有效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-for key, var in model.state_dict().items():
-    var.copy_(torch.ones_like(var))
-print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 #======================================== var 乘法 有效  ===============================================
 ## 3
@@ -418,17 +405,6 @@ for key, var in model.state_dict().items():
     var.mul_(10)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#======================================== var 乘法 无效  ===============================================
-## 3
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-## 无效
-for key, var in model.state_dict().items():
-    # var.mul_(mask[key])
-    var = var*(10)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-
 #======================================== var 乘法 有效  ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -438,9 +414,7 @@ for key, var in model.state_dict().items():
     var *= (10)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
 #======================================== var 乘法 有效  ===============================================
-## 3
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 ## 有效
@@ -448,17 +422,6 @@ for key, var in model.state_dict().items():
     # var.mul_(mask[key])
     var.mul_(mask[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-#======================================== var 乘法 无效  ===============================================
-## 3
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-## 无效
-for key, var in model.state_dict().items():
-    # var.mul_(mask[key])
-    var = var*(mask[key])
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
 
 #======================================== var 乘法 有效  ===============================================
 model.load_state_dict(orig_params)
@@ -469,8 +432,27 @@ for key, var in model.state_dict().items():
     var *= (mask[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
+#======================================== var 乘法 无效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+## 无效
+for key, var in model.state_dict().items():
+    # var.mul_(mask[key])
+    var = var*(10)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== var 乘法 无效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+## 无效
+for key, var in model.state_dict().items():
+    # var.mul_(mask[key])
+    var = var*(mask[key])
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+
 #####################################################################################################################
-#======================================== model.state_dict() :: 加法 有效 ===============================================
+#==================================== model.state_dict() : 加法 有效 ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
@@ -478,15 +460,7 @@ for key, var in model.state_dict().items():
     model.state_dict()[key].add_(10)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#======================================== model.state_dict() :: 加法 无效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-for key, var in model.state_dict().items():
-    model.state_dict()[key] = model.state_dict()[key] + 10
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-#======================================== model.state_dict() :: 加法 有效  ===============================================
+#==================================== model.state_dict() : 加法 有效  ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
@@ -494,7 +468,7 @@ for key, var in model.state_dict().items():
     model.state_dict()[key] += 10
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#======================================== model.state_dict() : 加法: 有效 ===============================================
+#==================================== model.state_dict() : 加法: 有效 ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
@@ -502,15 +476,7 @@ for key, var in model.state_dict().items():
     model.state_dict()[key].add_(tmp_param[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#======================================== model.state_dict() : 加法: 无效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-for key, var in model.state_dict().items():
-    model.state_dict()[key] = model.state_dict()[key] + tmp_param[key]
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-#======================================== model.state_dict() : 加法 有效  ===============================================
+#==================================== model.state_dict() : 加法 有效  ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
@@ -518,7 +484,23 @@ for key, var in model.state_dict().items():
     model.state_dict()[key] += tmp_param[key]
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-#========================================  model.state_dict() : 等于 有效 ===============================================
+#==================================== model.state_dict() : 加法 无效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    model.state_dict()[key] = model.state_dict()[key] + 10
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================= model.state_dict(): 加法: 无效  =============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    model.state_dict()[key] = model.state_dict()[key] + tmp_param[key]
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== model.state_dict(): 等于 有效 ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
@@ -526,15 +508,6 @@ for key, var in model.state_dict().items():
     # print(f"0: {var}, {tmp_param[key]}")
     model.state_dict()[key].copy_(tmp_param[key])
     # print(f"1: {model.state_dict()[key]}, {tmp_param[key]}")
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-
-#======================================== model.state_dict() : 等于 无效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-for key, var in model.state_dict().items():
-    model.state_dict()[key] = tmp_param[key]
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 #======================================== model.state_dict()  等于 有效  ===============================================
@@ -545,14 +518,47 @@ for key, var in model.state_dict().items():
     model.state_dict()[key].copy_(torch.ones_like(var))
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
+#======================================== model.state_dict() : 等于 无效  ==============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key, var in model.state_dict().items():
+    model.state_dict()[key] = tmp_param[key]
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
 #======================================== model.state_dict()  乘法 有效  ===============================================
-## 3
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 ## 有效
 for key, var in model.state_dict().items():
     # var.mul_(mask[key])
     model.state_dict()[key].mul_(10)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+#======================================== model.state_dict()  乘法 有效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+## 有效
+for key, var in model.state_dict().items():
+    # var.mul_(mask[key])
+    model.state_dict()[key] *= 10
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== model.state_dict()  乘法 有效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+## 有效
+for key, var in model.state_dict().items():
+    # var.mul_(mask[key])
+    model.state_dict()[key].mul_(mask[key])
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================== model.state_dict()  乘法 有效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+## 有效
+for key, var in model.state_dict().items():
+    # var.mul_(mask[key])
+    model.state_dict()[key] *= (mask[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 #======================================== model.state_dict()  乘法 无效  ===============================================
@@ -566,25 +572,6 @@ for key, var in model.state_dict().items():
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 
-#======================================== model.state_dict()  乘法 有效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-## 有效
-for key, var in model.state_dict().items():
-    # var.mul_(mask[key])
-    model.state_dict()[key] *= 10
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-#======================================== model.state_dict()  乘法 有效  ===============================================
-## 3
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-## 有效
-for key, var in model.state_dict().items():
-    # var.mul_(mask[key])
-    model.state_dict()[key].mul_(mask[key])
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-
 #======================================== model.state_dict()  乘法 无效  ===============================================
 ## 3
 model.load_state_dict(orig_params)
@@ -596,18 +583,9 @@ for key, var in model.state_dict().items():
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 
-#======================================== model.state_dict()  乘法 有效  ===============================================
-model.load_state_dict(orig_params)
-print(f"model.state_dict() = {model.state_dict()} \n\n")
-## 有效
-for key, var in model.state_dict().items():
-    # var.mul_(mask[key])
-    model.state_dict()[key] *= (mask[key])
-print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-##############################################################################################################################################
-
-#======================================== model.named_parameters() : param.data:: 加法 有效 ===============================================
+########################################################################################################################################
+#====================================== model.named_parameters() : param.data:: 加法 有效 =============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
@@ -663,7 +641,6 @@ for key, param in model.named_parameters():
     param.data = tmp_param[key].clone()  # must add .clone(), or  tmp_param will change when param.data  changed
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
 #========================================  model.named_parameters() : param.data =  等于 有效 ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -674,7 +651,6 @@ for key, param in model.named_parameters():
     # print(f"1: {model.state_dict()[key]}, {tmp_param[key]}")
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
 #======================================== model.named_parameters() : param.data =   等于 有效  ===============================================
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -682,8 +658,6 @@ print(f"model.state_dict() = {model.state_dict()} \n\n")
 for key, param in model.named_parameters():
     param.data.copy_(torch.ones_like(param))
 print(f"model.state_dict() = {model.state_dict()} \n\n")
-
-
 
 #======================================== model.named_parameters() : param.data   乘法 有效  ===============================================
 ## 3
@@ -773,23 +747,6 @@ print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 """
 验证模型保存时保存的.pt文件大小是否改变，以及随着训练的进行，模型的参数数值是否改变。结果表明：
 
@@ -797,43 +754,26 @@ print(f"model.state_dict() = {model.state_dict()} \n\n")
 2. 随着训练过程的持续，模型的参数一直在变。
 3. 随着训练过程的推荐，冻结的那些层的参数不会改变。
 """
-
 import sys,os
 import torch
 from torch.autograd import Variable
-
-
 import torch.nn as nn
 import imageio
-
-
 import matplotlib
-matplotlib.use('TkAgg')
-
-
 import torch.optim as optim
-
-
-
-
-
 #===================================================================================
 # 测试在init和forward部分，模型的层的定义和调用对模型结构的关系
 #===================================================================================
-
 # 定义一个简单的网络
 class net(nn.Module):
     def __init__(self, num_class=10):
         super(net, self).__init__()
         self.fc1 = nn.Linear(8, 4)
         self.fc2 = nn.Linear(4, num_class)
-
-
     def forward(self, x):
         return self.fc2(self.fc1(x))
 
 model = net()
-
 print(f"模型结构为：\n{model}, \n模型参数为:\n ")
 for name, param in  model.named_parameters():
     if param.requires_grad:
@@ -852,7 +792,6 @@ for name, param in  model.named_parameters():
 # fc2.weight               : size=torch.Size([10, 4]), requires_grad=True
 # fc2.bias                 : size=torch.Size([10]), requires_grad=True
 
-
 #==================================================================================
 # 定义一个简单的网络
 class net1(nn.Module):
@@ -860,11 +799,8 @@ class net1(nn.Module):
         super(net1, self).__init__()
         self.fc2 = nn.Linear(4, num_class)
         self.fc1 = nn.Linear(8, 4)
-
-
     def forward(self, x):
         return self.fc2(self.fc1(x))
-
 
 model = net1()
 
@@ -894,10 +830,8 @@ class net1(nn.Module):
         self.fc2 = nn.Linear(4, num_class)
         self.fc1 = nn.Linear(8, 4)
         self.fc3 = nn.Linear(8, 4)
-
     def forward(self, x):
         return self.fc2(self.fc1(x))
-
 
 model = net1()
 

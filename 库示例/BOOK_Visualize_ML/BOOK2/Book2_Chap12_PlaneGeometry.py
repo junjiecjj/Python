@@ -4,10 +4,10 @@
 
 
 
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用patches绘制平面几何形状
-
 import matplotlib.pyplot as plt
-
 import matplotlib as mpl
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
@@ -34,8 +34,7 @@ artists = [
     mpatches.Ellipse((0, 0), 0.2, 0.1),
     mpatches.Arrow(-0.05, -0.05, 0.1, 0.1, width=0.1),
     mpatches.PathPatch(mpath.Path(verts, codes), ec="none"),
-    mpatches.FancyBboxPatch((-0.025, -0.05), 0.05, 0.1, ec="none",
-                            boxstyle=mpatches.BoxStyle("Round", pad=0.02)),
+    mpatches.FancyBboxPatch((-0.025, -0.05), 0.05, 0.1, ec="none", boxstyle=mpatches.BoxStyle("Round", pad=0.02)),
     mlines.Line2D([-0.06, 0.0, 0.1], [0.05, -0.05, 0.05], lw=5),
 ]
 
@@ -43,8 +42,7 @@ axs = plt.figure(figsize=(6, 6)).subplots(3, 3)
 for i, (ax, artist) in enumerate(zip(axs.flat, artists)):
     artist.set(color=mpl.cm.get_cmap('hsv')(i / len(artists)))
     ax.add_artist(artist)
-    ax.set(title=type(artist).__name__,
-           aspect=1, xlim=(-.2, .2), ylim=(-.2, .2))
+    ax.set(title=type(artist).__name__, aspect=1, xlim=(-.2, .2), ylim=(-.2, .2))
     ax.set_axis_off()
 plt.show()
 
@@ -53,9 +51,6 @@ plt.show()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 利用patches绘制正圆，以及外切、内接正多边形
-
-
-
 # 导入包
 import matplotlib.pyplot as plt
 from matplotlib.patches import RegularPolygon, Circle
@@ -63,17 +58,12 @@ import numpy as np
 
 # 可视化
 fig, axs = plt.subplots(nrows = 1, ncols = 4)
-
 for num_vertices, ax in zip([4,5,6,8], axs.ravel()):
-
-    hexagon_inner = RegularPolygon((0,0), numVertices=num_vertices,
-                                   radius=1, alpha=0.2, edgecolor='k')
+    hexagon_inner = RegularPolygon((0,0), numVertices=num_vertices, radius=1, alpha=0.2, edgecolor='k')
     ax.add_patch(hexagon_inner)
     # 绘制正圆内接多边形
 
-    hexagon_outer = RegularPolygon((0,0), numVertices=num_vertices,
-                                   radius=1/np.cos(np.pi/num_vertices),
-                                   alpha=0.2, edgecolor='k')
+    hexagon_outer = RegularPolygon((0,0), numVertices=num_vertices, radius=1/np.cos(np.pi/num_vertices), alpha=0.2, edgecolor='k')
     ax.add_patch(hexagon_outer)
     # 绘制正圆外切多边形
 
@@ -84,17 +74,7 @@ for num_vertices, ax in zip([4,5,6,8], axs.ravel()):
     ax.set_xlim(-1.5,1.5); ax.set_ylim(-1.5,1.5)
     ax.set_aspect('equal', adjustable='box'); ax.axis('off')
 
-
-
-
-
-
-
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正圆的生成艺术
-
 
 import os
 
@@ -120,9 +100,7 @@ for i in range_array:
     deg = delta_angle * i
     width = 0.05 + i * 0.05
     point_of_rotation = np.array([-width/2, -width/2])
-    rec = plt.Circle(point_of_rotation, radius=width,
-                        fill = False, edgecolor = colors[i],
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = plt.Circle(point_of_rotation, radius=width, fill = False, edgecolor = colors[i], transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
@@ -147,9 +125,7 @@ for i in range_array:
     deg = delta_angle * i
     width = 2
     point_of_rotation = np.array([0, -width])
-    rec = plt.Circle(point_of_rotation, radius=width,
-                        fill = False, edgecolor = colors[i],
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = plt.Circle(point_of_rotation, radius=width, fill = False, edgecolor = colors[i], transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
@@ -169,17 +145,12 @@ ax.plot(0, 0,  color='b', marker='o', markersize=10)
 
 range_array = np.arange(36)
 delta_angle = 10 # degrees
-
 colors = plt.cm.hsv(np.linspace(0, 1, len(range_array)))
-
 for i in range_array:
     deg = delta_angle * i
     width = 2
     point_of_rotation = np.array([0, -width])
-    rec = plt.Circle(point_of_rotation, radius=width,
-                        fill = True, edgecolor = 'b',
-                     alpha = 0.1,
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = plt.Circle(point_of_rotation, radius=width, fill = True, edgecolor = 'b', alpha = 0.1, transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
@@ -199,9 +170,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import EllipseCollection
 
-
-
-
 num = 30
 x = np.arange(num)
 y = np.arange(num)
@@ -217,8 +185,7 @@ aa = X * 2*np.pi
 
 fig, ax = plt.subplots(figsize = (8,8))
 
-ec = EllipseCollection(ww, hh, aa, units='x', offsets=XY,
-                       transOffset=ax.transData,cmap = 'RdYlBu')
+ec = EllipseCollection(ww, hh, aa, units='x', offsets=XY, transOffset=ax.transData,cmap = 'RdYlBu')
 ec.set_array((X**2 + Y**2).ravel())
 ax.add_collection(ec)
 ax.autoscale_view()
@@ -263,9 +230,7 @@ for i in range_array:
     deg = delta_angle * i
     width = 0.05 + i * 0.05
     point_of_rotation = np.array([-width/2, -width/2])
-    rec = Ellipse(point_of_rotation, width=width, height = width * 1.5,
-                        fill = False, edgecolor = colors[i],
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = Ellipse(point_of_rotation, width=width, height = width * 1.5, fill = False, edgecolor = colors[i], transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
@@ -288,21 +253,12 @@ for i in range_array:
     deg = delta_angle * i
     width = 0.05 + i * 0.05
     point_of_rotation = np.array([-width/2, -width/2])
-    rec = Ellipse(point_of_rotation, width=width, height = width * 1.5,
-                        fill = False, edgecolor = colors[i],
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = Ellipse(point_of_rotation, width=width, height = width * 1.5, fill = False, edgecolor = colors[i], transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
 # fig.savefig('Figures/旋转椭圆_B.svg', format='svg')
 plt.show()
-
-
-
-
-
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正方形的生成艺术，两组
 
@@ -331,9 +287,7 @@ for i in range_array:
     deg = delta_angle * i
     width = 0.05 + i * 0.05
     point_of_rotation = np.array([-width/2, -width/2])
-    rec = plt.Rectangle(point_of_rotation, width=width, height=width,
-                        fill = False, edgecolor = colors[i],
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = plt.Rectangle(point_of_rotation, width=width, height=width, fill = False, edgecolor = colors[i], transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
@@ -361,9 +315,7 @@ for i in range_array:
     deg = delta_angle * i
     width = 0.05 + i * 0.05
     point_of_rotation = np.array([-width/2, -width/2])
-    rec = plt.Rectangle((0,0), width=width, height=width,
-                        fill = False, edgecolor = colors[i],
-                        transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
+    rec = plt.Rectangle((0,0), width=width, height=width, fill = False, edgecolor = colors[i], transform=Affine2D().rotate_deg_around(0,0, deg)+ax.transData)
     ax.add_patch(rec)
 
 plt.axis('off')
@@ -371,15 +323,7 @@ plt.axis('off')
 plt.show()
 
 
-
-
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 沿横轴填充
-
-
-
 
 # 导入包
 import numpy as np
@@ -391,20 +335,12 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-
-
-
 # 产生两个函数数据
-
 x_array = np.linspace(0, 4*np.pi, 1001)
 y_array = np.sin(x_array)
 y2_array = np.sin(2*x_array)
 
-
-
 # 同一个颜色
-
 fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array, y_array, color='#0088FF')
@@ -434,10 +370,7 @@ ax.set_ylabel('f(x)')
 # fig.savefig('Figures/沿横轴填充，负1.2.svg', format='svg')
 
 
-
-
 fig, ax = plt.subplots(figsize=(5,3))
-
 plt.plot(x_array, y_array, color='#0088FF')
 plt.fill_between(x_array, 1.2, y_array, color='r', alpha=.25, hatch = '///')
 
@@ -513,9 +446,6 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-
-
 # 产生两个函数数据
 
 x_array = np.linspace(0, 4*np.pi, 1001)
@@ -565,14 +495,9 @@ ax6.set_xlim((-1.2, 1.2))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 阴影
 
-
-
 # 导入包
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-
-
-
 
 # 定义函数
 def hatches_plot(ax, hatch_style):
@@ -581,7 +506,6 @@ def hatches_plot(ax, hatch_style):
     ax.text(1, 2.5, f"' {hatch_style} '", size=15, ha="center")
     ax.axis('equal')
     ax.axis('off')
-
 
 hatches = ['/', '\\', '|', '-', '+',
            'x', 'o', 'O', '.', '*',
@@ -611,17 +535,11 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-
 x_array = np.linspace(0, 4*np.pi, 101)
 # 等差数列的公差为 4*pi/100；数列有101个值
 y_array = np.sin(x_array)
 
-
-
-
 # 水平填充
-
 fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array, y_array, color='#0088FF')
@@ -635,10 +553,7 @@ ax.set_ylabel('f(x)')
 
 # fig.savefig('Figures/参考填充色块，水平填充.svg', format='svg')
 
-
-
 # 竖直填充
-
 fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array, y_array, color='#0088FF')
@@ -652,9 +567,6 @@ ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
 # fig.savefig('Figures/参考填充色块，竖直填充.svg', format='svg')
-
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 展示旋转
 
@@ -679,16 +591,9 @@ def plot_shape(X,copy = False):
         fill_color = np.array([219,238,243])/255
         edge_color = np.array([0,153,255])/255
 
-    plt.fill(X[:,0], X[:,1],
-             color = fill_color,
-             edgecolor = edge_color,
-             alpha = 0.5)
+    plt.fill(X[:,0], X[:,1], color = fill_color, edgecolor = edge_color, alpha = 0.5)
 
-    plt.plot(X[:,0], X[:,1],marker = 'x',
-             markeredgecolor = edge_color*0.5,
-             linestyle = 'None')
-
-
+    plt.plot(X[:,0], X[:,1],marker = 'x', markeredgecolor = edge_color*0.5, linestyle = 'None')
 
 X = np.array([[1,1],
               [0,-1],
@@ -708,12 +613,9 @@ fig, ax = plt.subplots()
 plot_shape(X)      # plot original
 
 for theta in thetas:
-
-
     theta = theta/180*np.pi;
     # rotation
-    R = np.array([[np.cos(theta),  np.sin(theta)],
-                  [-np.sin(theta), np.cos(theta)]])
+    R = np.array([[np.cos(theta),  np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
 
     Z = X@R
     # 旋转
@@ -768,7 +670,6 @@ yy = b1*xx + b0;
 
 
 def plot_square(x,y1,y2):
-
     if y2 > y1:
         temp = y2;
         y2 = y1;
@@ -776,10 +677,7 @@ def plot_square(x,y1,y2):
 
     d = y1 - y2;
 
-    plt.fill(np.vstack((x, x + d, x + d, x)),
-             np.vstack((y2, y2, y1, y1)),
-             facecolor='#0088FF', edgecolor='none',
-             alpha = 0.2)
+    plt.fill(np.vstack((x, x + d, x + d, x)), np.vstack((y2, y2, y1, y1)), facecolor='#0088FF', edgecolor='none', alpha = 0.2)
 
 
 fig, ax = plt.subplots(figsize=(6, 6))
@@ -825,7 +723,6 @@ p["axes.grid"] = True
 p["grid.color"] = "0.5"
 p["grid.linewidth"] = 0.5
 
-
 # 产生网格数据
 x1 = np.arange(-20, 20 + 1, step=1)
 x2 = np.arange(-20, 20 + 1, step=1)
@@ -833,15 +730,10 @@ x2 = np.arange(-20, 20 + 1, step=1)
 XX1,XX2 = np.meshgrid(x1,x2)
 X = np.column_stack((XX1.ravel(),XX2.ravel()))
 
-
-
 # 自定义可视化函数
 def visualize_transform(XX1, XX2, ZZ1, ZZ2, cube, arrows, fig_name):
-
     colors = np.arange(len(XX1.ravel()))
-
     fig, ax = plt.subplots(figsize = (5,5))
-
     # 绘制原始网格
     plt.plot(XX1,XX2,color = [0.8,0.8,0.8], lw = 0.25)
     plt.plot(XX1.T,XX2.T,color = [0.8,0.8,0.8], lw = 0.25)
@@ -869,22 +761,12 @@ def visualize_transform(XX1, XX2, ZZ1, ZZ2, cube, arrows, fig_name):
     ax.spines['left'].set_visible(False)
 
     # fig.savefig('Figures/' + fig_name + '.svg', format='svg')
-#
-
-
 
 # 原始网格
 colors = np.arange(len(XX1.ravel()))
-
 fig, ax = plt.subplots(figsize = (5,5))
-
-cube = np.array([[0, 0],
-                 [1, 0],
-                 [1, 1],
-                 [0, 1]])
-arrows = np.array([[1, 0],
-                   [0, 1]])
-
+cube = np.array([[0, 0], [1, 0], [1, 1], [0, 1]])
+arrows = np.array([[1, 0], [0, 1]])
 
 # 绘制原始网格
 plt.plot(XX1,XX2,color = '#0070C0', lw = 0.25)
@@ -905,20 +787,15 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
-
 # fig.savefig('Figures/原始网格.svg', format='svg')
-
 
 
 # 旋转
 # 绕原点，逆时针旋转30
 
 theta = 30/180*np.pi
-R = np.array([[np.cos(theta), -np.sin(theta)],
-              [np.sin(theta),  np.cos(theta)]])
-
-Z = X@R.T;
-
+R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
+Z = X@R.T
 ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
 ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
 fig_name = '逆时针旋转30度'
@@ -928,15 +805,9 @@ arrows_ = arrows @ R.T;
 
 visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
 
-
-
-
 # 等比例放大
-S = np.array([[2, 0],
-              [0, 2]])
-
-Z = X@S;
-
+S = np.array([[2, 0], [0, 2]])
+Z = X@S
 ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
 ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
 
@@ -946,10 +817,8 @@ arrows_ = arrows @ S.T;
 
 visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
 
-
 # 等比例缩小
-S = np.array([[0.4, 0],
-              [0,   0.4]])
+S = np.array([[0.4, 0], [0,   0.4]])
 
 Z = X@S;
 
@@ -962,11 +831,8 @@ arrows_ = arrows @ S.T;
 
 visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
 
-
-
 # 非等比例缩放
-S = np.array([[2, 0],
-              [0, 0.5]])
+S = np.array([[2, 0], [0, 0.5]])
 
 Z = X@S;
 
@@ -991,7 +857,6 @@ arrows_ = arrows @S.T@R.T;
 
 visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
 
-
 # 先旋转，再放大
 Z = X@R.T@S.T;
 
@@ -1006,8 +871,7 @@ visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
 
 
 # 沿横轴剪切
-T = np.array([[1, 1.5],
-              [0, 1]])
+T = np.array([[1, 1.5], [0, 1]])
 
 Z = X@T.T;
 

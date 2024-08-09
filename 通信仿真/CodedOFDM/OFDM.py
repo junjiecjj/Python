@@ -54,9 +54,7 @@ import matplotlib.pyplot as plt
 import scipy
 import commpy as cpy
 import matplotlib
-# matplotlib.get_backend()
-matplotlib.use('TkAgg')
-# matplotlib.use('WXagg')
+
 from matplotlib.font_manager import FontProperties
 from pylab import tick_params
 from matplotlib.pyplot import MultipleLocator
@@ -82,35 +80,34 @@ P = P + 1                           # 导频的数量也需要加1
 
 
 #%%  2 可视化导频插入的方式
-
 # 可视化数据和导频的插入方式
-# dataCarriers = np.delete(allCarriers, pilotCarriers)
-# fig, axs = plt.subplots(1,1, figsize=(8, 2), constrained_layout=True)
-# axs.plot(pilotCarriers, np.zeros_like(pilotCarriers), 'bo', label='pilot')
-# axs.plot(dataCarriers, np.zeros_like(dataCarriers), 'ro', label='data')
+dataCarriers = np.delete(allCarriers, pilotCarriers)
+fig, axs = plt.subplots(1,1, figsize=(8, 2), constrained_layout=True)
+axs.plot(pilotCarriers, np.zeros_like(pilotCarriers), 'bo', label='pilot')
+axs.plot(dataCarriers, np.zeros_like(dataCarriers), 'ro', label='data')
 
-# axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize = 20, width = 3,  )
-# labels = axs.get_xticklabels() + axs.get_yticklabels()
-# [label.set_fontname('Times New Roman') for label in labels]
-# # [label.set_fontsize(20) for label in labels] #刻度值字号
+axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize = 20, width = 3,  )
+labels = axs.get_xticklabels() + axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+# [label.set_fontsize(20) for label in labels] #刻度值字号
 
-# font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-# legend1 = plt.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font1, ncol = 2)
-# frame1 = legend1.get_frame()
-# frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
+font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+legend1 = plt.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font1, ncol = 2)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-# axs.set_yticks([])
-# axs.set_xlim((-1, K))
-# axs.set_ylim((-0.1, 0.3))
-# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-# plt.xlabel('Carrier index', fontproperties=font)
+axs.set_yticks([])
+axs.set_xlim((-1, K))
+axs.set_ylim((-0.1, 0.3))
+font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+plt.xlabel('Carrier index', fontproperties=font)
 
-# axs.grid(True)
-# filepath2 = '/home/jack/snap/'
-# out_fig = plt.gcf()
+axs.grid(True)
+filepath2 = '/home/jack/snap/'
+out_fig = plt.gcf()
 # out_fig .savefig(filepath2+'carrier.eps',   bbox_inches = 'tight')
-# plt.close()
+plt.show()
 
 
 ##%% 3 定义调制和解调方式
@@ -134,6 +131,21 @@ def Modulation(bits):
         return symbol
     elif Modulation_type == "QAM16":
         QAM16 = cpy.QAMModem(16)
+    #     QAM16.plot_constellation_cjj()
+    # def plot_constellation_cjj(self):
+    #     """ Plot the constellation """
+    #     plt.figure(figsize=(10, 10)) # 6，8分别对应宽和高
+    #     plt.scatter(self.constellation.real, self.constellation.imag)
+
+    #     # bin(i)[2:].rjust(nbits, '0')
+    #     for symb in self.constellation:
+    #         # print(len(self.demodulate(symb, 'hard')))
+    #         plt.text(symb.real, symb.imag + .2, "".join([str(i) for i in self.demodulate(symb, 'hard')]), ha='center')
+    #         plt.text(symb.real, symb.imag - .3, symb, ha='center')
+
+    #     plt.title('Constellation')
+    #     plt.grid()
+    #     plt.show()
         symbol = QAM16.modulate(bits)
         return symbol
     elif Modulation_type == "QAM64":
@@ -166,68 +178,46 @@ def DeModulation(symbol):
 
 
 #%% 举例16QAM调制方式，画出星座图
-# mapping_table = {
-#     (0, 0, 0, 0): -3-3j,
-#     (0, 0, 0, 1): -3-1j,
-#     (0, 0, 1, 0): -3+3j,
-#     (0, 0, 1, 1): -3+1j,
-#     (0, 1, 0, 0): -1-3j,
-#     (0, 1, 0, 1): -1-1j,
-#     (0, 1, 1, 0): -1+3j,
-#     (0, 1, 1, 1): -1+1j,
-#     (1, 0, 0, 0):  3-3j,
-#     (1, 0, 0, 1):  3-1j,
-#     (1, 0, 1, 0):  3+3j,
-#     (1, 0, 1, 1):  3+1j,
-#     (1, 1, 0, 0):  1-3j,
-#     (1, 1, 0, 1):  1-1j,
-#     (1, 1, 1, 0):  1+3j,
-#     (1, 1, 1, 1):  1+1j
-# }
+mapping_table = {
+    (0, 0, 0, 0): -3-3j,
+    (0, 0, 0, 1): -3-1j,
+    (0, 0, 1, 0): -3+3j,
+    (0, 0, 1, 1): -3+1j,
+    (0, 1, 0, 0): -1-3j,
+    (0, 1, 0, 1): -1-1j,
+    (0, 1, 1, 0): -1+3j,
+    (0, 1, 1, 1): -1+1j,
+    (1, 0, 0, 0):  3-3j,
+    (1, 0, 0, 1):  3-1j,
+    (1, 0, 1, 0):  3+3j,
+    (1, 0, 1, 1):  3+1j,
+    (1, 1, 0, 0):  1-3j,
+    (1, 1, 0, 1):  1-1j,
+    (1, 1, 1, 0):  1+3j,
+    (1, 1, 1, 1):  1+1j
+}
 
-# fig, axs = plt.subplots(1,1, figsize=(8, 8), constrained_layout=True)
-# for b3 in [0, 1]:
-#     for b2 in [0, 1]:
-#         for b1 in [0, 1]:
-#             for b0 in [0, 1]:
-#                 B = (b3, b2, b1, b0)
-#                 Q = mapping_table[B]
-#                 axs.plot(Q.real, Q.imag, 'bo', markersize = 10)
-#                 axs.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha = 'center', fontsize  = 20)
-# axs.grid(True)
-# axs.set_xlim((-4, 4))
-# axs.set_ylim((-4, 4))
-# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-# axs.set_xlabel('Real part (I)', fontproperties=font)
-# axs.set_ylabel('Imaginary part (Q)', fontproperties=font)
-# plt.title('16 QAM Constellation with Gray-Mapping', fontproperties=font)
-# filepath2 = '/home/jack/snap/'
-# out_fig = plt.gcf()
+fig, axs = plt.subplots(1,1, figsize=(8, 8), constrained_layout=True)
+for b3 in [0, 1]:
+    for b2 in [0, 1]:
+        for b1 in [0, 1]:
+            for b0 in [0, 1]:
+                B = (b3, b2, b1, b0)
+                Q = mapping_table[B]
+                axs.plot(Q.real, Q.imag, 'bo', markersize = 10)
+                axs.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha = 'center', fontsize  = 20)
+axs.grid(True)
+axs.set_xlim((-4, 4))
+axs.set_ylim((-4, 4))
+font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+axs.set_xlabel('Real part (I)', fontproperties=font)
+axs.set_ylabel('Imaginary part (Q)', fontproperties=font)
+plt.title('16 QAM Constellation with Gray-Mapping', fontproperties=font)
+filepath2 = '/home/jack/snap/'
+out_fig = plt.gcf()
 # out_fig.savefig(filepath2+'constellation.eps',   bbox_inches = 'tight')
-# plt.close()
+plt.show()
 
-
-#%% 可视化信道冲击响应，仿真信道
-## the impulse response of the wireless channel
-# fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
-# channelResponse = np.array([1, 0, 0.3 + 0.3j])
-# H_exact = np.fft.fft(channelResponse, K)
-# axs.plot(allCarriers, abs(H_exact), linewidth = 3)
-
-# axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=24, width=3,  )
-# labels = axs.get_xticklabels() + axs.get_yticklabels()
-# [label.set_fontname('Times New Roman') for label in labels]
-# # [label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-# axs.set_xlabel('Subcarrier index', fontproperties=font)
-# axs.set_ylabel('|H(f)|', fontproperties=font)
-# plt.grid(True)
-# axs.set_xlim(0, K-1)
-# filepath2 = '/home/jack/snap/'
-# out_fig = plt.gcf()
-# out_fig .savefig(filepath2 + 'channelresponse.eps',   bbox_inches = 'tight')
-# plt.close()
 
 #%% 4 定义信道
 def add_awgn(x_s, snrDB):
@@ -273,7 +263,7 @@ def DFT(OFDM_RX):
 ## 信道估计
 def channelEstimate(OFDM_demod):
     pilots = OFDM_demod[pilotCarriers]  # 取导频处的数据
-    Hest_at_pilots = pilots / pilotValue  # LS信道估计s
+    Hest_at_pilots = pilots / pilotValue  # LS信道估计
     # 在导频载波之间进行插值以获得估计，然后利用插值估计得到数据下标处的信道响应
     Hest_abs = scipy.interpolate.interp1d(pilotCarriers, abs( Hest_at_pilots), kind = 'linear')(allCarriers)
     Hest_phase = scipy.interpolate.interp1d(pilotCarriers, np.angle( Hest_at_pilots), kind = 'linear')(allCarriers)
@@ -286,10 +276,6 @@ def equalize(OFDM_demod, Hest):
 ## 获取数据位置的数据
 def get_payload(equalized):
     return equalized[dataCarriers]
-
-
-
-
 
 # 5.1 产生比特流
 bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
@@ -322,6 +308,31 @@ bits_est = DeModulation(QAM_est)
 # print(bits_est)
 ber = np.sum(abs(bits-bits_est))/len(bits)
 print(f"{SNRdb} 误比特率BER：{ber}", )
+
+
+
+# %% 可视化信道冲击响应，仿真信道
+# the impulse response of the wireless channel
+fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
+channelResponse = np.array([1, 0, 0.3 + 0.3j])
+H_exact = np.fft.fft(channelResponse, K)
+axs.plot(allCarriers, abs(H_exact), linewidth = 3, label = 'exact')
+axs.plot(allCarriers, abs(Hest), linewidth = 3, label = 'estimated')
+
+axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=24, width=3,  )
+labels = axs.get_xticklabels() + axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+# [label.set_fontsize(24) for label in labels]  # 刻度值字号
+
+font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
+axs.set_xlabel('Subcarrier index', fontproperties=font)
+axs.set_ylabel('|H(f)|', fontproperties=font)
+plt.grid(True)
+axs.set_xlim(0, K-1)
+filepath2 = '/home/jack/snap/'
+out_fig = plt.gcf()
+# out_fig .savefig(filepath2 + 'channelresponse.eps',   bbox_inches = 'tight')
+plt.show()
 
 
 #%%  5 OFDM通信仿真
@@ -397,8 +408,6 @@ def OFDM_simulation():
 # out_fig = plt.gcf()
 # out_fig.savefig(filepath2 + 'OFDM_QAM.png', bbox_inches = 'tight')
 # plt.close()
-
-
 
 
 ### 画出发送信号和过信道后的信号

@@ -565,8 +565,7 @@ model.fit(X_train, y_train)
 def plot_decision_boundary(X, y, model):
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
-                         np.arange(y_min, y_max, 0.01))
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01), np.arange(y_min, y_max, 0.01))
     Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     plt.contourf(xx, yy, Z, alpha=0.8, cmap=ListedColormap(['#FFAAAA', '#AAAAFF']))
@@ -641,8 +640,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import permutation_importance
 
 # 生成虚拟数据集
-X, y = make_classification(n_samples=1000, n_features=2, n_informative=2, n_redundant=0,
-                           n_clusters_per_class=1, n_classes=3, random_state=42)
+X, y = make_classification(n_samples=1000, n_features=2, n_informative=2, n_redundant=0, n_clusters_per_class=1, n_classes=3, random_state=42)
 
 # 创建随机森林分类器
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -651,8 +649,7 @@ clf.fit(X, y)
 # 绘制决策边界
 x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
-                     np.arange(y_min, y_max, 0.02))
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02), np.arange(y_min, y_max, 0.02))
 Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
 Z = Z.reshape(xx.shape)
 
@@ -674,8 +671,7 @@ indices = np.argsort(importances)[::-1]
 # 绘制特征重要性条形图
 plt.figure(figsize=(8, 6))
 plt.title("Feature Importances")
-plt.bar(range(X.shape[1]), importances[indices],
-        color="r", yerr=std[indices], align="center")
+plt.bar(range(X.shape[1]), importances[indices], color="r", yerr=std[indices], align="center")
 plt.xticks(range(X.shape[1]), [f'Feature {i+1}' for i in indices])
 plt.xlim([-1, X.shape[1]])
 plt.show()
@@ -793,8 +789,7 @@ clf.fit(X, y)
 # 创建网格以绘制决策边界
 x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
-                     np.arange(y_min, y_max, 0.01))
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01), np.arange(y_min, y_max, 0.01))
 
 # 预测网格点上的值
 Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
@@ -833,7 +828,7 @@ X[50:100] = np.random.normal(loc=[6, 5], scale=[0.5, 0.5], size=(50, 2))
 y[50:100] = 1
 
 # 类别2
-X[100:] = np.random.normal(loc=[8, 3], scale=[0.5, 0.5], size=(50, 2))
+X[100:] = np.random.normal(loc=[8, 3], scale=[0.5, 0.5], size=(900, 2))
 y[100:] = 2
 
 # 训练朴素贝叶斯分类器
@@ -882,9 +877,7 @@ model.fit(X_train, y_train)
 
 # 4. 决策边界可视化
 def plot_decision_boundary(model, X, y, ax):
-    DecisionBoundaryDisplay.from_estimator(
-        model, X, response_method="predict", ax=ax, grid_resolution=1000, cmap="coolwarm", alpha=0.6
-    )
+    DecisionBoundaryDisplay.from_estimator( model, X, response_method="predict", ax=ax, grid_resolution=1000, cmap="coolwarm", alpha=0.6 )
     ax.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm", edgecolor="k", alpha=0.7)
     ax.set_xlim(X[:, 0].min(), X[:, 0].max())
     ax.set_ylim(X[:, 1].min(), X[:, 1].max())
@@ -907,13 +900,11 @@ def plot_learning_curve(model, X_train, y_train, ax):
     train_sizes = np.arange(100, len(X_train), 100)  # 修改为整数
     train_scores = []
     test_scores = []
-
     for size in train_sizes:
         X_sub, _, y_sub, _ = train_test_split(X_train, y_train, train_size=size, random_state=42)
         model.fit(X_sub, y_sub)
         train_scores.append(model.score(X_sub, y_sub))
         test_scores.append(model.score(X_test, y_test))
-
     ax.plot(train_sizes, train_scores, label='Train score', marker='o')
     ax.plot(train_sizes, test_scores, label='Test score', marker='o')
     ax.set_xlabel('Training Size')
@@ -921,20 +912,14 @@ def plot_learning_curve(model, X_train, y_train, ax):
     ax.set_title('Learning Curve')
     ax.legend()
 
-
-
 # 7. 绘制图形
 fig, axs = plt.subplots(1, 3, figsize=(18, 6))
-
 # 决策边界
 plot_decision_boundary(model, X_test, y_test, ax=axs[0])
-
 # 特征重要性
 plot_feature_importance(model, ax=axs[1])
-
 # 学习曲线
 plot_learning_curve(model, X_train, y_train, ax=axs[2])
-
 plt.tight_layout()
 plt.show()
 
@@ -957,7 +942,7 @@ lda = LinearDiscriminantAnalysis(n_components=2)
 X_lda = lda.fit_transform(X, y)
 
 # 绘制LDA结果
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(16, 8))
 
 # 2D散点图
 plt.subplot(1, 2, 1)
