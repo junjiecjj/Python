@@ -1,0 +1,21 @@
+{
+    "version": "1.0",
+    "results": {
+        "label": [
+            "haha",
+            "xixi"
+        ],
+        "data": [
+            234,
+            123
+        ],
+        "score": [
+            0.3,
+            0.7
+        ]
+    },
+    "explain": {
+        "used": true,
+        "details": "this is for josn test"
+    }
+}

@@ -30,10 +30,6 @@ for i, (k, v) in enumerate(data.items()):   # 读取字典中前十个键值对
         print(k, v)
 
 
-
-
-
-
 #============================================================================================================
 #                         写入 numpy
 #============================================================================================================
@@ -88,75 +84,37 @@ print(f"nup1 = \n{nup1}")
 #============================================================================================================
 #                         写入 tensor
 #============================================================================================================
-
-
 import pickle
 import numpy as np
 import torch
-
 
 ts = torch.randint(low = 0, high = 100, size = (4, 5))*1.2
 with open('tensor.pickle', 'wb') as f:
     pickle.dump(ts, f)
 
-
-
 files = open('tensor.pickle','rb')  # 以二进制读模式（rb）打开pkl文件
 ts1 = pickle.load(files)  # 读取存储的pickle文件
 print(type(ts1))   # 查看数据类型
 print(f"ts1 = \n{ts1}")
 
-
-
 #============================================================================================================
 #                         写入 tensor + numpy 字典
 #============================================================================================================
-
-
 import pickle
 import numpy as np
 import torch
 
-
 ts = torch.randint(low = 0, high = 100, size = (4, 5))*1.2
-
 nupp = np.random.randint(low = 0, high = 100, size = (4, 5))
-
-
 Ats = {'a':ts, 'b':nupp }
 
 with open('tensor.pickle', 'wb') as f:
     pickle.dump(Ats, f)
 
-
-
 files = open('tensor.pickle','rb')  # 以二进制读模式（rb）打开pkl文件
 ts1 = pickle.load(files)  # 读取存储的pickle文件
 print(type(ts1))   # 查看数据类型
 print(f"ts1 = \n{ts1}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -47,9 +47,6 @@ for i, (ax, artist) in enumerate(zip(axs.flat, artists)):
 plt.show()
 
 
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 利用patches绘制正圆，以及外切、内接正多边形
 # 导入包
 import matplotlib.pyplot as plt
@@ -132,10 +129,6 @@ plt.axis('off')
 fig.savefig('Figures/旋转正圆_B.svg', format='svg')
 plt.show()
 
-
-
-
-
 # import numpy as np
 # import matplotlib.pyplot as plt
 # from matplotlib.transforms import Affine2D
@@ -156,8 +149,6 @@ for i in range_array:
 plt.axis('off')
 plt.show()
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 椭圆的生成艺术
 
 import os
@@ -174,9 +165,7 @@ num = 30
 x = np.arange(num)
 y = np.arange(num)
 X, Y = np.meshgrid(x, y)
-
 XY = np.column_stack((X.ravel(), Y.ravel()))
-
 btm = 0.3
 ww = (1 - btm) * X / num + btm
 hh = (1 - btm) * Y / num + btm
@@ -184,7 +173,6 @@ aa = X * 2*np.pi
 
 
 fig, ax = plt.subplots(figsize = (8,8))
-
 ec = EllipseCollection(ww, hh, aa, units='x', offsets=XY, transOffset=ax.transData,cmap = 'RdYlBu')
 ec.set_array((X**2 + Y**2).ravel())
 ax.add_collection(ec)
@@ -193,15 +181,9 @@ ax.set_xlabel('X')
 ax.set_ylabel('y')
 # cbar = plt.colorbar(ec)
 # cbar.set_label('X+Y')
-
 plt.axis('off')
-
 # fig.savefig('Figures/一组椭圆.svg', format='svg')
-
 plt.show()
-
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 椭圆的生成艺术，两组
@@ -235,7 +217,6 @@ for i in range_array:
 
 plt.axis('off')
 # fig.savefig('Figures/旋转椭圆_A.svg', format='svg')
-
 plt.show()
 
 
@@ -248,7 +229,6 @@ range_array = np.arange(200)
 delta_angle = 30 # degrees
 
 colors = plt.cm.RdYlBu(np.linspace(0, 1, len(range_array)))
-
 for i in range_array:
     deg = delta_angle * i
     width = 0.05 + i * 0.05
@@ -261,14 +241,11 @@ plt.axis('off')
 plt.show()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正方形的生成艺术，两组
-
-
 import os
 
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.transforms import Affine2D
@@ -300,7 +277,6 @@ plt.show()
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.transforms import Affine2D
-
 
 fig, ax = plt.subplots(figsize = (8,8))
 ax.set_aspect('equal')
@@ -413,12 +389,10 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-
 # fig.savefig('Figures/两条曲线.svg', format='svg')
 
 
 fig, ax = plt.subplots(figsize=(5,3))
-
 plt.plot(x_array, y_array, color='#0088FF')
 plt.plot(x_array, y2_array, color='#0088FF')
 plt.fill_between(x_array, y2_array, y_array, y_array > y2_array, color='#0088FF', alpha=.25, hatch = '///')
@@ -429,7 +403,6 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-
 # fig.savefig('Figures/两条曲线，双色.svg', format='svg')
 
 
@@ -488,9 +461,7 @@ ax6.fill_betweenx(x_array, y_array, y2_array, y_array > y2_array, color='#0088FF
 ax6.fill_betweenx(x_array, y_array, y2_array, y_array < y2_array, color='r', alpha=.25)
 ax6.set_ylim((0,4*np.pi))
 ax6.set_xlim((-1.2, 1.2))
-
 # fig.savefig('Figures/沿纵轴填充.svg', format='svg')
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 阴影
