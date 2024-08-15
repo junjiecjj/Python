@@ -9,6 +9,12 @@ Created on Thu Aug 15 13:11:55 2024
 import numpy as np
 import matplotlib.pyplot as plt
 
+from Solver import optimal_linear_reg
+
+
+
+
+
 
 m = 25;                     # workers
 d = 100;
