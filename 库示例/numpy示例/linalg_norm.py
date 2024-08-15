@@ -558,24 +558,46 @@ print(inputs1)
 # tensor([5.])
 
 
-
-
-
-
-
-
 #=================================================================================================================
-#                             范数的用法
+#                             验证酉空间的定义和性质
 #=================================================================================================================
 
 
 import numpy as np
+np.random.seed(2)
+
+x = np.random.randint(-3,4, size = (3,1)) + 1j * np.random.randint(-3,4, size = (3,1))
+y = np.random.randint(-3,4, size = (3,1)) + 1j * np.random.randint(-3,4, size = (3,1))
+z = np.random.randint(-3,4, size = (3,1)) + 1j * np.random.randint(-3,4, size = (3,1))
+
+# (1) (x, y) = bar{(y, x)}
+xyH = y.T.conjugate() @ x
+yxH = x.T.conjugate() @ y
+print(f"xyH = {xyH}, yxH = {yxH}")
+
+# (2) (x+y, z) = (x, z) + (y, z)
+xyz = z.T.conjugate() @ (x + y)
+xzyz = z.T.conjugate() @ x + z.T.conjugate() @ y
+print(f"xyz = {xyz}, xzyz = {xzyz}")
 
 
+# (3) (kx, y) = k(x, y)
+k = 2+2j
+kxy = y.T.conjugate() @ (k * x)
+kxy1 = k * (y.T.conjugate() @ x)
+print(f"kxy = {kxy}, kxy1 = {kxy1}")
+
+# (4) (x, ky) = bar{k}(x, y)
+k = 2+2j
+xky = (k*y).T.conjugate() @ x
+xky1 = k.conjugate() * (y.T.conjugate() @ x)
+print(f"xky = {xky}, xky1 = {xky1}")
 
 
-
-
+# |(x, x)|^(1/2) = |x|
+xnorm = np.linalg.norm(x, ord = 2)
+xnorm1 = np.sqrt(np.abs(x.T.conjugate() @ x))
+print(f"xnorm = {xnorm}, xnorm1 = {xnorm1}")
 
 
 

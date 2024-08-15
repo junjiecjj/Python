@@ -11,7 +11,7 @@ Created on Sun Jun 23 16:22:49 2024
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 颜色映射
-
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -25,7 +25,7 @@ p["xtick.minor.visible"] = False
 p["axes.grid"] = True
 p["grid.color"] = "0.5"
 p["grid.linewidth"] = 0.5
-
+plt.close('all')
 
 cmaps = plt.colormaps()
 cmaps
@@ -48,9 +48,9 @@ rgba_color
 # (0.19215686274509805, 0.21176470588235294, 0.5843137254901961, 1.0)
 
 #>>>>>>>>>>>>>>>>>>>>>>  生成颜色映射
-cmap1 = plt.cm.get_cmap('RdYlBu_r')
+cmap1 = matplotlib.colormaps.get_cmap('RdYlBu_r')
 cmap1
-colors1 = plt.cm.get_cmap('RdYlBu_r')(values) # (11, 4)
+colors1 = matplotlib.colormaps.get_cmap('RdYlBu_r')(values) # (11, 4)
 rgba_color1 = cmap1(values[0])
 rgba_color1
 
@@ -85,7 +85,7 @@ plt.show()
 
 
 #>>>>>>>>>>>>>>>>>>>>>> 生成颜色映射
-colormap = plt.cm.get_cmap('RdYlBu_r')
+colormap = matplotlib.colormaps.get_cmap('RdYlBu_r')
 # 生成数据
 data = np.round(np.linspace(0, 1, 21).reshape(-1, 1),2)
 # 用seaborn heatmap展示颜色，并在色块上打印RGB色号
@@ -108,7 +108,7 @@ import seaborn as sns
 # 生成一组随机数值
 random_values = np.random.randint(low = 0, high = 20, size = 20)
 # 定义颜色映射
-colormap = plt.cm.get_cmap('RdYlBu_r')
+colormap = matplotlib.colormaps.get_cmap('RdYlBu_r')
 # 使用Normalize将随机数值映射到[0, 1]范围
 norm = Normalize(vmin=random_values.min(), vmax=random_values.max())
 normalized_values = norm(random_values)
@@ -159,9 +159,9 @@ ax.set_proj_type('ortho')
 # 使用 RdYlBu 色谱, 请大家试着调用其他色谱
 surf = ax.plot_surface(xx, yy, ff, cmap=cm.RdYlBu, linewidth=0, antialiased=False)
 # 设定横纵轴标签
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 # 设定横、纵轴取值范围
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
@@ -186,9 +186,9 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.set_proj_type('ortho')
 surf = ax.plot_surface(xx,yy,ff, cmap='RdYlBu_r', linewidth=0, antialiased=False)
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
@@ -223,9 +223,9 @@ surf.set_facecolor((0,0,0,0))
 # ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 # ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
@@ -253,9 +253,9 @@ colorbar = ax.contour(xx,yy, ff,20, cmap = 'RdYlBu_r')
 fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
 ax.set_proj_type('ortho')
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
@@ -316,7 +316,7 @@ for cmap_idx in cmap_arrays:
 
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
-    cbar.ax.set_title('$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
+    cbar.ax.set_title(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
     # 增加色谱条，并指定刻度
 
     ax.set_xlim(xx.min(), xx.max())
@@ -344,7 +344,7 @@ for cmap_idx in cmap_arrays:
 
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
-    cbar.ax.set_title('$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
+    cbar.ax.set_title(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
 
     ax.set_xlim(xx.min(), xx.max())
     ax.set_ylim(yy.min(), yy.max())
@@ -415,14 +415,14 @@ for idx, angles in enumerate(zip(azim_array, elev_array)):
     ax.set_zlabel('B')
 
     # 白色图脊
-    ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
 
     # 白色背板
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
     # 格子颜色为黑色
     plt.rcParams['grid.color'] = "k"

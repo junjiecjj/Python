@@ -40,13 +40,6 @@ ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 
 
 
-
-
-
-
-
-
-
 # Bk3_Ch11_02
 
 import numpy as np
@@ -63,9 +56,7 @@ fig, ax = plt.subplots()
 colors = plt.cm.jet(np.linspace(0,1,6))
 
 for i in np.linspace(1,6,6):
-    plt.plot(x_array,ww[:,int(i)-1],
-             color = colors[int(i)-1],
-             label = '$a = {lll:.0f}$'.format(lll = a_array[int(i)-1]))
+    plt.plot(x_array,ww[:,int(i)-1], color = colors[int(i)-1], label = '$a = {lll:.0f}$'.format(lll = a_array[int(i)-1]))
 
 plt.xlabel('x'); plt.ylabel('f(x)')
 plt.legend()
@@ -77,10 +68,6 @@ ax.spines['right'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
-
-
-
-
 
 
 # Bk3_Ch11_03

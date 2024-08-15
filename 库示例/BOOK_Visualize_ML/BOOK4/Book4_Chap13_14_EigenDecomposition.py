@@ -23,9 +23,7 @@ vv = np.sin(thetas);
 
 fig, ax = plt.subplots()
 
-ax.quiver(xx1,xx2,uu,vv,
-          angles='xy', scale_units='xy',scale=1,
-          edgecolor='none', facecolor= 'b')
+ax.quiver(xx1,xx2,uu,vv, angles='xy', scale_units='xy',scale=1, edgecolor='none', facecolor= 'b')
 
 plt.ylabel('$x_2$')
 plt.xlabel('$x_1$')
@@ -144,11 +142,8 @@ A = np.array([[1.25, -0.75],
 
 visualize(A@X_circle, A@V_vec,'$A$')
 
-
 #  Eigen deomposition
-
 # A = V @ D @ V.T
-
 lambdas, V = np.linalg.eig(A)
 
 D = np.diag(np.flip(lambdas))
@@ -174,11 +169,6 @@ visualize(V@D@V.T@X_circle, V@D@V.T@V_vec,'$V\u039BV^T$')
 # plot the transformation of A
 
 visualize(A@X_circle, A@V_vec,'$A$')
-
-
-
-
-
 
 
 
@@ -419,10 +409,6 @@ ax.set_ylim(xx2_fine.min(),xx2_fine.max())
 plt.tight_layout()
 ax.set_proj_type('ortho')
 plt.show()
-
-
-
-
 
 
 #%% Bk4_Ch14_04.py

@@ -53,9 +53,7 @@ z = a * np.sin(theta)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_surface(x, y, z,
-                rstride=2, cstride=2,
-                cmap = 'RdYlBu', edgecolors='k')
+ax.plot_surface(x, y, z, rstride=2, cstride=2, cmap = 'RdYlBu', edgecolors='k')
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
 ax.set_zlim(-3,3)
@@ -73,8 +71,7 @@ plt.show()
 
 #%% “花篮”
 dphi, dtheta = np.pi / 250.0, np.pi / 250.0
-[phi, theta] = np.mgrid[0:np.pi + dphi * 1.5:dphi,
-                        0:2 * np.pi + dtheta * 1.5:dtheta]
+[phi, theta] = np.mgrid[0:np.pi + dphi * 1.5:dphi, 0:2 * np.pi + dtheta * 1.5:dtheta]
 m0 = 4; m1 = 3; m2 = 2; m3 = 3;
 m4 = 6; m5 = 2; m6 = 6; m7 = 4;
 
@@ -88,9 +85,7 @@ z = r * np.sin(phi) * np.sin(theta)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_surface(x, y, z,
-                rstride=3, cstride=3,
-                cmap = 'RdYlBu', edgecolors='k')
+ax.plot_surface(x, y, z, rstride=3, cstride=3, cmap = 'RdYlBu', edgecolors='k')
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
 ax.grid(False)
@@ -116,9 +111,7 @@ z = r * np.cos(tGrid)                  # z = r*cos(t)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_surface(x, y, z,
-                rstride=3, cstride=3,
-                cmap = 'RdYlBu', edgecolors='k')
+ax.plot_surface(x, y, z, rstride=3, cstride=3, cmap = 'RdYlBu', edgecolors='k')
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
 ax.grid(False)
@@ -161,10 +154,7 @@ tri = mtri.Triangulation(u, v)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_trisurf(x, y, z,
-                triangles=tri.triangles,
-                cmap=plt.cm.RdYlBu,
-                edgecolor = 'k')
+ax.plot_trisurf(x, y, z, triangles=tri.triangles, cmap=plt.cm.RdYlBu, edgecolor = 'k')
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
 ax.grid(False)
@@ -197,10 +187,7 @@ tri = mtri.Triangulation(theta, phi)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_trisurf(x, y, z,
-                triangles=tri.triangles,
-                cmap=plt.cm.RdYlBu,
-                edgecolor = 'k')
+ax.plot_trisurf(x, y, z, triangles=tri.triangles, cmap=plt.cm.RdYlBu, edgecolor = 'k')
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
 ax.set_zlim(-3,3)
@@ -229,10 +216,7 @@ tri = mtri.Triangulation(u, v)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_trisurf(x, y, z,
-                triangles=tri.triangles,
-                cmap=plt.cm.RdYlBu,
-                edgecolor = 'k')
+ax.plot_trisurf(x, y, z, triangles=tri.triangles, cmap=plt.cm.RdYlBu, edgecolor = 'k')
 ax.set_zlim(-0.6, 0.6)
 ax.view_init(azim=-30, elev=45)
 ax.set_proj_type('ortho')
@@ -267,10 +251,7 @@ tri = mtri.Triangulation(u, v)
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
 
-ax.plot_trisurf(x, y, z,
-                triangles=tri.triangles,
-                cmap=plt.cm.RdYlBu,
-                edgecolor = 'k')
+ax.plot_trisurf(x, y, z, triangles=tri.triangles, cmap=plt.cm.RdYlBu, edgecolor = 'k')
 ax.view_init(azim=-120, elev=30)
 # ax.view_init(azim=-30, elev=45)
 ax.set_proj_type('ortho')

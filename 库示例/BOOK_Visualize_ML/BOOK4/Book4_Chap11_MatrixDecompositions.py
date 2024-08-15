@@ -75,7 +75,6 @@ X = np.random.randn(9, 5)
 
 Q_complete, R_complete = np.linalg.qr(X, mode = 'complete')
 
-
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
 
 plt.sca(axs[0])
@@ -109,8 +108,7 @@ plt.title('Rc')
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
 
 plt.sca(axs[0])
-ax = sns.heatmap(Q_complete.T@Q_complete,cmap='RdBu_r',vmax = 2.5,vmin = -2.5,
-                 cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(Q_complete.T@Q_complete,cmap='RdBu_r',vmax = 2.5,vmin = -2.5, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('Qc.T@Qc')
 
@@ -129,8 +127,7 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(Q_complete,cmap='RdBu_r',vmax = 2.5,vmin = -2.5,
-                 cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(Q_complete,cmap='RdBu_r',vmax = 2.5,vmin = -2.5, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('Qc')
 
@@ -142,8 +139,7 @@ Q, R = np.linalg.qr(X)
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
 
 plt.sca(axs[0])
-ax = sns.heatmap(X,cmap='RdBu_r',vmax = 2.5,vmin = -2.5,
-                 cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(X,cmap='RdBu_r',vmax = 2.5,vmin = -2.5, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('X')
 

@@ -58,7 +58,6 @@ cov_xt = np.cov(X.T)
 
 
 #%% correlation matrix, P
-
 RHO = X_df.corr()
 
 # 计算相关性系数矩阵

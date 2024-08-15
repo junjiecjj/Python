@@ -3,7 +3,7 @@
 
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -526,9 +526,9 @@ fontt = FontProperties(fname=fontpath+"simsun.ttf", size=22)
 plt.suptitle('cos and sin正弦 and tan ', fontproperties=fontt, x=0.5,y=0.96,)
 
 out_fig = plt.gcf()
-out_fig.savefig(filepath2+'hh11.eps', format='eps',dpi=1000, bbox_inches='tight')
+# out_fig.savefig(filepath2+'hh11.eps', format='eps',dpi=1000, bbox_inches='tight')
 #out_fig.savefig(filepath2+'hh.svg', format='svg', dpi=1000, bbox_inches='tight')
-out_fig.savefig(filepath2+'hh.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+# out_fig.savefig(filepath2+'hh.pdf', format='pdf', dpi=1000, bbox_inches='tight')
 #out_fig.savefig(filepath2+'hh.emf',format='emf',dpi=1000, bbox_inches = 'tight')
 #out_fig.savefig(filepath2+'hh.jpg',format='jpg',dpi=1000, bbox_inches = 'tight')
 #out_fig.savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')

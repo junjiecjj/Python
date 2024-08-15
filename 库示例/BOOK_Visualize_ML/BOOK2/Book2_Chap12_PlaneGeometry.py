@@ -4,8 +4,6 @@
 
 
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用patches绘制平面几何形状
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -126,7 +124,7 @@ for i in range_array:
     ax.add_patch(rec)
 
 plt.axis('off')
-fig.savefig('Figures/旋转正圆_B.svg', format='svg')
+# fig.savefig('Figures/旋转正圆_B.svg', format='svg')
 plt.show()
 
 # import numpy as np
@@ -550,9 +548,6 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
-
-
 # 定义函数
 def plot_shape(X,copy = False):
     if copy:
@@ -561,36 +556,26 @@ def plot_shape(X,copy = False):
     else:
         fill_color = np.array([219,238,243])/255
         edge_color = np.array([0,153,255])/255
-
     plt.fill(X[:,0], X[:,1], color = fill_color, edgecolor = edge_color, alpha = 0.5)
-
     plt.plot(X[:,0], X[:,1],marker = 'x', markeredgecolor = edge_color*0.5, linestyle = 'None')
-
 X = np.array([[1,1],
               [0,-1],
               [-1,-1],
               [-1,1]])
-
 X = X + [2, 2]
-
-
 
 
 # 可视化
 num = 24
 thetas = np.linspace(360/num, 360, num, endpoint = False)
-
 fig, ax = plt.subplots()
 plot_shape(X)      # plot original
-
 for theta in thetas:
     theta = theta/180*np.pi;
     # rotation
     R = np.array([[np.cos(theta),  np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
-
     Z = X@R
     # 旋转
-
     plot_shape(Z,True) # plot copy
 
 # 装饰
@@ -613,8 +598,6 @@ ax.spines['right'].set_color('none')
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 展示最小二乘
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -638,18 +621,13 @@ y_points = b1*x_points + b0 + e;
 y_hat_points = b1*x_points + b0;
 yy = b1*xx + b0;
 
-
-
 def plot_square(x,y1,y2):
     if y2 > y1:
         temp = y2;
         y2 = y1;
         y1 = temp;
-
     d = y1 - y2;
-
     plt.fill(np.vstack((x, x + d, x + d, x)), np.vstack((y2, y2, y1, y1)), facecolor='#0088FF', edgecolor='none', alpha = 0.2)
-
 
 fig, ax = plt.subplots(figsize=(6, 6))
 plt.plot(x_points,y_points,'x');
@@ -669,7 +647,6 @@ plt.ylim(-1,5)
 ax.set_xticks([])
 ax.set_yticks([])
 # fig.savefig('Figures/添加图形元素.svg', format='svg')
-
 
 
 

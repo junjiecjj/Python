@@ -71,21 +71,17 @@ P = np.array([[1, cos_theta_12, cos_theta_13],
 L = np.linalg.cholesky(P)
 R = L.T
 
-
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
-plt.plot(0,0,0,color = 'r', marker = 'x',
-         markersize = 12)
+plt.plot(0,0,0,color = 'r', marker = 'x', markersize = 12)
 
 colors = ['b', 'r', 'g']
 for i in np.arange(0,3):
-
     vector = R[:,i]
     v = np.array([vector[0],vector[1],vector[2]])
     vlength=np.linalg.norm(v)
-    ax.quiver(0,0,0,vector[0],vector[1],vector[2],
-            length=vlength, color = colors[i])
+    ax.quiver(0,0,0,vector[0],vector[1],vector[2], length=vlength, color = colors[i])
 
 ax.set_xlim([-1,1])
 ax.set_ylim([-1,1])
