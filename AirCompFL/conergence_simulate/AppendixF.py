@@ -29,14 +29,11 @@ for row in range(len(Delta2)):
     results[row] = [calculate(t, Delta1, Delta2[row]) for t in range(T)]
 
 X =  np.arange(T)
-
 fig, ax = plt.subplots(figsize = (8,6))
-
 colors = plt.cm.cool(np.linspace(0, 1, len(results)))
 for i in range(len(results)):
     label =  r"$\delta_1$ = {}, $\delta_2$ = {}".format(Delta1, Delta2[i])
-    ax.loglog(X, results[i], color = colors[i], label = label)
-
+    ax.loglog(X, results[i], color = colors[i], lw = 3, label = label)
 
 font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 25,} # 'family':'Times New Roman',
 ax.set_xlabel("Communication Round", fontdict = font, labelpad = 2)

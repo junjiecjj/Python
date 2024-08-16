@@ -219,9 +219,7 @@ for key, var in model.named_parameters():
 
 
 for key, var in model.state_dict().items():
-    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n  {var} \n\n" )
-# for key, var in model.named_parameters():
-    # print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n  {var}" )
 # 0: fc1.weight, True, torch.Size([4, 8]), cpu, False, torch.FloatTensor, None
 # 0: fc1.bias, True, torch.Size([4]), cpu, False, torch.FloatTensor, None
 # 0: fc2.weight, True, torch.Size([10, 4]), cpu, False, torch.FloatTensor, None
@@ -239,6 +237,10 @@ output = model(x)
 loss = loss_fn(output, label)
 for key, var in model.state_dict().items():
     print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
+print("\n\n")
+
+for key, var in model.named_parameters():
+    print(f"1: {key}, {var.is_leaf}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
 print("\n\n")
 
 optimizer.zero_grad()
@@ -283,7 +285,7 @@ class net(nn.Module):
 
 model = net()
 loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-2)  # 传入的是所有的参数
+optimizer = optim.Adam(model.parameters(), lr=1e-1)  # 传入的是所有的参数
 x = torch.randn((3, 8))
 label = torch.randint(0,10,[3]).long()
 
@@ -297,32 +299,33 @@ for key, var in model.named_parameters():
 for key, var in model.named_parameters():
     print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 
-
-
-output = model(x)
-#print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
-loss = loss_fn(output, label)
-
-for key, var in model.named_parameters():
-    print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-print("\n\n")
-
 optimizer.zero_grad()
 for key, var in model.named_parameters():
     print(f"2: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 print("\n\n")
 
+output = model(x)
+#print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
+
+loss = loss_fn(output, label)
+for key, var in model.named_parameters():
+    print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+print("\n\n")
+
+
+# 计算每个参数的梯度
 loss.backward()
 for key, var in model.named_parameters():
     print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 print("\n\n")
 
+##梯度剪裁
 torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
-
 for key, var in model.named_parameters():
     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 print("\n\n")
 
+# 更新每个可学习参数的值
 optimizer.step()
 for key, var in model.named_parameters():
     print(f"5: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")

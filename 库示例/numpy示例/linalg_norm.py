@@ -602,10 +602,11 @@ print(f"xnorm = {xnorm}, xnorm1 = {xnorm1}")
 
 
 
+a = np.random.randint(-10, 10, size = (3, 4))
 
+b = np.random.randint(-10, 10, size = (3, 4))
 
-
-
+c = np.append(a.flatten(), b.flatten())
 
 
 
