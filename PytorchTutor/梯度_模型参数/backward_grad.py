@@ -227,7 +227,7 @@ for key, var in model.state_dict().items():
 
 
 loss_fn   = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-2)  # 传入的是所有的参数
+optimizer = optim.SGD(model.parameters(), lr=1e-2)  # 传入的是所有的参数
 x         = torch.randn((3, 8))
 label     = torch.randint(0,10,[3]).long()
 output = model(x)
@@ -285,7 +285,7 @@ class net(nn.Module):
 
 model = net()
 loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-1)  # 传入的是所有的参数
+optimizer = optim.SGD(model.parameters(), lr=1e-1)  # 传入的是所有的参数
 x = torch.randn((3, 8))
 label = torch.randint(0,10,[3]).long()
 

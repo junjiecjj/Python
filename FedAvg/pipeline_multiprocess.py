@@ -284,11 +284,6 @@ def  Quant_LDPC_BPSK_AWGN_equa(com_round = 1, client = '', param_W = '', snr = 2
 #     num_err_bits = np.random.choice(np.arange(codedim), 1, p = err_dist[raw, 1:]/err_dist[raw, 1:].sum())[0]
 #     err_dis[num_err_bits] += 1
 
-
-
-
-
-
 ##=======================================================================================
 
 def acc2Qbits1(acc):

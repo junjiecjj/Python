@@ -442,6 +442,8 @@ print(np.cov(Z_n.T))
 #########################################################################
 ### 工具包自动计算
 from sklearn.decomposition import PCA
+import pandas as pd
+
 
 iris = load_iris()
 X = iris.data
