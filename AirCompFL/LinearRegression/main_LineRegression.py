@@ -16,18 +16,19 @@ import torch
 ## 以下是本项目自己编写的库
 
 import Utility
+from Utility import Initial
 
 from clients import ClientsGroup
 
 from server import Server
 
-
 # 参数
-from config import args
+from config import args_parser
 
 import MetricsLog
 
 
+args = args_parser()
 #======================== seed ==================================
 # 设置随机数种子
 Utility.set_random_seed(args.seed, deterministic = True, benchmark = True)
@@ -36,9 +37,14 @@ Utility.set_printoption(5)
 # checkpoint
 ckp = Utility.checkpoint(args)
 
-#=================================================== main =====================================================
+#======================== main ==================================
 def main():
-    recorder = MetricsLog.TraRecorder(7, name = "Train", )
+    recorder = MetricsLog.TraRecorder(1, name = "Train", )
+
+    ## Initial
+    theta_true, dataset = Initial(args)
+
+
 
     ## 创建 Clients 群
     myClients = ClientsGroup(args )
@@ -50,10 +56,10 @@ def main():
     ##  选取的 Clients 数量
     num_in_comm = int(max(args.num_of_clients * args.cfraction, 1))
 
-    ##==================================================================================================
-    ##                                核心代码
-    ##==================================================================================================
-    comm_cost = 0.0
+    ##=======================================================================
+    ##          核心代码
+    ##=======================================================================
+
     ## num_comm 表示通信次数
     for round_idx in range(args.num_comm):
         pass

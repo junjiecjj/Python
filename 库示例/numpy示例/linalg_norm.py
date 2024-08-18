@@ -67,9 +67,6 @@ matrices and raise a ValueError when ``x.ndim != 2``.
 
 """
 
-
-
-
 #=================================================================================================================
 #                                                      矩阵范数
 #=================================================================================================================
@@ -82,38 +79,36 @@ print(A)
 
 
 # , keepdims = True  注意 keepdims = True 时，输出的是一个二维数组。
-ret_1 = np.linalg.norm(A, ord = 1, axis = None, keepdims = True)                          #  列范数，即所有矩阵列向量绝对值之和的最大值，matlab调用函数norm(A, 1)。
+ret_1 = np.linalg.norm(A, ord = 1, axis = None, keepdims = True)         #  列范数，即所有矩阵列向量绝对值之和的最大值，matlab调用函数norm(A, 1)。
 print(ret_1)
-ret_1 = np.linalg.norm(A, ord = -1, axis = None, keepdims = True)                         #  列范数，即所有矩阵列向量绝对值之和的最小值，matlab调用函数norm(A, 1)。
+ret_1 = np.linalg.norm(A, ord = -1, axis = None, keepdims = True)        #  列范数，即所有矩阵列向量绝对值之和的最小值，matlab调用函数norm(A, 1)。
 print(ret_1)
 
 
-ret_inf = np.linalg.norm(A, ord = np.Inf, axis = None, keepdims = True)                   #  行范数，即所有矩阵行向量绝对值之和的最大值，matlab调用函数norm(A, inf)。
+ret_inf = np.linalg.norm(A, ord = np.Inf, axis = None, keepdims = True)   #  行范数，即所有矩阵行向量绝对值之和的最大值，matlab调用函数norm(A, inf)。
 print(ret_inf)
-ret_inf = np.linalg.norm(A, ord = -np.Inf, axis = None, keepdims = True)                  #  行范数，即所有矩阵行向量绝对值之和的最小值，matlab调用函数norm(A, inf)。
+ret_inf = np.linalg.norm(A, ord = -np.Inf, axis = None, keepdims = True)  #  行范数，即所有矩阵行向量绝对值之和的最小值，matlab调用函数norm(A, inf)。
 print(ret_inf)
 
 
-ret_all = np.linalg.norm(A, ord = 'fro', axis = None, keepdims = True)                    # Frobenius范数，即矩阵元素绝对值的平方和再开平方，matlab调用函数norm(A, ’fro‘)。
+ret_all = np.linalg.norm(A, ord = 'fro', axis = None, keepdims = True)     # Frobenius范数，即矩阵元素绝对值的平方和再开平方，matlab调用函数norm(A, ’fro‘)。
 print(ret_all)
 ## X为矩阵是，默认求的是F范数。矩阵的F范数即：矩阵的各个元素平方之和再开平方根，它通常也叫做矩阵的L2范数，它的有点在它是一个凸函数，可以求导求解，易于计算。
 ret_all = np.linalg.norm(A, keepdims = True)
 print(ret_all)
 
-ret_2 = np.linalg.norm(A, ord = 2, axis = None, keepdims = True)                          #  谱范数，即A'A矩阵的最大特征值的开平方。matlab调用函数norm(x, 2)。
+ret_2 = np.linalg.norm(A, ord = 2, axis = None, keepdims = True)          #  谱范数，即A'A矩阵的最大特征值的开平方。matlab调用函数norm(x, 2)。
 print(ret_2)
-ret_2 = np.linalg.norm(A, ord = -2, axis = None, keepdims = True)                         #  谱范数，即A'A矩阵的最小特征值的开平方。matlab调用函数norm(x, 2)。
+ret_2 = np.linalg.norm(A, ord = -2, axis = None, keepdims = True)         #  谱范数，即A'A矩阵的最小特征值的开平方。matlab调用函数norm(x, 2)。
 print(ret_2)
 
-# ret_3 = np.linalg.norm(A, ord = 3, axis = None)                                                   # ret_3 返回的是  ValueError: Invalid norm order for matrices.
+# ret_3 = np.linalg.norm(A, ord = 3, axis = None)                      # ret_3 返回的是  ValueError: Invalid norm order for matrices.
 # print(ret_3)
-# ret_3 = np.linalg.norm(A, ord = -3, axis = None)                                                  # ret_3 返回的是  ValueError: Invalid norm order for matrices.
+# ret_3 = np.linalg.norm(A, ord = -3, axis = None)                     # ret_3 返回的是  ValueError: Invalid norm order for matrices.
 # print(ret_3)
 
-ret_nuc = np.linalg.norm(A, ord = 'nuc', axis = None)                    # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
+ret_nuc = np.linalg.norm(A, ord = 'nuc', axis = None)             # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
 print(ret_nuc)
-
-
 
 
 #=================================================================================================================
@@ -128,60 +123,57 @@ A = np.array([[3, -4],[-6, 2]])
 print(A)
 
 
-# ret_all = np.linalg.norm(A, ord = 'fro', axis = 1)                                    # ValueError: Invalid norm order 'fro' for vectors
+# ret_all = np.linalg.norm(A, ord = 'fro', axis = 1)                # ValueError: Invalid norm order 'fro' for vectors
 # print(ret_all)
 
-# ret_all = np.linalg.norm(A, ord = 'fro', axis = 0)                                    # ValueError: Invalid norm order 'fro' for vectors
+# ret_all = np.linalg.norm(A, ord = 'fro', axis = 0)                # ValueError: Invalid norm order 'fro' for vectors
 # print(ret_all)
 
 
-ret_0 = np.linalg.norm(A, ord = 0,  axis = 1, keepdims = True )                          # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
+ret_0 = np.linalg.norm(A, ord = 0,  axis = 1, keepdims = True )     # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
 print(ret_0)
-ret_0 = np.linalg.norm(A, ord = 0,  axis = 0, keepdims = True )                          # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
+ret_0 = np.linalg.norm(A, ord = 0,  axis = 0, keepdims = True )     # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
 print(ret_0)
 
-ret_1 = np.linalg.norm(A, ord = 1, axis = 1, keepdims = True)                               # ret_1 返回的是 1 范数, 向量元素绝对值之和，matlab调用函数norm(x, 1) 。
+ret_1 = np.linalg.norm(A, ord = 1, axis = 1, keepdims = True)       # ret_1 返回的是 1 范数, 向量元素绝对值之和，matlab调用函数norm(x, 1) 。
 print(ret_1)
-ret_1 = np.linalg.norm(A, ord = 1, axis = 0, keepdims = True)                               # ret_1 返回的是 1 范数, 向量元素绝对值之和，matlab调用函数norm(x, 1) 。
+ret_1 = np.linalg.norm(A, ord = 1, axis = 0, keepdims = True)       # ret_1 返回的是 1 范数, 向量元素绝对值之和，matlab调用函数norm(x, 1) 。
 print(ret_1)
-ret_1 = np.linalg.norm(A, ord = -1, axis = 1, keepdims = True)                              # ret_1 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_1 = np.linalg.norm(A, ord = -1, axis = 1, keepdims = True)      # ret_1 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_1)
-ret_1 = np.linalg.norm(A, ord = -1, axis = 0, keepdims = True)                              # ret_1 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_1 = np.linalg.norm(A, ord = -1, axis = 0, keepdims = True)      # ret_1 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_1)
 
 ## X为向量时，默认求向量2范数，即求向量元素绝对值的平方和再开方；
 # ret_all = np.linalg.norm(A,         axis = 1, keepdims = True)
 # print(ret_all)
-ret_2 = np.linalg.norm(A, ord = 2,  axis = 1, keepdims = True)                               # ret_2 返回的是 2 范数的值; Euclid范数（欧几里得范数，常用计算向量长度），即向量元素绝对值的平方和再开方，matlab调用函数norm(x, 2)。
+ret_2 = np.linalg.norm(A, ord = 2,  axis = 1, keepdims = True)       # ret_2 返回的是 2 范数的值; Euclid范数（欧几里得范数，常用计算向量长度），即向量元素绝对值的平方和再开方，matlab调用函数norm(x, 2)。
 print(ret_2)
-ret_2 = np.linalg.norm(A, ord = 2,  axis = 0, keepdims = True)                               # ret_2 返回的是 2 范数的值; Euclid范数（欧几里得范数，常用计算向量长度），即向量元素绝对值的平方和再开方，matlab调用函数norm(x, 2)。
+ret_2 = np.linalg.norm(A, ord = 2,  axis = 0, keepdims = True)       # ret_2 返回的是 2 范数的值; Euclid范数（欧几里得范数，常用计算向量长度），即向量元素绝对值的平方和再开方，matlab调用函数norm(x, 2)。
 print(ret_2)
-ret_2 = np.linalg.norm(A, ord = -2, axis = 1, keepdims = True)                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_2 = np.linalg.norm(A, ord = -2, axis = 1, keepdims = True)       # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_2)
-ret_2 = np.linalg.norm(A, ord = -2, axis = 0, keepdims = True)                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_2 = np.linalg.norm(A, ord = -2, axis = 0, keepdims = True)       # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_2)
 
 ## 向量的p范数：
-ret_3 = np.linalg.norm(A, ord = 3, axis = 1, keepdims = True)                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_3 = np.linalg.norm(A, ord = 3, axis = 1, keepdims = True)        # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_3)
-ret_3 = np.linalg.norm(A, ord = 3, axis = 0, keepdims = True)                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_3 = np.linalg.norm(A, ord = 3, axis = 0, keepdims = True)        # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_3)
-ret_3 = np.linalg.norm(A, ord = -3, axis = 1, keepdims = True)                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_3 = np.linalg.norm(A, ord = -3, axis = 1, keepdims = True)       # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_3)
-ret_3 = np.linalg.norm(A, ord = -3, axis = 0, keepdims = True)                               # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
+ret_3 = np.linalg.norm(A, ord = -3, axis = 0, keepdims = True)       # ret_2 返回的是 sum(abs(x)**ord)**(1./ord)
 print(ret_3)
 
-ret_inf = np.linalg.norm(A, ord = np.Inf, axis = 1, keepdims = True)                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最大值，matlab调用函数norm(x, inf)。
+ret_inf = np.linalg.norm(A, ord = np.Inf, axis = 1, keepdims = True)     # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最大值，matlab调用函数norm(x, inf)。
 print(ret_inf)
-ret_inf = np.linalg.norm(A, ord = np.Inf, axis = 0, keepdims = True)                         # 当 axis=0 时表示按列向量处理，求多个列向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最大值，matlab调用函数norm(x, inf)。
+ret_inf = np.linalg.norm(A, ord = np.Inf, axis = 0, keepdims = True)     # 当 axis=0 时表示按列向量处理，求多个列向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最大值，matlab调用函数norm(x, inf)。
 print(ret_inf)
-ret_inf = np.linalg.norm(A, ord = -np.Inf, axis = 1, keepdims = True)                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
+ret_inf = np.linalg.norm(A, ord = -np.Inf, axis = 1, keepdims = True)    # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
 print(ret_inf)
-ret_inf = np.linalg.norm(A, ord = -np.Inf, axis = 0, keepdims = True)                         # 当 axis=0 时表示按列向量处理，求多个列向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
+ret_inf = np.linalg.norm(A, ord = -np.Inf, axis = 0, keepdims = True)    # 当 axis=0 时表示按列向量处理，求多个列向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
 print(ret_inf)
-
-
-
 
 #=================================================================================================================
 #                                                      向量范数
@@ -221,10 +213,6 @@ ret_inf = np.linalg.norm(A, ord = np.Inf, )                         # 当 axis=1
 print(ret_inf)
 ret_inf = np.linalg.norm(A, ord = -np.Inf, )                         # 当 axis=1 时表示按行向量处理，求多个行向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
 print(ret_inf)
-
-
-
-
 
 #=================================================================================================================
 #                                                矩阵范数 torch.linalg.norm
@@ -290,11 +278,9 @@ print(ret_3)
 ret_nuc = torch.linalg.norm(A, ord = 'nuc', dim = None)                    # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
 print(ret_nuc)
 
-
 #=================================================================================================================
 #                                                      向量范数 torch.linalg.norm
 #=================================================================================================================
-
 
 import torch
 
@@ -330,7 +316,6 @@ ret_inf = torch.linalg.norm(A, ord = float('inf'), )                   # max(abs
 print(ret_inf)
 ret_inf = torch.linalg.norm(A, ord = -float('inf'), )                  # min(abs(x))
 print(ret_inf)
-
 
 #=================================================================================================================
 #                                     向量范数 torch.linalg.norm
@@ -387,8 +372,6 @@ ret_inf = torch.linalg.norm(A, ord = -np.Inf, dim = 1, keepdim = True)          
 print(ret_inf)
 ret_inf = torch.linalg.norm(A, ord = -float('inf'), dim = 0, keepdim = True)                         # 当 axis=0 时表示按列向量处理，求多个列向量的范数； ret_all返回的是 inf 范数的值; 即所有向量元素绝对值中的最小值，matlab调用函数norm(x, inf)。
 print(ret_inf)
-
-
 
 #=================================================================================================================
 #                                                      矩阵范数 torch.linalg.matrix_norm
@@ -451,9 +434,6 @@ print(ret_nuc)
 
 
 
-
-
-
 #=================================================================================================================
 #                                                      向量范数 torch.linalg.vector_norm
 #=================================================================================================================
@@ -474,7 +454,6 @@ import torch
 
 A = torch.tensor([3.0, -4.0, -6.0, 2.0,  0])
 print(A)
-
 
 
 ret_0 = torch.linalg.vector_norm(A, ord = 0, )                               # ret_0 返回的是 0 范数，表示向量中非零元素的个数。
@@ -506,9 +485,6 @@ ret_inf = torch.linalg.vector_norm(A, ord = float('inf'), )                   # 
 print(ret_inf)
 ret_inf = torch.linalg.vector_norm(A, ord = -float('inf'), )                  # min(abs(x))
 print(ret_inf)
-
-
-
 
 
 #=================================================================================================================
@@ -601,7 +577,7 @@ print(f"xnorm = {xnorm}, xnorm1 = {xnorm1}")
 
 
 
-
+##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 a = np.random.randint(-10, 10, size = (3, 4))
 
 b = np.random.randint(-10, 10, size = (3, 4))
@@ -610,8 +586,9 @@ c = np.append(a.flatten(), b.flatten())
 
 
 
-
-
+normab = np.linalg.norm(a, ord = 'fro')**2 + np.linalg.norm(b, ord = 'fro')**2
+normc = np.linalg.norm(c, ord = 2)**2
+print(normab - normc)
 
 
 

@@ -11,7 +11,7 @@ import os, sys
 import math
 import datetime
 import imageio
-import cv2
+# import cv2
 import skimage
 import glob
 import random
@@ -20,7 +20,7 @@ import torch
 
 import matplotlib
 # matplotlib.use('TkAgg')
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 
 
 #### 本项目自己编写的库
@@ -55,6 +55,20 @@ def set_printoption(precision = 3):
         profile = None,
         sci_mode = False  # 用科学技术法显示数据，默认True
         )
+
+
+def Initial(args):
+    theta_true = np.random.randn(args.D, 1)
+    X = {}
+    Y = {}
+    for client in range(args.num_of_clients):
+        X[f"client{client:d}"] = np.random.randn(args.local_ds, args.D)
+        noise = np.random.normal(loc = 0.0, scale = args.sigma, size = (args.local_ds, 1))
+        Y[f"client{client:d}"] = X[f"client{client:d}"] @ theta_true + noise
+    p = {}
+    tot_data_size = np.sum([len(val) for key, val in X.items()])
+    return theta_true, X, Y
+
 
 
 # 功能：

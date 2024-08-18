@@ -56,36 +56,31 @@ class Accumulator:
 
 
 #============================================================================================================================
-#                                                训练时 统计 PSNR和MSE
+#                                                训练时
 #============================================================================================================================
 
 class TraRecorder(object):
-    def __init__(self,  Len = 3,  name = "Train", compr = '', tra_snr = 'noiseless'):
+    def __init__(self,  Len = 3,  name = "Train",  tra_snr = 'noiseless'):
         self.name =  name
         self.len = Len
-        self.metricLog = np.empty((0, self.len))
+        self.metricLog = np.empty((0, self.len + 1))
         self.cn = self.__class__.__name__
-        if compr != '' :
-            self.title = r'$\mathrm{{R}}={:.1f},\mathrm{{SNR}}_\mathrm{{train}} = {}\mathrm{{(dB)}}$'.format(compr, tra_snr)
-            self.basename = f"{self.cn}_compr={compr:.1f}_trainSnr={tra_snr}(dB)"
-        else:
-            self.title = ""
-            self.basename = f"{self.cn}"
+
+        self.title = ""
+        self.basename = f"{self.cn}"
         return
 
     def reset(self):
-        self.metricLog = np.empty((0, self.len))
+        self.metricLog = np.empty((0, self.len + 1))
         return
 
     def addlog(self, epoch):
-        # self.metricLog.shape= (n, 4) # 每列分为别
-        # self.metricLog = np.vstack( ( self.metricLog, np.zeros( (1, len(self.args.metrics)) ) ) )
-        self.metricLog = np.append(self.metricLog , np.zeros( (1, self.len )), axis=0)
+        self.metricLog = np.append(self.metricLog , np.zeros( (1, self.len + 1)), axis=0)
         self.metricLog[-1, 0] = epoch
         return
 
     def assign(self,  metrics = ''):
-        if len(metrics) != self.len - 1:
+        if len(metrics) != self.len:
             print(f"[file:{os.path.realpath(__file__)}, line:{sys._getframe().f_lineno}, fun:{sys._getframe().f_code.co_name} ]")
             raise ValueError("len is inconsistent")
         self.metricLog[-1, 1:] = metrics

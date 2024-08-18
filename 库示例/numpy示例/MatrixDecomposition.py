@@ -142,8 +142,6 @@ P = np.array([[1, cos_theta_12, cos_theta_13],
               [cos_theta_13, cos_theta_23, 1]])
 
 L, D, _ = scipy.linalg.ldl(P)
-
-
 P_ = L@ D @ L.T
 
 
@@ -188,6 +186,17 @@ plt.sca(axs[8])
 ax = sns.heatmap(L.T, cmap='RdBu_r',vmax = 2.5,vmin = -2.5, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('L^T')
+
+
+a = np.array([[2, -1, 3], [0, 2, 0], [0, 0, 1]])
+lu, d, perm = scipy.linalg.ldl(a, lower=0) # Use the upper part
+lu
+d
+perm
+lu[perm, :]
+
+P1 = lu @ d @ lu.T
+
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>  QR 分解 complete version
 # Bk4_Ch11_02.py

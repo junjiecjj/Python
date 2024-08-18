@@ -15,7 +15,7 @@ from torch.utils.data import TensorDataset
 from torch.utils.data import DataLoader
 
 # from model import get_model
-from data.getData import GetDataSet
+# from data.getData import GetDataSet
 
 
 class client(object):
@@ -25,15 +25,17 @@ class client(object):
         self.datasize         = datasize
         return
 
-    def localUpdate(self,  ):
+    def localUpdate(self, loc_ep = 10, local_bs = 128 ):
 
         return
 
 
 
 class ClientsGroup(object):
-    def __init__(self, args = None,  ):
-
+    def __init__(self, num_of_clients = 100, isbalance = True, dimension = 100 ):
+        self.num_of_clients =  num_of_clients
+        self.isBalance = isbalance
+        self.D = dimension
         return
 
     def dataSetAllocation_balance(self):
