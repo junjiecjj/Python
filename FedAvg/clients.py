@@ -18,9 +18,7 @@ from torch.utils.data import DataLoader
 from data.getData import GetDataSet
 # 优化器
 # import Optimizer
-
 from LDPC.quantiation import  QuantilizeBbits_torch, SR1Bit_torch, QuantilizeMean
-
 
 
 class client(object):

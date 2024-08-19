@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 """
-Created on 2023/04/25
+Created on 2024/08/15
 
 @author: Junjie Chen
 
@@ -54,83 +54,32 @@ def set_printoption(precision = 3):
         linewidth = 150,  # 每行最多显示的字符数，默认80，超过则换行显示
         profile = None,
         sci_mode = False  # 用科学技术法显示数据，默认True
-        )
+    )
 
 
 def Initial(args):
     theta_true = np.random.randn(args.D, 1)
+    theta0 = np.zeros((args.D, 1))
     X = {}
     Y = {}
     for client in range(args.num_of_clients):
         X[f"client{client:d}"] = np.random.randn(args.local_ds, args.D)
         noise = np.random.normal(loc = 0.0, scale = args.sigma, size = (args.local_ds, 1))
         Y[f"client{client:d}"] = X[f"client{client:d}"] @ theta_true + noise
-    p = {}
+    frac = {}
     tot_data_size = np.sum([len(val) for key, val in X.items()])
-    return theta_true, X, Y
+    for key, val in X.items():
+        frac[key] = len(val)/tot_data_size
+    return  theta_true, theta0, X, Y, frac
 
 
+def optimal_linear_reg(X, Y, frac):
+    XTX = np.sum([data.T @ data for client, data in X.items()], axis = 0)
+    XTY = np.sum([data.T @ Y[client] for client, data in X.items()], axis = 0)
+    theta_optim = np.linalg.inv(XTX) @ XTY
+    optim_Fw = np.sum([0.5 * frac[client] * np.linalg.norm(data @ theta_optim - Y[client], ord = 2 )**2/len(data) for client, data in X.items()])
+    return theta_optim, optim_Fw
 
-# 功能：
-class checkpoint():
-    def __init__(self, args ):
-        print(color.fuchsia("\n#================================ checkpoint 开始准备 =======================================\n"))
-        self.args = args
-        self.n_processes = 8
-
-        self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-
-        # 模型训练时PSNR、MSE和loss和优化器等等数据的保存以及画图目录
-        self.savedir = os.path.join(args.save_path, f"{self.now}_{args.modelUse}")
-        os.makedirs(self.savedir, exist_ok = True)
-
-        print(f"训练结果保存目录 = {self.savedir} ")
-
-        # 模型参数保存的目录
-        # self.modelSaveDir = os.path.join(args.ModelSave, f"{self.now}_Model_{args.modelUse}")
-        self.modelSaveDir = self.args.ModelSave
-        os.makedirs(self.modelSaveDir, exist_ok = True)
-
-        # open_type = 'a' if os.path.exists(self.getSavePath('trainLog.txt')) else 'w'
-        # self.log_file = open(self.getSavePath('trainLog.txt'), open_type)
-        self.writeArgsLog(self.getSavePath('argsConfig.txt'))
-
-        # Prepare test dir and so on:
-        self.testResdir = os.path.join(self.savedir, "test_results")
-        os.makedirs(self.testResdir, exist_ok=True)
-        print(f"测试结果保存目录 = {self.testResdir} ")
-
-        print(color.fuchsia("\n#================================ checkpoint 准备完毕 =======================================\n"))
-        return
-
-
-    def getSavePath(self, *subdir):
-        return os.path.join(self.savedir, *subdir)
-
-    # 写日志
-    def write_log(self, log, train = False ):
-        if train == True:
-            logfile = self.getSavePath('trainLog.txt')
-        else:
-            logfile = self.get_testSavepath('testLog.txt')
-        with open(logfile, 'a+') as f:
-            f.write(log + '\n')
-        return
-
-    # 写日志
-    def write_attacklog(self, log ):
-        logfile = self.getSavePath('AttackLog.txt')
-        with open(logfile, 'a+') as f:
-            f.write(log + '\n')
-        return
-
-# >>> 测试相关函数
-    # 初始化测试结果目录
-    def get_testSavepath(self, *subdir):
-        return os.path.join(self.testResdir, *subdir)
-
-
-# <<< 测试相关函数
 
 
 
