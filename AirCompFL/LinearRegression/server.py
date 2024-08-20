@@ -23,16 +23,12 @@ class Server(object):
         self.theta -= lr * grad_avg  #  这里必须用-=, 如果为self.theat = self.theat - lr * grad_avg，则调用该函数后self.theta不会变化
         return
 
-
-
-    def erf_aggregate_model_diff(self, mess_lst,  ):
-
+    def erf_aggregate_model_diff(self, mess_lst,):
+        self.theta += np.mean(mess_lst, axis = 0)
         return
 
-
-
     def erf_aggregate_updated_model(self, mess_lst,  ):
-
+        self.theta[:] = np.mean(mess_lst, axis = 0)
         return
 
     ##>>>>>>>>>>>>>>>>>>>>>>>>>>> error free >>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -73,36 +69,34 @@ class Server(object):
 
 
 
-# class Server1(object):
-#     def __init__(self,  theta_init ):
+class Server1(object):
+    def __init__(self,  theta_init ):
 
-#         self.theta = theta_init
-#         return
+        self.theta = theta_init
+        return
 
-#     ##>>>>>>>>>>>>>>>>>>>>>>>>>>> error free >>>>>>>>>>>>>>>>>>>>>>>>>>>
-#     def erf(self, mess_lst, lr, ):
-#         grad_avg = np.mean(mess_lst, axis = 0)
-#         self.theta -=  lr * grad_avg
-#         return
+    def erf(self, mess_lst, lr, ):
+        grad_avg = np.mean(mess_lst, axis = 0)
+        self.theta[:] = grad_avg
+        return
 
+theta0 = np.zeros((3, 1))
+print(f"theta0 = \n{theta0}\n")
 
-# theta0 = np.zeros((3, 1))
-# print(f"theta0 = \n{theta0}\n")
+lr = 0.1
+s = Server1(theta0)
+print(f"0: s.theta = \n{s.theta}\n")
+mess_lst = []
+for i in range(3):
+    mess_lst.append(np.random.randn(3, 1) )
 
-# lr = 0.1
-# s = Server1(theta0)
-# print(f"0: s.theta = \n{s.theta}\n")
-# mess_lst = []
-# for i in range(3):
-#     mess_lst.append(np.random.randn(3, 1) )
+sum = 0
+for i in range(3):
+    sum += mess_lst[i]
+sum /= 3
 
-# sum = 0
-# for i in range(3):
-#     sum += mess_lst[i]
-# sum /= 3
-
-# s.erf(mess_lst, lr)
-# print(f"1: s.theta = \n{s.theta}\n")
+s.erf(mess_lst, lr)
+print(f"1: s.theta = \n{s.theta}\n")
 
 
 

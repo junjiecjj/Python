@@ -37,7 +37,7 @@ def args_parser():
     # parser.add_argument('--isBalance', type=int, default = 1,  help = 'numer of the clients') ## 每个客户端是否一样多的数据
 
     ## 联邦学习相关参数
-    parser.add_argument('--loc_up', type=int, default = 10, help = "the number of local epochs: E") ## 训练次数(客户端更新次数)
+    parser.add_argument('--local_up', type=int, default = 10, help = "the number of local epochs: E") ## 训练次数(客户端更新次数)
     parser.add_argument('--local_bs', type=int, default = 128, help="local batch size: B") ## local_batchsize 大小
     parser.add_argument('--test_bs', type=int, default = 128, help = 'test batch size') ## test_batchsize 大小
     parser.add_argument('--channel', type=str, default = 'error free', choices = ('error free', 'agwn', 'rician'),) ##

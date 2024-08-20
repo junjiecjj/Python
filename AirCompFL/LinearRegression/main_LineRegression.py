@@ -62,16 +62,19 @@ num_in_comm = int(max(args.num_of_clients * args.cfrac, 1))
 ##=======================================================================
 theta = theta0
 lr = args.lr
-## num_comm 表示通信次数
+args.case = "updated model"
+print(f"args.case = {args.case}")
+
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
     if args.lr_decrease:
         lr = lr/(0.004*comm_round + 1)
 
     gap_t = np.sum([frac[name] * user.local_loss(theta) for name, user in Users.items()])
-    print(f" round = {comm_round}, gap = {gap_t}")
+    print(f"  round = {comm_round}, gap = {gap_t}")
     ## 从 K 个客户端随机选取 k 个
     candidates = ['client{}'.format(int(i)) for i in np.random.choice(args.num_of_clients, num_in_comm, replace = False)]
+
 
     message_lst = []
     for name in candidates:
@@ -82,15 +85,13 @@ for comm_round in range(args.num_comm):
         elif args.case == "updated model":
             message = Users[name].updated_model(theta, args.local_up, args.local_bs, lr)
         message_lst.append(message)
-
-    args.case = "model diff"
     ####>>> error-free
     if args.case == "gradient" and args.channel.lower() == 'error free':
         server.erf_aggregate_local_gradient(message_lst, lr)
     elif args.case == "model diff" and args.channel.lower() == 'error free':
         server.erf_aggregate_model_diff(message_lst)
-    # elif args.case == "updated model" and args.channel.lower() == 'error free':
-    #     theta = server.erf_aggregate_updated_model(message_lst)
+    elif args.case == "updated model" and args.channel.lower() == 'error free':
+        server.erf_aggregate_updated_model(message_lst)
 
     ####>>> AGWN channel
     # if args.case == "gradient" and args.channel.lower() == 'agwn':
