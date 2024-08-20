@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on 2023/08/19
+Created on 2023/06/30
 
 @author: Junjie Chen
 
@@ -30,37 +29,38 @@ class Client(object):
         return
 
     ## 返回本地梯度
-    def local_gradient(self, theta, local_bs = 128, ):
+    def local_gradient(self, theta, local_bs = 128 ):
         idx = np.random.choice(self.local_ds, local_bs, replace = False)
         x = self.X[idx]
         y = self.Y[idx]
-        gradient = x.T @ (x @ theta - y) / local_bs
+        gradient = (x.T @ (x@theta - y)) / local_bs
 
-        return gradient
+        return [gradient, local_bs]
 
     ## 返回更新前后的差值
-    def model_diff(self, theta, num_local_update = 10, local_bs = 128, lr = 0.01, ):
-        tmp = theta
+    def model_diff(self, theta, num_local_update = 10, local_bs = 128, lr = 0.01 ):
+        tmp = copy.deepcopy(theta)
         for _ in range(num_local_update):
             idx = np.random.choice(self.local_ds, local_bs, replace = False)
             x = self.X[idx]
             y = self.Y[idx]
-            gradient = x.T @ (x @ theta - y) / local_bs
+            gradient = (x.T @ (x@theta - y)) / local_bs
             theta = theta - lr * gradient
         theta_diff = theta - tmp
-        return theta_diff
+        return [theta_diff, local_bs]
+
 
     ## 返回更新后的模型
-    def updated_model(self, theta, num_local_update = 10, local_bs = 128, lr = 0.01, ):
+    def updated_model(self, theta, num_local_update = 10, local_bs = 128, lr = 0.01):
         for _ in range(num_local_update):
             idx = np.random.choice(self.local_ds, local_bs, replace = False)
             x = self.X[idx]
             y = self.Y[idx]
-            gradient = x.T @ (x @ theta - y) / local_bs
+            gradient = (x.T @ (x@theta - y)) / local_bs
             theta = theta - lr * gradient
-        return theta
+        return [theta, local_bs]
 
-    ##
+
     def local_loss(self, theta,):
         Fk = 0.5 * np.linalg.norm( self.X @ theta - self.Y, ord = 2)**2 / self.local_ds
         return Fk
@@ -97,16 +97,6 @@ def GenClientsGroup(args, X, Y, theta0, frac):
 # aa1 = hh1(a)
 # print(f"a = {a}\naa1 = {aa1}")
 
-
-# a = np.array([1,2,3])
-# def hh1(a):
-#     tmp = a
-#     for i in range(2):
-#         a  = a -  i
-#     b = a - tmp
-#     return a, b
-# aa1, dif = hh1(a)
-# print(f"a = {a}\naa1 = {aa1}, {dif}")
 
 
 
