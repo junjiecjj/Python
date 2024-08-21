@@ -60,15 +60,9 @@ class Client(object):
             theta = theta - lr * gradient
         return theta
 
-    ##
     def local_loss(self, theta,):
         Fk = 0.5 * np.linalg.norm( self.X @ theta - self.Y, ord = 2)**2 / self.local_ds
         return Fk
-
-    # def update_theta(self, theta):
-    #     self.theta = theta
-    #     return
-
 
 def GenClientsGroup(args, X, Y, theta0, frac):
     ClientsGroup = {}

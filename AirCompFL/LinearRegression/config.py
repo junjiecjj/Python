@@ -1,20 +1,18 @@
 
 
+
+
+
 # -*- coding: utf-8 -*-
 """
 Created on 2023/06/30
-
 @author: Junjie Chen
-
 """
 
+
 import argparse
-
 import os
-
 import torch
-
-
 
 
 def args_parser():
@@ -40,23 +38,24 @@ def args_parser():
     parser.add_argument('--local_up', type=int, default = 10, help = "the number of local epochs: E") ## 训练次数(客户端更新次数)
     parser.add_argument('--local_bs', type=int, default = 128, help="local batch size: B") ## local_batchsize 大小
     parser.add_argument('--test_bs', type=int, default = 128, help = 'test batch size') ## test_batchsize 大小
-    parser.add_argument('--channel', type=str, default = 'error free', choices = ('error free', 'agwn', 'rician'),) ##
     parser.add_argument('--num_of_clients', type=int,   default = 100, help = 'numer of the clients') ## 客户端的数量
     parser.add_argument('--cfrac', type=float, default = 0.1, help = 'the fraction of clients: C') ## 随机挑选的客户端的数量
 
     parser.add_argument('--num_comm', type=int, default = 1000, help = 'number of communications') ## num_comm 表示通信次数，此处设置为1k
     parser.add_argument('--case', type=str, default = 'gradient', choices = ('gradient', 'model diff', 'updated model'), help = 'the join comm-learning case') ## 传输的是什么，本地训练多少轮等配置
 
+    ## 通信相关参数
+    parser.add_argument('--channel', type=str, default = 'error free', choices = ('error free', 'awgn', 'rician'),) ## 信道类型
+    parser.add_argument('--P0', type=float, default = 1, help = "average transmit power"  ) ## 单个信号平均发送功率
+    parser.add_argument('--SNR', type=float, default = 20, help = "dB"  ) ## 信噪比
 
     ## 数据根目录/日志保存目录
-    parser.add_argument('--save_path',    type = str, default = home + '/FedAvg_DataResults/results/',    help = 'file name to save')
+    parser.add_argument('--save_path', type = str, default = home + '/FedAvg_DataResults/results/',    help = 'file name to save')
     parser.add_argument('--lr', type = float, default = 0.01, help = 'learning rate')
     parser.add_argument('--lr_decrease', type = bool , default = False, help = 'learning rate')
 
-
     # args = parser.parse_args()
     args, unparsed = parser.parse_known_args()
-
     for arg in vars(args):
         if vars(args)[arg] == 'True':
             print(f"arg = {arg}")
@@ -64,13 +63,12 @@ def args_parser():
         elif vars(args)[arg] == 'False':
             print(f"arg = {arg}")
             vars(args)[arg] = False
-
-    # 如果不想用CPU且存在GPU, 则用GPU; 否则用CPU;
+    # 如果想用GPU且存在GPU, 则用GPU; 否则用CPU;
     args.device = torch.device(args.gpu_idx if torch.cuda.is_available() and args.gpu else "cpu")
 
     return args
 
-args = args_parser()
+# args = args_parser()
 
 
 
