@@ -37,17 +37,21 @@ class checkpoint(object):
             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         else:
             self.now =  now
+        first_dir = os.path.join(args.save_path, self.now)
+        os.makedirs(first_dir, exist_ok = True)
+        # print(first_dir)
         # 模型训练时loss和优化器等等数据的保存以及画图目录
         if args.case != "gradient" and args.channel != 'erf':
-            postfix = f"{self.now}_{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         elif args.case == 'gradient' and args.channel != 'erf':
-            postfix = f"{self.now}_{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         elif args.case != 'gradient' and args.channel == 'erf':
-            postfix = f"{self.now}_{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         elif args.case == 'gradient' and args.channel == 'erf':
-            postfix = f"{self.now}_{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
-
-        self.savedir = os.path.join(args.save_path, postfix)
+            postfix = f"{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        # print(postfix)
+        self.savedir = os.path.join(first_dir, postfix)
+        # print(self.savedir)
         os.makedirs(self.savedir, exist_ok = True)
         # print(f"训练结果保存目录 = {self.savedir} ")
         self.writeArgsLog(self.getSavePath('argsConfig.txt'))

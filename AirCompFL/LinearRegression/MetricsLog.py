@@ -19,9 +19,10 @@ import matplotlib
 # matplotlib.use('pdf')
 import pickle
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-from matplotlib.pyplot import MultipleLocator
-
+# from matplotlib.font_manager import FontProperties
+# from matplotlib.pyplot import MultipleLocator
+import warnings
+warnings.filterwarnings("ignore")
 
 
 # 本项目自己编写的库
@@ -85,6 +86,7 @@ class TraRecorder(object):
         self.plot(path, args)
         return
     def plot(self, path, args):
+        self.metricLog[ self.metricLog > 1e20] = 1e20
 
         label = 'Optimality gap'
         fig, ax = plt.subplots(1, 1, figsize = (8, 6))

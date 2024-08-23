@@ -22,7 +22,7 @@ https://blog.csdn.net/m0_46778675/article/details/119983568
 ##                    scipy fsolve 非线性方程组求解
 ##==========================================================================
 
-
+##>>>>>>>>>>>>>>>>>>>
 # https://blog.csdn.net/qq_35516360/article/details/122066046
 from math import sin, cos
 from scipy import optimize
@@ -40,34 +40,36 @@ def f(x):
 result = optimize.fsolve(f, [1, 1, 1])
 print(result)
 print(f(result))
-
-
 # [-0.70622057 -0.6        -2.5       ]
 # [0.0, -9.126033262418787e-14, 5.329070518200751e-15]
 
 
+##>>>>>>>>>>>>>>>>>>>
+import numpy as np
+from scipy.optimize import fsolve
+def func(x):
+    return [x[0] * np.cos(x[1]) - 4,
+            x[1] * x[0] - x[1] - 5]
+x = fsolve(func, [1, 1])
+print(x)
+# array([6.50409711, 0.90841421])
+print(np.isclose(func(x), [0.0, 0.0]))  # func(root) should be almost 0.0.
+# array([ True,  True])
 
+
+##>>>>>>>>>>>>>>>>>>>
 from math import sin, cos
 from scipy import optimize
 
 
 def f(x):
     x0, x1, x2 = x.tolist()
-    return [
-        5 * x1 + 3,
-        4 * x0 ** 2 - 2 * sin(x1 * x2),
-        x1 * x2 - 1.5
-    ]
+    return [ 5 * x1 + 3, 4 * x0 ** 2 - 2 * sin(x1 * x2), x1 * x2 - 1.5 ]
 
 
 def j(x):
     x0, x1, x2 = x.tolist()
-    return [
-        [0, 5, 0],
-        [8 * x0, -2 * x2 * cos(x1 * x2), -2 * x1 * cos(x1 * x2)],
-        [0, x2, x1]
-    ]
-
+    return [ [0, 5, 0], [8 * x0, -2 * x2 * cos(x1 * x2), -2 * x1 * cos(x1 * x2)], [0, x2, x1] ]
 
 result = optimize.fsolve(f, [1, 1, 1], fprime=j)
 print(result)
@@ -75,7 +77,7 @@ print(f(result))
 # [-0.70622057 -0.6        -2.5       ]
 # [0.0, -9.126033262418787e-14, 5.329070518200751e-15]
 
-
+##>>>>>>>>>>>>>>>>>>>
 ### https://zhuanlan.zhihu.com/p/28155370
 import numpy as np
 from scipy.optimize import fsolve
@@ -84,9 +86,7 @@ from scipy.optimize import fsolve
 def f(x):
 #转换为标准的浮点数列表
     x0, x1, x2 = x.tolist()
-    return[5*x1+3,
-           4*x0*x0 - 2*np.sin(x1*x2),
-           x1*x2-1.5]
+    return[5*x1+3, 4*x0*x0 - 2*np.sin(x1*x2), x1*x2-1.5]
 
 #f是计算的方程组误差函数，[1,1,1]是未知数的初始值
 result = fsolve(f, [1,1,1])
@@ -113,20 +113,21 @@ print(root(f1,[0,-1]).x)#初始猜测值[0,-1]
 print(root(f1,[0,0]).x)#初始猜测值[0,0]
 
 # 此外，在上面的基础上我们可以设置参数jac来提高运算速度（尤其是计算量很大时效果很明显）。
-from numpy import array,mat,sin,cos,exp
+# from numpy import array,mat,sin,cos,exp
+import numpy as np
 from scipy.optimize import root
 
 def f(x):
     eqs=[]
-    eqs.append(x[0]*x[1]+x[1]*x[2]+sin(x[0])*exp(x[1])+x[1])
-    eqs.append(x[0]*x[1]-exp(x[0])*x[1]+1)
-    eqs.append(x[1]*x[2]+exp(x[1])*x[2]+1)
+    eqs.append(x[0]*x[1]+x[1]*x[2]+np.sin(x[0])*np.exp(x[1])+x[1])
+    eqs.append(x[0]*x[1]-np.exp(x[0])*x[1]+1)
+    eqs.append(x[1]*x[2]+np.exp(x[1])*x[2]+1)
     return eqs
 
 def jac1(x):#方程组对应的雅可比矩阵
-    return mat([[x[1]+cos(x[0])*exp(x[1]), x[0]+x[2]+sin(x[0])*exp(x[1])+1, x[1]],
-                [x[1]-exp(x[0])*x[1], x[0]-exp(x[0]), 0],
-                [0 ,x[2]+exp(x[1])*x[2], x[1]+exp(x[1])]])
+    return mat([[x[1]+np.cos(x[0])*np.exp(x[1]), x[0]+x[2]+np.sin(x[0])*np.exp(x[1])+1, x[1]],
+                [x[1]-np.exp(x[0])*x[1], x[0]-np.exp(x[0]), 0],
+                [0 ,x[2]+np.exp(x[1])*x[2], x[1]+np.exp(x[1])]])
 
 print(root(f,[0,0,0]).x)
 print(root(f,[0,0,0],jac=jac1).x)#加上参数jac加快运算速度
@@ -258,7 +259,7 @@ print(nsolve(eqs, [x, y], X0))
 
 
 import numpy as np
-a = np.mat('1,2,3;2,4,8;9,6,3')
+a = np.mat('1,2,3; 2,4,8; 9,6,3')
 b = np.mat('1;1;3')
 c = np.linalg.solve(a,b)
 print(c)

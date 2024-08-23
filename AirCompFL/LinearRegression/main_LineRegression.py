@@ -16,6 +16,9 @@ import numpy as np
 import datetime
 # import torch
 import copy
+import warnings
+warnings.filterwarnings("ignore")
+
 
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
@@ -67,7 +70,7 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
     ##          迭代
     ##=======================================================================
     theta = theta0
-    lr = args.lr
+    lr0 = args.lr
     # args.case = "gradient"   # "gradient", "diff", "model"
     # args.channel = 'rician'       # 'erf', 'awgn', rician'
 
@@ -83,11 +86,11 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
         recorder.addlog(comm_round)
 
         if args.lr_decrease:
-            lr = lr/(0.004*comm_round + 1)
-        ## 根据当前的回归系数获取 F(w^(t)) - F(w^*),即 optimal gap
+            lr = lr0/(0.004*comm_round + 1)
+        ################# 根据当前的回归系数获取 F(w^(t)) - F(w^*),即 optimal gap
         gap_t = np.sum([frac[name] * user.local_loss(theta) for name, user in Users.items()])
         if (comm_round + 1) % 100 == 0:
-            print(f"   [{args.channel}:{args.SNR if args.channel != 'erf' else ''}(dB), {args.case}:{args.local_up if args.case != 'erf' else ''}] -----> round = {comm_round+1}, gap = {gap_t:.5f}")
+            print(f"   [{args.case}:{args.local_up if args.case != 'erf' else ''}, {args.channel}:{args.SNR if args.channel != 'erf' else ''}(dB), ] -----> round = {comm_round+1}, gap = {gap_t:.5f}, lr = {lr}")
 
         ####################### random choice client ##################
         clients_idx = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
@@ -131,7 +134,7 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
         elif args.case == "model" and args.channel.lower() == 'rician':
             server.aggregate_rician_model(message_lst, args.SNR, h)
 
-        ## 更新回归系数
+        ########################### 更新回归系数 ###############################
         theta = copy.deepcopy(server.theta)
 
         recorder.assign([abs(gap_t - optim_Fw), lr, ])
@@ -143,39 +146,69 @@ def main():
     cases = ["gradient", "diff", "model"]
     channels = ['erf', 'awgn', 'rician']
     local_E = [1, 5, 10]
-    SNR = np.arange(-20, 20, 5)
+    SNR = np.arange(-20, 21, 5)
+    # cases = ["model", "gradient", "diff", ]
+    # channels = ['rician', 'awgn', 'erf', ]
+    # local_E = [1, 5, 10]
+    # SNR = np.arange(-20, 20, 5)
+
     error_lst = []
 
     for info in cases:
         for channel in channels:
             if info != "gradient"  and channel != 'erf':
-                for snr in SNR:
-                    for E in local_E:
+                for E in local_E:
+                    for snr in SNR:
                         try:
                             run(info = info, channel = channel, snr = snr, local_E = E)
                         except Exception as e:
                             error_lst.append([info, E, channel, snr])
-                            print("f{e}: {info}, {E}, {channel}, {snr} error !!!!!!!!")
+                            print(f"{e}: {info}, {E}, {channel}, {snr} error !!!!!!!!")
             elif info == 'gradient' and channel != 'erf':
                 for snr in SNR:
                     try:
                         run(info = info, channel = channel, snr = snr)
                     except Exception as e:
                         error_lst.append([info, E, channel, snr])
-                        print("f{e}: {info}, {E}, {channel}, {snr} error !!!!!!!!")
+                        print(f"{e}: {info}, {E}, {channel}, {snr} error !!!!!!!!")
             elif info != 'gradient' and channel == 'erf':
                 for E in local_E:
                     run(info = info, channel = channel, local_E = E)
             elif info == 'gradient' and channel == 'erf':
                 run(info = info, channel = channel)
-    return
+    return error_lst
 
-if __name__=="__main__":
-    main()
+# if __name__=="__main__":
+error_lst = main()
+print(error_lst)
 
 
+"""
+Fixed Lr:
+error_lst = 2024-08-23-14:46:33
+[['model', 1, 'rician', -20],
+ ['model', 1, 'rician', -15],
+ ['model', 1, 'rician', -10],
+ ['model', 5, 'rician', -20],
+ ['model', 5, 'rician', -15],
+ ['model', 5, 'rician', -10],
+ ['model', 10, 'rician', -20],
+ ['model', 10, 'rician', -15],
+ ['model', 10, 'rician', -10]]
 
+Decreased Lr:
+error_lst = 2024-08-23-15:04:51
+[['model', 1, 'rician', -20],
+ ['model', 1, 'rician', -15],
+ ['model', 1, 'rician', -10],
+ ['model', 5, 'rician', -20],
+ ['model', 5, 'rician', -15],
+ ['model', 5, 'rician', -10],
+ ['model', 10, 'rician', -20],
+ ['model', 10, 'rician', -15],
+ ['model', 10, 'rician', -10]]
 
+"""
 
 
 

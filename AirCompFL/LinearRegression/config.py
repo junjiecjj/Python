@@ -51,7 +51,7 @@ def args_parser():
     ## 数据根目录/日志保存目录
     parser.add_argument('--save_path', type = str, default = home + '/AirFL/LinearRegression/',    help = 'file name to save')
     parser.add_argument('--lr', type = float, default = 0.01, help = 'learning rate')
-    parser.add_argument('--lr_decrease', type = bool , default = False, help = 'learning rate')
+    parser.add_argument('--lr_decrease', type = bool , default = True, help = 'learning rate')
 
     # args = parser.parse_args()
     args, unparsed = parser.parse_known_args()
