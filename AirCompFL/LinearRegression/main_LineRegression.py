@@ -13,7 +13,7 @@ Created on Thu Aug 15 13:11:55 2024
 
 import numpy as np
 # import matplotlib.pyplot as plt
-
+import datetime
 # import torch
 import copy
 
@@ -33,103 +33,145 @@ from config import args_parser
 import MetricsLog
 
 
-args = args_parser()
-#======================== seed ==================================
-# 设置随机数种子
-set_random_seed(args.seed, )
-set_printoption(5)
 
-# checkpoint
-# ckp =  checkpoint(args)
 
+now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 #======================== main ==================================
-# def main():
-recorder = MetricsLog.TraRecorder(1, name = "Train", )
+def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
+    args = args_parser()
+    #======================== seed ==================================
+    # 设置随机数种子
+    set_random_seed(args.seed, )
+    set_printoption(5)
 
-## Initial
-theta_true, theta0, X, Y, frac = Initial(args)
-theta_optim, optim_Fw = optimal_linear_reg(X, Y, frac)
+    recorder = MetricsLog.TraRecorder(2, name = "Train", )
 
-## 创建 Clients 群
-Users = GenClientsGroup(args, X, Y, theta0, frac)
+    ## Initial
+    theta_true, theta0, X, Y, frac = Initial(args)
+    theta_optim, optim_Fw = optimal_linear_reg(X, Y, frac)
 
-## 创建 server
-server = Server(args, theta0)
+    ## 创建 Clients 群
+    Users = GenClientsGroup(args, X, Y, frac)
 
-##============================= 完成以上准备工作 ================================#
-##  选取的 Clients 数量
-num_in_comm = int(max(args.num_of_clients * args.cfrac, 1))
+    ## 创建 server
+    server = Server(args, theta0)
 
-H = np.sqrt(1/2) * (np.random.randn(args.num_comm, args.num_of_clients) + 1j * np.random.randn(args.num_comm, args.num_of_clients))
-H = np.abs(H)
+    ##============================= 完成以上准备工作 ================================#
+    ##  选取的 Clients 数量
+    num_in_comm = int(max(args.num_of_clients * args.cfrac, 1))
 
-##=======================================================================
-##          迭代
-##=======================================================================
-theta = theta0
-lr = args.lr
-args.case = "updated model"   # "gradient", "model diff", "updated model"
-args.channel = 'rician'       # 'error free', 'awgn', rician'
-print(f"args.case = {args.case}, channel = {args.channel}")
+    H = np.sqrt(1/2) * (np.random.randn(args.num_comm, args.num_of_clients) + 1j * np.random.randn(args.num_comm, args.num_of_clients))
+    H = np.abs(H)
 
-for comm_round in range(args.num_comm):
-    recorder.addlog(comm_round)
+    ##=======================================================================
+    ##          迭代
+    ##=======================================================================
+    theta = theta0
+    lr = args.lr
+    # args.case = "gradient"   # "gradient", "diff", "model"
+    # args.channel = 'rician'       # 'erf', 'awgn', rician'
 
-    if args.lr_decrease:
-        lr = lr/(0.004*comm_round + 1)
-    ## 根据当前的回归系数获取 F(w^(t)) - F(w^*),即 optimal gap
-    gap_t = np.sum([frac[name] * user.local_loss(theta) for name, user in Users.items()])
-    print(f"  round = {comm_round}, gap = {gap_t}")
-    ## 从 K 个客户端随机选取 k 个
-    clients_idx = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
-    candidates = ['client{}'.format(int(i)) for i in clients_idx]
+    args.case = info
+    args.channel = channel
+    args.SNR = snr
+    args.local_up = local_E
+    print(f"Info = {args.case}, E = {args.local_up}, channel = {args.channel}, snr = {args.SNR}")
 
-    h = H[comm_round, clients_idx]
+    # checkpoint
+    ckp =  checkpoint(args, now)
+    for comm_round in range(args.num_comm):
+        recorder.addlog(comm_round)
 
-    message_lst = []
-    for name in candidates:
-        if args.case == "gradient":
-            message = Users[name].local_gradient(theta, args.local_bs)
-        elif args.case == "model diff":
-            message = Users[name].model_diff(theta, args.local_up, args.local_bs, lr)
-        elif args.case == "updated model":
-            message = Users[name].updated_model(theta, args.local_up, args.local_bs, lr)
-        message_lst.append(message)
-    ####>>> error-free
-    if args.case == "gradient" and args.channel.lower() == 'error free':
-        server.erf_aggregate_local_gradient(message_lst, lr)
-    elif args.case == "model diff" and args.channel.lower() == 'error free':
-        server.erf_aggregate_model_diff(message_lst)
-    elif args.case == "updated model" and args.channel.lower() == 'error free':
-        server.erf_aggregate_updated_model(message_lst)
+        if args.lr_decrease:
+            lr = lr/(0.004*comm_round + 1)
+        ## 根据当前的回归系数获取 F(w^(t)) - F(w^*),即 optimal gap
+        gap_t = np.sum([frac[name] * user.local_loss(theta) for name, user in Users.items()])
+        if (comm_round + 1) % 100 == 0:
+            print(f"   [{args.channel}:{args.SNR if args.channel != 'erf' else ''}(dB), {args.case}:{args.local_up if args.case != 'erf' else ''}] -----> round = {comm_round+1}, gap = {gap_t:.5f}")
 
-    ###>>> AWGN channel
-    if args.case == "gradient" and args.channel.lower() == 'awgn':
-        server.awgn_aggregate_local_gradient(message_lst, lr, args.SNR)
-    elif args.case == "model diff" and args.channel.lower() == 'awgn':
-        server.awgn_aggregate_model_diff(message_lst, args.SNR)
-    elif args.case == "updated model" and args.channel.lower() == 'awgn':
-        server.awgn_aggregate_updated_model(message_lst, args.SNR)
+        ####################### random choice client ##################
+        clients_idx = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
+        candidates = ['client{}'.format(int(i)) for i in clients_idx]
 
-    ###>>> Rice channel
-    if args.case == "gradient" and args.channel.lower() == 'rician':
-        server.rician_aggregate_local_gradient(message_lst, lr, args.SNR, h)
-    elif args.case == "model diff" and args.channel.lower() == 'rician':
-        server.rician_aggregate_model_diff(message_lst, args.SNR, h)
-    elif args.case == "updated model" and args.channel.lower() == 'rician':
-        server.rician_aggregate_updated_model(message_lst, args.SNR, h)
+        h = H[comm_round, clients_idx]
 
-    ## 更新回归系数
-    theta = copy.deepcopy(server.theta)
+        ######################## Distribution & Local Update ####################
+        message_lst = []
+        for name in candidates:
+            if args.case == "gradient":
+                message = Users[name].local_gradient(theta, args.local_bs)
+            elif args.case == "diff":
+                message = Users[name].model_diff(theta, args.local_up, args.local_bs, lr)
+            elif args.case == "model":
+                message = Users[name].updated_model(theta, args.local_up, args.local_bs, lr)
+            message_lst.append(message)
+
+        ######################## Upload & Aggregation ##########################
+        ####>>> error-free
+        if args.case == "gradient" and args.channel.lower() == 'erf':
+            server.aggregate_erf_gradient(message_lst, lr)
+        elif args.case == "diff" and args.channel.lower() == 'erf':
+            server.aggregate_erf_diff(message_lst)
+        elif args.case == "model" and args.channel.lower() == 'erf':
+            server.aggregate_erf_model(message_lst)
+
+        ###>>> AWGN channel
+        if args.case == "gradient" and args.channel.lower() == 'awgn':
+            server.aggregate_awgn_gradient(message_lst, lr, args.SNR)
+        elif args.case == "diff" and args.channel.lower() == 'awgn':
+            server.aggregate_awgn_diff(message_lst, args.SNR)
+        elif args.case == "model" and args.channel.lower() == 'awgn':
+            server.aggregate_awgn_model(message_lst, args.SNR)
+
+        ###>>> Rice channel
+        if args.case == "gradient" and args.channel.lower() == 'rician':
+            server.aggregate_rician_gradient(message_lst, lr, args.SNR, h)
+        elif args.case == "diff" and args.channel.lower() == 'rician':
+            server.aggregate_rician_diff(message_lst, args.SNR, h)
+        elif args.case == "model" and args.channel.lower() == 'rician':
+            server.aggregate_rician_model(message_lst, args.SNR, h)
+
+        ## 更新回归系数
+        theta = copy.deepcopy(server.theta)
+
+        recorder.assign([abs(gap_t - optim_Fw), lr, ])
+    recorder.save(ckp.savedir, args)
+    return
 
 
+def main():
+    cases = ["gradient", "diff", "model"]
+    channels = ['erf', 'awgn', 'rician']
+    local_E = [1, 5, 10]
+    SNR = np.arange(-20, 20, 5)
+    error_lst = []
 
-# print(f"Data volume = {data_valum} (floating point number) ")
-# return
+    for info in cases:
+        for channel in channels:
+            if info != "gradient"  and channel != 'erf':
+                for snr in SNR:
+                    for E in local_E:
+                        try:
+                            run(info = info, channel = channel, snr = snr, local_E = E)
+                        except Exception as e:
+                            error_lst.append([info, E, channel, snr])
+                            print("f{e}: {info}, {E}, {channel}, {snr} error !!!!!!!!")
+            elif info == 'gradient' and channel != 'erf':
+                for snr in SNR:
+                    try:
+                        run(info = info, channel = channel, snr = snr)
+                    except Exception as e:
+                        error_lst.append([info, E, channel, snr])
+                        print("f{e}: {info}, {E}, {channel}, {snr} error !!!!!!!!")
+            elif info != 'gradient' and channel == 'erf':
+                for E in local_E:
+                    run(info = info, channel = channel, local_E = E)
+            elif info == 'gradient' and channel == 'erf':
+                run(info = info, channel = channel)
+    return
 
-
-# if __name__=="__main__":
-#     main()
+if __name__=="__main__":
+    main()
 
 
 

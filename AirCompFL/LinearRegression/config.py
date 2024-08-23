@@ -37,20 +37,19 @@ def args_parser():
     ## 联邦学习相关参数
     parser.add_argument('--local_up', type=int, default = 10, help = "the number of local epochs: E") ## 训练次数(客户端更新次数)
     parser.add_argument('--local_bs', type=int, default = 128, help="local batch size: B") ## local_batchsize 大小
-    parser.add_argument('--test_bs', type=int, default = 128, help = 'test batch size') ## test_batchsize 大小
     parser.add_argument('--num_of_clients', type=int,   default = 100, help = 'numer of the clients') ## 客户端的数量
     parser.add_argument('--cfrac', type=float, default = 0.1, help = 'the fraction of clients: C') ## 随机挑选的客户端的数量
 
     parser.add_argument('--num_comm', type=int, default = 1000, help = 'number of communications') ## num_comm 表示通信次数，此处设置为1k
-    parser.add_argument('--case', type=str, default = 'gradient', choices = ('gradient', 'model diff', 'updated model'), help = 'the join comm-learning case') ## 传输的是什么，本地训练多少轮等配置
+    parser.add_argument('--case', type=str, default = 'gradient', choices = ('gradient', 'diff', 'model'), help = 'the join comm-learning case') ## 传输的是什么，本地训练多少轮等配置
 
     ## 通信相关参数
-    parser.add_argument('--channel', type=str, default = 'error free', choices = ('error free', 'awgn', 'rician'),) ## 信道类型
+    parser.add_argument('--channel', type=str, default = 'error free', choices = ('erf', 'awgn', 'rician'),) ## 信道类型
     parser.add_argument('--P0', type=float, default = 1, help = "average transmit power"  ) ## 单个信号平均发送功率
-    parser.add_argument('--SNR', type=float, default = 20, help = "dB"  ) ## 信噪比
+    parser.add_argument('--SNR', type=float, default = 10, help = "dB"  ) ## 信噪比
 
     ## 数据根目录/日志保存目录
-    parser.add_argument('--save_path', type = str, default = home + '/FedAvg_DataResults/results/',    help = 'file name to save')
+    parser.add_argument('--save_path', type = str, default = home + '/AirFL/LinearRegression/',    help = 'file name to save')
     parser.add_argument('--lr', type = float, default = 0.01, help = 'learning rate')
     parser.add_argument('--lr_decrease', type = bool , default = False, help = 'learning rate')
 
@@ -68,7 +67,7 @@ def args_parser():
 
     return args
 
-# args = args_parser()
+args = args_parser()
 
 
 

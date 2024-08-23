@@ -27,57 +27,57 @@ fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
-
-
 # 功能：
-class checkpoint():
-    def __init__(self, args ):
-        print(color.fuchsia("\n#================================ checkpoint 开始准备 =======================================\n"))
+class checkpoint(object):
+    def __init__(self, args, now = 'None'):
+        # print("#=================== checkpoint 开始准备 ======================\n")
         self.args = args
         self.n_processes = 8
+        if now == 'None':
+            self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        else:
+            self.now =  now
+        # 模型训练时loss和优化器等等数据的保存以及画图目录
+        if args.case != "gradient" and args.channel != 'erf':
+            postfix = f"{self.now}_{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        elif args.case == 'gradient' and args.channel != 'erf':
+            postfix = f"{self.now}_{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        elif args.case != 'gradient' and args.channel == 'erf':
+            postfix = f"{self.now}_{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        elif args.case == 'gradient' and args.channel == 'erf':
+            postfix = f"{self.now}_{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
 
-        self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-
-        # 模型训练时PSNR、MSE和loss和优化器等等数据的保存以及画图目录
-        self.savedir = os.path.join(args.save_path, f"{self.now}_{args.modelUse}")
+        self.savedir = os.path.join(args.save_path, postfix)
         os.makedirs(self.savedir, exist_ok = True)
-
-        print(f"训练结果保存目录 = {self.savedir} ")
-
-        # 模型参数保存的目录
-        # self.modelSaveDir = os.path.join(args.ModelSave, f"{self.now}_Model_{args.modelUse}")
-        self.modelSaveDir = self.args.ModelSave
-        os.makedirs(self.modelSaveDir, exist_ok = True)
-
-        # open_type = 'a' if os.path.exists(self.getSavePath('trainLog.txt')) else 'w'
-        # self.log_file = open(self.getSavePath('trainLog.txt'), open_type)
+        # print(f"训练结果保存目录 = {self.savedir} ")
         self.writeArgsLog(self.getSavePath('argsConfig.txt'))
-
-        # Prepare test dir and so on:
-        self.testResdir = os.path.join(self.savedir, "test_results")
-        os.makedirs(self.testResdir, exist_ok=True)
-        print(f"测试结果保存目录 = {self.testResdir} ")
-
-        print(color.fuchsia("\n#================================ checkpoint 准备完毕 =======================================\n"))
+        # print("#================== checkpoint 准备完毕 =======================\n")
         return
 
+    def writeArgsLog(self, filename, open_type = 'w'):
+        with open(filename, open_type) as f:
+            f.write('====================================================================================\n')
+            f.write(self.now + '\n')
+            f.write('====================================================================================\n\n')
+
+            f.write("###############################################################################\n")
+            f.write("################################  args  #######################################\n")
+            f.write("###############################################################################\n")
+
+            for k, v in self.args.__dict__.items():
+                f.write(f"{k: <25}: {str(v): <40}  {str(type(v)): <20}\n")
+            f.write("\n################################ args end  ##################################\n")
+        return
 
     def getSavePath(self, *subdir):
         return os.path.join(self.savedir, *subdir)
 
     # 写日志
-    def write_log(self, log, train = False ):
+    def write_log(self, log, train = True ):
         if train == True:
             logfile = self.getSavePath('trainLog.txt')
         else:
             logfile = self.get_testSavepath('testLog.txt')
-        with open(logfile, 'a+') as f:
-            f.write(log + '\n')
-        return
-
-    # 写日志
-    def write_attacklog(self, log ):
-        logfile = self.getSavePath('AttackLog.txt')
         with open(logfile, 'a+') as f:
             f.write(log + '\n')
         return

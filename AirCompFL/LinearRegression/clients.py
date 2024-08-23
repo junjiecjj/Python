@@ -10,23 +10,23 @@ Created on 2023/08/19
 
 
 import numpy as np
-import copy
-import torch
-from torch.utils.data import TensorDataset
-from torch.utils.data import DataLoader
+# import copy
+# import torch
+# from torch.utils.data import TensorDataset
+# from torch.utils.data import DataLoader
 
 # from model import get_model
 # from data.getData import GetDataSet
 
 
 class Client(object):
-    def __init__(self, args, trainX, trainY, theta_init, client_name = "clientxx",):
+    def __init__(self, args, trainX, trainY, client_name = "clientxx",):
         self.args             = args
         self.name      = client_name
         self.X                = trainX
         self.Y                = trainY
         self.local_ds         = len(trainX)
-        self.theta            = theta_init
+        # self.theta            = theta_init
         return
 
     ## 返回本地梯度
@@ -64,11 +64,11 @@ class Client(object):
         Fk = 0.5 * np.linalg.norm( self.X @ theta - self.Y, ord = 2)**2 / self.local_ds
         return Fk
 
-def GenClientsGroup(args, X, Y, theta0, frac):
+def GenClientsGroup(args, X, Y, frac):
     ClientsGroup = {}
     for clientname, data in X.items():
         ##  创建一个客户端
-        someone = Client(args, X[clientname], Y[clientname], theta0, clientname)
+        someone = Client(args, X[clientname], Y[clientname], clientname)
         # 为每一个clients 设置一个名字
         ClientsGroup[clientname] = someone
     return ClientsGroup
