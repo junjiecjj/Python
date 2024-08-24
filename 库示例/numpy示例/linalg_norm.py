@@ -594,14 +594,40 @@ print(normab - normc)
 
 
 
+#=================================================================================================================
+#验证如下定理， 对任意的矩阵A \in C^{m x n}， 任意的U \in C^{m x m} 和 V \in C^{n x n}， 则 ||UA||_2 = ||AV||_2 = ||UAV||_2 = ||A||_2, ||UA||_F = ||AV||_F = ||UAV||_F = ||A||_F, 1-norm 则不成立。结果被验证。
+#=================================================================================================================
+from scipy.stats import ortho_group
+m = 4
+n = 5
+
+A = np.random.randn(m, n) + 1j * np.random.randn(m, n)
+
+## 生成酉矩阵，方法一
+U = ortho_group.rvs(dim = m)
+V = ortho_group.rvs(dim = n)
+
+UU = U@U.T.conjugate()
+VV = V@V.T.conjugate()
 
 
+## 生成酉矩阵，方法二
+# tmp1 = np.random.rand(m, m) + 1j * np.random.rand(m, m)
+# U, R1 = np.linalg.qr(tmp1)
+# tmp2 = np.random.rand(n, n) + 1j * np.random.rand(n, n)
+# V, R2 = np.linalg.qr(tmp2)
+
+# UU = U@U.T.conjugate()
+# VV = V@V.T.conjugate()
 
 
+UA = U@A
+AV = A@V
+UAV = U@A@V
 
-
-
-
+norm_lst = [1, 2, 'fro',]
+for ord in norm_lst:
+    print(f"{ord}-norm: A = {np.linalg.norm(A, ord = ord)}, UA = {np.linalg.norm(UA, ord = ord)}, AV = {np.linalg.norm(AV, ord = ord)}, UAV = {np.linalg.norm(UAV, ord = ord)}")
 
 
 
