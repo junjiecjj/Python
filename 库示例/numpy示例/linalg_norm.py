@@ -595,7 +595,12 @@ print(normab - normc)
 
 
 #=================================================================================================================
-#验证如下定理， 对任意的矩阵A \in C^{m x n}， 任意的U \in C^{m x m} 和 V \in C^{n x n}， 则 ||UA||_2 = ||AV||_2 = ||UAV||_2 = ||A||_2, ||UA||_F = ||AV||_F = ||UAV||_F = ||A||_F, 1-norm 则不成立。结果被验证。
+#验证如下定理， 对任意的矩阵A \in C^{m x n}， 任意的U \in C^{m x m}, UU^H = I 和 V \in C^{n x n}, VV^H = I 则:
+#              (1) ||UA||_2 = ||AV||_2 = ||UAV||_2 = ||A||_2,
+#              (2) ||UA||_F = ||AV||_F = ||UAV||_F = ||A||_F,
+#              (3) 1-norm 则不成立。
+#              (4) A 和 UAV有相同的奇异值。
+#              结果被验证。即酉相抵的矩阵具有相同的2范数和F范数，且有相同的奇异值。
 #=================================================================================================================
 from scipy.stats import ortho_group
 m = 4
@@ -630,7 +635,9 @@ for ord in norm_lst:
     print(f"{ord}-norm: A = {np.linalg.norm(A, ord = ord)}, UA = {np.linalg.norm(UA, ord = ord)}, AV = {np.linalg.norm(AV, ord = ord)}, UAV = {np.linalg.norm(UAV, ord = ord)}")
 
 
-
+U1, S1, VH1 = np.linalg.svd(A)
+U2, S2, VH2 = np.linalg.svd(UAV)
+print(f"S1 = {S1}\nS2 = {S2}")
 
 
 
