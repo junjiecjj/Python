@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Aug 25 14:12:44 2024
+
+@author: jack
+
+https://blog.csdn.net/zhangxiuli006/article/details/115409238
+
+https://blog.csdn.net/u012290039/article/details/105696097
+
+https://blog.csdn.net/fjssharpsword/article/details/80365089
+
+https://blog.csdn.net/google19890102/article/details/51755245
+
+https://shunliz.gitbooks.io/machine-learning/content/nlp/lda/lda-gibbs.html
+
+
+"""
+

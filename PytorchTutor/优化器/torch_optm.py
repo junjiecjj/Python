@@ -15,10 +15,7 @@ https://pytorchbook.cn/chapter2/2.1.3-pytorch-basics-nerual-network/
     自适应调整：自适应调整学习率 ReduceLROnPlateau。
     自定义调整：自定义调整学习率 LambdaLR。
 
-
-
 """
-
 
 
 """
@@ -119,9 +116,6 @@ print("6-"*30)
 #更新参数
 optimizer.step()
 
-
-
-
 #========================================================================================
 # https://www.jianshu.com/p/9643cba47655?u_atoken=568ba1dd-322d-46a0-8097-8d68d1d0a859&u_asession=01yziPZpcGlZUx6sL3zb5NALh-SWMUpgwwLcUSIri9OLP8qfBnnOPMHavxg4crv3uPX0KNBwm7Lovlpxjd_P_q4JsKWYrT3W_NKPr8w6oU7K8xYXK4ZiJjOBj_JrChRp8xPpcarp92QKzyJKyYjREPlmBkFo3NEHBv0PZUm6pbxQU&u_asig=05INXw5uDoPWF7rcvX5GDmMczVXXpo52EOlLKB0UEwEx0dcIKp8AU3DEKfZZovOfEnXiTSMkbXALvFiuOwI5l3EZi8fD0cLn9JzrBPgdInFDd_EkWGfGaUoFt0zgwnLs3nRQXiXhfn5CWFimiB5FTf4pMiTkQlzWNHltxC3QkRjnD9JS7q8ZD7Xtz2Ly-b0kmuyAKRFSVJkkdwVUnyHAIJzW133U0bA1D264r16WyKRQin7ZDHhIq6RLjYTsjrhXtIWPRPQyB_SKrj-61LB_f61u3h9VXwMyh6PgyDIVSG1W8P1jhq9WAI7deW5maUWQuPMCiaxWNGs0SKRybKdVaVocS8_KYqQM2dyFvA6tiWgc6ldpZUFuHg1IvYPl7tY5TgmWspDxyAEEo4kbsryBKb9Q&u_aref=mWEbfXS7ymBmu6jwEFNvjM5k3dY%3D
 #========================================================================================
@@ -135,18 +129,16 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lrs
 import matplotlib
-matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.get_backend()
+# matplotlib.use('TkAgg')
 import collections
-
 
 class net(nn.Module):
     def __init__(self):
         super(net,self).__init__()
-        self.fc = nn.Linear(1,10)
+        self.fc = nn.Linear(1, 10)
     def forward(self,x):
         return self.fc(x)
-
 
 ###集成了优化器和学习率控制器
 def make_optimizer( net, epoch = 100, gamma = 0.9, lr = 0.01):
@@ -191,7 +183,6 @@ def make_optimizer( net, epoch = 100, gamma = 0.9, lr = 0.01):
             ## return optimizer.state_dict()['param_groups'][0]['lr']
             return self.param_groups[0]['lr']
 
-
         def set_lr(self, lr):
             # self.scheduler.get_last_lr()[0] = lr
             for param_group in self.param_groups:
@@ -209,7 +200,6 @@ def make_optimizer( net, epoch = 100, gamma = 0.9, lr = 0.01):
     optimizer = CustomOptimizer(trainable, **kwargs_optimizer)
     optimizer._register_scheduler(scheduler_class, **kwargs_scheduler)
     return optimizer
-
 
 #======================= 集成了优化器和学习率控制器的用法0 =======================
 model = net()
@@ -255,7 +245,7 @@ plt.plot(range(len(lr_list3)), lr_list3, color = 'y', linestyle = '-.', linewidt
 
 filepath2 = '/home/jack/snap/'
 out_fig = plt.gcf()
-out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
 
@@ -864,13 +854,6 @@ plt.show()
 
 #========================================================================================
 
-
-
-
-#========================================================================================
-
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
@@ -901,10 +884,8 @@ class LeNet_1(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-
 root='/home/jack/公共的/MLData/'
 tmpout = "/home/jack/SemanticNoise_AdversarialAttack/tmpout/"
-
 
 batch_size = 32
 trans = []
@@ -913,13 +894,11 @@ trans.append( transforms.ToTensor() )
 # trans.append( transforms.Normalize([0.5], [0.5]) )
 transform =  transforms.Compose(trans)
 
-
 trainset =  datasets.MNIST(root = root, train = True, download = True, transform = transform) # 表示是否需要对数据进行预处理，none为不进行预处理
 testset =  datasets.MNIST(root = root, train = False, download = True, transform = transform) # 表示是否需要对数据进行预处理，none为不进行预处理
 
 train_iter = DataLoader(trainset, batch_size=batch_size, shuffle = False,  )
 test_iter = DataLoader(testset, batch_size=batch_size, shuffle = False,  )
-
 
 if torch.cuda.is_available():
     device = torch.device("cuda")
@@ -931,12 +910,10 @@ else:
 print(f"len(trainset) = {len(trainset)}, len(train_iter) = {len(train_iter)}, ")
 # batch_size = 25, len(trainset) = 60000, len(testset) = 10000, len(train_iter) = 2400, len(test_iter) = 400
 
-
 model = LeNet_1()
 model = model.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
 lossfn = torch.nn.CrossEntropyLoss()
-
 
 # for epoch in range(100):
 optimizer.zero_grad()
@@ -962,15 +939,10 @@ model = model.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
 lossfn = torch.nn.CrossEntropyLoss(reduction='none')
 
-
-
 # for epoch in range(100):
 optimizer.zero_grad()
 clipped_grads = {name: torch.zeros_like(param) for name, param in model.named_parameters()}
 print(f"model.state_dict() = {model.state_dict()['fc2.bias']} \n\n")
-
-
-
 
 for batch, (X, y) in enumerate(train_iter):
     X, y  = X.to(device), y.to(device)
@@ -990,8 +962,6 @@ for batch, (X, y) in enumerate(train_iter):
 optimizer.step()
 
 #========================================================================================
-
-
 
 
 params = {}

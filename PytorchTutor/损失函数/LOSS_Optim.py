@@ -15,12 +15,9 @@ Created on Sat Apr  9 22:19:41 2022
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
 
 (2) torch.optim.RMSprop
-    除了以上的带有动量Momentum梯度下降法外，RMSprop（root mean square prop）也是一种可以加快梯度下降的算法，利用RMSprop算法，可以减小某些维度梯度更新波动较大的情况，使其梯度下降的速度变得更快
-
+    除了以上的带有动量Momentum梯度下降法外，RMSprop（root mean square prop）也是一种可以加快梯度下降的算法，利用RMSprop算法，可以减小某些维度梯度更新波动较大的情况，使其梯度下降的速度变得更快.
     #我们的课程基本不会使用到RMSprop所以这里只给一个实例
     optimizer = torch.optim.RMSprop(model.parameters(), lr=0.01, alpha=0.99)
-
-
 
 (3) torch.optim.Adam
     Adam 优化算法的基本思想就是将 Momentum 和 RMSprop 结合起来形成的一种适用于不同深度学习结构的优化算法
@@ -28,50 +25,26 @@ Created on Sat Apr  9 22:19:41 2022
     # 这里的lr，betas，还有eps都是用默认值即可，所以Adam是一个使用起来最简单的优化方法
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08)
 
-"""
-
-
-
-
-"""
-
-
 (1) nn.L1Loss:
-
     输入x和目标y之间差的绝对值，要求 x 和 y 的维度要一样（可以是向量或者矩阵），得到的 loss 维度也是对应一样的
-
     $ loss(x,y)=1/n\sum|x_i-y_i| $
 
 (2) nn.NLLLoss:
-
     用于多分类的负对数似然损失函数
-
     $ loss(x, class) = -x[class]$
-
     NLLLoss中如果传递了weights参数，会对损失进行加权，公式就变成了
-
     $ loss(x, class) = -weights[class] * x[class] $
 
-
-
 (3) nn.MSELoss:
-
     均方损失函数 ，输入x和目标y之间均方差
-
     $ loss(x,y)=1/n\sum(x_i-y_i)^2 $
 
 (4) nn.CrossEntropyLoss:
-
     多分类用的交叉熵损失函数，LogSoftMax和NLLLoss集成到一个类中，会调用nn.NLLLoss函数，我们可以理解为CrossEntropyLoss()=log_softmax() + NLLLoss()
-
     $loss(x,class)=−log(\frac{exp(x[class])}{∑_j exp(x[j])}) =−x[class]+log(∑_j exp(x[j]))$
-
     因为使用了NLLLoss，所以也可以传入weight参数，这时loss的计算公式变为：
-
     $ loss(x, class) = weights[class] * (-x[class] + log(\sum_j exp(x[j]))) $
-
     所以一般多分类的情况会使用这个损失函数
-
     # output是网络的输出，size=[batch_size, class]
     #如网络的batch size为128，数据分为10类，则size=[128, 10]
 
@@ -81,31 +54,18 @@ Created on Sat Apr  9 22:19:41 2022
     crossentropyloss=nn.CrossEntropyLoss()
     crossentropyloss_output=crossentropyloss(output,target)
 
-
-
 (5) nn.BCELoss:
-
     计算 x 与 y 之间的二进制交叉熵。
-
     $ loss(o,t)=-\frac{1}{n}\sum_i(t[i] *log(o[i])+(1-t[i])* log(1-o[i])) $
-
     与NLLLoss类似，也可以添加权重参数：
-
     $ loss(o,t)=-\frac{1}{n}\sum_iweights[i] *(t[i]* log(o[i])+(1-t[i])* log(1-o[i])) $
-
     用的时候需要在该层前面加上 Sigmoid 函数。
 
-"""
-
-
-"""
 通常会在遍历epochs的过程中依次用到optimizer.zero_grad(),loss.backward()和optimizer.step()三个函数
 总得来说，这三个函数的作用是先将梯度归零（optimizer.zero_grad()），然后反向传播计算得到每个参数的梯度值（loss.backward()），最后通过梯度下降执行一步参数更新（optimizer.step()）
 一、optimizer.zero_grad()：
     optimizer.zero_grad()函数会遍历模型的所有参数，通过p.grad.detach_()方法截断反向传播的梯度流，再通过p.grad.zero_()函数将每个参数的梯度值设为0，即上一次的梯度记录被清空。
-
     因为训练的过程通常使用mini-batch方法，所以如果不将梯度清零的话，梯度会与上一个batch的数据相关，因此该函数要写在反向传播和梯度下降之前。
-
 
 二、loss.backward()：
     PyTorch的反向传播(即tensor.backward())是通过autograd包来实现的，autograd包会根据tensor进行过的数学运算来自动计算其对应的梯度。
@@ -140,18 +100,18 @@ import torch
 import torch.nn as nn
 
 input = torch.randn(3, 5, requires_grad=True)
-target = torch.randn(3, 5)
+target1 = torch.randn(3, 5)
 
 loss = nn.L1Loss(reduction='none')
-output = loss(input, target)
+output = loss(input, target1)
 print(f"output = {output}")
 
 loss = nn.L1Loss(reduction='mean')
-output = loss(input, target)
+output = loss(input, target1)
 print(f"output = {output}")
 
 loss = nn.L1Loss(reduction='sum')
-output = loss(input, target)
+output = loss(input, target1)
 print(f"output = {output}")
 
 
@@ -168,20 +128,17 @@ import math
 # 举个栗子，我们一共有三种类别，批量大小为1（为了好计算），那么输入size为（1,3），具体值为torch.Tensor([[-0.7715, -0.6205,-0.2562]])。标签值为target = torch.tensor([0])，
 # 这里标签值为0，表示属于第0类。loss计算如下：
 
-
-
-
 print("=="*60)
 print("   nn.NLLLoss()  ")
 print("=="*60)
 #我们在看看是否等价nn.logSoftmax()和nn.NLLLoss()的整合：
 m = nn.LogSoftmax()
 loss = nn.NLLLoss()
-inputx =torch.Tensor([[-0.7715, -0.6205,-0.2562]])
+inputx = torch.Tensor([[-0.7715, -0.6205,-0.2562]])
 target = torch.tensor([0])
 print(f"inputx 1 = {inputx}")
 
-inputx=m(inputx)
+inputx = m(inputx)
 print(f"inputx 2 = {inputx}")
 
 output2 = loss(inputx, target) #target 和 input千万别反了,会报错
@@ -197,17 +154,15 @@ print("=="*60)
 #我们在看看是否等价nn.logSoftmax()和nn.NLLLoss()的整合：
 m = nn.LogSoftmax()
 loss = nn.NLLLoss(reduction='none')
-inputx = torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
-target = torch.tensor([0,1])
+inputx = torch.Tensor([[-0.7715, -0.6205,-0.2562], [-1.7715, -0.6305,-0.2562]])
+target = torch.tensor([0, 1])
 print(f"inputx 1 = {inputx}")
 
 inputx=m(inputx)
 print(f"inputx 2 = {inputx}")
 
-output2 = loss(inputx, target)#target 和 input千万别反了,会报错
+output2 = loss(inputx, target) # target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
-
-
 
 
 #====================================================
@@ -224,10 +179,8 @@ print(f"inputx 1 = {inputx}")
 inputx=m(inputx)
 print(f"inputx 2 = {inputx}")
 
-output2 = loss(inputx, target) #target 和 input千万别反了,会报错
+output2 = loss(inputx, target) # target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
-
-
 
 #====================================================
 print("=="*60)
@@ -236,7 +189,7 @@ print("=="*60)
 #我们在看看是否等价nn.logSoftmax()和nn.NLLLoss()的整合：
 m = nn.LogSoftmax()
 loss = nn.NLLLoss(reduction='sum')
-inputx = torch.Tensor([[-0.7715, -0.6205,-0.2562],[-1.7715, -0.6305,-0.2562]])
+inputx = torch.Tensor([[-0.7715, -0.6205, -0.2562], [-1.7715, -0.6305, -0.2562]])
 target = torch.tensor([0,1])
 print(f"inputx 1 = {inputx}")
 
@@ -247,65 +200,56 @@ output2 = loss(inputx, target)#target 和 input千万别反了,会报错
 print(f"output2 = {output2}")
 
 
-
-
-
-
 #=====================================================================
 #    https://zhuanlan.zhihu.com/p/98785902
 #=====================================================================
 import torch
 import torch.nn as nn
-x_input=torch.randn(3,3)#随机生成输入
-print('x_input:\n',x_input)
-y_target=torch.tensor([1,2,0])#设置输出具体值
-print('y_target\n',y_target)
+x_input = torch.randn(3,3)#随机生成输入
+print('x_input:\n', x_input)
+y_target = torch.tensor([1,2,0])#设置输出具体值
+print('y_target\n', y_target)
 
-#计算输入softmax，此时可以看到每一行加到一起结果都是1
-softmax_func=nn.Softmax(dim=1)
-soft_output=softmax_func(x_input)
-print('soft_output:\n',soft_output)
+## 计算输入softmax，此时可以看到每一行加到一起结果都是1
+softmax_func = nn.Softmax(dim=1)
+soft_output = softmax_func(x_input)
+print('soft_output:\n', soft_output)
 
-#在softmax的基础上取log
-log_output=torch.log(soft_output)
-print('log_output:\n',log_output)
+## 在softmax的基础上取log
+log_output = torch.log(soft_output)
+print('log_output:\n', log_output)
 
-#对比softmax与log的结合与nn.LogSoftmaxloss(负对数似然损失)的输出结果，发现两者是一致的。
-logsoftmax_func=nn.LogSoftmax(dim=1)
-logsoftmax_output=logsoftmax_func(x_input)
-print('logsoftmax_output:\n',logsoftmax_output)
+## 对比softmax与log的结合与nn.LogSoftmaxloss(负对数似然损失)的输出结果，发现两者是一致的。
+logsoftmax_func = nn.LogSoftmax(dim=1)
+logsoftmax_output = logsoftmax_func(x_input)
+print('logsoftmax_output:\n', logsoftmax_output)
 
-#pytorch中关于NLLLoss的默认参数配置为：reducetion=True、size_average=True
-nllloss_func=nn.NLLLoss()
-nlloss_output=nllloss_func(logsoftmax_output,y_target)#target 和 input千万别反了,会报错
-print('nlloss_output:\n',nlloss_output)
+## pytorch中关于NLLLoss的默认参数配置为：reducetion=True、size_average=True
+nllloss_func = nn.NLLLoss()
+nlloss_output = nllloss_func(logsoftmax_output, y_target)#target 和 input千万别反了,会报错
+print('nlloss_output:\n', nlloss_output)
 
+## 直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss = nn.CrossEntropyLoss()
+crossentropyloss_output = crossentropyloss(x_input, y_target) #target 和 input千万别反了,会报错
+print('crossentropyloss_output:\n', crossentropyloss_output)
 
-#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
-crossentropyloss=nn.CrossEntropyLoss()
-crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
-print('crossentropyloss_output:\n',crossentropyloss_output)
+## 直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss = nn.CrossEntropyLoss(reduction='mean')
+crossentropyloss_output = crossentropyloss(x_input, y_target) #target 和 input千万别反了,会报错
+print('crossentropyloss_output:\n', crossentropyloss_output)
 
+## 直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss = nn.CrossEntropyLoss(reduction='none')
+crossentropyloss_output = crossentropyloss(x_input, y_target) #target 和 input千万别反了,会报错
+print('crossentropyloss_output:\n', crossentropyloss_output)
 
-#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
-crossentropyloss=nn.CrossEntropyLoss(reduction='mean')
-crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
-print('crossentropyloss_output:\n',crossentropyloss_output)
+## 直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
+crossentropyloss = nn.CrossEntropyLoss(reduction='sum')
+crossentropyloss_output = crossentropyloss(x_input, y_target) #target 和 input千万别反了,会报错
+print('crossentropyloss_output:\n', crossentropyloss_output)
 
-
-#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
-crossentropyloss=nn.CrossEntropyLoss(reduction='none')
-crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
-print('crossentropyloss_output:\n',crossentropyloss_output)
-
-
-#直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样
-crossentropyloss=nn.CrossEntropyLoss(reduction='sum')
-crossentropyloss_output=crossentropyloss(x_input,y_target)#target 和 input千万别反了,会报错
-print('crossentropyloss_output:\n',crossentropyloss_output)
-
-
-#通过上面的结果可以看出，直接使用pytorch中的loss_func=nn.CrossEntropyLoss()计算得到的结果与softmax-log-NLLLoss计算得到的结果是一致的。
+#通过上面的结果可以看出，直接使用pytorch中的 loss_func = nn.CrossEntropyLoss() 计算得到的结果与 softmax-log-NLLLoss 计算得到的结果是一致的。
 
 
 """
@@ -721,8 +665,6 @@ output = loss(y_hat, y)   #target 和 lossinput千万别反了，不会报错，
 print(f"output = {output}\n\n")
 
 
-
-
 import torch
 import torch.nn as nn
 
@@ -753,10 +695,6 @@ tensor([-1.2380,  0.7973, -0.0140])
 计算loss的结果:
 tensor([-0.9987,  0.0779, -0.0024], grad_fn=<BinaryCrossEntropyBackward0>)
 """
-
-
-
-
 
 
 # https://www.jianshu.com/p/0062d04a2782
@@ -799,12 +737,9 @@ l(x,y) = sum(L)   if reduction = 'sum'
 inpuT = torch.tensor([[-0.2383, 0.4086, 0.0835],
                      [-1.2237, 2.3024, -0.1782],
                      [0.6650, -0.3253, -0.6224]])
-
 target = torch.tensor([[0, 1, 0],
                      [1, 0, 0],
                      [1, 1, 1]])*1.0
-
-
 
 m = torch.nn.Sigmoid()
 input1 = m(inpuT)
@@ -814,7 +749,6 @@ input1 = tensor([[0.4407, 0.6008, 0.5209],
         [0.2273, 0.9091, 0.4556],
         [0.6604, 0.4194, 0.3492]])
 """
-
 
 loss1 = torch.nn.BCELoss()
 output1 = loss1(input1,target) #target 和 input千万别反了,，不会报错，但是结果没意义
@@ -910,17 +844,14 @@ reduction='sum'：求所有对应位置差的平方的和，返回的是一个�
 """
 import torch
 x = torch.Tensor([[1, 2, 3],
-                      [2, 1, 3],
-                      [3, 1, 2]])
+                  [2, 1, 3],
+                  [3, 1, 2]])
 
 y = torch.Tensor([[1, 0, 0],
-                        [0, 1, 0],
-                        [0, 0, 1]])
+                  [0, 1, 0],
+                  [0, 0, 1]])
 
-
-
-#如果reduction='none'：
-
+# 如果reduction='none'：
 criterion1 = nn.MSELoss(reduction='none')
 loss1 = criterion1(x, y)  #x,y顺序不影响结果，因为是均方根
 print(loss1)
@@ -930,23 +861,17 @@ tensor([[0., 4., 9.],
         [9., 1., 1.]])
 """
 
-
-
 #如果reduction='mean'：
 criterion2 = nn.MSELoss(reduction='mean')
 loss2 = criterion2(x, y) #x,y顺序不影响结果，因为是均方根
 print(loss2)
-
 #tensor(4.1111)
-
 
 #如果reduction='sum'：
 criterion3 = nn.MSELoss(reduction='sum')
 loss3 = criterion3(x, y) #x,y顺序不影响结果，因为是均方根
 print(loss3)
-
 #tensor(37.)
-
 
 #https://blog.csdn.net/Will_Ye/article/details/104994504
 import torch

@@ -56,11 +56,6 @@ print(f" ds_demo[2] = {ds_demo[2]}\n")
 print(f" ds_demo__getitem1__(2) = {ds_demo.__getitem1__(2)}")
 
 
-
-
-
-
-
 #Dataloader
 #DataLoader为我们提供了对Dataset的读取操作，常用参数有：batch_size(每个batch的大小)、 shuffle(是否进行shuffle操作)、
 # num_workers(加载数据的时候使用几个子进程)。下面做一个简单的操作
@@ -77,10 +72,6 @@ for i, data in enumerate(dl):
     print(f"i = {i}, data.shape = {data.shape} \n data = {data}\n")
     # 为了节约空间，这里只循环一遍
     #break
-
-
-
-
 
 #torchvision 包
 #torchvision 是PyTorch中专门用来处理图像的库，PyTorch官网的安装教程中最后的pip install torchvision 就是安装这个包。

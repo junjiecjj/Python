@@ -17,6 +17,29 @@ https://blog.csdn.net/m0_46778675/article/details/119983568
 
 """
 
+# https://blog.csdn.net/nejssd/article/details/104901610
+##==========================================================================
+##                  线性方程组可以用numpy去求解。
+##==========================================================================
+
+
+import numpy as np
+a = np.mat('1,2,3; 2,4,8; 9,6,3')
+b = np.mat('1;1;3')
+c = np.linalg.solve(a,b)
+print(c)
+# [[-0.5]
+#  [ 1.5]
+#  [-0.5]]
+
+import numpy as np
+a = np.mat('1,-1j; 1j,-1')
+b = np.mat('1; 1')
+c = np.linalg.solve(a,b)
+print(c)
+# [[ 0.5-0.5j]
+#  [-0.5+0.5j]]
+
 
 ##==========================================================================
 ##                    scipy fsolve 非线性方程组求解
@@ -35,7 +58,6 @@ def f(x):
         4 * x0 ** 2 - 2 * sin(x1 * x2),
         x1 * x2 - 1.5
         ]
-
 
 result = optimize.fsolve(f, [1, 1, 1])
 print(result)
@@ -58,18 +80,17 @@ print(np.isclose(func(x), [0.0, 0.0]))  # func(root) should be almost 0.0.
 
 
 ##>>>>>>>>>>>>>>>>>>>
-from math import sin, cos
+# from math import sin, cos
 from scipy import optimize
-
 
 def f(x):
     x0, x1, x2 = x.tolist()
-    return [ 5 * x1 + 3, 4 * x0 ** 2 - 2 * sin(x1 * x2), x1 * x2 - 1.5 ]
+    return [ 5 * x1 + 3, 4 * x0 ** 2 - 2 * np.sin(x1 * x2), x1 * x2 - 1.5 ]
 
 
 def j(x):
     x0, x1, x2 = x.tolist()
-    return [ [0, 5, 0], [8 * x0, -2 * x2 * cos(x1 * x2), -2 * x1 * cos(x1 * x2)], [0, x2, x1] ]
+    return [ [0, 5, 0], [8 * x0, -2 * x2 * np.cos(x1 * x2), -2 * x1 * np.cos(x1 * x2)], [0, x2, x1] ]
 
 result = optimize.fsolve(f, [1, 1, 1], fprime=j)
 print(result)
@@ -239,7 +260,6 @@ print(solve(eqs, [x, y]))
 
 
 # 5.2 利用nsolve求解数值解
-
 from sympy import symbols, Eq, nsolve
 x, y = symbols('x y')
 eqs = [Eq(x ** 2 / 4 + y ** 2, 1),
@@ -250,32 +270,6 @@ print(nsolve(eqs, [x, y], X0))
 # nsolve为数值求解，需要指定一个初始值，初始值会影响最终得到哪一个解（如果有多解的话），而且初始值设的不好，则可能找不到解。
 # scipy.optimize.root求解速度快，但只能得到靠近初始值的一个解。对形式简单、有求根公式的方程，sympy.solve能够得到所有严格解，但当方程组变量较多时，它求起来会很慢。而且对于不存在求根公式的复杂方程，sympy.solve无法求解。
 
-
-
-# https://blog.csdn.net/nejssd/article/details/104901610
-##==========================================================================
-##                  线性方程组可以用numpy去求解。
-##==========================================================================
-
-
-import numpy as np
-a = np.mat('1,2,3; 2,4,8; 9,6,3')
-b = np.mat('1;1;3')
-c = np.linalg.solve(a,b)
-print(c)
-# [[-0.5]
-#  [ 1.5]
-#  [-0.5]]
-
-
-
-import numpy as np
-a = np.mat('1,-1j; 1j,-1')
-b = np.mat('1; 1')
-c = np.linalg.solve(a,b)
-print(c)
-# [[ 0.5-0.5j]
-#  [-0.5+0.5j]]
 
 
 

@@ -24,18 +24,11 @@ warnings.filterwarnings("ignore")
 from Utility import set_random_seed, set_printoption
 from Utility import Initial
 from Utility import optimal_linear_reg
-
 from clients import GenClientsGroup
-
 from server import Server
-
 from checkpoints import checkpoint
-
 from config import args_parser
-
 import MetricsLog
-
-
 
 
 now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
@@ -90,14 +83,13 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
         ################# 根据当前的回归系数获取 F(w^(t)) - F(w^*),即 optimal gap
         gap_t = np.sum([frac[name] * user.local_loss(theta) for name, user in Users.items()])
         if (comm_round + 1) % 100 == 0:
-            print(f"   [{args.case}:{args.local_up if args.case != 'erf' else ''}, {args.channel}:{args.SNR if args.channel != 'erf' else ''}(dB), ] -----> round = {comm_round+1}, gap = {gap_t:.5f}, lr = {lr}")
+            print(f"   [{args.case}:{args.local_up if args.case != 'gradient' else ''}, {args.channel}:{args.SNR if args.channel != 'erf' else ''}(dB), ] -----> round = {comm_round+1}, gap = {gap_t:.5f}, lr = {lr}")
 
         ####################### random choice client ##################
         clients_idx = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
         candidates = ['client{}'.format(int(i)) for i in clients_idx]
 
         h = H[comm_round, clients_idx]
-
         ######################## Distribution & Local Update ####################
         message_lst = []
         for name in candidates:

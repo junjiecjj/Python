@@ -31,7 +31,6 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
-
 def data_tf_mlp_mnist(x):
     ## 1
     # x = transforms.ToTensor()(x)
@@ -60,17 +59,17 @@ def data_tf_cnn_mnist_1(x):
     return x
 
 def data_tf_cnn_mnist_batch(x):
-    # ## 1
-    # x = transforms.ToTensor()(x)
-    # x = (x - 0.5) / 0.5
-    # x = x.reshape((-1, 1, 28, 28))
+    ## 1
+    x = transforms.ToTensor()(x)
+    x = (x - 0.5) / 0.5
+    x = x.reshape((-1, 1, 28, 28))
 
-    # 2
-    x = np.array(x, dtype='float32') / 255
-    # x = (x - 0.5) / 0.5
-    # x = x.reshape((-1,))  # (-1, 28*28)
-    x = x.reshape((-1, 1, 28, 28))  # ( 1, 28, 28)
-    x = torch.from_numpy(x)
+    # ### 2
+    # x = np.array(x, dtype='float32') / 255
+    # # x = (x - 0.5) / 0.5
+    # # x = x.reshape((-1,))  # (-1, 28*28)
+    # x = x.reshape((-1, 1, 28, 28))  # ( 1, 28, 28)
+    # x = torch.from_numpy(x)
     return x
 
 root='/home/jack/公共的/MLData/'
@@ -78,8 +77,8 @@ tmpout = "/home/jack/SemanticNoise_AdversarialAttack/tmpout/"
 
 
 batch_size = 25
-trans = []
 
+trans = []
 trans.append( transforms.ToTensor() )
 # trans.append( transforms.Normalize([0.5], [0.5]) )
 transform =  transforms.Compose(trans)
@@ -98,46 +97,32 @@ testset =  datasets.MNIST(root = root, # 表示 MNIST 数据的加载的目录
                                       train = False,  # 表示是否加载数据库的训练集，false的时候加载测试集
                                       download = True, # 表示是否自动下载 MNIST 数据集
                                       transform = data_tf_cnn_mnist_1) # 表示是否需要对数据进行预处理，none为不进行预处理
-if sys.platform.startswith('win'):
-    num_workers = 0
-else:
-    num_workers = 0
 
 train_iter = DataLoader(trainset, batch_size=batch_size, shuffle = False,  )
 test_iter = DataLoader(testset, batch_size=batch_size, shuffle = False,  )
 
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-    print(f"PyTorch is running on GPU: {torch.cuda.get_device_name(0)}")
-else:
-    device = torch.device("cpu")
-    print("PyTorch is running on CPU.")
-
-### (1)  data_tf_cnn_mnist_1
+# ## (1)  data_tf_cnn_mnist_1
 # trainset.data[0].shape
-# Out[20]: torch.Size([28, 28])   0-255
+# # Out[20]: torch.Size([28, 28])   0-255
 
 # trainset[0][0].shape
-# Out[21]: torch.Size([1, 28, 28])     0-1
+# # Out[21]: torch.Size([1, 28, 28])     0-1
 
-### (2) transform
+# ## (2) transform
 # trainset.data[0].shape
-# Out[20]: torch.Size([28, 28])   0-255
+# # Out[20]: torch.Size([28, 28])   0-255
 
 # trainset[0][0].shape
-# Out[21]: torch.Size([1, 28, 28])     0-1
+# # Out[21]: torch.Size([1, 28, 28])     0-1
 
-### (3) data_tf_cnn_mnist_batch
+# ## (3) data_tf_cnn_mnist_batch
 # trainset.data[0].shape
-# Out[34]: torch.Size([28, 28])    0-255
+# # Out[34]: torch.Size([28, 28])    0-255
 
 # trainset[0][0].shape
-# Out[35]: torch.Size([1, 1, 28, 28])   0-1
-
-
-
-
+# # Out[35]: torch.Size([1, 1, 28, 28])   0-1
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -147,9 +132,6 @@ print(f"len(trainset) = {len(trainset)}, len(train_iter) = {len(train_iter)}, ")
 
 import PIL
 img = PIL.Image.fromarray(np.uint8(trainset.data[0]))
-
-
-
 
 def data_inv_tf_mlp_mnist(x):
     """
@@ -169,8 +151,8 @@ def data_inv_tf_cnn_mnist_batch_3D(x):
     :param x:
     :return:
     """
-    # recover_data = x * 0.5 + 0.5
-    recover_data = x * 255
+    recover_data = x * 0.5 + 0.5
+    recover_data = recover_data * 255
     recover_data = recover_data.reshape(( -1, 1, 28, 28))  # (-1, 28, 28)
     recover_data = np.around(recover_data.numpy()) # .astype(np.uint8)
     # recover_data =  recover_data.round() # .type(torch.uint8)
@@ -182,16 +164,12 @@ def data_inv_tf_cnn_mnist_batch_2D(x):
     :param x:
     :return:
     """
-    # recover_data = x * 0.5 + 0.5
-    recover_data = x * 255
+    recover_data = x * 0.5 + 0.5
+    recover_data = recover_data * 255
     recover_data = recover_data.reshape((-1, 28, 28))  # (-1, 28, 28)
     recover_data = np.around(recover_data.numpy()) # .astype(np.uint8)
     # recover_data =  recover_data.round() # .type(torch.uint8)
-
     return recover_data  # (128, 28, 28)
-
-
-
 
 ## plt.imshow()可以显示 numpy 也可以显示 tensor 数组.
 def draw_images(tmpout, generated_images, labels, epoch,   dim = (5, 5), figsize = (10, 10)):
@@ -220,7 +198,6 @@ def draw_images(tmpout, generated_images, labels, epoch,   dim = (5, 5), figsize
     # plt.show()
     plt.close(fig)
     return
-
 
 # use this general fun, images可以是tensor可以是numpy, 可以是(batchsize, 28, 28) 可以是(batchsize, 1/3, 28, 28)
 def grid_imgsave(savedir, images, labels,  predlabs = '', dim = (4, 5), suptitle = '', basename = "raw_image"):
@@ -260,7 +237,6 @@ def grid_imgsave(savedir, images, labels,  predlabs = '', dim = (4, 5), suptitle
     # plt.close(fig)
     return
 
-
 for batch, (X, y) in enumerate(train_iter):
     X, y = X.to(device), y.to(device)
     print(f"X.shape = {X.shape}, y.shape = {y.shape}")   # X的每个元素都是 0 - 1的.
@@ -272,7 +248,6 @@ for batch, (X, y) in enumerate(train_iter):
     print(f"{X.min()}, {X.max()}, {X_hat_2D.min()}, {X_hat_2D.max()},  {X_hat_3D.min()}, {X_hat_3D.max()}")
     if batch ==  0:
         break
-
 
 ##========================================================
 # import PIL
@@ -287,8 +262,6 @@ for batch, (X, y) in enumerate(train_iter):
 
 #     im = PIL.Image.fromarray(im.numpy())
 #     im.save(f"/home/jack/snap/{idx}_{label}.png")
-
-
 
 #  cmap='Greys',  'gray'   'viridis'  Greys_r   Purples   binary  rainbow
 # figsize=(10,10)
@@ -315,14 +288,11 @@ for batch, (X, y) in enumerate(train_iter):
 #     plt.axis('off')
 # plt.show()
 
-
-
-
 ##=====================================================================================
 
-# print(f"trainset.train_data.size() = {trainset.train_data.size()}")            # trainset.train_data 的每个元素都是 0-255 的, 不随transform = 而变化
-# print(f"trainset.test_data.size() = {trainset.test_data.size()}")             # trainset.train_data 的每个元素都是 0-255 的, 不随transform = 而变化
-print(f"\ntrainset.data.size() = {trainset.data.size()}")                    # trainset.data 的每个元素都是 0-255 的, 不随 transform = 而变化, trainset.data是最深层次的原始数据, 不会改变的
+# print(f"trainset.train_data.size() = {trainset.train_data.size()}")  # trainset.train_data 的每个元素都是 0-255 的, 不随transform = 而变化
+# print(f"trainset.test_data.size() = {trainset.test_data.size()}")   # trainset.train_data 的每个元素都是 0-255 的, 不随transform = 而变化
+print(f"\ntrainset.data.size() = {trainset.data.size()}")             # trainset.data 的每个元素都是 0-255 的, 不随 transform = 而变化, trainset.data是最深层次的原始数据, 不会改变的
 # trainset.train_data.size() = torch.Size([60000, 28, 28])
 # # trainset.test_data.size() = torch.Size([60000, 28, 28])
 # # trainset.data.size() = torch.Size([60000, 28, 28])
@@ -335,8 +305,8 @@ print(f"\ntrainset.data.size() = {trainset.data.size()}")                    # t
 # # trainset.targets.size() = torch.Size([60000])
 
 
-# print(f"trainset.train_data[0].size() = {trainset.train_data[0].size()}")        # trainset.train_data 的每个元素都是 0-255 的
-# print(f"trainset.test_data[0].size() = {trainset.test_data[0].size()}")         # trainset.test_data 的每个元素都是 0-255 的
+# print(f"trainset.train_data[0].size() = {trainset.train_data[0].size()}")  # trainset.train_data 的每个元素都是 0-255 的
+# print(f"trainset.test_data[0].size() = {trainset.test_data[0].size()}")    # trainset.test_data 的每个元素都是 0-255 的
 print(f"trainset.data[0].size() = {trainset.data[0].size()}")                # trainset.data 的每个元素都是 0-255 的
 print(f"trainset.data[0].max() = {trainset.data[0].max()}, trainset.data[0].min={trainset.data[0].min()}\n\n") # trainset.data[0] 的每个元素都是 0-255 的, 不随 transform = 而变化,
 # # trainset.train_data[0].size() = torch.Size([28, 28])
@@ -351,7 +321,7 @@ print(f"trainset.data[0].max() = {trainset.data[0].max()}, trainset.data[0].min=
 # # trainset.test_labels[0] = 5
 # # trainset.targets[0] = 5
 
-print(f"trainset[0][0].size() = {trainset[0][0].size()}")                        # trainset[0][0] 的每个元素都是 0-1 的, 随transform = 而变化
+print(f"trainset[0][0].size() = {trainset[0][0].size()}")      # trainset[0][0] 的每个元素都是 0-1 的, 随transform = 而变化
 print(f"trainset[0][0].max() = {trainset[0][0].max()}, trainset[0][0].min() = {trainset[0][0].min()}\n\n")
 # print(f"trainset[0][1] = {trainset[0][1]}")
 # # trainset[0][0].size() = torch.Size([1, 28, 28])
@@ -392,6 +362,21 @@ print(f"train_iter.dataset[0][0].max() = {train_iter.dataset[0][0].max()}, train
 # print(f"train_iter.dataset[0][1] = {trainset[0][1]}")
 # # train_iter.dataset[0][0].size() = torch.Size([1, 28, 28])
 # # train_iter.dataset[0][1] = 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -69,9 +69,6 @@ r05_10db_dir = "2023-11-30-21:34:56_FLSemantic"
 r09_20db_dir = "2023-11-30-19:35:46_FLSemantic"
 
 
-
-
-
 config = {
     "font.family": "serif",  # 使用衬线体
     "font.serif": ["SimSun"],  # 全局默认使用衬线宋体

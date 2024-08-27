@@ -532,23 +532,497 @@ plt.show()
 
 
 
+# https://mp.weixin.qq.com/s?__biz=Mzk0MjUxMzg3OQ==&mid=2247489491&idx=1&sn=01253c364d06f02f9b8b29b8e83171dd&chksm=c368ccd15f272790bbfeb53f46c7aa1c2f68c3c6727331e3b07536eabbb67b7e92acad225562&mpshare=1&scene=1&srcid=0825WhILEaMRAoODqt1XWLNm&sharer_shareinfo=19022c0f36e86fb5249c76a56af3578f&sharer_shareinfo_first=19022c0f36e86fb5249c76a56af3578f&exportkey=n_ChQIAhIQAvsIK%2BeFE5L9N0WQDEyyzhKfAgIE97dBBAEAAAAAAGgBINZQRmUAAAAOpnltbLcz9gKNyK89dVj0c3N6oyuH6I%2BxuRuYjd10BnzKrjxBEm6q7h%2BNv6xudjIyrPerqOLiHHUnGOqQZLBfngPUaSwElbfltmsAdQKQuDy3PM4R1KKOHWMI1RhdDzOO71lCjGvRvUhfmq4azy%2FfW4beHtaVD0hAnWcHCLoloOKXH8KJ4mwFDCKFN5ovz789oXltTm%2BQ%2FcWQofAbuVnvmYYlrt7MfrUb4ix7lMtEJTRtbAo0CeMJvfB%2BmuG3Bowl%2FIZhGr5m2zmAE2kaq9shqdXfIrRIT%2FXMO63glqMl%2Fk5bXPvhNdD6B%2FS7W4wkIr9N3naDapUcyf%2Fu%2BEKx84Inig6PM6Ov8Eu1&acctmode=0&pass_ticket=EKcg1AfhUKBNCHPsnDGBWERO28gz3bIoR%2B%2F8Obi06po2brDCZaAAwLiQEq8FYUoT&wx_header=0#rd
 
 
 
+#%% 1. 主成分分析 (PCA, Principal Component Analysis)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.datasets import load_iris
+import seaborn as sns
+
+# 加载数据集
+iris = load_iris()
+data = iris.data
+target = iris.target
+target_names = iris.target_names
+feature_names = iris.feature_names
+
+# 创建DataFrame
+df = pd.DataFrame(data, columns=feature_names)
+df['target'] = target
+
+# 进行PCA降维
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(data)
+principal_df = pd.DataFrame(data=principal_components, columns=['Principal Component 1', 'Principal Component 2'])
+final_df = pd.concat([principal_df, df[['target']]], axis=1)
+
+# 图1: PCA后的散点图
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=final_df, x='Principal Component 1', y='Principal Component 2', hue='target', palette='Set1')
+plt.title('PCA of Iris Dataset')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.legend(target_names)
+plt.show()
+
+# 图2: 原始特征的散点矩阵
+sns.pairplot(df, hue='target', palette='Set1', diag_kind='kde')
+plt.suptitle('Pairplot of Original Features', y=1.02)
+plt.show()
+
+# 图3: PCA后的解释方差比率
+plt.figure(figsize=(10, 6))
+explained_variance = pca.explained_variance_ratio_
+plt.bar(range(len(explained_variance)), explained_variance, alpha=0.7, align='center', label='individual explained variance')
+plt.step(range(len(np.cumsum(explained_variance))), np.cumsum(explained_variance), where='mid', linestyle='--', label='cumulative explained variance')
+plt.title('Explained Variance by Principal Components')
+plt.xlabel('Principal Components')
+plt.ylabel('Explained Variance Ratio')
+plt.legend(loc='best')
+plt.show()
+
+# 图4: PCA后成分的热力图
+plt.figure(figsize=(10, 6))
+sns.heatmap(pd.DataFrame(pca.components_, columns=feature_names, index=['PC1', 'PC2']), annot=True, cmap='coolwarm')
+plt.title('PCA Component Heatmap')
+plt.show()
+
+#%% 2. 线性判别分析 (LDA, Linear Discriminant Analysis)
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 加载Iris数据集
+iris = load_iris()
+X = iris.data
+y = iris.target
+target_names = iris.target_names
+
+# 创建LDA模型
+lda = LDA(n_components=2)
+X_r2 = lda.fit(X, y).transform(X)
+
+# 创建一个DataFrame，用于可视化
+df = pd.DataFrame(X_r2, columns=['LD1', 'LD2'])
+df['target'] = y
+df['target_name'] = df['target'].apply(lambda x: target_names[x])
+
+# 绘制LDA结果的散点图
+plt.figure(figsize=(10, 8))
+sns.scatterplot(x='LD1', y='LD2', hue='target_name', data=df, palette='Set1')
+plt.title('LDA of Iris dataset')
+plt.xlabel('LD1')
+plt.ylabel('LD2')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 计算每个类别的LDA投影的均值
+means = df.groupby('target_name').mean()
+
+# 绘制每个类别的LDA投影的均值的图形
+plt.figure(figsize=(10, 8))
+sns.scatterplot(x=means['LD1'], y=means['LD2'], hue=means.index, palette='Set1', s=100, marker='D', edgecolor='black')
+for i, txt in enumerate(means.index):
+    plt.annotate(txt, (means['LD1'][i], means['LD2'][i]), fontsize=12, weight='bold')
+plt.title('Class Means in LDA Space')
+plt.xlabel('LD1')
+plt.ylabel('LD2')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 绘制LDA各线性判别向量的权重图
+plt.figure(figsize=(12, 6))
+components_df = pd.DataFrame(lda.coef_, columns=iris.feature_names, index=target_names)
+components_df.plot(kind='bar', ax=plt.gca())
+plt.title('LDA Coefficients')
+plt.xlabel('Features')
+plt.ylabel('Coefficient value')
+plt.legend(loc='best')
+plt.grid(True)
+plt.show()
 
 
+#%% 3. 奇异值分解 (SVD, Singular Value Decomposition)
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import TruncatedSVD
+
+# 生成一个合成高维数据集
+np.random.seed(42)
+n_samples = 1000
+n_features = 50
+X = np.random.rand(n_samples, n_features)
+
+# 在高维数据中添加一些结构
+for i in range(n_samples):
+    if i % 2 == 0:
+        X[i, :10] += 5
+    else:
+        X[i, 10:20] += 5
+
+# 进行奇异值分解
+svd = TruncatedSVD(n_components=2)
+X_reduced = svd.fit_transform(X)
+
+# 可视化原始数据的特征分布（随机选择两组特征进行对比）
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.scatter(X[:, 0], X[:, 1], alpha=0.7, c='blue', edgecolors='k', s=50)
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('Feature Distribution in Original High-dimensional Space')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X[:, 10], X[:, 11], alpha=0.7, c='red', edgecolors='k', s=50)
+plt.xlabel('Feature 11')
+plt.ylabel('Feature 12')
+plt.title('Feature Distribution in Original High-dimensional Space')
+
+plt.tight_layout()
+plt.show()
+
+# 可视化降维后的数据分布
+plt.figure(figsize=(8, 6))
+plt.scatter(X_reduced[:, 0], X_reduced[:, 1], alpha=0.7, c='green', edgecolors='k', s=50)
+plt.xlabel('Component 1')
+plt.ylabel('Component 2')
+plt.title('Data Distribution after SVD Dimensionality Reduction')
+plt.show()
+
+# 计算并可视化每个奇异值对应的方差解释比例
+explained_variance = svd.explained_variance_ratio_
+cumulative_explained_variance = np.cumsum(explained_variance)
+
+plt.figure(figsize=(8, 6))
+plt.bar(range(len(explained_variance)), explained_variance, alpha=0.7, align='center',
+        label='Individual explained variance')
+plt.step(range(len(cumulative_explained_variance)), cumulative_explained_variance, where='mid',
+         label='Cumulative explained variance')
+plt.ylabel('Explained variance ratio')
+plt.xlabel('Principal components')
+plt.legend(loc='best')
+plt.title('Explained Variance by Different Principal Components')
+plt.show()
+
+#%% 4. 独立成分分析 (ICA, Independent Component Analysis)
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import sawtooth
+from sklearn.decomposition import FastICA
+from sklearn.datasets import make_blobs
+
+# 生成样本数据
+np.random.seed(0)
+n_samples = 2000
+time = np.linspace(0, 8, n_samples)
+
+# 生成独立信号
+s1 = np.sin(2 * time)  # 正弦波
+s2 = np.sign(np.sin(3 * time))  # 方波
+s3 = sawtooth(2 * np.pi * time)  # 锯齿波，使用sawtooth函数
+
+S = np.c_[s1, s2, s3]
+S += 0.2 * np.random.normal(size=S.shape)  # 添加噪声
+
+# 混合数据
+A = np.array([[1, 1, 1], [0.5, 2, 1.0], [1.5, 1.0, 2.0]])  # 混合矩阵
+X = np.dot(S, A.T)  # 观测信号
+
+# ICA 分解
+ica = FastICA(n_components=3)
+S_ = ica.fit_transform(X)  # 重构信号
+A_ = ica.mixing_  # 重构混合矩阵
+
+# 结果可视化
+plt.figure(figsize=(12, 8))
+
+# 原始信号
+plt.subplot(3, 1, 1)
+plt.title("Original Signals")
+for i, sig in enumerate(S.T):
+    plt.plot(sig, label=f"Signal {i+1}")
+plt.legend()
+
+# 混合信号
+plt.subplot(3, 1, 2)
+plt.title("Mixed Signals")
+for i, sig in enumerate(X.T):
+    plt.plot(sig, label=f"Mixed Signal {i+1}")
+plt.legend()
+
+# 分离信号
+plt.subplot(3, 1, 3)
+plt.title("Separated Signals (after ICA)")
+for i, sig in enumerate(S_.T):
+    plt.plot(sig, label=f"Separated Signal {i+1}")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# 对比原始信号和分离信号的相关系数矩阵
+def plot_correlation_matrix(S, S_):
+    correlation = np.corrcoef(S.T, S_.T)[:3, 3:]
+    plt.figure(figsize=(6, 6))
+    plt.imshow(correlation, cmap='viridis', aspect='auto')
+    plt.colorbar()
+    plt.title("Correlation Matrix between Original and Separated Signals")
+    plt.xlabel("Separated Signals")
+    plt.ylabel("Original Signals")
+    plt.xticks(range(3), ["Separated 1", "Separated 2", "Separated 3"])
+    plt.yticks(range(3), ["Original 1", "Original 2", "Original 3"])
+    plt.show()
+
+plot_correlation_matrix(S, S_)
 
 
+#%% 5. 非负矩阵分解 (NMF, Non-negative Matrix Factorization)
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.decomposition import NMF
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import MinMaxScaler
+
+# 加载数据集
+iris = load_iris()
+X = iris.data
+y = iris.target
+
+# 数据标准化
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 应用NMF进行降维
+nmf = NMF(n_components=2, random_state=42)
+X_nmf = nmf.fit_transform(X_scaled)
+
+plt.figure(figsize=(14, 6))
+
+# 可视化原始数据的分布
+plt.subplot(1, 2, 1)
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=y, palette="viridis")
+plt.title("Distribution of Original Data")
+plt.xlabel(iris.feature_names[0])
+plt.ylabel(iris.feature_names[1])
+
+# 可视化NMF降维后的数据
+plt.subplot(1, 2, 2)
+sns.scatterplot(x=X_nmf[:, 0], y=X_nmf[:, 1], hue=y, palette="viridis")
+plt.title("Distribution of Data after NMF Dimensionality Reduction")
+plt.xlabel("NMF Component 1")
+plt.ylabel("NMF Component 2")
+plt.show()
+
+# 查看NMF组件
+components = nmf.components_
+
+# 可视化NMF组件
+plt.figure(figsize=(10, 4))
+for i, comp in enumerate(components):
+    plt.subplot(1, 2, i+1)
+    plt.bar(iris.feature_names, comp)
+    plt.title(f"NMF Component {i+1}")
+plt.tight_layout()
+plt.show()
+
+# 查看每个样本在NMF组件上的权重
+plt.figure(figsize=(10, 6))
+sns.heatmap(X_nmf, cmap="viridis", cbar=True, xticklabels=[f"NMF Component {i+1}" for i in range(2)])
+plt.title("Weights of Each Sample on NMF Components")
+plt.xlabel("NMF Component")
+plt.ylabel("Sample")
+plt.show()
 
 
+#%% 6. 核PCA (KPCA, Kernel PCA)
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_circles
+from sklearn.decomposition import PCA, KernelPCA
+from sklearn.preprocessing import StandardScaler
+from mpl_toolkits.mplot3d import Axes3D
+
+# 生成数据
+X, y = make_circles(n_samples=400, factor=0.3, noise=0.05, random_state=0)
+
+# 标准化数据
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 应用KPCA降维到二维
+kpca = KernelPCA(n_components=2, kernel='rbf', gamma=15)
+X_kpca_2d = kpca.fit_transform(X_scaled)
+
+# 应用KPCA降维到三维
+kpca_3d = KernelPCA(n_components=3, kernel='rbf', gamma=15)
+X_kpca_3d = kpca_3d.fit_transform(X_scaled)
+
+# 绘制原始数据的二维散点图
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis')
+plt.title('Original Data')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+
+# 绘制KPCA降维后的二维散点图
+plt.subplot(1, 2, 2)
+plt.scatter(X_kpca_2d[:, 0], X_kpca_2d[:, 1], c=y, cmap='viridis')
+plt.title('KPCA Reduced Data (2D)')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+
+plt.show()
+
+# 绘制KPCA降维后的三维散点图
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(111, projection='3d')
+scatter = ax.scatter(X_kpca_3d[:, 0], X_kpca_3d[:, 1], X_kpca_3d[:, 2], c=y, cmap='viridis')
+legend1 = ax.legend(*scatter.legend_elements(), title="Classes")
+ax.add_artist(legend1)
+ax.set_title('KPCA Reduced Data (3D)')
+ax.set_xlabel('Principal Component 1')
+ax.set_ylabel('Principal Component 2')
+ax.set_zlabel('Principal Component 3')
+
+plt.show()
 
 
+#%% 7. 多维尺度分析 (MDS, Multidimensional Scaling)
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.manifold import MDS
+from sklearn.preprocessing import StandardScaler
+
+# 加载数据集
+iris = load_iris()
+X = iris.data
+y = iris.target
+
+# 标准化数据
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 使用MDS进行降维，将数据从4维降至2维
+mds = MDS(n_components=2, random_state=42)
+X_mds = mds.fit_transform(X_scaled)
+
+# 绘制降维后的数据
+plt.figure(figsize=(10, 6))
+
+# 绘制不同类别的散点图
+for i in range(len(np.unique(y))):
+    plt.scatter(X_mds[y == i, 0], X_mds[y == i, 1], label=f'Class {i}', alpha=0.7)
+
+plt.title('MDS Visualization of Iris Dataset')
+plt.xlabel('Component 1')
+plt.ylabel('Component 2')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 
+#%% 8. t-分布邻域嵌入 (t-SNE, t-Distributed Stochastic Neighbor Embedding)
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_digits
+from sklearn.manifold import TSNE
+
+# 加载手写数字数据集
+digits = load_digits()
+X = digits.data
+y = digits.target
+
+# 使用t-SNE进行降维，降到2维
+tsne = TSNE(n_components=2, random_state=42)
+X_tsne = tsne.fit_transform(X)
+
+# 绘制原始数据的散点图
+plt.figure(figsize=(12, 8))
+plt.subplot(121)
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.get_cmap("jet", 10))
+plt.title('Original Data')
+plt.colorbar()
+
+# 绘制t-SNE降维后的散点图
+plt.subplot(122)
+plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y, cmap=plt.cm.get_cmap("jet", 10))
+plt.title('t-SNE Visualization')
+plt.colorbar()
+
+plt.tight_layout()
+plt.show()
 
 
+#%% 9. 局部线性嵌入 (Locally Linear Embedding, LLE)
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_swiss_roll
+from sklearn.manifold import LocallyLinearEmbedding
+
+# 生成一个瑞士卷状数据集
+X, _ = make_swiss_roll(n_samples=3000, noise=0.2, random_state=42)
+
+# 使用LLE进行降维，目标是将3维数据降到2维
+lle = LocallyLinearEmbedding(n_neighbors=10, n_components=2, random_state=42)
+X_lle = lle.fit_transform(X)
+
+# 绘制原始数据和降维后的数据
+fig = plt.figure(figsize=(12, 6))
+
+# 原始数据的散点图
+ax1 = fig.add_subplot(121, projection='3d')
+ax1.scatter(X[:, 0], X[:, 1], X[:, 2], c=X[:, 2], cmap=plt.cm.Spectral)
+ax1.set_title('Original 3D Swiss Roll')
+
+# LLE降维后的散点图
+ax2 = fig.add_subplot(122)
+ax2.scatter(X_lle[:, 0], X_lle[:, 1], c=X[:, 2], cmap=plt.cm.Spectral)
+ax2.set_title('LLE Projection')
+
+plt.tight_layout()
+plt.show()
 
 
+#%% 10. UMAP
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+from umap import UMAP
+
+# 加载手写数字数据集（MNIST）
+mnist = fetch_openml('mnist_784', version=1)
+X, y = mnist.data / 255.0, mnist.target.astype(int)
+
+# 只选择一部分数据进行演示
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, train_size=0.1, random_state=42)
+
+# 使用UMAP进行降维
+umap = UMAP(n_components=2, random_state=42)
+X_umap = umap.fit_transform(X_train)
+
+# 绘制降维后的数据点
+plt.figure(figsize=(10, 8))
+plt.scatter(X_umap[:, 0], X_umap[:, 1], c=y_train, cmap='Spectral', s=5)
+plt.colorbar(boundaries=np.arange(11)-0.5).set_ticks(np.arange(10))
+plt.title('UMAP Projection of MNIST')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.show()
 
 
 

@@ -73,13 +73,6 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-
-
-
-
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>> 2. 贝叶斯估计 (Bayesian Estimation)
 
 import numpy as np
@@ -154,8 +147,6 @@ axs[1, 1].set_title('Joint Posterior Distribution of $\mu$ and $\sigma$')
 plt.tight_layout()
 plt.show()
 
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>> 3. 最小二乘估计 (Ordinary Least Squares, OLS)
 import numpy as np
 import matplotlib.pyplot as plt
@@ -225,9 +216,6 @@ ax4.set_title('X1 and X2 vs Y')
 plt.suptitle(f'OLS Regression Analysis (MSE: {mse:.3f})')
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()
-
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>>>> 4. 岭回归 (Ridge Regression)
 
@@ -299,9 +287,6 @@ ax[1].grid(True)
 plt.tight_layout()
 plt.show()
 
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>> 5. Lasso回归 (Lasso Regression)
 
 import numpy as np
@@ -364,8 +349,6 @@ ax2.legend(loc='upper left')
 
 # 显示图形
 plt.show()
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>>>> 6. 最小化均方误差 (Minimization of Mean Squared Error, MSE)
 import numpy as np
@@ -454,10 +437,6 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
-
-
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>>>> 7. 期望最大化算法 (Expectation-Maximization, EM)
 import numpy as np
@@ -553,8 +532,6 @@ plt.ylabel('Log-Likelihood')
 plt.tight_layout()
 plt.show()
 
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>> 8. 梯度下降 (Gradient Descent)
 
 import numpy as np
@@ -635,8 +612,6 @@ ax[1, 1].set_ylabel("Loss")
 plt.tight_layout()
 plt.show()
 
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>> 9. 最小化交叉熵 (Minimization of Cross-Entropy)
 import numpy as np
 import matplotlib.pyplot as plt
@@ -699,8 +674,6 @@ ax[2].legend()
 
 plt.tight_layout()
 plt.show()
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>>>> 10. 卡尔曼滤波器 (Kalman Filter)
 
@@ -791,6 +764,48 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

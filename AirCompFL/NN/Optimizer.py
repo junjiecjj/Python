@@ -1,3 +1,7 @@
+
+
+
+
 # -*- coding: utf-8 -*-
 """
 Created on 2022/07/07
@@ -41,7 +45,6 @@ class net(nn.Module):
         self.fc = nn.Linear(1,10)
     def forward(self,x):
         return self.fc(x)
-
 
 def make_optimizer(args, net,  compr = '', snr = ''):
     ### make optimizer and scheduler together
@@ -196,3 +199,37 @@ plt.plot(range(200),lr_list1,color = 'r')
 plt.show()
 
 """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

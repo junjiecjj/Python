@@ -1,106 +1,98 @@
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on 2023/08/19
-
 @author: Junjie Chen
-
 """
 
 
 
+
 import numpy as np
-# import copy
-# import torch
-# from torch.utils.data import TensorDataset
-# from torch.utils.data import DataLoader
-
-# from model import get_model
-# from data.getData import GetDataSet
-
+import copy
+import torch
+from torch.utils.data import TensorDataset
+from torch.utils.data import DataLoader
+import torch.nn as nn
+import torch.optim as optim
 
 class Client(object):
-    def __init__(self, args, trainX, trainY, client_name = "clientxx",):
-        self.args             = args
-        self.name      = client_name
-        self.X                = trainX
-        self.Y                = trainY
-        self.local_ds         = len(trainX)
-        # self.theta            = theta_init
+    def __init__(self, args, data, model, client_name = "clientxx",):
+        # self.args             = args
+        self.id               = client_name
+        self.trainloader      = DataLoader(data, batch_size = args.local_bs, shuffle = True)
+        self.datasize         = len(data)
+        self.model            = model
+        self.num_local_update = args.local_up
+        self.optimizer        = optim.SGD(params = self.model.parameters(), lr = args.lr)
+        self.los_fn           = nn.CrossEntropyLoss()
         return
 
     ## 返回本地梯度
-    def local_gradient(self, theta, local_bs = 128, ):
-        idx = np.random.choice(self.local_ds, local_bs, replace = False)
-        x = self.X[idx]
-        y = self.Y[idx]
-        gradient = x.T @ (x @ theta - y) / local_bs
+    def local_update_gradient(self, global_weight ):
+        self.model.load_state_dict(global_weight, strict=True)
+        self.model.train()
 
-        return gradient
+        gard = {}
+
+        return
 
     ## 返回更新前后的差值
-    def model_diff(self, theta, num_local_update = 10, local_bs = 128, lr = 0.01, ):
-        tmp = theta
-        for _ in range(num_local_update):
-            idx = np.random.choice(self.local_ds, local_bs, replace = False)
-            x = self.X[idx]
-            y = self.Y[idx]
-            gradient = x.T @ (x @ theta - y) / local_bs
-            theta = theta - lr * gradient
-        theta_diff = theta - tmp
-        return theta_diff
+    def local_update_diff(self, global_weight, num_local_update = 10, local_bs = 128, lr = 0.01, ):
+
+        return
 
     ## 返回更新后的模型
-    def updated_model(self, theta, num_local_update = 10, local_bs = 128, lr = 0.01, ):
-        for _ in range(num_local_update):
-            idx = np.random.choice(self.local_ds, local_bs, replace = False)
-            x = self.X[idx]
-            y = self.Y[idx]
-            gradient = x.T @ (x @ theta - y) / local_bs
-            theta = theta - lr * gradient
-        return theta
+    def local_update_model(self, global_weight, num_local_update = 10, local_bs = 128, lr = 0.01, ):
 
-    def local_loss(self, theta,):
-        Fk = 0.5 * np.linalg.norm( self.X @ theta - self.Y, ord = 2)**2 / self.local_ds
-        return Fk
+        return
 
-def GenClientsGroup(args, X, Y, frac):
+def GenClientsGroup(args, local_dt_dict, model):
     ClientsGroup = {}
-    for clientname, data in X.items():
-        ##  创建一个客户端
-        someone = Client(args, X[clientname], Y[clientname], clientname)
-        # 为每一个clients 设置一个名字
+    for clientname, dataset in local_dt_dict.items():
+        someone = Client(args, dataset, copy.deepcopy(model), clientname)
         ClientsGroup[clientname] = someone
     return ClientsGroup
 
 
 
-# a = np.array([1,2,3])
-# def hh(a):
-#     for i in range(2):
-#         a  = a - i
-#     return a
-# aa = hh(a)
-# print(f"a = {a}\naa = {aa}")
-
-# a = np.array([1,2,3])
-# def hh1(a):
-#     for i in range(2):
-#         a  -=  i
-#     return a
-# aa1 = hh1(a)
-# print(f"a = {a}\naa1 = {aa1}")
 
 
-# a = np.array([1,2,3])
-# def hh1(a):
-#     tmp = a
-#     for i in range(2):
-#         a  = a -  i
-#     b = a - tmp
-#     return a, b
-# aa1, dif = hh1(a)
-# print(f"a = {a}\naa1 = {aa1}, {dif}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

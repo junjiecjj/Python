@@ -617,13 +617,12 @@ VV = V@V.T.conjugate()
 
 
 ## 生成酉矩阵，方法二
-# tmp1 = np.random.rand(m, m) + 1j * np.random.rand(m, m)
-# U, R1 = np.linalg.qr(tmp1)
-# tmp2 = np.random.rand(n, n) + 1j * np.random.rand(n, n)
-# V, R2 = np.linalg.qr(tmp2)
-
-# UU = U@U.T.conjugate()
-# VV = V@V.T.conjugate()
+tmp1 = np.random.rand(m, m) + 1j * np.random.rand(m, m)
+U, R1 = np.linalg.qr(tmp1)
+tmp2 = np.random.rand(n, n) + 1j * np.random.rand(n, n)
+V, R2 = np.linalg.qr(tmp2)
+UU = U@U.T.conjugate()
+VV = V@V.T.conjugate()
 
 
 UA = U@A

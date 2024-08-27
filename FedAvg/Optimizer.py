@@ -7,7 +7,6 @@ Created on 2022/07/07
 如果类B的某个成员self.fa是类A的实例a, 则如果B中更改了a的某个属性, 则a的那个属性也会变.
 
 """
-
 import os
 import sys
 import numpy as np
@@ -15,20 +14,17 @@ import torch.nn as nn
 import torch
 import collections
 
-
 import matplotlib
 # matplotlib.use('TkAgg')
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-
 # 本项目自己编写的库
 # from  ColorPrint import ColoPrint
 # color =  ColoPrint()
 # sys.path.append("..")
 # from  Option import args
-
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"

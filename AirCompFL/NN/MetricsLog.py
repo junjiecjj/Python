@@ -160,27 +160,20 @@ class TraRecorder(object):
 #                                        记录当前每个epcoh的 相关指标, 但是不记录历史
 #=====================================================================================================================
 
-class Accumulator:
-    """For accumulating sums over n variables."""
+
+class Accumulator(object):
+    """ For accumulating sums over n variables. """
     def __init__(self,  n):
         self.data = [0.0] * n
         return
-
     def add(self, *Args):
         self.data = [a + float(b) for a, b in zip(self.data, Args)]
         return
-
     def reset(self):
         self.data = [0.0] * len(self.data)
         return
-
     def __getitem__(self, idx):
         return self.data[idx]
-
-
-
-
-
 
 
 

@@ -351,8 +351,6 @@ class AE_cnn_classify_mnist_R_SNR_Trainer():
 
 
 
-
-
 if ckp.ok:
     ## 数据迭代器，DataLoader
     loader = data_generator.DataGenerator(args, data)
