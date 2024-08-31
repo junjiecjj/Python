@@ -7,14 +7,16 @@ Created on:  2024/08/24
 
 @author: Junjie Chen
 
+# nn.CrossEntropyLoss() 接受的输入是 logits，这说明分类的输出不需要提前经过 log_softmax. 如果提前经过 log_softmax, 则需要使用 nn.NLLLoss()（负对数似然损失）。
 """
 
-
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class Mnist_MLP(nn.Module):
+
+class Mnist_1MLP(nn.Module):
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(784, 10)
@@ -23,6 +25,34 @@ class Mnist_MLP(nn.Module):
         inputs = inputs.view(-1, 28*28)
         tensor = self.fc1(inputs)
         return tensor
+# ### Data volume = 7850 (floating point number)
+# net = Mnist_1MLP()
+# data_valum1 = np.sum([param.numel() for param in net.state_dict().values()])
+# print(f"Data volume = {data_valum1} (floating point number) ")
+
+# for key, var in net.state_dict().items():
+#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
+
+
+class Mnist_2MLP(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(784, 50)
+        self.fc2 = nn.Linear(50, 10)
+
+    def forward(self, inputs):
+        inputs = inputs.view(-1, 28*28)
+        tensor = F.relu(self.fc1(inputs))
+        tensor = self.fc2(tensor)
+        return tensor
+# ### Data volume = 39760 (floating point number)
+# net = Mnist_2MLP()
+# data_valum1 = np.sum([param.numel() for param in net.state_dict().values()])
+# print(f"Data volume = {data_valum1} (floating point number) ")
+
+# for key, var in net.state_dict().items():
+#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
+
 
 class Mnist_2NN(nn.Module):
     def __init__(self):
@@ -37,15 +67,13 @@ class Mnist_2NN(nn.Module):
         tensor = F.relu(self.fc2(tensor))
         tensor = self.fc3(tensor)
         return tensor
-
-# nn.CrossEntropyLoss() 接受的输入是 logits，这说明分类的输出不需要提前经过 log_softmax. 如果提前经过 log_softmax, 则需要使用 nn.NLLLoss()（负对数似然损失）。
-
-# # Data volume = 178110 (floating point number)
+# ### Data volume = 178110 (floating point number)
 # net = Mnist_2NN()
-# data_valum = 0
-# for key, var in net.state_dict().items():
-#     data_valum += var.numel()
+# data_valum = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
+
+# for key, var in net.state_dict().items():
+#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
 
 
 
@@ -67,45 +95,54 @@ class Mnist_CNN(nn.Module):
         x = self.fc2(x) # [, 10]
         return x
 
-# # Data volume = 21840 (floating point number)
-# net = Mnist_CNN()
-# data_valum = 0
-# for key, var in net.state_dict().items():
-#     data_valum += var.numel()
+# ## Data volume = 21840 (floating point number)
+net = Mnist_CNN()
+# data_valum = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
-
-class Mnist_CNN2(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=5, stride=1, padding=2)
-        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=5, stride=1, padding=2)
-        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.fc1 = nn.Linear(7*7*64, 512)
-        self.fc2 = nn.Linear(512, 10)
-
-    def forward(self, inputs):
-        tensor = inputs.view(-1, 1, 28, 28)
-        tensor = F.relu(self.conv1(tensor))
-        tensor = self.pool1(tensor)
-        tensor = F.relu(self.conv2(tensor))
-        tensor = self.pool2(tensor)
-        tensor = tensor.view(-1, 7*7*64)
-        tensor = F.relu(self.fc1(tensor))
-        tensor = self.fc2(tensor)
-        return tensor
-
-# Data volume = 1663370 (floating point number)
-# net = Mnist_CNN()
-# data_valum = 0
 # for key, var in net.state_dict().items():
-#     data_valum += var.numel()
-# print(f"Data volume = {data_valum} (floating point number) ")
+#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
+
+param_W = net.state_dict()
+
+### torch
+# params_float = torch.Tensor([], )
+# for key, val in param_W.items():
+#     params_float = torch.cat((params_float, val.detach().cpu().flatten()))
+# std = params_float.std()
+# var = params_float.var()
+# mean = params_float.mean()
 
 
+### np
+# params_float = np.empty((0, 0), dtype = np.float32 )
+# for key, val in param_W.items():
+#     params_float = np.append(params_float, np.array(val.detach().cpu().clone()))
+# std = np.std(params_float)
+# var = np.var(params_float)
+# mean = np.mean(params_float)
 
+# def model_stastic(param_W):
+#     params_float = torch.Tensor([], )
+#     for key, val in param_W.items():
+#         params_float = torch.cat((params_float, val.detach().cpu().flatten()))
+#     std = params_float.std()
+#     var = params_float.var()
+#     mean = params_float.mean()
+#     return std, var, mean
+# std1, var1, mean1 = model_stastic(param_W)
+# print(f"1: {std1}, {var1}, {mean1}")
 
+# def model_stastic2(param_W):
+#     params_float = np.empty((0, 0), dtype = np.float32 )
+#     for key, val in param_W.items():
+#         params_float = np.append(params_float, np.array(val.detach().cpu().clone()))
+#     std = np.std(params_float)
+#     var = np.var(params_float)
+#     mean = np.mean(params_float)
+#     return std, var, mean
+# std2, var2, mean2 = model_stastic2(param_W)
+# print(f"2: {std2}, {var2}, {mean2}")
 
 
 

@@ -128,8 +128,6 @@ y_X_df.rename(columns={"^GSPC": "SP500"},inplace = True)
 X_df = y_X_df[tickers[1:]]
 y_df = y_X_df[['SP500']]
 
-
-
 # OLS
 import statsmodels.api as sm
 
@@ -187,49 +185,57 @@ plt.grid(b=True, which='minor', color='0.8')
 plt.show()
 
 
-# #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  图 16. 随着 α 增大，套索回归参数变化
-# # Lasso regression
-# clf = Lasso()
-# coefs = []
-# errors = []
-# coeff_df = pd.DataFrame()
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  图 16. 随着 α 增大，套索回归参数变化
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.linear_model import Ridge, Lasso
+from sklearn.metrics import mean_squared_error
+# import yfinance as yf
+import seaborn as sns
+import pandas as pd
 
-# alphas = np.logspace(-4, 2, 200)
+# Lasso regression
+clf = Lasso()
+coefs = []
+errors = []
+coeff_df = pd.DataFrame()
 
-# # Train the model with different regularisation strengths
-# for alpha_i in alphas:
-#     clf.set_params(alpha=alpha_i)
-#     clf.fit(X_df, y_df)
-#     coefs.append(clf.coef_)
-#     errors.append(mean_squared_error(clf.coef_.reshape(1,-1), b.reshape(1,-1)))
+alphas = np.logspace(-4, 2, 200)
 
-#     b_i = clf.coef_.reshape(1,-1)
-#     b_X_df = pd.DataFrame(data=b_i[:,1:].T, index = tickers[1:], columns=[alpha_i])
+# Train the model with different regularisation strengths
+for alpha_i in alphas:
+    clf.set_params(alpha=alpha_i)
+    clf.fit(X_df, y_df)
+    coefs.append(clf.coef_)
+    errors.append(mean_squared_error(clf.coef_.reshape(1,-1), b.reshape(1,-1)))
 
-#     coeff_df = pd.concat([coeff_df, b_X_df], axis = 1)
+    b_i = clf.coef_.reshape(1,-1)
+    b_X_df = pd.DataFrame(data=b_i[:,1:].T, index = tickers[1:], columns=[alpha_i])
 
-# fig, ax = plt.subplots(figsize = (8,5))
-# h = sns.lineplot(data=coeff_df.T, markers=False, dashes=False, palette = "husl")
-# plt.axhline(y=0, color='k', linestyle='--')
-# h.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-# plt.tight_layout()
-# ax.set_xscale('log')
-# plt.grid(b=True, which='minor', color='0.8')
-# # ax.grid(which='minor', axis='x', linestyle='--')
+    coeff_df = pd.concat([coeff_df, b_X_df], axis = 1)
+
+fig, ax = plt.subplots(figsize = (8,5))
+h = sns.lineplot(data=coeff_df.T, markers=False, dashes=False, palette = "husl")
+plt.axhline(y=0, color='k', linestyle='--')
+h.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.tight_layout()
+ax.set_xscale('log')
+plt.grid(b=True, which='minor', color='0.8')
+# ax.grid(which='minor', axis='x', linestyle='--')
 
 
-# #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 图 9. 和 OLS 相比，岭回归参数误差
-# fig, ax = plt.subplots(figsize = (8,5))
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 图 9. 和 OLS 相比，岭回归参数误差
+fig, ax = plt.subplots(figsize = (8,5))
 
-# ax.plot(alphas, errors)
-# plt.fill_between(alphas, errors, color = '#DEEAF6')
-# ax.set_xscale('log')
-# plt.xlabel('$\u03B1$')
-# plt.ylabel('Coefficient error')
-# plt.axis('tight')
-# plt.ylim(0,0.015)
-# plt.grid(b=True, which='minor', color='0.8')
-# plt.show()
+ax.plot(alphas, errors)
+plt.fill_between(alphas, errors, color = '#DEEAF6')
+ax.set_xscale('log')
+plt.xlabel('$\u03B1$')
+plt.ylabel('Coefficient error')
+plt.axis('tight')
+plt.ylim(0,0.015)
+plt.grid(b=True, which='minor', color='0.8')
+plt.show()
 
 
 

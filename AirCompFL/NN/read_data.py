@@ -73,8 +73,10 @@ def get_MNIST(args):
     # test_data_size  = len(test_set.data)   # 10000
 
     if args.IID:
+        print(">>> [The Data Partition is IID......]")
         dict_users = mnist_iid(train_data_size, args.num_of_clients)
-    elif not args.IID:
+    else:
+        print(">>> [The Data Partition is non-IID......]")
         dict_users = mnist_noniid(train_data_size, labels, args.num_of_clients)
 
     ## Train data
@@ -95,12 +97,13 @@ def get_cifar10(args):
     return
 
 
-
 ##>>>>>>>>>>>>>>>>>>>>>>>> get data ##################################
 def GetDataSet(args):
     if args.dataset.lower() == 'mnist':
+        print(f">>> [{args.dataset} Dataset Is Used for FL......]")
         local_dt_dict, testloader = get_MNIST(args)
     elif args.dataset.lower() == 'cifar10':
+        print(f">>> [{args.dataset} Dataset Is Used for FL......]")
         local_dt_dict, testloader = get_cifar10(args)
     return local_dt_dict, testloader
 

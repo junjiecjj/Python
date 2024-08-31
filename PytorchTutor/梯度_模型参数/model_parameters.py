@@ -39,7 +39,6 @@ import numpy as np
 
 """
 
-
 # 初始化随机数种子
 def set_random_seed(seed = 10, deterministic = False, benchmark = False):
     random.seed(seed)
@@ -128,7 +127,6 @@ for key in params:
 for parameters in model.parameters():
         print(f"{parameters.is_leaf}, {parameters.shape}, {parameters.requires_grad} {parameters.type()}, ")
 
-
 #===============================================================================================================
 #                                            模型参数加载
 #===============================================================================================================
@@ -144,6 +142,34 @@ class net(nn.Module):
         return self.fc2(self.fc1(x))
 
 model = net().to("cuda:0")
+data_valum = np.sum([param.numel() for param in model.state_dict().values()])
+
+for param in model.state_dict():
+    print(param)
+
+# param_W = model.state_dict()
+# def model_stastic(param_W):
+#     params_float = torch.Tensor([], )
+#     for key, val in param_W.items():
+#         params_float = torch.cat((params_float, val.detach().cpu().flatten()))
+#     std = params_float.std()
+#     var = params_float.var()
+#     mean = params_float.mean()
+#     return std, var, mean
+# std1, var1, mean1 = model_stastic(param_W)
+# print(f"1: {std1}, {var1}, {mean1}")
+
+# def model_stastic2(param_W):
+#     params_float = np.empty((0, 0))
+#     for key, val in param_W.items():
+#         params_float = np.append(params_float, np.array(val.detach().cpu().clone()))
+#     std = np.std(params_float)
+#     var = np.var(params_float)
+#     mean = np.mean(params_float)
+#     return std, var, mean
+# std2, var2, mean2 = model_stastic2(param_W)
+# print(f"2: {std2}, {var2}, {mean2}")
+
 
 ## 加载时的参数可以是在cpu上，模型在哪加载后的参数就在哪，与加载前的参数的device无关，只与模型的device有关
 params = {}
@@ -221,16 +247,66 @@ for key, var in model.state_dict().items():
     orig_params[key] = var.clone()#.cpu()   # .detach().cpu().numpy()
     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} \n  {var}" )
 
-
 tmp_param = {}
 for i , (key, val) in enumerate(orig_params.items()):
     tmp_param[key] = torch.ones_like(val.clone() ) + i
 
-
-
 # for key, var in model.state_dict().items():
 #     orig_params[key] += tmp_param[key]
 # RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
+
+
+# for param in  model.state_dict():
+#     tmp_param[param] = model.state_dict()[param] - tmp_param[param]
+# tmp_param changed
+
+#==================================== model.state_dict() : 加法 有效 ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key in model.state_dict():
+    model.state_dict()[key].add_(10)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#==================================== model.state_dict() : 加法 有效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key in model.state_dict():
+    model.state_dict()[key] += 10
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#==================================== model.state_dict() : 加法: 有效 ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key in model.state_dict():
+    model.state_dict()[key].add_(tmp_param[key])
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#==================================== model.state_dict() : 加法 有效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key in model.state_dict():
+    model.state_dict()[key] += tmp_param[key]
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#==================================== model.state_dict() : 加法 无效  ===============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key in model.state_dict():
+    model.state_dict()[key] = model.state_dict()[key] + 10
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+#======================================= model.state_dict(): 加法: 无效  =============================================
+model.load_state_dict(orig_params)
+print(f"model.state_dict() = {model.state_dict()} \n\n")
+
+for key in model.state_dict():
+    model.state_dict()[key] = model.state_dict()[key] + tmp_param[key]
+print(f"model.state_dict() = {model.state_dict()} \n\n")
 
 #================================  random mask =================================================
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -269,8 +345,6 @@ for key, var in model.state_dict().items():
     model.state_dict()[key].mul_(mask[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
-
 ## 3
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -289,7 +363,6 @@ for key, var in model.state_dict().items():
     var = var*(mask[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
 ## 3
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -299,8 +372,6 @@ for key, var in model.state_dict().items():
     var *= (mask[key])
 print(f"model.state_dict() = {model.state_dict()} \n\n")
 
-
-
 ## 4
 model.load_state_dict(orig_params)
 print(f"model.state_dict() = {model.state_dict()} \n\n")
@@ -308,7 +379,6 @@ print(f"model.state_dict() = {model.state_dict()} \n\n")
 for key, param in model.named_parameters():
     param.data  *= mask[key]
 print(f"model.state_dict() = {model.state_dict()} \n\n")
-
 
 ## 5
 model.load_state_dict(orig_params)

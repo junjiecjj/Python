@@ -114,7 +114,7 @@ plt.show()
 a = 1.99
 mean, var, skew, kurt = sy.stats.gamma.stats(a, moments='mvsk')
 
-
+# α (shape) = 2.0, θ (scale) = 2.0
 a_array = [0.8, 1, 2, 4 ]
 scale_array = [0.1, 0.5, 1, np.sqrt(2), 4]
 scale_array_, a_array_ = np.meshgrid(scale_array, a_array)
@@ -123,7 +123,6 @@ scale_array_, a_array_ = np.meshgrid(scale_array, a_array)
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(scale_array), figsize=(len(scale_array)*4, len(a_array)*3))
 for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.ravel()):
     mean, var, skew, kurt = sy.stats.gamma.stats(a_idx,scale = scale_idx, moments='mvsk')
-    print(f"mean = {mean:.2f}/{a_idx*scale_idx:.2f}, var = {var:.2f}/{a_idx*scale_idx**2:.2f}")
 
     x = np.linspace(sy.stats.gamma.ppf(0.01, a_idx, scale = scale_idx), sy.stats.gamma.ppf(0.99, a_idx, scale = scale_idx), 100)
     title_idx = f"a = {a_idx:.2f}, scale = {scale_idx:.2f}"
@@ -143,6 +142,7 @@ for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.rave
     y = bins**(a_idx-1)*(np.exp(-bins/scale_idx) / (sps.gamma(a_idx)*scale_idx**a_idx))
     ax.plot(bins, y, lw=2, color='r', label = "np pdf")
 
+    print(f"mean = {mean:.2f}/{a_idx*scale_idx:.2f}/{np.mean(s)}, var = {var:.2f}/{a_idx*scale_idx**2:.2f}/{np.var(s)}")
     # ax.set_xlim(0,60)
     # ax.set_ylim(0,4)
 
@@ -282,7 +282,6 @@ for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-
 ###>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 import numpy as np
 import matplotlib.pyplot as plt
@@ -339,70 +338,6 @@ fig.suptitle('Beta Distribution Analysis', fontsize=16)
 plt.tight_layout(rect=[0, 0, 1, 0.96])
 plt.show()
 
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡方分布(chi2  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-from scipy.stats import chi2
-
-df = 55
-mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
-
-df_array = [1, 2, 4, 5, 7, 9, 10 ]
-
-### PDF of chi2 Distributions
-fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
-for df, ax in zip(df_array, axs.ravel()):
-    mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
-    print(f"mean = {mean:.2f}/ , var = {var:.2f}/ ")
-
-    x = np.linspace(chi2.ppf(0.01, df), chi2.ppf(0.99, df), 100)
-    title_idx = f"df = {df}"
-    ax.plot(x, chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
-
-    ## frozen
-    rv = chi2(df)
-    ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
-
-    ## scipy Random variates.
-    r = chi2.rvs(df, size = 10000)
-    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.03, facecolor = "#FF3300", label =  "rvs", zorder = 3)
-
-    ## np
-    s = np.random.chisquare(df = df, size = 1000)
-    count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
-    y = (1/2)**(df/2) * bins**(df/2-1) * np.exp(-bins/2) / sps.gamma(df/2)
-    ax.plot(bins, y, lw=2, color='r', label = "np pdf")
-
-    # ax.set_xlim(0,60)
-    # ax.set_ylim(0,4)
-
-    ax.legend(loc='best', frameon=False)
-    ax.set_title(title_idx)
-    ax.spines.right.set_visible(False)
-    ax.spines.top.set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.tick_params(axis="x", direction='in')
-    ax.tick_params(axis="y", direction='in')
-
-
-### CDF of gamma Distributions
-fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
-for df, ax in zip(df_array, axs.ravel()):
-    x = np.linspace(chi2.cdf(0.01, df), chi2.ppf(0.99999, df), 100)
-    title_idx = f"df = {df}"
-    ax.plot(x, chi2.cdf(x, df), 'b', lw=1)
-    ax.set_title(title_idx)
-
-    ax.spines.right.set_visible(False)
-    ax.spines.top.set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.tick_params(axis="x", direction='in')
-    ax.tick_params(axis="y", direction='in')
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 瑞丽分布(rayleigh  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 from scipy.stats import rayleigh
@@ -450,7 +385,6 @@ for scale, ax in zip(scale_array, axs.ravel()):
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-
 ### CDF of rayleigh Distributions
 fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
 
@@ -468,6 +402,7 @@ for scale, ax in zip(scale_array, axs.ravel()):
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
+
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 指数分布 (Exponential Distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -536,8 +471,6 @@ for scale, ax in zip(scale_array, axs.ravel()):
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-
-
 ##>>>>>>>>>>>>>>>>>>>>>>>>>>>
 import numpy as np
 import pandas as pd
@@ -579,8 +512,6 @@ axs[1, 1].set_title('Q-Q Plot of Exponential Distribution')
 plt.tight_layout()
 plt.show()
 
-
-
 #%%>>>>>>>>>> 循环对称高斯分布( X~CN(0, sigma^2)  distribution) %%%%%%%%%%%%%%%%%%%%%%%%
 
 # X = (x1+jx2) ~ CN(0, sigma^2)
@@ -606,10 +537,9 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
 
     ## scipy
     x = np.linspace(rayleigh.ppf(0.01, loc = loc, scale = np.sqrt(sigma2/2)), rayleigh.ppf(0.99, loc = loc, scale = np.sqrt(sigma2/2)), 100)
-
     ax.plot(x, rayleigh.pdf(x, loc = loc, scale = np.sqrt(sigma2/2)), 'b', lw=2, label = 'rayleigh pdf', zorder = 1)
 
-    print(f"mean = {mean:.2f}/{np.sqrt(np.pi/2)*scale}/{np.mean(s)}, var = {var:.2f}/{(2-np.pi/2)*scale**2}/{np.var(s)} ")
+    print(f"mean = {np.sqrt(np.pi/2)*np.sqrt(sigma2/2):.2f}/{np.mean(X)}, var = {(2-np.pi/2)*sigma2/2:.2f}/{np.var(X)} ")
     # ax.set_xlim(0,60)
     # ax.set_ylim(0,4)
 
@@ -622,7 +552,6 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
-
 
 ### PDF of (x1**2 + x2**2) Distributions
 fig, axs = plt.subplots(nrows = 1, ncols = len(sigma2_array), figsize=(len(sigma2_array)*4, 3))
@@ -640,7 +569,7 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     x = np.linspace(expon.ppf(0.01, loc = loc, scale = sigma2), expon.ppf(0.99, loc = loc, scale = sigma2), 100)
     ax.plot(x, expon.pdf(x, loc = loc, scale = sigma2), 'b--', lw=2, label = 'expon pdf', zorder = 2)
 
-    print(f"mean = {mean:.2f}/{np.sqrt(np.pi/2)*scale}/{np.mean(s)}, var = {var:.2f}/{(2-np.pi/2)*scale**2}/{np.var(s)} ")
+    print(f"mean = {sigma2:.2f}/{np.mean(X)}, var = {sigma2**2:.2f}/{np.var(X)} ")
     # ax.set_xlim(0,60)
     # ax.set_ylim(0,4)
 
@@ -653,6 +582,69 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡方分布(chi2  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+from scipy.stats import chi2
+
+df = 55
+mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
+
+df_array = [1, 2, 4, 5, 7, 9, 10 ]
+
+### PDF of chi2 Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
+for df, ax in zip(df_array, axs.ravel()):
+    mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
+    print(f"mean = {mean:.2f}/ , var = {var:.2f}/ ")
+
+    x = np.linspace(chi2.ppf(0.01, df), chi2.ppf(0.99, df), 100)
+    title_idx = f"df = {df}"
+    ax.plot(x, chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
+
+    ## frozen
+    rv = chi2(df)
+    ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
+
+    ## scipy Random variates.
+    r = chi2.rvs(df, size = 10000)
+    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.03, facecolor = "#FF3300", label =  "rvs", zorder = 3)
+
+    ## np
+    s = np.random.chisquare(df = df, size = 1000)
+    count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
+    y = (1/2)**(df/2) * bins**(df/2-1) * np.exp(-bins/2) / sps.gamma(df/2)
+    ax.plot(bins, y, lw=2, color='r', label = "np pdf")
+
+    # ax.set_xlim(0,60)
+    # ax.set_ylim(0,4)
+
+    ax.legend(loc='best', frameon=False)
+    ax.set_title(title_idx)
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+
+### CDF of gamma Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
+for df, ax in zip(df_array, axs.ravel()):
+    x = np.linspace(chi2.cdf(0.01, df), chi2.ppf(0.99999, df), 100)
+    title_idx = f"df = {df}"
+    ax.plot(x, chi2.cdf(x, df), 'b', lw=1)
+    ax.set_title(title_idx)
+
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dirichlet分布 (Dirichlet Distribution)
 import numpy as np

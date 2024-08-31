@@ -33,7 +33,6 @@ class client(object):
         self.datasize         = datasize
         self.local_model      = model
         # self.G                = args.G
-
         return
 
     def localUpdate(self, localEpoch, localBatchSize, lossFun, opti, global_parameters, ):

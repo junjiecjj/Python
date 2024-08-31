@@ -85,17 +85,18 @@ class TraRecorder(object):
         #     pickle.dump(self.metricLog, f)
         self.plot(path, args)
         return
+
     def plot(self, path, args):
         self.metricLog[ self.metricLog > 1e20] = 1e20
 
-        label = 'Optimality gap'
+        label = 'Test acc'
         fig, ax = plt.subplots(1, 1, figsize = (8, 6))
         # colors = plt.cm.cool(np.linspace(0, 1, len(results)))
         ax.semilogy(self.metricLog[:,0], self.metricLog[:,1], color = colors[0], lw = 3, label = label)
 
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 25,} # 'family':'Times New Roman',
         ax.set_xlabel("Communication Round", fontdict = font, labelpad = 2)
-        ax.set_ylabel("Optimality gap", fontdict = font, labelpad = 2)
+        ax.set_ylabel("Accuracy", fontdict = font, labelpad = 2)
         title = f"{args.case}, E = {args.local_up}, {args.channel}, SNR = {args.SNR}"
         ax.set_title(title, fontproperties = font, )
 
@@ -116,7 +117,40 @@ class TraRecorder(object):
         ax.tick_params(which = 'minor', axis='y', direction='in', color = 'red',  width=2, length = 2,  )
         ax.grid(color = 'black', alpha = 0.3, linestyle = (0, (5, 10)), linewidth = 1.5 )
         out_fig = plt.gcf()
-        out_fig.savefig(os.path.join(path, "OptimalityGap.eps"),  )
+        out_fig.savefig(os.path.join(path, "Accuracy.eps"),  )
+        # plt.show()
+        plt.close()
+
+        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        label = 'Loss'
+        fig, ax = plt.subplots(1, 1, figsize = (8, 6))
+        # colors = plt.cm.cool(np.linspace(0, 1, len(results)))
+        ax.semilogy(self.metricLog[:,0], self.metricLog[:,2], color = colors[0], lw = 3, label = label)
+
+        font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 25,} # 'family':'Times New Roman',
+        ax.set_xlabel("Communication Round", fontdict = font, labelpad = 2)
+        ax.set_ylabel("Loss", fontdict = font, labelpad = 2)
+        title = f"{args.case}, E = {args.local_up}, {args.channel}, SNR = {args.SNR}, users{args.num_in_comm}"
+        ax.set_title(title, fontproperties = font, )
+
+        font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,}
+        legend1 = ax.legend(loc='best', prop =  font )
+        frame1 = legend1.get_frame()
+        frame1.set_alpha(1)
+        frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+        ax.spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
+        ax.spines['left'].set_linewidth(1.5);  ####设置左边坐标轴的粗细
+        ax.spines['right'].set_linewidth(1.5); ###设置右边坐标轴的粗细
+        ax.spines['top'].set_linewidth(1.5);   ####设置上部坐标轴的粗细
+
+        ax.tick_params(which = 'major', axis='both', direction='in', left = True, right = True, top=True, bottom=True, width=3, length = 5,  labelsize=25, labelfontfamily = 'Times New Roman', pad = 2)
+
+        ax.tick_params(which = 'minor', axis='x', direction='in', top=True,  width=2, length = 2,  )
+        ax.tick_params(which = 'minor', axis='y', direction='in', color = 'red',  width=2, length = 2,  )
+        ax.grid(color = 'black', alpha = 0.3, linestyle = (0, (5, 10)), linewidth = 1.5 )
+        out_fig = plt.gcf()
+        out_fig.savefig(os.path.join(path, "Loss.eps"),  )
         # plt.show()
         plt.close()
 
@@ -124,7 +158,7 @@ class TraRecorder(object):
         label = 'lr'
         fig, ax = plt.subplots(1, 1, figsize = (8, 6))
         # colors = plt.cm.cool(np.linspace(0, 1, len(results)))
-        ax.plot(self.metricLog[:,0], self.metricLog[:,2], color = colors[0], lw = 3, label = label)
+        ax.plot(self.metricLog[:,0], self.metricLog[:,3], color = colors[0], lw = 3, label = label)
 
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 25,} # 'family':'Times New Roman',
         ax.set_xlabel("Communication Round", fontdict = font, labelpad = 2)
@@ -138,10 +172,10 @@ class TraRecorder(object):
         frame1.set_alpha(1)
         frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-        ax.spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
-        ax.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
-        ax.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
-        ax.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
+        ax.spines['bottom'].set_linewidth(1.5);### 设置底部坐标轴的粗细
+        ax.spines['left'].set_linewidth(1.5);  ### 设置左边坐标轴的粗细
+        ax.spines['right'].set_linewidth(1.5); ### 设置右边坐标轴的粗细
+        ax.spines['top'].set_linewidth(1.5);   ### 设置上部坐标轴的粗细
 
         ax.tick_params(axis='both', direction='in', left = True, right = True, top=True, bottom=True, width=3, length = 5,  labelsize=25, labelfontfamily = 'Times New Roman', pad = 2)
 
@@ -153,13 +187,9 @@ class TraRecorder(object):
         plt.close()
         return
 
-
-
-
 #=====================================================================================================================
 #                                        记录当前每个epcoh的 相关指标, 但是不记录历史
 #=====================================================================================================================
-
 
 class Accumulator(object):
     """ For accumulating sums over n variables. """
@@ -174,6 +204,25 @@ class Accumulator(object):
         return
     def __getitem__(self, idx):
         return self.data[idx]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

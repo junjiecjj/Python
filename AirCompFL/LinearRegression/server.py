@@ -100,9 +100,9 @@ class Server(object):
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         grad_avg = np.mean(mess_lst, axis = 0)
-        h_sigmak = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
+        h_sigma = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
         # print(grad_norm)
-        eta = min(h_sigmak)
+        eta = min(h_sigma)
         noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = grad_avg.shape)
         self.theta -= lr * (grad_avg + noise/eta/len(mess_lst))
 
@@ -118,9 +118,9 @@ class Server(object):
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         diff_avg = np.mean(mess_lst, axis = 0)
-        h_sigmak = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
+        h_sigma = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
         # print(grad_norm)
-        eta = min(h_sigmak)
+        eta = min(h_sigma)
         noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = diff_avg.shape)
         self.theta += (diff_avg + noise/eta/len(mess_lst) )
 
@@ -136,9 +136,9 @@ class Server(object):
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         model_avg = np.mean(mess_lst, axis = 0)
-        h_sigmak = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
+        h_sigma = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
         # print(grad_norm)
-        eta = min(h_sigmak)
+        eta = min(h_sigma)
         noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = model_avg.shape)
         self.theta = model_avg + noise/eta/len(mess_lst)
 

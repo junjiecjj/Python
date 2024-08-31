@@ -27,16 +27,13 @@ user_name = getpass.getuser()
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
 
-
 ##  自己编写的库
 # checkpoint
 import Utility
 from MetricsLog import Accumulator
 import models
 
-
 #===============================================================================================
-
 # 设置随机数种子
 Utility.set_random_seed(9999, )
 Utility.set_printoption(3)
@@ -72,7 +69,6 @@ testloader = torch.utils.data.DataLoader(testset, batch_size = 128, shuffle = Fa
 # model = models.mnist_cnn().to(device)
 model = models.Mnist_2NN().to(device)
 # model = models.Mnist_MLP().to(device)
-
 
 # optimizer = torch.optim.Adam(model.parameters(), lr = 0.01, betas = (0.9, 0.999), eps = 1e-08,)
 optimizer = torch.optim.SGD(model.parameters(), lr = 0.004, momentum = 0.9, weight_decay = 0.0001 )
@@ -115,16 +111,14 @@ for epoch in range(epochs):
     test_acc = validata(model, testloader, device =  device)
     print(f"  Epoch: {epoch+1}/{epochs} | loss = {epoch_avg_loss:.4f} | train acc: {epoch_train_acc:.3f}, test acc: {test_acc:.3f} | \n")
 
-### 保存网络中的参数, 速度快，占空间少
-# torch.save(model.state_dict(), "/home/jack/FL_semantic/LeNet_model/LeNet_Minst_classifier.pt")   # 训练和测试都归一化
+### 保存网络中的参数,
+# torch.save(model.state_dict(), "/home/jack/FL_semantic/LeNet_model/LeNet_Minst_classifier.pt")
 
 print("\n#============ 训练完毕,  =================\n")
 acc1 =  validata(model, testloader, device =  device)
 print(f"train data acc = {acc1}")
 acc2 =  validata(model, testloader, device =  device,)
 print(f"test data acc = {acc2}")
-
-
 
 # classifier = LeNets.LeNet_3().to(args.device)
 # pretrained_model = "/home/jack/SemanticNoise_AdversarialAttack/LeNet_AlexNet/LeNet_Minst_classifier_2023-06-01-22:20:58.pt"

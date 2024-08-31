@@ -89,8 +89,7 @@ true_sigma = 2
 n_samples = 50
 data = np.random.normal(true_mu, true_sigma, n_samples)
 
-# 贝叶斯推断：假设先验为常见的非信息性先验
-# 均值的先验分布为高斯分布，方差的先验分布为Inverse-Gamma分布
+# 贝叶斯推断: 假设先验为常见的非信息性先验,均值的先验分布为高斯分布,方差的先验分布为Inverse-Gamma分布
 mu_prior_mean = 0
 mu_prior_std = 10
 alpha_prior = 1
@@ -122,7 +121,7 @@ for i in range(n_iter):
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 # 数据分布和拟合的高斯分布
-sns.histplot(data, kde=False, color="blue", ax=axs[0, 0])
+sns.histplot(data, kde=True, color="blue", ax=axs[0, 0])
 x = np.linspace(min(data), max(data), 100)
 for i in range(100):
     sample_mu = mu_samples[i]
@@ -500,7 +499,6 @@ def em_algorithm(data, k, max_iter=100, tol=1e-6):
 
         if iteration > 0 and abs(log_likelihood - log_likelihoods[-2]) < tol:
             break
-
     return weights, means, variances, log_likelihoods
 
 # 运行EM算法
@@ -537,7 +535,7 @@ plt.show()
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 生成线性回归数据
+############# 生成线性回归数据
 np.random.seed(42)
 X_lin = 2 * np.random.rand(100, 1)
 y_lin = 4 + 3 * X_lin + np.random.randn(100, 1)
@@ -556,7 +554,23 @@ for iteration in range(n_iterations):
     loss = np.mean((X_b.dot(theta) - y_lin) ** 2)
     loss_history_lin.append(loss)
 
-# 生成逻辑回归数据
+# 绘制结果
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+
+# 线性回归数据和拟合曲线
+ax[0].scatter(X_lin, y_lin, color="blue", label="Data Points")
+ax[0].plot(X_lin, X_b.dot(theta), color="red", label="Linear Regression Fit")
+ax[0].set_title("Linear Regression Fit")
+ax[0].legend()
+
+# 线性回归损失随迭代的变化
+ax[1].plot(range(n_iterations), loss_history_lin, color="green")
+ax[1].set_title("Linear Regression Loss")
+ax[1].set_xlabel("Iterations")
+ax[1].set_ylabel("Loss")
+
+
+############# 生成逻辑回归数据
 X_log = np.random.rand(100, 2) * 10 - 5
 y_log = (X_log[:, 0] * 0.5 + X_log[:, 1] * 0.3 + np.random.randn(100) > 0).astype(int)
 
@@ -579,35 +593,22 @@ for iteration in range(n_iterations):
     loss_history_log.append(loss)
 
 # 绘制结果
-fig, ax = plt.subplots(2, 2, figsize=(12, 10))
-
-# 线性回归数据和拟合曲线
-ax[0, 0].scatter(X_lin, y_lin, color="blue", label="Data Points")
-ax[0, 0].plot(X_lin, X_b.dot(theta), color="red", label="Linear Regression Fit")
-ax[0, 0].set_title("Linear Regression Fit")
-ax[0, 0].legend()
-
-# 线性回归损失随迭代的变化
-ax[0, 1].plot(range(n_iterations), loss_history_lin, color="green")
-ax[0, 1].set_title("Linear Regression Loss")
-ax[0, 1].set_xlabel("Iterations")
-ax[0, 1].set_ylabel("Loss")
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
 
 # 逻辑回归数据分布和决策边界
-ax[1, 0].scatter(X_log[y_log == 0][:, 0], X_log[y_log == 0][:, 1], color="blue", label="Class 0")
-ax[1, 0].scatter(X_log[y_log == 1][:, 0], X_log[y_log == 1][:, 1], color="red", label="Class 1")
+ax[0].scatter(X_log[y_log == 0][:, 0], X_log[y_log == 0][:, 1], color="blue", label="Class 0")
+ax[0].scatter(X_log[y_log == 1][:, 0], X_log[y_log == 1][:, 1], color="red", label="Class 1")
 x_values = [np.min(X_log[:, 0] - 1), np.max(X_log[:, 0] + 1)]
 y_values = -(theta_log[0] + theta_log[1] * x_values) / theta_log[2]
-ax[1, 0].plot(x_values, y_values, label="Decision Boundary", color="green")
-ax[1, 0].set_title("Logistic Regression Decision Boundary")
-ax[1, 0].legend()
-
+ax[0].plot(x_values, y_values, label="Decision Boundary", color="green")
+ax[0].set_title("Logistic Regression Decision Boundary")
+ax[0].legend()
 
 # 逻辑回归损失随迭代的变化
-ax[1, 1].plot(range(n_iterations), loss_history_log, color="purple")
-ax[1, 1].set_title("Logistic Regression Loss")
-ax[1, 1].set_xlabel("Iterations")
-ax[1, 1].set_ylabel("Loss")
+ax[1].plot(range(n_iterations), loss_history_log, color="purple")
+ax[1].set_title("Logistic Regression Loss")
+ax[1].set_xlabel("Iterations")
+ax[1].set_ylabel("Loss")
 
 plt.tight_layout()
 plt.show()

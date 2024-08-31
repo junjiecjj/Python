@@ -2,6 +2,154 @@
 
 
 
+#%%>>>>>>>>>>>>>>>>>>>>>>> 1-feature 期望最大化算法 (Expectation-Maximization, EM) >>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+# 生成虚拟数据集
+np.random.seed(42)
+
+# 参数设置
+mu1, sigma1, n1 = 2, 0.5, 400  # 第一组高斯分布参数
+mu2, sigma2, n2 = 8, 1.0, 600  # 第二组高斯分布参数
+
+# 生成两组高斯分布数据
+data1 = np.random.normal(mu1, sigma1, n1)
+data2 = np.random.normal(mu2, sigma2, n2)
+data = np.hstack((data1, data2))  # 合并数据集
+
+# EM算法初始化
+def initialize_parameters(data, k):
+    weights = np.ones(k) / k
+    means = np.random.choice(data, k, replace=False)
+    variances = np.random.random_sample(k)
+    return weights, means, variances
+
+# E-step: 计算责任度
+def e_step(data, weights, means, variances):
+    responsibilities = np.zeros((len(data), len(means)))
+    for i in range(len(means)):
+        responsibilities[:, i] = weights[i] * norm.pdf(data, means[i], np.sqrt(variances[i]))
+    responsibilities /= responsibilities.sum(1, keepdims=True)
+    return responsibilities
+
+# M-step: 更新参数
+def m_step(data, responsibilities):
+    nk = responsibilities.sum(axis=0)
+    weights = nk / len(data)
+    means = (responsibilities.T @ data) / nk
+    variances = np.zeros(len(means))
+    for i in range(len(means)):
+        variances[i] = (responsibilities[:, i] * (data - means[i])**2).sum() / nk[i]
+    return weights, means, variances
+
+# 计算对数似然函数
+def compute_log_likelihood(data, weights, means, variances):
+    log_likelihood = 0
+    for i in range(len(means)):
+        log_likelihood += weights[i] * norm.pdf(data, means[i], np.sqrt(variances[i]))
+    return np.sum(np.log(log_likelihood))
+
+# EM算法主函数
+def em_algorithm(data, k, max_iter=100, tol=1e-6):
+    weights, means, variances = initialize_parameters(data, k)
+    log_likelihoods = []
+
+    for iteration in range(max_iter):
+        responsibilities = e_step(data, weights, means, variances)
+        weights, means, variances = m_step(data, responsibilities)
+        log_likelihood = compute_log_likelihood(data, weights, means, variances)
+        log_likelihoods.append(log_likelihood)
+
+        if iteration > 0 and abs(log_likelihood - log_likelihoods[-2]) < tol:
+            break
+
+    return weights, means, variances, log_likelihoods
+
+## 运行EM算法
+k = 2  # 混合高斯模型的成分数量
+weights, means, variances, log_likelihoods = em_algorithm(data, k)
+
+# 绘图
+plt.figure(figsize=(12, 8))
+
+# 子图1：原始数据与高斯分布拟合曲线
+plt.subplot(2, 1, 1)
+plt.hist(data, bins=30, density=True, alpha=0.5, color='gray', label='Data histogram')
+
+x = np.linspace(min(data), max(data), 1000)
+for i in range(k):
+    plt.plot(x, weights[i] * norm.pdf(x, means[i], np.sqrt(variances[i])), label=f'Gaussian {i+1}')
+plt.title('Data and Fitted Gaussian Distributions')
+plt.xlabel('Data points')
+plt.ylabel('Density')
+plt.legend()
+
+# 子图2：对数似然函数变化
+plt.subplot(2, 1, 2)
+plt.plot(log_likelihoods, marker='o')
+plt.title('Log-Likelihood during EM iterations')
+plt.xlabel('Iteration')
+plt.ylabel('Log-Likelihood')
+
+plt.tight_layout()
+plt.show()
+
+
+
+#%%>>>>>>>>>>>>>>>>>>>>>>> n-feature 期望最大化算法 (Expectation-Maximization, EM) >>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

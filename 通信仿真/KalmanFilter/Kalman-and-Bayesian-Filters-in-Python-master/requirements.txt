@@ -1,0 +1,7 @@
+filterpy
+jupyter
+notebook
+sympy
+numpy
+scipy
+matplotlib

@@ -1,0 +1,11 @@
+name: kf_bf
+dependencies:
+- python
+- pip
+- ipython
+- jupyter
+- matplotlib
+- scipy
+- sympy
+- pip:
+  - filterpy
