@@ -324,8 +324,6 @@ plt.show()
 print("Final parameters (theta):", theta)
 
 
-
-
 #%%>>>>>>>>>>>>>> 5. RMSProp (Root Mean Square Propagation)
 
 # import torch
@@ -399,7 +397,6 @@ print("Final parameters (theta):", theta)
 # plt.show()
 
 
-
 ########## 机器学习例子
 import numpy as np
 import matplotlib.pyplot as plt
@@ -421,8 +418,6 @@ plt.show()
 
 # 添加偏置项 x0 = 1 到 X 中
 X_b = np.c_[np.ones((1000, 1)), X]
-
-
 
 def rmsprop(X, y, theta, alpha, beta, epsilon=1e-8, iterations=100):
     m = len(y)
@@ -1095,10 +1090,6 @@ def gradient_descent(X, y, theta, alpha, num_iters):
         theta = theta - alpha * gradient
     return theta
 
-
-
-
-
 #%%>>>>>>>>>>>>>> 动量梯度下降（Gradient Descent with Momentum）
 def momentum_gradient_descent(X, y, theta, alpha, beta, num_iters):
     m = len(y)
@@ -1108,8 +1099,6 @@ def momentum_gradient_descent(X, y, theta, alpha, beta, num_iters):
         v = beta * v + (1 - beta) * gradient
         theta = theta - alpha * v
     return theta
-
-
 
 #%%>>>>>>>>>>>>>> Nesterov加速梯度（Nesterov Accelerated Gradient, NAG）
 def nesterov_accelerated_gradient(X, y, theta, alpha, beta, num_iters):
@@ -1122,9 +1111,6 @@ def nesterov_accelerated_gradient(X, y, theta, alpha, beta, num_iters):
         theta = theta - alpha * v
     return theta
 
-
-
-
 #%%>>>>>>>>>>>>>> AdaGrad（Adaptive Gradient Algorithm）
 def adagrad(X, y, theta, alpha, num_iters, epsilon=1e-8):
     m = len(y)
@@ -1134,8 +1120,6 @@ def adagrad(X, y, theta, alpha, num_iters, epsilon=1e-8):
         G += gradient ** 2
         theta = theta - alpha / (np.sqrt(G + epsilon)) * gradient
     return theta
-
-
 
 #%%>>>>>>>>>>>>>> RMSProp（Root Mean Square Propagation）
 
@@ -1147,8 +1131,6 @@ def rmsprop(X, y, theta, alpha, beta, num_iters, epsilon=1e-8):
         E_g2 = beta * E_g2 + (1 - beta) * gradient ** 2
         theta = theta - alpha / (np.sqrt(E_g2 + epsilon)) * gradient
     return theta
-
-
 
 #%%>>>>>>>>>>>>>> Adam（Adaptive Moment Estimation）
 def adam(X, y, theta, alpha, beta1, beta2, num_iters, epsilon=1e-8):
@@ -1164,9 +1146,6 @@ def adam(X, y, theta, alpha, beta1, beta2, num_iters, epsilon=1e-8):
         theta = theta - alpha * m_t_hat / (np.sqrt(v_t_hat) + epsilon)
     return theta
 
-
-
-
 #%%>>>>>>>>>>>>>> AdaDelta
 
 def adadelta(X, y, theta, rho, num_iters, epsilon=1e-8):
@@ -1180,7 +1159,6 @@ def adadelta(X, y, theta, rho, num_iters, epsilon=1e-8):
         theta = theta + delta_theta
         E_delta_theta2 = rho * E_delta_theta2 + (1 - rho) * delta_theta ** 2
     return theta
-
 
 
 #%%>>>>>>>>>>>>>> Nadam（Nesterov-accelerated Adaptive Moment Estimation）
@@ -1210,9 +1188,6 @@ def lbfgs(X, y, theta):
 
     theta, _, _ = fmin_l_bfgs_b(loss_and_grad, theta)
     return theta
-
-
-
 
 #%%>>>>>>>>>>>>>> CMA-ES（Covariance Matrix Adaptation Evolution Strategy）
 

@@ -10,3 +10,4 @@ https://github.com/rlabbe/filterpy
 
 https://github.com/milsto/robust-kalman/tree/master
 
+https://filterpy.readthedocs.io/en/latest/index.html

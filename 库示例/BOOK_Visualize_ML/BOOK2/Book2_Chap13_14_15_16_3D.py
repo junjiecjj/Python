@@ -46,9 +46,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -70,9 +70,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -92,9 +92,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -117,9 +117,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -141,9 +141,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -168,9 +168,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -192,9 +192,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -216,9 +216,9 @@ ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 fig.colorbar(scatter_plot, ax = ax, shrink = 0.5, aspect = 10)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -242,9 +242,9 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 ax.set_box_aspect([1,1,1])
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xlim(4, 8)
 ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
@@ -288,9 +288,9 @@ def visualize_multinomial(p_array, num = 20):
     ax.set_xlabel('$x_1$')
     ax.set_ylabel('$x_2$')
     ax.set_zlabel('$x_3$')
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
     ax.set_xticks([0,num])
     ax.set_yticks([0,num])
@@ -540,9 +540,9 @@ def visualize_Dirichlet(alpha_array, num = 50):
                  cmap = 'RdYlBu_r')
 
     ax.set_proj_type('ortho')
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     # ax.set_xticks(np.linspace(0,1,6))
     # ax.set_yticks(np.linspace(0,1,6))
     # ax.set_zticks(np.linspace(0,1,6))
@@ -630,9 +630,9 @@ def visualize_sample(alpha_array):
     ax.set_proj_type('ortho')
     ax.view_init(azim=30, elev=30)
     ax.set_box_aspect([1,1,1])
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     ax.set_xlim(0,1)
     ax.set_ylim(0,1)
     ax.set_zlim(0,1)
@@ -841,8 +841,6 @@ plt.show()
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
 # 产生网格数据
 grid = np.linspace(-3,3)
 
@@ -850,14 +848,11 @@ xx1,xx2 = np.meshgrid(np.linspace(-3,3),np.linspace(-3,3))
 ff = np.exp(- xx1**2 - xx2**2)
 # 高斯函数
 
-
 # 可视化
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 # 绘制曲面
-ax.plot_wireframe(xx1, xx2, ff,
-                  color = [0.3,0.3,0.3],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1, xx2, ff, color = [0.3,0.3,0.3], linewidth = 0.25)
 
 # 绘制两条曲线
 ax.plot(grid, # y坐标
@@ -888,9 +883,7 @@ plt.show()
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 # 绘制曲面
-ax.plot_wireframe(xx1, xx2, ff,
-                  color = [0.3,0.3,0.3],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1, xx2, ff, color = [0.3,0.3,0.3], linewidth = 0.25)
 
 # 绘制两条曲线
 ax.plot(grid, np.sqrt(np.pi) * np.exp(-grid**2), zs=-3, zdir='x')
@@ -919,8 +912,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import multinomial
 
-
-
 # 沿 z
 p_array = [0.15, 0.35, 0.5]
 num = 15
@@ -933,8 +924,7 @@ xx1, xx2 = np.meshgrid(x1_array, x2_array)
 xx3 = num - xx1 - xx2
 xx3 = np.where(xx3 >= 0.0, xx3, np.nan)
 
-PMF_ff = multinomial.pmf(x=np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])).T,
-                         n=num, p=p_array)
+PMF_ff = multinomial.pmf(x=np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])).T, n=num, p=p_array)
 
 PMF_ff = np.where(PMF_ff > 0.0, PMF_ff, np.nan)
 
@@ -950,9 +940,9 @@ ax.set_proj_type('ortho')
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('$x_3$')
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
 ax.set_xticks([0,num])
 ax.set_yticks([0,num])
@@ -1003,9 +993,7 @@ Data = np.row_stack((A,B,C,D,E,F,G,O))
 fig = plt.figure()
 ax = fig.add_subplot(projection="3d")
 
-ax.scatter(Data[:,0],Data[:,1],Data[:,2],
-          alpha = 1,
-          s = 40)
+ax.scatter(Data[:,0],Data[:,1],Data[:,2], alpha = 1, s = 40)
 
 for label_idx, [x, y, z] in zip(Labels, Data):
     label = label_idx + ': (%d, %d, %d)' % (x, y, z)
@@ -1030,9 +1018,7 @@ plt.show()
 fig = plt.figure()
 ax = fig.add_subplot(projection="3d")
 
-ax.scatter(Data[:,0],Data[:,1],Data[:,2],
-          alpha = 1,
-          s = 40)
+ax.scatter(Data[:,0],Data[:,1],Data[:,2], alpha = 1, s = 40)
 
 for label_idx, [x, y, z] in zip(Labels, Data):
     label = label_idx + ': (%d, %d, %d)' % (x, y, z)
@@ -1413,9 +1399,10 @@ ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, 
 fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
 ax.set_proj_type('ortho')
 
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# 3D坐标区的背景设置为白色
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')
