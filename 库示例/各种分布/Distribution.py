@@ -543,22 +543,22 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     # ax.set_xlim(0,60)
     # ax.set_ylim(0,4)
 
-    ax.legend(loc='best', frameon=False)
+    ax.legend(loc = 'best', frameon = False)
     title_idx = f"sigma^2 = {sigma2}"
     ax.set_title(title_idx)
     ax.spines.right.set_visible(False)
     ax.spines.top.set_visible(False)
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
-    ax.tick_params(axis="x", direction='in')
-    ax.tick_params(axis="y", direction='in')
+    ax.tick_params(axis = "x", direction = 'in')
+    ax.tick_params(axis = "y", direction = 'in')
 
 ### PDF of (x1**2 + x2**2) Distributions
-fig, axs = plt.subplots(nrows = 1, ncols = len(sigma2_array), figsize=(len(sigma2_array)*4, 3))
+fig, axs = plt.subplots(nrows = 1, ncols = len(sigma2_array), figsize = (len(sigma2_array)*4, 3))
 
 for sigma2, ax in zip(sigma2_array, axs.ravel()):
-    x1 = np.random.normal(loc = mu, scale = np.sqrt(sigma2/2), size=10000)
-    x2 = np.random.normal(loc = mu, scale = np.sqrt(sigma2/2), size=10000)
+    x1 = np.random.normal(loc = mu, scale = np.sqrt(sigma2/2), size = 10000)
+    x2 = np.random.normal(loc = mu, scale = np.sqrt(sigma2/2), size = 10000)
     X = (x1**2 + x2**2)
     ## np
     count, bins, ignored = ax.hist(X, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)

@@ -138,11 +138,6 @@ recorder.save(ckp.savedir, args)
 
 
 
-
-
-
-
-
 # def main():
 #     cases = ["gradient", "diff", "model"]
 #     channels = ['erf', 'rician']

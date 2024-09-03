@@ -1,10 +1,98 @@
 
+
+
+
+"""
+https://mp.weixin.qq.com/s?__biz=Mzk0NDM4OTYyOQ==&mid=2247486351&idx=1&sn=05a3cef0a0dfa9e2c6f3d114537b0532&chksm=c274a3d1b97b3dd121c32e9801f3131aa3e6984133b1e969cf4a92d49f6ffcde0e9eaac15efc&mpshare=1&scene=1&srcid=0901IlukJc5NXm16jmh4x5UY&sharer_shareinfo=a49cd910401ab2173f360aacc8825b10&sharer_shareinfo_first=a49cd910401ab2173f360aacc8825b10&exportkey=n_ChQIAhIQtCodkrdq0SrnF0S99B5L%2BBKfAgIE97dBBAEAAAAAAPiKBEr9zssAAAAOpnltbLcz9gKNyK89dVj0sJQKK68YOc30T14Nr9CG2C%2F29H1vHxDVdd4nF%2Fz58Bs0XNHtrh1aOXYl8vaQUBOIg6TkdBe%2BHH%2BO%2BmXle8nJL2dO0thkAPPOi6zc0MNZFXKGyoZFpcOvsJlae40ixOjqDDNFlnq2X1qVTZfvweG3sYEMhDfUKX56MD9bJRgFEZkC1fHF%2Bvj9bqgnVSbvbgS5ZYqjqJk35op%2Fu84EVa%2F3c4ODANc2QcUtnXgAgcctBaNgxkM49tmzULPAjCHta6uNpJ85pACvst38qNYkfcLQUhzIyvSDZzqS6E2WQsj5Jie0LyUVRrKm6tskGaEN6bcpr692%2Fs3UpwPk&acctmode=0&pass_ticket=dgu7HA%2FGxN2Mkg8O%2BkMqv92%2BIGp0lah6dZXWkVHBXsGvulGPpbSsI%2B3WOhF7pvLS&wx_header=0#rd
+
+"""
+
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import datasets
+from sklearn.decomposition import PCA, KernelPCA, FastICA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.manifold import TSNE, MDS, Isomap, LocallyLinearEmbedding
+from sklearn.random_projection import GaussianRandomProjection
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+import numpy as np
+
+# 加载鸢尾花数据集
+iris = datasets.load_iris()
+X = iris.data  # 特征矩阵
+y = iris.target  # 标签
+target_names = iris.target_names
+
+# 标准化数据（均值为0，方差为1）
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 定义降维方法
+methods = {
+    'PCA': PCA(n_components=2),  # 主成分分析
+    'Kernel PCA': KernelPCA(n_components=2, kernel='rbf'),  # 核主成分分析
+    'LDA': LDA(n_components=2),  # 线性判别分析
+    'FastICA': FastICA(n_components=2),  # 独立成分分析
+    'MDS': MDS(n_components=2),  # 多维尺度分析
+    't-SNE': TSNE(n_components=2, random_state=42),  # t-SNE
+    'Isomap': Isomap(n_components=2),  # Isomap
+    'LLE': LocallyLinearEmbedding(n_components=2),  # 局部线性嵌入
+    'Random Projection': GaussianRandomProjection(n_components=2),  # 随机投影
+    'SVD': make_pipeline(StandardScaler(), PCA(n_components=2))  # 奇异值分解
+}
+
+# 创建子图，5行2列
+fig, axes = plt.subplots(5, 2, figsize=(8, 16), )
+axes = axes.flatten()  # 将子图阵列平铺成一维数组，方便迭代
+
+# 定义颜色映射
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+
+# 生成各个降维方法的二维散点图
+for i, (name, method) in enumerate(methods.items()):
+    # 对于LDA，需要提供标签信息；其他方法只需特征矩阵
+    if name == 'LDA':
+        X_2d = method.fit_transform(X_scaled, y)
+    else:
+        X_2d = method.fit_transform(X_scaled)
+
+    ax = axes[i]  # 当前子图
+    for color, label, target_name in zip(colors, [0, 1, 2], target_names):
+        ax.scatter(X_2d[y == label, 0], X_2d[y == label, 1], label=target_name, c=color, edgecolor='k', s=50)
+
+    # 设置标题、标签和刻度样式
+    ax.set_title(f'{name}', fontsize=14)
+    ax.set_xlabel('Component 1', fontsize=12)
+    ax.set_ylabel('Component 2', fontsize=12)
+    ax.tick_params(axis='both', which='major', labelsize=10)
+
+    # 添加图例
+    ax.legend(title="Classes", loc="best", fontsize=10, title_fontsize='12')
+
+# 美化子图布局，避免重叠
+plt.tight_layout()
+
+# 全局设置
+plt.suptitle('Dimensionality Reduction Techniques on Iris Dataset', fontsize=20, y=1.02)
+plt.subplots_adjust(top=0.95)  # 调整顶部以容纳全局标题
+sns.set(style="whitegrid")  # 使用Seaborn白色网格风格
+
+# 保存为PDF文件
+# fig.savefig("Dimensionality_Reduction_Techniques_on_Iris_Dataset.pdf", format='pdf', bbox_inches='tight')
+
+# 显示图形
+plt.show()
+
+
+
+
 """
 
 最强总结，十大降维算法 ！
 https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247484483&idx=1&sn=758cac475ccbd1d542573cf2e30e25c9&chksm=c0e5de85f7925793e5092c57d479a146403bacf3c3d4eeff48bb2dc9586285e35ebfe8af94fe&mpshare=1&scene=1&srcid=0726BRSLjsDMD7D7sMwhSURW&sharer_shareinfo=c77ff2867fa87083cab20f479226fed5&sharer_shareinfo_first=c77ff2867fa87083cab20f479226fed5&exportkey=n_ChQIAhIQNJ71rQv%2F2dHjiPUe9doSCBKfAgIE97dBBAEAAAAAAANjMMEGmLoAAAAOpnltbLcz9gKNyK89dVj0F1Q1ihNQLRnM1Ny07eqj2Rsnr0ajrwYNCwq5R5pd%2FqBqM1V%2F128bMJJYK1yvSNX1V5e%2Fa2ukk0gSRm6J27qX55%2Bcz7umHH2jXlgBFbHw%2BUrUXQqKsWQWfIcjRqsNENPO6ubBneN9za5eVeH2bh7D51Ij4KTO7S2%2BeZEKhEzGPvteVxs4e3gp8xPmxN9p1SqeEXx9Yu5tBexzDPlOAKKy3TATZwiyM5506bCje6hZNi8%2Bi5tMLedtWAWd6LSH6PaKGROGr02KvmabbMmTTQFfgcmoLEfoNXVNjcRH4W6TzieU75oKI5dWPWbSAiPw6BYXfsubgdzDddYD&acctmode=0&pass_ticket=8i8k1gbi4GtOFvUuUNbT8k2asxM6xlXj5ZVscQ%2BYYmGv6J5vPnbL%2FEN8oXPQNrwj&wx_header=0#rd
-
-
 
 """
 

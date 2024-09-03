@@ -9,26 +9,24 @@ Created on Wed May 18 16:46:55 2022
 import numpy as np
 import torch
 
-
 #============================================================================
 #  使用 numpy.tofile() 和 numpy.fromfile() 函数保存和加载 NumPy 数组
 #============================================================================
 
-
 a = np.arange(0,12)
 
-a.shape = 3,4
+a.shape = 3, 4
 
 a.tofile("/home/jack/公共的/MLData/TrashFile/a.bin")
 
-b = np.fromfile("/home/jack/公共的/MLData/TrashFile/a.bin", dtype=np.float) # 按照float类型读入数据
+b = np.fromfile("/home/jack/公共的/MLData/TrashFile/a.bin", dtype = np.float) # 按照float类型读入数据
 
 print(f"b  = {b}") # 读入的数据是错误的
 
 print(f"a.dtype = {a.dtype}") # 查看a的dtype
 # a.dtype = int64
 
-b = np.fromfile("/home/jack/公共的/MLData/TrashFile/a.bin", dtype=np.int64) # 按照int32类型读入数据
+b = np.fromfile("/home/jack/公共的/MLData/TrashFile/a.bin", dtype = np.int64) # 按照int32类型读入数据
 print(f"b  = {b}")
 b.shape = 3, 4 # 按照a的shape修改b的shape
 
@@ -42,7 +40,7 @@ print(f"b  = {b}")
 print("=="*30)
 """
 loadtxt() 和 savetxt() 函数处理正常的文本文件(.txt 等)
-np.loadtxt和np.savetxt可以读写1维和2维数组的文本文件：
+np.loadtxt 和 np.savetxt 可以读写1维和2维数组的文本文件：
 同时可以指定各种分隔符、针对特定列的转换器函数、需要跳过的行数等。
 ——
 注意：只能处理 1维和2维数组。可以用于CSV格式文本文件
@@ -55,21 +53,21 @@ np.savetxt(fname, X, fmt=’%.18e’, delimiter=’ ‘, newline=’\n’, heade
 path1 = '/home/jack/公共的/MLData/TrashFile/test1.txt'
 ar1 =  np.arange(24).reshape(4,6)
 
-np.savetxt(path1, ar1, fmt='%.2f', delimiter=',',)#使用默认分割符（空格），保留两位小数
+np.savetxt(path1, ar1, fmt='%.2f', delimiter=',',) # 使用默认分割符（空格），保留两位小数
 
 path2 = '/home/jack/公共的/MLData/TrashFile/test2.txt'
 np.savetxt(path2, ar1,   delimiter=',', fmt='%.18e')
 
-ar1_load = np.loadtxt(path2, delimiter=',')#指定逗号分割符
+ar1_load = np.loadtxt(path2, delimiter = ',')#指定逗号分割符
 print(f"ar1_load = \n{ar1_load}")
 print(f"ar1_load.dtype = \n{ar1_load.dtype}")
 
 
 # 保存一个二维数组为CSV
 path3 = '/home/jack/公共的/MLData/TrashFile/test1.csv'
-np.savetxt(path3, ar1, fmt='%.2f', delimiter=',',)#使用默认分割符（空格），保留两位小数
+np.savetxt(path3, ar1, fmt = '%.2f', delimiter = ',',)#使用默认分割符（空格），保留两位小数
 
-ar2_load = np.loadtxt(path3, delimiter=',')#指定逗号分割符
+ar2_load = np.loadtxt(path3, delimiter = ',')#指定逗号分割符
 print(f"ar2_load = \n{ar2_load}")
 print(f"ar2_load.dtype = \n{ar2_load.dtype}")
 
@@ -110,9 +108,6 @@ print(f"ar1 = {ar1}")
 np.savetxt(path1, ar1, fmt='%.2f', delimiter=',', )#error, savetxt只能保存数组
 ar2_load = np.loadtxt(path1, delimiter=',' )#指定逗号分割符
 
-
-
-
 # 保存三维数组也会出错
 path1 = '/home/jack/公共的/MLData/TrashFile/test3.txt'
 ar1 = np.random.randint(1,5,size=(2,3,4))
@@ -120,8 +115,6 @@ print(f"ar1 = {ar1}")
 
 np.savetxt(path1, ar1, fmt='%.2f', delimiter=',', )#error, savetxt只能保存1D/2D数组
 ar2_load = np.loadtxt(path1, delimiter=',' )#指定逗号分割符
-
-
 
 #============================================================================
 #  2 np.save()和np.load()
@@ -191,10 +184,6 @@ print(f"ar_load = \n{ar_load}")
 #  [12 13 14 15 16 17]
 #  [18 19 20 21 22 23]]
 
-
-
-
-
 # 保存2个二维数组为npy
 import numpy as np
 path1 = '/home/jack/公共的/MLData/TrashFile/test1.npy'
@@ -210,7 +199,6 @@ ar_load = np.load(path1, allow_pickle=True )# 必须有allow_pickle=True，否�
 print(f"ar_load = \n{ar_load}")
 print(f"ar_load[0] = \n{ar_load[0]}")
 print(f"ar_load[1] = \n{ar_load[1]}")
-
 
 # ar1 =
 # [[ 0  1  2  3  4  5]
@@ -234,8 +222,6 @@ print(f"ar_load[1] = \n{ar_load[1]}")
 # ar_load[1] =
 # [[8 7 7 3]
 #  [5 7 5 7]]
-
-
 
 #保存1个字典为npy
 path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
@@ -280,24 +266,20 @@ print(f"ar2_load.item()['Jack'] = \n{ar2_load.item()['Jack']}")
 # [[2 1 2 1]
 #  [2 2 1 2]]
 
-
 import numpy as np
 	# define
 path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
 dict1 = {'a' : {1,2,3}, 'b': {4,5,6}}
-	# save
+    # save
 np.save(path1,dict1)
-	# load
+    # load
 dict_load=np.load(path1, allow_pickle=True)
 
 print("dict =",dict_load.item())
 print("dict['a'] =",dict_load.item()['a'])
 
-
 # dict = {'a': {1, 2, 3}, 'b': {4, 5, 6}}
 # dict['a'] = {1, 2, 3}
-
-
 
 #保存1个字典为npy
 path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
@@ -367,7 +349,6 @@ print(f"Data[2]  = \n{Data[2] }")
 # [[2 2 1 1]
 #  [1 2 2 1]]
 
-
 #同时保存多个数组和多个字典
 path1 = '/home/jack/公共的/MLData/TrashFile/test2.npy'
 ar1 =  np.random.randint(1,5,size=(4,4))
@@ -414,7 +395,6 @@ print(f"Data[3]['name'] = \n{Data[3]['name']}")
 #============================================================================
 #  3   np.savez()和np.load()
 #============================================================================
-
 """
 savez() 函数用于将多个数组写入文件，默认情况下，数组是以未压缩的原始二进制格式保存在扩展名为 .npz 的文件中。
 savez函数的第一个参数是文件名，其后的参数都是需要保存的数组，也可以使用关键字参数为数组起一个名字，
@@ -422,7 +402,6 @@ savez函数的第一个参数是文件名，其后的参数都是需要保存的
 savez函数输出的是一个压缩文件(扩展名为npz)，其中每个文件都是一个save函数保存的npy文件，文件名对应于数组名。
 load函数自动识别npz文件，并且返回一个类似于字典的对象，可以通过数组名作为关键字获取数组的内容。
 ——————
-
 
 numpy.savez() 函数将多个数组保存到以 npz 为扩展名的文件中。
 numpy.savez(file, *args, **kwds)
@@ -546,6 +525,16 @@ print(f"DATA['A2'] = \n{DATA['A2']}")
 # DATA['A2'] =
 # [[32 33 34 35 36 37]
 #  [38 39 40 41 42 43]]
+
+
+#同时保存多个数组和多个字典
+dic1 = {"first":np.arange(12).reshape(3,4), "name":'jack', "host":"129.20.1.12"}
+ar1 = np.arange(32).reshape(4,8)
+ar2 = np.arange(32,44).reshape(2,6)
+
+path = "/home/jack/snap/test5.npz"
+np.savez(path,  dic1, ar1, ar2 )
+data = np.load(path, allow_pickle=True) # 必须有allow_pickle=True，否则出错
 
 #============================================================================
 #  numpy.savez_compressed
