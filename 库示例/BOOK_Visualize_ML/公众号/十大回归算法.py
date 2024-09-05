@@ -323,6 +323,81 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# 设置随机种子
+np.random.seed(42)
+
+# 生成虚拟数据集
+n_samples = 2000
+X = np.random.uniform(15, 35, n_samples)  # 生成 15 到 35 之间的气温数据
+noise = np.random.normal(0, 10, n_samples)  # 添加噪声
+y = 50 + 3 * X + noise  # 生成冰激凌销售量数据
+
+# 将数据集转换为DataFrame
+data = pd.DataFrame({'Temperature': X, 'IceCreamSales': y})
+
+# 创建线性回归模型并拟合数据
+model = LinearRegression()
+model.fit(X.reshape(-1, 1), y)
+y_pred = model.predict(X.reshape(-1, 1))
+
+# 输出回归系数
+print(f'回归截距 b0: {model.intercept_}')
+print(f'回归斜率 b1: {model.coef_[0]}')
+
+# 计算模型评价指标
+mse = mean_squared_error(y, y_pred)
+r2 = r2_score(y, y_pred)
+print(f'Mean Squared Error: {mse}')
+print(f'R^2 Score: {r2}')
+
+# 绘制数据分析图形
+plt.figure(figsize=(14, 10))
+
+# 子图1: 数据点与回归直线
+plt.subplot(2, 2, 1)
+sns.scatterplot(x=X, y=y, color='blue', label='Data')
+sns.lineplot(x=X, y=y_pred, color='red', label='Regression Line')
+plt.title('Temperature vs Ice Cream Sales')
+plt.xlabel('Temperature (°C)')
+plt.ylabel('Ice Cream Sales')
+plt.legend()
+
+# 子图2: 残差分析
+residuals = y - y_pred
+plt.subplot(2, 2, 2)
+sns.scatterplot(x=X, y=residuals, color='purple')
+plt.axhline(0, color='red', linestyle='--')
+plt.title('Residuals vs Temperature')
+plt.xlabel('Temperature (°C)')
+plt.ylabel('Residuals')
+
+# 子图3: 残差分布直方图
+plt.subplot(2, 2, 3)
+sns.histplot(residuals, kde=True, color='green')
+plt.title('Distribution of Residuals')
+plt.xlabel('Residuals')
+plt.ylabel('Frequency')
+
+# 子图4: 预测值 vs 真实值
+plt.subplot(2, 2, 4)
+sns.scatterplot(x=y, y=y_pred, color='orange')
+plt.plot([min(y), max(y)], [min(y), max(y)], color='black', linestyle='--', label='Ideal Line')
+plt.title('Predicted vs Actual Ice Cream Sales')
+plt.xlabel('Actual Sales')
+plt.ylabel('Predicted Sales')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+#%% 1. 线性回归 (Linear Regression)
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 

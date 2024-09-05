@@ -1283,9 +1283,7 @@ y_array = np.linspace(-3,3,num)
 xx,yy = np.meshgrid(x_array,y_array)
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
-    - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)\
-    - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x,y],f_xy)
 # 将符号函数表达式转换为Python函数
@@ -2253,20 +2251,13 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 # 绘制剖面
 zz_ = np.zeros_like(xx_) + z_level
 ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(xx_, yy_, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
 
 # 绘制网格曲面
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 # 绘制指定一条剖面线
-ax.contour(xx, yy, ff,
-           levels = [z_level],
-           colors = 'r',
-           linewidths = 1)
+ax.contour(xx, yy, ff, levels = [z_level], colors = 'r', linewidths = 1)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -2292,20 +2283,15 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 # 绘制剖面
 ax.plot_surface(xx_, xx_*0 + y_level, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(xx_, xx_*0 + y_level, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(xx_, xx_*0 + y_level, zz_, color = 'b', lw = 0.2)
 
 # 绘制曲面网格
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 # 绘制指定一条剖面线
 x_array = np.linspace(-3,3,101)
 y_array = x_array*0 + y_level
-ax.plot(x_array, y_array, f_xy_fcn(x_array,y_array),
-        color = 'r', lw = 1)
+ax.plot(x_array, y_array, f_xy_fcn(x_array,y_array), color = 'r', lw = 1)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -2330,13 +2316,9 @@ yy_, zz_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-8, 8, 2))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 ax.plot_surface(yy_*0 + x_level, yy_, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(yy_*0 + x_level, yy_, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(yy_*0 + x_level, yy_, zz_, color = 'b', lw = 0.2)
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 y_array = np.linspace(-3,3,101)
 

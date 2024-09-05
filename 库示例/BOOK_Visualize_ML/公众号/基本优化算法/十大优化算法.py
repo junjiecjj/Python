@@ -4,6 +4,8 @@
 Created on Mon Aug 12 14:04:55 2024
 
 @author: jack
+
+https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247484520&idx=1&sn=c2c25b442734b44ddfa412a1129f8dca&chksm=c1fa6683ca294107ef4816e6add6a6422cc0bbb593e0c64b5c64adecafd09abe82e05939450a&mpshare=1&scene=1&srcid=0812uv9NtQrWpJQ6prUy2C6J&sharer_shareinfo=39a4c9769f55194efb3a702d8cb1281d&sharer_shareinfo_first=6bc86de1b2f94b09b94707b820ffe899&exportkey=n_ChQIAhIQKrh0y7hnY1su%2FG0qKUy7YRKfAgIE97dBBAEAAAAAAJlBAfWZUzkAAAAOpnltbLcz9gKNyK89dVj0ARjnCEJReDN%2BekOxv9jldjPmruLo8eMl4ISbYnjrBD54DjpPj6pPM3eufDEONXWO7dWBQlqEgZgul99Yh7vsovX3APoqj1gQLYjVSO0%2FXHbvbA71b96Igkv87KoHI%2BtG3oEvjoM2NH0wpSTHBHmpJsjin%2FJp1vP0DfGhip%2FV52b%2BkLxyiHQdQiQTflKAWV%2F9%2FL3WeOm8etKlUzFwOdZZ2Q51LKjUfBFxPPI86cZwDrqK1OLwr6lpfg3JV5mhOQA8%2BxtTTm8TU79AcnoivDARJwvs1DflypQd04%2BsFaVrgVmTDEJndKDXwLf3sbPgebp1sOnNYlON8Pk5&acctmode=0&pass_ticket=3qZUWMNvP47Z0UY45NrWgr2ouMyo0YE60mjzpevzs4uA7ojRXiuA04r%2FlCWjD%2B%2Fh&wx_header=0#rd
 """
 
 #%%>>>>>>>>>>>>>> 1. 梯度下降法 (Gradient Descent)
@@ -1190,9 +1192,7 @@ def lbfgs(X, y, theta):
     return theta
 
 #%%>>>>>>>>>>>>>> CMA-ES（Covariance Matrix Adaptation Evolution Strategy）
-
 import cma
-
 def cma_es(X, y, theta):
     def loss(theta):
         return np.sum((X @ theta - y) ** 2) / (2 * len(y))

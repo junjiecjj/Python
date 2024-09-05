@@ -7,9 +7,7 @@ Created on Thu Dec 14 11:31:52 2023
 """
 
 import matplotlib
-# matplotlib.get_backend()
-matplotlib.use('TkAgg')
-# matplotlib.use('WXagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
@@ -18,8 +16,6 @@ from pylab import tick_params
 import copy
 from matplotlib.pyplot import MultipleLocator
 
-# matplotlib.use('Agg')
-# matplotlib.rcParams['text.usetex'] = True
 filepath2 = '/home/jack/snap/'
 font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
 
@@ -96,7 +92,6 @@ ax1.spines['right'].set_color('green') ## 设置边框线颜色
 ax1.set_xticks([0, 1, 2, 3, 4, 5,6,7,8,9]) # 设置刻度
 xlabels = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
 ax1.set_xticklabels(xlabels)
-
 
 #=============================================== 1 ======================================================
 ax2 = fig.add_subplot(222)
@@ -263,17 +258,14 @@ fontt = FontProperties(fname=fontpath+"simsun.ttf", size=22)
 #fontt = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 plt.suptitle('cos and sin正弦 and tan ', fontproperties=fontt, x=0.5, y=0.99,)
 
-
 out_fig = plt.gcf()
 
 filepath2 = '/home/jack/snap/'
 # out_fig.savefig(filepath2+'hh.pdf', format='pdf', dpi=1000, bbox_inches='tight')
 #out_fig .savefig(filepath2+'hh.emf',format='emf',dpi=1000, bbox_inches = 'tight')
-out_fig .savefig(filepath2+'plotfig.eps',format='eps',dpi=1000, bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'plotfig.eps',format='eps',dpi=1000, bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
-
-
 
 #=====================================================================================================
 
@@ -494,7 +486,7 @@ plt.suptitle('cos and sin正弦 and tan ', fontproperties=fontt, x=0.5, y=0.99,)
 out_fig = plt.gcf()
 
 filepath2 = '/home/jack/snap/'
-out_fig .savefig(filepath2+'plotfig.eps',  bbox_inches = 'tight')
+# out_fig.savefig(filepath2+'plotfig.eps',  bbox_inches = 'tight')
 plt.close()
 
 

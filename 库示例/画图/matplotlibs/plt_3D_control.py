@@ -8,9 +8,7 @@ Created on Thu Dec 14 13:58:26 2023
 
 
 import matplotlib
-# matplotlib.get_backend()
-# matplotlib.use('TkAgg')
-# matplotlib.use('WXagg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
@@ -85,9 +83,9 @@ ax.set_zlabel(r'Z(cos(x))', fontproperties=font3, labelpad = 0.5)
 ax.set_title('Surface plot')
 
 # 设置坐标轴线宽
-ax.w_xaxis.line.set_lw(.6)
-ax.w_yaxis.line.set_lw(.6)
-ax.w_zaxis.line.set_lw(.6)
+ax.xaxis.line.set_lw(.6)
+ax.yaxis.line.set_lw(.6)
+ax.zaxis.line.set_lw(.6)
 
 # ax.spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
 # ax.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
@@ -127,9 +125,9 @@ ax.yaxis._axinfo["grid"].update({"linewidth": 0.3, "linestyle": '--', "color": '
 ax.zaxis._axinfo["grid"].update({"linewidth": 0.3, "linestyle": '--', "color": 'k'})
 
 # 设置网格背景色
-ax.w_xaxis.set_pane_color((0, 0, 0, 0))
-ax.w_yaxis.set_pane_color((0, 0, 0, 0))
-ax.w_zaxis.set_pane_color((0, 0, 0, 0))
+ax.xaxis.set_pane_color((0, 0, 0, 0))
+ax.yaxis.set_pane_color((0, 0, 0, 0))
+ax.zaxis.set_pane_color((0, 0, 0, 0))
 
 # 更改z轴位置
 ax.zaxis._axinfo['juggled'] = (1, 2, 7)
