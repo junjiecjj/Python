@@ -42,7 +42,7 @@ theta_initial = np.random.randn(X_b.shape[1], 1)
 lr = 0.1
 beta1 = 0.9
 beta2 = 0.99
-n_iterations = 1000
+n_iterations = 100
 epsilon=1e-8
 
 # 运行梯度下降算法
@@ -111,7 +111,7 @@ theta_initial = np.random.randn(X_b.shape[1], 1)
 lr = 0.1
 beta1 = 0.9
 beta2 = 0.99
-n_iterations = 1000
+n_iterations = 100
 epsilon=1e-8
 
 # 运行梯度下降算法
@@ -177,6 +177,7 @@ def Nadam_optimizer(theta_init, lr = 0.1, beta1 = 0.9, beta2 = 0.99, num_iters =
     ## 初始化
     theta = theta_init
     history = []
+    history.append([theta[0], theta[1], f(theta)])
     m_t = np.zeros_like(theta)
     v_t = np.zeros_like(theta)
 
@@ -207,9 +208,10 @@ beta1 = 0.9
 beta2 = 0.99
 n_iterations = 1000
 epsilon=1e-8
+pb = 1
 
 # 执行优化算法
-x_opt, y_opt, f_opt, history = Nadam_optimizer(theta_init, lr = lr, beta1 = beta1, beta2 = beta2, num_iters = n_iterations, epsilon=epsilon)
+x_opt, y_opt, f_opt, history = Nadam_optimizer(theta_init, lr = lr, beta1 = beta1, beta2 = beta2, num_iters = n_iterations, epsilon=epsilon, perturbation = pb)
 
 ## 3D
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8), constrained_layout=True)

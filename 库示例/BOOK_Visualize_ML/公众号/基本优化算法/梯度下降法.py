@@ -166,6 +166,7 @@ def Gradient_descent(start_x, start_y, lr, num_iterations, perturbation = 0.1):
     x = start_x
     y = start_y
     history = []
+    history.append([x, y, f(x, y)])
     # 执行梯度下降迭代
     for i in  range (num_iterations):
         # 计算梯度
@@ -256,6 +257,7 @@ def Gradient_descent(theta_init, lr, num_iterations, perturbation = 0.1):
     # 初始化参数
     theta = theta_init
     history = []
+    history.append([theta[0], theta[1], f(theta)])
     # 执行梯度下降迭代
     for i in  range (num_iterations):
         # 计算梯度
@@ -350,6 +352,7 @@ def Gradient_descent(start_x, start_y, lr, num_iterations, perturbation = 0.1):
     x = start_x
     y = start_y
     history = []
+    history.append([x, y, f(x, y)])
     # 执行梯度下降迭代
     for i in  range (num_iterations):
         # 计算梯度
@@ -442,6 +445,7 @@ def Gradient_descent(theta_init, lr, num_iterations, perturbation = 0.1):
     # 初始化参数
     theta = theta_init
     history = []
+    history.append([theta[0], theta[1], f(theta)])
     # 执行梯度下降迭代
     for i in  range (num_iterations):
         # 计算梯度
@@ -462,7 +466,7 @@ Z = f(W_array).reshape(X.shape)
 
 
 # 执行梯度下降并绘制结果
-theta_init = np.array([0, 0])
+theta_init = np.array([0.01, 0.01])
 learning_rate = 0.1
 num_iterations = 100
 pb = 1

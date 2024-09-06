@@ -886,21 +886,8 @@ import matplotlib.pyplot as plt
 np.random.seed(0)
 X = 2 * np.random.rand(1000, 1)
 y = 4 + 3 * X + np.random.randn(1000, 1)
-
-# 绘制原始数据散点图
-plt.figure(figsize=(10, 6))
-plt.scatter(X, y, c='b', label='Original data')
-plt.xlabel('X')
-plt.ylabel('y')
-plt.title('Linear Regression with Gradient Descent')
-plt.legend()
-plt.grid(True)
-plt.show()
-
 # 添加偏置项 x0 = 1 到 X 中
 X_b = np.c_[np.ones((1000, 1)), X]
-
-
 
 # 共轭梯度法实现
 def ConjugateGradientMethod(X, y, theta_initial, iterations=100):
@@ -918,6 +905,7 @@ def ConjugateGradientMethod(X, y, theta_initial, iterations=100):
         theta = theta + step_size * direction
         next_gradient = 2/m * X.T @ (X @ theta - y)
         beta = ((next_gradient.T @ next_gradient) / (gradient.T @ gradient) )[0,0]
+        print(f"beta = {beta}")
         direction = - next_gradient + beta * direction
         gradient = next_gradient
         # trajectory.append(theta)

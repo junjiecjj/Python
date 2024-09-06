@@ -536,8 +536,6 @@ plt.tight_layout()
 plt.show()
 
 
-
-
 #%%>>>>>>>>>>>>>> 8. Nesterov加速梯度
 
 import numpy as np
