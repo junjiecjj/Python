@@ -46,7 +46,6 @@ for i, l in enumerate(loss):
     # fig = plt.figure(constrained_layout=True)
     plt.plot(X, losslog[:, i], label=label,  marker='o', markersize = 12, markevery=10)
 
-
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
 plt.xlabel('Epoch',fontproperties=font, labelpad=2.5) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
 plt.ylabel('Training loss',fontproperties=font)

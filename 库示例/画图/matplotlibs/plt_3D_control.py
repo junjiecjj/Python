@@ -73,7 +73,6 @@ ax = plt.axes(projection='3d')
 ax.plot_surface(x, y, z,cmap='viridis', edgecolor='none')
 
 
-
 font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
 
 font2  = {'family':'Times New Roman','style':'normal','size':12, 'color':'#00FF00'}

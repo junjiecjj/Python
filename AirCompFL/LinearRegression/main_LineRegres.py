@@ -90,7 +90,7 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
         candidates = ['client{}'.format(int(i)) for i in clients_idx]
 
         h = H[comm_round, clients_idx]
-        ######################## Distribution & Local Update ####################
+        ####################### Distribution & Local Update #################
         message_lst = []
         for name in candidates:
             if args.case == "gradient":
