@@ -104,7 +104,7 @@ class Server(object):
 
     def aggregate_model_rician(self, mess_lst, SNR, noise_var, P, H, device):
         h_sigma = [P * np.abs(H[i])**2/model_stastic(copy.deepcopy(mess)) for i, mess in enumerate(mess_lst)]
-        eta = min(h_sigma);
+        eta = min(h_sigma)
         w_avg = copy.deepcopy(mess_lst[0])
         for key in w_avg.keys():
             for i in range(1, len(mess_lst)):

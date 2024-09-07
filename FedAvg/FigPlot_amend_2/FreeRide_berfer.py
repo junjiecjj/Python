@@ -154,16 +154,13 @@ def SNR_berfer( ):  ## E = 10, B = 128
     lb = "Payload, Free-Ride, " + r"$\ell = 2$"
     axs.semilogy(LDPC5GFreeRideExtra2BitPayloadBerFer[:, 0], LDPC5GFreeRideExtra2BitPayloadBerFer[:, cols], 'o', markerfacecolor='none',  markeredgewidth = 2, color='r', label = lb,  ms=22)
 
-
-
     ##========================= FreeRide 1bit, extra data ===============================
     lb = "Extra data, Free-Ride, " + r"$\ell = 1$"
-    axs.semilogy(LDPC5GFreeRideExtra1BitExtraBerFer[:, 0], LDPC5GFreeRideExtra1BitExtraBerFer[:, cols], linestyle = '-',linewidth = 3,  marker = 'd', color='b', label = lb, markeredgewidth = 2, markerfacecolor='white', ms=18 )
+    axs.semilogy(LDPC5GFreeRideExtra1BitExtraBerFer[:, 0], LDPC5GFreeRideExtra1BitExtraBerFer[:, cols], linestyle = '-', linewidth = 3, marker = 'd', color='b', label = lb, markeredgewidth = 2, markerfacecolor = 'white', ms = 18 )
 
     ##========================= FreeRide 2bit, extra data ===============================
     lb = "Extra data, Free-Ride, " + r"$\ell = 2$"
-    axs.semilogy(LDPC5GFreeRideExtra2BitExtraBerFer[:, 0], LDPC5GFreeRideExtra2BitExtraBerFer[:, cols], linestyle = '-',linewidth = 3, marker = '^', color='b', label = lb, markeredgewidth = 2, markerfacecolor='white', ms=18 )
-
+    axs.semilogy(LDPC5GFreeRideExtra2BitExtraBerFer[:, 0], LDPC5GFreeRideExtra2BitExtraBerFer[:, cols], linestyle = '-', linewidth = 3, marker = '^', color='b', label = lb, markeredgewidth = 2, markerfacecolor = 'white', ms = 18 )
 
     ##===========================================================
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )

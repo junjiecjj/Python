@@ -17,6 +17,13 @@ class Server(object):
         self.theta = theta_init
         return
 
+    def set_learning_rate(self, comm_round, lr0,  lr_decrease):
+        if lr_decrease:
+            lr = lr0/(0.004*comm_round + 1)
+        else:
+            lr = lr0
+        return lr
+
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%% Error-free %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     def aggregate_erf_gradient(self, mess_lst, lr, ):
         grad_avg = np.mean(mess_lst, axis = 0)
@@ -32,115 +39,105 @@ class Server(object):
         return
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%% AWGN MAC %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    def aggregate_awgn_gradient(self, mess_lst, lr, SNR,  ):
+    def aggregate_awgn_gradient(self, mess_lst, lr, noise_var, P0,  ):
         # ##1 eta = min_{k} d*P0/|z_k^t|^2, 发送端不对发送信号归一化时，接收端的去噪因子，
         # grad_avg = np.mean(mess_lst, axis = 0)
-        # grad_norm = [np.linalg.norm(mess, ord = 2) for mess in mess_lst]
-        # # print(grad_norm)
-        # eta = np.sqrt(self.args.D) / max(grad_norm)
-        # noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = grad_avg.shape)
-        # self.theta -= lr * (grad_avg + noise/eta/len(mess_lst))
+        # eta2 = [P0 / np.power(np.linalg.norm(mess, ord = 2), 2) for mess in mess_lst]
+        # eta =  self.args.D * min(eta2)
+        # noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = grad_avg.shape)
+        # self.theta -= lr * (grad_avg + noise)
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         grad_avg = np.mean(mess_lst, axis = 0)
-        grad_std = [np.std(mess,) for mess in mess_lst]
-        # print(grad_norm)
-        eta = 1 / max(grad_std)
-        noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = grad_avg.shape)
-        self.theta -= lr * (grad_avg + noise/eta/len(mess_lst))
+        eta2 = [P0 / np.var(mess,) for mess in mess_lst]
+        eta = min(eta2)
+        noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = grad_avg.shape)
+        self.theta -= lr * (grad_avg + noise)
 
         return
 
-    def aggregate_awgn_diff(self, mess_lst, SNR, ):
+    def aggregate_awgn_diff(self, mess_lst, noise_var, P0, ):
         # ##1 eta = min_{k} d*P0/|z_k^t|^2, 不归一化时，接收端的去噪因子，
         # diff_avg = np.mean(mess_lst, axis = 0)
-        # diff_norm = [np.linalg.norm(mess, ord = 2) for mess in mess_lst]
-        # # print(grad_norm)
-        # eta = np.sqrt(self.args.D) / max(diff_norm)
-        # noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = diff_avg.shape)
-        # self.theta += (diff_avg + noise/eta/len(mess_lst) )
+        # eta2 = [P0 / np.power(np.linalg.norm(mess, ord = 2), 2) for mess in mess_lst]
+        # eta =  self.args.D * min(eta2)
+        # noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = diff_avg.shape)
+        # self.theta += (diff_avg + noise )
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端归一化时，接收端的去噪因子
         diff_avg = np.mean(mess_lst, axis = 0)
-        diff_std = [np.std(mess,) for mess in mess_lst]
-        # print(grad_norm)
-        eta = 1 / max(diff_std)
-        noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = diff_avg.shape)
-        self.theta += (diff_avg + noise/eta/len(mess_lst) )
+        eta2 = [P0 / np.var(mess,) for mess in mess_lst]
+        eta = min(eta2)
+        noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = diff_avg.shape)
+        self.theta += (diff_avg + noise)
 
         return
 
-    def aggregate_awgn_model(self, mess_lst, SNR, ):
+    def aggregate_awgn_model(self, mess_lst, noise_var, P0, ):
         # ##1 eta = min_{k} d*P0/|z_k^t|^2, 不归一化时，接收端的去噪因子，
         # model_avg = np.mean(mess_lst, axis = 0)
-        # model_norm = [np.linalg.norm(mess, ord = 2) for mess in mess_lst]
-        # # print(grad_norm)
-        # eta = np.sqrt(self.args.D) / max(model_norm)
-        # noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = model_avg.shape)
-        # self.theta = model_avg + noise/eta/len(mess_lst)
+        # eta2 = [P0 / np.power(np.linalg.norm(mess, ord = 2), 2) for mess in mess_lst]
+        # eta =  self.args.D * min(eta2)
+        # noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = model_avg.shape)
+        # self.theta = model_avg + noise
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端归一化时，接收端的去噪因子
         model_avg = np.mean(mess_lst, axis = 0)
-        model_std = [np.std(mess,) for mess in mess_lst]
-        # print(grad_norm)
-        eta = 1 / max(model_std)
-        noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = model_avg.shape)
-        self.theta = model_avg + noise/eta/len(mess_lst)
-
+        eta2 = [P0 / np.var(mess,) for mess in mess_lst]
+        eta = min(eta2)
+        noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = model_avg.shape)
+        self.theta = model_avg + noise
         return
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%% Rician Fading Mac %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    def aggregate_rician_gradient(self, mess_lst, lr, SNR, H):
+    def aggregate_rician_gradient(self, mess_lst, lr, noise_var, P0, H):
         # ##1 eta = min_{k} d*P0/|z_k^t|^2, 发送端不对发送信号归一化时，接收端的去噪因子，
         # grad_avg = np.mean(mess_lst, axis = 0)
-        # h_grad = [np.abs(H[i]) / np.linalg.norm(mess, ord = 2)  for i, mess in enumerate(mess_lst)]
-        # eta = np.sqrt(self.args.D) * min(h_grad)
-        # noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = grad_avg.shape)
-        # self.theta -= lr * (grad_avg + noise/eta/len(mess_lst))
+        # eta2 = [P0 * np.abs(H[i])**2 / np.power(np.linalg.norm(mess, ord = 2), 2)  for i, mess in enumerate(mess_lst)]
+        # eta =  self.args.D * min(eta2)
+        # noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = grad_avg.shape)
+        # self.theta -= lr * (grad_avg + noise)
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         grad_avg = np.mean(mess_lst, axis = 0)
-        h_sigma = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
-        # print(grad_norm)
-        eta = min(h_sigma)
-        noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = grad_avg.shape)
-        self.theta -= lr * (grad_avg + noise/eta/len(mess_lst))
+        eta2 = [P0 * np.abs(H[i])**2 / np.var(mess,) for i, mess in enumerate(mess_lst)]
+        eta = min(eta2)
+        noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = grad_avg.shape)
+        self.theta -= lr * (grad_avg + noise )
 
         return
 
-    def aggregate_rician_diff(self, mess_lst, SNR, H):
+    def aggregate_rician_diff(self, mess_lst, noise_var, P0, H):
         # ##1 eta = min_{k} d*P0/|z_k^t|^2, 发送端不对发送信号归一化时，接收端的去噪因子，
         # diff_avg = np.mean(mess_lst, axis = 0)
-        # h_diff = [np.abs(H[i]) / np.linalg.norm(mess, ord = 2)  for i, mess in enumerate(mess_lst)]
-        # eta = np.sqrt(self.args.D) * min(h_diff)
-        # noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = diff_avg.shape)
-        # self.theta += (diff_avg + noise/eta/len(mess_lst) )
+        # eta2 = [P0 * np.abs(H[i])**2 / np.power(np.linalg.norm(mess, ord = 2), 2)  for i, mess in enumerate(mess_lst)]
+        # eta =  self.args.D * min(eta2)
+        # noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = diff_avg.shape)
+        # self.theta += (diff_avg + noise)
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         diff_avg = np.mean(mess_lst, axis = 0)
-        h_sigma = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
-        # print(grad_norm)
-        eta = min(h_sigma)
-        noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = diff_avg.shape)
-        self.theta += (diff_avg + noise/eta/len(mess_lst) )
+        eta2 = [P0 * np.abs(H[i])**2 / np.var(mess,) for i, mess in enumerate(mess_lst)]
+        eta = min(eta2)
+        noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = diff_avg.shape)
+        self.theta += (diff_avg + noise )
 
         return
 
-    def aggregate_rician_model(self, mess_lst, SNR, H):
+    def aggregate_rician_model(self, mess_lst, noise_var, P0, H):
         # ##1 eta = min_{k} d*P0/|z_k^t|^2, 发送端不对发送信号归一化时，接收端的去噪因子，
         # model_avg = np.mean(mess_lst, axis = 0)
-        # h_diff = [np.abs(H[i]) / np.linalg.norm(mess, ord = 2)  for i, mess in enumerate(mess_lst)]
-        # eta = np.sqrt(self.args.D) * min(h_diff)
-        # noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = model_avg.shape)
-        # self.theta = model_avg + noise/eta/len(mess_lst)
+        # eta2 = [P0 * np.abs(H[i])**2 / np.power(np.linalg.norm(mess, ord = 2), 2)  for i, mess in enumerate(mess_lst)]
+        # eta =  self.args.D * min(eta2)
+        # noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = model_avg.shape)
+        # self.theta = model_avg + noise
 
         ##2 eta = min_{k} P0/sigma_k^2, 发送端对发送信号归一化时，接收端的去噪因子。这两者是等价的，只要发送功率一样。
         model_avg = np.mean(mess_lst, axis = 0)
-        h_sigma = [np.abs(H[i])/np.std(mess,) for i, mess in enumerate(mess_lst)]
-        # print(grad_norm)
-        eta = min(h_sigma)
-        noise = np.random.normal(loc = 0, scale = np.sqrt(10**(-SNR/10)), size = model_avg.shape)
-        self.theta = model_avg + noise/eta/len(mess_lst)
+        eta2 = [P0 * np.abs(H[i])**2 / np.var(mess,) for i, mess in enumerate(mess_lst)]
+        eta = min(eta2)
+        noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = model_avg.shape)
+        self.theta = model_avg + noise
 
         return
 

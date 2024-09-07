@@ -87,6 +87,7 @@ class TraRecorder(object):
         return
     def plot(self, path, args):
         self.metricLog[ self.metricLog > 1e20] = 1e20
+        num_of_clients = int(max(args.num_of_clients * args.cfrac, 1))
 
         label = 'Optimality gap'
         fig, ax = plt.subplots(1, 1, figsize = (8, 6))
@@ -96,7 +97,7 @@ class TraRecorder(object):
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 25,} # 'family':'Times New Roman',
         ax.set_xlabel("Communication Round", fontdict = font, labelpad = 2)
         ax.set_ylabel("Optimality gap", fontdict = font, labelpad = 2)
-        title = f"{args.case}, E = {args.local_up}, {args.channel}, SNR = {args.SNR}"
+        title = f"{args.case},E:{args.local_up},{args.channel},SNR:{args.SNR},bs:{args.local_bs},numUse:{num_of_clients}"
         ax.set_title(title, fontproperties = font, )
 
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,}
@@ -129,7 +130,7 @@ class TraRecorder(object):
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 25,} # 'family':'Times New Roman',
         ax.set_xlabel("Communication Round", fontdict = font, labelpad = 2)
         ax.set_ylabel("Learning rate", fontdict = font, labelpad = 2)
-        title = f"{args.case}, E = {args.local_up}, {args.channel}, SNR = {args.SNR}"
+        title = f"{args.case},E:{args.local_up},{args.channel},SNR:{args.SNR},bs:{args.local_bs},numUse:{num_of_clients}"
         ax.set_title(title, fontproperties = font, )
 
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,}

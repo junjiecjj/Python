@@ -74,12 +74,11 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
     print(f"Info = {args.case}, E = {args.local_up}, channel = {args.channel}, snr = {args.SNR}")
 
     # checkpoint
-    ckp =  checkpoint(args, now)
+    ckp = checkpoint(args, now)
     for comm_round in range(args.num_comm):
         recorder.addlog(comm_round)
+        lr = server.set_learning_rate(comm_round, lr0, args.lr_decrease)
 
-        if args.lr_decrease:
-            lr = lr0/(0.004*comm_round + 1)
         ################# 根据当前的回归系数获取 F(w^(t)) - F(w^*),即 optimal gap
         gap_t = np.sum([frac[name] * user.local_loss(theta) for name, user in Users.items()])
         if (comm_round + 1) % 100 == 0:
@@ -111,20 +110,23 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
             server.aggregate_erf_model(message_lst)
 
         ###>>> AWGN channel
+        # print(f"{args.SNR}")
+        if args.channel != "erf":
+            noise_var = args.P0 * 10**(-(args.SNR/10.0))
         if args.case == "gradient" and args.channel.lower() == 'awgn':
-            server.aggregate_awgn_gradient(message_lst, lr, args.SNR)
+            server.aggregate_awgn_gradient(message_lst, lr, noise_var, args.P0)
         elif args.case == "diff" and args.channel.lower() == 'awgn':
-            server.aggregate_awgn_diff(message_lst, args.SNR)
+            server.aggregate_awgn_diff(message_lst, noise_var, args.P0)
         elif args.case == "model" and args.channel.lower() == 'awgn':
-            server.aggregate_awgn_model(message_lst, args.SNR)
+            server.aggregate_awgn_model(message_lst, noise_var, args.P0)
 
         ###>>> Rice channel
         if args.case == "gradient" and args.channel.lower() == 'rician':
-            server.aggregate_rician_gradient(message_lst, lr, args.SNR, h)
+            server.aggregate_rician_gradient(message_lst, lr, noise_var, args.P0, h)
         elif args.case == "diff" and args.channel.lower() == 'rician':
-            server.aggregate_rician_diff(message_lst, args.SNR, h)
+            server.aggregate_rician_diff(message_lst, noise_var, args.P0, h)
         elif args.case == "model" and args.channel.lower() == 'rician':
-            server.aggregate_rician_model(message_lst, args.SNR, h)
+            server.aggregate_rician_model(message_lst, noise_var, args.P0, h)
 
         ########################### 更新回归系数 ###############################
         theta = copy.deepcopy(server.theta)
@@ -137,12 +139,9 @@ def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 def main():
     cases = ["gradient", "diff", "model"]
     channels = ['erf', 'awgn', 'rician']
-    local_E = [1, 5, 10]
-    SNR = np.arange(-20, 21, 5)
-    # cases = ["model", "gradient", "diff", ]
-    # channels = ['rician', 'awgn', 'erf', ]
-    # local_E = [1, 5, 10]
-    # SNR = np.arange(-20, 20, 5)
+    local_E = [1, 3, 5]
+    SNR = np.append(np.arange(-20, 0, 5), np.arange(0, 8, 2))
+
 
     error_lst = []
 
@@ -177,28 +176,94 @@ print(error_lst)
 
 """
 Fixed Lr:
-error_lst = 2024-08-23-14:46:33
-[['model', 1, 'rician', -20],
- ['model', 1, 'rician', -15],
- ['model', 1, 'rician', -10],
- ['model', 5, 'rician', -20],
- ['model', 5, 'rician', -15],
- ['model', 5, 'rician', -10],
- ['model', 10, 'rician', -20],
- ['model', 10, 'rician', -15],
- ['model', 10, 'rician', -10]]
 
-Decreased Lr:
-error_lst = 2024-08-23-15:04:51
-[['model', 1, 'rician', -20],
+'2024-09-07-16:58:24': UserNum = 10
+[['model', 1, 'awgn', -20],
+ ['model', 1, 'awgn', -15],
+ ['model', 1, 'awgn', -10],
+ ['model', 3, 'awgn', -20],
+ ['model', 3, 'awgn', -15],
+ ['model', 3, 'awgn', -10],
+ ['model', 5, 'awgn', -20],
+ ['model', 5, 'awgn', -15],
+ ['model', 1, 'rician', -20],
  ['model', 1, 'rician', -15],
  ['model', 1, 'rician', -10],
+ ['model', 1, 'rician', -5],
+ ['model', 1, 'rician', 0],
+ ['model', 1, 'rician', 2],
+ ['model', 1, 'rician', 4],
+ ['model', 3, 'rician', -20],
+ ['model', 3, 'rician', -15],
+ ['model', 3, 'rician', -10],
+ ['model', 3, 'rician', -5],
+ ['model', 3, 'rician', 0],
+ ['model', 3, 'rician', 2],
+ ['model', 3, 'rician', 4],
  ['model', 5, 'rician', -20],
  ['model', 5, 'rician', -15],
  ['model', 5, 'rician', -10],
- ['model', 10, 'rician', -20],
- ['model', 10, 'rician', -15],
- ['model', 10, 'rician', -10]]
+ ['model', 5, 'rician', -5],
+ ['model', 5, 'rician', 0],
+ ['model', 5, 'rician', 2],
+ ['model', 5, 'rician', 4]]
+
+
+'2024-09-07-17:17:36': UserNum = 30
+[['model', 1, 'awgn', -20],
+ ['model', 1, 'awgn', -15],
+ ['model', 3, 'awgn', -20],
+ ['model', 3, 'awgn', -15],
+ ['model', 5, 'awgn', -20],
+ ['model', 5, 'awgn', -15],
+ ['model', 1, 'rician', -20],
+ ['model', 1, 'rician', -15],
+ ['model', 1, 'rician', -10],
+ ['model', 1, 'rician', -5],
+ ['model', 1, 'rician', 0],
+ ['model', 1, 'rician', 2],
+ ['model', 1, 'rician', 4],
+ ['model', 3, 'rician', -20],
+ ['model', 3, 'rician', -15],
+ ['model', 3, 'rician', -10],
+ ['model', 3, 'rician', -5],
+ ['model', 3, 'rician', 0],
+ ['model', 3, 'rician', 2],
+ ['model', 3, 'rician', 4],
+ ['model', 5, 'rician', -20],
+ ['model', 5, 'rician', -15],
+ ['model', 5, 'rician', -10],
+ ['model', 5, 'rician', -5],
+ ['model', 5, 'rician', 0],
+ ['model', 5, 'rician', 2],
+ ['model', 5, 'rician', 4]]
+
+'2024-09-07-17:54:11': UserNum = 60
+[['model', 1, 'awgn', -20],
+ ['model', 3, 'awgn', -20],
+ ['model', 5, 'awgn', -20],
+ ['model', 1, 'rician', -20],
+ ['model', 1, 'rician', -15],
+ ['model', 1, 'rician', -10],
+ ['model', 1, 'rician', -5],
+ ['model', 1, 'rician', 0],
+ ['model', 1, 'rician', 2],
+ ['model', 1, 'rician', 4],
+ ['model', 3, 'rician', -20],
+ ['model', 3, 'rician', -15],
+ ['model', 3, 'rician', -10],
+ ['model', 3, 'rician', -5],
+ ['model', 3, 'rician', 0],
+ ['model', 3, 'rician', 2],
+ ['model', 3, 'rician', 4],
+ ['model', 5, 'rician', -20],
+ ['model', 5, 'rician', -15],
+ ['model', 5, 'rician', -10],
+ ['model', 5, 'rician', -5],
+ ['model', 5, 'rician', 0],
+ ['model', 5, 'rician', 2],
+ ['model', 5, 'rician', 4]]
+
 
 """
 

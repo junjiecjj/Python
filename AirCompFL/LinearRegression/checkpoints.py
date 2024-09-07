@@ -32,6 +32,7 @@ class checkpoint(object):
     def __init__(self, args, now = 'None'):
         # print("#=================== checkpoint 开始准备 ======================\n")
         self.args = args
+        num_of_clients = int(max(args.num_of_clients * args.cfrac, 1))
         self.n_processes = 8
         if now == 'None':
             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
@@ -42,13 +43,13 @@ class checkpoint(object):
         # print(first_dir)
         # 模型训练时loss和优化器等等数据的保存以及画图目录
         if args.case != "gradient" and args.channel != 'erf':
-            postfix = f"{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"user{num_of_clients}_bs{args.local_bs}_{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         elif args.case == 'gradient' and args.channel != 'erf':
-            postfix = f"{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"user{num_of_clients}_bs{args.local_bs}_{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         elif args.case != 'gradient' and args.channel == 'erf':
-            postfix = f"{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"user{num_of_clients}_bs{args.local_bs}_{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         elif args.case == 'gradient' and args.channel == 'erf':
-            postfix = f"{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+            postfix = f"user{num_of_clients}_bs{args.local_bs}_{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
         # print(postfix)
         self.savedir = os.path.join(first_dir, postfix)
         # print(self.savedir)

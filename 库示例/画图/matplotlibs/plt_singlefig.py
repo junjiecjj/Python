@@ -89,8 +89,6 @@ s1 = np.sin(2*np.pi*X)
 s2 = np.cos(2*np.pi*X)
 s3 = np.tan(2*np.pi*X)
 
-
-
 losslog = np.zeros((len(X),3))
 losslog[:,0] = s1
 losslog[:,1] = s2
