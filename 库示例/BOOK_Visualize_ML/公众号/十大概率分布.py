@@ -29,6 +29,8 @@ data = np.random.normal(mu, sigma, 1000)
 # 创建一个画布和子图
 fig, axs = plt.subplots(2, 2, figsize=(14, 12))
 
+# count, bins, ignored  = axs[0, 0].hist(data, density=True, bins='auto', histtype='stepfilled', alpha=0.4, facecolor = "red", label= "np hist", zorder = 4)
+
 # 直方图和核密度估计图
 sns.histplot(data, kde=True, ax=axs[0, 0], bins=30, color='skyblue')
 axs[0, 0].set_title('Histogram and KDE')

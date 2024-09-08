@@ -25,7 +25,7 @@ def args_parser():
     ## 设备相关
     parser.add_argument('--gpu',    type = int, default = True,      help = 'use gpu')
     parser.add_argument('--gpu_idx', type = str, default = 'cuda:0',   help = 'cuda device')
-    parser.add_argument('--seed',   type = int, default = 9999,       help = 'random seed')
+    parser.add_argument('--seed',   type = int, default = 0,       help = 'random seed')
 
     # 模型和数据
     parser.add_argument('--D', type=int, default=100, help="dimension of linear regession")   ## 线性回归的维度
@@ -38,7 +38,7 @@ def args_parser():
     parser.add_argument('--local_up', type=int, default = 3, help = "the number of local epochs: E") ## 训练次数(客户端更新次数)
     parser.add_argument('--local_bs', type=int, default = 100, help="local batch size: B") ## local_batchsize 大小
     parser.add_argument('--num_of_clients', type=int, default = 100, help = 'numer of the clients') ## 客户端的数量
-    parser.add_argument('--cfrac', type=float, default = 0.6, help = 'the fraction of clients: C') ## 随机挑选的客户端的数量
+    parser.add_argument('--cfrac', type=float, default = 0.1, help = 'the fraction of clients: C') ## 随机挑选的客户端的数量
 
     parser.add_argument('--num_comm', type=int, default = 1200, help = 'number of communications') ## num_comm 表示通信次数，此处设置为1k
     parser.add_argument('--case', type=str, default = 'gradient', choices = ('gradient', 'diff', 'model'), help = 'the join comm-learning case') ## 传输的是什么，本地训练多少轮等配置

@@ -140,11 +140,9 @@ def main():
     cases = ["gradient", "diff", "model"]
     channels = ['erf', 'awgn', 'rician']
     local_E = [1, 3, 5]
-    SNR = np.append(np.arange(-20, 0, 5), np.arange(0, 8, 2))
-
+    SNR = np.append(np.arange(-20, 0, 5), np.arange(0, 21, 2))
 
     error_lst = []
-
     for info in cases:
         for channel in channels:
             if info != "gradient"  and channel != 'erf':
@@ -177,7 +175,7 @@ print(error_lst)
 """
 Fixed Lr:
 
-'2024-09-07-16:58:24': UserNum = 10
+'2024-09-08-13:28:19': UserNum = 10
 [['model', 1, 'awgn', -20],
  ['model', 1, 'awgn', -15],
  ['model', 1, 'awgn', -10],
@@ -238,7 +236,7 @@ Fixed Lr:
  ['model', 5, 'rician', 2],
  ['model', 5, 'rician', 4]]
 
-'2024-09-07-17:54:11': UserNum = 60
+'2024-09-08-16:23:14': UserNum = 60
 [['model', 1, 'awgn', -20],
  ['model', 3, 'awgn', -20],
  ['model', 5, 'awgn', -20],

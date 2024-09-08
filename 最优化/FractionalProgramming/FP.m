@@ -1,5 +1,6 @@
-
+ 
 clc; clear;cvx_clear;
+cvx_expert true;
 
 rng(1) % 随机种子
 epsilon = 1e-5; % 收敛阈值

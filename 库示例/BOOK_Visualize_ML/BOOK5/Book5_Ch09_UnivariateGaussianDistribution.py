@@ -26,8 +26,7 @@ sigma = 1
 
 f_x_varying_mu = uni_normal_pdf(XX, MM, sigma)
 # surface projected along Y to X-Z plane
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8), constrained_layout=True)
 
 ax.plot_wireframe(XX, MM, f_x_varying_mu, rstride=1, cstride=0, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour(XX, MM, f_x_varying_mu, levels = 20, zdir='y', offset=mu.max(), cmap=cm.RdYlBu_r)
@@ -78,8 +77,8 @@ sigma = 1
 F_x_varying_mu = norm.cdf(XX, loc=MM, scale=sigma)
 
 # surface projected along Y to X-Z plane
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8), constrained_layout=True)
+
 
 ax.plot_wireframe(XX, MM, F_x_varying_mu, rstride=1, cstride=0, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour(XX, MM, F_x_varying_mu, levels = 20, zdir='y', offset=mu.max(), cmap=cm.RdYlBu_r)
@@ -123,8 +122,8 @@ F_x_varying_sig = norm.cdf(XX, loc=mu, scale=SS)
 
 # F_x_varying_sig = np.cumsum(f_x_varying_sig,axis = 1)*0.05
 # surface projected along Y to X-Z plane
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8), constrained_layout=True)
+
 
 ax.plot_wireframe(XX, SS, F_x_varying_sig, rstride=1, cstride=0, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour(XX, SS, F_x_varying_sig, levels = 20, zdir='y', offset=sigma.max(), cmap=cm.RdYlBu_r)

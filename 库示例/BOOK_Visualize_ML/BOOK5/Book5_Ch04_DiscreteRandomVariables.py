@@ -131,10 +131,6 @@ plot_stem(df, 'circle')
 
 
 
-
-
-
-
 #%% Bk5_Ch04_02.py
 
 import numpy as np
