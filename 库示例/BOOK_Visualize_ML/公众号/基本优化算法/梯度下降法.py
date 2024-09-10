@@ -541,7 +541,7 @@ elif mod == 'hard':
 
 learning_rate = 0.1
 num_iterations = 100
-pb = 10
+pb = 0
 
 x_opt, y_opt, f_opt, history = Gradient_descent(theta_init, learning_rate, num_iterations, perturbation = pb)
 
@@ -735,7 +735,7 @@ out_fig = plt.gcf()
 optimizer = "GD"
 savedir = f'/home/jack/公共的/Figure/optimfigs/{optimizer}/'
 os.makedirs(savedir, exist_ok = True)
-out_fig.savefig(savedir + f'{optimizer}_pb{pb}_2D_Xy.eps',bbox_inches='tight', pad_inches=0, )
+# out_fig.savefig(savedir + f'{optimizer}_pb{pb}_2D_Xy.eps',bbox_inches='tight', pad_inches=0, )
 plt.show()
 
 
