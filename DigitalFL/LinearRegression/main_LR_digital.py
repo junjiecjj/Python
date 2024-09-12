@@ -19,7 +19,6 @@ import copy
 import warnings
 warnings.filterwarnings("ignore")
 
-
 ## 以下是本项目自己编写的库
 from transmission import Quantize_1bit
 from Utility import set_random_seed, set_printoption
@@ -128,12 +127,7 @@ for comm_round in range(args.num_comm):
     ########################### 更新回归系数 ###############################
     theta = copy.deepcopy(server.theta)
     recorder.assign([abs(gap_t - optim_Fw), lr, ])
-
 recorder.save(ckp.savedir, args)
-
-
-
-
 
 
 # def main():

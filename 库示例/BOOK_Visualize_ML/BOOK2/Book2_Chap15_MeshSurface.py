@@ -1143,11 +1143,12 @@ colors = cm.RdYlBu_r(norm_plt(ff))
 # colors = cm.Blues_r(norm_plt(ff))
 
 surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
-                       rstride = 5,
-                       cstride = 5,
+                       rstride = 2,
+                       cstride = 2,
                        linewidth = 1, # 线宽
                        shade = False) # 删除阴影
 surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+
 
 # 三维等高线
 # colorbar = ax.contour(xx,yy, ff, 20,  cmap = 'hsv')
@@ -1161,6 +1162,11 @@ ax.set_proj_type('ortho')
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')
 ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+
+# 设置X、Y、Z面的背景是白色
+# ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())

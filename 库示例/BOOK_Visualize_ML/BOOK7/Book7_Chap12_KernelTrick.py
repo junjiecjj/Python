@@ -85,11 +85,11 @@ for ds_cnt, ds in enumerate(datasets):
         norm = plt.Normalize(-Z.max(),-Z.min())
         colors = cm.RdYlBu_r(norm(-Z))
 
-        surf = ax.plot_surface(xx, yy, -Z,linewidths = 0.25, facecolors=colors, shade=False, rstride=10,cstride=10)
-        surf.set_facecolor((0,0,0,0))
+        surf = ax.plot_surface(xx, yy, -Z, linewidths = 0.25, facecolors=colors, shade=False, rstride=10,cstride=10)
+        surf.set_facecolor((0, 0, 0, 0))
 
         ax.contour(xx, yy, -Z, [0], colors='#1B5A9C',linewidths = 1.25)
-        ax.contour(xx, yy, -Z, [-1,1], colors='k',linewidths = 1.25,linestyles = '--')
+        ax.contour(xx, yy, -Z, [-1, 1], colors='k',linewidths = 1.25,linestyles = '--')
 
         ax.set_xlabel('x1')
         ax.set_ylabel('x2')

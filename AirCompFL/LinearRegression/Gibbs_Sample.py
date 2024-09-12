@@ -93,18 +93,15 @@ axs[1, 0].axvline(x=true_sigma, color='red', linestyle='--')
 axs[1, 0].set_title('Posterior Distribution of $\sigma$')
 
 # 均值与方差的联合后验分布
-sns.scatterplot(x=mu_samples, y=sigma_samples, ax=axs[1, 1], s=10, alpha=0.5)
+sns.scatterplot(x = mu_samples, y = sigma_samples, ax = axs[1, 1], s = 10, alpha = 0.5)
 axs[1, 1].set_title('Joint Posterior Distribution of $\mu$ and $\sigma$')
 
 plt.tight_layout()
 plt.show()
 
 
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>>
-
+# https://zhuanlan.zhihu.com/p/614076300
 import numpy as np
 
 # 吉布斯抽样
@@ -119,12 +116,11 @@ def gibbs_sampling(conditional_prob, initial_state, num_samples):
     for i in range(1, num_samples):
         for j in range(n):
             # 计算条件概率分布
-            prob_distribution = conditional_prob[j](state_sequence[i-1])
+            prob_distribution = conditional_prob[j](state_sequence[i - 1])
             # 抽取新状态
-            new_state_j = np.random.choice([0, 1], p=prob_distribution)
+            new_state_j = np.random.choice([0, 1], p = prob_distribution)
             # 更新状态序列
             state_sequence[i][j] = new_state_j
-
     return state_sequence
 
 # 测试代码

@@ -15,7 +15,8 @@ def Quantize_1bit(mess_lst):
     mes_return = []
     mess_lst1 = [np.sign(mess) for mess in mess_lst]
     for mes in mess_lst1:
-        mes[np.where(mes == 0)] = np.random.choice([-1, 1], size = np.where(mes == 0)[0].shape, replace = True, p = [0.5, 0.5] )
+        sz = np.where(mes == 0)[0].shape
+        mes[np.where(mes == 0)] = np.random.choice([-1, 1], size = sz, replace = True, p = [0.5, 0.5] )
         mes_return.append(mes / 2)
     return mes_return
 
