@@ -64,10 +64,10 @@ H = np.abs(H)
 ##=======================================================================
 theta = theta0
 lr0 = args.lr
-args.case = "gradient"   # "gradient", "diff", "model"
+args.case = "model"   # "gradient", "diff", "model"
 args.channel = 'erf'       # 'erf', 'awgn', rician'
-args.SNR = 1
-args.local_up = 2
+args.SNR = 20
+args.local_up = 1
 print(f"Info = {args.case}, E = {args.local_up}, channel = {args.channel}, snr = {args.SNR}")
 
 # checkpoint

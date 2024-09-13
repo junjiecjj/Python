@@ -302,7 +302,7 @@ def AWGN_Diff_Esame_SNRsame_User(E = 1, SNR = 10):
     lw = 2
     fig, axs = plt.subplots( figsize = (8, 6), constrained_layout=True)
 
-    ########## model #######
+    ########## diff #######
 
     dt = np.load(now10 + f"/user10_bs100_diff_E{E}_awgn_SNR{SNR}_fixedLr/TraRecorder.npy")
     axs.semilogy(dt[:,0], dt[:,1], linestyle='-', c = '#FF6347', lw = lw, marker = 'o', ms = 13, mew = 2, mfc='none', markevery = 100, label = f"diff, E={E}, User=10, AWGN,SNR={SNR}(dB)", zorder = 2 )
@@ -432,7 +432,7 @@ def AWGN_grad_Esame_Usersame_SNR(U = 10):
     out_fig = plt.gcf()
     savedir =  '/home/jack/AirFL/LineR_figures/'
     os.makedirs(savedir, exist_ok = True)
-    out_fig.savefig(savedir + f'AWGN_gradient_{U}_usersame_SNRdiff.eps', bbox_inches='tight', pad_inches=0,)
+    # out_fig.savefig(savedir + f'AWGN_gradient_{U}_usersame_SNRdiff.eps', bbox_inches='tight', pad_inches=0,)
     return
 
 
@@ -440,19 +440,18 @@ def AWGN_grad_Esame_Usersame_SNR(U = 10):
 # AWGN_SNRsame_Ediff(2)
 
 # ## 比较在相同E、相同U下，三种传输方案在地高信噪比下的性能
-AWGN_Esame_SNRcompar(E = 1, U = 10, snr_l = 0, snr_h = 10)
-AWGN_Model_Esame_SNRcompar(E = 1, U = 10, snr_l = 10, snr_h = 20)
+# AWGN_Esame_SNRcompar(E = 1, U = 10, snr_l = 0, snr_h = 10)
+# AWGN_Model_Esame_SNRcompar(E = 1, U = 10, snr_l = 10, snr_h = 20)
 
 ## 比较在指定E和U下， diff在不同SNR下的性能
 # AWGN_E_SNRcompar(E = 5, U = 60, snr_l = 0, snr_h = 10, )
 
 
-# AWGN_Model_Esame_SNRsame_User(E = 1, SNR = 20)
+# AWGN_Model_Esame_SNRsame_User(E = 5, SNR = 10)
 
-# AWGN_Diff_Esame_SNRsame_User(E = 1, SNR = 10)
+AWGN_Diff_Esame_SNRsame_User(E = 1, SNR = 10)
 
 # AWGN_grad_Esame_SNRsame_User( SNR = 20)
-
 
 # AWGN_grad_Esame_Usersame_SNR(U = 10)
 

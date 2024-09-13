@@ -236,10 +236,154 @@ Z = himmelblau([X, Y])
 
 # 3D 表面图
 fig = plt.figure(figsize=( 14 , 8 ))
-ax.set_proj_type('ortho')
+
 ax = fig.add_subplot( 111 , projection= '3d' )
+ax.set_proj_type('ortho')
 norm_plt = plt.Normalize(X.min(), X.max())
 colors = cm.plasma_r(norm_plt(X))
+surf = ax.plot_surface(X, Y, Z, facecolors = colors,
+                       rstride = 2,
+                       cstride = 2,
+                       linewidth = 0.5, # 线宽
+                       shade = False) # 删除阴影
+surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+
+# 设置X、Y、Z面的背景是白色
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+
+ax.grid()
+
+
+ax.scatter(x_opt, y_opt, optimal_value, color= 'red' , s= 50 , label= 'optimal sol' )
+ax.set_xlabel( 'x' )
+ax.set_ylabel( 'y' )
+ax.set_zlabel( 'fun' )
+ax.set_title( 'Himmelblau 3D' )
+ax.legend()
+
+plt.show()
+
+
+
+
+
+#%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 4. Beale 函数
+
+
+# 目标函数
+def  beale ( vars ):
+    x, y = vars
+    return ( 1.5 - x + x * y)** 2 + ( 2.25 - x + x * y** 2 )** 2 + ( 2.625 - x + x * y** 3 )** 2
+
+# 初始猜测
+initial_guess = [ 1 , 1 ]
+
+# 执行优化
+result = minimize(beale, initial_guess)
+
+# 提取结果
+x_opt, y_opt = result.x
+optimal_value = beale(result.x)
+
+# 打印结果
+print ( f"x 的最佳值：{x_opt} " )
+print ( f"y 的最佳值：{y_opt} " )
+print ( f"Beale 函数的最小值：{optimal_value} " )
+
+# 绘图
+x = np.linspace(- 4 , 4 , 100 )
+y = np.linspace(- 4 , 4 , 100 )
+X, Y = np.meshgrid(x, y)
+Z = beale([X, Y])
+
+# 3D 表面图
+fig = plt.figure(figsize=( 14 , 8 ))
+
+ax = fig.add_subplot( 111 , projection= '3d' )
+ax.set_proj_type('ortho')
+norm_plt = plt.Normalize(X.min(), X.max())
+colors = cm.hsv(norm_plt(X))
+surf = ax.plot_surface(X, Y, Z, facecolors = colors,
+                       rstride = 2,
+                       cstride = 2,
+                       linewidth = 0.5, # 线宽
+                       shade = False) # 删除阴影
+surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+
+# 设置X、Y、Z面的背景是白色
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+
+ax.grid()
+
+ax.scatter(x_opt, y_opt, optimal_value, color= 'red' , s= 50 , label= '最优解' )
+ax.set_xlabel( 'x' )
+ax.set_ylabel( 'y' )
+ax.set_zlabel( 'Beale' )
+ax.set_title( '3D Beale' )
+ax.legend()
+
+plt.show()
+
+
+
+
+
+#%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 5.二次规划问题
+
+from scipy.optimize import minimize, LinearConstraint
+
+# 目标函数
+def  quadratic_function ( vars ):
+    x, y = vars
+    return x** 2 + 2 *x*y + y** 2
+
+# 约束
+def  constrain1 ( vars ):
+    x, y = vars
+    return x + y - 1
+
+def  constrain2 ( vars ):
+    x, y = vars
+    return x - y
+
+# 定义约束
+constrains = [
+    { 'type' : 'ineq' , 'fun' : constrain1},
+    { 'type' : 'ineq' , 'fun' : constrain2}
+]
+
+# 初始猜测
+initial_guess = [ 0 , 0 ]
+
+# 执行优化
+result = minimize(quadratic_function, initial_guess,constraints=constraints)
+
+# 提取结果
+x_opt, y_opt = result.x
+optimal_value = quadratic_function(result.x)
+
+# 打印结果
+print ( f"x 的最佳值：{x_opt} " )
+print ( f"y 的最佳值：{y_opt} " )
+print ( f"二次函数的最小值：{optimal_value} " )
+
+# 绘图
+x = np.linspace(- 1 , 2 , 100 )
+y = np.linspace(- 1 , 2 , 100 )
+X, Y = np.meshgrid(x, y)
+Z = quadratic_function([X, Y])
+
+# 3D 表面图
+fig = plt.figure(figsize=( 14 , 8 ))
+
+ax = fig.add_subplot( 111 , projection= '3d' )
+ax.set_proj_type('ortho')
+norm_plt = plt.Normalize(X.min(), X.max())
+colors = cm.hsv(norm_plt(X))
 surf = ax.plot_surface(X, Y, Z, facecolors = colors,
                        rstride = 2,
                        cstride = 2,
@@ -256,26 +400,11 @@ ax.grid()
 ax.scatter(x_opt, y_opt, optimal_value, color= 'red' , s= 50 , label= 'optimal sol' )
 ax.set_xlabel( 'x' )
 ax.set_ylabel( 'y' )
-ax.set_zlabel( 'fun' )
-ax.set_title( 'Himmelblau 3D' )
+ax.set_zlabel( 'quadratic function' )
+ax.set_title('3D quadratic function' )
 ax.legend()
 
 plt.show()
-
-
-
-
-
-#%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
-
-
-
-
-#%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 
 
 
