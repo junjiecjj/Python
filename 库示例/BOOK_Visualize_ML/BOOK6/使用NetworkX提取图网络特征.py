@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Sep 14 17:02:59 2024
+
+@author: jack
+
+https://mp.weixin.qq.com/s?__biz=MzUzMTcyNjY0NQ==&mid=2247486153&idx=1&sn=638d596055d4cf730631d1ce63916beb&chksm=fb47b65ba7f51de00b81154944014023de093685074a003856825c7b836e3ced69206d35e3ef&mpshare=1&scene=1&srcid=0914TNo6XnPaqigDvR7SD8ea&sharer_shareinfo=ba0261a6c097cf0282289be716a4f283&sharer_shareinfo_first=ba0261a6c097cf0282289be716a4f283&exportkey=n_ChQIAhIQhHASpS%2FDqrIMXZ1iLYV0qxKfAgIE97dBBAEAAAAAAAZEIY2Put4AAAAOpnltbLcz9gKNyK89dVj0zNpM3yEwx2obmBhf7CVVOIGoD4Ie%2F%2FlsKs3GL%2FHlVddc7QRawVAcOtKd6Ts6CMHLVNBBwmGADYgB9FeEAGu6tX8Ai%2F6ka317RYiONAK1tSa452FOvOKs5SSitXJgHQGnza2sfVdD6YOu3j1Jlx%2Faq5StRob6cDCNJTkr25Qdl8fu0XqwPL6DvvUxchp9RJXrkZ164w0oaTaAyAeHV1yjBsPdUTF4WwJg7I6uT%2FdtlG%2FIvigNJ4Pa2dHNxe1j0l7cqoHwHI4GMdOVRXNT0sOchisruixHSnAolKz8mVvsft6a8azOxILJLX4YNQuY5YN%2BQTadoTLiHj58&acctmode=0&pass_ticket=Lfm9mIyXlLsiuHa9aYnf8yXWBP%2FD%2FuKDCMasQo20ZS%2F0IM9KC8OZ9DEMQDgrRME7&wx_header=0#rd
+
+
+"""
