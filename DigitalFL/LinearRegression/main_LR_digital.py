@@ -71,7 +71,7 @@ args.local_up = 1
 print(f"Info = {args.case}, E = {args.local_up}, channel = {args.channel}, snr = {args.SNR}")
 
 # checkpoint
-ckp = checkpoint(args, now)
+# ckp = checkpoint(args, now)
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
     lr = server.set_learning_rate(comm_round, lr0, args.lr_decrease)
@@ -127,7 +127,7 @@ for comm_round in range(args.num_comm):
     ########################### 更新回归系数 ###############################
     theta = copy.deepcopy(server.theta)
     recorder.assign([abs(gap_t - optim_Fw), lr, ])
-recorder.save(ckp.savedir, args)
+# recorder.save(ckp.savedir, args)
 
 
 # def main():

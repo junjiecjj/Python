@@ -43,7 +43,7 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 pi = np.pi
 epsilon = 1e-4
 d0 = 51
-dv = 2                          # user到AP-RIS垂直距离
+dv = 2                               # user到AP-RIS垂直距离
 D0 = 1.0
 
 d1 = 20                              # AP半径
@@ -53,7 +53,7 @@ C0 = 10**(C0/10.0)                   # 参考距离的路损
 sigmaK2 = -80                        # dBm
 sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
 GammaDB = np.arange(-4, 25, 4)       # dB
-Gamma = 10**(GammaDB/10.0)           #  信干噪比约束10dB
+Gamma = 10**(GammaDB/10.0)           # 信干噪比约束10dB
 M = 4                                # AP天线数量
 Nx = 5
 Ny = 6
@@ -69,7 +69,7 @@ beta_AI = 10**(3/10)     # IRS到User考虑瑞利衰落信道，AP和IRS之间�
 beta_Iu = 10**(3/10)     # IRS到User考虑瑞利衰落信道，AP和IRS之间为纯LoS信道
 beta_Au = 0              # AP和 User 之间为Rayleigh信道
 
-Uk = 2                   # 2个用户，图8仿真，假设U_k, k=1,2 是活跃用户
+Uk = 2                   # 2个用户，图8仿真，假设 U_k, k = 1,2 是活跃用户
 
 #%% AP-User和RIS-User之间的距离和角度
 d_Au = [d1, np.sqrt((d2*np.cos(pi/5))**2 + (d0 - d2*np.sin(pi/5))**2), ]
@@ -82,7 +82,6 @@ theta_Iu = [pi + np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), 3*pi/2 - pi/
 # theta_Au = [-pi/4, 2*pi - np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), ]
 # d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2,  ]
 # theta_Iu = [pi + np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), 3*pi/2 - pi/5, ]
-
 
 ## results, User1
 CombPowUser1 = np.zeros(Gamma.size)

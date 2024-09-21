@@ -75,7 +75,7 @@ file = r'berlin52.txt'
 nodes = {}
 with open(file,'r') as f:
     contents = f.readlines()[6:-1]
-    for i,content in enumerate(contents):
+    for i, content in enumerate(contents):
         info = content.strip().split(' ')
         node = Node(int(info[0]),float(info[1]),float(info[2]))
         nodes[i] = node

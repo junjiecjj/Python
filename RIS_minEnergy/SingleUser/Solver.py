@@ -39,7 +39,7 @@ def SDRsolver(G, hr, hd, N, L = 200):
          print("Not optimal")
          exit(-1)
 
-    #%% method 1: 高斯随机化过程
+    ### method 1: 高斯随机化过程
     max_F = -1e13
     max_v = -1e13
     Sigma, U = np.linalg.eig(V.value)
@@ -58,21 +58,17 @@ def SDRsolver(G, hr, hd, N, L = 200):
 
     return low_bound, optim_v
 
-
-
 def AU_MRT(hd, hr, G):
     w_aumrt = hd.T.conjugate()/np.linalg.norm(hd, 2)
     varphi0 = np.angle(hd @ w_aumrt)
     v_aumrt = np.exp(1j*(varphi0 - np.angle(np.diag(hr.flatten()) @ G @ w_aumrt)))
     return v_aumrt, w_aumrt
 
-
 def AI_MRT(hd, hr, G):
     w_aimrt = G[1,:].reshape(-1,1).conjugate()/np.linalg.norm(G[1,:], 2)
     varphi0 = np.angle(hd @ w_aimrt)
     v_aimrt = np.exp(1j*(varphi0 - np.angle(np.diag(hr.flatten()) @ G @ w_aimrt)))
     return v_aimrt, w_aimrt
-
 
 def AlternatingOptim(hd, hr, G, epsilon, gamma):
     ##  以Ap-user MRT进行初始化

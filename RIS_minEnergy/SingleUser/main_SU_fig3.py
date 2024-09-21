@@ -130,7 +130,6 @@ for i, d in enumerate(D):
     WithoutRIS[i] = 10 * np.log10(WithoutRIS[i]*1000/frame)
     print(f"  SDR = {SDR}, \n  LowBound = {LowBound}, \n  AO = {AO}, \n  AuMRT = {AuMRT}, \n  AIMRT = {AIMRT}, \n  RANDOMphase = {RANDOMphase}, \n  WithoutRIS = {WithoutRIS}")
 
-
 # SDR = 10 * np.log10(SDR/frame )
 # LowBound = 10 * np.log10(LowBound/frame )
 # AO = 10 * np.log10(AO/frame )
@@ -138,7 +137,6 @@ for i, d in enumerate(D):
 # AIMRT = 10 * np.log10(AIMRT/frame )
 # RANDOMphase = 10 * np.log10(RANDOMphase/frame )
 # WithoutRIS = 10 * np.log10(WithoutRIS/frame )
-
 
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
