@@ -107,8 +107,7 @@ plt.figure(figsize=(10, 5))
 
 # # 最优路径图
 plt.subplot(1, 2, 1)
-plt.plot(xs,ys,
-         marker='o')
+plt.plot(xs,ys, marker='o')
 plt.title('搜索路径结果')
 plt.xlabel('X')
 plt.ylabel('Y')
@@ -119,7 +118,7 @@ plt.title('距离收敛曲线')
 plt.xlabel('迭代次数')
 plt.ylabel('距离')
 plt.tight_layout()
-plt.savefig('SA结果.png',dpi=600,bbox_inches='tight')
+# plt.savefig('SA结果.png', bbox_inches='tight')
 plt.show()
 
 

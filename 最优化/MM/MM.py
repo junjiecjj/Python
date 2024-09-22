@@ -7,5 +7,16 @@ Created on Thu May 23 19:35:29 2024
 
 https://zhuanlan.zhihu.com/p/107204751
 
+https://github.com/forieux/qmm
+
+https://github.com/AmmarMian/huber_mm_framework
+
 """
+
+
+
+
+
+
+
 
