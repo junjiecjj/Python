@@ -25,9 +25,7 @@ from sklearn.metrics import pairwise_distances
 from scipy.spatial.distance import pdist
 
 # 12个坐标点
-points = np.array([[1,6],[4,6],[1,5],[6,0],
-                   [3,8],[8,3],[4,1],[3,5],
-                   [9,2],[5,9],[4,9],[8,4]])
+points = np.array([[1,6], [4,6], [1,5], [6,0], [3,8], [8,3], [4,1], [3,5], [9,2], [5,9], [4,9], [8,4]])
 
 # 计算成对距离矩阵
 # D = np.linalg.norm(points[:, np.newaxis, :] - points, axis = 2)

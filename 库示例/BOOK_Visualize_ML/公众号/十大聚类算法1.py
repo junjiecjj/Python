@@ -34,7 +34,7 @@ plt.figure(figsize=(18, 8))
 
 # 子图1：原始数据分布
 plt.subplot(1, 3, 1)
-plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='rainbow', edgecolors='k')
+plt.scatter(X[:, 0], X[:, 1], c = y, s = 50, cmap = 'rainbow', edgecolors = 'k')
 plt.title("Original Data Distribution", fontsize=14)
 plt.xlabel("Feature 1")
 plt.ylabel("Feature 2")
@@ -512,8 +512,7 @@ n_samples = 1000
 n_features = 2
 centers = 4
 cluster_std = [1.0, 2.5, 0.5, 1.5]
-X, y = make_blobs(n_samples=n_samples, n_features=n_features,
-                  centers=centers, cluster_std=cluster_std, random_state=42)
+X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=centers, cluster_std=cluster_std, random_state=42)
 
 # 应用 Spectral Clustering
 spectral = SpectralClustering(n_clusters=4, affinity='rbf',
@@ -643,7 +642,7 @@ cluster_std = [0.2, 0.3, 0.2, 0.3]
 X, _ = make_blobs(n_samples=n_samples, centers=centers, cluster_std=cluster_std)
 
 # 计算相似性矩阵（负欧氏距离）
-similarity = -pairwise_distances(X, metric='euclidean')
+similarity = -pairwise_distances(X, metric = 'euclidean')
 
 # 使用Affinity Propagation进行聚类
 af = AffinityPropagation(affinity='precomputed', random_state=42)
