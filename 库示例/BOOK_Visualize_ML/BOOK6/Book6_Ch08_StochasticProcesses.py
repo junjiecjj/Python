@@ -614,7 +614,6 @@ plt.title('Correlation matrix of historical data')
 
 import scipy.linalg
 
-
 L = scipy.linalg.cholesky(cov_SIGMA, lower=True)
 R = scipy.linalg.cholesky(cov_SIGMA, lower=False)
 

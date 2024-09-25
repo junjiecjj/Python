@@ -844,11 +844,7 @@ right_shift
 right_shift() 函数将数组元素的二进制形式向右移动到指定位置，左侧附加相等数量的 0。
 
 
-
 """
-
-
-
 print ('13 和 17 的二进制形式：')
 a,b = 13,17
 print (bin(a), bin(b))
@@ -879,8 +875,6 @@ print ('\n')
 print ('242 的二进制表示：')
 print (np.binary_repr(242, width = 8))
 
-
-
 import numpy as np
 
 print ('将 10 左移两位：')
@@ -895,9 +889,6 @@ print ('40 的二进制表示：')
 print (np.binary_repr(40, width = 8))
 #  '00001010' 中的两位移动到了左边，并在右边添加了两个 0。
 
-
-
-
 print ('将 40 右移两位：')
 print (np.right_shift(40,2))
 print ('\n')
@@ -909,12 +900,6 @@ print ('\n')
 print ('10 的二进制表示：')
 print (np.binary_repr(10, width = 8))
 #  '00001010' 中的两位移动到了右边，并在左边添加了两个 0。
-
-
-
-
-
-
 
 #=====================================================================================
 #    NumPy 位运算
@@ -1080,8 +1065,6 @@ a = np.char.encode('runoob', 'cp500')
 print (a)
 print (np.char.decode(a,'cp500'))
 
-
-
 #=====================================================================================
 #    NumPy 数学函数
 #=====================================================================================
@@ -1110,11 +1093,6 @@ numpy.floor() 返回小于或者等于指定表达式的最大整数，即向下
 
 numpy.ceil()
 numpy.ceil() 返回大于或者等于指定表达式的最小整数，即向上取整。
-
-
-
-
-
 
 
 """
@@ -1246,7 +1224,6 @@ print ('\n')
 print ('两个数组相除：')
 print (np.divide(a,b))
 
-
 import numpy as np
 
 a = np.array([0.25,  1.33,  1,  100])
@@ -1255,9 +1232,6 @@ print (a)
 print ('\n')
 print ('调用 reciprocal 函数：')
 print (np.reciprocal(a))
-
-
-
 
 import numpy as np
 
@@ -1275,10 +1249,6 @@ print ('\n')
 print ('再次调用 power 函数：')
 print (np.power(a,b))
 
-
-
-
-
 import numpy as np
 
 a = np.array([10,20,30])
@@ -1294,10 +1264,6 @@ print (np.mod(a,b))
 print ('\n')
 print ('调用 remainder() 函数：')
 print (np.remainder(a,b))
-
-
-
-
 
 #=====================================================================================
 #    NumPy 统计函数
@@ -1449,9 +1415,6 @@ print ('\n')
 print ('沿轴 1 调用 mean() 函数：')
 print (np.mean(a, axis =  1))
 
-
-
-
 import numpy as np
 
 a = np.array([1,2,3,4])
@@ -1544,12 +1507,8 @@ numpy.nonzero() 函数返回输入数组中非零元素的索引。
 numpy.where()
 numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
 
-
 numpy.extract()
 numpy.extract() 函数根据某个条件从数组中抽取元素，返回满条件的元素。
-
-
-
 
 """
 

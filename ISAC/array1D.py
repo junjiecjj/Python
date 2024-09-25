@@ -49,11 +49,8 @@ for num in range(Ns):
     Atheta = np.exp(-1j * (np.pi * (np.arange(N) + 1) * np.sin(rad)) + alpha )  # 导向/方向矢量
     Ptheta[num] = np.abs(wt @ Atheta.T.conjugate()) + mini_a
     # Ptheta[num] = np.abs(np.sum(wt * Atheta.T.conjugate())) + mini_a
-
 dbP = 20 * np.log10(Ptheta)
 peaks, _ =  scipy.signal.find_peaks(dbP)
-
-
 
 ### 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8), )

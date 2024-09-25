@@ -20,11 +20,8 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
 # ## 定义可视化函数
-
 def visualize_2D(array, title, vmax, vmin):
-
     fig_width  = math.ceil(array.shape[1] * 0.5)
     fig_length = math.ceil(array.shape[0] * 0.5)
 
@@ -42,15 +39,13 @@ def visualize_2D(array, title, vmax, vmin):
                 cmap = 'RdYlBu_r', # 指定色谱
                 linewidths = .5,   # 方格线宽
                 cbar = False,      # 不显示色谱条
-                yticklabels=False, # 不显示纵轴标签
-                xticklabels=False, # 不显示横轴标签
+                yticklabels = False, # 不显示纵轴标签
+                xticklabels = False, # 不显示横轴标签
                 ax = ax)           # 指定绘制热图的轴
 
     # fig.savefig('Figures/' + title + '.svg', format='svg')
 
 # ## 导入鸢尾花数据
-
-
 iris = load_iris()
 # 从sklearn导入鸢尾花数据
 
@@ -256,7 +251,7 @@ plt.title('$G^{-1}$')
 # 对格拉姆矩阵G进行Cholesky分解
 L = np.linalg.cholesky(G)
 
-fig,axs = plt.subplots(1,5,figsize = (8,3), gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3]})
+fig, axs = plt.subplots(1,5,figsize = (8,3), gridspec_kw={'width_ratios': [3, 0.5, 3, 0.5, 3]})
 
 plt.sca(axs[0])
 ax = sns.heatmap(G, cmap = 'RdYlBu_r', vmax = 5000, vmin = 0, cbar_kws = {'orientation':'horizontal'}, yticklabels=False, annot=True, fmt=".0f", square = 'equal')

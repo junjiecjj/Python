@@ -16,9 +16,6 @@ import matplotlib.pyplot as plt
 import os, time
 
 
-
-
-
 """
 #=========================================================
 #numpy    array
@@ -162,6 +159,8 @@ np.cumsum(b, axis=0)
 np.cumprod(b,axis=1)
 
 np.cumprod(b,axis=0)
+
+
 
 
 
@@ -939,10 +938,6 @@ print('判断特征向量是否正交：\n', np.dot(eigenvector.transpose(), eig
 
 #==========================================================================
 
-
-
-
-
 #=============================================================================
 #=========  Jordan标准型 ========================
 #=============================================================================
@@ -957,14 +952,10 @@ a = Matrix(A)
 P, Ja = a.jordan_form()
 pprint.pprint(Ja)
 
-
 B = np.array([[-1,-4,-8],[1,3,8],[0,0,-1]])
 b = Matrix(B)
 P,Jb = b.jordan_form()
 pprint.pprint(Jb)
-
-
-
 
 '''------------------- 进行 Cholesky分解 -------------------'''
 # A能够作Cholesky分解的充要条件是A是对称正定矩阵
@@ -1021,7 +1012,6 @@ print('VT：\n',VT)
 #2.SVD重构
 B = U.dot(Sigma.dot(VT))
 print('重构后的矩阵B：\n', B)
-
 print('原矩阵与重构矩阵是否相同？',np.allclose(A,B))
 
 # 3. SVD矩阵压缩（降维）
@@ -1029,12 +1019,8 @@ for k in range(3,0,-1):  # 3,2,1
     # U的k列，VT的k行
     D = U[:,:k].dot(Sigma[:k,:k].dot(VT[:k,:]))
     print('k=',k,"压缩后的矩阵：\n",np.round(D,1))  # round取整数
-
-
 ATA = A.T@A
-
 V , P = np.linalg.eigh(ATA)
-
 print(f"A = \n{A}\n特征值 = \n{V}\n特征向量 = \n{P}\n")
 
 
@@ -1169,6 +1155,58 @@ print("even2:", even2)     #[0 2 4 6 8]
 indices = np.where(a%2 ==0)
 print("偶数项元素的索引：", indices)  #(array([0, 2, 4, 6, 8], dtype=int64),)
 print("even3:", np.take(a,indices))   #[[0 2 4 6 8]]
+
+#==========================================================
+#  np.block
+#==========================================================
+import numpy as np
+
+A = np.array([[1, 2, 3, 0,  0],
+              [4, 5, 6, 0,  0],
+              [0, 0, 0, -1, 0],
+              [0, 0 ,0, 0,  1]])
+
+# NumPy array slicing
+
+A_1_1 = A[0:2,0:3]
+
+A_1_2 = A[0:2,3:]
+# A_1_2 = A[0:2,-2:]
+A_2_1 = A[2:,0:3]
+# A_2_1 = A[-2:,0:3]
+A_2_2 = A[2:,3:]
+# A_2_2 = A[-2:,-2:]
+
+# Assemble a matrix from nested lists of blocks
+# 分块矩阵的意思是把若干个矩阵当成元素进行组合，从而构造出更大的矩阵，和线性代数中的分块矩阵思想相同
+A_ = np.block([[A_1_1, A_1_2],
+               [A_2_1, A_2_2]])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

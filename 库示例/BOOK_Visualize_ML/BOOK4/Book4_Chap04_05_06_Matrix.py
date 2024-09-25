@@ -221,7 +221,6 @@ import numpy as np
 import seaborn as sns
 
 def plot_heatmap(x,title):
-
     fig, ax = plt.subplots()
     ax = sns.heatmap(x,
                      cmap='RdYlBu_r',

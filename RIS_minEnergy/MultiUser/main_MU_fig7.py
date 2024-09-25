@@ -45,19 +45,19 @@ epsilon = 1e-4
 d0 = 51
 D0 = 1.0
 
-d1 = 20                         # AP半径
-d2 = 3                          # RIS半径
-C0 = -30                        # dB
-C0 = 10**(C0/10.0)              # 参考距离的路损
-sigmaK2 = -80                   # dBm
+d1 = 20                              # AP半径
+d2 = 3                               # RIS半径
+C0 = -30                             # dB
+C0 = 10**(C0/10.0)                   # 参考距离的路损
+sigmaK2 = -80                        # dBm
 sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
-gamma = 20                      # dB
-gamma = 10**(gamma/10.0)        #  信干噪比约束20dB
-M = 4                           # AP天线数量
+gamma = 20                           # dB
+gamma = 10**(gamma/10.0)             # 信干噪比约束20dB
+M = 4                                # AP天线数量
 Nx = 5
 Ny = 6
-N = Nx * Ny                     # RIS天线数量
-L = 1000                        # Gaussian随机化次数
+N = Nx * Ny                        # RIS天线数量
+L = 1000                           # Gaussian随机化次数
 frame = 500
 
 #%% 路损参数
@@ -68,7 +68,7 @@ beta_AI = 10**(3/10)     # IRS到User考虑瑞利衰落信道，AP和IRS之间�
 beta_Iu = 10**(3/10)     # IRS到User考虑瑞利衰落信道，AP和IRS之间为纯LoS信道
 beta_Au = 0              #  AP和 User 之间为Rayleigh信道
 
-Uk = 4                   # 4个用户，图7仿真，假设U_k, k=1,2,3,4是活跃用户
+Uk = 4                   # 4个用户，图7仿真，假设U_k, k = 1,2,3,4是活跃用户
 
 #%% AP-User和RIS-User之间的距离和角度
 d_Au = [d1, np.sqrt((d2*np.cos(pi/5))**2 + (d0 - d2*np.sin(pi/5))**2), d1, np.sqrt((d2*np.sin(pi/10))**2 + (d0 - d2*np.cos(pi/10))**2)]
@@ -76,14 +76,11 @@ theta_Au = [-pi/4, 2*pi - np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), p
 d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2, np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2]
 theta_Iu = [pi + np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), 3*pi/2 - pi/5, pi - np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), pi+pi/10]
 
-
 # #%% AP-User和RIS-User之间的距离和角度
 # d_Au = [d1, np.sqrt((d2*np.cos(pi/5))**2 + (d0 - d2*np.sin(pi/5))**2), d1, np.sqrt((d2*np.sin(pi/10))**2 + (d0 - d2*np.cos(pi/10))**2)]
 # theta_Au = [pi/4, np.arctan(d2*np.cos(pi/5) / (d0 - d2*np.sin(pi/5))), -pi/4, np.arctan(d2*np.sin(pi/10) / (d0 - d2*np.cos(pi/10)))]
 # d_Iu = [np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2, np.sqrt((d1*np.sin(pi/4))**2 + (d0-d1*np.cos(pi/4))**2), d2]
 # theta_Iu = [-np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), -3*pi/10, np.arctan(d1*np.sin(pi/4)/(d0 - d1*np.cos(pi/4))), -pi/10]
-
-
 
 #%% AP-RIS 信道G
 AI_large_fading = C0 * ((d0/D0)**(-alpha_AI))
@@ -114,7 +111,6 @@ iternum,  Pow, _, _ = AlternatingOptim(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
 #%% TwoStage Algorithm
 Pow2, W, v = TwoStageAlgorithm(Hr, Hd, G, M, N, Uk, gamma, epsilon, L)
 
-
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(np.arange(iternum), Pow, color = 'k', linestyle='-', lw = 3,  marker = "o", markerfacecolor='white',markersize = 10, label = "Solving P4'",  )
@@ -135,7 +131,7 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 
 # x_major_locator = MultipleLocator(5)               #把x轴的刻度间隔设置为1，并存在变量里
 # axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
-axs.tick_params(direction='in', axis='both', top=True, right=True,labelsize=16, width=3,)
+axs.tick_params(direction = 'in', axis = 'both', top = True, right = True,labelsize = 16, width = 3,)
 labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(24) for label in labels]  # 刻度值字号
