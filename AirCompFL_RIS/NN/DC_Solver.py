@@ -117,7 +117,7 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
     theta = copy.deepcopy(vv/np.abs(vv))
     return theta, infeasible_check
 
-def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, SNR, maxiter, iter_num, rho, verbose, ):
+def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, ):
     MSE_log = np.zeros(maxiter + 1)
     f = np.random.randn(N, ) + 1j * np.random.randn(N, )
     f = f / np.linalg.norm(f, ord = 2)
@@ -126,7 +126,7 @@ def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, SNR, maxiter, iter_num, rho, ve
     h = np.zeros([N, K], dtype = complex)
     for i in range(K):
         h[:, i] = h_d[:, i] + G[:, :, i] @ theta
-    MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / SNR
+    MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
     MSE_log[0] = MSE_pre
 
     infeasible = False
@@ -139,7 +139,7 @@ def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, SNR, maxiter, iter_num, rho, ve
         h = np.zeros([N, K], dtype = complex)
         for k in range(K):
             h[:, k] = h_d[:, k] + G[:, :, k] @ theta
-        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / SNR
+        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_log[it + 1] = MSE
         if verbose:
             print(f'  Outer iter = {it}, MSE = {MSE}, infeasible = {infeasible}')

@@ -67,7 +67,8 @@ testset = torchvision.datasets.MNIST(root = home+'/FL_semantic/Data/', train = F
 testloader = torch.utils.data.DataLoader(testset, batch_size = 128, shuffle = False, num_workers = 6, )
 
 # model = models.mnist_cnn().to(device)
-model = models.Mnist_2NN().to(device)
+# model = models.Mnist_2NN().to(device)
+model = models.CNNMnist(1, 10).to(device)
 # model = models.Mnist_MLP().to(device)
 
 # optimizer = torch.optim.Adam(model.parameters(), lr = 0.01, betas = (0.9, 0.999), eps = 1e-08,)

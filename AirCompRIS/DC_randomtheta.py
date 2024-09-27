@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep 20 22:30:14 2024
+Created on Thu Sep 26 16:19:17 2024
 
 @author: jack
 """
+
 
 import numpy as np
 import copy
@@ -53,21 +54,30 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
     f = u[:,0]
     return f # / np.linalg.norm(f)
 
-def DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, ):
+def DC_random_theta(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, ):
     MSE_log = np.zeros(maxiter + 1)
     f = np.random.randn(N, ) + 1j * np.random.randn(N, )
     f = f / np.linalg.norm(f, ord = 2)
-    theta = np.zeros(L, dtype = complex)
+    theta = np.random.randn(L, ) + 1j * np.random.randn(L, )
+    theta = theta/np.abs(theta)
+    # theta = np.zeros(L, dtype = complex)
 
-    MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h_d)**2) / P0
+    h = np.zeros([N, K], dtype = complex)
+    for i in range(K):
+        h[:, i] = h_d[:, i] + G[:, :, i] @ theta
+    MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
     MSE_log[0] = MSE_pre
 
     for it in range(maxiter):
         print(f"  Outer iter = {it}:")
+
         f = DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,)
         # print(f"  Outer iter = {it}, f = {f}")
 
-        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h_d)**2) / P0
+        h = np.zeros([N, K], dtype = complex)
+        for i in range(K):
+            h[:, i] = h_d[:, i] + G[:, :, i] @ theta
+        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_log[it + 1] = MSE
         if verbose:
             print(f'  Outer iter = {it}, MSE = {MSE}, ')

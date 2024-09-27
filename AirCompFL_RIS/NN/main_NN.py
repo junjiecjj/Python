@@ -56,14 +56,7 @@ recorder = MetricsLog.TraRecorder(3, name = "Train", )
 local_dt_dict, testloader = GetDataSet(args)
 
 ## Model
-if args.model.lower() == "mnist_2nn":
-    global_model = models.Mnist_2NN().to(args.device)
-elif args.model.lower() == "mnist_1mlp":
-    global_model = models.Mnist_1MLP().to(args.device)
-elif args.model.lower() == "mnist_2mlp":
-    global_model = models.Mnist_2MLP().to(args.device)
-elif args.model.lower() == "mnist_cnn":
-    global_model = models.Mnist_CNN().to(args.device)
+global_model = models.Mnist_CNN().to(args.device)
 
 global_weight = global_model.state_dict()
 args.dimension = np.sum([param.numel() for param in global_weight.values()]); print(f"# of parameters =  {args.dimension}.")

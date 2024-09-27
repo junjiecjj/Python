@@ -36,13 +36,35 @@ def User2RISSteerVec( Nx = 3, Ny = 4, azi = 0, ele = 0 ):
     return SteerVecRIS
 
 
-def User2APSteerVec(N, azi = 0, ele = 0 ):
+def Point2UPASteerVec(K, Ny, Nz, RIS_locate, users_locate):
+    L = Ny * Nz
+    XY = (users_locate - RIS_locate)
+    x = XY[:,0]
+    y = XY[:,1]
+    azi = -np.arctan2(y, x) + np.pi
+    x = np.linalg.norm(XY[:,:2], axis = 1, )
+    y = XY[:,2]
+    ele = np.arctan2(y, x)
 
-    return
+    hrLos = np.zeros((L, K), dtype = complex)
+    for k in range(K):
+        ax = np.exp(-1j * np.pi * np.arange(Ny) * np.sin(azi[k]) * np.cos(ele[k]))
+        ay = np.exp(-1j * np.pi * np.arange(Nz) * np.sin(ele[k]) )
+        hrLos[:, k] = np.kron(ax, ay)
+
+    return hrLos
 
 
 
 
+def Point2ULASteerVec(N, K, BS_locate, users_locate):
+    XY = (users_locate - BS_locate)[:,:2]
+    x = XY[:,0]
+    y = XY[:,1]
+    theta = -np.arctan2(y, x)
+    d = np.arange(N)
+    stevec = np.exp(1j * np.pi * np.outer(d, np.sin(theta)))
+    return stevec
 
 
 

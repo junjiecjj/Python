@@ -19,7 +19,7 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
         h[:, i] = h_d[:, i] + G[:, :, i] @ theta
         H[:,:, i] = np.outer(h[:, i], h[:, i].conj())
     ## define the optimization problem
-    M_var = cp.Variable((N, N), complex = True)
+    M_var = cp.Variable((N, N), hermitian = True)
     M_partial = cp.Parameter((N, N), hermitian = True)
 
     tmp = np.random.randn(N, 1) + 1j*np.random.randn(N, 1)
@@ -40,7 +40,7 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
         prob.solve() # solver = cp.MOSEK
         # obj = np.real(np.trace(M_var.value)) + rho * (np.real(np.trace(M_var.value)) - np.linalg.norm(M_var.value, ord = 2))
         if verbose > 1:
-            print(f'   Solving f, Inner iter = {i}, Status = {prob.status}, Value = {prob.value:.3f} ' )
+            print(f'   Solving f, Inner iter = {i}, Status = {prob.status}, prob.Value = {prob.value:.3f} ' )
         err = np.abs(prob.value - obj_pre)
         M = copy.deepcopy(M_var.value)
         _, V = np.linalg.eigh(M)
@@ -92,10 +92,10 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
         prob.solve()
         # obj = np.real(np.trace(V_var.value)) - np.linalg.norm(V_var.value, ord = 2)
         if verbose > 1:
-            print(f'   Solving theta, iter = {it}, Status = {prob.status}, Value = {prob.value:.3e} ' )
+            print(f'   Solving theta, iter = {it}, Status = {prob.status}, prob.Value = {prob.value:.3e} ' )
         if prob.status == 'infeasible' or prob.value is np.inf:
             infeasible_check = True
-            print(f'   Solving theta infeasible, iter = {it}, Status = {prob.status}, Value = {prob.value} ' )
+            print(f'   Solving theta infeasible, iter = {it}, Status = {prob.status}, prob.Value = {prob.value} ' )
             break
         err = np.abs(prob.value - obj_pre)
         V = copy.deepcopy(V_var.value)
@@ -117,7 +117,7 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
     theta = copy.deepcopy(vv/np.abs(vv))
     return theta, infeasible_check
 
-def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, SNR, maxiter, iter_num, rho, verbose, ):
+def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, ):
     MSE_log = np.zeros(maxiter + 1)
     f = np.random.randn(N, ) + 1j * np.random.randn(N, )
     f = f / np.linalg.norm(f, ord = 2)
@@ -126,7 +126,7 @@ def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, SNR, maxiter, iter_num, rho, ve
     h = np.zeros([N, K], dtype = complex)
     for i in range(K):
         h[:, i] = h_d[:, i] + G[:, :, i] @ theta
-    MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / SNR
+    MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
     MSE_log[0] = MSE_pre
 
     infeasible = False
@@ -139,7 +139,7 @@ def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, SNR, maxiter, iter_num, rho, ve
         h = np.zeros([N, K], dtype = complex)
         for k in range(K):
             h[:, k] = h_d[:, k] + G[:, :, k] @ theta
-        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / SNR
+        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_log[it + 1] = MSE
         if verbose:
             print(f'  Outer iter = {it}, MSE = {MSE}, infeasible = {infeasible}')
