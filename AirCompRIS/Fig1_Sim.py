@@ -31,6 +31,7 @@ from DC_Solver import DC_RIS
 from DC_Solver1 import DC_RIS1
 from SCA_solver import SCA_RIS
 from DC_wo_RIS import DC_woRIS
+from SDR import SDR_RIS
 from Utility import set_random_seed, set_printoption
 set_random_seed(999)
 
@@ -51,40 +52,40 @@ Ny = 8
 L = Nx * Ny  # RIS antenna
 
 ## path loss exponents
-alpha_Au = 3.5
+alpha_Au = 4.8
 alpha_AI = 2.2
-alpha_Iu = 2.8
+alpha_Iu = 2.2
 
 ## Rician factor
 beta_Au = 0   # dB
 beta_AI = 3   # dB
-beta_Iu = 3   # dB
+beta_Iu = 0   # dB
 beta_Au = 10**(beta_Au/10)
 beta_AI = 10**(beta_AI/10)
 beta_Iu = 10**(beta_Iu/10)
 
-sigmaK2 = -80                        # dBm
+sigmaK2 = -60                        # dBm
 sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
 P0 = 30 # dBm
 P0 = 10**(P0/10.0)/1000
 
-## Location, Case I
-BS_locate = np.array([[-50, 0, 10]])
-RIS_locate = np.array([[0, 0, 10]])
-users_locate_x1 = np.random.rand(int(K/2), 1) * (-20)
-users_locate_x2 = np.random.rand(int(K/2), 1) * 20 + 100
-users_locate_x = np.vstack((users_locate_x1, users_locate_x2))
-users_locate_y = np.random.rand(K, 1) * 20 - 10
-users_locate_z = np.zeros((K, 1))
-users_locate = np.hstack((users_locate_x, users_locate_y, users_locate_z))
-
-## Location, Case II
+# Location, Case I
 # BS_locate = np.array([[-50, 0, 10]])
 # RIS_locate = np.array([[0, 0, 10]])
-# users_locate_x = np.random.rand(K, 1) * 20
+# users_locate_x1 = np.random.rand(int(K/2), 1) * (-20)
+# users_locate_x2 = np.random.rand(int(K/2), 1) * 20 + 100
+# users_locate_x = np.vstack((users_locate_x1, users_locate_x2))
 # users_locate_y = np.random.rand(K, 1) * 20 - 10
 # users_locate_z = np.zeros((K, 1))
 # users_locate = np.hstack((users_locate_x, users_locate_y, users_locate_z))
+
+# Location, Case II
+BS_locate = np.array([[-50, 0, 10]])
+RIS_locate = np.array([[0, 0, 10]])
+users_locate_x = np.random.rand(K, 1) * (-20)
+users_locate_y = np.random.rand(K, 1) * 20 - 10
+users_locate_z = np.zeros((K, 1))
+users_locate = np.hstack((users_locate_x, users_locate_y, users_locate_z))
 
 # Location, Case III
 # BS_locate = np.array([[0, 0, 25]])
@@ -139,16 +140,16 @@ iter_num = 50
 ## Solver 3
 Imax = 100000
 tau = 1
-threshold = 1e-6
-f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
-# print(f"MSE = {MSE_sca[-1]}, ||f||_2 = {np.linalg.norm(f_sca)}, |theta| = {np.abs(theta_sca)}")
+threshold = 1e-5
+# f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
+# # print(f"MSE = {MSE_sca[-1]}, ||f||_2 = {np.linalg.norm(f_sca)}, |theta| = {np.abs(theta_sca)}")
 
-f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
-print(f"MSE = {MSE_sca_wo[-1]}, ||f||_2 = {np.linalg.norm(f_sca_wo)}, |theta| = {np.abs(theta_sca_wo)}")
+# f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
+# print(f"MSE = {MSE_sca_wo[-1]}, ||f||_2 = {np.linalg.norm(f_sca_wo)}, |theta| = {np.abs(theta_sca_wo)}")
 
-# # Solver 1
-f_DC, theta_DC, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
-# print(f"MSE_DC = {MSE_DC}, ||f_DC||_2 = {np.linalg.norm(f_DC)}, |theta_DC| = f{np.abs(theta_DC)}")
+# # # Solver 1
+# f_DC, theta_DC, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+# # print(f"MSE_DC = {MSE_DC}, ||f_DC||_2 = {np.linalg.norm(f_DC)}, |theta_DC| = f{np.abs(theta_DC)}")
 
 # # Solver 2
 # f_DC1, theta_DC1, MSE_DC1 = DC_RIS1(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose)
@@ -156,11 +157,12 @@ f_DC, theta_DC, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxite
 
 # Solver 4
 # DC without RIS
-f_woRIS, MSE_wo = DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+# f_woRIS, MSE_wo = DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
 # print(f"MSE = {MSE_wo[-1]}, ||f||_2 = {np.linalg.norm(f_woRIS)}, ")
-# MSE_wo1 = np.zeros(30,)
-# MSE_wo1[:len(MSE_wo)] = MSE_wo
-# MSE_wo1[len(MSE_wo):] = MSE_wo[-1]
+
+
+# # Solver 5
+f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verbose, )
 
 
 # np.savez('./fig1.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
@@ -169,13 +171,14 @@ f_woRIS, MSE_wo = DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, it
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-axs.semilogy(np.arange(len(MSE_sca[:21])), MSE_sca[:21], color = 'r', lw = 3, linestyle='-',  label = 'Poposed SCA',  )
-axs.semilogy(np.arange(len(MSE_sca_wo[:21])), MSE_sca_wo[:21], color = 'purple', lw = 3, linestyle='--',  label = 'Poposed SCA w/o RIS',  )
-axs.semilogy(np.arange(len(MSE_DC)), MSE_DC, color = 'b', lw = 3,linestyle=(0,(1,1)),  label = 'DC',  )
+# axs.semilogy(np.arange(len(MSE_sca )), MSE_sca , color = 'r', lw = 3, linestyle='-',  label = 'Poposed SCA',  )
+axs.semilogy(np.arange(len(MSE_sdr )), MSE_sdr , color = 'purple', lw = 3, linestyle='-', label = 'SDR',  )
+# axs.semilogy(np.arange(len(MSE_sca_wo )), MSE_sca_wo , color = 'purple', lw = 3, linestyle='--',  label = 'SCA w/o RIS',  )
+# axs.semilogy(np.arange(len(MSE_DC)), MSE_DC, color = 'b', lw = 3,linestyle=(0,(1,1)),  label = 'DC',  )
 # axs.semilogy(np.arange(len(MSE_DC1)), MSE_DC1, color = 'k', lw = 3,linestyle='--',  label = 'DC 1',  )
-axs.semilogy(np.arange(len(MSE_wo)), MSE_wo, color = 'green', lw = 3, linestyle='-',  label = 'DC w/o RIS',  )
+# axs.semilogy(np.arange(len(MSE_wo)), MSE_wo, color = 'green', lw = 3, linestyle='-',  label = 'DC w/o RIS',  )
 
-axs.axhline(MSE_DC[-1,], linestyle = (0,(5,5)), lw = 2, color = 'gray')
+# axs.axhline(MSE_DC[-1,], linestyle = (0,(5,5)), lw = 2, color = 'gray')
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
@@ -203,8 +206,8 @@ axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-# out_fig.savefig('fig1_1.eps' )
-# out_fig.savefig('fig1_1.pdf' )
+# out_fig.savefig('fig1_2.eps' )
+# out_fig.savefig('fig1_2.pdf' )
 plt.show()
 
 

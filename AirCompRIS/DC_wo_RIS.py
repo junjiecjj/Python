@@ -40,7 +40,8 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
         prob.solve() # solver = cp.MOSEK
         # obj = np.real(np.trace(M_var.value)) + rho * (np.real(np.trace(M_var.value)) - np.linalg.norm(M_var.value, ord = 2))
         if verbose > 1:
-            print(f'   Solving f, Inner iter = {i}, Status = {prob.status}, Value = {prob.value:.3f} ' )
+            if (i + 1) % 10 == 0:
+                print(f'   Solving f, wo ris, Inner iter = {i}, Status = {prob.status}, Value = {prob.value:.3f} ' )
         err = np.abs(prob.value - obj_pre)/np.abs(prob.value)
         M = copy.deepcopy(M_var.value)
         _, V = np.linalg.eigh(M)

@@ -49,8 +49,13 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
         obj_pre = prob.value
         if err < epsilon_dc:
             break
-    u, _, _ = np.linalg.svd(M, compute_uv = True, hermitian = True)
-    f = u[:,0]
+    try:
+        l = scipy.linalg.cholesky(M, lower = True)
+        f = l[:,0]
+    except Exception as e:
+        print(f"    f, cholesky failed, use SVD decomposition ")
+        u, _, _ = np.linalg.svd(M, compute_uv = True, hermitian = True)
+        f = u[:,0]
     return f # / np.linalg.norm(f)
 
 # Given M, update theta
@@ -91,13 +96,13 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
     for it in range(iter_num):
         prob.solve()
         # obj = np.real(np.trace(V_var.value)) - np.linalg.norm(V_var.value, ord = 2)
+        err = np.abs(prob.value - obj_pre)
         if verbose > 1:
-            print(f'   Solving theta, iter = {it}, Status = {prob.status}, prob.Value = {prob.value:.3e} ' )
+            print(f'   Solving theta, iter = {it}, Status = {prob.status}, err = {err:.3e}, prob.Value = {prob.value:.3e} ' )
         if prob.status == 'infeasible' or prob.value is np.inf:
             infeasible_check = True
-            print(f'   Solving theta infeasible, iter = {it}, Status = {prob.status}, prob.Value = {prob.value} ' )
+            print(f'   Solving theta infeasible, iter = {it}, Status = {prob.status}, err = {err:.3e}, prob.Value = {prob.value} ' )
             break
-        err = np.abs(prob.value - obj_pre)
         V = copy.deepcopy(V_var.value)
         _, v = np.linalg.eigh(V)
         u = v[:,L]
@@ -105,13 +110,13 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
         obj_pre = prob.value # prob.value
         if err < epsilon_dc:
             break
-    # try:
-    #     l = scipy.linalg.cholesky(V, lower = True)
-    #     v_hat = l[:,0]
-    # except Exception as e:
-        # print("   Theta: Cholesky decomposition failed, use SVD decomposition !!!")
-    u, _, _ = np.linalg.svd(V, compute_uv = True, hermitian = True)
-    v_hat = u[:,0]
+    try:
+        l = scipy.linalg.cholesky(V, lower = True)
+        v_hat = l[:,0]
+    except Exception as e:
+        print("   Theta: Cholesky decomposition failed, use SVD decomposition !!!")
+        u, _, _ = np.linalg.svd(V, compute_uv = True, hermitian = True)
+        v_hat = u[:,0]
 
     vv = v_hat[0:L]/v_hat[L]
     theta = copy.deepcopy(vv/np.abs(vv))

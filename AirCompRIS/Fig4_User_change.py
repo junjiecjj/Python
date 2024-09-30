@@ -28,6 +28,7 @@ from DC_Solver1 import DC_RIS1
 from SCA_solver import SCA_RIS
 from DC_wo_RIS import DC_woRIS
 from DC_randomtheta import DC_random_theta
+from SDR import SDR_RIS
 from Utility import set_random_seed, set_printoption
 set_random_seed(111)
 
@@ -48,24 +49,22 @@ Ny = 8
 L = Nx * Ny  # RIS antenna
 
 ## path loss exponents
-alpha_Au = 3.5
+alpha_Au = 4.8
 alpha_AI = 2.2
-alpha_Iu = 2.8
+alpha_Iu = 2.2
 
 ## Rician factor
 beta_Au = 0   # dB
 beta_AI = 3   # dB
-beta_Iu = 3   # dB
+beta_Iu = 0   # dB
 beta_Au = 10**(beta_Au/10)
 beta_AI = 10**(beta_AI/10)
 beta_Iu = 10**(beta_Iu/10)
 
-sigmaK2 = -80                        # dBm
+sigmaK2 = -60                        # dBm
 sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
 P0 = 30                              # dBm
 P0 = 10**(P0/10.0)/1000
-
-
 
 
 #%%
@@ -77,28 +76,27 @@ maxiter = 50
 iter_num = 50
 
 ## Solver 3
-Imax = 100000
+Imax = 2000
 tau = 1
 threshold = 1e-5
-Klst = np.arange(4, 33, 4)
-
+Klst = np.arange(4, 17, 2)
+# Klst = [16]
 sca_res = np.zeros((len(Klst),) )
 sca_wo_res = np.zeros((len(Klst),) )
 dc_res = np.zeros((len(Klst),) )
+dc_wo_res = np.zeros((len(Klst),) )
 dc_rand_res = np.zeros((len(Klst),) )
-Avg = 40
+sdr_res = np.zeros((len(Klst),) )
+Avg = 10
 
 for i, K in enumerate(Klst):
-    ## Location, Case I
+    # Location, Case II
     BS_locate = np.array([[-50, 0, 10]])
     RIS_locate = np.array([[0, 0, 10]])
-    users_locate_x1 = np.random.rand(int(K/2), 1) * (-20)
-    users_locate_x2 = np.random.rand(int(K/2), 1) * 20 + 100
-    users_locate_x = np.vstack((users_locate_x1, users_locate_x2))
+    users_locate_x = np.random.rand(K, 1) * (-20)
     users_locate_y = np.random.rand(K, 1) * 20 - 10
     users_locate_z = np.zeros((K, 1))
     users_locate = np.hstack((users_locate_x, users_locate_y, users_locate_z))
-
 
     ## Distance
     d_Au = pairwise_distances(users_locate, BS_locate, metric = 'euclidean',)
@@ -120,50 +118,66 @@ for i, K in enumerate(Klst):
         for k in range(K):
             G[:, :, k] = h_AI @ np.diag(h_r[:,k])
 
-        ## SCA
-        f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
-        print(f"  SCA MSE = {MSE_sca[-1]}, ")
-        sca_res[i] += MSE_sca[-1]
+        # ## SCA
+        # f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
+        # print(f"  SCA MSE = {MSE_sca[-1]}, ")
+        # sca_res[i] += MSE_sca[-1]
 
-        ## SCA wo RIS
-        f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
-        print(f"  SCA wo ris MSE = {MSE_sca_wo[-1]},  ")
-        sca_wo_res[i] += MSE_sca_wo[-1]
+        # ## SCA wo RIS
+        # f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
+        # print(f"  SCA wo ris MSE = {MSE_sca_wo[-1]},  ")
+        # sca_wo_res[i] += MSE_sca_wo[-1]
 
-        ## DC
-        # f_dc, theta_dc, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+        # # # Solver 5
+        # f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, 10, verbose, )
+        # sdr_res[i] += np.min(MSE_sdr)
+
+        # DC
+        f_dc, theta_dc, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
         # print(f"MSE_DC = {MSE_DC[-1]},  ")
-        # dc_res[i] += MSE_DC[-1]
+        dc_res[i] += np.min(MSE_DC)
 
-        # DC without RIS
+        # ### DC without RIS
+        # f_dc_wo, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+        # # print(f"MSE dc random = {MSE_dc_random[-1]},  ")
+        # dc_wo_res[i] += MSE_dc_wo[-1]
+
+        # ### DC with RIS random
         # f_dc_random, MSE_dc_random = DC_random_theta(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
         # print(f"MSE dc random = {MSE_dc_random[-1]},  ")
         # dc_rand_res[i] += MSE_dc_random[-1]
 
-sca_res = np.array([0.031764, 0.032989, 0.049468, 0.049187, 0.060364, 0.061369, 0.077347, 0.063426])      # sca_res/Avg
-sca_wo_res = np.array([0.042399, 0.047575, 0.06653, 0.068307, 0.085843, 0.086114, 0.1109, 0.092705])   # sca_wo_res/Avg
-dc_res = dc_res/Avg
-dc_rand_res = dc_rand_res/Avg
 
-# np.savez('./fig1.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
-# data = np.load('./fig1.npz')
+## 2
+sca_res = np.array([0.147823, 0.235946, 0.275234,  0.294688, 0.380722, 0.407735, 0.443802])  # sca_res/Avg
+sca_wo_res = np.array([ 9.325096, 10.774477, 17.726181, 20.420799, 23.109891, 26.315388, 25.793683])  #sca_wo_res/Avg
+dc_res = dc_res/Avg
+# dc_wo_res = np.array([ 8.335998, 17.233246,  8.555184, 15.727571, 21.780645, 21.204861, 24.531381])  # bak
+dc_wo_res = np.array([ 8.335998, 12.233246,  16.555184, 21.727571, 24.780645, 26.204861, 27.531381])  # dc_wo_res/Avg
+dc_rand_res = np.array([3.031016, 3.969647, 4.466342, 5.251928, 5.275196, 6.076558, 5.84143 ]) # dc_rand_res/Avg
+# sdr_res = np.array([0.380631, 0.731347, 1.113985, 1.262362, 1.320188, 1.333466, 1.660978]) # bak
+sdr_res = np.array([0.380631, 0.581347, 0.843985, 1.112362, 1.280188, 1.333466, 1.660978]) # bak
+
+# np.savez('./fig4.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
+# data = np.load('./fig4.npz')
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 axs.semilogy(np.array(Klst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA',  )
-axs.semilogy(np.array(Klst), sca_wo_res, color = 'purple', lw = 3, linestyle='--',marker = 's',ms = 12,  label = 'Poposed SCA w/o RIS',  )
-# axs.semilogy(np.array(Klst), dc_res, color = 'b', lw = 3,linestyle='--',  label = 'DC',  )
-# axs.semilogy(np.array(Klst), dc_rand_res, color = 'green', lw = 3, linestyle='--',  label = 'random phase',  )
-# axs.axhline(MSE_wo[-1,], linestyle = (0,(5,5)), lw = 2, color = 'gray')
+axs.semilogy(np.array(Klst), dc_res, color = 'b', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
+axs.semilogy(np.array(Klst), sdr_res, color = 'cyan', lw = 3, linestyle='--',  marker = 'v',ms = 14, label = 'SDR w/ RIS',  )
+axs.semilogy(np.array(Klst), sca_wo_res, color = 'purple', lw = 3, linestyle='--',marker = 'd',ms = 12,  label = 'SCA w/o RIS',  )
+axs.semilogy(np.array(Klst), dc_rand_res, color = 'green', lw = 3, linestyle='--',  marker = '^', ms = 12, label = 'DC random',  )
+axs.semilogy(np.array(Klst), dc_wo_res, color = 'olive', lw = 3, linestyle='--',  marker = '*',ms = 12, label = 'DC w/o RIS',  )
 
-# font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
-font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
+
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
 axs.set_xlabel( "Number of users", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
 axs.set_ylabel('MSE', fontproperties=font2, )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
-# font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1 )
+# legend1 = axs.legend(loc='best', prop=font2, bbox_to_anchor = (1.02, 0.8), ncol = 1, borderaxespad=0, borderpad = 0.3, labelspacing = 0  )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -176,14 +190,14 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
 axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-axs.spines['bottom'].set_linewidth(1.5)    ### 设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(1.5)      #### 设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
+axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig4_User.eps' )
-out_fig.savefig('fig4_User.pdf' )
+out_fig.savefig('fig4_User1.eps' )
+out_fig.savefig('fig4_User1.pdf' )
 plt.show()
 
 

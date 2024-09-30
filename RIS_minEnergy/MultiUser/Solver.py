@@ -58,7 +58,7 @@ def SOCPforW(H, Uk, M, gamma):
 
     W = cp.Variable((M, Uk), complex = True)
     obj = cp.Minimize(cp.norm(W, 'fro')**2)
-    constraints = [ cp.imag(cp.diag(H@W)) == 0,] + [cp.real(H[k,:]@W[:,k]) >= np.sqrt(gamma)*cp.norm(cp.hstack([H[k,:]@W[:, idxsum[k]], 1.0])) for k in range(Uk)]
+    constraints = [cp.imag(cp.diag(H@W)) == 0,] + [cp.real(H[k,:]@W[:,k]) >= np.sqrt(gamma)*cp.norm(cp.hstack([H[k,:]@W[:, idxsum[k]], 1.0])) for k in range(Uk)]
 
     prob = cp.Problem(obj, constraints)
     prob.solve()

@@ -62,12 +62,12 @@ def SCA(N, L, K, h_d, G, f, theta, Imax, tau, threshold, P0, verbose, RISON = 1)
         mse = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_recod[it + 1] = mse
         if  verbose >= 1:
-            if (it + 1) % 10 == 0:
+            if (it + 1) % 40 == 0:
                 print(f'    Iteration {it} MSE {mse:.6f} Opt Obj {res.fun:.6f}' )
         if np.abs(mse - obj_mse)/ abs(mse) <= threshold:
             break
     if  verbose >= 1:
-        print(f'    SCA Take {it+1} iterations with final obj {MSE_recod[it+2]:.6f}')
+        print(f'    SCA Take {it+1} iterations with final obj {MSE_recod[it+1]:.6f}')
     MSE_recod = MSE_recod[0 : it + 2]
     return f, theta, MSE_recod
 
@@ -87,14 +87,11 @@ def SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1):
     f0 = np.random.randn(N, ) + 1j * np.random.randn(N, )
     f0 = f0 / np.linalg.norm(f0, ord = 2)
 
-    # MSE0 = np.linalg.norm(f0, ord = 2)**2 / min(np.abs(f0.conj()@h)**2) / P0
-
     f, theta, MSE_log = SCA(N, L, K, h_d, G, f0, theta0, Imax, tau, threshold, P0, verbose, RISON)
     h = np.zeros([N, K], dtype=complex)
     for i in range(K):
         h[:,i] = h_d[:,i] + G[:,:,i]@theta
 
-    # MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
     return f, theta, MSE_log
 
 
