@@ -39,8 +39,9 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
     for i in range(iter_num):
         prob.solve() # solver = cp.MOSEK
         # obj = np.real(np.trace(M_var.value)) + rho * (np.real(np.trace(M_var.value)) - np.linalg.norm(M_var.value, ord = 2))
-        if verbose > 1:
-            print(f'   Solving f, Inner iter = {i}, Status = {prob.status}, prob.Value = {prob.value:.3f} ' )
+        # if verbose > 1:
+        #     if (i + 1) % 10 == 0:
+        #         print(f'   Solving f, Inner iter = {i}, Status = {prob.status}, prob.Value = {prob.value:.3f} ' )
         err = np.abs(prob.value - obj_pre)
         M = copy.deepcopy(M_var.value)
         _, V = np.linalg.eigh(M)
@@ -53,7 +54,7 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
         l = scipy.linalg.cholesky(M, lower = True)
         f = l[:,0]
     except Exception as e:
-        print(f"    f, cholesky failed, use SVD decomposition ")
+        # print(f"    f, cholesky failed, use SVD decomposition ")
         u, _, _ = np.linalg.svd(M, compute_uv = True, hermitian = True)
         f = u[:,0]
     return f # / np.linalg.norm(f)
@@ -98,10 +99,11 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
         # obj = np.real(np.trace(V_var.value)) - np.linalg.norm(V_var.value, ord = 2)
         err = np.abs(prob.value - obj_pre)
         if verbose > 1:
-            print(f'   Solving theta, iter = {it}, Status = {prob.status}, err = {err:.3e}, prob.Value = {prob.value:.3e} ' )
+            pass
+            # print(f'   Solving theta, iter = {it}, Status = {prob.status}, err = {err:.3e}, prob.Value = {prob.value:.3e} ' )
         if prob.status == 'infeasible' or prob.value is np.inf:
             infeasible_check = True
-            print(f'   Solving theta infeasible, iter = {it}, Status = {prob.status}, err = {err:.3e}, prob.Value = {prob.value} ' )
+            # print(f'   Solving theta infeasible, iter = {it}, Status = {prob.status}, err = {err:.3e}, prob.Value = {prob.value} ' )
             break
         V = copy.deepcopy(V_var.value)
         _, v = np.linalg.eigh(V)
@@ -114,7 +116,7 @@ def DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, ):
         l = scipy.linalg.cholesky(V, lower = True)
         v_hat = l[:,0]
     except Exception as e:
-        print("   Theta: Cholesky decomposition failed, use SVD decomposition !!!")
+        # print("   Theta: Cholesky decomposition failed, use SVD decomposition !!!")
         u, _, _ = np.linalg.svd(V, compute_uv = True, hermitian = True)
         v_hat = u[:,0]
 
@@ -136,7 +138,7 @@ def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, ver
 
     infeasible = False
     for it in range(maxiter):
-        print(f"  Outer iter = {it}:")
+        # print(f"  DC Outer iter = {it}:")
         f = DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,)
         # print(f"  Outer iter = {it}, f = {f}")
         theta, infeasible = DC_theta(N, L, K, h_d, G, f, epsilon_dc, iter_num, verbose, )
@@ -147,7 +149,8 @@ def DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, ver
         MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_log[it + 1] = MSE
         if verbose:
-            print(f'  Outer iter = {it}, MSE = {MSE}, infeasible = {infeasible}')
+            pass
+            # print(f'  Outer iter = {it}, MSE = {MSE}, infeasible = {infeasible}')
         if np.abs(MSE - MSE_pre) < epsilon or infeasible == True:
             break
         MSE_pre = MSE

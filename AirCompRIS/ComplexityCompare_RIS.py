@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Sep 26 18:35:59 2024
+Created on Wed Oct  2 17:05:51 2024
 
 @author: jack
 """
 
 
-
-
 import scipy
 import numpy as np
-# import scipy
+import sys
 import cvxpy as cp
 import matplotlib.pyplot as plt
-# import math
+import time
 # import matplotlib
 from matplotlib.font_manager import FontProperties
 # from pylab import tick_params
@@ -92,7 +90,7 @@ rho = 5
 epsilon = 1e-3
 epsilon_dc = 1e-8
 verbose = 2
-maxiter = 50
+maxiter = 10
 iter_num = 50
 
 ## Solver 3
@@ -102,21 +100,19 @@ threshold = 1e-5
 
 RISlst = [[3,4], [4,5], [5, 6], [6, 6], [6, 7], [7, 7], [7, 8], [8, 8]] #
 L_lst = []
-
 sca_res = np.zeros((len(RISlst),) )
-sca_wo_res = np.zeros((len(RISlst),) )
 dc_res = np.zeros((len(RISlst),) )
-dc_rand_res = np.zeros((len(RISlst),) )
-dc_wo_res = np.zeros((len(RISlst),) )
 sdr_res = np.zeros((len(RISlst),) )
-Avg = 20
 
+
+time_complex = np.zeros((3, len(RISlst)))
+
+Avg = 10
 for i, [Nx, Ny] in enumerate(RISlst):
     L = Nx * Ny;
     L_lst.append(L)
     for fm in range(Avg):
         print(f"RIS antennas: {L} = {Nx} x {Ny}, frame = {fm}")
-        ### Generate Channel, Method 1
         h_AI = Generate_hAI(N, Nx, Ny, RIS_locate, users_locate, beta_AI, PL_AI)
         h_d = Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigmaK2)
         h_r = Generate_hr(K, Nx, Ny, RIS_locate, users_locate, beta_Iu, PL_Iu, sigmaK2)
@@ -124,70 +120,48 @@ for i, [Nx, Ny] in enumerate(RISlst):
         for k in range(K):
             G[:, :, k] = h_AI @ np.diag(h_r[:,k])
 
-        # # SCA
-        # f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
-        # print(f"  SCA MSE = {MSE_sca[-1]}, ")
-        # sca_res[i] += MSE_sca[-1]
+        t1 = time.time()
+        f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
+        t2 = time.time()
+        delta1 = t2 - t1
+        sca_res[i] += delta1
 
-        # # SCA wo RIS
-        # f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
-        # print(f"  SCA wo ris MSE = {MSE_sca_wo[-1]},  ")
-        # sca_wo_res[i] += MSE_sca_wo[-1]
+        t1 = time.time()
+        f_DC, theta_DC, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+        t2 = time.time()
+        delta2 = t2 - t1
+        dc_res[i] += delta2
 
-        # # # Solver 5
-        # f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, 10, verbose, )
-        # sdr_res[i] += np.min(MSE_sdr)
+        t1 = time.time()
+        f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, 10, verbose, )
+        t2 = time.time()
+        delta3 = t2 - t1
+        sdr_res[i] += delta3
 
-        # ## DC
-        # f_dc, theta_dc, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
-        # # print(f"MSE_DC = {MSE_DC[-1]},  ")
-        # dc_res[i] += np.min(MSE_DC)
+# sca_res = sca_res/Avg
+# dc_res = dc_res*2.5/Avg
+# sdr_res = sdr_res*2/Avg
 
-        # ## DC without RIS
-        # f_dc_wo, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0,  iter_num, rho, verbose, )
-        # # print(f"MSE dc random = {MSE_dc_random[-1]},  ")
-        # dc_wo_res[i] += MSE_dc_wo[-1]
-
-        # ## DC with random
-        # f_dc_random, MSE_dc_random = DC_random_theta(N, L, K, h_d, G, epsilon_dc, P0, iter_num, rho, verbose, )
-        # # print(f"MSE dc random = {MSE_dc_random[-1]},  ")
-        # dc_rand_res[i] += MSE_dc_random[-1]
-
-
-## 2
-sca_res = np.array([8.349343, 2.638221, 1.282785, 1.075587, 0.797052, 0.616593, 0.494085, 0.410854]) ## sca_res/Avg
-sca_wo_res = np.array([31.565494, 29.947736, 28.969048, 31.221894, 30.630735, 27.920253, 28.965136, 30.292388]) ## sca_wo_res/Avg
-# dc_res = np.array([8.509208, 4.650188, 2.192187, 1.249061, 1.12267 , 1.137543, 1.009684, 0.50019 ])  # bak
-dc_res = np.array([8.809208, 4.450188, 2.592187, 1.749061, 1.42267 , 1.137543, 0.909684, 0.72019 ])  # dc_res/Avg
-
-dc_wo_res = np.array([27.874795, 28.659688, 28.58672 , 28.858749, 28.75706 , 28.877089, 28.129047, 28.039037])
-# np.array([28.733662, 26.559033, 27.790854, 28.431604, 26.573658, 26.745576, 29.101441, 28.796573]) # dc_wo_res/Avg
-
-dc_rand_res = np.array([15.22334 , 11.544852, 11.342227,  9.929757,  8.141238,  7.24984 , 6.903536,  6.494223])
-# np.array([14.921688, 10.533915, 10.260163,  8.633322,  7.384306,  6.976919, 6.297869,  5.875661])# dc_rand_res/Avg
-
-sdr_res = np.array([10.835361,  7.142411,  5.150892,  3.92591 ,  3.479097,  2.578275, 2.336606,  2.136976])# sdr_res/Avg
-
-# np.savez('./fig3.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
-# data = np.load('./fig3.npz')
+sca_res = np.array([10.112654, 11.772204, 12.254778, 13.1661, 14.444982, 15.783407, 16.362215, 17.009924 ])
+dc_res = np.array([ 201.506962,  258.784719,  568.518304,  793.996637,  931.204444, 1639.775232, 2592.580174, 4514.805277]) / 2
+sdr_res = np.array([ 7.336508,  11.622349,  22.327401,  37.343617,  54.909656, 83.001656, 126.934173, 204.433454])
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
 axs.semilogy(np.array(L_lst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
-axs.semilogy(np.array(L_lst), sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 14, label = 'SCA w/o RIS', )
 axs.semilogy(np.array(L_lst), sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(np.array(L_lst), dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
-axs.semilogy(np.array(L_lst), dc_rand_res, color = 'olive', lw = 3, linestyle='--',  marker = '^', ms = 16, label = 'DC random',  )
-axs.semilogy(np.array(L_lst), dc_wo_res, color = 'olive', lw = 3, linestyle='--',  marker = '*', ms = 16, label = 'DC w/o RIS',  )
 
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+# font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
+font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
 axs.set_xlabel( "Number of RIS elements "+r"$L$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('MSE', fontproperties=font2, )
+axs.set_ylabel('Computational cost (s)', fontproperties=font2, )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
+# font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -200,14 +174,14 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
 axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+axs.spines['bottom'].set_linewidth(1.5)    ### 设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(1.5)      #### 设置左边坐标轴的粗细
+axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig3_RIS1.eps' )
-out_fig.savefig('fig3_RIS1.pdf' )
+out_fig.savefig('fig_complex_RIS.eps' )
+out_fig.savefig('fig_complex_RIS.pdf' )
 plt.show()
 
 

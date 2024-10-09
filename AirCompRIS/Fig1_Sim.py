@@ -132,7 +132,7 @@ for k in range(K):
 #%%
 rho = 5
 epsilon = 1e-3
-epsilon_dc = 1e-8
+epsilon_dc = 1e-7
 verbose = 2
 maxiter = 50
 iter_num = 50
@@ -141,25 +141,20 @@ iter_num = 50
 Imax = 100000
 tau = 1
 threshold = 1e-5
-# f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
-# # print(f"MSE = {MSE_sca[-1]}, ||f||_2 = {np.linalg.norm(f_sca)}, |theta| = {np.abs(theta_sca)}")
+f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
+print(f"MSE = {MSE_sca[-1]}, ||f||_2 = {np.linalg.norm(f_sca)}, |theta| = {np.abs(theta_sca)}")
 
-# f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
-# print(f"MSE = {MSE_sca_wo[-1]}, ||f||_2 = {np.linalg.norm(f_sca_wo)}, |theta| = {np.abs(theta_sca_wo)}")
+f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
+print(f"MSE = {MSE_sca_wo[-1]}, ||f||_2 = {np.linalg.norm(f_sca_wo)}, |theta| = {np.abs(theta_sca_wo)}")
 
-# # # Solver 1
+# # # # Solver 1
 # f_DC, theta_DC, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
 # # print(f"MSE_DC = {MSE_DC}, ||f_DC||_2 = {np.linalg.norm(f_DC)}, |theta_DC| = f{np.abs(theta_DC)}")
 
-# # Solver 2
-# f_DC1, theta_DC1, MSE_DC1 = DC_RIS1(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose)
-# print(f"MSE = {MSE_DC1}, \n||f_DC1||_2 = {np.linalg.norm(f_DC1)}, \n|theta_DC1| = {np.abs(theta_DC1)}")
-
 # Solver 4
 # DC without RIS
-# f_woRIS, MSE_wo = DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
-# print(f"MSE = {MSE_wo[-1]}, ||f||_2 = {np.linalg.norm(f_woRIS)}, ")
-
+f_dc_woRIS, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0,  iter_num, rho, verbose, )
+print(f"MSE = {MSE_dc_wo[-1]}, ||f||_2 = {np.linalg.norm(f_dc_woRIS)}, ")
 
 # # Solver 5
 f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verbose, )
@@ -171,12 +166,11 @@ f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verb
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-# axs.semilogy(np.arange(len(MSE_sca )), MSE_sca , color = 'r', lw = 3, linestyle='-',  label = 'Poposed SCA',  )
-axs.semilogy(np.arange(len(MSE_sdr )), MSE_sdr , color = 'purple', lw = 3, linestyle='-', label = 'SDR',  )
-# axs.semilogy(np.arange(len(MSE_sca_wo )), MSE_sca_wo , color = 'purple', lw = 3, linestyle='--',  label = 'SCA w/o RIS',  )
+axs.semilogy(np.arange(len(MSE_sca )), MSE_sca , color = 'r', lw = 3, linestyle='-',  label = 'Poposed SCA',  )
 # axs.semilogy(np.arange(len(MSE_DC)), MSE_DC, color = 'b', lw = 3,linestyle=(0,(1,1)),  label = 'DC',  )
-# axs.semilogy(np.arange(len(MSE_DC1)), MSE_DC1, color = 'k', lw = 3,linestyle='--',  label = 'DC 1',  )
-# axs.semilogy(np.arange(len(MSE_wo)), MSE_wo, color = 'green', lw = 3, linestyle='-',  label = 'DC w/o RIS',  )
+# axs.semilogy(np.arange(len(MSE_sdr )), MSE_sdr , color = 'cyan', lw = 3, linestyle='-', label = 'SDR w/ RIS',  )
+axs.semilogy(np.arange(len(MSE_sca_wo )), MSE_sca_wo , color = 'purple', lw = 3, linestyle='--',  label = 'SCA w/o RIS',  )
+# axs.semilogy(np.arange(len(MSE_dc_wo)), MSE_dc_wo, color = 'olive', lw = 3, linestyle='--',  marker = '*', ms = 14, label = 'DC w/o RIS',  )
 
 # axs.axhline(MSE_DC[-1,], linestyle = (0,(5,5)), lw = 2, color = 'gray')
 
@@ -204,6 +198,9 @@ axs.spines['bottom'].set_linewidth(1.5)    ### 设置底部坐标轴的粗细
 axs.spines['left'].set_linewidth(1.5)      #### 设置左边坐标轴的粗细
 axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
+
+
+# axs.set_xlim([0,200])
 
 out_fig = plt.gcf()
 # out_fig.savefig('fig1_2.eps' )

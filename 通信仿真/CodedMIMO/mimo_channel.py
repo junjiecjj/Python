@@ -17,7 +17,7 @@ import math
 import numpy as np
 
 
-def SVD_Precoding(hmat, power, d):
+def SVD_Precoding(hmat, power, d, Nt):
     """
         SVD precoding.
 
@@ -36,7 +36,7 @@ def SVD_Precoding(hmat, power, d):
     V = VH.conj().T[:, :d]
     V_norm = np.linalg.norm(V, ord = 'fro', ) # np.sqrt(np.trace(V.dot(V.conj().T)))
     # print(V_norm)
-    V = V * math.sqrt(power) # / V_norm  # power normalization
+    V = V * math.sqrt(power) * np.sqrt(Nt) / V_norm  # power normalization
     return U, D, V
 
 
@@ -158,7 +158,7 @@ class MIMO_Channel():
             ----------
             Rx_sig: array(num_symbol, ). Decoded symbol at the receiver side.
         """
-        self.H = 1 / math.sqrt(2) * (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt))
+        self.H =  (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt)) / math.sqrt(2)
         # U, D, V = SVD_Precoding(H, self.P, self.d)
         # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
         return
@@ -274,7 +274,6 @@ class MIMO_Channel():
             noise = np.sqrt(sigma2 / 2) * (np.random.randn(self.Nr, tx_times) + 1j * np.random.randn(self.Nr, tx_times))
             y = H@V@symbol_x + noise  # y = HVx+n, (Nr, tx_times)  (6, 240)
 
-
             DigD = np.zeros(self.H.T.shape, dtype = complex)  # (4, 6)
             DigD[np.diag_indices(self.Nr)] = 1/D    # (4, 6)
             # y_de = DigD.dot(U.conj().T).dot(y) / np.sqrt(self.P)
@@ -291,6 +290,30 @@ class MIMO_Channel():
 # channel = MIMO_Channel(Nr = 24, Nt = 24, d = 2, P = 1, Tw = 4, Th = 6, Rw = 6, Rh = 4)
 # # ula = channel.mmwave_MIMO_ULA2ULA()
 # upa = channel.mmwave_MIMO_UPA2UPA()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

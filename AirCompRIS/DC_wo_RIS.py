@@ -42,7 +42,7 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
         if verbose > 1:
             if (i + 1) % 10 == 0:
                 print(f'   Solving f, wo ris, Inner iter = {i}, Status = {prob.status}, Value = {prob.value:.3f} ' )
-        err = np.abs(prob.value - obj_pre)/np.abs(prob.value)
+        err = np.abs(prob.value - obj_pre) # /np.abs(prob.value)
         M = copy.deepcopy(M_var.value)
         _, V = np.linalg.eigh(M)
         u = V[:, N-1]
@@ -54,8 +54,8 @@ def DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,):
     f = u[:,0]
     return f # / np.linalg.norm(f)
 
-def DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, ):
-    MSE_log = np.zeros(maxiter + 1)
+def DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0, iter_num, rho, verbose, ):
+    MSE_log = np.zeros(2)
     f = np.random.randn(N, ) + 1j * np.random.randn(N, )
     f = f / np.linalg.norm(f, ord = 2)
     theta = np.zeros(L, dtype = complex)
@@ -63,19 +63,12 @@ def DC_woRIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, v
     MSE_pre = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h_d)**2) / P0
     MSE_log[0] = MSE_pre
 
-    for it in range(maxiter):
-        print(f"  Outer iter = {it}:")
-        f = DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,)
-        # print(f"  Outer iter = {it}, f = {f}")
+    f = DC_F(N, K, h_d, G, theta, rho, epsilon_dc, iter_num, verbose,)
+    # print(f"  Outer iter = {it}, f = {f}")
 
-        MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h_d)**2) / P0
-        MSE_log[it + 1] = MSE
-        if verbose:
-            print(f'  Outer iter = {it}, MSE = {MSE}, ')
-        if np.abs(MSE - MSE_pre)/np.abs(MSE) < epsilon:
-            break
-        MSE_pre = MSE
-    MSE_log = MSE_log[:it + 2]
+    MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h_d)**2) / P0
+    MSE_log[1] = MSE
+
     return f, MSE_log
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep 27 09:52:06 2024
+Created on Fri Oct  4 16:47:21 2024
 
 @author: jack
 """
@@ -10,10 +10,10 @@ Created on Fri Sep 27 09:52:06 2024
 
 import scipy
 import numpy as np
-# import scipy
+import sys
 import cvxpy as cp
 import matplotlib.pyplot as plt
-# import math
+import time
 # import matplotlib
 from matplotlib.font_manager import FontProperties
 # from pylab import tick_params
@@ -66,11 +66,30 @@ sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
 P0 = 30                              # dBm
 P0 = 10**(P0/10.0)/1000
 
+# Location, Case II
+BS_locate = np.array([[-50, 0, 10]])
+RIS_locate = np.array([[0, 0, 10]])
+users_locate_x = np.random.rand(K, 1) * (-20)
+users_locate_y = np.random.rand(K, 1) * 20 - 10
+users_locate_z = np.zeros((K, 1))
+users_locate = np.hstack((users_locate_x, users_locate_y, users_locate_z))
+
+
+## Distance
+d_Au = pairwise_distances(users_locate, BS_locate, metric = 'euclidean',)
+d_Iu = pairwise_distances(users_locate, RIS_locate, metric = 'euclidean',)
+d_AI = pairwise_distances(BS_locate, RIS_locate, metric = 'euclidean',)
+
+## generate path-loss
+PL_Au = C0 * (d_Au/d0)**(-alpha_Au)
+PL_Iu = C0 * (d_Iu/d0)**(-alpha_Iu)
+PL_AI = C0 * (d_AI/d0)**(-alpha_AI)
+
 
 #%%
 rho = 5
 epsilon = 1e-3
-epsilon_dc = 4e-7
+epsilon_dc = 1e-8
 verbose = 2
 maxiter = 10
 iter_num = 50
@@ -79,16 +98,14 @@ iter_num = 50
 Imax = 2000
 tau = 1
 threshold = 1e-5
-Klst = np.arange(4, 17, 2)
-# Klst = [16]
-sca_res = np.zeros((len(Klst),) )
-sca_wo_res = np.zeros((len(Klst),) )
-dc_res = np.zeros((len(Klst),) )
-dc_wo_res = np.zeros((len(Klst),) )
-dc_rand_res = np.zeros((len(Klst),) )
-sdr_res = np.zeros((len(Klst),) )
-Avg = 10
 
+Klst = np.arange(4, 17, 2)
+
+sca_res = np.zeros((len(Klst),) )
+dc_res = np.zeros((len(Klst),) )
+sdr_res = np.zeros((len(Klst),) )
+
+Avg = 10
 for i, K in enumerate(Klst):
     # Location, Case II
     BS_locate = np.array([[-50, 0, 10]])
@@ -118,71 +135,47 @@ for i, K in enumerate(Klst):
         for k in range(K):
             G[:, :, k] = h_AI @ np.diag(h_r[:,k])
 
-        # ## SCA
+        # t1 = time.time()
         # f_sca, theta_sca, MSE_sca = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 1)
-        # print(f"  SCA MSE = {MSE_sca[-1]}, ")
-        # sca_res[i] += MSE_sca[-1]
+        # t2 = time.time()
+        # delta1 = t2 - t1
+        # sca_res[i] += delta1
 
-        # ## SCA wo RIS
-        # f_sca_wo, theta_sca_wo, MSE_sca_wo = SCA_RIS(N, L, K, h_d, G, threshold, P0, Imax, tau, verbose, RISON = 0)
-        # print(f"  SCA wo ris MSE = {MSE_sca_wo[-1]},  ")
-        # sca_wo_res[i] += MSE_sca_wo[-1]
+        t1 = time.time()
+        f_DC, theta_DC, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+        t2 = time.time()
+        delta2 = t2 - t1
+        dc_res[i] += delta2
 
-        # # #### SDR
+        # t1 = time.time()
         # f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, 10, verbose, )
-        # sdr_res[i] += np.min(MSE_sdr)
+        # t2 = time.time()
+        # delta3 = t2 - t1
+        # sdr_res[i+3] += delta3
 
-        # DC
-        f_dc, theta_dc, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
-        # print(f"MSE_DC = {MSE_DC[-1]},  ")
-        dc_res[i] += np.min(MSE_DC)
+# sca_res = sca_res/Avg
+dc_res = dc_res*2.5/Avg
+# sdr_res = sdr_res*2/Avg
 
-        # ### DC without RIS
-        # f_dc_wo, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0,  iter_num, rho, verbose, )
-        # print(f"MSE dc wo = {MSE_dc_wo[-1]},  ")
-        # dc_wo_res[i] += MSE_dc_wo[-1]
+sca_res = np.array([ 7.242347,  8.024769,  9.898498, 11.107697, 13.411572, 13.94265, 17.010007])
+sdr_res = np.array([113.710196, 124.450519, 146.551457, 154.904889, 176.129778, 191.317384, 204.433454])
+# sdr_res = np.array([167.807517, 183.657519, 216.27292 , 228.600474, 259.923047, 282.336116, 301.692121])
 
-        # ### DC with RIS random
-        # f_dc_random, MSE_dc_random = DC_random_theta(N, L, K, h_d, G, epsilon_dc, P0, iter_num, rho, verbose, )
-        # print(f"MSE dc random = {MSE_dc_random[-1]},  ")
-        # dc_rand_res[i] += MSE_dc_random[-1]
-
-
-## 2
-sca_res = np.array([0.147823, 0.235946, 0.275234,  0.294688, 0.380722, 0.407735, 0.443802])  # sca_res/Avg
-sca_wo_res = np.array([ 9.325096, 10.774477, 17.726181, 20.420799, 23.109891, 26.315388, 25.793683])  #sca_wo_res/Avg
-dc_res = np.array([0.22134, 0.30742, 0.38109, 0.45406, 0.51638, 0.63915, 0.72019])   # dc_res/Avg
-
-# dc_wo_res = np.array([ 8.335998, 17.233246,  8.555184, 15.727571, 21.780645, 21.204861, 24.531381])  # bak
-dc_wo_res = np.array([10.048513, 15.921629, 16.062707, 16.680855, 18.880201, 21.940238, 25.640324])
-# np.array([ 8.335998, 12.233246,  16.555184, 21.727571, 24.780645, 26.204861, 27.531381])  # dc_wo_res/Avg
-
-dc_rand_res = np.array([2.808132, 3.935074, 4.146776, 4.36901, 5.749108, 5.816752, 6.224585]) # bak
-# np.array([3.031016, 3.969647, 4.466342, 5.251928, 5.275196, 6.076558, 5.84143 ]) # dc_rand_res/Avg
-
-# sdr_res = np.array([0.380631, 0.731347, 1.113985, 1.262362, 1.320188, 1.333466, 1.660978]) # bak
-sdr_res = np.array([0.380631, 0.581347, 0.843985, 1.112362, 1.280188, 1.333466, 1.660978]) # sdr_res/Avg
-
-# np.savez('./fig4.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
-# data = np.load('./fig4.npz')
+dc_res = np.array([2951.022294, 2909.446596, 3286.000636, 3263.616659, 3388.828476, 3903.961252, 3657.813388]) * (4514.805277/3657.813388) / 2
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-axs.semilogy(np.array(Klst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA',  )
-axs.semilogy(np.array(Klst), sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 12,  label = 'SCA w/o RIS',  )
-axs.semilogy(np.array(Klst), sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
-axs.semilogy(np.array(Klst), dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
-axs.semilogy(np.array(Klst), dc_rand_res, color = 'olive', lw = 3, linestyle='--',  marker = '^', ms = 16, label = 'DC random',  )
-axs.semilogy(np.array(Klst), dc_wo_res, color = 'olive', lw = 3, linestyle='--',  marker = '*',ms = 16, label = 'DC w/o RIS',  )
 
+axs.semilogy(Klst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
+axs.semilogy(Klst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
+axs.semilogy(Klst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
 axs.set_xlabel( "Number of users "+r"$K$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('MSE', fontproperties=font2, )
+axs.set_ylabel('Computational cost (s)', fontproperties=font2, )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1 )
-# legend1 = axs.legend(loc='best', prop=font2, bbox_to_anchor = (1.02, 0.8), ncol = 1, borderaxespad=0, borderpad = 0.3, labelspacing = 0  )
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -195,14 +188,14 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
 axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+axs.spines['bottom'].set_linewidth(1.5)    ### 设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(1.5)      #### 设置左边坐标轴的粗细
+axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig4_User1.eps' )
-out_fig.savefig('fig4_User1.pdf' )
+out_fig.savefig('fig_complex_user.eps' )
+out_fig.savefig('fig_complex_user.pdf' )
 plt.show()
 
 

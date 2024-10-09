@@ -29,11 +29,11 @@ def SDR_F(N, K, h_d, G, theta, verbose,):
     prob = cp.Problem(cp.Minimize(cost), constraints)
     prob.solve()
 
-    if prob.status == 'optimal':
-         print(f'   Solving f, Status = {prob.status}, prob.Value = {prob.value:.3e} ' )
-    else:
-         print(f'   Solving f infeasible, Status = {prob.status}, prob.Value = {prob.value:.3e} ' )
-         exit(-1)
+    # if prob.status == 'optimal':
+    #      print(f'   Solving f, Status = {prob.status}, prob.Value = {prob.value:.3e} ' )
+    # else:
+    #      print(f'   Solving f infeasible, Status = {prob.status}, prob.Value = {prob.value:.3e} ' )
+    #      exit(-1)
     ### method 1: 高斯随机化过程
     Gmax = 1000  # Gaussian 随机化次数
     max_M = 1e13
@@ -51,7 +51,7 @@ def SDR_F(N, K, h_d, G, theta, verbose,):
     return optim_f
 
 # Given M, update theta
-def SDR_theta(N, L, K, h_d, G, f,  verbose, ):
+def SDR_theta(L, K, h_d, G, f,  verbose, ):
     c = np.zeros(K, dtype = complex)
     R = np.zeros((L+1, L+1, K), dtype = complex)
     for k in range(K):
@@ -74,10 +74,12 @@ def SDR_theta(N, L, K, h_d, G, f,  verbose, ):
     prob.solve()
 
     if prob.status == 'optimal':
-         print(f'   Solving theta, Status = {prob.status}, prob.Value = {prob.value:.3e}')
-         # print(f"   V_var = {V_var.value.shape}")
+        pass
+        # print(f'   Solving theta, Status = {prob.status}, prob.Value = {prob.value:.3e}')
     else:
-         print(f'   Solving theta infeasible, Status = {prob.status}, prob.Value = {prob.value:.3e}')
+        tmp = ( np.random.randn(L+1, 1) + 1j * np.random.randn(L+1, 1) )
+        V_var.value = tmp@tmp.T.conj()
+        # print(f'   Solving theta infeasible, Status = {prob.status}, prob.Value = {prob.value:.3e}')
 
     ## method 1: 高斯随机化过程
     Gmax = 1000
@@ -114,18 +116,18 @@ def SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verbose, ):
     MSE_log[0] = MSE_pre
 
     for it in range(maxiter):
-        print(f"  Outer iter = {it}:")
+        # print(f"  SDR Outer iter = {it}:")
         f = SDR_F(N, K, h_d, G, theta, verbose,)
-        # print(f"  Outer iter = {it}, f = {f}")
-        theta = SDR_theta(N, L, K, h_d, G, f, verbose, )
-        # print(f"  Outer iter = {it}, theta = {theta}")
+        # print(f"  SDR Outer iter = {it}, f.shape = {f.shape}")
+        theta = SDR_theta(L, K, h_d, G, f, verbose, )
+        # print(f"  SDR Outer iter = {it}, theta = {theta}")
         h = np.zeros([N, K], dtype = complex)
         for k in range(K):
             h[:, k] = h_d[:, k] + G[:, :, k] @ theta
         MSE = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_log[it + 1] = MSE
-        if verbose:
-            print(f'  Outer iter = {it}, MSE = {MSE},  ')
+        # if verbose:
+        #     print(f'  Outer iter = {it}, MSE = {MSE:.3f}, {np.abs(MSE - MSE_pre):.3f} ')
         if np.abs(MSE - MSE_pre) < epsilon:
             break
         MSE_pre = MSE

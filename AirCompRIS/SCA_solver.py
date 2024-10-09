@@ -39,7 +39,7 @@ def SCA(N, L, K, h_d, G, f, theta, Imax, tau, threshold, P0, verbose, RISON = 1)
                 c[:, i] = np.abs(f.conj() @ h[:, i])**2 + 2*tau*(L+1) + 2*np.real((theta.conj().T)@(G[:,:,i].conj().T)@F_cro@h[:,i])
             else:
                 c[:, i] = np.abs(f.conj() @ h[:,i])**2 + 2*tau
-        ## print(c.shape)
+
         fun = lambda mu: np.real(2*np.linalg.norm(a@mu, ord = 2) + 2*np.linalg.norm(b@mu, ord = 1) - c@mu)
         cons = ({'type': 'eq', 'fun': lambda mu: np.sum(mu)-1})
         bnds = ((0, None) for i in range(K))
@@ -61,13 +61,13 @@ def SCA(N, L, K, h_d, G, f, theta, Imax, tau, threshold, P0, verbose, RISON = 1)
             h[:,i] = h_d[:,i] + G[:,:,i]@theta
         mse = np.linalg.norm(f, ord = 2)**2 / min(np.abs(f.conj()@h)**2) / P0
         MSE_recod[it + 1] = mse
-        if  verbose >= 1:
-            if (it + 1) % 40 == 0:
-                print(f'    Iteration {it} MSE {mse:.6f} Opt Obj {res.fun:.6f}' )
+        # if  verbose >= 1:
+        #     if (it + 1) % 50 == 0:
+        #         print(f'    Iteration {it} MSE {mse:.6f} Opt Obj {res.fun:.6f}' )
         if np.abs(mse - obj_mse)/ abs(mse) <= threshold:
             break
-    if  verbose >= 1:
-        print(f'    SCA Take {it+1} iterations with final obj {MSE_recod[it+1]:.6f}')
+    # if  verbose >= 1:
+    #     print(f'    SCA Take {it+1} iterations with final obj {MSE_recod[it+1]:.6f}')
     MSE_recod = MSE_recod[0 : it + 2]
     return f, theta, MSE_recod
 

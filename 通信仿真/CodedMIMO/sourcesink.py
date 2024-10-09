@@ -45,7 +45,6 @@ class SourceSink(object):
             f.write("\n#=============================== args end  ===============================\n")
         return
 
-
     def GenerateBitStr(self, Len):
         # uu = np.random.choice([0, 1], Len, p=[0.5, 0.5])
         uu = np.random.randint(low = 0, high = 2, size = (Len, ), dtype = np.int8 )
@@ -82,8 +81,6 @@ class SourceSink(object):
         with open(filename, open_type) as f:
             f.write(log + "\n")
         return
-
-
 
     def PrintScreen(self, snr = '',  ):
         print(f"  snr = {snr:.2f}(dB): tot_blk = {self.tot_blk}, err_blk = {self.err_blk}, fer = {self.fer:.10f}, ber = {self.ber:.10f}")
