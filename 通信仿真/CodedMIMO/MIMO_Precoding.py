@@ -10,6 +10,10 @@ https://blog.csdn.net/weixin_43871127/article/details/104593325
 
 
 @author: jack
+
+可以看到最大比合并MCR的目标是最大化MCR，ZF的目标是最大化SIR，MMSE的目标是最大化SINR
+
+
 """
 
 
@@ -47,83 +51,6 @@ elif Modulation_type == "QAM64":
 elif Modulation_type == "QAM256":
     modem = cpy.QAMModem(256)
 
-
-# 接收方估计
-def main_ZF_MMSE_SIC():
-    for snr in SNR:
-        # channel = AWGN(snr, polar.coderate)
-        source.ClrCnt()
-        print( f"\nsnr = {snr}(dB):\n")
-        while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
-            channel = MIMO_Channel(Nr = Nr, Nt = Nt, d = d, P = P)
-            channel.mmwave_MIMO_ULA2ULA()
-
-            # 编码
-            # cc = encoder(uu)
-            tx_bits = source.GenerateBitStr(1920)
-
-            # 调制
-            tx_symbol = modem.modulate(tx_bits)
-            tx_data = tx_symbol.reshape(Nt, -1)
-            ## 符号能量归一化
-            tx_data = SignalNorm(tx_data, M )
-
-            # 信道
-            rx_data = channel.forward(tx_data, 1, snr )
-
-            #%%============================================
-            ##                  ZF
-            ###============================================
-            # pinvH = scipy.linalg.pinv(channel.H)
-            # rx_data_zf = pinvH @ rx_data
-            # rx_symb_zf = rx_data_zf.reshape(-1)
-            # rx_symb_zf = SignalNorm(rx_symb_zf, M, denorm=True)
-            # rx_bits = modem.demodulate(rx_symb_zf, 'hard',)
-
-            #%%============================================
-            ##                 MMSE
-            ###============================================
-            # H = channel.H[:]
-            # P_noise = 1*(10**(-1*snr/10))
-            # G_MMSE = H.T.conjugate() @ (np.linalg.inv((H@H.T.conjugate() + P_noise*np.eye(Nr, Nr))))
-            # rx_data_mmse = G_MMSE @ rx_data
-            # rx_symb_mmse = rx_data_mmse.reshape(-1)
-            # rx_symb_mmse = SignalNorm(rx_symb_mmse, M, denorm=True)
-            # rx_bits = modem.demodulate(rx_symb_mmse, 'hard',)
-
-            #%%============================================
-            ##                  SIC
-            ###============================================
-            H = channel.H[:]
-            G = scipy.linalg.pinv(H)
-            rx_data_tmp = rx_data[:]
-            rx_data_sic = np.zeros(tx_data.shape, dtype = complex)
-            for _ in range(Nt):
-                Gl2N = np.sum(np.abs(G)**2, axis = 1)
-                Min = Gl2N[np.abs(Gl2N) > 10e-7].min()
-                MinRowIdx = np.abs(Gl2N - Min).argmin()
-                # print(MinRowIdx)
-                data_ki = G[MinRowIdx] @ rx_data_tmp
-                data_ki = SignalNorm(data_ki, M, denorm = True)
-                data_aki_bits = modem.demodulate(data_ki, 'hard',)
-                data_aki = modem.modulate(data_aki_bits)
-                rx_data_sic[MinRowIdx] = data_aki
-                data_aki = SignalNorm(data_aki, M )
-                rx_data_tmp = rx_data_tmp -  data_aki * (H[:, MinRowIdx].reshape(-1, 1))
-                H[:, MinRowIdx] = 0
-                G = scipy.linalg.pinv(H)
-            rx_symb_sic = rx_data_sic.reshape(-1)
-            rx_bits = modem.demodulate(rx_symb_sic, 'hard',)
-
-            #%% count
-            source.CntErr(tx_bits, rx_bits)
-            if source.tot_blk % 1000 == 0:
-                source.PrintScreen(snr = snr)
-        print("  *** *** *** *** ***");
-        source.PrintScreen(snr = snr)
-        print("  *** *** *** *** ***\n");
-        source.SaveToFile(snr = snr)
-    return
 
 # 预编码
 def main_SVD():
@@ -203,7 +130,7 @@ def main_precoding_MMSE():
             ## 符号能量归一化
             tx_data = SignalNorm(symbol_group, M,  denorm = False) # (4, 120)
 
-            ## 预编码
+            ## MMSE预编码
             P_noise = P*(10**(-1*snr/10))
             temp_W = H.T.conjugate() @ np.linalg.inv((H@H.T.conjugate() + P_noise*np.eye(Nr, Nr)))
             beta = np.sqrt(Nt)/np.linalg.norm(temp_W, ord = 'fro', )  # beta = np.sqrt(Nt / np.trace(temp_W@temp_W.conj().T))
@@ -249,7 +176,7 @@ def main_precoding_ZF():
 
             ## 符号能量归一化
             tx_data = SignalNorm(symbol_group, M,  denorm = False) # (4, 120)
-            ## 预编码
+            ## ZF预编码
             P_noise = P*(10**(-1*snr/10))
             temp_W = np.linalg.inv(H)
             beta = np.sqrt(Nt)/np.linalg.norm(temp_W, ord = 'fro', )
@@ -272,13 +199,13 @@ def main_precoding_ZF():
         print("  *** *** *** *** ***\n");
         # source.SaveToFile(snr = snr)
 
+
+
 # main_ZF_MMSE_SIC
-
 # main_SVD()
-
 # main_precoding_MMSE()
-
 # main_precoding_ZF()
+
 
 
 

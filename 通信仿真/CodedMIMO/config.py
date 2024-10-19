@@ -26,15 +26,22 @@ Args = {
 "maximum_error_number" : 1000,
 "maximum_block_number" : 1000000,
 
+
+
 "Nt" : 4,
 "Nr" : 6,
-"Ncl" : 4,
-"Nray" : 6,
 
+## Modulator Order
 "M" : 16,
 
 "P" : 1,
 "d" : 2,
+
+## LDPC***0***PARAMETERS
+"max_iteration" : 50,
+"encoder_active" : 1,
+"file_name_of_the_H" : "PEG1024regular0.5.txt",
+
 
 ## others
 "home" : home,

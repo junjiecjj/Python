@@ -50,6 +50,8 @@ def SignalNorm(signal, M, mod_type='qam', denorm = False):
             denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
         Returns
     """
+    if mod_type == 'bpsk' or mod_type == 'qpsk' or mod_type == '8psk':
+        Es = 1
     if mod_type == 'qam':
         if M == 8:
             Es = 6
@@ -61,7 +63,7 @@ def SignalNorm(signal, M, mod_type='qam', denorm = False):
         signal = signal / math.sqrt(Es)
     else:
         signal = signal * math.sqrt(Es)
-    return signal
+    return signal, Es
 
 
 class MIMO_Channel():

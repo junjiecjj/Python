@@ -39,9 +39,9 @@ class SourceSink(object):
             f.write("######### [program config] #########\n")
             for k, v in promargs.__dict__.items():
                 f.write(f"{k: <25}: {v: <40}\n")
-            # f.write("######### [code config] ##########\n")
-            # for k, v in codeargs.items():
-            #     f.write(f"{k: <25}: {v: <40}\n")
+            f.write("######### [code config] ##########\n")
+            for k, v in codeargs.items():
+                f.write(f"{k: <25}: {v: <40}\n")
             f.write("\n#=============================== args end  ===============================\n")
         return
 

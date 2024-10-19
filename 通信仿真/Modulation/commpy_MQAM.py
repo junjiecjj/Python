@@ -46,7 +46,6 @@ elif Modulation_type=="64QAM":
 # 解调, 和调制一样，需要先定义调制方法的类，再去调用解调的函数。
 import commpy as cpy
 
-
 bits = np.random.binomial(n=1,p=0.5,size=(20))
 # Modem : QPSK
 modem = cpy.QAMModem(16)
@@ -59,8 +58,43 @@ rec_bits = modem.demodulate(signal, 'soft', noise_var = 40)
 print(f"bits = \n {bits}")
 print(f"rec_bits = \n {rec_bits}")
 
+def plot_myconstellation(modulator):
+    M = len(modulator.constellation)
+    nbits = int(np.log2(M))
+    map_table = {}
+    demap_table = {}
 
+    fig, axs = plt.subplots(1,1, figsize=(8, 8), constrained_layout=True)
+    for idx, symb in enumerate(modulator.constellation):
+        map_table[idx] = symb
+        demap_table[symb] = idx
+        axs.scatter(symb.real, symb.imag, s = 40, c = 'b')
+        # axs.text(symb.real-0.4, symb.imag + 0.1, str(modulator.demodulate(symb, 'hard')) + ":" + str(idx), fontsize=18, color='black', )
+        axs.text(symb.real-0.4, symb.imag + 0.1, bin(idx)[2:].rjust(nbits, '0') + ":" + str(idx), fontsize=18, color='black', )
 
+    ##
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    axs.set_title(f"{M}-QAM Mapping Table", fontproperties=font2,)
+
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(24) for label in labels]  # 刻度值字号
+
+    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+    axs.set_xlim([modulator.constellation.real.min() - 1, modulator.constellation.real.max() + 1])
+    axs.set_ylim([modulator.constellation.imag.min() - 1, modulator.constellation.imag.max() + 1])
+    plt.show()
+
+    return map_table, demap_table
+
+modem = cpy.QAMModem(16)
+map_table, demap_table = plot_myconstellation(modem)
 
 ####################################  2  ##########################################################
 import math
@@ -142,7 +176,7 @@ trellis3 = cc.Trellis(memory, g_matrix, feedback, 'rsc')
 #         # Decode the received bits
 #         decoded_bits = cc.viterbi_decode(coded_bits.astype(float), trellis, tb_depth)
 
-#         num_bit_errors = util.hamming_dist(message_bits, decoded_bits[:len(message_bits)])
+        # num_bit_errors = util.hamming_dist(message_bits, decoded_bits[:len(message_bits)])
 
 #         if num_bit_errors != 0:
 #             print(num_bit_errors, "Bit Errors found!")

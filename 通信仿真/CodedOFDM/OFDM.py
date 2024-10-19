@@ -45,6 +45,7 @@ https://blog.csdn.net/ddatalent/article/details/121132095
 
 导频符号:OFDM中的导频符号是指在OFDM符号中插入的一些特殊符号，用于信道估计和同步。导频符号可以安插在OFDM的时间和频率二维结构内，只要在两个方向的导频密度满足二维Nyquist定理，就可以精确估计信道的时变和衰落特性，因此能够适应快衰落信道。
 
+https://zhuanlan.zhihu.com/p/348078794/
 """
 
 

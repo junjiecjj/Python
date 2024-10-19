@@ -1,8 +1,7 @@
 # -*- coding:utf-8 -*-
 # @Time: 2023/6/1 15:50
 import numpy as np
-from qam_modulator import qam_mod, draw_mod_constellation, qam_mapper, draw_trx_constellation, channel_Rician,channel_Awgn, qam_demapper, \
-    bit_error_rate, draw_ber_curve, draw_ber_curve_smooth
+from qam_modulator import qam_mod, draw_mod_constellation, qam_mapper, draw_trx_constellation, channel_Rician,channel_Awgn, qam_demapper,  bit_error_rate, draw_ber_curve, draw_ber_curve_smooth
 
 # Settings
 seed = 0  # random seed

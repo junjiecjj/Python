@@ -188,10 +188,6 @@ def CodeWordValidation(ParityCheckMatrix, CodeWord):
     else:
         return False
 
-
-
-
-
 """
 输入：两个等长的比特串。
 输出：两个比特串的汉明距离，即不同位的长度。

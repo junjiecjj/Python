@@ -26,8 +26,6 @@ def build(x, y):
 f1 = build(2, 3)
 print(f"f1() = {f1()}")
 
-
-
 import numpy as np
 def get_generator_input_sampler(mean, std):
     return lambda m, n: np.random.normal(loc = mean, scale = std,  size = (m, n))  # Uniform-dist data into generator, _NOT_ Gaussian

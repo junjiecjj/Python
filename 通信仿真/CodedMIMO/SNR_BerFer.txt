@@ -313,20 +313,20 @@ Pre-ZF 4x4, 16QAM
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-Ncl                      : 4                                       
-Nray                     : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+Ncl                      : 4
+Nray                     : 6
+M                        : 16
+P                        : 1
+d                        : 2
+home                     : /home/jack
+smallprob                : 1e-15
 
 #=============================== args end  ===============================
 [0.00, 1.00000000, 0.15645604],
@@ -340,3 +340,4 @@ smallprob                : 1e-15
 [16.00, 0.37322893, 0.01171793],
 [18.00, 0.24097256, 0.00706578],
 [20.00, 0.16619625, 0.00482733],
+
