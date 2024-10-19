@@ -113,7 +113,7 @@ def Gauss_Elimination(encH, num_row, num_col):
                 # print(f"{i} 行交换")
                 encH[[i, ii], :] = encH[[ii, i], :]
             if jj != i:
-                print("1: 列交换")
+                # print("1: 列交换")
                 ## 记录列交换
                 temp = col_exchange[i]
                 col_exchange[i] = col_exchange[jj]

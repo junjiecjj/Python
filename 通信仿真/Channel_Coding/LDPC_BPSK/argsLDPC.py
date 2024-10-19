@@ -41,4 +41,4 @@ ldpc_args = {
 
 
 
-arg = argparse.Namespace(**ldpc_args)
+args = argparse.Namespace(**ldpc_args)

@@ -33,42 +33,42 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 #=====================================================================================
                       2024-10-18-21:38:34
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
 #=============================== args end  ===============================
@@ -77,21 +77,21 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
 #=============================== args end  ===============================
@@ -100,21 +100,21 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
 #=============================== args end  ===============================
@@ -123,21 +123,21 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
 #=============================== args end  ===============================
@@ -146,21 +146,21 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
 #=============================== args end  ===============================
@@ -169,21 +169,21 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
 #=============================== args end  ===============================
@@ -192,52 +192,21 @@ smallprob                : 1e-15
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
+minimum_snr              : 0
+maximum_snr              : 20
+increment_snr            : 0.5
+maximum_error_number     : 1000
+maximum_block_number     : 1000000
+Nt                       : 4
+Nr                       : 6
+M                        : 16
+P                        : 1
+d                        : 2
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
 ######### [code config] ##########
 
-#=============================== args end  ===============================
-#=====================================================================================
-                      2024-10-18-21:42:57
-#=====================================================================================
 
-######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 20                                      
-increment_snr            : 0.5                                     
-maximum_error_number     : 1000                                    
-maximum_block_number     : 1000000                                 
-Nt                       : 4                                       
-Nr                       : 6                                       
-M                        : 16                                      
-P                        : 1                                       
-d                        : 2                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
-######### [code config] ##########
-
-#=============================== args end  ===============================
-[0.00, 0.67726658, 0.00270240],
-[2.00, 0.24691663, 0.00054513],
-[4.00, 0.04962570, 0.00008066],
-[6.00, 0.00597466, 0.00000866],
-[8.00, 0.00060000, 0.00000080],
-[10.00, 0.00004700, 0.00000006],
-[12.00, 0.00000300, 0.00000000],
-[14.00, 0.00000000, 0.00000000],

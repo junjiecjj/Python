@@ -22,13 +22,9 @@ class AWGN(object):
         self.noise_std = np.sqrt(noise_var(snr_in_db))
 
     def forward(self, cc:_array) -> _array:
-        # if type(cc) == list:
-        #     print("cc is list")
-        #     shape = len(cc)
-        # elif type(cc) == np.ndarray:
-        #     shape = cc.shape
-        return cc + np.random.normal(0, self.noise_std, size = cc.shape )
-
+        noise = np.sqrt(self.noise_var/2) * (np.random.randn(*cc.shape)+1j*np.random.randn(*cc.shape))
+        # noise = np.random.normal(0, self.noise_std, size = cc.shape )
+        return cc + noise
 
 def lines_to_array(lines):
     return [list(map(int, x.split(' '))) for x in lines]
@@ -42,14 +38,12 @@ class Rayleigh(object):
         self.noise_std = np.sqrt(noise_var(snr_in_db))
 
     def forward(self, cc):
-        shape = cc.shape
-        sigma = math.sqrt(1 / 2)
-        H = np.random.normal(0.0, sigma, size=shape) + 1j * np.random.normal(0.0, sigma, size=shape)
-        Tx_sig = tx_signal * H
-        Rx_sig = channel_Awgn(Tx_sig, snr, output_power=output_power)
-        # Channel estimation
-        Rx_sig = Rx_sig / H
-        return Rx_sig
+        H = (np.random.normal(0.0, 1.0, size = cc.shape) + 1j * np.random.normal(0.0, 1.0, size = cc.shape)) / np.sqrt(2)
+        yy = cc * H
+        noise = np.sqrt(self.noise_var/2) * (np.random.normal(0, 1, size = cc.shape )+1j*np.random.normal(0, 1, size = cc.shape ))
+        yy = yy + noise
+
+        return yy, H
 
 
 

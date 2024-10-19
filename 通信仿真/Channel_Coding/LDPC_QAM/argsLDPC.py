@@ -20,10 +20,9 @@ home = os.path.expanduser('~')
 
 
 ldpc_args = {
-
-"minimum_snr" : 0 ,
-"maximum_snr" : 4 ,
-"increment_snr" : 0.5,
+"minimum_snr" : -5 ,
+"maximum_snr" : 13,
+"increment_snr" : 1,
 "maximum_error_number" : 500,
 "maximum_block_number" : 1000000,
 
@@ -38,7 +37,4 @@ ldpc_args = {
 "smallprob": 1e-15
 }
 
-
-
-
-arg = argparse.Namespace(**ldpc_args)
+args = argparse.Namespace(**ldpc_args)

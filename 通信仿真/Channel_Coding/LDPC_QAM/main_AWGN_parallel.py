@@ -5,55 +5,100 @@ Created on Thu Aug 10 21:08:38 2023
 
 @author: jack
 
-numpy.nonzero()
-numpy.nonzero() 函数返回输入数组中非零元素的索引。
-
-numpy.where()
-numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
-
 
 """
 ## system lib
 import numpy  as np
 import datetime
+import commpy as cpy
+import copy
+import argparse
+import socket, getpass , os
 import multiprocessing
 
 ##  自己编写的库
 from sourcesink import SourceSink
 from channel import AWGN
-from modulation import BPSK
-# from modulation import demodu_BPSK
+from channel import Rayleigh
+# from modulation import  BPSK,  demodu_BPSK
 import utility
-from argsLDPC import args
+# from argsLDPC import args
 from ldpc_coder import LDPC_Coder_llr
+import Modulator
 
 
 
-# source.InitLog(promargs = ldpcarg, codeargs = coderargs)
+def parameters():
+    # 获取当前系统主机名
+    host_name = socket.gethostname()
+    # 获取当前系统用户名
+    user_name = getpass.getuser()
+    # 获取当前系统用户目录
+    user_home = os.path.expanduser('~')
+    home = os.path.expanduser('~')
 
+    ldpc_args = {
+    "minimum_snr" : 0,
+    "maximum_snr" : 13,
+    "increment_snr" : 1,
+    "maximum_error_number" : 500,
+    "maximum_block_number" : 1000000,
 
-def BPSK_AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None):
+    ## LDPC***0***PARAMETERS
+    "max_iteration" : 50,
+    "encoder_active" : 1,
+    "file_name_of_the_H" : "PEG1024regular0.5.txt",
+
+    ## others
+    "home" : home,
+    "smallprob": 1e-15,
+
+    ##>>>>>>>  modulation param
+    "type" : 'qam',
+    "M":  16,
+
+    # "type" : 'psk',
+    # "M":  2,  # BPSK
+    # "M":  4,  # QPSK
+    # "M":  8,  # 8PSK
+    }
+    args = argparse.Namespace(**ldpc_args)
+    return args
+
+args = parameters()
+utility.set_random_seed()
+
+def AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None):
     np.random.seed(i)
     source = SourceSink()
     source.ClrCnt()
 
-    channel = AWGN(snr)
+    M = args.M
+    modutype = args.type
+    if modutype == 'qam':
+        modem = cpy.QAMModem(M)
+    elif modutype == 'psk':
+        modem =  cpy.PSKModem(M)
+    Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
-    print( f"\nsnr = {snr}(dB): ")
-    frame = 0
+    channel = AWGN(snr)
+    noise_var = 10.0 ** (-snr / 10.0)
+    print( f"\nsnr = {snr}(dB):\n")
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
-        frame += 1
         uu = source.GenerateBitStr(ldpcCoder.codedim)
         cc = ldpcCoder.encoder(uu)
-        yy = BPSK(cc)
-        yy = channel.forward(yy)
-        llr = utility.yyToLLR(yy, channel.noise_var)
-        uu_hat, iter_num = ldpcCoder.decoder_spa(llr)
+        syms = modem.modulate(cc)
+        ## 符号能量归一化
+        syms  = syms / np.sqrt(Es)
+
+        yy = channel.forward(syms)
+
+        llr_yy = Modulator.demod_awgn(copy.deepcopy(modem.constellation), yy, 'soft', Es, noise_var)
+
+        uu_hat, iter_num = ldpcCoder.decoder_spa(llr_yy)
         source.tot_iter += iter_num
         source.CntErr(uu, uu_hat)
-        # if source.tot_blk % 2 == 0:
-            # source.PrintScreen(snr = snr)
-            # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
+
     dic_berfer[name] = {"ber":source.ber, "fer":source.fer, "ave_iter":source.ave_iter }
     if lock != None:
         lock.acquire()
@@ -61,9 +106,6 @@ def BPSK_AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None
         source.SaveToFile(snr = snr)
         lock.release()
     return
-
-
-# BPSK_AWGN_Simulation(topargs)
 
 if __name__ == '__main__':
     utility.set_random_seed(1)
@@ -75,7 +117,8 @@ if __name__ == '__main__':
                  'coderate':ldpcCoder.coderate,
                  'row':ldpcCoder.num_row,
                  'col':ldpcCoder.num_col}
-    utility.WrLogHead(promargs = args, codeargs = coderargs)
+    logf = "BerFer_AWGN.txt"
+    utility.WrLogHead(logfile = logf, promargs = args, codeargs = coderargs)
 
     m = multiprocessing.Manager()
     # dict_param = m.dict()
@@ -84,7 +127,7 @@ if __name__ == '__main__':
     jobs = []
 
     for i, snr in enumerate(np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr)):
-        ps = multiprocessing.Process(target = BPSK_AWGN_Simulation, args=(i, f"snr={snr:.2f}(dB)", args, snr, dict_berfer, lock ))
+        ps = multiprocessing.Process(target = AWGN_Simulation, args=(i, f"snr={snr:.2f}(dB)", args, snr, dict_berfer, lock ))
         jobs.append(ps)
         ps.start()
 
@@ -94,21 +137,6 @@ if __name__ == '__main__':
     for snr in  np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr):
         name = f"snr={snr:.2f}(dB)"
         print(f"{name} {dict_berfer[name]['ber']:.8f} {dict_berfer[name]['fer']:.8f} {dict_berfer[name]['ave_iter']:.3f}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

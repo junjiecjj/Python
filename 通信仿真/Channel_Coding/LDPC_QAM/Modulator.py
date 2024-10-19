@@ -27,7 +27,7 @@ def demodu_BPSK(y):
             y[i] = 1
     return y
 
-def NormFactor(mod_type='qam', M = 16,):
+def NormFactor(mod_type = 'qam', M = 16,):
     """
         Signal power normalization and de-normalization.
         Parameters
@@ -37,12 +37,12 @@ def NormFactor(mod_type='qam', M = 16,):
             denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
         Returns
     """
-    if mod_type == 'bpsk':
+    if mod_type == 'psk':
         Es = 1
-    if mod_type == 'qpsk':
-        Es = 1
-    if mod_type == '8psk':
-        Es = 1
+    # if mod_type == 'qpsk':
+    #     Es = 1
+    # if mod_type == '8psk':
+    #     Es = 1
     if mod_type == 'qam':
         if M == 8:
             Es = 6
@@ -53,8 +53,8 @@ def NormFactor(mod_type='qam', M = 16,):
     return Es
 
 
-## 16QAM, 64 QAM, 256QAM
-def demod(constellation, input_symbols, demod_type, Es = None, noise_var=0):
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + Fading
+def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_var=0):
     """ Demodulate (map) a set of constellation symbols to corresponding bits.
     Parameters
     ----------
@@ -73,9 +73,10 @@ def demod(constellation, input_symbols, demod_type, Es = None, noise_var=0):
         Corresponding demodulated bits.
     """
     M = len(constellation)
+    bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-    bitsPerSym = int(np.log2(M))
+
     if demod_type == 'hard':
         index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
@@ -84,14 +85,63 @@ def demod(constellation, input_symbols, demod_type, Es = None, noise_var=0):
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):
             current_symbol = input_symbols[i]
+            h = H[i]
+            for bit_index in np.arange(bitsPerSym):
+                llr_num = 0
+                llr_den = 0
+                for bit_value, symbol in enumerate(h * constellation):
+                    if (bit_value >> bit_index) & 1:
+                        llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                    else:
+                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
+    else:
+        raise ValueError('demod_type must be "hard" or "soft"')
+
+    return demod_bits
+
+
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + Fading
+def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):
+    """ Demodulate (map) a set of constellation symbols to corresponding bits.
+    Parameters
+    ----------
+    input_symbols : 1D ndarray of complex floats
+        Input symbols to be demodulated.
+    demod_type : string
+        'hard' for hard decision output (bits)
+        'soft' for soft decision output (LLRs)
+    Es: float
+        Avg power of constellation
+    noise_var : float
+        AWGN variance. Needs to be specified only if demod_type is 'soft'
+    Returns
+    -------
+    demod_bits : 1D ndarray of ints
+        Corresponding demodulated bits.
+    """
+    M = len(constellation)
+    bitsPerSym = int(np.log2(M))
+    if Es != None:
+        constellation = constellation / np.sqrt(Es)
+
+    if demod_type == 'hard':
+        index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
+        demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
+
+    elif demod_type == 'soft':
+        demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
+        for i in np.arange(len(input_symbols)):
+            current_symbol = input_symbols[i]
+
             for bit_index in np.arange(bitsPerSym):
                 llr_num = 0
                 llr_den = 0
                 for bit_value, symbol in enumerate(constellation):
                     if (bit_value >> bit_index) & 1:
-                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
-                    else:
                         llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                    else:
+                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
                 demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
     else:
         raise ValueError('demod_type must be "hard" or "soft"')

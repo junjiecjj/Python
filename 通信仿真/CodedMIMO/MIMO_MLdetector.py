@@ -51,6 +51,8 @@ elif Modulation_type=="QPSK":
     modem = cpy.PSKModem(4)
 elif Modulation_type=="8PSK":
     modem = cpy.PSKModem(8)
+elif Modulation_type=="4QAM":
+    modem = cpy.QAMModem(4)
 elif Modulation_type=="16QAM":
     modem = cpy.QAMModem(16)
 elif Modulation_type=="64QAM":

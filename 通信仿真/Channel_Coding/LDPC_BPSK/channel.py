@@ -22,12 +22,9 @@ class AWGN(object):
         self.noise_std = np.sqrt(noise_var(snr_in_db))
 
     def forward(self, cc:_array) -> _array:
-        # if type(cc) == list:
-        #     print("cc is list")
-        #     shape = len(cc)
-        # elif type(cc) == np.ndarray:
-        #     shape = cc.shape
-        return cc + np.random.normal(0, self.noise_std, size = cc.shape )
+        # noise = np.sqrt(self.noise_var/2) * (np.random.randn(*cc.shape)+1j*np.random.randn(*cc.shape))
+        noise = np.random.normal(0, self.noise_std, size = cc.shape )
+        return cc + noise
 
 
 def lines_to_array(lines):

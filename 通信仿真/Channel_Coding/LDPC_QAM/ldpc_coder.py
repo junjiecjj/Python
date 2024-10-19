@@ -41,11 +41,11 @@ class LDPC_Coder_llr(object):
         self.MC2V = None                    # 校验节点 到 变量节点 的消息
 
         self.readH()
-        print("读取H完成...\n")
+        # print("读取H完成...\n")
         self.systemH()
-        print("高斯消元完成, encH，decH已获取...\n")
+        # print("高斯消元完成, encH，decH已获取...\n")
         self.NoneZeros()
-        print("保存行列索引完成...")
+        # print("保存行列索引完成...")
         return
 
     def readH(self):
@@ -96,74 +96,9 @@ class LDPC_Coder_llr(object):
             self.decH[:, j] = tmpH[:, col_exchange[j]]
         return
 
-    # 慢
-    def systemH1(self):
-        codechk = 0
-        tmpH = copy.deepcopy(self.decH)
-        self.encH = copy.deepcopy(self.decH)
-        col_exchange = np.arange(self.num_col)
-
-        ##=======================================================
-        ##  开始 Gauss 消元，建立系统阵(生成矩阵G )，化简为: [I, P]的形式
-        ##=======================================================
-        for i in range(self.num_row):
-            flag = 0
-            for jj in range(i, self.num_col):
-                for ii in range(i, self.num_row):
-                    if self.encH[ii, jj] != 0:
-                        flag = 1
-                        # print("0: I am break")
-                        break
-                if flag == 1:
-                    codechk += 1
-                    # print("1: I am break")
-                    break
-            if flag == 0:
-                print("I am break")
-                break
-            else:
-                ## 交换 i 行和 ii 行;
-                if ii != i:
-                    # print(f"{i} 行交换")
-                    for n in range(self.num_col):
-                        temp = self.encH[i, n]
-                        self.encH[i, n] = self.encH[ii, n]
-                        self.encH[ii, n] = temp
-                if jj != i:
-                    print("0: 列交换")
-                    ## 记录列交换
-                    temp = col_exchange[i]
-                    col_exchange[i] = col_exchange[jj]
-                    col_exchange[jj] = temp
-
-                    ## 交换 i 列和 jj 列;
-                    for m in range(self.num_row):
-                        temp = self.encH[m, i]
-                        self.encH[m, i] = self.encH[m, jj]
-                        self.encH[m, jj] = temp
-                ## 消去 [I, P] 形式的前半部分 mxm 矩阵的第 i 列主对角线外的其他元素
-                for m in range(self.num_row):
-                    if m != i and (self.encH[m, i] == 1):
-                        for n in range(self.num_col):
-                            self.encH[m, n] ^= self.encH[i, n]
-        ##====================== Gauss 消元 end =================================
-        ## 计算码的参数
-        self.codechk = codechk
-        self.codedim = self.codelen -  self.codechk
-        self.coderate = self.codedim / self.codelen
-        ##======================================================
-        ## 根据列交换结果交换原 decH 矩阵的列
-        ##=======================================================
-        for j in range(self.num_col):
-            self.decH[:, j] = tmpH[:, col_exchange[j]]
-        return
-
     def encoder(self, uu):
         cc = np.zeros(self.codelen, dtype = np.int8)
         cc[self.codechk:] = uu
-
-        ## 1：可能出错
-        # cc[:self.codechk] = np.mod(np.matmul(uu, self.encH[:,self.codechk:].T), 2)
 
         ## 2：相对快
         for i in range(self.codechk):
@@ -171,10 +106,6 @@ class LDPC_Coder_llr(object):
             # cc[i] = np.logical_xor.reduce(uu[:] & self.encH[j, self.codechk:])
             # cc[i] = np.bitwise_xor.reduce(uu[:] & self.encH[j, self.codechk:])
 
-        ## 3：慢
-        # for i in range(self.codechk):
-        #     for j in range(self.codedim):
-        #         cc[i] ^=  (uu[j]&self.encH[i, self.codechk:][j])
         return cc
 
     def NoneZeros(self):
@@ -222,21 +153,10 @@ class LDPC_Coder_llr(object):
             # 对等号节点判决
             cc_hat = np.zeros(self.codelen, dtype = np.int8 )
             cc_hat[np.where(dec_llr < 0)] = 1
-            # sgn = np.sign(dec_llr)
-            # for i in range(0, dec_llr.shape[-1]):
-            #     if sgn[i] < 0:
-            #         cc_hat[i] = 1
+
             uu_hat = cc_hat[self.codechk:]
 
             success = 1
-            # # parity checking，校验
-            # for row in self.SetRows:
-            #     parity_check = 0
-            #     for col in self.SetRows[f'{row}']:
-            #         parity_check ^= cc_hat[int(col)]
-            #     if parity_check != 0:
-            #         success = 0
-            #         break
             # parity checking，校验
             for i in range(self.num_row):
                 # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
@@ -244,9 +164,6 @@ class LDPC_Coder_llr(object):
                 if parity_check != 0:
                     success = 0
                     break
-            # # parity checking，校验
-            # if np.all(np.mod(np.matmul(cc_hat, self.decH.T), 2) != 0):
-            #     success = 0
 
             if success == 1:
                 return uu_hat, iter_num + 1
@@ -324,82 +241,6 @@ class LDPC_Coder_llr(object):
                     self.MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
 
         return uu_hat, iter_num + 1
-
-# def square(A):
-#     A_2 = np.zeros((A.shape[0], A.shape[1]), dtype=int)
-#     for i in range(A.shape[0]):
-#         for j in range(A.shape[1]):
-#             A_2[i][j] = np.logical_xor.reduce(np.logical_and(A[i], A[:, j]))
-#     return A_2
-
-
-
-# def Multipul(A, B):  # 二元域上的矩阵乘法
-#     A_B = np.zeros((A.shape[0], B.shape[1]), dtype=int)
-#     for i in range(A.shape[0]):
-#         for j in range(B.shape[1]):
-#             A_B[i][j] = np.logical_xor.reduce(np.logical_and(A[i], B[:, j]))
-#     return A_B
-
-
-# codechk = 128
-# codedim = 128
-# codelen = 256
-
-# # uu = np.ones(codedim, dtype = np.int8)
-# uu = np.random.randint(low = 0, high = 2, size = (codedim,), dtype = np.int8)
-# encH = np.random.randint(low = 0, high = 2, size = (codechk, codelen ), dtype = np.int8)
-# cc1 = np.zeros(codelen, dtype = np.int8)
-# cc2 = np.zeros(codelen, dtype = np.int8)
-# cc3 = np.zeros(codelen, dtype = np.int8)
-# cc4 = np.zeros(codelen, dtype = np.int8)
-
-
-# cc1[codechk:] = uu
-# cc1[: codechk] = np.mod(np.matmul(uu,  encH[:, codechk:].T), 2)
-
-# cc2[codechk:] = uu
-# for j in range(codechk):
-#     # cc2[j] = np.logical_xor.reduce(np.logical_and(uu[:], encH[j, codechk:]))
-#     cc2[j] = np.logical_xor.reduce(uu[:] & encH[j, codechk:])
-
-
-# cc3[codechk:] = uu
-# for i in range(codechk):
-#     for j in range(codedim):
-#         cc3[i] ^=  (uu[j]&encH[i, codechk:][j])
-
-
-# cc4[codechk:] = uu
-# for j in range(codechk):
-#     cc4[j] = np.bitwise_xor.reduce( uu[:] & encH[j, codechk:])
-
-
-
-
-# print((cc1-cc2).min(), (cc1-cc2).max())
-# print((cc1-cc3).min(), (cc1-cc3).max())
-# print((cc1-cc4).min(), (cc1-cc4).max())
-
-
-
-# import copy
-
-# tmpH = np.arange(20).reshape(4,5)
-# encH = copy.deepcopy(tmpH)
-# decH = copy.deepcopy(tmpH)
-
-
-
-# exchange = [4,3,1,0,2]
-
-# for j in range(5):
-#     for i in range(4):
-#         encH[i, j] = tmpH[i, exchange[j]]
-
-
-# for j in range(5):
-#     decH[:, j] = tmpH[:, exchange[j]]
 
 
 

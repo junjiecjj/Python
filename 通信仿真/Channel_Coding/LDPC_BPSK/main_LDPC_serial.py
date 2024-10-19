@@ -23,7 +23,7 @@ from sourcesink import SourceSink
 from channel import AWGN
 from modulation import  BPSK,  demodu_BPSK
 import utility
-from argsLDPC import arg as ldpcarg
+from argsLDPC import args
 from ldpc_coder import LDPC_Coder_llr
 
 
@@ -32,7 +32,7 @@ utility.set_random_seed()
 
 # print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
 
-ldpcCoder =  LDPC_Coder_llr(ldpcarg)
+ldpcCoder =  LDPC_Coder_llr(args)
 coderargs = {'codedim':ldpcCoder.codedim,
              'codelen':ldpcCoder.codelen,
              'codechk':ldpcCoder.codechk,
@@ -42,7 +42,7 @@ coderargs = {'codedim':ldpcCoder.codedim,
 
 
 source = SourceSink()
-source.InitLog(promargs = ldpcarg, codeargs = coderargs)
+source.InitLog(promargs = args, codeargs = coderargs)
 
 def  BPSK_AWGN_Simulation(args):
     for snr in np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr):
@@ -56,9 +56,9 @@ def  BPSK_AWGN_Simulation(args):
             yy = BPSK(cc)
             yy = channel.forward(yy)
 
-            # yy = utility.yyToLLR(yy, channel.noise_var)
+            llr = utility.yyToLLR(yy, channel.noise_var)
 
-            uu_hat, iter_num = ldpcCoder.decoder_msa(yy)
+            uu_hat, iter_num = ldpcCoder.decoder_spa(llr)
             source.tot_iter += iter_num
             source.CntErr(uu, uu_hat)
             if source.tot_blk % 2 == 0:
@@ -72,8 +72,7 @@ def  BPSK_AWGN_Simulation(args):
     return
 
 
-
-BPSK_AWGN_Simulation(ldpcarg)
+BPSK_AWGN_Simulation(args)
 
 
 
