@@ -39,8 +39,8 @@ def parameters():
 
     ldpc_args = {
     "minimum_snr" : 0,
-    "maximum_snr" : 13,
-    "increment_snr" : 1,
+    "maximum_snr" : 15,
+    "increment_snr" : 2,
     "maximum_error_number" : 500,
     "maximum_block_number" : 1000000,
 
