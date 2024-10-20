@@ -74,7 +74,7 @@ def parameters():
 args = parameters()
 # print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
 
-
+## Rayleigh Fading 信道，BPSK/QAM下，LPDC编码，串行
 def Fading_Simulation(args,  ):
     ldpcCoder =  LDPC_Coder_llr(args)
     coderargs = {'codedim':ldpcCoder.codedim,

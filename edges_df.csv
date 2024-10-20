@@ -1,6 +1,3 @@
-,source,target,edge_key,weight
-0,b,a,ba,1
-1,b,d,bd,2
-2,d,c,dc,3
-3,c,b,cb,4
-4,a,c,ac,5
+version https://git-lfs.github.com/spec/v1
+oid sha256:23bcd9edba2261b5b1c015a2944f199c494dcda69c6eae28dc277ab3fdefaf5d
+size 86

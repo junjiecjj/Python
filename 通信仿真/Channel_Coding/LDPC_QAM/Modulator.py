@@ -78,8 +78,10 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
         constellation = constellation / np.sqrt(Es)
 
     if demod_type == 'hard':
-        index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
-        demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
+        idx = np.abs(input_symbols.reshape(-1,1) - H[:,None] @ constellation.reshape(1, -1)).argmin(1)
+        # syms_hard_decoded =
+        # index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
+        demod_bits = commpy.utilities.dec2bitarray(idx, bitsPerSym)
 
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
@@ -133,7 +135,6 @@ def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):
             current_symbol = input_symbols[i]
-
             for bit_index in np.arange(bitsPerSym):
                 llr_num = 0
                 llr_den = 0

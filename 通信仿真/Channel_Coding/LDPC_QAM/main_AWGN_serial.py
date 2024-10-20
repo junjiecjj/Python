@@ -93,7 +93,7 @@ def parameters():
 args = parameters()
 # print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
 
-
+## AWGN信道，BPSK/QAM下，LPDC编码，串行
 def AWGN_Simulation(args):
     ldpcCoder =  LDPC_Coder_llr(args)
     coderargs = {'codedim':ldpcCoder.codedim,

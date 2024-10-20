@@ -38,7 +38,7 @@ def parameters():
     home = os.path.expanduser('~')
 
     ldpc_args = {
-    "minimum_snr" : 0,
+    "minimum_snr" : 8,
     "maximum_snr" : 15,
     "increment_snr" : 2,
     "maximum_error_number" : 500,
@@ -68,6 +68,7 @@ def parameters():
 args = parameters()
 utility.set_random_seed()
 
+## AWGN 信道，BPSK/QAM下，LPDC编码，并行
 def AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None):
     np.random.seed(i)
     source = SourceSink()
@@ -100,10 +101,11 @@ def AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None):
         source.CntErr(uu, uu_hat)
 
     dic_berfer[name] = {"ber":source.ber, "fer":source.fer, "ave_iter":source.ave_iter }
+    logf = "BerFer_AWGN.txt"
     if lock != None:
         lock.acquire()
         source.PrintScreen(snr = snr);
-        source.SaveToFile(snr = snr)
+        source.SaveToFile(filename = logf, snr = snr)
         lock.release()
     return
 

@@ -26,8 +26,6 @@ import utility
 from ldpc_coder import LDPC_Coder_llr
 import Modulator
 
-
-
 def parameters():
     # 获取当前系统主机名
     host_name = socket.gethostname()
@@ -38,7 +36,7 @@ def parameters():
     home = os.path.expanduser('~')
 
     ldpc_args = {
-    "minimum_snr" : 0,
+    "minimum_snr" : 12,
     "maximum_snr" : 15,
     "increment_snr" : 2,
     "maximum_error_number" : 500,
@@ -68,6 +66,7 @@ def parameters():
 args = parameters()
 utility.set_random_seed()
 
+## Rayleigh Fading 信道，BPSK/QAM下，LPDC编码，并行
 def Fading_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None):
     np.random.seed(i)
     source = SourceSink()
@@ -99,10 +98,11 @@ def Fading_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None):
         source.tot_iter += iter_num
         source.CntErr(uu, uu_hat)
     dic_berfer[name] = {"ber":source.ber, "fer":source.fer, "ave_iter":source.ave_iter }
+    logf = "BerFer_Fading.txt"
     if lock != None:
         lock.acquire()
-        source.PrintScreen(snr = snr);
-        source.SaveToFile(snr = snr)
+        source.PrintScreen(snr = snr)
+        source.SaveToFile(filename = logf, snr = snr)
         lock.release()
     return
 
