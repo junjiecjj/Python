@@ -21,7 +21,8 @@ import matplotlib.pyplot as plt
 import scipy
 import commpy as cpy
 import copy
-
+import argparse
+import socket, getpass , os
 
 ##  自己编写的库
 from sourcesink import SourceSink
@@ -54,6 +55,44 @@ def SIC_detecor(y, H, Nt, M, Es):
         y = y -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
         H = np.delete(H, [maxidx], axis = 1)
     return x
+
+
+def parameters():
+    home = os.path.expanduser('~')
+
+    ldpc_args = {
+    "minimum_snr" : 2 ,
+    "maximum_snr" : 13,
+    "increment_snr" : 1,
+    "maximum_error_number" : 500,
+    "maximum_block_number" : 1000000,
+
+    ## LDPC***0***PARAMETERS
+    "max_iteration" : 50,
+    "encoder_active" : 1,
+    "file_name_of_the_H" : "PEG1024regular0.5.txt",
+
+    ## others
+    "home" : home,
+    "smallprob": 1e-15,
+
+    "Nt" : 4,
+    "Nr" : 6,
+    "P" : 1,
+    "d" : 2,
+    ##>>>>>>>  modulation param
+    "type" : 'qam',
+    "M":  16,
+
+    # "type" : 'psk',
+    # "M":  2,  # BPSK
+    # "M":  4,  # QPSK
+    # "M":  8,  # 8PSK
+    }
+    args = argparse.Namespace(**ldpc_args)
+    return args
+
+args = parameters()
 
 utility.set_random_seed()
 

@@ -101,30 +101,30 @@ for snr in SNR:
         #%%============================================
         ##       (一) mmse sic 基于SINR排序
         ###============================================
-        # H = copy.deepcopy(channel.H)
+        H = copy.deepcopy(channel.H)
 
-        # tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
-        # Order = []
-        # idx_ary = list(np.arange(Nt))
-        # # print(f"0: idx_ary = {idx_ary}")
-        # for nt in range(Nt):
-        #     Wmmse = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
-        #     WH = Wmmse @ H
-        #     SINR = []
-        #     for i in range(Nt - nt):
-        #         tmp = P * (np.sum(np.abs(WH[i])**2) - np.abs(WH[i, i])**2) + P_noise * np.sum(np.abs(Wmmse[i])**2)
-        #         SINR.append(P * np.abs(WH[i, i])**2 / tmp)
-        #     maxidx = np.argmax(SINR)
-        #     Order.append(idx_ary[maxidx])
-        #     idx_ary.remove(idx_ary[maxidx])
-        #     xk_est = Wmmse[maxidx] @ rx_sig
-        #     xk_bits = Modulator.demod(modem.constellation, xk_est, 'hard', Es = Es, ) # modem.demodulate(xk_denorm, 'hard',)
-        #     xk_hat = modem.modulate(xk_bits)
-        #     tx_syms_hat[Order[-1]] = xk_hat
-        #     rx_sig = rx_sig -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
-        #     H = np.delete(H, [maxidx], axis = 1)
-        # tx_syms_hat = tx_syms_hat.reshape(-1)
-        # rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
+        tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
+        Order = []
+        idx_ary = list(np.arange(Nt))
+        # print(f"0: idx_ary = {idx_ary}")
+        for nt in range(Nt):
+            Wmmse = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
+            WH = Wmmse @ H
+            SINR = []
+            for i in range(Nt - nt):
+                tmp = P * (np.sum(np.abs(WH[i])**2) - np.abs(WH[i, i])**2) + P_noise * np.sum(np.abs(Wmmse[i])**2)
+                SINR.append(P * np.abs(WH[i, i])**2 / tmp)
+            maxidx = np.argmax(SINR)
+            Order.append(idx_ary[maxidx])
+            idx_ary.remove(idx_ary[maxidx])
+            xk_est = Wmmse[maxidx] @ rx_sig
+            xk_bits = Modulator.demod(modem.constellation, xk_est, 'hard', Es = Es, ) # modem.demodulate(xk_denorm, 'hard',)
+            xk_hat = modem.modulate(xk_bits)
+            tx_syms_hat[Order[-1]] = xk_hat
+            rx_sig = rx_sig -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
+            H = np.delete(H, [maxidx], axis = 1)
+        tx_syms_hat = tx_syms_hat.reshape(-1)
+        rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
 
         # #%%============================================
         # ##       (二) zf sic 基于SNR排序
@@ -153,26 +153,26 @@ for snr in SNR:
         #%%============================================
         ##       (二) wmmse sic 基于SNR排序
         ###============================================
-        H = copy.deepcopy(channel.H)
+        # H = copy.deepcopy(channel.H)
 
-        tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
-        Order = []
-        idx_ary = list(np.arange(Nt))
-        # print(f"0: idx_ary = {idx_ary}")
-        for nt in range(Nt):
-            G = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
-            SNR = np.linalg.norm(G, ord = 2, axis = 1)
-            minidx = np.argmin(SNR)
-            Order.append(idx_ary[minidx])
-            idx_ary.remove(idx_ary[minidx])
-            xk_est = G[minidx] @ rx_sig
-            xk_bits = Modulator.demod(modem.constellation, xk_est, 'hard', Es = Es, )
-            xk_hat = modem.modulate(xk_bits)
-            tx_syms_hat[Order[-1]] = xk_hat
-            rx_sig = rx_sig -  np.outer(H[:, minidx], xk_hat/np.sqrt(Es))
-            H = np.delete(H, [minidx], axis = 1)
-        tx_syms_hat = tx_syms_hat.reshape(-1)
-        rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
+        # tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
+        # Order = []
+        # idx_ary = list(np.arange(Nt))
+        # # print(f"0: idx_ary = {idx_ary}")
+        # for nt in range(Nt):
+        #     G = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
+        #     SNR = np.linalg.norm(G, ord = 2, axis = 1)
+        #     minidx = np.argmin(SNR)
+        #     Order.append(idx_ary[minidx])
+        #     idx_ary.remove(idx_ary[minidx])
+        #     xk_est = G[minidx] @ rx_sig
+        #     xk_bits = Modulator.demod(modem.constellation, xk_est, 'hard', Es = Es, )
+        #     xk_hat = modem.modulate(xk_bits)
+        #     tx_syms_hat[Order[-1]] = xk_hat
+        #     rx_sig = rx_sig -  np.outer(H[:, minidx], xk_hat/np.sqrt(Es))
+        #     H = np.delete(H, [minidx], axis = 1)
+        # tx_syms_hat = tx_syms_hat.reshape(-1)
+        # rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
 
         # # #%%============================================
         # # ##       (三) wmmse sic 基于列范数排序,每次更新H
