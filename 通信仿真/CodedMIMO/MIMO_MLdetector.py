@@ -15,25 +15,63 @@ https://blog.csdn.net/weixin_43871127/article/details/104593325
 """
 
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 import itertools
-
-
+import argparse
+import socket, getpass , os
 import commpy as cpy
 import copy
 
 
 ##  自己编写的库
 from sourcesink import SourceSink
-from config import args
+# from config import args
 from mimo_channel import MIMO_Channel, SignalNorm, SVD_Precoding
 import utility
 import Modulator
+
+
+def parameters():
+    home = os.path.expanduser('~')
+
+    Args = {
+    "minimum_snr" : 2 ,
+    "maximum_snr" : 13,
+    "increment_snr" : 1,
+    "maximum_error_number" : 500,
+    "maximum_block_number" : 1000000,
+
+    ## LDPC***0***PARAMETERS
+    "max_iteration" : 50,
+    "encoder_active" : 1,
+    "file_name_of_the_H" : "PEG1024regular0.5.txt",
+
+    ## others
+    "home" : home,
+    "smallprob": 1e-15,
+
+    "Nt" : 4,
+    "Nr" : 6,
+    "P" : 1,
+    "d" : 2,
+    ##>>>>>>>  modulation param
+    "type" : 'qam',
+    "M":  16,
+
+    # "type" : 'psk',
+    # "M":  2,  # BPSK
+    # "M":  4,  # QPSK
+    # "M":  8,  # 8PSK
+    }
+    args = argparse.Namespace(**Args)
+    return args
+
+args = parameters()
+
 utility.set_random_seed()
-SNR = np.arange(0, 21, 2)
+
 source = SourceSink()
 
 logf = "ML_BerFer.txt"
@@ -44,30 +82,20 @@ Nr = args.Nr
 Nt = args.Nt
 P = args.P
 
-Modulation_type = f"BPSK"
-if Modulation_type=="BPSK":
-    modem = cpy.PSKModem(2)
-elif Modulation_type=="QPSK":
-    modem = cpy.PSKModem(4)
-elif Modulation_type=="8PSK":
-    modem = cpy.PSKModem(8)
-elif Modulation_type=="4QAM":
-    modem = cpy.QAMModem(4)
-elif Modulation_type=="16QAM":
-    modem = cpy.QAMModem(16)
-elif Modulation_type=="64QAM":
-    modem = cpy.QAMModem(64)
-elif Modulation_type == "QAM256":
-    modem = cpy.QAMModem(256)
-map_table, demap_table = modem.plot_constellation(Modulation_type)
-Es = Modulator.NormFactor(mod_type='bpsk', M = M,)
-allposs = np.array(list(itertools.product(modem.constellation, repeat = Nt))).T
+modutype = args.type
+if modutype == 'qam':
+    modem = cpy.QAMModem(M)
+elif modutype == 'psk':
+    modem =  cpy.PSKModem(M)
+Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
+TxSequence = np.array(list(itertools.product(modem.constellation, repeat = Nt))).T
 
 # https://blog.csdn.net/weixin_44863193/article/details/124493090
 # https://zhuanlan.zhihu.com/p/634499207
 # 接收方估计
 # def ML_detector():
+SNR = np.arange(0, 21, 2)
 for snr in SNR:
     # channel = AWGN(snr, polar.coderate)
     source.ClrCnt()
@@ -77,7 +105,7 @@ for snr in SNR:
         channel.circular_gaussian()
         # 编码
         # cc = encoder(uu)
-        tx_bits = source.GenerateBitStr(1024)
+        tx_bits = source.GenerateBitStr(512)
 
         # 调制
         tx_symbols = modem.modulate(tx_bits)
@@ -97,17 +125,17 @@ for snr in SNR:
 
         for frame in range(rx_sig.shape[1]):
             y = rx_sig[:, frame]
-            y_hat = H @ (allposs / np.sqrt(Es))
+            y_hat = H @ (TxSequence / np.sqrt(Es))
             delta = y_hat - y[:,None]
             idx = np.sum(np.abs(delta)**2, axis = 0).argmin()
-            tx_syms_hat[:, frame] = allposs[:, idx]
+            tx_syms_hat[:, frame] = TxSequence[:, idx]
 
         tx_syms_hat = tx_syms_hat.reshape(-1)
         rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
 
         #%% count
         source.CntErr(tx_bits, rx_bits)
-        if source.tot_blk % 100 == 0:
+        if source.tot_blk % 10 == 0:
             source.PrintScreen(snr = snr)
     print("  *** *** *** *** ***");
     source.PrintScreen(snr = snr)

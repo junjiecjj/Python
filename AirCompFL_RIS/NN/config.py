@@ -47,17 +47,6 @@ def args_parser():
     parser.add_argument('--optimizer', type = str, default = 'SGD', choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
     parser.add_argument('--lr', type = float, default = 0.04, help = 'learning rate')
     parser.add_argument('--lr_decrease', type = bool , default = False, help = 'learning rate diminishing')
-    parser.add_argument('--decay', type = str,   default = '40-80-120-200', help = 'learning rate decay type')
-    parser.add_argument('--gamma', type = float, default = 0.9934, help = 'learning rate decay factor for step decay')
-    parser.add_argument('--momentum', type = float, default = 0.9, help = 'SGD momentum')
-    parser.add_argument('--betas', type = tuple, default = (0.5, 0.999), help = 'ADAM beta')
-    parser.add_argument('--epsilon', type = float, default = 1e-8, help = 'ADAM epsilon for numerical stability')
-    parser.add_argument('--weight_decay', type = float, default = 0, help = 'weight decay')
-    parser.add_argument('--gclip', type = float, default = 0, help = 'gradient clipping threshold (0 = no clipping)')
-
-    ### 损失函数
-    parser.add_argument('--loss',         type = str, default = '1*CrossEntropy',   help = ' ')
-    parser.add_argument('--reduction',    type = str, default = 'sum',              help = ' ')
 
     ## 通信相关参数
     parser.add_argument('--channel', type=str, default = 'erf', choices = ('erf', 'awgn', 'rician'),) ## 信道类型

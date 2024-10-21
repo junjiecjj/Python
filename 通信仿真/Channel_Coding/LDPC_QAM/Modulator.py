@@ -53,30 +53,15 @@ def NormFactor(mod_type = 'qam', M = 16,):
     return Es
 
 
-## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + Fading
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
 def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_var=0):
-    """ Demodulate (map) a set of constellation symbols to corresponding bits.
-    Parameters
-    ----------
-    input_symbols : 1D ndarray of complex floats
-        Input symbols to be demodulated.
-    demod_type : string
-        'hard' for hard decision output (bits)
-        'soft' for soft decision output (LLRs)
-    Es: float
-        Avg power of constellation
-    noise_var : float
-        AWGN variance. Needs to be specified only if demod_type is 'soft'
-    Returns
-    -------
-    demod_bits : 1D ndarray of ints
-        Corresponding demodulated bits.
-    """
+
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
 
+    ##
     if demod_type == 'hard':
         idx = np.abs(input_symbols.reshape(-1,1) - H[:,None] @ constellation.reshape(1, -1)).argmin(1)
         # syms_hard_decoded =
@@ -103,25 +88,9 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
     return demod_bits
 
 
-## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + Fading
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + AWGN
 def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):
-    """ Demodulate (map) a set of constellation symbols to corresponding bits.
-    Parameters
-    ----------
-    input_symbols : 1D ndarray of complex floats
-        Input symbols to be demodulated.
-    demod_type : string
-        'hard' for hard decision output (bits)
-        'soft' for soft decision output (LLRs)
-    Es: float
-        Avg power of constellation
-    noise_var : float
-        AWGN variance. Needs to be specified only if demod_type is 'soft'
-    Returns
-    -------
-    demod_bits : 1D ndarray of ints
-        Corresponding demodulated bits.
-    """
+
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
@@ -224,10 +193,6 @@ def qam8_32_mod(M):
     map_table = dict(zip(graycode, constellation))
     demap_table = {v: k for k, v in map_table.items()}
     return map_table, demap_table
-
-
-
-
 
 
 

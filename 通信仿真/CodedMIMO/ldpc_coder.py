@@ -41,11 +41,11 @@ class LDPC_Coder_llr(object):
         self.MC2V = None                    # 校验节点 到 变量节点 的消息
 
         self.readH()
-        print("读取H完成...\n")
+        # print("读取H完成...\n")
         self.systemH()
-        print("高斯消元完成, encH，decH已获取...\n")
+        # print("高斯消元完成, encH，decH已获取...\n")
         self.NoneZeros()
-        print("保存行列索引完成...")
+        # print("保存行列索引完成...")
         return
 
     def readH(self):

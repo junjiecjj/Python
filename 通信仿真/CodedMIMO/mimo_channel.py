@@ -161,8 +161,7 @@ class MIMO_Channel():
             Rx_sig: array(num_symbol, ). Decoded symbol at the receiver side.
         """
         self.H =  (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt)) / math.sqrt(2)
-        # U, D, V = SVD_Precoding(H, self.P, self.d)
-        # Rx_sig = self.trans_procedure(Tx_sig, H, V, D, U, snr)
+
         return
 
 
