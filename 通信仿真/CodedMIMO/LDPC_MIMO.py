@@ -60,7 +60,7 @@ def SIC_detecor(y, H, Nt, M, Es):
 def parameters():
     home = os.path.expanduser('~')
 
-    ldpc_args = {
+    Args = {
     "minimum_snr" : 2 ,
     "maximum_snr" : 13,
     "increment_snr" : 1,
@@ -89,7 +89,7 @@ def parameters():
     # "M":  4,  # QPSK
     # "M":  8,  # 8PSK
     }
-    args = argparse.Namespace(**ldpc_args)
+    args = argparse.Namespace(**Args)
     return args
 
 args = parameters()
