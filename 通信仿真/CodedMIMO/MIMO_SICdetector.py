@@ -209,22 +209,22 @@ for snr in SNR:
         # # #%%============================================
         # # ##       (三) wmmse sic 基于列范数排序,每次更新H
         # # ###============================================
-        H = copy.deepcopy(channel.H)
-        Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
-        Order = np.flip(np.argsort(Hnorm,))
-        tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
+        # H = copy.deepcopy(channel.H)
+        # Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
+        # Order = np.flip(np.argsort(Hnorm,))
+        # tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
 
-        # print(f"0: idx_ary = {idx_ary}")
-        for nt in range(Nt):
-            H_bar = H[:, Order[nt:]]
-            G = scipy.linalg.pinv(H_bar.T.conjugate()@H_bar + P_noise*np.eye(Nt - nt)) @ H_bar.T.conjugate()
-            xk_est = (G @ rx_sig)[0,:]
-            xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
-            xk_hat = modem.modulate(xk_bits)
-            tx_syms_hat[Order[nt]] = xk_hat
-            rx_sig = rx_sig - np.outer(H[:, Order[nt]], xk_hat/np.sqrt(Es))
-        tx_syms_hat = tx_syms_hat.reshape(-1)
-        rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
+        # # print(f"0: idx_ary = {idx_ary}")
+        # for nt in range(Nt):
+        #     H_bar = H[:, Order[nt:]]
+        #     G = scipy.linalg.pinv(H_bar.T.conjugate()@H_bar + P_noise*np.eye(Nt - nt)) @ H_bar.T.conjugate()
+        #     xk_est = (G @ rx_sig)[0,:]
+        #     xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+        #     xk_hat = modem.modulate(xk_bits)
+        #     tx_syms_hat[Order[nt]] = xk_hat
+        #     rx_sig = rx_sig - np.outer(H[:, Order[nt]], xk_hat/np.sqrt(Es))
+        # tx_syms_hat = tx_syms_hat.reshape(-1)
+        # rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
 
         # #%%============================================
         # ##       (三) zf sic 基于列范数排序,每次更新H
@@ -268,21 +268,21 @@ for snr in SNR:
         # # #%%================================================================
         # # ##       (三) zf sic 基于列范数排序,固定H，只利用检测顺序, 书上(11.18)
         # # ###================================================================
-        # H = copy.deepcopy(channel.H)
-        # Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
-        # Order = np.flip(np.argsort(Hnorm,))
-        # W = scipy.linalg.pinv(H)
-        # tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
+        H = copy.deepcopy(channel.H)
+        Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
+        Order = np.flip(np.argsort(Hnorm,))
+        W = scipy.linalg.pinv(H)
+        tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)
 
-        # # print(f"0: idx_ary = {idx_ary}")
-        # for nt in range(Nt):
-        #     xk_est = W[Order[nt]] @ rx_sig
-        #     xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
-        #     xk_hat = modem.modulate(xk_bits)
-        #     tx_syms_hat[Order[nt]] = xk_hat
-        #     rx_sig = rx_sig -  np.outer(H[:, Order[nt]], xk_hat/np.sqrt(Es))
-        # tx_syms_hat = tx_syms_hat.reshape(-1)
-        # rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
+        # print(f"0: idx_ary = {idx_ary}")
+        for nt in range(Nt):
+            xk_est = W[Order[nt]] @ rx_sig
+            xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+            xk_hat = modem.modulate(xk_bits)
+            tx_syms_hat[Order[nt]] = xk_hat
+            rx_sig = rx_sig -  np.outer(H[:, Order[nt]], xk_hat/np.sqrt(Es))
+        tx_syms_hat = tx_syms_hat.reshape(-1)
+        rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
 
         #%% count
         source.CntErr(tx_bits, rx_bits)

@@ -26,9 +26,8 @@ def args_parser():
     parser.add_argument('--seed',   type = int, default = 9999,      help = 'random seed')
 
     # 模型和数据
-    parser.add_argument('--model', type=str, default = "Mnist_2MLP", help = 'the model to train') ## 模型名称
     parser.add_argument('--dataset', type=str, default = 'MNIST', help = "name of dataset")      ## 所用的数据集
-    parser.add_argument('--dir_data',    type = str, default = home+'/AirFL/Dataset', help = 'dataset directory')
+    parser.add_argument('--dir_data', type = str, default = home+'/AirFL/Dataset', help = 'dataset directory')
     parser.add_argument('--IID', type = bool, default = False, help = 'Default set to IID. Set to 0 for non-IID.') ## 数据是否 IID
 
     ## 联邦学习相关参数
@@ -41,7 +40,7 @@ def args_parser():
     parser.add_argument('--case', type=str, default = 'gradient', choices = ('gradient', 'diff', 'model'), help = 'the join comm-learning case')
 
     ## 数据根目录/日志保存目录
-    parser.add_argument('--save_path', type = str, default = home + '/AirFL/NN/',    help = 'file name to save')
+    parser.add_argument('--save_path', type = str, default = home + '/AirFL/NN/', help = 'file name to save')
 
     ### 优化器
     parser.add_argument('--optimizer', type = str, default = 'SGD', choices = ('SGD', 'ADAM', 'RMSprop'), help = 'optimizer to use (SGD | ADAM | RMSprop)')
@@ -49,9 +48,6 @@ def args_parser():
     parser.add_argument('--lr_decrease', type = bool , default = False, help = 'learning rate diminishing')
 
     ## 通信相关参数
-    parser.add_argument('--channel', type=str, default = 'erf', choices = ('erf', 'awgn', 'rician'),) ## 信道类型
-    parser.add_argument('--P0', type=float, default = 1, help = "average transmit power"  ) ## 单个信号平均发送功率
-    parser.add_argument('--SNR', type=float, default = 0, help = "dB"  ) ## 信噪比
 
     # args = parser.parse_args()
     args, unparsed = parser.parse_known_args()

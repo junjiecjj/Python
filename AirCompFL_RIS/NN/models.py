@@ -30,7 +30,6 @@ class Mnist_1MLP(nn.Module):
 # data_valum1 = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum1} (floating point number) ")
 
-
 class Mnist_2MLP(nn.Module):
     def __init__(self):
         super().__init__()
@@ -109,83 +108,31 @@ class Mnist_CNN(nn.Module):
 # mean = params_float.mean()
 
 
-### np
-# params_float = np.empty((0, 0), dtype = np.float32 )
-# for key, val in param_W.items():
-#     params_float = np.append(params_float, np.array(val.detach().cpu().clone()))
-# std = np.std(params_float)
-# var = np.var(params_float)
-# mean = np.mean(params_float)
+class CNNMnist(nn.Module):
+    def __init__(self, num_channels, num_classes,batch_norm=False):
+        super(CNNMnist, self).__init__()
+        self.conv1 = nn.Conv2d(num_channels, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        if batch_norm:
+            self.conv2_norm=nn.BatchNorm2d(20)
+        else:
+            self.conv2_norm = nn.Dropout2d()
+        self.fc1 = nn.Linear(320, 50)
+        self.fc2 = nn.Linear(50, num_classes)
 
-# def model_stastic(param_W):
-#     params_float = torch.Tensor([], )
-#     for key, val in param_W.items():
-#         params_float = torch.cat((params_float, val.detach().cpu().flatten()))
-#     std = params_float.std()
-#     var = params_float.var()
-#     mean = params_float.mean()
-#     return std, var, mean
-# std1, var1, mean1 = model_stastic(param_W)
-# print(f"1: {std1}, {var1}, {mean1}")
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_norm(self.conv2(x)), 2))
+        x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training=self.training)
+        x = self.fc2(x)
+        return x
 
-# def model_stastic2(param_W):
-#     params_float = np.empty((0, 0), dtype = np.float32 )
-#     for key, val in param_W.items():
-#         params_float = np.append(params_float, np.array(val.detach().cpu().clone()))
-#     std = np.std(params_float)
-#     var = np.var(params_float)
-#     mean = np.mean(params_float)
-#     return std, var, mean
-# std2, var2, mean2 = model_stastic2(param_W)
-# print(f"2: {std2}, {var2}, {mean2}")
-
-
-# class MLP(nn.Module):
-#     def __init__(self, dim_in, dim_hidden, dim_out):
-#         super(MLP, self).__init__()
-#         self.layer_input = nn.Linear(dim_in, dim_hidden)
-#         self.bn=nn.BatchNorm1d(dim_hidden)
-#         self.dropout = nn.Dropout()
-#         self.relu = nn.ReLU()
-#         self.layer_hidden = nn.Linear(dim_hidden, dim_out)
-
-#     def forward(self, x):
-#         x = x.view(-1, x.shape[1]*x.shape[-2]*x.shape[-1])
-#         x = self.layer_input(x)
-#         x = self.dropout(x)
-#         x = self.relu(x)
-
-#         x = self.layer_hidden(x)
-#         return x
-
-
-
-
-# class CNNMnist(nn.Module):
-#     def __init__(self, num_channels, num_classes,batch_norm=False):
-#         super(CNNMnist, self).__init__()
-#         self.conv1 = nn.Conv2d(num_channels, 10, kernel_size=5)
-#         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-#         if batch_norm:
-#             self.conv2_norm=nn.BatchNorm2d(20)
-#         else:
-#             self.conv2_norm = nn.Dropout2d()
-#         self.fc1 = nn.Linear(320, 50)
-#         self.fc2 = nn.Linear(50, num_classes)
-
-#     def forward(self, x):
-#         x = F.relu(F.max_pool2d(self.conv1(x), 2))
-#         x = F.relu(F.max_pool2d(self.conv2_norm(self.conv2(x)), 2))
-#         x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
-#         x = F.relu(self.fc1(x))
-#         x = F.dropout(x, training=self.training)
-#         x = self.fc2(x)
-#         return x
-
-# # # ## Data volume = 21840 (floating point number)
-# # net = CNNMnist(1, 10)
-# # data_valum = np.sum([param.numel() for param in net.state_dict().values()])
-# # print(f"Data volume = {data_valum} (floating point number) ")
+# # ## Data volume = 21840 (floating point number)
+# net = CNNMnist(1, 10)
+# data_valum = np.sum([param.numel() for param in net.state_dict().values()])
+# print(f"Data volume = {data_valum} (floating point number) ")
 
 
 

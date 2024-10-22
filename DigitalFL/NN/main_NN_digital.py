@@ -98,30 +98,15 @@ for comm_round in range(args.num_comm):
     ######################## Distribution & Local Update ####################
     message_lst = []
     for name in candidates:
-        if args.case == "gradient":
-            message = Users[name].local_update_gradient(copy.deepcopy(global_weight), cur_lr)
-        elif args.case == "diff":
-            message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr)
-        elif args.case == "model":
-            message = Users[name].local_update_model(copy.deepcopy(global_weight), cur_lr)
-        message_lst.append(message)
+        message = Users[name].local_update_gradient(copy.deepcopy(global_weight), cur_lr)
+
     ######################## Upload & Aggregation ##########################
     ####>>> error-free
-    if args.case == "gradient" and args.channel.lower() == 'erf':
-        server.aggregate_gradient_erf(message_lst, cur_lr)
-    elif args.case == "diff" and args.channel.lower() == 'erf':
-        server.aggregate_diff_erf(message_lst)
-    elif args.case == "model" and args.channel.lower() == 'erf':
-        server.aggregate_model_erf(message_lst)
+    server.aggregate_gradient_erf(message_lst, cur_lr)
 
     ####>>> Rician channel
     noise_var = args.P0 * 10**(-args.SNR/10.0)
-    if args.case == "gradient" and args.channel.lower() == 'rician':
-        server.aggregate_gradient_rician(message_lst, cur_lr, noise_var, args.P0, h, args.device)
-    elif args.case == "diff" and args.channel.lower() == 'rician':
-        server.aggregate_diff_rician(message_lst, args.SNR, noise_var, args.P0, h, args.device)
-    elif args.case == "model" and args.channel.lower() == 'rician':
-        server.aggregate_model_rician(message_lst, args.SNR, noise_var, args.P0, h, args.device)
+    server.aggregate_gradient_rician(message_lst, cur_lr, noise_var, args.P0, h, args.device)
 
     ########################### Update & Test ###############################
     global_weight = copy.deepcopy(server.global_weight)

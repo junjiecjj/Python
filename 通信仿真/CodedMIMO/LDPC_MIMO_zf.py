@@ -35,8 +35,6 @@ import Modulator
 
 utility.set_random_seed()
 
-
-
 def SIC_detecor(y, H, Nt, M, Es):
     print(f"0: y = {y}")
     x = np.zeros((Nt, 1), dtype = complex)

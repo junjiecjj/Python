@@ -48,27 +48,6 @@ class Server(object):
             self.global_weight[param] -= lr*w_avg[param]
         return
 
-    def aggregate_diff_erf(self, mess_lst, ):
-        w_avg = copy.deepcopy(mess_lst[0])
-        for key in w_avg.keys():
-            for i in range(1, len(mess_lst)):
-                w_avg[key] += mess_lst[i][key]
-            w_avg[key] = torch.div(w_avg[key], len(mess_lst))
-
-        for param in self.global_weight:
-            self.global_weight[param] += w_avg[param]
-        return
-
-    def aggregate_model_erf(self, mess_lst, ):
-        w_avg = copy.deepcopy(mess_lst[0])
-        for key in w_avg.keys():
-            for i in range(1, len(mess_lst)):
-                w_avg[key] += mess_lst[i][key]
-            w_avg[key] = torch.div(w_avg[key], len(mess_lst))
-
-        self.global_weight = w_avg
-        return
-
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%% Rician Fading MAC %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     def aggregate_gradient_rician(self, mess_lst, lr, noise_var, P, H, device):
         h_sigma = [P * np.abs(H[i])**2/model_stastic(copy.deepcopy(mess)) for i, mess in enumerate(mess_lst)]
@@ -84,37 +63,6 @@ class Server(object):
                 val += torch.normal(torch.zeros_like(val), np.sqrt(noise_var/eta/len(mess_lst))).to(device);
         for param in self.global_weight:
             self.global_weight[param] -= lr * w_avg[param]
-        return
-
-    def aggregate_diff_rician(self, mess_lst, SNR, noise_var, P, H, device):
-        h_sigma = [P * np.abs(H[i])**2/model_stastic(copy.deepcopy(mess)) for i, mess in enumerate(mess_lst)]
-        eta = min(h_sigma)
-        w_avg = copy.deepcopy(mess_lst[0])
-        for key in w_avg.keys():
-            for i in range(1, len(mess_lst)):
-                w_avg[key] += mess_lst[i][key]
-            w_avg[key] = torch.div(w_avg[key], len(mess_lst))
-        # AWGN noise  full power transmit
-        if noise_var > 0:
-            for key, val in w_avg.items():
-                val += torch.normal(torch.zeros_like(val), np.sqrt(noise_var/eta/len(mess_lst))).to(device);
-        for param in self.global_weight:
-            self.global_weight[param] += w_avg[param]
-        return
-
-    def aggregate_model_rician(self, mess_lst, SNR, noise_var, P, H, device):
-        h_sigma = [P * np.abs(H[i])**2/model_stastic(copy.deepcopy(mess)) for i, mess in enumerate(mess_lst)]
-        eta = min(h_sigma)
-        w_avg = copy.deepcopy(mess_lst[0])
-        for key in w_avg.keys():
-            for i in range(1, len(mess_lst)):
-                w_avg[key] += mess_lst[i][key]
-            w_avg[key] = torch.div(w_avg[key], len(mess_lst))
-        # AWGN noise  full power transmit
-        if noise_var > 0:
-            for key, val in w_avg.items():
-                val += torch.normal(torch.zeros_like(val), np.sqrt(noise_var/eta/len(mess_lst))).to(device);
-        self.global_weight = w_avg
         return
 
     #%% validate on test dataset
