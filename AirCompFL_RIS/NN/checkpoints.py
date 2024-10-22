@@ -37,20 +37,20 @@ class checkpoint(object):
             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         else:
             self.now =  now
-        first_dir = os.path.join(args.save_path, self.now)
-        os.makedirs(first_dir, exist_ok = True)
-
-        if args.case != "gradient" and args.channel != 'erf':
-            postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
-        elif args.case == 'gradient' and args.channel != 'erf':
-            postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
-        elif args.case != 'gradient' and args.channel == 'erf':
-            postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
-        elif args.case == 'gradient' and args.channel == 'erf':
-            postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
-
-        self.savedir = os.path.join(first_dir, postfix)
+        self.savedir = os.path.join(args.save_path, self.now)
         os.makedirs(self.savedir, exist_ok = True)
+
+        # if args.case != "gradient" and args.channel != 'erf':
+        #     postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_E{args.local_up}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        # elif args.case == 'gradient' and args.channel != 'erf':
+        #     postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_{args.channel}_SNR{args.SNR}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        # elif args.case != 'gradient' and args.channel == 'erf':
+        #     postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_E{args.local_up}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+        # elif args.case == 'gradient' and args.channel == 'erf':
+        #     postfix = f"{args.model}_users{args.num_in_comm}_{args.case}_{args.channel}_{"decreaseLr" if args.lr_decrease else "fixedLr"}"
+
+        # self.savedir = os.path.join(first_dir, postfix)
+        # os.makedirs(self.savedir, exist_ok = True)
 
         self.writeArgsLog(self.getSavePath('argsConfig.txt'))
         # print("#================== checkpoint 准备完毕 =======================\n")

@@ -1,6 +1,4 @@
 
-
-
 # -*- coding: utf-8 -*-
 """
 Created on 2024/08/26
@@ -17,7 +15,6 @@ from torch.utils.data import DataLoader
 # from torch.utils.data import Dataset
 from torch.utils.data import TensorDataset
 import torch
-
 
 def data_tf_mnist(x):
     ## 1
@@ -38,7 +35,6 @@ class DatasetSplit(TensorDataset):
     def __getitem__(self, item):
         image, label = self.dataset[self.idxs[item]]
         return image, label
-
 
 ##>>>>>>>>>>>>>>>>>>>>>>>> MNIST ##################################
 def mnist_iid(train_data_size, num_users):

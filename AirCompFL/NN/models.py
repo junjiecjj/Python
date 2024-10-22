@@ -96,14 +96,14 @@ class Mnist_CNN(nn.Module):
         return x
 
 # ## Data volume = 21840 (floating point number)
-net = Mnist_CNN()
+# net = Mnist_CNN()
 # data_valum = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
 # for key, var in net.state_dict().items():
 #     print(f"{key}, {var.is_leaf}, {var.shape},  " )
 
-param_W = net.state_dict()
+# param_W = net.state_dict()
 
 ### torch
 # params_float = torch.Tensor([], )

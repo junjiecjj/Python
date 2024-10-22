@@ -94,22 +94,16 @@ class Mnist_CNN(nn.Module):
 # data_valum = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
-# for key, var in net.state_dict().items():
-#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
 
-# param_W = net.state_dict()
-
-### torch
-# params_float = torch.Tensor([], )
-# for key, val in param_W.items():
-#     params_float = torch.cat((params_float, val.detach().cpu().flatten()))
-# std = params_float.std()
-# var = params_float.var()
-# mean = params_float.mean()
-
+import sys,os
+import torch
+import torch.nn as nn
+import matplotlib
+matplotlib.use('TkAgg')
+import torch.optim as optim
 
 class CNNMnist(nn.Module):
-    def __init__(self, num_channels, num_classes,batch_norm=False):
+    def __init__(self, num_channels, num_classes, batch_norm=False):
         super(CNNMnist, self).__init__()
         self.conv1 = nn.Conv2d(num_channels, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
@@ -130,9 +124,66 @@ class CNNMnist(nn.Module):
         return x
 
 # # ## Data volume = 21840 (floating point number)
-# net = CNNMnist(1, 10)
+# model = CNNMnist(1, 10, batch_norm=True)
 # data_valum = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
+
+# for key, var in model.state_dict().items():
+#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
+
+# loss_fn = nn.CrossEntropyLoss()
+# optimizer = optim.SGD(model.parameters(), lr=1e-1)  # 传入的是所有的参数
+# x = torch.randn((1, 1, 28, 28))
+# label = torch.randint(0, 10,[1]).long()
+
+# for key, var in model.named_parameters():
+#     print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n{var.data}")
+
+
+# for key, var in model.named_parameters():
+#     print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+
+# optimizer.zero_grad()
+# for key, var in model.named_parameters():
+#     print(f"2: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# print("\n\n")
+
+# output = model(x)
+# #print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
+
+# loss = loss_fn(output, label)
+# for key, var in model.named_parameters():
+#     print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# print("\n\n")
+
+
+# # 计算每个参数的梯度
+# loss.backward()
+# for key, var in model.named_parameters():
+#     print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# print("\n\n")
+
+# ##梯度剪裁
+# torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
+# for key, var in model.named_parameters():
+#     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# print("\n\n")
+
+# # 更新每个可学习参数的值
+# optimizer.step()
+# for key, var in model.named_parameters():
+#     print(f"5: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# print("\n\n")
+
+
+# # for key, var in model.state_dict().items():
+# #     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
+# # for key, var in model.named_parameters():
+#     # print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+
+
+
+
 
 
 

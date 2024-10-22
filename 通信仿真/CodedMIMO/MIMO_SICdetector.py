@@ -284,6 +284,7 @@ for snr in SNR:
         tx_syms_hat = tx_syms_hat.reshape(-1)
         rx_bits = modem.demodulate(tx_syms_hat, 'hard',)
 
+
         #%% count
         source.CntErr(tx_bits, rx_bits)
         if source.tot_blk % 100 == 0:

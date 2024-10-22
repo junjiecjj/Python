@@ -29,17 +29,20 @@ class Client(object):
         # self.args             = args
         self.device           = args.device
         self.id               = client_name
-        self.trainloader      = DataLoader(data, batch_size = args.local_bs, shuffle = True)
         self.datasize         = len(data)
+        # args.local_bs         = int(self.datasize/2)
+        self.trainloader      = DataLoader(data, batch_size = args.local_bs, shuffle = True)
         self.model            = model
         self.num_local_update = args.local_up
-        self.optimizer        = optim.SGD(params = self.model.parameters(), lr = args.lr)
+        self.optimizer        = torch.optim.SGD(self.model.parameters(), lr = args.lr, momentum = 0.9, weight_decay = 0.0001 )
+        # self.optimizer        = optim.SGD(self.model.parameters(), lr = args.lr)
+        # self.optimizer        = torch.optim.Adam(self.model.parameters(), lr = args.lr)
         self.los_fn           = nn.CrossEntropyLoss()
         return
 
     ## 返回本地梯度
     def local_update_gradient(self, cur_weight, lr = 0.01):
-        self.model.load_state_dict(cur_weight, strict=True)
+        self.model.load_state_dict(cur_weight, strict = True)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -51,7 +54,8 @@ class Client(object):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            if batch_idx >= 0: break
+            if batch_idx >= 0:
+                break
         for key, param in self.model.named_parameters():
             message[key] = param.grad.data.detach()
         return message
@@ -69,7 +73,8 @@ class Client(object):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            if batch_idx >= self.num_local_update - 1: break
+            if batch_idx >= self.num_local_update - 1:
+                break
         for param in self.model.state_dict():
             model_diff[param] = self.model.state_dict()[param] - model_diff[param]
         return model_diff

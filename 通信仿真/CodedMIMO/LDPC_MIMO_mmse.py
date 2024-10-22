@@ -39,7 +39,7 @@ def parameters():
     home = os.path.expanduser('~')
 
     Args = {
-    "minimum_snr" : 2 ,
+    "minimum_snr" : 10 ,
     "maximum_snr" : 13,
     "increment_snr" : 1,
     "maximum_error_number" : 500,
@@ -98,7 +98,7 @@ Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 # map_table, demap_table = modem.plot_constellation(Modulation_type)
 
 # def main_mmseSIC():
-SNR = np.arange(0, 21, 2)
+SNR = np.arange(10, 21, 2)
 for snr in SNR:
     P_noise = 1*(10**(-1*snr/10))
     source.ClrCnt()

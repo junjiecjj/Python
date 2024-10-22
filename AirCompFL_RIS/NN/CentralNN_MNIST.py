@@ -66,13 +66,15 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size = 128, shuffle = 
 testset = torchvision.datasets.MNIST(root = home+'/FL_semantic/Data/', train = False, download = True, transform = data_tf_cnn_mnist)
 testloader = torch.utils.data.DataLoader(testset, batch_size = 128, shuffle = False, num_workers = 6, )
 
-# model = models.mnist_cnn().to(device)
+# model = models.Mnist_1MLP().to(device)
+# model = models.Mnist_2MLP().to(device)
 # model = models.Mnist_2NN().to(device)
-model = models.CNNMnist(1, 10).to(device)
-# model = models.Mnist_MLP().to(device)
+model = models.Mnist_CNN().to(device)
+# model = models.CNNMnist(1, 10, batch_norm = False).to(device)
+
 
 # optimizer = torch.optim.Adam(model.parameters(), lr = 0.01, betas = (0.9, 0.999), eps = 1e-08,)
-optimizer = torch.optim.SGD(model.parameters(), lr = 0.004, momentum = 0.9, weight_decay = 0.0001 )
+optimizer = torch.optim.SGD(model.parameters(), lr = 0.01, momentum = 0.9, weight_decay = 0.0001 )
 milestone = list(np.arange(10, 1000, 10))
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones = milestone, gamma = 0.96)
 lossfn = torch.nn.CrossEntropyLoss(reduction='mean')

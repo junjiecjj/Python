@@ -37,9 +37,9 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.case = "model"        # "gradient", "diff", "model"
-args.channel = 'rician'       # 'erf', rician'
-args.model = "mnist_2mlp"   # "mnist_2nn", "mnist_1mlp", "mnist_2mlp", "mnist_cnn"
+args.case = "gradient"        # "gradient", "diff", "model"
+args.channel = 'erf'       # 'erf', rician'
+args.model = "mnist_cnn"   # "mnist_2nn", "mnist_1mlp", "mnist_2mlp", "mnist_cnn"
 args.SNR = 20
 args.local_up = 5
 
@@ -126,7 +126,7 @@ for comm_round in range(args.num_comm):
     ########################### Update & Test ###############################
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
-    if (comm_round + 1) % 20 == 0:
+    if (comm_round + 1) % 2 == 0:
         print(f"   [{args.case}:{args.local_up if args.case != 'gradient' else ''}, {args.channel}:{args.SNR if args.channel != 'erf' else ''}(dB), ] ---> round = {comm_round+1}, lr = {cur_lr:.3f}, acc = {acc:.3f}, los = {test_los:.3f}")
 
     recorder.assign([acc, test_los, cur_lr, ])
@@ -134,8 +134,6 @@ recorder.save(ckp.savedir, args)
 
 
     # return
-
-
 
 
 # def main():
