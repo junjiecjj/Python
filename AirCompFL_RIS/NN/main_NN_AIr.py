@@ -17,8 +17,10 @@ import copy
 
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
+from Utility import mess_stastic
 from read_data import GetDataSet
 from clients import GenClientsGroup
+
 from server import Server
 from checkpoints import checkpoint
 import models
@@ -38,7 +40,8 @@ recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
 
-global_model = models.CNNMnist(1, 10, True).to(args.device)
+# global_model = models.Mnist_2MLP().to(args.device)
+global_model = models.CNNMnist(1, 10, False).to(args.device)
 
 global_weight = global_model.state_dict()
 # args.dimension = np.sum([param.numel() for param in global_weight.values()])
@@ -53,7 +56,7 @@ print(f"%%%%%%% Number of participated Users {num_in_comm}")
 args.num_in_comm = num_in_comm
 
 ##=======================================================================
-##                               迭代
+##                              迭代
 ##=======================================================================
 cur_lr = args.lr
 
@@ -65,12 +68,21 @@ for comm_round in range(args.num_comm):
     candidates = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
 
     message_lst = []
-    for name in candidates:
-        message = Users[name].local_update_gradient(copy.deepcopy(global_weight), cur_lr)
-        # message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr)
-        message_lst.append(message)
 
+    ## grdient
+    for name in candidates:
+        message = Users[name].local_update_gradient1(copy.deepcopy(global_weight), cur_lr)
+        message_lst.append(message)
+    # if (comm_round + 1) % 100 == 0:
+        # mess_stastic(args, comm_round+1, ckp.savedir, message_lst)
     server.aggregate_gradient_erf(message_lst, cur_lr)
+
+    ## diff
+    # args.local_up = 2
+    # for name in candidates:
+    #     message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr, args.local_up)
+    #     # message = Users[name].local_update_diff1(copy.deepcopy(global_weight), cur_lr, 3)
+    #     message_lst.append(message)
     # server.aggregate_diff_erf(message_lst)
 
     global_weight = copy.deepcopy(server.global_weight)
@@ -78,6 +90,7 @@ for comm_round in range(args.num_comm):
     if (comm_round + 1) % 2 == 0:
         print(f"   [  round = {comm_round+1}, lr = {cur_lr:.3f}, acc = {acc:.3f}, los = {test_los:.3f}")
     recorder.assign([acc, test_los, cur_lr, ])
+    recorder.plot(ckp.savedir, args)
 recorder.save(ckp.savedir, args)
 
 

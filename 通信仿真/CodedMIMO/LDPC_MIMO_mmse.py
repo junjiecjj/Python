@@ -98,7 +98,7 @@ Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 # map_table, demap_table = modem.plot_constellation(Modulation_type)
 
 # def main_mmseSIC():
-SNR = np.arange(10, 21, 2)
+SNR = np.arange(12, 21, 2)
 for snr in SNR:
     P_noise = 1*(10**(-1*snr/10))
     source.ClrCnt()

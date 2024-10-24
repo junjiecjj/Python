@@ -15,6 +15,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import sys,os
+
+import matplotlib
+# matplotlib.use('TkAgg')
+import torch.optim as optim
 
 class Mnist_1MLP(nn.Module):
     def __init__(self):
@@ -95,12 +100,6 @@ class Mnist_CNN(nn.Module):
 # print(f"Data volume = {data_valum} (floating point number) ")
 
 
-import sys,os
-import torch
-import torch.nn as nn
-import matplotlib
-matplotlib.use('TkAgg')
-import torch.optim as optim
 
 class CNNMnist(nn.Module):
     def __init__(self, num_channels, num_classes, batch_norm=False):
@@ -123,13 +122,14 @@ class CNNMnist(nn.Module):
         x = self.fc2(x)
         return x
 
-# # ## Data volume = 21840 (floating point number)
-# model = CNNMnist(1, 10, batch_norm=True)
-# data_valum = np.sum([param.numel() for param in net.state_dict().values()])
-# print(f"Data volume = {data_valum} (floating point number) ")
+# # # ## Data volume = 21840 (floating point number)
+# model = CNNMnist(1, 10, batch_norm = True)
+# # data_valum = np.sum([param.numel() for param in net.state_dict().values()])
+# # print(f"Data volume = {data_valum} (floating point number) ")
 
 # for key, var in model.state_dict().items():
-#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
+#     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} " )
+
 
 # loss_fn = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(model.parameters(), lr=1e-1)  # 传入的是所有的参数

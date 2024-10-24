@@ -104,7 +104,6 @@ class Server(object):
         eta = min(eta2)
         noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = grad_avg.shape)
         self.theta -= lr * (grad_avg + noise )
-
         return
 
     def aggregate_rician_diff(self, mess_lst, noise_var, P0, H):
@@ -121,7 +120,6 @@ class Server(object):
         eta = min(eta2)
         noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = diff_avg.shape)
         self.theta += (diff_avg + noise )
-
         return
 
     def aggregate_rician_model(self, mess_lst, noise_var, P0, H):
@@ -138,9 +136,7 @@ class Server(object):
         eta = min(eta2)
         noise = np.random.normal(loc = 0, scale = np.sqrt(noise_var/eta/len(mess_lst)), size = model_avg.shape)
         self.theta = model_avg + noise
-
         return
-
 
 
 
