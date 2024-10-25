@@ -147,7 +147,7 @@ class TraRecorder(object):
         ax.tick_params(which = 'minor', axis='y', direction='in', color = 'red',  width=2, length = 2,  )
         ax.grid(color = 'black', alpha = 0.3, linestyle = (0, (5, 10)), linewidth = 1.5 )
         out_fig = plt.gcf()
-        out_fig.savefig(os.path.join(path, "Loss.eps"),  )
+        out_fig.savefig(os.path.join(path, "Loss.png"),  )
         # plt.show()
         plt.close()
 

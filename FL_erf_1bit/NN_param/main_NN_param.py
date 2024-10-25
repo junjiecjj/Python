@@ -41,7 +41,7 @@ recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
 
-# global_model = models.Mnist_2MLP().to(args.device)
+# global_model = models.Mnist_1MLP().to(args.device)
 global_model = models.CNNMnist(1, 10, True).to(args.device)
 
 global_weight = global_model.state_dict()
@@ -51,7 +51,7 @@ D2 = 0
 for key, var in global_model.named_parameters():
     D2 += var.numel()
 print(f"D1 = {D1}, D2 = {D2}")
-Users = GenClientsGroup(args, local_dt_dict, global_model )
+Users = GenClientsGroup(args, local_dt_dict, copy.deepcopy(global_model) )
 server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight), testloader)
 
 ##============================= 完成以上准备工作 ================================#
@@ -70,33 +70,32 @@ for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
 
     candidates = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
-
+    # print(f"candidates = {candidates}")
     message_lst = []
 
-    ## grdient
-    for name in candidates:
-        message = Users[name].local_update_gradient1(copy.deepcopy(global_weight), cur_lr)
-        message_lst.append(message)
-    # if comm_round == 0 or (comm_round + 1) % 50 == 0:
-        # mess_stastic(message_lst, D, args, comm_round+1, ckp.savedir)
-
-    # mess_recv = OneBitTransmit(message_lst, args, D1)
-
-    server.aggregate_gradient_erf(message_lst, cur_lr)
-
-
-    ## diff
-    # args.local_up = 2
+    # ## grdient
     # for name in candidates:
-    #     message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr, args.local_up)
-    #     # message = Users[name].local_update_diff1(copy.deepcopy(global_weight), cur_lr, 3)
+    #     message = Users[name].local_update_gradient1(copy.deepcopy(global_weight), cur_lr)
     #     message_lst.append(message)
-    # server.aggregate_diff_erf(message_lst)
+    # # if comm_round == 0 or (comm_round + 1) % 50 == 0:
+    #     # mess_stastic(message_lst, D, args, comm_round+1, ckp.savedir)
+    # mess_recv = OneBitTransmit(message_lst, args)
+    # server.aggregate_gradient_erf(mess_recv, cur_lr)
+
+    ### diff
+    args.local_up = 3
+    local_epoch = 10
+    for name in candidates:
+        # message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr, args.local_up)
+        message = Users[name].local_update_diff1(copy.deepcopy(global_weight), cur_lr, local_epoch)
+        message_lst.append(message)
+    mess_recv = OneBitTransmit(message_lst, args, )
+    server.aggregate_diff_erf(mess_recv)
 
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
     if (comm_round + 1) % 2 == 0:
-        print(f"   [  round = {comm_round+1}, lr = {cur_lr:.3f}, acc = {acc:.3f}, los = {test_los:.3f}")
+        print(f"   [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f} ]")
     recorder.assign([acc, test_los, cur_lr, ])
     recorder.plot(ckp.savedir, args)
 recorder.save(ckp.savedir, args)

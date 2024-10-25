@@ -69,8 +69,8 @@ testloader = torch.utils.data.DataLoader(testset, batch_size = 128, shuffle = Fa
 # model = models.Mnist_1MLP().to(device)
 # model = models.Mnist_2MLP().to(device)
 # model = models.Mnist_2NN().to(device)
-model = models.Mnist_CNN().to(device)
-# model = models.CNNMnist(1, 10, batch_norm = False).to(device)
+# model = models.Mnist_CNN().to(device)
+model = models.CNNMnist(1, 10, batch_norm = True).to(device)
 
 
 # optimizer = torch.optim.Adam(model.parameters(), lr = 0.01, betas = (0.9, 0.999), eps = 1e-08,)

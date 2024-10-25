@@ -40,8 +40,6 @@ def QuantilizeBbits_torch(params, G = None, B = 8, rounding = 'sr'):
         params = torch.clamp(SR_torch(params * G), min = -G, max = G - 1, )/G
     return params
 
-
-
 ## 1比特的全流程，nearest rounding (NR), torch
 def NR1Bit_torch(params, G = None, B = 8):
     if G == None:
@@ -59,23 +57,6 @@ def SR1Bit_torch(params, G = None, BG = 8):
     param = torch.bernoulli(p)
     param = torch.where(param < 1, -1, param)/G
     return param
-
-
-
-## 将 params 数组大于0的位置替换为大于0的元素的均值, 将 params 数组小于0的位置替换为小于0的元素的均值
-def QuantilizeMean(params ):
-    res = torch.zeros_like(params)
-    res[torch.where(params > 0)] = params[torch.where(params > 0)].mean()
-    res[torch.where(params < 0)] = params[torch.where(params < 0)].mean()
-    # print(f"G = {G}")
-    # params = torch.clamp(torch.round(params * G), min = -2**(B-1), max = 2**(B-1) - 1, )/G
-    return res
-# a = torch.randn(3,4).to('cuda')
-# print(f"a = {a}")
-# b = QuantilizeMean(a)
-# print(f"a = {a}")
-# print(f"b = {b}")
-# ## 函数调用后，a已经变了， 函数调用后a is b
 
 
 
@@ -109,23 +90,6 @@ def SR_np(param):
 ##     binary_send:
 ##         长度为 n*B 的0，1整数序列, 量化后的结果, np.array(np.int8);
 """
-def QuantizationNP_uint(params,  B = 8):
-    # print(f"{B} Bit quantization..")
-    G =  2**(B - 1)
-    # Scale_up = params * G
-    # Round = np.round(Scale_up)
-    # Clip = np.clip(Round, a_min = -1*G, a_max = G - 1,)
-    Clip = np.clip(np.round(params * G), a_min = -1*G, a_max = G - 1, )
-    Shift = Clip + G
-    Uint =  np.array(Shift, dtype = np.uint32 )
-
-    bin_len = int(Uint.size * B)
-    binary_send = np.zeros(bin_len, dtype = np.int8 )
-    for idx, num in enumerate(Uint):
-        binary_send[idx*B:(idx+1)*B] = [int(b) for b in  np.binary_repr(num, width = B+1)[-B:]]
-
-    return binary_send
-
 ## 用在并行中的np的多比特的量化
 def QuantizationBbits_NP_int(params,  B = 8, rounding = "nr"):
     # print("      QuantizationBbits_NP_int\n")
@@ -158,35 +122,6 @@ def Quantization1bits_NP_int(params,  BG = 8,):
     Int = f1(p).astype(np.int8)
 
     return Int
-
-
-## 用在并行中的np的1比特的量化, nearest rounding (NR)
-def Quantization1bits_NP_int_NR(params, BG = 8):
-    # G =  2**BG
-    params = np.where(params < 0, 0, 1)
-    return  params
-
-
-
-
-
-def QuantizationTorch_int(params, G = None, B = 8):
-    # print(f"{B} Bit quantization..")
-    if G ==None:
-        G =  2**(B - 1)
-    Clip = torch.clamp(torch.round(params * G), min = -1*G, max = G - 1, )
-    Int = Clip.type(torch.int32)
-    # Int =  np.array(Clip, dtype = np.int32)
-    bin_len = int(Int.numel() * B)
-    binary_send = np.zeros(bin_len, dtype = np.int8 )
-    for idx, num in enumerate(Int):
-        ## print(f"{num} {num.item()}")
-        binary_send[idx*B:(idx+1)*B] = [int(b) for b in  np.binary_repr(num.item(), width = B)]
-    return binary_send
-
-
-# a = torch.randn((20, ),  )
-
 
 ##=========================================================================================
 ##                             接收方的量化函数
@@ -239,7 +174,7 @@ def deQuantizationBbits_NP_int(bin_recv, B = 8):
     return param_recv.astype(np.float32)
 
 ## 用在并行中的np的1比特的反量化
-def deQuantization1bits_NP_int(bin_recv, BG = 8, ):
+def deQuantization1bits_NP_int(bin_recv,   BG = 8, ):
     G = 2**BG
     param_recv = np.where(bin_recv < 1, -1, bin_recv).astype(np.float32)/G
     return param_recv

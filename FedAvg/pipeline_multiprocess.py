@@ -26,7 +26,7 @@ import torch
 # from LDPC.ldpc_coder import LDPC_Coder_llr
 # from LDPC.quantiation import   QuantizationNP_uint, deQuantizationNP_uint
 from LDPC.quantiation import  QuantizationBbits_NP_int, deQuantizationBbits_NP_int
-from LDPC.quantiation import Quantization1bits_NP_int, Quantization1bits_NP_int_NR,  deQuantization1bits_NP_int
+from LDPC.quantiation import Quantization1bits_NP_int,  deQuantization1bits_NP_int
 # from LDPC.quantiation import  QuantizationTorch_int
 
 # utility.set_random_seed()

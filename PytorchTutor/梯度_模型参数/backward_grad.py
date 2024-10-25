@@ -210,20 +210,20 @@ class net(nn.Module):
         return self.fc2(self.fc1(x))
 model = net()
 
-for key, var in model.named_parameters():
-    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n{var.data}")
-# fc1.weight, True, torch.Size([4, 8]), cpu, True, torch.FloatTensor, None
-# fc1.bias  , True, torch.Size([4]), cpu, True, torch.FloatTensor, None
-# fc2.weight, True, torch.Size([10, 4]), cpu, True, torch.FloatTensor, None
-# fc2.bias  , True, torch.Size([10]), cpu, True, torch.FloatTensor, None
+# for key, var in model.named_parameters():
+#     print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n{var.data}")
+# # fc1.weight, True, torch.Size([4, 8]), cpu, True, torch.FloatTensor, None
+# # fc1.bias  , True, torch.Size([4]), cpu, True, torch.FloatTensor, None
+# # fc2.weight, True, torch.Size([10, 4]), cpu, True, torch.FloatTensor, None
+# # fc2.bias  , True, torch.Size([10]), cpu, True, torch.FloatTensor, None
 
 
-for key, var in model.state_dict().items():
-    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n  {var}" )
-# 0: fc1.weight, True, torch.Size([4, 8]), cpu, False, torch.FloatTensor, None
-# 0: fc1.bias, True, torch.Size([4]), cpu, False, torch.FloatTensor, None
-# 0: fc2.weight, True, torch.Size([10, 4]), cpu, False, torch.FloatTensor, None
-# 0: fc2.bias, True, torch.Size([10]), cpu, False, torch.FloatTensor, None
+# for key, var in model.state_dict().items():
+#     print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}, \n  {var}" )
+# # 0: fc1.weight, True, torch.Size([4, 8]), cpu, False, torch.FloatTensor, None
+# # 0: fc1.bias, True, torch.Size([4]), cpu, False, torch.FloatTensor, None
+# # 0: fc2.weight, True, torch.Size([10, 4]), cpu, False, torch.FloatTensor, None
+# # 0: fc2.bias, True, torch.Size([10]), cpu, False, torch.FloatTensor, None
 
 
 loss_fn   = nn.CrossEntropyLoss()
@@ -253,6 +253,10 @@ for key, var in model.state_dict().items():
     print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
 print("\n\n")
 
+for key, var in model.named_parameters():
+    print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+print("\n\n")
+
 optimizer.step()
 for key, var in model.state_dict().items():
     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
@@ -268,7 +272,7 @@ import sys,os
 import torch
 import torch.nn as nn
 import matplotlib
-matplotlib.use('TkAgg')
+import copy
 import torch.optim as optim
 
 
@@ -285,51 +289,77 @@ class net(nn.Module):
 
 model = net()
 loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=1e-1)  # 传入的是所有的参数
+lr = 1e-2
+optimizer = optim.SGD(model.parameters(), lr = lr)  # 传入的是所有的参数
 x = torch.randn((3, 8))
-label = torch.randint(0,10,[3]).long()
+label = torch.randint(0, 10,[3]).long()
 
+## 最开始的模型
+params0 = {}
+for key, var in model.state_dict().items():
+    params0[key] = copy.deepcopy(var) # .detach().cpu().numpy()
+    print(f"00: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
 
 for key, var in model.named_parameters():
-    print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n{var.data}")
-
-
-# for key, var in model.state_dict().items():
-    # print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} \n\n" )
-for key, var in model.named_parameters():
-    print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+    print(f"01: {key}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data}")
 
 optimizer.zero_grad()
+for key, var in model.state_dict().items():
+    print(f"10: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
 for key, var in model.named_parameters():
-    print(f"2: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-print("\n\n")
+    print(f"11: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+
 
 output = model(x)
-#print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
+for key, var in model.state_dict().items():
+    print(f"20: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
+for key, var in model.named_parameters():
+    print(f"21: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 
 loss = loss_fn(output, label)
+for key, var in model.state_dict().items():
+    print(f"30: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
 for key, var in model.named_parameters():
-    print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-print("\n\n")
+    print(f"31: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 
 
 # 计算每个参数的梯度
 loss.backward()
+for key, var in model.state_dict().items():
+    print(f"40: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
 for key, var in model.named_parameters():
-    print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+    print(f"41: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 print("\n\n")
 
-##梯度剪裁
-torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
+## 获取梯度
+grad = {}
 for key, var in model.named_parameters():
-    print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-print("\n\n")
+    grad[key] =  var.grad.data.detach()
+
+# ##梯度剪裁
+# torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
+# for key, var in model.named_parameters():
+#     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+# print("\n\n")
 
 # 更新每个可学习参数的值
 optimizer.step()
+for key, var in model.state_dict().items():
+    print(f"50: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var}" )
 for key, var in model.named_parameters():
-    print(f"5: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+    print(f"51: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
 print("\n\n")
+
+## 更新后的模型
+params1 = {}
+for key, var in model.state_dict().items():
+    params1[key] = copy.deepcopy(var) # .detach().cpu().numpy()
+
+grad_dt = {}
+for key, var in model.state_dict().items():
+    grad_dt[key] = (params0[key] - params1[key]) / lr
+
+
 
 
 # for key, var in model.state_dict().items():

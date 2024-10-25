@@ -38,8 +38,8 @@ class Mnist_1MLP(nn.Module):
 class Mnist_2MLP(nn.Module):
     def __init__(self):
         super().__init__()
-        self.fc1 = nn.Linear(784, 50)
-        self.fc2 = nn.Linear(50, 10)
+        self.fc1 = nn.Linear(784, 20)
+        self.fc2 = nn.Linear(20, 10)
 
     def forward(self, inputs):
         inputs = inputs.view(-1, 28*28)
@@ -187,6 +187,70 @@ class CNNMnist(nn.Module):
 # #     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
 # # for key, var in model.named_parameters():
 #     # print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+
+# model = CNNMnist(1, 10, batch_norm = True)
+
+# D = np.sum([param.numel() for param in model.state_dict().values()])
+# D1 = 0
+# for key, var in model.named_parameters():
+#     D1 += var.numel()
+
+# vec = np.array([], dtype = np.float32)
+
+# key_lst = []
+# info_lst = []
+
+# for key, val in model.state_dict().items():
+#     key_lst.append(key)
+
+#     info_lst.append([key, val.size(), val.numel(), val.dtype])
+#     vec = np.hstack((vec,  val.detach().cpu().numpy().flatten()))
+
+# for key, val in model.named_parameters():
+#     key_lst.append(key)
+#     # shape_lst.append(np.array(val.size()))
+#     # size_lst.append(val.numel())
+
+#     info_lst.append({key:[np.array(val.size()), var.numel()]})
+#     vec = np.hstack((vec,  val.detach().cpu().numpy().flatten()))
+
+# param = {}
+# start = 0
+# end = 0
+# for info in info_lst:
+#     end += info[2]
+#     param[info[0]] = torch.tensor(vec[start:end].reshape(info[1]), dtype = info[3])
+#     start += info[2]
+
+# ###############################
+# model = CNNMnist(1, 10, batch_norm = True)
+
+# key_lst = []
+# info_lst = []
+# for key, val in model.state_dict().items():
+#     key_lst.append(key)
+#     info_lst.append([key, val.size(), val.numel(), val.dtype])
+
+# vec = np.array([], dtype = np.float32)
+# for key in key_lst:
+#     vec = np.hstack((vec,  model.state_dict()[key].detach().cpu().numpy().flatten()))
+
+# param = {}
+# start = 0
+# end = 0
+# for info in info_lst:
+#     end += info[2]
+#     param[info[0]] = torch.tensor(vec[start:end].reshape(info[1]), dtype = info[3])
+#     start += info[2]
+
+
+
+
+
+
+
+
+
 
 
 

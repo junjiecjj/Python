@@ -29,11 +29,45 @@ def FedAvg_grad(w_glob, grad, device):
 
 
 # 1-bit error-free transmission
-def OneBitTransmit(message_lst, args, dimension):
-    # gradient2 = np.array([[]])
-    # for item in copyw.keys():
-    #     gradient2 = np.hstack((gradient2, np.reshape((initital_weight[item] - copyw[item]).cpu().numpy(), [1,-1])/libopt.lr))
+def OneBitTransmit(message_lst, args, ):
+    D = np.sum([param.numel() for param in message_lst[0].values()])
+    # print(f"Dimension = {D}")
 
+    key_lst = []
+    info_lst = []
+    for key, val in message_lst[0].items():
+        key_lst.append(key)
+        info_lst.append([key, val.size(), val.numel(), val.dtype])
+
+    source = np.zeros((len(message_lst), D))
+    for k, mess in enumerate(message_lst):
+        vec = np.array([], dtype = np.float32)
+        for key in key_lst:
+            vec = np.hstack((vec,  mess[key].detach().cpu().numpy().flatten()))
+        source[k,:] = vec
+
+    # Quantization
+    symbols = np.sign(source)
+    sz = np.where(symbols == 0)[0].shape
+    symbols[np.where(symbols == 0)] = np.random.choice([-1, 1], size = sz, replace = True, p = [0.5, 0.5] )
+
+    symbols_hat = copy.deepcopy(symbols) / (2**7)
+    mess_recov = []
+    for k in range(len(message_lst)):
+        symbols = symbols_hat[k,:]
+        param_k = {}
+        start = 0
+        end = 0
+        for info in info_lst:
+            end += info[2]
+            param_k[info[0]] = torch.tensor(symbols[start:end].reshape(info[1]), dtype = info[3]).to(args.device)
+            start += info[2]
+        mess_recov.append(param_k)
+
+    return mess_recov
+
+# 1-bit error-free transmission
+def OneBitTransmit1(message_lst, args, dimension):
     source = np.zeros((len(message_lst), dimension))
     for k, mess in enumerate(message_lst):
         vec = np.array([])

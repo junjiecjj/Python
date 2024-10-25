@@ -34,8 +34,7 @@ class Client(object):
         self.trainloader      = DataLoader(data, batch_size = args.local_bs, shuffle = True)
         self.model            = model
         self.num_local_update = args.local_up
-        # self.optimizer        = torch.optim.SGD(self.model.parameters(), lr = args.lr, momentum = 0.9, weight_decay = 0.0001 )
-        # self.optimizer        = optim.SGD(self.model.parameters(), lr = args.lr)
+        # self.optimizer        = torch.optim.SGD(self.model.parameters(), lr = args.lr, momentum = 0.99, weight_decay = 0.001 )
         self.optimizer        = torch.optim.Adam(self.model.parameters(), lr = args.lr)
         self.los_fn           = nn.CrossEntropyLoss()
         return
@@ -46,7 +45,6 @@ class Client(object):
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
-        message = {}
         for batch_idx, (data, label) in enumerate(self.trainloader):
             data, label = data.to(self.device), label.to(self.device)
             preds = self.model(data)
@@ -56,8 +54,9 @@ class Client(object):
             self.optimizer.step()
             if batch_idx >= 0:
                 break
+        message = {}
         for key, param in self.model.named_parameters():
-            message[key] = param.grad.data.detach()
+            message[key] = copy.deepcopy(param.grad.data.detach())
         return message
 
     ## 返回本地梯度，模型相减除以学习率
@@ -67,7 +66,6 @@ class Client(object):
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
-        message = {}
         for batch_idx, (data, label) in enumerate(self.trainloader):
             data, label = data.to(self.device), label.to(self.device)
             preds = self.model(data)
@@ -77,6 +75,7 @@ class Client(object):
             self.optimizer.step()
             if batch_idx >= 0:
                 break
+        message = {}
         copyw = copy.deepcopy(self.model.state_dict())
         for key in copyw.keys():
             message[key] = (init_weight[key] - copyw[key])/lr
