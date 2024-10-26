@@ -159,16 +159,11 @@ def Quantization1bits_NP_int(params,  BG = 8,):
 
     return Int
 
-
 ## 用在并行中的np的1比特的量化, nearest rounding (NR)
 def Quantization1bits_NP_int_NR(params, BG = 8):
     # G =  2**BG
     params = np.where(params < 0, 0, 1)
     return  params
-
-
-
-
 
 def QuantizationTorch_int(params, G = None, B = 8):
     # print(f"{B} Bit quantization..")
@@ -184,14 +179,11 @@ def QuantizationTorch_int(params, G = None, B = 8):
         binary_send[idx*B:(idx+1)*B] = [int(b) for b in  np.binary_repr(num.item(), width = B)]
     return binary_send
 
-
 # a = torch.randn((20, ),  )
-
 
 ##=========================================================================================
 ##                             接收方的量化函数
 ##=========================================================================================
-
 """
 ## 功能: 将译码后的01序列 bin_recv 反量化为实数
 ## Input:

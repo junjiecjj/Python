@@ -27,7 +27,7 @@ def args_parser():
 
     # 模型和数据
     parser.add_argument('--dataset', type=str, default = 'MNIST', help = "name of dataset")      ## 所用的数据集
-    parser.add_argument('--dir_data', type = str, default = home+'/AirFL/Dataset', help = 'dataset directory')
+    parser.add_argument('--dir_data', type = str, default = home+'/ErfFL/Dataset', help = 'dataset directory')
     parser.add_argument('--IID', type = bool, default = False, help = 'Default set to IID. Set to 0 for non-IID.') ## 数据是否 IID
 
     ## 联邦学习相关参数
@@ -39,7 +39,7 @@ def args_parser():
     parser.add_argument('--num_comm', type=int, default = 1000, help = 'number of communications')   ## num_comm 表示通信次数，此处设置为1k
 
     ## 数据根目录/日志保存目录
-    parser.add_argument('--save_path', type = str, default = home + '/AirFL/NN/', help = 'file name to save')
+    parser.add_argument('--save_path', type = str, default = home + '/ErfFL/NN/', help = 'file name to save')
 
     ### 优化器
     parser.add_argument('--lr', type = float, default = 0.01, help = 'learning rate')

@@ -35,7 +35,7 @@ class Client(object):
         self.model            = model
         self.num_local_update = args.local_up
         if args.optimizer == 'sgd':
-            self.optimizer        = torch.optim.SGD(self.model.parameters(), lr = args.lr, momentum = 0.99, weight_decay = 0.001 )
+            self.optimizer        = torch.optim.SGD(self.model.parameters(), lr = args.lr, momentum = 0.9,)
         elif args.optimizer == 'adam':
             self.optimizer        = torch.optim.Adam(self.model.parameters(), lr = args.lr)
         self.los_fn           = nn.CrossEntropyLoss()

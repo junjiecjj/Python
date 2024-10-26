@@ -97,7 +97,7 @@ print("Pymanopt solution:", result.point)
 
 
 
-
+# https://zhuanlan.zhihu.com/p/601045018
 
 
 
