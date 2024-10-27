@@ -28,22 +28,26 @@ def OneBitNR(message_lst, args, normfactor = 1):
         key_lst.append(key)
         info_lst.append([key, val.size(), val.numel(), val.dtype])
     ## convert dict to array
-    source = np.zeros((len(message_lst), D))
+    SS = np.zeros((len(message_lst), D))
     for k, mess in enumerate(message_lst):
         vec = np.array([], dtype = np.float32)
         for key in key_lst:
             vec = np.hstack((vec,  mess[key].detach().cpu().numpy().flatten()))
-        source[k,:] = vec
+        SS[k,:] = vec
+
+    # 1bit Quantization
+    SS[np.where(SS == 0)] = np.random.randint(0, 2, size = np.where(SS == 0)[0].shape)
+    uu = np.where(SS <= 0, -1, 1)
 
     # Quantization
-    symbols = np.sign(source)
-    sz = np.where(symbols == 0)[0].shape
-    symbols[np.where(symbols == 0)] = np.random.choice([-1, 1], size = sz, replace = True, p = [0.5, 0.5] )
+    # symbols = np.sign(SS)
+    # sz = np.where(symbols == 0)[0].shape
+    # symbols[np.where(symbols == 0)] = np.random.choice([-1, 1], size = sz, replace = True, p = [0.5, 0.5] )
 
-    symbols_hat = copy.deepcopy(symbols) / normfactor
+    uu_hat = uu / normfactor
     mess_recov = []
     for k in range(len(message_lst)):
-        symbolsK = symbols_hat[k,:]
+        symbolsK = uu_hat[k,:]
         param_k = {}
         start = 0
         end = 0
@@ -52,7 +56,6 @@ def OneBitNR(message_lst, args, normfactor = 1):
             param_k[info[0]] = torch.tensor(symbolsK[start:end].reshape(info[1]), dtype = info[3]).to(args.device)
             start += info[2]
         mess_recov.append(param_k)
-
     return mess_recov
 
 

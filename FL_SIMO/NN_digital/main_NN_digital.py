@@ -16,6 +16,7 @@ Created on 2024/08/25
 non-IID:
     (1) non-IID, diff本地5轮，lr = 0.01, SGD，no-quantize, U = 100, BS = 128;
         non-IID, diff本地5轮，lr = 0.01, SGD，no-quantize, U = 100, BS = 64;
+        non-IID, diff本地5轮，lr = 0.01, SGD，1bit-quantize, U = 100, BS = 64, 接收方/2**8;
     (2) non-IID, grad，lr = 0.1, SGD，no-quantize, U = 200, 10,  BS = 128;
         non-IID, grad，lr = 0.1, SGD，no-quantize, U = 100, 10,  BS = 128;
 
@@ -53,17 +54,16 @@ args.model = "CNN"
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
 args.active_client = 10
-args.case = 'diff'        # "grad", "diff"
+args.case = 'grad'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
 args.quantway = 'nr'    # 'nr',  'mimo', 'ldpc'
-args.local_bs = 64
+args.local_bs = 128
 args.local_up = 1
 args.local_epoch = 5
 args.snr_dB = 25
-
-print(args)
+args.norm_fact = 2
 
 ## seed
 set_random_seed(args.seed)
@@ -102,13 +102,17 @@ for comm_round in range(args.num_comm):
 
         if args.quantize == True:
             if args.quantway == 'nr':
-                mess_recv = OneBitNR(message_lst, args, normfactor = 1)
+                print(f"{args.case} -> quantize -> NR -> {args.norm_fact}")
+                mess_recv = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
-                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB)
+                print(f"{args.case} -> quantize -> MIMO -> {args.norm_fact}")
+                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
-                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h))
+                print(f"{args.case} -> quantize -> LDPC -> {args.norm_fact}")
+                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_gradient_erf(mess_recv, cur_lr)
         else:
+            print(f"{args.case} -> without quantization")
             server.aggregate_gradient_erf(message_lst, cur_lr)
     ### diff
     if args.case == 'diff':
@@ -120,13 +124,17 @@ for comm_round in range(args.num_comm):
             message_lst.append(message)
         if args.quantize == True:
             if args.quantway == 'nr':
-                mess_recv = OneBitNR(message_lst, args, normfactor = 2**8)
+                print(f"{args.case} -> quantize -> NR -> {args.norm_fact}")
+                mess_recv = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
-                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h))
+                print(f"{args.case} -> quantize -> MIMO -> {args.norm_fact}")
+                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
-                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h))
+                print(f"{args.case} -> quantize -> LDPC -> {args.norm_fact}")
+                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_diff_erf(mess_recv)
         else:
+            print(f"{args.case} -> without quantization")
             server.aggregate_diff_erf(message_lst)
 
     global_weight = copy.deepcopy(server.global_weight)
@@ -136,7 +144,7 @@ for comm_round in range(args.num_comm):
     recorder.assign([acc, test_los, cur_lr, ])
     recorder.plot(ckp.savedir, args)
 recorder.save(ckp.savedir, args)
-
+print(args)
 
 
 
