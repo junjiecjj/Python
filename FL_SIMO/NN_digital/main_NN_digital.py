@@ -8,7 +8,17 @@ Created on 2024/08/25
 
 @author: Junjie Chen
 
-(1) IID, 本地5轮，lr=0.01, SGD， 1bit-NR, U=100, BS =128, 接收方/2**8
+
+(1) IID, diff本地5轮，lr=0.01, SGD， 1bit-NR, U=100, BS =128, 接收方/2**8;
+(2) IID, grad，lr=0.01, SGD， 1bit-NR, U=100, BS = 64, 接收方 / 1;
+
+
+non-IID:
+    (1) non-IID, diff本地5轮，lr = 0.01, SGD，no-quantize, U = 100, BS = 128;
+        non-IID, diff本地5轮，lr = 0.01, SGD，no-quantize, U = 100, BS = 64;
+    (2) non-IID, grad，lr = 0.1, SGD，no-quantize, U = 200, 10,  BS = 128;
+        non-IID, grad，lr = 0.1, SGD，no-quantize, U = 100, 10,  BS = 128;
+
 
 """
 
@@ -38,21 +48,25 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True
+args.IID = False
 args.model = "CNN"
-cur_lr = args.lr = 0.1
-args.case = 'grad'        # "grad", "diff"
+cur_lr = args.lr = 0.01
+args.num_of_clients = 100
+args.active_client = 10
+args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
-args.quantize = True    # True, False
-args.quantway = 'nr'    # 'nr',  'detector', 'ldpc'
-args.local_bs = 128
+args.quantize = True     # True, False
+args.quantway = 'nr'    # 'nr',  'mimo', 'ldpc'
+args.local_bs = 64
 args.local_up = 1
 args.local_epoch = 5
+args.snr_dB = 25
 
+print(args)
 
 ## seed
-set_random_seed(args.seed,)
+set_random_seed(args.seed)
 set_printoption(5)
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
@@ -60,13 +74,7 @@ local_dt_dict, testloader = GetDataSet(args)
 # global_model = models.Mnist_1MLP().to(args.device)
 global_model = models.CNNMnist(1, 10, True).to(args.device)
 global_weight = global_model.state_dict()
-
-num_in_comm = int(max(args.num_of_clients * args.cfrac, 1))
-print(f"%%%%%%% Number of participated Users {num_in_comm}")
-args.num_in_comm = num_in_comm
-
 ##============================= 完成以上准备工作 ================================#
-
 Users = GenClientsGroup(args, local_dt_dict, copy.deepcopy(global_model) )
 server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight), testloader)
 ##=======================================================================
@@ -77,12 +85,12 @@ ckp =  checkpoint(args, now)
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
 
-    candidates = np.random.choice(args.num_of_clients, num_in_comm, replace = False)
+    candidates = np.random.choice(args.num_of_clients, args.active_client, replace = False)
     # print(f"candidates = {candidates}")
     message_lst = []
 
     ## generate channel
-    channel = MIMO_Channel(Nr = 16, Nt = 100, )
+    channel = MIMO_Channel(Nr = 16, Nt = args.num_of_clients, )
     channel.circular_gaussian()
     h = channel.H[:, candidates]
 
@@ -95,8 +103,8 @@ for comm_round in range(args.num_comm):
         if args.quantize == True:
             if args.quantway == 'nr':
                 mess_recv = OneBitNR(message_lst, args, normfactor = 1)
-            elif args.quantway == 'detector':
-                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h))
+            elif args.quantway == 'mimo':
+                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB)
             elif args.quantway == 'ldpc':
                 mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h))
             server.aggregate_gradient_erf(mess_recv, cur_lr)
@@ -113,10 +121,10 @@ for comm_round in range(args.num_comm):
         if args.quantize == True:
             if args.quantway == 'nr':
                 mess_recv = OneBitNR(message_lst, args, normfactor = 2**8)
-            elif args.quantway == 'detector':
-                mess_recv =  OneBitNR_SIMO(message_lst, args)
+            elif args.quantway == 'mimo':
+                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h))
             elif args.quantway == 'ldpc':
-                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args)
+                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h))
             server.aggregate_diff_erf(mess_recv)
         else:
             server.aggregate_diff_erf(message_lst)

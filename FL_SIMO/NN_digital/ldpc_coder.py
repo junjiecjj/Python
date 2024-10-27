@@ -96,6 +96,12 @@ class LDPC_Coder_llr(object):
             self.decH[:, j] = tmpH[:, col_exchange[j]]
         return
 
+    def NoneZeros(self):
+        ## 字典  {行号: {不为 0 的列号}}
+        self.SetRows  = {f'{i}': set(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
+        ## 字典  {列号: {不为 0 的行号}}
+        self.SetCols = {f'{j}': set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
+        return
 
     def encoder(self, uu):
         cc = np.zeros(self.codelen, dtype = np.int8)
@@ -116,12 +122,6 @@ class LDPC_Coder_llr(object):
         #         cc[i] ^=  (uu[j]&self.encH[i, self.codechk:][j])
         return cc
 
-    def NoneZeros(self):
-        ## 字典  {行号: {不为 0 的列号}}
-        self.SetRows  = {f'{i}': set(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
-        ## 字典  {列号: {不为 0 的行号}}
-        self.SetCols = {f'{j}': set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
-        return
 
     ## 对数域的和积算法
     def decoder_spa(self, yy_llr):

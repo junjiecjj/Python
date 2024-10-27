@@ -31,7 +31,7 @@ def args_parser():
     "local_bs": 128,
     "test_bs" : 128,
     "num_of_clients" : 100,
-    "cfrac" : 0.1,
+    "active_client" : 10,
     "num_comm" : 1000,
     "save_path" : home + '/DigitalFL/NN/',
     "lr" : 0.01,
@@ -52,8 +52,8 @@ def args_parser():
     ## others
     "smallprob": 1e-15,
 
-    "Nt" : 4,
-    "Nr" : 6,
+    "Nt" : 10,
+    "Nr" : 16,
     "P" : 1,
     "d" : 2,
     ##>>>>>>>  modulation param
@@ -69,10 +69,10 @@ def args_parser():
 
     # 如果想用GPU且存在GPU, 则用GPU; 否则用CPU;
     args.device = torch.device(args.gpu_idx if torch.cuda.is_available() and args.gpu else "cpu")
-
+    args.Nt = args.active_client
     return args
 
-# args = args_parser()
+args = args_parser()
 
 
 
