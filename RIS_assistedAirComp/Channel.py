@@ -89,9 +89,6 @@ def Generate_hAI(N, Ny, Nz, RIS_locate, users_locate, beta_AI, PL_AI):
     return h_AI
 
 
-
-
-
 #%% Generate Channel, Method 1
 # ## G: RIS to BS channel
 # GLos = UPA2ULA_Los(N = N, Nx = Nx, Ny = Ny, azi_AP = 0, azi_RIS = -np.pi, ele_RIS = 0)

@@ -183,7 +183,6 @@ class LDPC_Coder_llr(object):
                     self.MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
         return uu_hat, iter_num + 1
 
-
     ## 对数域的最小和算法
     def decoder_msa(self, yy_llr, alpha = 0.75):
         iter_num = 0

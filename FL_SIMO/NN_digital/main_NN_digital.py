@@ -57,16 +57,16 @@ args.active_client = 10
 args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
-args.quantize = False     # True, False
-args.quantway = 'nr'    # 'nr',  'mimo', 'ldpc'
+args.quantize = True     # True, False
+args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
 args.local_bs = 128
 args.local_up = 1
-args.local_epoch = 2
+args.local_epoch = 1
 args.snr_dB = 6
-args.norm_fact = 2**2
+args.norm_fact = 2**8
 
 ## seed
-set_random_seed(args.seed)
+set_random_seed(1) ## args.seed
 set_printoption(5)
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
@@ -102,17 +102,17 @@ for comm_round in range(args.num_comm):
 
         if args.quantize == True:
             if args.quantway == 'nr':
-                print(f"{args.case} -> quantize -> NR -> {args.norm_fact}")
+                print(f"  {args.case} -> quantize -> NR -> {args.norm_fact}")
                 mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
-                print(f"{args.case} -> quantize -> MIMO -> {args.norm_fact}")
+                print(f"  {args.case} -> quantize -> MIMO -> {args.norm_fact}")
                 mess_recv, err =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
-                print(f"{args.case} -> quantize -> LDPC -> {args.norm_fact}")
+                print(f"  {args.case} -> quantize -> LDPC -> {args.norm_fact}")
                 mess_recv, err =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_gradient_erf(mess_recv, cur_lr)
         else:
-            print(f"{args.case} -> without quantization")
+            print(f"  {args.case} -> without quantization")
             err = 0
             server.aggregate_gradient_erf(message_lst, cur_lr)
     ### diff
@@ -125,24 +125,24 @@ for comm_round in range(args.num_comm):
             message_lst.append(message)
         if args.quantize == True:
             if args.quantway == 'nr':
-                print(f"{args.case} -> quantize -> NR -> {args.norm_fact}")
+                print(f"  {args.case} -> quantize -> NR -> {args.norm_fact}")
                 mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
-                print(f"{args.case} -> quantize -> MIMO -> {args.norm_fact}")
+                print(f"  {args.case} -> quantize -> MIMO -> {args.norm_fact}")
                 mess_recv, err  =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
-                print(f"{args.case} -> quantize -> LDPC -> {args.norm_fact}")
+                print(f"  {args.case} -> quantize -> LDPC -> {args.norm_fact}")
                 mess_recv, err  =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_diff_erf(mess_recv)
         else:
-            print(f"{args.case} -> without quantization")
+            print(f"  {args.case} -> without quantization")
             err = 0
             server.aggregate_diff_erf(message_lst)
 
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
-    if (comm_round + 1) % 2 == 0:
-        print(f"   [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f}, {err}]")
+    # if (comm_round + 1) % 2 == 0:
+    print(f"  [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f}, {err}]")
     recorder.assign([acc, test_los, cur_lr, ])
     recorder.plot(ckp.savedir, args)
 recorder.save(ckp.savedir, args)
