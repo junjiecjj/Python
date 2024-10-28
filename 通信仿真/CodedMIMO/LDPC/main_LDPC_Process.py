@@ -63,8 +63,6 @@ def BPSK_AWGN_Simulation(i, name, args, snr = 2.0, dic_berfer = '',  lock = None
         lock.release()
     return
 
-
-
 # BPSK_AWGN_Simulation(topargs)
 
 if __name__ == '__main__':

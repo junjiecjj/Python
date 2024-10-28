@@ -49,21 +49,21 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False
+args.IID = True
 args.model = "CNN"
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
 args.active_client = 10
-args.case = 'grad'        # "grad", "diff"
+args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
-args.quantize = True     # True, False
+args.quantize = False     # True, False
 args.quantway = 'nr'    # 'nr',  'mimo', 'ldpc'
 args.local_bs = 128
 args.local_up = 1
-args.local_epoch = 5
-args.snr_dB = 25
-args.norm_fact = 2
+args.local_epoch = 2
+args.snr_dB = 6
+args.norm_fact = 2**2
 
 ## seed
 set_random_seed(args.seed)
@@ -103,16 +103,17 @@ for comm_round in range(args.num_comm):
         if args.quantize == True:
             if args.quantway == 'nr':
                 print(f"{args.case} -> quantize -> NR -> {args.norm_fact}")
-                mess_recv = OneBitNR(message_lst, args, normfactor = args.norm_fact)
+                mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
                 print(f"{args.case} -> quantize -> MIMO -> {args.norm_fact}")
-                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
                 print(f"{args.case} -> quantize -> LDPC -> {args.norm_fact}")
-                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_gradient_erf(mess_recv, cur_lr)
         else:
             print(f"{args.case} -> without quantization")
+            err = 0
             server.aggregate_gradient_erf(message_lst, cur_lr)
     ### diff
     if args.case == 'diff':
@@ -125,22 +126,23 @@ for comm_round in range(args.num_comm):
         if args.quantize == True:
             if args.quantway == 'nr':
                 print(f"{args.case} -> quantize -> NR -> {args.norm_fact}")
-                mess_recv = OneBitNR(message_lst, args, normfactor = args.norm_fact)
+                mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
                 print(f"{args.case} -> quantize -> MIMO -> {args.norm_fact}")
-                mess_recv =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
                 print(f"{args.case} -> quantize -> LDPC -> {args.norm_fact}")
-                mess_recv =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_diff_erf(mess_recv)
         else:
             print(f"{args.case} -> without quantization")
+            err = 0
             server.aggregate_diff_erf(message_lst)
 
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
     if (comm_round + 1) % 2 == 0:
-        print(f"   [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f} ]")
+        print(f"   [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f}, {err}]")
     recorder.assign([acc, test_los, cur_lr, ])
     recorder.plot(ckp.savedir, args)
 recorder.save(ckp.savedir, args)

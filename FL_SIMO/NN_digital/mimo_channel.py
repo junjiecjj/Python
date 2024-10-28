@@ -17,53 +17,6 @@ import math
 import numpy as np
 
 
-def SVD_Precoding(hmat, power, d, Nt):
-    """
-        SVD precoding.
-
-        Parameters
-        ----------
-        hmat: array(Nr, Nt). MIMO channel.
-        power: float. Transmitting power constraint.
-        d: int. data streams, d <= min(Nt/K, Nr).
-        Returns
-        ----------
-        U: array(Nr, Nr). SVD decoding matrix.
-        D: array(*, ). Singular value of hmat.
-        V: array(Nt, d). SVD precoding matrix.
-    """
-    U, D, VH = np.linalg.svd(hmat, full_matrices = True)
-    V = VH.conj().T[:, :d]
-    V_norm = np.linalg.norm(V, ord = 'fro', ) # np.sqrt(np.trace(V.dot(V.conj().T)))
-    # print(V_norm)
-    V = V * math.sqrt(power) * np.sqrt(Nt) / V_norm  # power normalization
-    return U, D, V
-
-
-def SignalNorm(signal, M, mod_type='qam', denorm = False):
-    """
-        Signal power normalization and de-normalization.
-        Parameters
-            signal: array(*, ). Signal to be transmitted or received.
-            M: int. Modulation order.
-            mod_type: str, default 'qam'. Type of modulation technique.
-            denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
-        Returns
-    """
-    if mod_type == 'bpsk' or mod_type == 'qpsk' or mod_type == '8psk':
-        Es = 1
-    if mod_type == 'qam':
-        if M == 8:
-            Es = 6
-        elif M == 32:
-            Es = 25.875
-        else: ##  https://blog.csdn.net/qq_41839588/article/details/135202875
-            Es = 2 * (M - 1) / 3
-    if not denorm:
-        signal = signal / math.sqrt(Es)
-    else:
-        signal = signal * math.sqrt(Es)
-    return signal, Es
 
 
 class MIMO_Channel():
@@ -92,10 +45,8 @@ class MIMO_Channel():
         ##  Nr == Rw x Rh
         self.Rw = Rw    # 接收阵面的天线长度
         self.Rh = Rh    # 接收阵面的天线宽度
-
         self.H = None
         return
-
 
     ## 普通的瑞丽衰落信道模型，
     ## 当为ULA到ULA时，self.Nr为接收天线数，self.Nt为发射天线数，
@@ -115,6 +66,8 @@ class MIMO_Channel():
         self.H =  (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt)) / math.sqrt(2)
 
         return
+
+
 
 def forward(Tx_sig, H, Tx_data_power = None, SNR_dB = 5,):
     """
@@ -142,7 +95,9 @@ def forward(Tx_sig, H, Tx_data_power = None, SNR_dB = 5,):
 
 
 
+def ChannelGain(args, BS_locate, User_locate, ):
 
+    return
 
 
 

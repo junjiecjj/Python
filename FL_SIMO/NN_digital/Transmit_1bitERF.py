@@ -56,7 +56,7 @@ def OneBitNR(message_lst, args, normfactor = 1):
             param_k[info[0]] = torch.tensor(symbolsK[start:end].reshape(info[1]), dtype = info[3]).to(args.device)
             start += info[2]
         mess_recov.append(param_k)
-    return mess_recov
+    return mess_recov, 0
 
 
 
