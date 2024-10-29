@@ -33,7 +33,6 @@ import Modulator
 
 utility.set_random_seed()
 
-
 def parameters():
     # 获取当前系统主机名
     host_name = socket.gethostname()

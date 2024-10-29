@@ -41,7 +41,7 @@ import models
 from config import args_parser
 import MetricsLog
 
-from mimo_channel import MIMO_Channel
+from mimo_channel import MIMO_Channel, channelConfig, Generate_hd
 
 
 now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
@@ -49,7 +49,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True
+args.IID = False     # True, False
 args.model = "CNN"
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
@@ -58,16 +58,25 @@ args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
-args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
-args.local_bs = 128
+args.quantway = 'mimo'    # 'nr',  'mimo', 'ldpc'
+args.local_bs = 64
 args.local_up = 1
 args.local_epoch = 1
-args.snr_dB = 6
+args.snr_dB = None
 args.norm_fact = 2**8
 
 ## seed
-set_random_seed(1) ## args.seed
+args.seed = 9999
+set_random_seed(args.seed) ## args.seed
 set_printoption(5)
+
+##>>>>>>>>>>>>>>>>> channel
+BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args)
+args.sigmaK2 = -60                        # dBm
+sigmaK2 = 10**(args.sigmaK2/10.0)/1000    # 噪声功率
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
@@ -89,10 +98,14 @@ for comm_round in range(args.num_comm):
     # print(f"candidates = {candidates}")
     message_lst = []
 
-    ## generate channel
-    channel = MIMO_Channel(Nr = 16, Nt = args.num_of_clients, )
-    channel.circular_gaussian()
-    h = channel.H[:, candidates]
+    ##  channel, only small fading, religh fading, y = Hx+n~CN(0, sigma^2)
+    # channel = MIMO_Channel(Nr = 16, Nt = args.num_of_clients, )
+    # channel.circular_gaussian()
+    # h = channel.H[:, candidates]
+
+    ## channel, large scale + small scale fading, in this case, H has been normalized by sigmaK2, so y = Hx + n~CN(0,1)
+    H = Generate_hd(args.Nr, args.num_of_clients, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigmaK2)
+    h = H[:, candidates]
 
     ## grdient
     if args.case == 'grad':
@@ -144,8 +157,9 @@ for comm_round in range(args.num_comm):
     # if (comm_round + 1) % 2 == 0:
     print(f"  [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f}, {err}]")
     recorder.assign([acc, test_los, cur_lr, ])
-    recorder.plot(ckp.savedir, args)
-recorder.save(ckp.savedir, args)
+    # recorder.plot(ckp.savedir, args)
+    # if (comm_round + 1) % 20 == 0:
+    recorder.save(ckp.savedir, args)
 print(args)
 
 

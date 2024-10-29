@@ -67,9 +67,7 @@ class MIMO_Channel():
 
         return
 
-
-
-def forward(Tx_sig, H, Tx_data_power = None, SNR_dB = 5,):
+def forward(Tx_sig, H, power = None, SNR_dB = None, ):
     """
     Parameters
     ----------
@@ -84,32 +82,19 @@ def forward(Tx_sig, H, Tx_data_power = None, SNR_dB = 5,):
 
     """
     Nr = H.shape[0]
-    if Tx_data_power == None:
+    if power == None:
         Tx_data_power = np.mean(abs(Tx_sig)**2)
-    noise_pwr = Tx_data_power*(10**(-1*SNR_dB/10))
+    if SNR_dB != None:
+        noise_pwr = Tx_data_power*(10**(-1*SNR_dB/10))
+    elif SNR_dB == None:
+        # sigmaK2 = -60                        # dBm
+        noise_pwr = 1  # 10**(sigma2_dBm/10.0)/1000    # 噪声功率
+    # else:
+    #     raise ValueError("信噪比和噪声方差同时只能给定一个")
     # noise = np.sqrt(noise_pwr/2.0) * ( np.random.randn((self.Nr, Tx_sig.shape[-1])) + 1j * np.random.randn((self.Nr, Tx_sig.shape[-1])) )
     noise = np.sqrt(noise_pwr/2) * (np.random.normal(loc=0.0, scale=1.0, size = ( Nr, Tx_sig.shape[-1])) + 1j * np.random.normal(loc=0.0, scale=1.0,  size = (Nr, Tx_sig.shape[-1])))
     Rx_sig =  H @ Tx_sig + noise
     return Rx_sig
-
-
-
-def Point2ULASteerVec(N, K, BS_locate, users_locate):
-    XY = (users_locate - BS_locate)[:,:2]
-    x = XY[:,0]
-    y = XY[:,1]
-    theta = -np.arctan2(y, x)
-    d = np.arange(N)
-    stevec = np.exp(1j * np.pi * np.outer(d, np.sin(theta)))
-    return stevec
-
-def Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigmaK2):
-    # User to AP/RIS channel
-    hdLos = Point2ULASteerVec(N, K, BS_locate, users_locate)
-    hdNLos = np.sqrt(1/2) * ( np.random.randn(N, K) + 1j * np.random.randn(N, K))
-    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
-    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigmaK2))
-    return h_d
 
 def channelConfig(args):
     K = args.num_of_clients
@@ -119,10 +104,10 @@ def channelConfig(args):
     d0 = 1
 
     ## path loss exponents
-    alpha_Au = 4.8
+    alpha_Au = 3.3
 
     ## Rician factor
-    beta_Au = 0   # dB
+    beta_Au = 3   # dB
     beta_Au = 10**(beta_Au/10)
 
     sigmaK2 = -60                        # dBm
@@ -145,12 +130,24 @@ def channelConfig(args):
     ## generate path-loss
     PL_Au = C0 * (d_Au/d0)**(-alpha_Au)
 
-    return BS_locate, users_locate
+    return BS_locate, users_locate, beta_Au, PL_Au
 
-def ChannelGain(args, BS_locate, User_locate, ):
+def Point2ULASteerVec(N, K, BS_locate, users_locate):
+    XY = (users_locate - BS_locate)[:,:2]
+    x = XY[:,0]
+    y = XY[:,1]
+    theta = -np.arctan2(y, x)
+    d = np.arange(N)
+    stevec = np.exp(1j * np.pi * np.outer(d, np.sin(theta)))
+    return stevec
 
-    return
-
+def Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
+    # User to AP/RIS channel
+    hdLos = Point2ULASteerVec(N, K, BS_locate, users_locate)
+    hdNLos = np.sqrt(1/2) * ( np.random.randn(N, K) + 1j * np.random.randn(N, K))
+    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
+    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    return h_d
 
 
 

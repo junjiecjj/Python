@@ -33,7 +33,7 @@ def args_parser():
     "num_of_clients" : 100,
     "active_client" : 10,
     "num_comm" : 1000,
-    "save_path" : home + '/DigitalFL/NN/',
+    "save_path" : home + '/DigitalFL/NN_pathloss/',
     "lr" : 0.01,
 
 
@@ -101,7 +101,7 @@ def ldpc_args():
 
 
 
-# args = args_parser()
+args = args_parser()
 
 
 

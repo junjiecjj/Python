@@ -1,0 +1,18 @@
+
+ZF, 16QAM, 512
+
+WMMSE, 16QAM, 512
+
+(一) mmse sic 基于SINR排序, 16QAM, 512
+
+(二) wmmse sic 基于SNR排序, 16QAM, 512
+
+(二) zf sic 基于SNR排序, 16QAM, 512
+
+(三) wmmse sic 基于列范数排序,每次更新H, 16QAM, 512
+
+(三) zf sic 基于列范数排序,每次更新H,  16QAM, 512
+
+ (三) wmmse sic 基于列范数排序,固定H，只利用检测顺序, 16QAM, 512
+
+ (三) zf sic 基于列范数排序,固定H，只利用检测顺序, 16QAM, 512

@@ -25,7 +25,7 @@ from config import ldpc_args
 
 
 ## 1-bit quant, w/o LDPC, only detector
-def OneBitNR_SIMO(message_lst, args, H, snr_dB = 10, normfactor = 1):
+def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -53,7 +53,7 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = 10, normfactor = 1):
     if modutype == 'qam':
         modem = comm.QAMModem(args.M)
     elif modutype == 'psk':
-        modem =  comm.PSKModem(args.M)
+        modem = comm.PSKModem(args.M)
     Es = Modulator.NormFactor(mod_type = modutype, M = args.M,)
 
     yy = modem.modulate(uu.flatten()).reshape(args.Nt, -1)
@@ -61,9 +61,12 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = 10, normfactor = 1):
     tx_sig = yy / np.sqrt(Es)
 
     ## channel
-    P_noise = 1*(10**(-1*snr_dB/10))
-    rx_sig = forward(tx_sig, H, Tx_data_power = 1, SNR_dB = snr_dB)
-
+    if  snr_dB != None:
+        P_noise = 1*(10**(-1*snr_dB/10))
+    else:
+        P_noise = 1
+    print(f"P_noise = {P_noise}")
+    rx_sig = forward(tx_sig, H, power = 1, SNR_dB = snr_dB)
     ## detector
     G_MMSE = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt)) @ H.T.conjugate()
     yy_hat = G_MMSE @ rx_sig
@@ -90,7 +93,7 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = 10, normfactor = 1):
 ## 1-bit quant, w/ LDPC,
 ldpcargs = ldpc_args()
 LDPC =  LDPC_Coder_llr(ldpcargs)
-def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = 10, normfactor = 1):
+def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -137,8 +140,11 @@ def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = 10, normfactor = 1):
     tx_sig = yy / np.sqrt(Es)
 
     ## channel
-    P_noise = 1*(10**(-1*snr_dB/10))
-    rx_sig = forward(tx_sig, H, Tx_data_power = 1, SNR_dB = snr_dB)
+    if  snr_dB != None:
+        P_noise = 1*(10**(-1*snr_dB/10))
+    else:
+        P_noise = 1
+    rx_sig = forward(tx_sig, H, power = 1, SNR_dB = snr_dB)
 
     ## detector & get llr
     llr_bits = np.zeros((args.Nt, rx_sig.shape[-1] * bitsPerSym))

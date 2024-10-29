@@ -60,11 +60,9 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-
     ##
     if demod_type == 'hard':
         idx = np.abs(input_symbols.reshape(-1,1) - H[:,None] @ constellation.reshape(1, -1)).argmin(1)
-        # syms_hard_decoded =
         # index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(idx, bitsPerSym)
 

@@ -39,8 +39,10 @@ class checkpoint(object):
             self.now =  now
 
         tempp = '_' + args.diff_case + str([args.local_up if args.diff_case == 'batchs' else args.local_epoch][0])
-
-        quantway = '_1bits_' + args.quantway + '_' if args.quantway == 'nr' else '_1bits_' + args.quantway + str(args.snr_dB) + '(dB)_'
+        if args.snr_dB != None:
+            quantway = '_1bits_' + args.quantway + '_' if args.quantway == 'nr' else '_1bits_' + args.quantway + str(args.snr_dB) + '(dB)_'
+        elif args.sigmaK2 != None:
+            quantway = '_1bits_' + args.quantway + '_' if args.quantway == 'nr' else '_1bits_' + args.quantway + str(args.sigmaK2) + '(dBm)_'
         tmp = f"{args.model}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{quantway if args.quantize else '_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}_bs{args.local_bs}_" + self.now
         self.savedir = os.path.join(args.save_path, tmp)
         os.makedirs(self.savedir, exist_ok = True)
