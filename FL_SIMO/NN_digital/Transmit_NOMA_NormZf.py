@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct 26 21:32:56 2024
+Created on Wed Oct 30 17:15:44 2024
 
 @author: jack
 """
+
 import scipy
 import numpy as np
 import torch
@@ -25,7 +26,7 @@ from config import ldpc_args
 
 
 ## 1-bit quant, w/o LDPC, only detector
-def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_NormZF(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -67,12 +68,20 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
         P_noise = 1
     print(f"P_noise = {P_noise}")
     rx_sig = forward(tx_sig, H, power = 1, SNR_dB = snr_dB)
-    ## mmse detector
-    G_MMSE = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt)) @ H.T.conjugate()
-    yy_hat = G_MMSE @ rx_sig
-    uu_hat = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), yy_hat.flatten(), 'hard', Es = Es, ).reshape(args.Nt, -1)
+    ## detector
+    tx_syms_hat = np.zeros((args.Nt, rx_sig.shape[-1]), dtype = complex)
+    Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
+    Order = np.flip(np.argsort(Hnorm,))
+    for nt in range(args.Nt):
+        H_bar = H[:, Order[nt:]]
+        G = scipy.linalg.pinv(H_bar)
+        xk_est = (G @ rx_sig)[0,:]
+        xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+        xk_hat = modem.modulate(xk_bits)
+        tx_syms_hat[Order[nt]] = xk_hat
+        rx_sig = rx_sig - np.outer(H[:, Order[nt]], xk_hat/np.sqrt(Es))
+    uu_hat = modem.demodulate(tx_syms_hat.flatten(), 'hard',).reshape(args.Nt, -1)
     uu_hat = uu_hat[:, :D]
-
     ##
     SS_hat = np.where(uu_hat.astype(np.float32) < 1, -1, 1) / normfactor
     mess_recov = []
@@ -93,7 +102,7 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
 ## 1-bit quant, w/ LDPC,
 ldpcargs = ldpc_args()
 LDPC =  LDPC_Coder_llr(ldpcargs)
-def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_LDPC_NormZF(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -148,14 +157,28 @@ def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
 
     ## detector & get llr
     llr_bits = np.zeros((args.Nt, rx_sig.shape[-1] * bitsPerSym))
-    W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt)) @ H.T.conjugate()
-    WH = W@H
+    Order = []
+    idx_ary = list(np.arange(args.Nt))
+    P = 1
     for nt in range(args.Nt):
-        xk_est = W[nt] @ rx_sig
-        hk = WH[nt, nt]
-        sigmaK = 1 * (np.sum(np.abs(WH[nt])**2) - np.abs(WH[nt, nt])**2) + P_noise * np.sum(np.abs(W[nt])**2)
-        llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigmaK)
-        llr_bits[nt] = llrK
+        W = scipy.linalg.pinv(H)
+        WH = W @ H
+        SNRo = np.linalg.norm(W, ord = 2, axis = 1)
+        minidx = np.argmin(SNRo)
+        Order.append(idx_ary[minidx])
+        idx_ary.remove(idx_ary[minidx])
+        xk_est = W[minidx] @ rx_sig
+        ## hard
+        xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+        xk_hat = modem.modulate(xk_bits)
+        rx_sig = rx_sig - np.outer(H[:, minidx], xk_hat/np.sqrt(Es))
+        H = np.delete(H, [minidx], axis = 1)
+        ## soft
+        hk = WH[minidx, minidx]
+        sigma_K2 = P * (np.sum(np.abs(WH[minidx])**2) - np.abs(WH[minidx, minidx])**2) + P_noise * np.sum(np.abs(W[minidx])**2)
+        llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigma_K2)
+        llr_bits[Order[-1]] = llrK
+
     ## decoder
     uu_hat = Parallel_Decoder(llr_bits, len(message_lst), uu.shape[1]) #.astype(np.int8)
     uu_hat = uu_hat[:, :D]
@@ -176,8 +199,6 @@ def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
     err = (uu_hat != uu0).sum(axis = 1)/uu0.shape[-1]
     # print(f"err2 = {err}")
     return mess_recov, err
-
-
 
 
 def Parallel_Decoder(llr_bits, K, mess_len):

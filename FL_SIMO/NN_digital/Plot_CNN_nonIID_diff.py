@@ -25,6 +25,21 @@ fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
+# 一、移动平均滤波
+def moving_average(signal, window_size):
+    window = np.ones(window_size) / window_size
+    return np.convolve(signal, window, mode='same')
+
+# 二、中值滤波
+def median_filter(signal, window_size):
+    filtered_signal = np.zeros_like(signal)
+    half_window = window_size // 2
+
+    for i in range(half_window, len(signal) - half_window):
+        window = signal[i - half_window : i + half_window + 1]
+        filtered_signal[i] = np.median(window)
+
+    return filtered_signal
 
 def CNN_nonIID_small():
     # %% 画图
@@ -84,32 +99,25 @@ def CNN_nonIID_small():
     out_fig.savefig('./Figures/CNN_nonIID_small.pdf' )
     plt.show()
 
-
-def CNN_nonIID_Large_small():
+def CNN_nonIID_Large_small_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 200
+    L = 800
     ## erf
-    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch5_sgd_0.01_U100_bs64_2024-10-29-14:52:41/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 14, mfc = 'white', markevery = 100, label = 'Error-free',)
+    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch2_sgd_0.01_U100_bs64_2024-10-30-12:05:11/TraRecorder.npy")[:L]
+    axs.plot(data[:-2,0], moving_average(data[:,1], 5)[:-2], color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 14, mfc = 'white', markevery = 100, label = 'Error-free',)
 
     ## 1-bit erf
-    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch5_1bits_nr_sgd_0.01_U100_bs64_2024-10-29-14:50:42/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'r', lw = 3, linestyle='-',  label = '1-bit Error-free',)
+    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch2_1bits_nr_sgd_0.01_U100_bs64_2024-10-30-12:01:30/TraRecorder.npy")[:L]
+    axs.plot(data[:-2,0], moving_average(data[:,1], 5)[:-2], color = 'b', lw = 3, linestyle='-',  label = '1-bit Error-free',)
 
     ## 1-bit -60dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch5_1bits_mimo-60(dBm)_sgd_0.01_U100_bs64_2024-10-29-15:54:45/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'olive', lw = 3, linestyle='-', label = '1-bit w/o LDPC',)
+    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch2_1bits_mimo-60(dBm)_sgd_0.01_U100_bs64_2024-10-30-13:18:03/TraRecorder.npy")[:L]
+    axs.plot(data[:-2,0], moving_average(data[:,1], 5)[:-2], color = 'olive', lw = 3, linestyle='-', label = '1-bit w/o LDPC',)
 
-    # ## 1-bit 6dB, LDPC
-    # data = np.load("/home/jack/DigitalFL/NN/CNN_IID_diff_epoch1_1bits_ldpc6(dB)_sgd_0.01_U100_bs128_2024-10-28-21:19:02/TraRecorder.npy")[:L]
-    # axs.plot(data[:,0], data[:,1], color = 'olive', lw = 3, linestyle='--', label = '1-bit w/ LDPC, 6 dB',)
-
-    # axs.semilogy(APlst, sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 14, label = 'SCA w/o RIS', )
-    # axs.semilogy(APlst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
-    # axs.semilogy(APlst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
-    # axs.semilogy(APlst, dc_rand_res, color = 'olive', lw = 3, linestyle='--',  marker = '^', ms = 16, label = 'DC random',  )
-    # axs.semilogy(APlst, dc_wo_res, color = 'olive', lw = 3, linestyle='--',  marker = '*', ms = 16, label = 'DC w/o RIS',  )
+    ## 1-bit 6dB, LDPC
+    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_noIID_diff_epoch2_1bits_ldpc-60(dBm)_sgd_0.01_U100_bs64_2024-10-30-13:28:10/TraRecorder.npy")[:L]
+    axs.plot(data[:-2,0], moving_average(data[:,1], 5)[:-2], color = 'r', lw = 3, linestyle='--', marker = '*', ms = 14,  markevery = 50, label = 'Proposed 1-bit w/ LDPC',)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
@@ -129,7 +137,7 @@ def CNN_nonIID_Large_small():
     [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.3, 1.06)  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.3, 1.06)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -144,7 +152,7 @@ def CNN_nonIID_Large_small():
 
 # CNN_nonIID_small()
 
-CNN_nonIID_Large_small()
+CNN_nonIID_Large_small_acc()
 
 
 

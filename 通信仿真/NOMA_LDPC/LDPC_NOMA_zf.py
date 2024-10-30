@@ -14,8 +14,6 @@ https://blog.csdn.net/weixin_43871127/article/details/104593325
 
 """
 
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -27,15 +25,13 @@ import socket, getpass , os
 ##  自己编写的库
 from sourcesink import SourceSink
 # from config import args
+# from mimo_channel import  SignalNorm
 from mimo_channel import channelConfig, Generate_hd, PassChannel
 from ldpc_coder import LDPC_Coder_llr
 import utility
 import Modulator
 
-
 utility.set_random_seed()
-
-
 
 def parameters():
     home = os.path.expanduser('~')
@@ -83,7 +79,7 @@ coderargs = {'codedim' : ldpcCoder.codedim,
              'col' : ldpcCoder.num_col}
 
 source = SourceSink()
-logf = "LDPC_MIMO_BerFer_sic1.txt"
+logf = "LDPC_MIMO_BerFer_zf.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 M = args.M
@@ -103,7 +99,7 @@ BS_locate, users_locate, beta_Au, PL_Au = channelConfig(Nt)
 
 # 接收方估计
 # def main_mmseSIC():
-sigma2dBm = np.array([ -60, -70, -75, -80, -85, -90, -95, -100, -105, -110, -115])  # dBm
+sigma2dBm = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
 sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
 for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     source.ClrCnt()
@@ -111,10 +107,11 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     bitsPerSym = int(np.log2(M))
     while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
         H0 = Generate_hd(Nr, Nt, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
-
         # 编码
-        uu = source.GenerateBitStr(ldpcCoder.codedim)
-        cc = ldpcCoder.encoder(uu)
+        uu = source.GenerateBitStr(Nt * ldpcCoder.codedim)
+        cc = np.array([], dtype = np.int8)
+        for k in range(Nt):
+            cc = np.hstack((cc, ldpcCoder.encoder(uu[k*ldpcCoder.codedim : (k+1)*ldpcCoder.codedim])))
 
         # 调制
         yy = modem.modulate(cc)
@@ -124,41 +121,27 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         # 信道
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
-        #%%=======================================================
-        ##    (一) mmse sic 基于SINR排序, LDPC coded MIMO, soft
-        ###=======================================================
+        #%%============================================
+        ##    (0) ZF , LDPC coded NOMA, soft
+        ###============================================
         H = copy.deepcopy(H0)
         llr_bits = np.zeros((Nt, rx_sig.shape[-1] * bitsPerSym))
 
-        Order = []
-        idx_ary = list(np.arange(Nt))
-
+        W = scipy.linalg.pinv(H)
+        WH = W@H
         for nt in range(Nt):
-            W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
-            WH = W @ H
-            SINR = []
-            for i in range(Nt - nt):
-                tmp = P * (np.sum(np.abs(WH[i])**2) - np.abs(WH[i, i])**2) + P_noise * np.sum(np.abs(W[i])**2)
-                SINR.append(P * np.abs(WH[i, i])**2 / tmp)
-            maxidx = np.argmax(SINR)
-            Order.append(idx_ary[maxidx])
-            idx_ary.remove(idx_ary[maxidx])
-            xk_est = W[maxidx] @ rx_sig
-
-            ## hard
-            xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
-            xk_hat = modem.modulate(xk_bits)
-            rx_sig = rx_sig -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
-            H = np.delete(H, [maxidx], axis = 1)
-
+            xk_est = W[nt] @ rx_sig
             ## soft
-            hk = WH[maxidx, maxidx]
-            sigmaK = P * (np.sum(np.abs(WH[maxidx])**2) - np.abs(WH[maxidx, maxidx])**2) + P_noise * np.sum(np.abs(W[maxidx])**2)
+            hk = WH[nt, nt]
+            sigmaK = P * (np.sum(np.abs(WH[nt])**2) - np.abs(WH[nt, nt])**2) + P_noise * np.sum(np.abs(W[nt])**2)
             llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigmaK)
-            llr_bits[Order[-1]] = llrK
-
+            llr_bits[nt] = llrK
         llr_bits = llr_bits.reshape(-1)
-        uu_hat, iter_num = ldpcCoder.decoder_spa(llr_bits)
+        # uu_hat, iter_num = ldpcCoder.decoder_spa(llr_bits)
+
+        uu_hat = np.array([], dtype = np.int8)
+        for k in range(Nt):
+            uu_hat = np.hstack((uu_hat, ldpcCoder.decoder_spa(llr_bits[k * ldpcCoder.codelen : (k+1) * ldpcCoder.codelen])[0] ))
         source.CntErr(uu, uu_hat)
 
         ##

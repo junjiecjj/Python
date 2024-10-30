@@ -240,16 +240,15 @@ def SNR_berfer( ):  ## E = 10, B = 128
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("NOMA_16QAM_16x10_fer.eps")
-        out_fig.savefig( "NOMA_16QAM_16x10_fer.png")
+        out_fig.savefig("/home/jack/公共的/Python/通信仿真/NOMA_LDPC/NOMA_16QAM_16x10_fer.eps")
+        out_fig.savefig( "/home/jack/公共的/Python/通信仿真/NOMA_LDPC/NOMA_16QAM_16x10_fer.png")
     elif cols == 2:
-        out_fig.savefig( "NOMA_16QAM_16x10_ber.eps")
-        out_fig.savefig( "NOMA_16QAM_16x10_ber.png")
+        out_fig.savefig( "/home/jack/公共的/Python/通信仿真/NOMA_LDPC/NOMA_16QAM_16x10_ber.eps")
+        out_fig.savefig( "/home/jack/公共的/Python/通信仿真/NOMA_LDPC/NOMA_16QAM_16x10_ber.png")
 
     plt.show()
     plt.close()
     return
-
 
 SNR_berfer()
 

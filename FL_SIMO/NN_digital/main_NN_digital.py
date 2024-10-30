@@ -32,6 +32,7 @@ from Utility import set_random_seed, set_printoption
 from Utility import mess_stastic
 from Transmit_1bitERF import OneBitNR
 from Transmit_SIMO import  OneBitNR_SIMO, OneBitNR_SIMO_LPDC
+from Transmit_NOMA_SINR import OneBit_SINR, OneBit_LPDC_SINR
 from read_data import GetDataSet
 from clients import GenClientsGroup
 from server import Server
@@ -57,15 +58,15 @@ args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
-args.quantway = 'mimo'    # 'nr',  'mimo', 'ldpc'
+args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
 args.local_bs = 64
 args.local_up = 1
-args.local_epoch = 5
+args.local_epoch = 2
 args.snr_dB = None
 args.norm_fact = 2**8
 
 ## seed
-args.seed = 9999
+args.seed = 1
 set_random_seed(args.seed) ## args.seed
 set_printoption(5)
 

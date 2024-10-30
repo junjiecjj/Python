@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct 26 21:32:56 2024
+Created on Wed Oct 30 17:15:44 2024
 
 @author: jack
 """
+
 import scipy
 import numpy as np
 import torch
-# import seaborn as sns
 import copy
-# import matplotlib.pyplot as plt
-# import datetime
 import multiprocessing
-
-
 import commpy as comm
-# from Quantizer import Quantization1bits_NP_int, deQuantization1bits_NP_int
-# from mimo_channel import MIMO_Channel, SignalNorm
+
 from ldpc_coder import LDPC_Coder_llr
 import Modulator
 from mimo_channel import forward
@@ -25,7 +20,7 @@ from config import ldpc_args
 
 
 ## 1-bit quant, w/o LDPC, only detector
-def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_SINR(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -49,13 +44,13 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
     pad_len = int(np.ceil(D/bitsPerSym) * bitsPerSym - D)
     uu = np.pad(uu0, ((0,0),(0, pad_len)), 'constant', constant_values = 0)
 
+    # 调制
     modutype = args.type
     if modutype == 'qam':
         modem = comm.QAMModem(args.M)
     elif modutype == 'psk':
         modem = comm.PSKModem(args.M)
     Es = Modulator.NormFactor(mod_type = modutype, M = args.M,)
-
     yy = modem.modulate(uu.flatten()).reshape(args.Nt, -1)
     ## 符号能量归一化
     tx_sig = yy / np.sqrt(Es)
@@ -67,14 +62,32 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
         P_noise = 1
     print(f"P_noise = {P_noise}")
     rx_sig = forward(tx_sig, H, power = 1, SNR_dB = snr_dB)
-    ## mmse detector
-    G_MMSE = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt)) @ H.T.conjugate()
-    yy_hat = G_MMSE @ rx_sig
-    uu_hat = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), yy_hat.flatten(), 'hard', Es = Es, ).reshape(args.Nt, -1)
-    uu_hat = uu_hat[:, :D]
 
+    ## detector
+    tx_syms_hat = np.zeros((args.Nt, rx_sig.shape[-1]), dtype = complex)
+    Order = []
+    P = 1
+    idx_ary = list(np.arange(args.Nt))
+    for nt in range(args.Nt):
+        Wmmse = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt - nt)) @ H.T.conjugate()
+        WH = Wmmse @ H
+        SINR = []
+        for i in range(args.Nt - nt):
+            tmp = P * (np.sum(np.abs(WH[i])**2) - np.abs(WH[i, i])**2) + P_noise * np.sum(np.abs(Wmmse[i])**2)
+            SINR.append(P * np.abs(WH[i, i])**2 / tmp)
+        maxidx = np.argmax(SINR)
+        Order.append(idx_ary[maxidx])
+        idx_ary.remove(idx_ary[maxidx])
+        xk_est = Wmmse[maxidx] @ rx_sig
+        xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+        xk_hat = modem.modulate(xk_bits)
+        tx_syms_hat[Order[-1]] = xk_hat
+        rx_sig = rx_sig -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
+        H = np.delete(H, [maxidx], axis = 1)
+    uu_hat = modem.demodulate(tx_syms_hat.flatten, 'hard',).reshape(args.Nt, -1)
+    uu_hat = uu_hat[:, :D]
     ##
-    SS_hat = np.where(uu_hat.astype(np.float32) < 1, -1, 1) / normfactor
+    SS_hat = np.where(uu_hat.astype(np.float32) < 0.5, -1, 1) / normfactor
     mess_recov = []
     for k in range(len(message_lst)):
         symbolsK = SS_hat[k,:]
@@ -93,7 +106,7 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
 ## 1-bit quant, w/ LDPC,
 ldpcargs = ldpc_args()
 LDPC =  LDPC_Coder_llr(ldpcargs)
-def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_LPDC_SINR(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -148,14 +161,33 @@ def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
 
     ## detector & get llr
     llr_bits = np.zeros((args.Nt, rx_sig.shape[-1] * bitsPerSym))
-    W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt)) @ H.T.conjugate()
-    WH = W@H
+    Order = []
+    idx_ary = list(np.arange(args.Nt))
+    P = 1
     for nt in range(args.Nt):
-        xk_est = W[nt] @ rx_sig
-        hk = WH[nt, nt]
-        sigmaK = 1 * (np.sum(np.abs(WH[nt])**2) - np.abs(WH[nt, nt])**2) + P_noise * np.sum(np.abs(W[nt])**2)
-        llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigmaK)
-        llr_bits[nt] = llrK
+        W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(args.Nt - nt)) @ H.T.conjugate()
+        WH = W @ H
+        SINR = []
+        for i in range(args.Nt - nt):
+            tmp = P * (np.sum(np.abs(WH[i])**2) - np.abs(WH[i, i])**2) + P_noise * np.sum(np.abs(W[i])**2)
+            SINR.append(P * np.abs(WH[i, i])**2 / tmp)
+        maxidx = np.argmax(SINR)
+        Order.append(idx_ary[maxidx])
+        idx_ary.remove(idx_ary[maxidx])
+        xk_est = W[maxidx] @ rx_sig
+
+        ## hard
+        xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+        xk_hat = modem.modulate(xk_bits)
+        rx_sig = rx_sig -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
+        H = np.delete(H, [maxidx], axis = 1)
+
+        ## soft
+        hk = WH[maxidx, maxidx]
+        sigma_K2 = P * (np.sum(np.abs(WH[maxidx])**2) - np.abs(WH[maxidx, maxidx])**2) + P_noise * np.sum(np.abs(W[maxidx])**2)
+        llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigma_K2)
+        llr_bits[Order[-1]] = llrK
+
     ## decoder
     uu_hat = Parallel_Decoder(llr_bits, len(message_lst), uu.shape[1]) #.astype(np.int8)
     uu_hat = uu_hat[:, :D]
@@ -176,8 +208,6 @@ def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
     err = (uu_hat != uu0).sum(axis = 1)/uu0.shape[-1]
     # print(f"err2 = {err}")
     return mess_recov, err
-
-
 
 
 def Parallel_Decoder(llr_bits, K, mess_len):

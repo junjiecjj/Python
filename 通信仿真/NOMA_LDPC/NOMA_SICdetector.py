@@ -155,7 +155,7 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
             rx_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), rx_symb_mmse, 'hard', Es = Es, )
         elif case == 'sinr':
             #%%============================================
-            ##       (一) mmse sic 基于SINR排序, 书上(11.15)
+            ##     (一) mmse sic 基于SINR排序, 书上(11.15)
             ###============================================
             H = copy.deepcopy(H0)
             tx_syms_hat = np.zeros((Nt, rx_sig.shape[-1]), dtype = complex)

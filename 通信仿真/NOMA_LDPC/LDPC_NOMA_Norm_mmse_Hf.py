@@ -14,6 +14,8 @@ https://blog.csdn.net/weixin_43871127/article/details/104593325
 
 """
 
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -25,13 +27,13 @@ import socket, getpass , os
 ##  自己编写的库
 from sourcesink import SourceSink
 # from config import args
-# from mimo_channel import  SignalNorm
 from mimo_channel import channelConfig, Generate_hd, PassChannel
 from ldpc_coder import LDPC_Coder_llr
 import utility
 import Modulator
 
 utility.set_random_seed()
+
 
 def parameters():
     home = os.path.expanduser('~')
@@ -79,7 +81,7 @@ coderargs = {'codedim' : ldpcCoder.codedim,
              'col' : ldpcCoder.num_col}
 
 source = SourceSink()
-logf = "LDPC_MIMO_BerFer_zf.txt"
+logf = "LDPC_MIMO_BerFer_sic4.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 M = args.M
@@ -93,8 +95,6 @@ if modutype == 'qam':
 elif modutype == 'psk':
     modem =  cpy.PSKModem(M)
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
-# map_table, demap_table = modem.plot_constellation(Modulation_type)
-
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(Nt)
 
 # 接收方估计
@@ -121,24 +121,30 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         # 信道
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
-        #%%============================================
-        ##    (0) ZF , LDPC coded NOMA, soft
-        ###============================================
+        #%%==========================================================
+        ##       (4) wmmse sic 基于列范数排序, 固定H, 只利用检测顺序
+        ###==========================================================
         H = copy.deepcopy(H0)
+        Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
+        Order = np.flip(np.argsort(Hnorm,))
+        W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt)) @ H.T.conjugate()
+        WH = W@H
         llr_bits = np.zeros((Nt, rx_sig.shape[-1] * bitsPerSym))
 
-        W = scipy.linalg.pinv(H)
-        WH = W@H
         for nt in range(Nt):
-            xk_est = W[nt] @ rx_sig
+            idx = Order[nt]
+            xk_est = W[idx] @ rx_sig
+            ## hard
+            xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
+            xk_hat = modem.modulate(xk_bits)
+            rx_sig = rx_sig - np.outer(H[:, idx], xk_hat/np.sqrt(Es))
 
             ## soft
-            hk = WH[nt, nt]
-            sigmaK = P * (np.sum(np.abs(WH[nt])**2) - np.abs(WH[nt, nt])**2) + P_noise * np.sum(np.abs(W[nt])**2)
+            hk = WH[idx, idx]
+            sigmaK = P * (np.sum(np.abs(WH[idx])**2) - np.abs(WH[idx, idx])**2) + P_noise * np.sum(np.abs(W[idx])**2)
             llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigmaK)
-            llr_bits[nt] = llrK
+            llr_bits[idx] = llrK
         llr_bits = llr_bits.reshape(-1)
-        # uu_hat, iter_num = ldpcCoder.decoder_spa(llr_bits)
 
         uu_hat = np.array([], dtype = np.int8)
         for k in range(Nt):
