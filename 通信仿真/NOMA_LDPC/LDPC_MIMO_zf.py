@@ -14,8 +14,6 @@ https://blog.csdn.net/weixin_43871127/article/details/104593325
 
 """
 
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -33,33 +31,7 @@ from ldpc_coder import LDPC_Coder_llr
 import utility
 import Modulator
 
-
 utility.set_random_seed()
-
-# def SIC_detecor(y, H, Nt, M, Es):
-#     print(f"0: y = {y}")
-#     x = np.zeros((Nt, 1), dtype = complex)
-#     Order = []
-#     idx_ary = list(np.arange(Nt))
-#     y = y[:,None]
-#     for nt in range(Nt):
-#         Wmmse = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
-#         WH = Wmmse @ H
-#         SINR = []
-#         for i in range(Nt - nt):
-#             tmp = P * (np.sum(np.abs(WH[i])**2) - np.abs(WH[i, i])**2) + P_noise * np.sum(np.abs(Wmmse[i])**2)
-#             SINR.append(P * np.abs(WH[i, i])**2 / tmp)
-#         maxidx = np.argmax(SINR)
-#         Order.append(idx_ary[maxidx])
-#         idx_ary.remove(idx_ary[maxidx])
-#         xk_est = Wmmse[maxidx] @ y
-#         xk_bits = Modulator.demod(modem.constellation, xk_est, 'hard', Es = Es, )
-#         xk_hat = modem.modulate(xk_bits)
-#         x[Order[-1]] = xk_hat
-#         y = y -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
-#         H = np.delete(H, [maxidx], axis = 1)
-#     return x
-
 
 def parameters():
     home = os.path.expanduser('~')
@@ -80,8 +52,8 @@ def parameters():
     "home" : home,
     "smallprob": 1e-15,
 
-    "Nt" : 4,
-    "Nr" : 6,
+    "Nt" : 10,
+    "Nr" : 16,
     "P" : 1,
     "d" : 2,
     ##>>>>>>>  modulation param
@@ -127,7 +99,7 @@ BS_locate, users_locate, beta_Au, PL_Au = channelConfig(Nt)
 
 # 接收方估计
 # def main_mmseSIC():
-sigma2dBm = np.array([0, -10, -40, -50, -55, -60, -65, -70, -75, -80])  # dBm
+sigma2dBm = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
 sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
 for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     source.ClrCnt()
@@ -136,8 +108,10 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
         H0 = Generate_hd(Nr, Nt, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         # 编码
-        uu = source.GenerateBitStr(ldpcCoder.codedim)
-        cc = ldpcCoder.encoder(uu)
+        uu = source.GenerateBitStr(Nt * ldpcCoder.codedim)
+        cc = np.array([], dtype = np.int8)
+        for k in range(Nt):
+            cc = np.hstack((cc, ldpcCoder.encoder(uu[k*ldpcCoder.codedim : (k+1)*ldpcCoder.codedim])))
 
         # 调制
         yy = modem.modulate(cc)
@@ -148,7 +122,7 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
         #%%============================================
-        ##    (0) ZF , LDPC coded MIMO, soft
+        ##    (0) ZF , LDPC coded NOMA, soft
         ###============================================
         H = copy.deepcopy(H0)
         llr_bits = np.zeros((Nt, rx_sig.shape[-1] * bitsPerSym))
@@ -164,7 +138,11 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
             llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigmaK)
             llr_bits[nt] = llrK
         llr_bits = llr_bits.reshape(-1)
-        uu_hat, iter_num = ldpcCoder.decoder_spa(llr_bits)
+        # uu_hat, iter_num = ldpcCoder.decoder_spa(llr_bits)
+
+        uu_hat = np.array([], dtype = np.int8)
+        for k in range(Nt):
+            uu_hat = np.hstack((uu_hat, ldpcCoder.decoder_spa(llr_bits[k * ldpcCoder.codelen : (k+1) * ldpcCoder.codelen])[0] ))
         source.CntErr(uu, uu_hat)
 
         ##

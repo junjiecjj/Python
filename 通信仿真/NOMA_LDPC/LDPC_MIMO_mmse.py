@@ -35,12 +35,11 @@ import Modulator
 
 utility.set_random_seed()
 
-
 def parameters():
     home = os.path.expanduser('~')
 
     Args = {
-    "minimum_snr" : 2 ,
+    "minimum_snr" : 10 ,
     "maximum_snr" : 13,
     "increment_snr" : 1,
     "maximum_error_number" : 500,
@@ -55,8 +54,8 @@ def parameters():
     "home" : home,
     "smallprob": 1e-15,
 
-    "Nt" : 4,
-    "Nr" : 6,
+    "Nt" : 10,
+    "Nr" : 16,
     "P" : 1,
     "d" : 2,
     ##>>>>>>>  modulation param
@@ -82,7 +81,7 @@ coderargs = {'codedim' : ldpcCoder.codedim,
              'col' : ldpcCoder.num_col}
 
 source = SourceSink()
-logf = "LDPC_MIMO_BerFer_sic3.txt"
+logf = "LDPC_MIMO_BerFer_mmse.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 M = args.M
@@ -100,7 +99,7 @@ BS_locate, users_locate, beta_Au, PL_Au = channelConfig(Nt)
 
 # 接收方估计
 # def main_mmseSIC():
-sigma2dBm = np.array([0, -10, -40, -50, -55, -60, -65, -70, -75, -80])  # dBm
+sigma2dBm = np.array([ -60, -70, -75, -80, -85, -90, -95, -100, -105, -110, -115])  # dBm
 sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
 for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     source.ClrCnt()
@@ -120,33 +119,22 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         # 信道
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
-        #%%================================================
-        ##       (三) wmmse sic 基于列范数排序,每次更新H
-        ###================================================
+        #%%============================================
+        ##    (0) WMMSE, LDPC coded MIMO, soft
+        ###============================================
         H = copy.deepcopy(H0)
-        Hnorm = np.linalg.norm(H, ord = 2, axis = 0)
-        Order = np.flip(np.argsort(Hnorm,))
         llr_bits = np.zeros((Nt, rx_sig.shape[-1] * bitsPerSym))
 
-        # print(f"0: idx_ary = {idx_ary}")
+        W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt)) @ H.T.conjugate()
+        WH = W@H
         for nt in range(Nt):
-            idx = Order[nt]
-            H_bar = H[:, Order[nt:]]
-            W = scipy.linalg.pinv(H_bar.T.conjugate()@H_bar + P_noise*np.eye(Nt - nt)) @ H_bar.T.conjugate()
-            xk_est = (W @ rx_sig)[0,:]
-
-            ## hard
-            xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
-            xk_hat = modem.modulate(xk_bits)
-            rx_sig = rx_sig -  np.outer(H[:, idx], xk_hat/np.sqrt(Es))
+            xk_est = W[nt] @ rx_sig
 
             ## soft
-            WH = W @ H_bar
-            hk = WH[0, 0]
-            sigmaK = P * (np.sum(np.abs(WH[0])**2) - np.abs(WH[0, 0])**2) + P_noise * np.sum(np.abs(W[0])**2)
+            hk = WH[nt, nt]
+            sigmaK = P * (np.sum(np.abs(WH[nt])**2) - np.abs(WH[nt, nt])**2) + P_noise * np.sum(np.abs(W[nt])**2)
             llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigmaK)
-            llr_bits[idx] = llrK
-
+            llr_bits[nt] = llrK
         llr_bits = llr_bits.reshape(-1)
         uu_hat, iter_num = ldpcCoder.decoder_spa(llr_bits)
         source.CntErr(uu, uu_hat)

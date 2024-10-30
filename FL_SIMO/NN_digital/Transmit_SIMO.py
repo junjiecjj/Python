@@ -181,11 +181,11 @@ def Parallel_Decoder(llr_bits, K, mess_len):
     manager = multiprocessing.Manager()
     # dict_param = manager.dict()
     dict_uu = manager.dict()
-    lock = multiprocessing.Lock()  # 这个一定要定义为全局
+    # lock = multiprocessing.Lock()  # 这个一定要定义为全局
     jobs = []
 
     for k in range(K):
-        ps = multiprocessing.Process(target = Decoder_k, args=(k, llr_bits[k], copy.deepcopy(LDPC), dict_uu, lock ))
+        ps = multiprocessing.Process(target = Decoder_k, args=(k, llr_bits[k], copy.deepcopy(LDPC), dict_uu, ))
         jobs.append(ps)
         ps.start()
 
@@ -197,7 +197,7 @@ def Parallel_Decoder(llr_bits, K, mess_len):
         uu_hat[k, :] = dict_uu[k]
     return uu_hat
 
-def Decoder_k(k, llrK, decoder, dic_berfer = '',  lock = None):
+def Decoder_k(k, llrK, decoder, dic_berfer = '', lock = None):
     codelen = decoder.codelen
     # codedim = decoder.codedim
     num_frame = int(len(llrK) / codelen)

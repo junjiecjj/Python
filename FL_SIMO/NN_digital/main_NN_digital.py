@@ -20,7 +20,6 @@ non-IID:
     (2) non-IID, grad，lr = 0.1, SGD，no-quantize, U = 200, 10,  BS = 128;
         non-IID, grad，lr = 0.1, SGD，no-quantize, U = 100, 10,  BS = 128;
 
-
 """
 
 import numpy as np
@@ -61,7 +60,7 @@ args.quantize = True     # True, False
 args.quantway = 'mimo'    # 'nr',  'mimo', 'ldpc'
 args.local_bs = 64
 args.local_up = 1
-args.local_epoch = 1
+args.local_epoch = 5
 args.snr_dB = None
 args.norm_fact = 2**8
 
