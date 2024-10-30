@@ -87,27 +87,27 @@ def Only_small():
 def Large_small():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 200
+    L = 400
     ## erf
     data = np.load("/home/jack/DigitalFL/NN/CNN_IID_diff_epoch1_sgd_0.01_U100_bs128_2024-10-28-17:59:45/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 14, mfc = 'white', markevery = 20, label = 'Error-free',)
+    axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 18, mfc = 'white', markevery = 50, label = 'Error-free',)
 
     ## 1-bit erf
     data = np.load("/home/jack/DigitalFL/NN/CNN_IID_diff_epoch1_1bits_nr_sgd_0.01_U100_bs128_2024-10-28-20:46:47/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'r', lw = 3, linestyle='--', label = '1-bit Error-free',)
+    axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'b', lw = 5, linestyle='--', label = '1-bit Error-free',)
 
     ## 1-bit -60dBm, MIMO
     data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_IID_diff_epoch1_1bits_mimo-60(dBm)_sgd_0.01_U100_bs128_2024-10-29-13:12:05/TraRecorder.npy")[:L]
     axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'olive', lw = 3, linestyle='-', label = '1-bit w/o LDPC',)
 
-    # # ## 1-bit -60dBm, LDPC
-    # data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_IID_diff_epoch1_1bits_ldpc-60(dBm)_sgd_0.01_U100_bs128_2024-10-29-12:00:52/TraRecorder.npy")[:L]
-    # axs.plot(data[:,0], data[:,1], color = 'b', lw = 3, linestyle='--', label = '1-bit w/ LDPC',)
+    # ## 1-bit -60dBm, LDPC
+    data = np.load("/home/jack/DigitalFL/NN_pathloss/CNN_IID_diff_epoch1_1bits_ldpc-60(dBm)_sgd_0.01_U100_bs128_2024-10-29-12:00:52/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'r', lw = 3, linestyle='--', marker = '*', ms = 14,  markevery = 50,label = 'Proposed 1-bit w/ LDPC',)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('Test accuracy', fontproperties=font2, )
-    axs.set_title("CNN, IID", fontproperties=font2)
+    # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
