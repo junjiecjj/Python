@@ -15,7 +15,6 @@ import copy
 # import datetime
 import multiprocessing
 
-
 import commpy as comm
 # from Quantizer import Quantization1bits_NP_int, deQuantization1bits_NP_int
 # from mimo_channel import MIMO_Channel, SignalNorm
@@ -23,7 +22,6 @@ from ldpc_coder import LDPC_Coder_llr
 import Modulator
 from mimo_channel import forward
 from config import ldpc_args
-
 
 ## 1-bit quant, w/o LDPC, only detector
 def OneBit_ZFsnr(message_lst, args, H, snr_dB = None, normfactor = 1):

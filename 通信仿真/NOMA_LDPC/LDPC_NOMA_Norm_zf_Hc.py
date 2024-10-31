@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Oct 30 22:24:29 2024
+Created on Tue Oct 15 14:50:37 2024
+https://blog.csdn.net/weixin_52135976/article/details/118893267
+
+
+https://blog.csdn.net/weixin_43871127/article/details/104593325
+
 
 @author: jack
-"""
 
+可以看到最大比合并MCR的目标是最大化MCR，ZF的目标是最大化SIR，MMSE的目标是最大化SINR
+
+"""
 
 
 
@@ -75,7 +82,7 @@ coderargs = {'codedim' : ldpcCoder.codedim,
              'col' : ldpcCoder.num_col}
 
 source = SourceSink()
-logf = "LDPC_MIMO_BerFer_sic3.txt"
+logf = "LDPC_NOMA_BerFer_NormZF_Hc.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 M = args.M
@@ -116,7 +123,7 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
         #%%================================================
-        ##       (三) wmmse sic 基于列范数排序,每次更新H
+        ##       (三) zf sic 基于列范数排序,每次更新H
         ###================================================
         H = copy.deepcopy(H0)
         Hnorm = np.linalg.norm(H, ord = 2, axis = 0)

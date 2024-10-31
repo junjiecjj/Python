@@ -20,10 +20,12 @@ from sourcesink import SourceSink
 # from config import args
 from mimo_channel import channelConfig, Generate_hd, PassChannel
 from ldpc_coder import LDPC_Coder_llr
+from MPA_detector import  MPA_detector
 import utility
 import Modulator
 
 utility.set_random_seed()
+
 
 def parameters():
     home = os.path.expanduser('~')
@@ -71,7 +73,7 @@ coderargs = {'codedim' : ldpcCoder.codedim,
              'col' : ldpcCoder.num_col}
 
 source = SourceSink()
-logf = "LDPC_NOMA_BerFer_sic2.txt"
+logf = "LDPC_MIMO_BerFer_sic4.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 M = args.M
@@ -111,34 +113,12 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         # 信道
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
-        #%%=====================================================
-        ##   (二) wmmse sic 基于SNR排序, LDPC coded MIMO, soft
-        ###=====================================================
-        H = copy.deepcopy(H0)
-        llr_bits = np.zeros((Nt, rx_sig.shape[-1] * bitsPerSym))
-        Order = []
-        idx_ary = list(np.arange(Nt))
+        #%%==========================================================
+        ##  MPA detector
+        ###==========================================================
 
-        for nt in range(Nt):
-            W = scipy.linalg.pinv(H.T.conjugate()@H + P_noise*np.eye(Nt - nt)) @ H.T.conjugate()
-            WH = W @ H
-            SNRo = np.linalg.norm(W, ord = 2, axis = 1)
-            minidx = np.argmin(SNRo)
-            Order.append(idx_ary[minidx])
-            idx_ary.remove(idx_ary[minidx])
-            xk_est = W[minidx] @ rx_sig
+        llr_bits = MPA_detector(H0, rx_sig )
 
-            ## hard
-            xk_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'hard', Es = Es, )
-            xk_hat = modem.modulate(xk_bits)
-            rx_sig = rx_sig -  np.outer(H[:, minidx], xk_hat/np.sqrt(Es))
-            H = np.delete(H, [minidx], axis = 1)
-
-            ## soft
-            hk = WH[minidx, minidx]
-            sigma_K2 = P * (np.sum(np.abs(WH[minidx])**2) - np.abs(WH[minidx, minidx])**2) + P_noise * np.sum(np.abs(W[minidx])**2)
-            llrK = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), xk_est, 'soft', Es = Es, h = hk, noise_var = sigma_K2)
-            llr_bits[Order[-1]] = llrK
         llr_bits = llr_bits.reshape(-1)
 
         uu_hat = np.array([], dtype = np.int8)

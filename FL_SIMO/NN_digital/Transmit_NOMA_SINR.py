@@ -18,7 +18,6 @@ import Modulator
 from mimo_channel import forward
 from config import ldpc_args
 
-
 ## 1-bit quant, w/o LDPC, only detector
 def OneBit_SINR(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
@@ -56,7 +55,7 @@ def OneBit_SINR(message_lst, args, H, snr_dB = None, normfactor = 1):
     tx_sig = yy / np.sqrt(Es)
 
     ## channel
-    if  snr_dB != None:
+    if snr_dB != None:
         P_noise = 1*(10**(-1*snr_dB/10))
     else:
         P_noise = 1

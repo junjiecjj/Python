@@ -18,56 +18,56 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 
 
+def SVD_Precoding(hmat, power, d, Nt):
+    """
+        SVD precoding.
 
-class MIMO_Channel():
-    def __init__(self, Nr = 2, Nt = 4, d = 2, P = 1, Tw = None, Th = None, Rw = None, Rh = None, mod_type='qam', ):
-        # Base configs
-        self.Nt = Nt  # transmit antenna
-        # self.K = K  # users
-        self.Nr = Nr  # receive antenna
-        self.d = d  # data streams, d <= min(Nt/K, Nr)
-        self.P = P  # power
-        # self.M = M  # modulation order
-        self.mod_type = mod_type  # modulation type
+        Parameters
+        ----------
+        hmat: array(Nr, Nt). MIMO channel.
+        power: float. Transmitting power constraint.
+        d: int. data streams, d <= min(Nt/K, Nr).
+        Returns
+        ----------
+        U: array(Nr, Nr). SVD decoding matrix.
+        D: array(*, ). Singular value of hmat.
+        V: array(Nt, d). SVD precoding matrix.
+    """
+    U, D, VH = np.linalg.svd(hmat, full_matrices = True)
+    V = VH.conj().T[:, :d]
+    V_norm = np.linalg.norm(V, ord = 'fro', ) # np.sqrt(np.trace(V.dot(V.conj().T)))
+    # print(V_norm)
+    V = V * math.sqrt(power) * np.sqrt(Nt) / V_norm  # power normalization
+    return U, D, V
 
-        # mmWave configs, 发射和接收为ULA
-        # 假设有 N_cl 个散射簇，每个散射簇中包含 N_ray 条传播路径
-        self.Ncl = 4  # clusters, 族群数目
-        self.Nray = 6  # ray, 每个族中的路径数
-        self.sigma_h = 0.3  # gain
-        self.Tao = 0.001  # delay
-        self.fd = 3  # maximum Doppler shift
 
-        # mmWave configs, 发射和接收为UPA
-        ##  Nt == Tw x Th
-        self.Tw = Tw    # 发射阵面的天线长度
-        self.Th = Th    # 发射阵面的天线宽度
-        ##  Nr == Rw x Rh
-        self.Rw = Rw    # 接收阵面的天线长度
-        self.Rh = Rh    # 接收阵面的天线宽度
-        self.H = None
-        return
+def SignalNorm(signal, M, mod_type='qam', denorm = False):
+    """
+        Signal power normalization and de-normalization.
+        Parameters
+            signal: array(*, ). Signal to be transmitted or received.
+            M: int. Modulation order.
+            mod_type: str, default 'qam'. Type of modulation technique.
+            denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
+        Returns
+    """
+    if mod_type == 'bpsk' or mod_type == 'qpsk' or mod_type == '8psk':
+        Es = 1
+    if mod_type == 'qam':
+        if M == 8:
+            Es = 6
+        elif M == 32:
+            Es = 25.875
+        else: ##  https://blog.csdn.net/qq_41839588/article/details/135202875
+            Es = 2 * (M - 1) / 3
+    if not denorm:
+        signal = signal / math.sqrt(Es)
+    else:
+        signal = signal * math.sqrt(Es)
+    return signal, Es
 
-    ## 普通的瑞丽衰落信道模型，
-    ## 当为ULA到ULA时，self.Nr为接收天线数，self.Nt为发射天线数，
-    ## 当为UPA到UPA时，self.Nr为接收阵面的天线总数，self.Nt为发射阵面的总天线数，
-    def circular_gaussian(self, ):
-        """
-            Circular gaussian MIMO channel.
 
-            Parameters
-            ----------
-            Tx_sig: array(num_symbol, ). Modulated symbols.
-            snr: int. SNR at the receiver side.
-            Returns
-            ----------
-            Rx_sig: array(num_symbol, ). Decoded symbol at the receiver side.
-        """
-        self.H =  (np.random.randn(self.Nr, self.Nt) + 1j * np.random.randn(self.Nr, self.Nt)) / math.sqrt(2)
-
-        return
-
-def forward(Tx_sig, H, power = None, SNR_dB = None, ):
+def PassChannel(Tx_sig, H, power = None, SNR_dB = None, ):
     """
     Parameters
     ----------
@@ -89,22 +89,19 @@ def forward(Tx_sig, H, power = None, SNR_dB = None, ):
     elif SNR_dB == None:
         # sigmaK2 = -60                        # dBm
         noise_pwr = 1  # 10**(sigma2_dBm/10.0)/1000    # 噪声功率
-    # else:
-    #     raise ValueError("信噪比和噪声方差同时只能给定一个")
+
     # noise = np.sqrt(noise_pwr/2.0) * ( np.random.randn((self.Nr, Tx_sig.shape[-1])) + 1j * np.random.randn((self.Nr, Tx_sig.shape[-1])) )
     noise = np.sqrt(noise_pwr/2) * (np.random.normal(loc=0.0, scale=1.0, size = ( Nr, Tx_sig.shape[-1])) + 1j * np.random.normal(loc=0.0, scale=1.0,  size = (Nr, Tx_sig.shape[-1])))
     Rx_sig =  H @ Tx_sig + noise
     return Rx_sig
 
-def channelConfig(args):
-    K = args.num_of_clients
-
+def channelConfig(K):
     C0 = -30                             # dB
     C0 = 10**(C0/10.0)                   # 参考距离的路损
     d0 = 1
 
     ## path loss exponents
-    alpha_Au = 3.3
+    alpha_Au = 3.6
 
     ## Rician factor
     beta_Au = 3   # dB
@@ -112,8 +109,8 @@ def channelConfig(args):
 
     sigmaK2 = -60                        # dBm
     sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
-    # P0 = 30 # dBm
-    # P0 = 10**(P0/10.0)/1000
+    P0 = 30 # dBm
+    P0 = 10**(P0/10.0)/1000
 
     # Location, Case II
     BS_locate = np.array([[0, 0, 10]])
@@ -148,6 +145,8 @@ def Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
     h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
     h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
     return h_d
+
+
 
 
 

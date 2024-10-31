@@ -2,18 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Oct 15 14:50:37 2024
-https://blog.csdn.net/weixin_52135976/article/details/118893267
-
-
-https://blog.csdn.net/weixin_43871127/article/details/104593325
-
 
 @author: jack
 
-可以看到最大比合并MCR的目标是最大化MCR，ZF的目标是最大化SIR，MMSE的目标是最大化SINR
-
 """
-
 
 
 import numpy as np
@@ -32,10 +24,7 @@ from ldpc_coder import LDPC_Coder_llr
 import utility
 import Modulator
 
-
 utility.set_random_seed()
-
-
 
 def parameters():
     home = os.path.expanduser('~')

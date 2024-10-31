@@ -159,50 +159,41 @@ def SNR_berfer( ):  ## E = 10, B = 128
     # markeredgewidth # 圆的线宽
     # # 注意如果令markerfacecolor='none'，那线就会穿过圆
     lb = "MMSE"
-    axs.semilogy(MMSE[:, 0], MMSE[:, cols], color = 'b', ls='--', lw = 3, marker = 'o', ms = 18, mfc = 'none', mew = 2, label = lb)
+    axs.semilogy(MMSE[:, 0], MMSE[:, cols], color = 'b', ls='--', lw = 3, marker = 'o', ms = 18,  mew = 2, label = lb)
 
     #========================= SINR ===============================
     # markeredgecolor # 圆边缘的颜色
     # markeredgewidth # 圆的线宽
     # # 注意如果令markerfacecolor='none'，那线就会穿过圆
     lb = "SIC, SINR, mmse"
-    axs.semilogy(SIC_sinr_mmse[:, 0], SIC_sinr_mmse[:, cols], color = 'r', ls='-', lw = 3, marker = 'o', ms = 22,  mfc = 'none', mew = 2, label = lb)
+    axs.semilogy(SIC_sinr_mmse[:, 0], SIC_sinr_mmse[:, cols], color = 'r', ls='-', lw = 3, marker = 'o', ms = 25,  mfc = 'none', mew = 2, label = lb)
 
     #========================= SNR MMSE ===============================
-
     lb = "SIC, SNR, mmse"
     axs.semilogy(SIC_snr_mmse[:, 0], SIC_snr_mmse[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'D', ms = 18, mfc = 'none', mew = 2, label = lb)
 
     #========================= SNR ZF ===============================
-
     lb = "SIC, SNR, zf"
     axs.semilogy(SIC_snr_zf[:, 0], SIC_snr_zf[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = '*', ms = 20,  mew = 2, label = lb)
 
     #========================= norm wmmse Hch ===============================
-
     lb = "SIC, norm, mmse, Hc"
     axs.semilogy(SIC_norm_mmse_Hcg[:, 0], SIC_norm_mmse_Hcg[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'o', ms = 14, mfc = 'none',  mew = 2, label = lb)
 
     #========================= norm zf Hch ===============================
-
     lb = "SIC, norm, zf, Hc"
     axs.semilogy(SIC_norm_zf_Hcg[:, 0], SIC_norm_zf_Hcg[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'd', ms = 14, mfc = 'none',  mew = 2, label = lb)
 
     #========================= norm wmmse Hf ===============================
-
     lb = "SIC, norm, mmse, Hf"
-    axs.semilogy(SIC_norm_mmse_Hf[:, 0], SIC_norm_mmse_Hf[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 's', ms = 16, mfc = 'none', mew = 2, label = lb)
+    axs.semilogy(SIC_norm_mmse_Hf[:, 0], SIC_norm_mmse_Hf[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 's', ms = 20, mfc = 'none', mew = 2, label = lb)
 
     #========================= norm zf Hf ===============================
-
     lb = "SIC, norm, zf, Hf"
-    axs.semilogy(SIC_norm_zf_Hf[:, 0], SIC_norm_zf_Hf[:, cols], color = '#FFA500', ls='--', lw = 3, marker = '1', ms = 22, mew = 4, label = lb)
-
+    axs.semilogy(SIC_norm_zf_Hf[:, 0], SIC_norm_zf_Hf[:, cols], color = '#FFA500', ls='--', lw = 3, marker = '1', ms = 16, mew = 3, label = lb)
     # ========================= ML ===============================
-
     # lb = "ML"
     # axs.semilogy(ML[:, 0], ML[:, cols], color = '#FF00FF', ls='-', lw = 3, marker = 'H', ms = 18,  mfc = 'none', mew = 2, label = lb)
-
 
     ##===========================================================
     plt.gca().invert_xaxis()
