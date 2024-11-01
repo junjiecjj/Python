@@ -11,20 +11,22 @@ import scipy.io as sio
 
 
 class SCMA(object):
-    def __init__(self, args):
+    def __init__(self, ):
         ## code parameters
-        self.args = args
+        # self.args = args
         self.J = 0
         self.K = 0
-
         self.M = 0
+        self.readCB()
 
     def readCB(self):
         CB = sio.loadmat('DE_rayleigh.mat')['CB']
         (self.K, self.M, self.J) = CB.shape
 
         for k in range(CB.shape[0]):
-            CB[k] /= np.sum(np.abs(CB[k])**2) / self.K
+            tmp = np.sum(np.abs(CB[k])**2) / self.M
+            CB[k] /= np.sqrt(tmp)
+        self.CB = CB
         return
 
     def encoder(self, uu):
@@ -40,3 +42,5 @@ class SCMA(object):
 
         return
 
+
+scma = SCMA()
