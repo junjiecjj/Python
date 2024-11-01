@@ -17,15 +17,16 @@ import socket, getpass , os
 
 ##  自己编写的库
 from sourcesink import SourceSink
-# from config import args
-from mimo_channel import channelConfig, Generate_hd, PassChannel
+from Channel import circular_gaussian
+from Channel import channelConfig
+from Channel import Generate_hd
+from Channel import PassChannel
 from ldpc_coder import LDPC_Coder_llr
-from MPA_detector import  MPA_detector
+from SCMA_EncDec import SCMA
 import utility
 import Modulator
 
 utility.set_random_seed()
-
 
 def parameters():
     home = os.path.expanduser('~')
@@ -45,11 +46,6 @@ def parameters():
     ## others
     "home" : home,
     "smallprob": 1e-15,
-
-    "Nt" : 10,
-    "Nr" : 16,
-    "P" : 1,
-    "d" : 2,
     ##>>>>>>>  modulation param
     "type" : 'qam',
     "M":  16,
@@ -64,6 +60,7 @@ def parameters():
 
 args = parameters()
 
+scma = SCMA(args)
 ldpcCoder =  LDPC_Coder_llr(args)
 coderargs = {'codedim' : ldpcCoder.codedim,
              'codelen' : ldpcCoder.codelen,
@@ -73,13 +70,13 @@ coderargs = {'codedim' : ldpcCoder.codedim,
              'col' : ldpcCoder.num_col}
 
 source = SourceSink()
-logf = "LDPC_MIMO_BerFer_sic4.txt"
+logf = "LDPC_SCMA_BerFer.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 M = args.M
 Nr = args.Nr
 Nt = args.Nt
-P = args.P
+P = 1
 
 modutype = args.type
 if modutype == 'qam':
@@ -104,20 +101,17 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         cc = np.array([], dtype = np.int8)
         for k in range(Nt):
             cc = np.hstack((cc, ldpcCoder.encoder(uu[k*ldpcCoder.codedim : (k+1)*ldpcCoder.codedim])))
+        cc = cc.reshape(args.Nt, -1)
+        ## scma调制
+        yy = {}
+        for j in range(args.J):
+            yy[j] = scma.encoder(cc[j])
 
-        # 调制
-        yy = modem.modulate(cc)
-        tx_symbols = yy.reshape(Nt, -1)
-        ## 符号能量归一化
-        tx_sig = tx_symbols / np.sqrt(Es)
         # 信道
-        rx_sig = PassChannel(tx_sig, H0, power = 1, )
+        rx_sig = PassChannel(yy, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
-        #%%==========================================================
-        ##  MPA detector
-        ###==========================================================
 
-        llr_bits = MPA_detector(H0, rx_sig )
+        llr_bits = SCMA.MPA_detector(H0, rx_sig )
 
         llr_bits = llr_bits.reshape(-1)
 

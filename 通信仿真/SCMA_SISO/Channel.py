@@ -18,29 +18,6 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 
 
-def SVD_Precoding(hmat, power, d, Nt):
-    """
-        SVD precoding.
-
-        Parameters
-        ----------
-        hmat: array(Nr, Nt). MIMO channel.
-        power: float. Transmitting power constraint.
-        d: int. data streams, d <= min(Nt/K, Nr).
-        Returns
-        ----------
-        U: array(Nr, Nr). SVD decoding matrix.
-        D: array(*, ). Singular value of hmat.
-        V: array(Nt, d). SVD precoding matrix.
-    """
-    U, D, VH = np.linalg.svd(hmat, full_matrices = True)
-    V = VH.conj().T[:, :d]
-    V_norm = np.linalg.norm(V, ord = 'fro', ) # np.sqrt(np.trace(V.dot(V.conj().T)))
-    # print(V_norm)
-    V = V * math.sqrt(power) * np.sqrt(Nt) / V_norm  # power normalization
-    return U, D, V
-
-
 def SignalNorm(signal, M, mod_type='qam', denorm = False):
     """
         Signal power normalization and de-normalization.
@@ -65,6 +42,21 @@ def SignalNorm(signal, M, mod_type='qam', denorm = False):
     else:
         signal = signal * math.sqrt(Es)
     return signal, Es
+
+def circular_gaussian(Nr, Nt, ):
+    """
+        Circular gaussian MIMO channel.
+
+        Parameters
+        ----------
+        Tx_sig: array(num_symbol, ). Modulated symbols.
+        snr: int. SNR at the receiver side.
+        Returns
+        ----------
+        Rx_sig: array(num_symbol, ). Decoded symbol at the receiver side.
+    """
+    H =  (np.random.randn(Nr, Nt) + 1j * np.random.randn( Nr, Nt)) / math.sqrt(2)
+    return H
 
 
 def PassChannel(Tx_sig, H, power = None, SNR_dB = None, ):
