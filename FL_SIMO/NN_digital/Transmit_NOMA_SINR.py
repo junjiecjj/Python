@@ -83,7 +83,7 @@ def OneBit_SINR(message_lst, args, H, snr_dB = None, normfactor = 1):
         tx_syms_hat[Order[-1]] = xk_hat
         rx_sig = rx_sig -  np.outer(H[:, maxidx], xk_hat/np.sqrt(Es))
         H = np.delete(H, [maxidx], axis = 1)
-    uu_hat = modem.demodulate(tx_syms_hat.flatten, 'hard',).reshape(args.Nt, -1)
+    uu_hat = modem.demodulate(tx_syms_hat.flatten(), 'hard',).reshape(args.Nt, -1)
     uu_hat = uu_hat[:, :D]
     ##
     SS_hat = np.where(uu_hat.astype(np.float32) < 0.5, -1, 1) / normfactor

@@ -31,8 +31,10 @@ import torch
 from Utility import set_random_seed, set_printoption
 from Utility import mess_stastic
 from Transmit_1bitERF import OneBitNR
-from Transmit_SIMO import  OneBitNR_SIMO, OneBitNR_SIMO_LPDC
+from Transmit_SIMO import  OneBit_MMSE, OneBit_LDPC_MMSE
 from Transmit_NOMA_SINR import OneBit_SINR, OneBit_LPDC_SINR
+from Transmit_NOMA_SNRzf import OneBit_SNRzf, OneBit_LDPC_SNRzf
+from Transmit_NOMA_NormZf import OneBit_NormZF, OneBit_LDPC_NormZF
 from read_data import GetDataSet
 from clients import GenClientsGroup
 from server import Server
@@ -49,7 +51,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False     # True, False
+args.IID = True     # True, False
 args.model = "CNN"
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
@@ -58,10 +60,10 @@ args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
-args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
-args.local_bs = 64
+args.quantway = 'mimo'    # 'nr',  'mimo', 'ldpc'
+args.local_bs = 128
 args.local_up = 1
-args.local_epoch = 2
+args.local_epoch = 1
 args.snr_dB = None
 args.norm_fact = 2**8
 
@@ -119,10 +121,10 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
                 print(f"  {args.case} -> quantize -> MIMO -> {args.norm_fact}")
-                mess_recv, err =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err =  OneBit_NormZF(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
                 print(f"  {args.case} -> quantize -> LDPC -> {args.norm_fact}")
-                mess_recv, err =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err =  OneBit_LDPC_NormZF(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_gradient_erf(mess_recv, cur_lr)
         else:
             print(f"  {args.case} -> without quantization")
@@ -142,10 +144,10 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
                 print(f"  {args.case} -> quantize -> MIMO -> {args.norm_fact}")
-                mess_recv, err  =  OneBitNR_SIMO(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBit_SNRzf(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
                 print(f"  {args.case} -> quantize -> LDPC -> {args.norm_fact}")
-                mess_recv, err  =  OneBitNR_SIMO_LPDC(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBit_LPDC_SINR(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_diff_erf(mess_recv)
         else:
             print(f"  {args.case} -> without quantization")

@@ -25,7 +25,7 @@ from config import ldpc_args
 
 
 ## 1-bit quant, w/o LDPC, only detector
-def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_MMSE(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -93,7 +93,7 @@ def OneBitNR_SIMO(message_lst, args, H, snr_dB = None, normfactor = 1):
 ## 1-bit quant, w/ LDPC,
 ldpcargs = ldpc_args()
 LDPC =  LDPC_Coder_llr(ldpcargs)
-def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_LDPC_MMSE(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -176,8 +176,6 @@ def OneBitNR_SIMO_LPDC(message_lst, args, H, snr_dB = None, normfactor = 1):
     err = (uu_hat != uu0).sum(axis = 1)/uu0.shape[-1]
     # print(f"err2 = {err}")
     return mess_recov, err
-
-
 
 
 def Parallel_Decoder(llr_bits, K, mess_len):

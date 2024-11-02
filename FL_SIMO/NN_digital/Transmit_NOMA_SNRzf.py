@@ -24,7 +24,7 @@ from mimo_channel import forward
 from config import ldpc_args
 
 ## 1-bit quant, w/o LDPC, only detector
-def OneBit_ZFsnr(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_SNRzf(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -106,7 +106,7 @@ def OneBit_ZFsnr(message_lst, args, H, snr_dB = None, normfactor = 1):
 ## 1-bit quant, w/ LDPC,
 ldpcargs = ldpc_args()
 LDPC =  LDPC_Coder_llr(ldpcargs)
-def OneBit_LDPC_ZFsnr(message_lst, args, H, snr_dB = None, normfactor = 1):
+def OneBit_LDPC_SNRzf(message_lst, args, H, snr_dB = None, normfactor = 1):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
