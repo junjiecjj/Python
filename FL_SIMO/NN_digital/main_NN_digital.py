@@ -74,7 +74,7 @@ set_printoption(5)
 
 ##>>>>>>>>>>>>>>>>> channel
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args)
-args.sigmaK2 = -60                        # dBm
+args.sigmaK2 = -65                        # dBm
 sigmaK2 = 10**(args.sigmaK2/10.0)/1000    # 噪声功率
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<

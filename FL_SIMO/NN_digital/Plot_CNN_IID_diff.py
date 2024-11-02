@@ -87,7 +87,7 @@ def Only_small():
 def Large_small_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 200
+    L = 500
     ## erf
     data = np.load("/home/jack/DigitalFL/NN/CNN_IID_diff_epoch1_sgd_0.01_U100_bs128_2024-10-28-17:59:45/TraRecorder.npy")[:L]
     axs.plot(data[:,0], savgol_filter(data[:,1], 5, 3, mode= 'nearest'), color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 18, mfc = 'white', markevery = 50, label = 'Error-free',)
