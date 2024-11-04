@@ -45,7 +45,6 @@ import MetricsLog
 
 from mimo_channel import MIMO_Channel, channelConfig, Generate_hd
 
-
 now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 #======================== main ==================================
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
@@ -60,7 +59,7 @@ args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
-args.quantway = 'mimo'    # 'nr',  'mimo', 'ldpc'
+args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
 args.local_bs = 128
 args.local_up = 1
 args.local_epoch = 1
@@ -74,7 +73,7 @@ set_printoption(5)
 
 ##>>>>>>>>>>>>>>>>> channel
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args)
-args.sigmaK2 = -65                        # dBm
+args.sigmaK2 = -55                        # dBm
 sigmaK2 = 10**(args.sigmaK2/10.0)/1000    # 噪声功率
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<

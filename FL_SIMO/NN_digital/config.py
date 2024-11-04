@@ -33,7 +33,7 @@ def args_parser():
     "num_of_clients" : 100,
     "active_client" : 10,
     "num_comm" : 1000,
-    "save_path" : home + '/DigitalFL/CNN_SNRzf/',
+    "save_path" : home + '/DigitalFL/CNN_SINR/',
     "lr" : 0.01,
 
 

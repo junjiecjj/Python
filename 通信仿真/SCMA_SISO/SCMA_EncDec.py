@@ -11,16 +11,17 @@ import scipy.io as sio
 
 
 class SCMA(object):
-    def __init__(self, ):
+    def __init__(self, codebookfile = 'DE_rayleigh.mat'):
         ## code parameters
         # self.args = args
-        self.J = 0
-        self.K = 0
-        self.M = 0
-        self.readCB()
+        self.J = 0  # user num
+        self.K = 0  # resource block num
+        self.M = 0  # codeword num
+        self.Init(codebookfile)
 
-    def readCB(self):
-        CB = sio.loadmat('DE_rayleigh.mat')['CB']
+    ## init & normalize CB;
+    def Init(self, codebookfile = 'DE_rayleigh.mat'):
+        CB = sio.loadmat(codebookfile)['CB']
         (self.K, self.M, self.J) = CB.shape
 
         for k in range(CB.shape[0]):
@@ -29,16 +30,17 @@ class SCMA(object):
         self.CB = CB
         return
 
-    def encoder(self, uu):
+
+    def encoder(self, uu, h, CB):
 
         return
 
-    def MPA_detector_hard(self, yy):
+    def MPAdetector_hard(self, yy, h, CB, sigma2):
 
         return
 
 
-    def MPA_detector_soft(self, yy):
+    def MPAdetector_soft(self, yy, h, CB, sigma2):
 
         return
 

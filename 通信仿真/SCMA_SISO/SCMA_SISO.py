@@ -5,8 +5,6 @@ Created on Tue Oct 15 14:50:37 2024
 
 """
 
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -61,13 +59,13 @@ def parameters():
 args = parameters()
 
 scma = SCMA(args)
-ldpcCoder =  LDPC_Coder_llr(args)
-coderargs = {'codedim' : ldpcCoder.codedim,
-             'codelen' : ldpcCoder.codelen,
-             'codechk' : ldpcCoder.codechk,
-             'coderate' : ldpcCoder.coderate,
-             'row' : ldpcCoder.num_row,
-             'col' : ldpcCoder.num_col}
+ldpc =  LDPC_Coder_llr(args)
+coderargs = {'codedim' : ldpc.codedim,
+             'codelen' : ldpc.codelen,
+             'codechk' : ldpc.codechk,
+             'coderate' : ldpc.coderate,
+             'row' : ldpc.num_row,
+             'col' : ldpc.num_col}
 
 source = SourceSink()
 logf = "LDPC_SCMA_BerFer.txt"
@@ -87,7 +85,6 @@ Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(Nt)
 
 # 接收方估计
-# def main_mmseSIC():
 sigma2dBm = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
 sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
 for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
@@ -97,10 +94,10 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
         H0 = Generate_hd(Nr, Nt, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         # 编码
-        uu = source.GenerateBitStr(Nt * ldpcCoder.codedim)
+        uu = source.GenerateBitStr(Nt * ldpc.codedim)
         cc = np.array([], dtype = np.int8)
         for k in range(Nt):
-            cc = np.hstack((cc, ldpcCoder.encoder(uu[k*ldpcCoder.codedim : (k+1)*ldpcCoder.codedim])))
+            cc = np.hstack((cc, ldpc.encoder(uu[k*ldpc.codedim : (k+1)*ldpc.codedim])))
         cc = cc.reshape(args.Nt, -1)
         ## scma调制
         yy = {}
@@ -111,13 +108,13 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         rx_sig = PassChannel(yy, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
 
-        llr_bits = SCMA.MPA_detector(H0, rx_sig )
+        llr_bits = scma.MPA_detector(H0, rx_sig )
 
         llr_bits = llr_bits.reshape(-1)
 
         uu_hat = np.array([], dtype = np.int8)
         for k in range(Nt):
-            uu_hat = np.hstack((uu_hat, ldpcCoder.decoder_spa(llr_bits[k * ldpcCoder.codelen : (k+1) * ldpcCoder.codelen])[0] ))
+            uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[k * ldpc.codelen : (k+1) * ldpc.codelen])[0] ))
         source.CntErr(uu, uu_hat)
 
         ##
