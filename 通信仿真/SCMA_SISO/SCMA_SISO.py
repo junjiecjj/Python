@@ -59,6 +59,7 @@ def parameters():
 args = parameters()
 
 scma = SCMA(args)
+scmaCB = scma.CB
 ldpc =  LDPC_Coder_llr(args)
 coderargs = {'codedim' : ldpc.codedim,
              'codelen' : ldpc.codelen,
@@ -102,13 +103,13 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         ## scma调制
         yy = {}
         for j in range(args.J):
-            yy[j] = scma.encoder(cc[j])
+            yy[j] = scma.encoder(cc[j], scmaCB)
 
         # 信道
         rx_sig = PassChannel(yy, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
 
-        llr_bits = scma.MPA_detector(H0, rx_sig )
+        llr_bits = scma.MPA_detector(H0, rx_sig, scmaCB )
 
         llr_bits = llr_bits.reshape(-1)
 
