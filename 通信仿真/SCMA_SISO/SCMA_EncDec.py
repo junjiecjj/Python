@@ -73,7 +73,7 @@ class SCMA(object):
         N0 = sigma2
         CB_temp = np.zeros_like(self.CB)
         decision = np.zeros((self.J, 1))
-        decoded_symbols = np.zeros((self.J, yy.shape[-1]))
+        decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
         uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
         frame_len = yy.shape[-1]
 

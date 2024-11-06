@@ -91,7 +91,7 @@ logf = "LDPC_SCMA_BerFer.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(10, 31, 2)  # dB
+sigma2dB = np.arange(0, 31, 2)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
@@ -124,7 +124,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         # for k in range(Nt):
             # uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[k * ldpc.codelen : (k+1) * ldpc.codelen])[0] ))
         source.CntBerFer(uu, uu_hat)
-        source.CntBerFer(symbols, symbols_hat)
+        source.CntSer(symbols, symbols_hat)
         ##
         if source.tot_blk % 1 == 0:
             source.PrintScreen(snr = sigma2db)
