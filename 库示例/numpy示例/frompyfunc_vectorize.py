@@ -134,7 +134,7 @@ def add(a,b):
 	return a + b
 
 add([1,2,3],[4,5,6])
-
+# Out[139]: [1, 2, 3, 4, 5, 6]
 
 add_vectorized_func1 = np.vectorize(add)
 add_vectorized_func1([1,2,3],[4,5,6])
@@ -143,8 +143,6 @@ add_vectorized_func1([1,2,3],[4,5,6])
 # a: 2 b: 5
 # a: 3 b: 6
 # Out[2]: array([5, 7, 9])
-
-
 
 add_vectorized_func2 = np.vectorize(add, signature="(),(n)->(n)")
 add_vectorized_func2([1,2,3], np.array([4,5,6])) # 这里用np.array来保证数和数组的加法可以实现

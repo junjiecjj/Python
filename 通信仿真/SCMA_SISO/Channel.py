@@ -3,16 +3,6 @@
 
 
 
-"""
-https://www.cnblogs.com/MayeZhang/p/12374196.html
-https://www.zhihu.com/question/28698472#
-https://blog.csdn.net/weixin_39274659/article/details/111477860
-https://zhuyulab.blog.csdn.net/article/details/104434934
-https://blog.csdn.net/UncleWa/article/details/123780502
-https://zhuanlan.zhihu.com/p/627524436
-"""
-
-
 import math
 import numpy as np
 from sklearn.metrics import pairwise_distances
@@ -30,38 +20,20 @@ def FastFadingRayleigh(K, J, frame_len):
     H = (np.random.randn(K, J, frame_len) + 1j * np.random.randn(K, J, frame_len))/np.sqrt(2)
     return H
 
+def LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
+    hdLos = np.ones((K, J))
+    hdNLos = np.sqrt(1/2) * (np.random.randn(K, J) + 1j * np.random.randn(K, J))
+    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
+    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    H = np.expand_dims(h_d, 2).repeat(frame_len, axis = 2)
+    return H
 
-
-
-def PassChannel(Tx_sig, H, power = None, SNR_dB = None, ):
-    """
-    Parameters
-    ----------
-    Tx_sig : 二维数组：Nt X 长度L
-        DESCRIPTION.
-    Tx_data_power : 发送功率
-    SNR_dB :
-
-    Returns
-    -------
-    Rx_sig : 接收信号
-
-    """
-    Nr = H.shape[0]
-    if power == None:
-        Tx_data_power = np.mean(abs(Tx_sig)**2)
-    if SNR_dB != None:
-        noise_pwr = Tx_data_power*(10**(-1*SNR_dB/10))
-    elif SNR_dB == None:
-        # sigmaK2 = -60                        # dBm
-        noise_pwr = 1  # 10**(sigma2_dBm/10.0)/1000    # 噪声功率
-
-    # noise = np.sqrt(noise_pwr/2.0) * ( np.random.randn((self.Nr, Tx_sig.shape[-1])) + 1j * np.random.randn((self.Nr, Tx_sig.shape[-1])) )
-    noise = np.sqrt(noise_pwr/2) * (np.random.normal(loc=0.0, scale=1.0, size = ( Nr, Tx_sig.shape[-1])) + 1j * np.random.normal(loc=0.0, scale=1.0,  size = (Nr, Tx_sig.shape[-1])))
-    Rx_sig =  H @ Tx_sig + noise
+def PassChannel(Tx_sig, noise_var = 1, ):
+    noise = np.sqrt(noise_var/2.0) * ( np.random.randn(*Tx_sig.shape) + 1j * np.random.randn(*Tx_sig.shape) )
+    Rx_sig =  Tx_sig + noise
     return Rx_sig
 
-def channelConfig(K):
+def channelConfig(K, r = 100):
     C0 = -30                             # dB
     C0 = 10**(C0/10.0)                   # 参考距离的路损
     d0 = 1
@@ -80,7 +52,7 @@ def channelConfig(K):
 
     # Location, Case II
     BS_locate = np.array([[0, 0, 10]])
-    radius = np.random.rand(K, 1) * 100
+    radius = np.random.rand(K, 1) * r
     angle = np.random.rand(K, 1) * 2 * np.pi
     users_locate_x = radius * np.cos(angle)
     users_locate_y = radius * np.sin(angle)
@@ -94,33 +66,6 @@ def channelConfig(K):
     PL_Au = C0 * (d_Au/d0)**(-alpha_Au)
 
     return BS_locate, users_locate, beta_Au, PL_Au
-
-def Point2ULASteerVec(N, K, BS_locate, users_locate):
-    XY = (users_locate - BS_locate)[:,:2]
-    x = XY[:,0]
-    y = XY[:,1]
-    theta = -np.arctan2(y, x)
-    d = np.arange(N)
-    stevec = np.exp(1j * np.pi * np.outer(d, np.sin(theta)))
-    return stevec
-
-def Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
-    # User to AP/RIS channel
-    hdLos = Point2ULASteerVec(N, K, BS_locate, users_locate)
-    hdNLos = np.sqrt(1/2) * ( np.random.randn(N, K) + 1j * np.random.randn(N, K))
-    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
-    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
-    return h_d
-
-
-
-def LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
-
-    return
-
-
-
-
 
 
 

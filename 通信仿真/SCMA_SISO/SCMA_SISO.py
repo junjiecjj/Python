@@ -8,7 +8,7 @@ Created on Tue Oct 15 14:50:37 2024
 import numpy as np
 # import matplotlib.pyplot as plt
 # import scipy
-# import commpy as cpy
+import commpy as comm
 import copy
 import argparse
 import os
@@ -22,9 +22,9 @@ from Channel import PassChannel
 from ldpc_coder import LDPC_Coder_llr
 from SCMA_EncDec import SCMA
 import utility
-# import Modulator
+import Modulator
 
-utility.set_random_seed()
+utility.set_random_seed(1)
 
 def parameters():
     home = os.path.expanduser('~')
@@ -54,15 +54,18 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'AWGN', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'fast fading rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
     }
     args = argparse.Namespace(**Args)
     return args
 args = parameters()
 
+
 ## SCMA
 scma = SCMA()
 scmaCB = scma.CB
+row_valid = np.where(scma.FG != 0)[1].reshape(scma.K, -1)
+col_valid = np.where(scma.FG.T != 0)[1].reshape(scma.J, -1).T
 J = scma.J # user num
 K = scma.K # resource block num
 M = scma.M # codeword num
@@ -87,51 +90,49 @@ source = SourceSink()
 logf = "LDPC_SCMA_BerFer.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
-BS_locate, users_locate, beta_Au, PL_Au = channelConfig(J)
-
-# 接收方估计
-sigma2dBm = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
-sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
-for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
+## 遍历SNR
+sigma2dB = np.arange(0, 31, 2)  # dB
+sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
+for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
-    print( f"\n sigma2 = {sigma2dbm}(dBm), {sigma2w}(w):")
+    print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
     while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
         if args.channel_type == 'AWGN':
-            H0 = AWGN(K, J, frame_len)
+            H = AWGN(K, J, frame_len)
         elif args.channel_type == 'quasi-static rayleigh':
-            H0 = QuasiStaticRayleigh(K, J, frame_len)
+            H = QuasiStaticRayleigh(K, J, frame_len)
         elif args.channel_type == 'fast fading rayleigh':
-            H0 = FastFadingRayleigh(K, J, frame_len)
-        elif args.channel == 'large + quasi-static rician':
-            H0 = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
+            H = FastFadingRayleigh(K, J, frame_len)
+        elif args.channel_type == 'large + quasi-static rician':
+            BS_locate, users_locate, beta_Au, PL_Au = channelConfig(J, r = 100)
+            H = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1)
         # 编码
         uu = source.SourceBits(scma.J, ldpc.codedim)
         # cc = np.array([], dtype = np.int8)
         # for k in range(Nt):
             # cc = np.hstack((cc, ldpc.encoder(uu[k*ldpc.codedim : (k+1)*ldpc.codedim])))
         # cc = cc.reshape(args.Nt, -1)
-        ## scma调制
-        symbols = scma.encoder(uu, )
-        # 信道
-        rx_sig = PassChannel(symbols, H0, power = 1, )
-        P_noise = 1  # 1*(10**(-1*snr/10))
 
-        llr_bits = scma.MPA_detector(H0, rx_sig, scmaCB )
+        symbols = scma.mapping(uu, )
+        yy = scma.encoder(symbols, H, )
+        rx_sig = PassChannel(yy, noise_var = sigma2w, )
+
+        uu_hat = scma.MPAdetector_hard(rx_sig, H, sigma2w, Nit = 6)
 
         # llr_bits = llr_bits.reshape(-1)
 
         uu_hat = np.array([], dtype = np.int8)
         # for k in range(Nt):
             # uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[k * ldpc.codelen : (k+1) * ldpc.codelen])[0] ))
-        source.CntErr(uu, uu_hat)
+        source.CntBerFer(uu, uu_hat)
 
         ##
         if source.tot_blk % 1 == 0:
-            source.PrintScreen(snr = sigma2dbm)
+            source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***")
-    source.PrintScreen(snr = sigma2dbm)
+    source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***\n")
-    source.SaveToFile(filename = logf, snr = sigma2dbm)
+    source.SaveToFile(filename = logf, snr = sigma2db)
     # return
 
 
