@@ -58,8 +58,6 @@ def Gauss_Elimination(encH, num_row, num_col):
     ##====================== Gauss 消元 end =================================
     return encH, col_exchange
 
-
-
 class LDPC_Coder_llr(object):
     def __init__(self, args):
         ## code parameters
@@ -110,14 +108,12 @@ class LDPC_Coder_llr(object):
                 for i in range(row_dt[1]):
                     self.decH[row_dt[0], row_dt[i+2]] = 1
         # np.savetxt('orig_decH.txt', self.decH, fmt='%d', delimiter=' ')
-
         self.codelen = self.num_col
         self.codedim = self.codelen - self.codechk
         self.coderate = self.codedim / self.codelen
 
         self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-
         return
 
     # 相对较快
@@ -125,13 +121,11 @@ class LDPC_Coder_llr(object):
         tmpH = copy.deepcopy(self.decH)
         self.encH = copy.deepcopy(self.decH)
         col_exchange = np.arange(self.num_col)
-
         ##=======================================================
         ##  开始 Gauss 消元，建立系统阵(生成矩阵G )，化简为: [I, P]的形式
         ##=======================================================
         self.encH, col_exchange = Gauss_Elimination(copy.deepcopy(self.encH), self.num_row, self.num_col)
         ##====================== Gauss 消元 end =================================
-
         ##======================================================
         ## 根据列交换结果交换原 decH 矩阵的列
         ##=======================================================
@@ -139,24 +133,15 @@ class LDPC_Coder_llr(object):
             self.decH[:, j] = tmpH[:, col_exchange[j]]
         return
 
-
     def encoder(self, uu):
         cc = np.zeros(self.codelen, dtype = np.int8)
         cc[self.codechk:] = uu
-
-        ## 1：可能出错
-        # cc[:self.codechk] = np.mod(np.matmul(uu, self.encH[:,self.codechk:].T), 2)
 
         ## 2：相对快
         for i in range(self.codechk):
             cc[i] = np.logical_xor.reduce(np.logical_and(uu[:], self.encH[i, self.codechk:]))
             # cc[i] = np.logical_xor.reduce(uu[:] & self.encH[j, self.codechk:])
             # cc[i] = np.bitwise_xor.reduce(uu[:] & self.encH[j, self.codechk:])
-
-        ## 3：慢
-        # for i in range(self.codechk):
-        #     for j in range(self.codedim):
-        #         cc[i] ^=  (uu[j]&self.encH[i, self.codechk:][j])
         return cc
 
     def NoneZeros(self):
@@ -176,7 +161,6 @@ class LDPC_Coder_llr(object):
         for col in self.SetCols.keys():
             for row in self.SetCols[f'{col}']:
                 self.MV2C[int(row), int(col)] = yy_llr[int(col)]
-
         ## 开始迭代，对数域的消息传播,
         for iter_num in range(self.max_iter):
             ##==========================================================
@@ -222,10 +206,9 @@ class LDPC_Coder_llr(object):
                     Mes = 0
                     for cout in self.SetCols[f'{col}']:
                         if cout != row:
-                            Mes += self.MC2V[int(cout),int(col)] # (白老师书上3.48)
-                    self.MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
+                            Mes += self.MC2V[int(cout), int(col)] # (白老师书上3.48)
+                    self.MV2C[int(row), int(col)] = Mes +  yy_llr[int(col)]
         return uu_hat, iter_num + 1
-
 
     ## 对数域的最小和算法
     def decoder_msa(self, yy_llr, alpha = 0.75):

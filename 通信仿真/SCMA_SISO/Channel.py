@@ -17,46 +17,20 @@ import math
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
-
-def SignalNorm(signal, M, mod_type='qam', denorm = False):
-    """
-        Signal power normalization and de-normalization.
-        Parameters
-            signal: array(*, ). Signal to be transmitted or received.
-            M: int. Modulation order.
-            mod_type: str, default 'qam'. Type of modulation technique.
-            denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
-        Returns
-    """
-    if mod_type == 'bpsk' or mod_type == 'qpsk' or mod_type == '8psk':
-        Es = 1
-    if mod_type == 'qam':
-        if M == 8:
-            Es = 6
-        elif M == 32:
-            Es = 25.875
-        else: ##  https://blog.csdn.net/qq_41839588/article/details/135202875
-            Es = 2 * (M - 1) / 3
-    if not denorm:
-        signal = signal / math.sqrt(Es)
-    else:
-        signal = signal * math.sqrt(Es)
-    return signal, Es
-
-def circular_gaussian(Nr, Nt, ):
-    """
-        Circular gaussian MIMO channel.
-
-        Parameters
-        ----------
-        Tx_sig: array(num_symbol, ). Modulated symbols.
-        snr: int. SNR at the receiver side.
-        Returns
-        ----------
-        Rx_sig: array(num_symbol, ). Decoded symbol at the receiver side.
-    """
-    H =  (np.random.randn(Nr, Nt) + 1j * np.random.randn( Nr, Nt)) / math.sqrt(2)
+def AWGN(K, J, frame_len):
+    H = np.ones((K, J, frame_len))
     return H
+
+def QuasiStaticRayleigh(K, J, frame_len):
+    H0 = (np.random.randn(K, J ) + 1j * np.random.randn(K, J ))/np.sqrt(2)
+    H = np.expand_dims(H0, 2).repeat(frame_len, axis = 2)
+    return H
+
+def FastFadingRayleigh(K, J, frame_len):
+    H = (np.random.randn(K, J, frame_len) + 1j * np.random.randn(K, J, frame_len))/np.sqrt(2)
+    return H
+
+
 
 
 def PassChannel(Tx_sig, H, power = None, SNR_dB = None, ):
@@ -140,7 +114,9 @@ def Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
 
 
 
+def LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
 
+    return
 
 
 
