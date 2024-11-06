@@ -78,8 +78,8 @@ class LDPC_Coder_llr(object):
         self.smallprob = args.smallprob
         self.SetRows = {}                   # 每行不为0的列号
         self.SetCols = {}                   # 每列不为0的行号
-        self.MV2C = None                    # 变量节点 到 校验节点 的消息
-        self.MC2V = None                    # 校验节点 到 变量节点 的消息
+        # self.MV2C = None                    # 变量节点 到 校验节点 的消息
+        # self.MC2V = None                    # 校验节点 到 变量节点 的消息
 
         self.readH()
         # print("读取H完成...\n")
@@ -112,8 +112,8 @@ class LDPC_Coder_llr(object):
         self.codedim = self.codelen - self.codechk
         self.coderate = self.codedim / self.codelen
 
-        self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-        self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        # self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        # self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         return
 
     # 相对较快
@@ -153,6 +153,8 @@ class LDPC_Coder_llr(object):
 
     ## 对数域的和积算法
     def decoder_spa(self, yy_llr):
+        MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         iter_num = 0
         uu_hat = np.zeros(self.codedim, dtype = np.int8)
         ##===========================================
@@ -160,7 +162,7 @@ class LDPC_Coder_llr(object):
         ##===========================================
         for col in self.SetCols.keys():
             for row in self.SetCols[f'{col}']:
-                self.MV2C[int(row), int(col)] = yy_llr[int(col)]
+                MV2C[int(row), int(col)] = yy_llr[int(col)]
         ## 开始迭代，对数域的消息传播,
         for iter_num in range(self.max_iter):
             ##==========================================================
@@ -171,10 +173,10 @@ class LDPC_Coder_llr(object):
                     Mes = 1.0
                     for cin in self.SetRows[f'{row}']:
                         if cin != col:
-                            Mes *= np.tanh(self.MV2C[int(row), int(cin)]/2)
+                            Mes *= np.tanh(MV2C[int(row), int(cin)]/2)
                     # Mes = np.sign(Mes) * min(abs(Mes), 1-1e-15 )  ## 解决数值不稳定性问题
                     Mes = np.clip(Mes, self.smallprob - 1, 1 - self.smallprob)  ## 解决数值不稳定性问题
-                    self.MC2V[int(row), int(col)] = np.log((1 + Mes)/(1 - Mes)) # (白老师书上3.43)
+                    MC2V[int(row), int(col)] = np.log((1 + Mes)/(1 - Mes)) # (白老师书上3.43)
             ##=============================================================================
             ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
             ##=============================================================================
@@ -182,7 +184,7 @@ class LDPC_Coder_llr(object):
             for col in self.SetCols.keys():
                 Mes = 0
                 for row in self.SetCols[f'{col}']:
-                    Mes += self.MC2V[int(row), int(col)]
+                    Mes +=  MC2V[int(row), int(col)]
                 dec_llr[int(col)] = Mes + yy_llr[int(col)] # (白老师书上3.49)
             # 对等号节点判决
             cc_hat = np.zeros(self.codelen, dtype = np.int8 )
@@ -206,12 +208,14 @@ class LDPC_Coder_llr(object):
                     Mes = 0
                     for cout in self.SetCols[f'{col}']:
                         if cout != row:
-                            Mes += self.MC2V[int(cout), int(col)] # (白老师书上3.48)
-                    self.MV2C[int(row), int(col)] = Mes +  yy_llr[int(col)]
+                            Mes +=  MC2V[int(cout), int(col)] # (白老师书上3.48)
+                    MV2C[int(row), int(col)] = Mes +  yy_llr[int(col)]
         return uu_hat, iter_num + 1
 
     ## 对数域的最小和算法
     def decoder_msa(self, yy_llr, alpha = 0.75):
+        MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         iter_num = 0
         uu_hat = np.zeros(self.codedim, dtype = np.int8)
         cc_hat = np.zeros(self.codelen, dtype = np.int8 )
@@ -220,7 +224,7 @@ class LDPC_Coder_llr(object):
         ##===========================================
         for col in self.SetCols.keys():
             for row in self.SetCols[f'{col}']:
-                self.MV2C[int(row), int(col)] = yy_llr[int(col)]
+                MV2C[int(row), int(col)] = yy_llr[int(col)]
 
         ## 开始迭代，对数域的消息传播,
         for iter_num in range(self.max_iter):
@@ -230,10 +234,10 @@ class LDPC_Coder_llr(object):
             for row in self.SetRows:
                 for col in self.SetRows[f'{row}']:
                     Sign = 1.0
-                    Min = min([abs(self.MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col])
-                    sign_list = [np.sign(self.MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col]
+                    Min = min([abs(MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col])
+                    sign_list = [np.sign(MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col]
                     Sign = functools.reduce(lambda a, b: a*b, sign_list)
-                    self.MC2V[int(row), int(col)] = Sign * Min * alpha
+                    MC2V[int(row), int(col)] = Sign * Min * alpha
 
             ##=============================================================================
             ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
@@ -242,7 +246,7 @@ class LDPC_Coder_llr(object):
             for col in self.SetCols.keys():
                 Mes = 0
                 for row in self.SetCols[f'{col}']:
-                    Mes += self.MC2V[int(row), int(col)]
+                    Mes += MC2V[int(row), int(col)]
                 dec_llr[int(col)] = Mes + yy_llr[int(col)]
 
             # 对等号节点判决
@@ -267,8 +271,8 @@ class LDPC_Coder_llr(object):
                     Mes = 0
                     for cout in self.SetCols[f'{col}']:
                         if cout != row:
-                            Mes += self.MC2V[int(cout),int(col)]
-                    self.MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
+                            Mes += MC2V[int(cout),int(col)]
+                    MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
 
         return uu_hat, iter_num + 1
 

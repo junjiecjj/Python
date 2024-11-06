@@ -176,6 +176,18 @@ for date, items in groupby(rows, key=lambda r: r['date']):
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 三、组合生成器
+# https://blog.csdn.net/watfe/article/details/80108774
+# 为了输出结果好看，加了list(map(lambda x:''.join(x)……
+print(list(map(lambda x:''.join(x),itertools.combinations('ABCD', 2))))
+print(list(map(lambda x:''.join(x),itertools.permutations('ABCD', 2))))
+print(list(map(lambda x:''.join(x),itertools.combinations_with_replacement('ABCD', 2))))
+print(list(map(lambda x:''.join(x),itertools.product('ABCD', repeat=2))))
+# ['AB', 'AC', 'AD', 'BC', 'BD', 'CD']
+# ['AB', 'AC', 'AD', 'BA', 'BC', 'BD', 'CA', 'CB', 'CD', 'DA', 'DB', 'DC']
+# ['AA', 'AB', 'AC', 'AD', 'BB', 'BC', 'BD', 'CC', 'CD', 'DD']
+# ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
+
+
 ######### python把list的所有元素生成排列和组合
 ##################
 #product 就是产生多个列表或者迭代器的n维积。如果没有特别指定repeat默认为列表和迭代器的数量。((x,y) for x in A for y in B)
