@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 15 14:50:37 2024
+Created on Thu Nov  7 13:27:55 2024
 
+@author: jack
 """
+
+
 
 import numpy as np
 # import matplotlib.pyplot as plt
@@ -54,7 +57,7 @@ def parameters():
     # "M":  8,  # 8PSK
     "Nit" : 10,
     ## channel
-    'channel_type': 'large + quasi-static rician', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'fast fading rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -83,18 +86,16 @@ coderargs = {'scma.J' : scma.J ,
              'row' : ldpc.num_row,
              'col' : ldpc.num_col}
 
-frame_len = int(ldpc.codedim/bitsPerSym)
+frame_len = int(ldpc.codelen/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "SCMAdetector_large.txt"
+logf = "LDPC_scma_BerFer.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-# sigma2dB = np.arange(0, 31, 2)  # dB
-# sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
-sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
-sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
+sigma2dB = np.arange(0, 31, 2)  # dB
+sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
@@ -107,20 +108,30 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             H = FastFadingRayleigh(K, J, frame_len)
         elif args.channel_type == 'large + quasi-static rician':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(J, r = 100)
-            H = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
+            H = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1)
         # 编码
         uu = source.SourceBits(scma.J, ldpc.codedim)
-        symbols = scma.mapping(uu, )
+        cc = np.array([], dtype = np.int8)
+        for j in range(scma.J):
+            cc = np.hstack((cc, ldpc.encoder(uu[j,:])))
+        cc = cc.reshape(scma.J, -1)
+
+        symbols = scma.mapping(cc, )
         yy = scma.encoder(symbols, H, )
         rx_sig = PassChannel(yy, noise_var = sigma2w, )
-        symbols_hat, uu_hat = scma.MPAdetector_SISO_hard(rx_sig, H, 1, Nit = args.Nit)
-        # symbols_hat, uu_hat = scma.MPAdetector_hard(rx_sig, H, sigma2w, Nit = args.Nit)
 
+        symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2w, Nit = args.Nit)
+
+        # llr_bits = llr_bits.reshape(-1)
+        uu_hat = np.array([], dtype = np.int8)
+        for j in range(scma.J):
+            uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[j,:])[0] ))
+        uu_hat = uu_hat.reshape(scma.J, -1)
         source.CntBerFer(uu, uu_hat)
-        source.CntSer(symbols, symbols_hat)
+        # source.CntSer(symbols, symbols_hat)
         ##
-        # if source.tot_blk % 1 == 0:
-        source.PrintScreen(snr = sigma2db)
+        if source.tot_blk % 1 == 0:
+            source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***")
     source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***\n")

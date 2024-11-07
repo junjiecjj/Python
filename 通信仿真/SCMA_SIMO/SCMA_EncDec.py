@@ -13,7 +13,7 @@ import scipy.io as sio
 import commpy as comm
 
 
-class SCMA_SISO(object):
+class SCMA_SIMO(object):
     ## code parameters
     def __init__(self, codebookfile = 'DE_rayleigh.mat'):
         self.J = 0    # user num
@@ -60,53 +60,63 @@ class SCMA_SISO(object):
             symbols[:, c] = (uu[:, c*self.bps:(c+1)*self.bps] @ self.bits_weigh).flatten()
         return symbols
 
-    def encoder(self, symbols, H, ):
-        yy = np.zeros((self.K, symbols.shape[-1]), dtype = complex)
-        for c in range(symbols.shape[-1]):
-            yy[:, c] = np.array([self.CB[:, symbols[j, c], j] * H[:, j, c]  for j in range(self.J)]).sum(axis = 0).flatten()
+    def encoder(self, symbols, H, Nr):
+        yy = np.zeros((self.K, Nr, symbols.shape[-1]), dtype = complex)
+        for nr in range(Nr):
+            for c in range(symbols.shape[-1]):
+                yy[:, nr, c] = np.array([self.CB[:, symbols[j, c], j] * H[:,nr, j, c]  for j in range(self.J)]).sum(axis = 0).flatten()
         return yy
 
-    def MPAdetector_SISO_hard(self, yy, H, sigma2, Nit = 10):
+    def MPAdetector_SIMO_hard(self, yy, H, sigma2, Nr, Nit = 10):
         N0 = sigma2
-        CB_temp = np.zeros_like(self.CB)
+        CB_temp = np.zeros_like(self.K, self.M, self.J, Nr)
         # decision = np.zeros((self.J, 1))
         decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
         uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
         frame_len = yy.shape[-1]
 
         for f in range(frame_len):
-            MR2U = np.zeros((self.K, self.J, self.M))
-            MU2R = np.ones((self.J, self.K, self.M))/self.M
+            MR2U = np.zeros((self.K, Nr, self.J, self.M))
+            MU2R = np.ones((self.J, self.K, Nr, self.M))/self.M
             ## channel reverse
-            for j in range(self.J):
-                CB_temp[:,:,j] = self.CB[:,:,j] * (H[:, j, f].reshape(-1,1))
+            for nr in range(Nr):
+                for j in range(self.J):
+                    CB_temp[:,:,j, Nr] = self.CB[:,:,j] * (H[:, nr, j, f].reshape(-1,1))
 
             for it in range(Nit):
                 ## update FN to VN
-                MR2U = np.zeros((self.K, self.J, self.M))
-                for k in range(self.K):
-                    for j in self.SetRows[k]:
-                        col_in = copy.deepcopy(self.SetRows[k])
-                        col_in.remove(j)
-                        for m in range(self.M):
-                            for comb in self.combination:
-                                tmp = yy[k, f] - CB_temp[k, m, j]
-                                for idx, u in enumerate(col_in):
-                                    tmp -= CB_temp[k, comb[idx], u]
-                                tmp = np.exp(-np.abs(tmp)**2/N0)
-                                for idx, u in enumerate(col_in):
-                                    tmp *= MU2R[u, k, comb[idx]]
-                                MR2U[k, j, m] += tmp
+                MR2U = np.zeros((self.K, Nr, self.J, self.M))
+                for nr in range(Nr):
+                    for k in range(self.K):
+                        for j in self.SetRows[k]:
+                            col_in = copy.deepcopy(self.SetRows[k])
+                            col_in.remove(j)
+                            for m in range(self.M):
+                                for comb in self.combination:
+                                    tmp = yy[k, f] - CB_temp[k, m, j, nr]
+                                    for idx, u in enumerate(col_in):
+                                        tmp -= CB_temp[k, comb[idx], u, nr]
+                                    tmp = np.exp(-np.abs(tmp)**2/N0)
+                                    for idx, u in enumerate(col_in):
+                                        tmp *= MU2R[u, k, nr, comb[idx]]
+                                    MR2U[k, nr, j, m] += tmp
                 ## update VN to FN
-                MU2R = np.ones((self.J, self.K, self.M))/self.M
-                for j in range(self.J):
-                    for k in self.SetCols[j]:
-                        row_in = copy.deepcopy(self.SetCols[j])
-                        row_in.remove(k)
-                        for m in range(self.M):
-                            for r in row_in:
-                                MU2R[j, k, m] *= MR2U[r, j, m]
-                        MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
+                MU2R = np.ones((self.J, self.K, Nr, self.M))/self.M
+                for nr in range(Nr):
+                    nr_remain = [i for i in range(Nr)]
+                    nr_remain.remove(nr)
+                    for j in range(self.J):
+                        for k in self.SetCols[j]:
+                            row_in = copy.deepcopy(self.SetCols[j])
+                            row_in.remove(k)
+                            for m in range(self.M):
+                                for r in row_in:
+                                    MU2R[j, k, nr, m] *= MR2U[r, nr j, m]
+                            for ne in nr_remain:
+                                for m in range(self.M):
+                                    for r in copy.deepcopy(self.SetCols[j]):
+                                        MU2R[j, k, nr, m] *= MR2U[r, ne j, m]
+                            MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
             ## decision
             result = np.ones((self.J, self.M))/self.M
             for j in range(self.J):
@@ -119,7 +129,7 @@ class SCMA_SISO(object):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
         return decoded_symbols, uu_hat
 
-    def MPAdetector_SISO_soft(self, yy, H, sigma2, Nit = 10):
+    def MPAdetector_SIMO_soft(self, yy, H, sigma2, Nit = 10):
         N0 = sigma2
         CB_temp = np.zeros_like(self.CB)
         # decision = np.zeros((self.J, 1))

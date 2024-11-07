@@ -7,17 +7,17 @@ import math
 import numpy as np
 from sklearn.metrics import pairwise_distances
 
-def AWGN(K, J, frame_len):
-    H = np.ones((K, J, frame_len))
+def AWGN(K, Nr, J, frame_len):
+    H = np.ones((K, Nr, J, frame_len))
     return H
 
-def QuasiStaticRayleigh(K, J, frame_len):
-    H0 = (np.random.randn(K, J ) + 1j * np.random.randn(K, J ))/np.sqrt(2)
-    H = np.expand_dims(H0, 2).repeat(frame_len, axis = 2)
+def QuasiStaticRayleigh(K, Nr, J, frame_len):
+    H0 = (np.random.randn(K, Nr, J ) + 1j * np.random.randn(K, Nr, J ))/np.sqrt(2)
+    H = np.expand_dims(H0, -1).repeat(frame_len, axis = -1)
     return H
 
-def FastFadingRayleigh(K, J, frame_len):
-    H = (np.random.randn(K, J, frame_len) + 1j * np.random.randn(K, J, frame_len))/np.sqrt(2)
+def FastFadingRayleigh(K, Nr, J, frame_len):
+    H = (np.random.randn(K, Nr, J, frame_len) + 1j * np.random.randn(K, Nr, J, frame_len))/np.sqrt(2)
     return H
 
 def LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):

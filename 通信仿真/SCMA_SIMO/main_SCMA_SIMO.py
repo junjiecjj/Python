@@ -20,7 +20,7 @@ from Channel import channelConfig
 from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician
 from Channel import PassChannel
 from ldpc_coder import LDPC_Coder_llr
-from SCMA_EncDec import SCMA_SISO
+from SCMA_EncDec import SCMA_SIMO
 import utility
 import Modulator
 
@@ -53,8 +53,9 @@ def parameters():
     # "M":  4,  # QPSK
     # "M":  8,  # 8PSK
     "Nit" : 10,
+    "Nr" : 8,
     ## channel
-    'channel_type': 'large + quasi-static rician', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'quasi-static rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -62,7 +63,7 @@ args = parameters()
 
 
 ## SCMA
-scma = SCMA_SISO()
+scma = SCMA_SIMO()
 scmaCB = scma.CB
 row_valid = np.where(scma.FG != 0)[1].reshape(scma.K, -1)
 col_valid = np.where(scma.FG.T != 0)[1].reshape(scma.J, -1).T
@@ -87,7 +88,7 @@ frame_len = int(ldpc.codedim/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "SCMAdetector_large.txt"
+logf = "SCMAdetector_SIMO_Blockfading.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
@@ -100,25 +101,24 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
     while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
         if args.channel_type == 'AWGN':
-            H = AWGN(K, J, frame_len)
+            H = AWGN(K, args.Nr, J, frame_len)
         elif args.channel_type == 'quasi-static rayleigh':
-            H = QuasiStaticRayleigh(K, J, frame_len)
+            H = QuasiStaticRayleigh(K, args.Nr, J, frame_len)
         elif args.channel_type == 'fast fading rayleigh':
-            H = FastFadingRayleigh(K, J, frame_len)
+            H = FastFadingRayleigh(K, args.Nr, J, frame_len)
         elif args.channel_type == 'large + quasi-static rician':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(J, r = 100)
             H = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
-        # 编码
+        ## 编码
         uu = source.SourceBits(scma.J, ldpc.codedim)
         symbols = scma.mapping(uu, )
-        yy = scma.encoder(symbols, H, )
+        yy = scma.encoder(symbols, H, args.Nr)
         rx_sig = PassChannel(yy, noise_var = sigma2w, )
-        symbols_hat, uu_hat = scma.MPAdetector_SISO_hard(rx_sig, H, 1, Nit = args.Nit)
-        # symbols_hat, uu_hat = scma.MPAdetector_hard(rx_sig, H, sigma2w, Nit = args.Nit)
+        symbols_hat, uu_hat = scma.MPAdetector_SIMO_hard(rx_sig, H, sigma2w, args.Nr, Nit = args.Nit)
 
         source.CntBerFer(uu, uu_hat)
         source.CntSer(symbols, symbols_hat)
-        ##
+
         # if source.tot_blk % 1 == 0:
         source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***")
