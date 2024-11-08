@@ -71,7 +71,26 @@ fastfading = np.array([[0.00, 1.00000000, 0.27089921, 0.46235584],
                         [22.00, 0.15493827, 0.00034722, 0.00064863],
                         [24.00, 0.06330553, 0.00013450, 0.00025370],
                         [26.00, 0.02191601, 0.00004580, 0.00008681],
-                ])
+                        ])
+SIMO_fastfading = np.array([[0.00, 1.00000000, 0.07347083, 0.13926866],
+                        [1.00, 1.00000000, 0.05152142, 0.09881882],
+                        [2.00, 1.00000000, 0.03498186, 0.06733631],
+                        [3.00, 1.00000000, 0.02151925, 0.04177517],
+                        [4.00, 1.00000000, 0.01192026, 0.02334449],
+                        [5.00, 0.95454545, 0.00585568, 0.01156339],
+                        [6.00, 0.78660436, 0.00291752, 0.00576811],
+                        [7.00, 0.47175141, 0.00124875, 0.00246440],
+                        ])
+
+LDPC_fastfading = np.array([[0.00, 1.00000000, 0.26733011, 0.00000000],
+                    [2.00, 1.00000000, 0.23215448, 0.00000000],
+                    [4.00, 1.00000000, 0.18391927, 0.00000000],
+                    [6.00, 0.99019608, 0.11997549, 0.00000000],
+                    [6.50, 0.91123188, 0.09242315, 0.00000000],
+                    [7.00, 0.66933333, 0.05686719, 0.00000000],
+                    [7.50, 0.24181118, 0.01803254, 0.00000000],
+                    [8.00, 0.05024067, 0.00342345, 0.00000000],
+                    ])
 
 bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
                         [2.00, 1.00000000, 0.23726594, 0.41070654],
@@ -85,10 +104,14 @@ bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
                         [18.00, 0.24159462, 0.00271674, 0.00490251],
                         [20.00, 0.09036797, 0.00093675, 0.00173541],
                         [22.00, 0.02867445, 0.00028785, 0.00053613],
-                 ])
-
-largesmall = np.array([
                         ])
+
+largesmall = np.array([[-50.00, 0.61975309, 0.18900463, 0.31180556],
+                        [-55.00, 0.46316759, 0.11736375, 0.19927270],
+                        [-60.00, 0.35836910, 0.07494104, 0.13229837],
+                        [-65.00, 0.16834677, 0.02152441, 0.03908481],
+                        [-70.00, 0.01223555, 0.00108881, 0.00205919],
+                      ])
 
 
 def SCMAdetector_SISO( ):
@@ -100,15 +123,19 @@ def SCMAdetector_SISO( ):
     ##=============================== LDPC =========================================
 
     ##=========================   ===============================
-    lb = "Fast fading"
-    axs.semilogy(fastfading[:, 0], fastfading[:, cols], color = 'k', ls='-', lw = 3, marker = 'o', ms = 12, label = lb,)
+    lb = "Fast fading, SISO, w/o LDPC"
+    axs.semilogy(fastfading[:, 0], fastfading[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+
+    # #=========================  ===============================
+    lb = "Fast fading, SISO,  w/ LDPC"
+    axs.semilogy(LDPC_fastfading[:, 0], LDPC_fastfading[:, cols], color = 'r', ls='--', lw = 3, marker = '*', ms = 16,  mew = 2, label = lb)
 
     #=========================   ===============================
     # markeredgecolor # 圆边缘的颜色
     # markeredgewidth # 圆的线宽
     # # 注意如果令markerfacecolor='none'，那线就会穿过圆
-    lb = "Block fading"
-    axs.semilogy(bolckfading[:, 0], bolckfading[:, cols], color = 'b', ls='--', lw = 3, marker = 'o', ms = 18,  mew = 2, label = lb)
+    lb = "Block fading, SISO,  w/o LDPC"
+    axs.semilogy(bolckfading[:, 0], bolckfading[:, cols], color = 'b', ls='--', lw = 3,  mew = 2, label = lb)
 
     #=========================   ===============================
     # markeredgecolor # 圆边缘的颜色
@@ -118,12 +145,8 @@ def SCMAdetector_SISO( ):
     # axs.semilogy(largesmall[:, 0], largesmall[:, cols], color = 'r', ls='-', lw = 3, marker = 'o', ms = 25,  mfc = 'none', mew = 2, label = lb)
 
     # #=========================   ===============================
-    # lb = " "
-    # axs.semilogy(SIC_snr_mmse[:, 0], SIC_snr_mmse[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'D', ms = 18, mfc = 'none', mew = 2, label = lb)
-
-    # #=========================  ===============================
-    # lb = " "
-    # axs.semilogy(SIC_snr_zf[:, 0], SIC_snr_zf[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = '*', ms = 20,  mew = 2, label = lb)
+    lb = "Fast fading, SIMO, w/o LDPC"
+    axs.semilogy(SIMO_fastfading[:, 0], SIMO_fastfading[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'D', ms = 16, mfc = 'none', mew = 2, label = lb)
 
     # #=========================  ===============================
     # lb = " "
@@ -175,7 +198,7 @@ def SCMAdetector_SISO( ):
     [label.set_fontsize(30) for label in labels] #刻度值字号
 
     fontt = {'family':'Times New Roman','style':'normal','size':35 }
-    plt.suptitle("SCMA, 512, Uncoded", fontproperties = fontt, )
+    plt.suptitle("SCMA, 512", fontproperties = fontt, )
     out_fig = plt.gcf()
 
     if cols == 3:

@@ -1,33 +1,40 @@
 #=====================================================================================
-                      2024-11-08-10:30:57
+                      2024-11-08-12:52:34
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 2                                       
-maximum_snr              : 13                                      
-increment_snr            : 1                                       
-maximum_error_number     : 500                                     
-maximum_block_number     : 1000000                                 
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
-type                     : qam                                     
-M                        : 16                                      
-Nit                      : 6                                       
-Nr                       : 4                                       
-channel_type             : fast fading rayleigh                    
+minimum_snr              : 2
+maximum_snr              : 13
+increment_snr            : 1
+maximum_error_number     : 500
+maximum_block_number     : 1000000
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
+type                     : qam
+M                        : 16
+Nit                      : 6
+Nr                       : 4
+channel_type             : fast fading rayleigh
 ######### [code config] ##########
-scma.J                   : 6                                       
-scma.K                   : 4                                       
-scma.M                   : 4                                       
-codedim                  : 512                                     
-codelen                  : 1024                                    
-codechk                  : 512                                     
-coderate                 : 0.5                                     
-row                      : 512                                     
-col                      : 1024                                    
+scma.J                   : 6
+scma.K                   : 4
+scma.M                   : 4
+codedim                  : 512
+codelen                  : 1024
+codechk                  : 512
+coderate                 : 0.5
+row                      : 512
+col                      : 1024
 
 #=============================== args end  ===============================
 [0.00, 1.00000000, 0.07347083, 0.13926866],
+[1.00, 1.00000000, 0.05152142, 0.09881882],
+[2.00, 1.00000000, 0.03498186, 0.06733631],
+[3.00, 1.00000000, 0.02151925, 0.04177517],
+[4.00, 1.00000000, 0.01192026, 0.02334449],
+[5.00, 0.95454545, 0.00585568, 0.01156339],
+[6.00, 0.78660436, 0.00291752, 0.00576811],
+[7.00, 0.47175141, 0.00124875, 0.00246440],
