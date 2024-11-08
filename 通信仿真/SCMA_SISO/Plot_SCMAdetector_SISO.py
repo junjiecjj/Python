@@ -73,7 +73,18 @@ fastfading = np.array([[0.00, 1.00000000, 0.27089921, 0.46235584],
                         [26.00, 0.02191601, 0.00004580, 0.00008681],
                 ])
 
-bolckfading = np.array([
+bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
+                        [2.00, 1.00000000, 0.23726594, 0.41070654],
+                        [4.00, 1.00000000, 0.20355903, 0.35505022],
+                        [6.00, 1.00000000, 0.16000899, 0.28041295],
+                        [8.00, 0.99404762, 0.12482174, 0.21917628],
+                        [10.00, 0.98235294, 0.07706036, 0.13605239],
+                        [12.00, 0.92307692, 0.04046117, 0.07184352],
+                        [14.00, 0.78037383, 0.01733779, 0.03078149],
+                        [16.00, 0.49901381, 0.00667607, 0.01189981],
+                        [18.00, 0.24159462, 0.00271674, 0.00490251],
+                        [20.00, 0.09036797, 0.00093675, 0.00173541],
+                        [22.00, 0.02867445, 0.00028785, 0.00053613],
                  ])
 
 largesmall = np.array([
@@ -90,14 +101,14 @@ def SCMAdetector_SISO( ):
 
     ##=========================   ===============================
     lb = "Fast fading"
-    axs.semilogy(fastfading[::-1, 0], fastfading[::-1, cols], color = 'k', ls='-', lw = 3, marker = 'o', ms = 12, label = lb,)
+    axs.semilogy(fastfading[:, 0], fastfading[:, cols], color = 'k', ls='-', lw = 3, marker = 'o', ms = 12, label = lb,)
 
     #=========================   ===============================
     # markeredgecolor # 圆边缘的颜色
     # markeredgewidth # 圆的线宽
     # # 注意如果令markerfacecolor='none'，那线就会穿过圆
-    # lb = "Block fading"
-    # axs.semilogy(bolckfading[:, 0], bolckfading[:, cols], color = 'b', ls='--', lw = 3, marker = 'o', ms = 18,  mew = 2, label = lb)
+    lb = "Block fading"
+    axs.semilogy(bolckfading[:, 0], bolckfading[:, cols], color = 'b', ls='--', lw = 3, marker = 'o', ms = 18,  mew = 2, label = lb)
 
     #=========================   ===============================
     # markeredgecolor # 圆边缘的颜色

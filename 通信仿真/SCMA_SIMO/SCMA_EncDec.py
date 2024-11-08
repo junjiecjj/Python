@@ -69,7 +69,7 @@ class SCMA_SIMO(object):
 
     def MPAdetector_SIMO_hard(self, yy, H, sigma2, Nr, Nit = 10):
         N0 = sigma2
-        CB_temp = np.zeros_like(self.K, self.M, self.J, Nr)
+        CB_temp = np.zeros((self.K, self.M, self.J, Nr), dtype = complex)
         # decision = np.zeros((self.J, 1))
         decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
         uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
@@ -81,10 +81,9 @@ class SCMA_SIMO(object):
             ## channel reverse
             for nr in range(Nr):
                 for j in range(self.J):
-                    CB_temp[:,:,j, Nr] = self.CB[:,:,j] * (H[:, nr, j, f].reshape(-1,1))
-
+                    CB_temp[:, :, j, nr] = self.CB[:, :, j] * (H[:, nr, j, f].reshape(-1,1))
             for it in range(Nit):
-                ## update FN to VN
+                ## update Resource to User
                 MR2U = np.zeros((self.K, Nr, self.J, self.M))
                 for nr in range(Nr):
                     for k in range(self.K):
@@ -93,14 +92,16 @@ class SCMA_SIMO(object):
                             col_in.remove(j)
                             for m in range(self.M):
                                 for comb in self.combination:
-                                    tmp = yy[k, f] - CB_temp[k, m, j, nr]
+                                    tmp = yy[k, nr, f] - CB_temp[k, m, j, nr]
+                                    # print(f"tmp = {tmp}")
                                     for idx, u in enumerate(col_in):
                                         tmp -= CB_temp[k, comb[idx], u, nr]
                                     tmp = np.exp(-np.abs(tmp)**2/N0)
                                     for idx, u in enumerate(col_in):
                                         tmp *= MU2R[u, k, nr, comb[idx]]
+
                                     MR2U[k, nr, j, m] += tmp
-                ## update VN to FN
+                ## update User to Resource
                 MU2R = np.ones((self.J, self.K, Nr, self.M))/self.M
                 for nr in range(Nr):
                     nr_remain = [i for i in range(Nr)]
@@ -111,93 +112,29 @@ class SCMA_SIMO(object):
                             row_in.remove(k)
                             for m in range(self.M):
                                 for r in row_in:
-                                    MU2R[j, k, nr, m] *= MR2U[r, nr j, m]
+                                    MU2R[j, k, nr, m] *= MR2U[r, nr, j, m]
                             for ne in nr_remain:
                                 for m in range(self.M):
                                     for r in copy.deepcopy(self.SetCols[j]):
-                                        MU2R[j, k, nr, m] *= MR2U[r, ne j, m]
-                            MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
+                                        MU2R[j, k, nr, m] *= MR2U[r, ne, j, m]
+                            MU2R[j, k, nr, :] = MU2R[j, k, nr, :] / np.sum(MU2R[j, k, nr, :])
             ## decision
             result = np.ones((self.J, self.M))/self.M
             for j in range(self.J):
                 row_in = copy.deepcopy(self.SetCols[j])
                 for m in range(self.M):
-                    for r in row_in:
-                        result[j, m] *= MR2U[r, j, m]
+                    for nr in range(Nr):
+                        for r in row_in:
+                            result[j, m] *= MR2U[r, nr, j, m]
             decoded_symbols[:, f] = np.argmax(result, axis = 1)
         for j in range(self.J):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
         return decoded_symbols, uu_hat
 
-    def MPAdetector_SIMO_soft(self, yy, H, sigma2, Nit = 10):
-        N0 = sigma2
-        CB_temp = np.zeros_like(self.CB)
-        # decision = np.zeros((self.J, 1))
-        decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
-        uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
-        llr_bits = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.float32)
-        frame_len = yy.shape[-1]
+    def EPAdetector_SIMO_hard(self, yy, H, sigma2, Nr, Nit = 10):
 
-        for f in range(frame_len):
-            pro_bit = np.zeros((2, self.bps, self.J))  # 存储每个用户所有码字比特0/1的概率
-            MR2U = np.zeros((self.K, self.J, self.M))
-            MU2R = np.ones((self.J, self.K, self.M))/self.M
-            ## channel reverse
-            for j in range(self.J):
-                CB_temp[:,:,j] = self.CB[:,:,j] * (H[:, j, f].reshape(-1,1))
 
-            for it in range(Nit):
-                ## update FN to VN
-                MR2U = np.zeros((self.K, self.J, self.M))
-                for k in range(self.K):
-                    for j in self.SetRows[k]:
-                        col_in = copy.deepcopy(self.SetRows[k])
-                        col_in.remove(j)
-                        for m in range(self.M):
-                            for comb in self.combination:
-                                tmp = yy[k, f] - CB_temp[k, m, j]
-                                for idx, u in enumerate(col_in):
-                                    tmp -= CB_temp[k, comb[idx], u]
-                                tmp = np.exp(-np.abs(tmp)**2/N0)
-                                for idx, u in enumerate(col_in):
-                                    tmp *= MU2R[u, k, comb[idx]]
-                                MR2U[k, j, m] += tmp
-                ## update VN to FN
-                MU2R = np.ones((self.J, self.K, self.M))/self.M
-                for j in range(self.J):
-                    for k in self.SetCols[j]:
-                        row_in = copy.deepcopy(self.SetCols[j])
-                        row_in.remove(k)
-                        for m in range(self.M):
-                            for r in row_in:
-                                MU2R[j, k, m] *= MR2U[r, j, m]
-                        MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
-            ## decision
-            result = np.ones((self.J, self.M))/self.M
-            for j in range(self.J):
-                row_in = copy.deepcopy(self.SetCols[j])
-                for m in range(self.M):
-                    for r in row_in:
-                        result[j, m] *= MR2U[r, j, m]
-            decoded_symbols[:, f] = np.argmax(result, axis = 1)
-            ## get LLR
-            result1 = result / result.sum(axis = 1).reshape(-1,1)
-            for j in range(self.J):
-                for b in range(self.bps):
-                    for m, bits in enumerate(self.bits):
-                        # ibits = comm.utilities.dec2bitarray(m, self.bps)[1]
-                        pro_bit[bits[b], b, j] += result1[j, m]
-            llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
-
-            llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
-            llr_tmp[np.isnan(llr_tmp)]  = 1/N0
-            llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
-
-        ## hard decoded bits
-        for j in range(self.J):
-            uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
-
-        return decoded_symbols, uu_hat, llr_bits
+        return
 
 # scma = SCMA()
 # CB = scma.CB

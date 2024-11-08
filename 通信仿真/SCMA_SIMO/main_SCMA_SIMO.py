@@ -52,10 +52,10 @@ def parameters():
     # "M":  2,  # BPSK
     # "M":  4,  # QPSK
     # "M":  8,  # 8PSK
-    "Nit" : 10,
-    "Nr" : 8,
+    "Nit" : 6,
+    "Nr" : 4,
     ## channel
-    'channel_type': 'quasi-static rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'fast fading rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -88,14 +88,14 @@ frame_len = int(ldpc.codedim/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "SCMAdetector_SIMO_Blockfading.txt"
+logf = "SCMAdetector_SIMO_Fastfading.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-# sigma2dB = np.arange(0, 31, 2)  # dB
-# sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
-sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
-sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
+sigma2dB = np.arange(0, 7, 0.5)  # dB
+sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
+# sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
+# sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")

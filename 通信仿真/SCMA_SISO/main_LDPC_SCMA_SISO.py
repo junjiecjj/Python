@@ -90,11 +90,11 @@ frame_len = int(ldpc.codelen/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "LDPC_scma_BerFer.txt"
+logf = "LDPC_SCMA_BerFer.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 31, 2)  # dB
+sigma2dB = np.arange(6.5, 11, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
