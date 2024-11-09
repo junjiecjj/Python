@@ -99,7 +99,6 @@ class SCMA_SIMO(object):
                                     tmp = np.exp(-np.abs(tmp)**2/N0)
                                     for idx, u in enumerate(col_in):
                                         tmp *= MU2R[u, k, nr, comb[idx]]
-
                                     MR2U[k, nr, j, m] += tmp
                 ## update User to Resource
                 MU2R = np.ones((self.J, self.K, Nr, self.M))/self.M
@@ -132,8 +131,49 @@ class SCMA_SIMO(object):
         return decoded_symbols, uu_hat
 
     def EPAdetector_SIMO_hard(self, yy, H, sigma2, Nr, Nit = 10):
+        CB = copy.deepcopy(self.CB)
+        decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
+        uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
+        frame_len = yy.shape[-1]
 
+        for f in range(frame_len):
+            meanK2J = np.zeros((self.K, self.J, Nr), dtype = complex)
+            varK2J = np.ones((self.K, self.J, Nr)) * 100
+            for _ in range(Nit):
+                ## (1.1) 计算每个用户每个码字的后验概率（根据从资源节点返回的均值和方差计算）
+                post_prob = np.ones((self.J, self.M)) / self.M
+                for j in range(self.J):
+                    row_in = copy.deepcopy(self.SetCols[j])
+                    for m in range(self.M):
+                        for nr in range(Nr):
+                            for k in row_in:
+                                post_prob[j, m] *= np.exp(-np.abs(CB[k, m, j] - meanK2J[k,j,nr])**2/varK2J[k,j,nr])
+                post_prob /= post_prob.sum(axis = 1).reshape(-1,1)
+                if True in np.isnan(post_prob):
+                    post_prob[:] = 1/self.M
 
+                ## (1.2)计算后验均值和方差
+                mean_post = np.zeros((self.K, self.J), dtype = complex)
+                for k in range(self.K):
+                    for j in range(self.J):
+                        for m in range(self.M):
+                            mean_post[k, j] += post_prob[j, m] * CB[k, m, j]
+                ## (1.3)
+                var_post = np.zeros((self.K, self.J))
+                for k in range(self.K):
+                    for j in range(self.J):
+                        for m in range(self.M):
+                            var_post[k,j] += post_prob[j, m] * np.abs(CB[k, m, j] - mean_post[k, j])**2
+                ## (1.4) 计算用户节点到资源节点传递的均值和方差
+                meanJ2K = np.zeros((self.K, self.J, Nr), dtype = complex)
+                varJ2K = np.zeros((self.K, self.J, Nr), )
+                for nr in range(Nr):
+                    for k in range(self.K):
+                        for j in range(self.J):
+                            varJ2K[k, j, nr] = varK2J[k, j, nr] * var_post[k,j] / (varK2J[k, j, nr] - var_post[k,j])
+                            meanJ2K[k,j, nr] = varJ2K[k, j, nr] * (var_post[k,j] / mean_post[k, j] - meanK2J[k,j,nr]/varK2J[k,j,nr])
+
+                ## (2) 资源节点更新:计算资源节点向用户节点传递的均值和方差
         return
 
 # scma = SCMA()

@@ -69,7 +69,6 @@ class SCMA_SISO(object):
     def MPAdetector_SISO_hard(self, yy, H, sigma2, Nit = 10):
         N0 = sigma2
         CB_temp = np.zeros_like(self.CB)
-        # decision = np.zeros((self.J, 1))
         decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
         uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
         frame_len = yy.shape[-1]
@@ -135,7 +134,6 @@ class SCMA_SISO(object):
             ## channel reverse
             for j in range(self.J):
                 CB_temp[:,:,j] = self.CB[:,:,j] * (H[:, j, f].reshape(-1,1))
-
             for it in range(Nit):
                 ## update FN to VN
                 MR2U = np.zeros((self.K, self.J, self.M))
@@ -175,10 +173,8 @@ class SCMA_SISO(object):
             for j in range(self.J):
                 for b in range(self.bps):
                     for m, bits in enumerate(self.bits):
-                        # ibits = comm.utilities.dec2bitarray(m, self.bps)[1]
                         pro_bit[bits[b], b, j] += result1[j, m]
             llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
-
             llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
@@ -188,10 +184,6 @@ class SCMA_SISO(object):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
 
         return decoded_symbols, uu_hat, llr_bits
-
-# scma = SCMA()
-# CB = scma.CB
-
 
 
 

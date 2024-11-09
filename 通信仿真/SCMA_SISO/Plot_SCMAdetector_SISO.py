@@ -80,6 +80,9 @@ SIMO_fastfading = np.array([[0.00, 1.00000000, 0.07347083, 0.13926866],
                         [5.00, 0.95454545, 0.00585568, 0.01156339],
                         [6.00, 0.78660436, 0.00291752, 0.00576811],
                         [7.00, 0.47175141, 0.00124875, 0.00246440],
+                        [8.00, 0.21465296, 0.00047113, 0.00093556],
+                        [9.00, 0.07653529, 0.00015694, 0.00031269],
+                        [10.00, 0.0261553589, 0.0000518529, 0.0001037058]
                         ])
 
 LDPC_fastfading = np.array([[0.00, 1.00000000, 0.26733011, 0.00000000],
@@ -90,6 +93,7 @@ LDPC_fastfading = np.array([[0.00, 1.00000000, 0.26733011, 0.00000000],
                     [7.00, 0.66933333, 0.05686719, 0.00000000],
                     [7.50, 0.24181118, 0.01803254, 0.00000000],
                     [8.00, 0.05024067, 0.00342345, 0.00000000],
+                    [8.50, 0.0053969359, 0.0003348150, 0.0000000000]
                     ])
 
 bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
@@ -104,6 +108,8 @@ bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
                         [18.00, 0.24159462, 0.00271674, 0.00490251],
                         [20.00, 0.09036797, 0.00093675, 0.00173541],
                         [22.00, 0.02867445, 0.00028785, 0.00053613],
+                        [24.00, 0.00982006, 0.00011734, 0.00022043],
+                        [26.00, 0.0036998497, 0.0000382202, 0.0000727143]
                         ])
 
 largesmall = np.array([[-50.00, 0.61975309, 0.18900463, 0.31180556],
@@ -181,7 +187,7 @@ def SCMAdetector_SISO( ):
     #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
     font1 = {'family':'Times New Roman','style':'normal','size':25, }
-    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1,)
+    legend1 = axs.legend(loc = 'upper right', borderaxespad = 0, edgecolor = 'black', prop = font1,)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')  # 设置图例legend背景透明
