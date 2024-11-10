@@ -121,12 +121,11 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         rx_sig = PassChannel(yy, noise_var = sigma2w, )
 
         symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2w, Nit = args.Nit)
-
-        # llr_bits = llr_bits.reshape(-1)
         uu_hat = np.array([], dtype = np.int8)
         for j in range(scma.J):
             uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[j,:])[0] ))
         uu_hat = uu_hat.reshape(scma.J, -1)
+
         source.CntBerFer(uu, uu_hat)
         # source.CntSer(symbols, symbols_hat)
         ##

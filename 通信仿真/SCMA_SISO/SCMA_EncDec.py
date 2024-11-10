@@ -106,7 +106,7 @@ class SCMA_SISO(object):
                             for r in row_in:
                                 MU2R[j, k, m] *= MR2U[r, j, m]
                         MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
-            ## decision
+            ## hard decision
             result = np.ones((self.J, self.M))/self.M
             for j in range(self.J):
                 row_in = copy.deepcopy(self.SetCols[j])
@@ -160,7 +160,7 @@ class SCMA_SISO(object):
                             for r in row_in:
                                 MU2R[j, k, m] *= MR2U[r, j, m]
                         MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
-            ## decision
+            ## hard decision
             result = np.ones((self.J, self.M))/self.M
             for j in range(self.J):
                 row_in = copy.deepcopy(self.SetCols[j])

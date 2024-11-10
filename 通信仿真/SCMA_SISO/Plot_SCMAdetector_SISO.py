@@ -82,8 +82,25 @@ SIMO_fastfading = np.array([[0.00, 1.00000000, 0.07347083, 0.13926866],
                         [7.00, 0.47175141, 0.00124875, 0.00246440],
                         [8.00, 0.21465296, 0.00047113, 0.00093556],
                         [9.00, 0.07653529, 0.00015694, 0.00031269],
-                        [10.00, 0.0261553589, 0.0000518529, 0.0001037058]
+                        [10.00, 0.02527240, 0.00005035, 0.00010049],
+                        [11.00, 0.0079926625, 0.0000156107, 0.0000312213]
                         ])
+
+EPA_SIMO_fastfading = np.array([[0.00, 1.00000000, 0.07348245, 0.13936942],
+                                [1.00, 1.00000000, 0.05180819, 0.09934586],
+                                [2.00, 1.00000000, 0.03548952, 0.06811911],
+                                [3.00, 1.00000000, 0.02201916, 0.04265098],
+                                [4.00, 1.00000000, 0.01276507, 0.02478609],
+                                [5.00, 0.96743295, 0.00664886, 0.01299090],
+                                [6.00, 0.85204082, 0.00351097, 0.00681601],
+                                [7.00, 0.56916100, 0.00163868, 0.00318435],
+                                [8.00, 0.30204573, 0.00072390, 0.00137259],
+                                [9.00, 0.16150870, 0.00038471, 0.00068252],
+                        ])
+
+EPA_LDPC_SIMO_fastfading = np.array([
+                        ])
+
 
 LDPC_fastfading = np.array([[0.00, 1.00000000, 0.26733011, 0.00000000],
                     [2.00, 1.00000000, 0.23215448, 0.00000000],
@@ -93,7 +110,7 @@ LDPC_fastfading = np.array([[0.00, 1.00000000, 0.26733011, 0.00000000],
                     [7.00, 0.66933333, 0.05686719, 0.00000000],
                     [7.50, 0.24181118, 0.01803254, 0.00000000],
                     [8.00, 0.05024067, 0.00342345, 0.00000000],
-                    [8.50, 0.0053969359, 0.0003348150, 0.0000000000]
+                    [8.50, 0.0058584409, 0.0003505654, 0.0000000000]
                     ])
 
 bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
@@ -109,7 +126,7 @@ bolckfading = np.array([[0.00, 1.00000000, 0.27087209, 0.46112351],
                         [20.00, 0.09036797, 0.00093675, 0.00173541],
                         [22.00, 0.02867445, 0.00028785, 0.00053613],
                         [24.00, 0.00982006, 0.00011734, 0.00022043],
-                        [26.00, 0.0036998497, 0.0000382202, 0.0000727143]
+                        [26.00, 0.0036100551, 0.0000322039, 0.0000616449]
                         ])
 
 largesmall = np.array([[-50.00, 0.61975309, 0.18900463, 0.31180556],
@@ -152,14 +169,14 @@ def SCMAdetector_SISO( ):
 
     # #=========================   ===============================
     lb = "Fast fading, SIMO, w/o LDPC"
-    axs.semilogy(SIMO_fastfading[:, 0], SIMO_fastfading[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'D', ms = 16, mfc = 'none', mew = 2, label = lb)
+    axs.semilogy(SIMO_fastfading[:, 0], SIMO_fastfading[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'D', ms = 13, mfc = 'none', mew = 2, label = lb)
 
     # #=========================  ===============================
-    # lb = " "
-    # axs.semilogy(SIC_norm_mmse_Hcg[:, 0], SIC_norm_mmse_Hcg[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'o', ms = 14, mfc = 'none',  mew = 2, label = lb)
+    lb = "Fast fading, EPA, SIMO, w/o LDPC"
+    axs.semilogy(EPA_SIMO_fastfading[:, 0], EPA_SIMO_fastfading[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'o', ms = 14, mfc = 'none',  mew = 2, label = lb)
 
     # #=========================  ===============================
-    # lb = " "
+    # lb = "Fast fading, EPA, SIMO, w/ LDPC"
     # axs.semilogy(SIC_norm_zf_Hcg[:, 0], SIC_norm_zf_Hcg[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'd', ms = 14, mfc = 'none',  mew = 2, label = lb)
 
     # #========================= ===============================
@@ -186,7 +203,7 @@ def SCMAdetector_SISO( ):
 
     #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
-    font1 = {'family':'Times New Roman','style':'normal','size':25, }
+    font1 = {'family':'Times New Roman','style':'normal','size':22, }
     legend1 = axs.legend(loc = 'upper right', borderaxespad = 0, edgecolor = 'black', prop = font1,)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)

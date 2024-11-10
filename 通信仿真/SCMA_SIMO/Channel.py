@@ -20,13 +20,6 @@ def FastFadingRayleigh(K, Nr, J, frame_len):
     H = (np.random.randn(K, Nr, J, frame_len) + 1j * np.random.randn(K, Nr, J, frame_len))/np.sqrt(2)
     return H
 
-def LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
-    hdLos = np.ones((K, J))
-    hdNLos = np.sqrt(1/2) * (np.random.randn(K, J) + 1j * np.random.randn(K, J))
-    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
-    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
-    H = np.expand_dims(h_d, 2).repeat(frame_len, axis = 2)
-    return H
 
 def PassChannel(Tx_sig, noise_var = 1, ):
     noise = np.sqrt(noise_var/2.0) * ( np.random.randn(*Tx_sig.shape) + 1j * np.random.randn(*Tx_sig.shape) )
@@ -47,7 +40,7 @@ def channelConfig(K, r = 100):
 
     sigmaK2 = -60                        # dBm
     sigmaK2 = 10**(sigmaK2/10.0)/1000    # 噪声功率
-    P0 = 30 # dBm
+    P0 = 30                              # dBm
     P0 = 10**(P0/10.0)/1000
 
     # Location, Case II
@@ -67,6 +60,53 @@ def channelConfig(K, r = 100):
     PL_Au = C0 * (d_Au/d0)**(-alpha_Au)
 
     return BS_locate, users_locate, beta_Au, PL_Au
+
+def Point2ULASteerVec(N, K, BS_locate, users_locate):
+    XY = (users_locate - BS_locate)[:,:2]
+    x = XY[:,0]
+    y = XY[:,1]
+    theta = -np.arctan2(y, x)
+    d = np.arange(N)
+    stevec = np.exp(1j * np.pi * np.outer(d, np.sin(theta)))
+    return stevec
+
+def Generate_hd(N, K, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
+    # User to AP/RIS channel
+    hdLos = Point2ULASteerVec(N, K, BS_locate, users_locate)
+    hdNLos = np.sqrt(1/2) * ( np.random.randn(N, K) + 1j * np.random.randn(N, K))
+    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
+    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    return h_d
+
+def LargeRician(K, Nr, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
+    hdLos = Point2ULASteerVec(Nr, J, BS_locate, users_locate)
+    hdLos = np.expand_dims(hdLos, 0).repeat(K, axis = 0)
+    hdNLos = np.sqrt(1/2) * (np.random.randn(K, Nr, J) + 1j * np.random.randn(K, Nr, J))
+    h_ds = (np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos )
+    for j in range(J):
+        h_ds[:,:,j] *= np.sqrt(PL_Au[j,0]/sigma2)
+    # h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    H = np.expand_dims(h_ds, -1).repeat(frame_len, axis = -1)
+    return H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
