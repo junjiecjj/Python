@@ -57,7 +57,7 @@ def parameters():
     "Nit" : 6,
     "Nr" : 4,
     ## channel
-    'channel_type': 'fast fading rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'large + quasi-static rician', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -90,14 +90,14 @@ frame_len = int(ldpc.codelen/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "SCMA_EPA_LDPC_SIMO_Fastfading.txt"
+logf = "SCMA_EPA_LDPC_SIMO_large.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(-5, 16, 1)  # dB
-sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
-# sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
-# sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
+# sigma2dB = np.arange(-5, 16, 1)  # dB
+# sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
+sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
+sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
@@ -121,9 +121,9 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
 
         symbols = scma.mapping(cc, )
         yy = scma.encoder(symbols, H, args.Nr)
-        rx_sig = PassChannel(yy, noise_var = sigma2w, )
-        # symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SIMO_soft(rx_sig, H, sigma2w, args.Nr, Nit = args.Nit)
-        symbols_hat, uu_hat, llr_bits = scma.EPAdetector_SIMO_soft(rx_sig, H, sigma2w, args.Nr, Nit = args.Nit)
+        rx_sig = PassChannel(yy, noise_var = 1, )
+        # symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SIMO_soft(rx_sig, H, 1, args.Nr, Nit = args.Nit)
+        symbols_hat, uu_hat, llr_bits = scma.EPAdetector_SIMO_soft(rx_sig, H, 1, args.Nr, Nit = args.Nit)
 
         uu_hat = np.array([], dtype = np.int8)
         for j in range(scma.J):

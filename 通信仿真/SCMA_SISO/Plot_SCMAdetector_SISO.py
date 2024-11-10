@@ -96,11 +96,18 @@ EPA_SIMO_fastfading = np.array([[0.00, 1.00000000, 0.07348245, 0.13936942],
                                 [7.00, 0.56916100, 0.00163868, 0.00318435],
                                 [8.00, 0.30204573, 0.00072390, 0.00137259],
                                 [9.00, 0.16150870, 0.00038471, 0.00068252],
-                        ])
+                                [10.00, 0.08968851, 0.00021503, 0.00037902],
+                                [11.00, 0.06848386, 0.00016236, 0.00027811],
+                                [12.00, 0.06344411, 0.00015514, 0.00025717],
+                                [13.00, 0.06018186, 0.00014699, 0.00024303],
+                                ])
 
-EPA_LDPC_SIMO_fastfading = np.array([
-                        ])
-
+EPA_LDPC_SIMO_fastfading = np.array([[-5.00, 1.00000000, 0.18725586, 0.35522073],
+                                    [-4.00, 1.00000000, 0.15180509, 0.31471664],
+                                    [-3.00, 0.98062016, 0.10480635, 0.27060244],
+                                    [-2.00, 0.28993056, 0.02057902, 0.22675465],
+                                    [-1.00, 0.0011272142, 0.0000745396, 0.1818912918]
+                                    ])
 
 LDPC_fastfading = np.array([[0.00, 1.00000000, 0.26733011, 0.00000000],
                     [2.00, 1.00000000, 0.23215448, 0.00000000],
@@ -137,7 +144,7 @@ largesmall = np.array([[-50.00, 0.61975309, 0.18900463, 0.31180556],
                       ])
 
 
-def SCMAdetector_SISO( ):
+def SCMAdetector_SISO():
     lw = 2
     width = 10
     high  = 8
@@ -176,8 +183,8 @@ def SCMAdetector_SISO( ):
     axs.semilogy(EPA_SIMO_fastfading[:, 0], EPA_SIMO_fastfading[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'o', ms = 14, mfc = 'none',  mew = 2, label = lb)
 
     # #=========================  ===============================
-    # lb = "Fast fading, EPA, SIMO, w/ LDPC"
-    # axs.semilogy(SIC_norm_zf_Hcg[:, 0], SIC_norm_zf_Hcg[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'd', ms = 14, mfc = 'none',  mew = 2, label = lb)
+    lb = "Fast fading, EPA, SIMO, w/ LDPC"
+    axs.semilogy(EPA_LDPC_SIMO_fastfading[:, 0], EPA_LDPC_SIMO_fastfading[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'd', ms = 14, mfc = 'none',  mew = 2, label = lb)
 
     # #========================= ===============================
     # lb = " "
@@ -203,7 +210,7 @@ def SCMAdetector_SISO( ):
 
     #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
-    font1 = {'family':'Times New Roman','style':'normal','size':22, }
+    font1 = {'family':'Times New Roman','style':'normal','size':18, }
     legend1 = axs.legend(loc = 'upper right', borderaxespad = 0, edgecolor = 'black', prop = font1,)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -225,11 +232,11 @@ def SCMAdetector_SISO( ):
     out_fig = plt.gcf()
 
     if cols == 3:
-        out_fig.savefig("./Figures/SCMAdetector_SISO_ser.eps")
-        out_fig.savefig("./Figures/SCMAdetector_SISO_ser.png")
+        out_fig.savefig("./Figures/SCMAdetector_SIMO_ser.eps")
+        out_fig.savefig("./Figures/SCMAdetector_SIMO_ser.png")
     elif cols == 2:
-        out_fig.savefig( "./Figures/SCMAdetector_SISO_ber.eps")
-        out_fig.savefig( "./Figures/SCMAdetector_SISO_ber.png")
+        out_fig.savefig( "./Figures/SCMAdetector_SIMO_ber.eps")
+        out_fig.savefig( "./Figures/SCMAdetector_SIMO_ber.png")
 
     plt.show()
     plt.close()
