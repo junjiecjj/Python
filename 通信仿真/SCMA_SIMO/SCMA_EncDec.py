@@ -202,7 +202,6 @@ class SCMA_SIMO(object):
             llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
-
         ## hard decoded bits
         for j in range(self.J):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
@@ -250,8 +249,10 @@ class SCMA_SIMO(object):
                 for nr in range(Nr):
                     for k in range(self.K):
                         for j in self.SetRows[k]:
-                            varJ2K[k, j, nr] = varK2J[k, j, nr] * var_post[k,j] / (varK2J[k, j, nr] - var_post[k,j])
-                            meanJ2K[k,j, nr] = varJ2K[k, j, nr] * (mean_post[k, j] / var_post[k,j] - meanK2J[k,j,nr]/varK2J[k,j,nr])
+                            # varJ2K[k, j, nr] = varK2J[k, j, nr] * var_post[k,j] / (varK2J[k, j, nr] - var_post[k,j])
+                            # meanJ2K[k,j, nr] = varJ2K[k, j, nr] * (mean_post[k, j] / var_post[k,j] - meanK2J[k,j,nr]/varK2J[k,j,nr])
+                            varJ2K[k,j,nr] = var_post[k,j]
+                            meanJ2K[k,j, nr] = mean_post[k, j]
                 ## (2) 资源节点更新:计算资源节点向用户节点传递的均值和方差
                 for nr in range(Nr):
                     for k in range(self.K):
@@ -325,8 +326,10 @@ class SCMA_SIMO(object):
                 for nr in range(Nr):
                     for k in range(self.K):
                         for j in self.SetRows[k]:
-                            varJ2K[k, j, nr] = varK2J[k, j, nr] * var_post[k,j] / (varK2J[k, j, nr] - var_post[k,j])
-                            meanJ2K[k,j, nr] = varJ2K[k, j, nr] * (mean_post[k, j] / var_post[k,j] - meanK2J[k,j,nr]/varK2J[k,j,nr])
+                            # varJ2K[k, j, nr] = varK2J[k, j, nr] * var_post[k,j] / (varK2J[k, j, nr] - var_post[k,j])
+                            # meanJ2K[k,j, nr] = varJ2K[k, j, nr] * (mean_post[k, j] / var_post[k,j] - meanK2J[k,j,nr]/varK2J[k,j,nr])
+                            varJ2K[k,j,nr] = var_post[k,j]
+                            meanJ2K[k,j, nr] = mean_post[k, j]
                 ## (2) 资源节点更新:计算资源节点向用户节点传递的均值和方差
                 for nr in range(Nr):
                     for k in range(self.K):
@@ -353,7 +356,6 @@ class SCMA_SIMO(object):
             if True in np.isnan(post_prob):
                 post_prob[:] = 1/self.M
             decoded_symbols[:, f] = np.argmax(post_prob, axis = 1)
-
             ## get LLR
             result1 = post_prob / post_prob.sum(axis = 1).reshape(-1,1)
             for j in range(self.J):
@@ -364,7 +366,6 @@ class SCMA_SIMO(object):
             llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
-
         ## hard decoded bits
         for j in range(self.J):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)

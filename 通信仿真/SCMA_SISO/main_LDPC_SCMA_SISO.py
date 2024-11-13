@@ -25,7 +25,7 @@ from Channel import PassChannel
 from ldpc_coder import LDPC_Coder_llr
 from SCMA_EncDec import SCMA_SISO
 import utility
-import Modulator
+# import Modulator
 
 utility.set_random_seed(1)
 
@@ -55,9 +55,9 @@ def parameters():
     # "M":  2,  # BPSK
     # "M":  4,  # QPSK
     # "M":  8,  # 8PSK
-    "Nit" : 10,
+    "Nit" : 6,
     ## channel
-    'channel_type': 'fast fading rayleigh', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'large + quasi-static rician', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -90,12 +90,14 @@ frame_len = int(ldpc.codelen/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "LDPC_SCMA_BerFer.txt"
+logf = "SCMA_MPA_LDPC_SISO_large.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(6.5, 11, 0.5)  # dB
-sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
+# sigma2dB = np.arange(0, 12, 2)  # dB
+# sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
+sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
+sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
@@ -108,7 +110,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             H = FastFadingRayleigh(K, J, frame_len)
         elif args.channel_type == 'large + quasi-static rician':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(J, r = 100)
-            H = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1)
+            H = LargeRician(K, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         # 编码
         uu = source.SourceBits(scma.J, ldpc.codedim)
         cc = np.array([], dtype = np.int8)
@@ -118,9 +120,9 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
 
         symbols = scma.mapping(cc, )
         yy = scma.encoder(symbols, H, )
-        rx_sig = PassChannel(yy, noise_var = sigma2w, )
+        rx_sig = PassChannel(yy, noise_var = 1, )
+        symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2 = 1, Nit = args.Nit)
 
-        symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2w, Nit = args.Nit)
         uu_hat = np.array([], dtype = np.int8)
         for j in range(scma.J):
             uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[j,:])[0] ))

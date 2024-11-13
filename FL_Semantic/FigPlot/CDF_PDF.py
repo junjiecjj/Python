@@ -13,7 +13,7 @@ import os
 import sys
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,42 +37,39 @@ root_dir = f"/home/jack/FL_semantic/results/{now}/cdf_pdf"
 
 r1 = 1
 c1 = 99
-r1_pdf = torch.load(os.path.join(root_dir, f"round_{r1}/round={r1}_client{c1}_pdf.pt"))
-r1_cdf = torch.load(os.path.join(root_dir, f"round_{r1}/round={r1}_client{c1}_cdf.pt"))
+r1_pdf = torch.load(os.path.join(root_dir, f"round_{r1}/round={r1}_client{c1}_pdf.pt"), weights_only=False)
+r1_cdf = torch.load(os.path.join(root_dir, f"round_{r1}/round={r1}_client{c1}_cdf.pt"), weights_only=False)
 
 r2 = 5
 c2 = 35
-r2_pdf = torch.load(os.path.join(root_dir, f"round_{r2}/round={r2}_client{c2}_pdf.pt"))
-r2_cdf = torch.load(os.path.join(root_dir, f"round_{r2}/round={r2}_client{c2}_cdf.pt"))
+r2_pdf = torch.load(os.path.join(root_dir, f"round_{r2}/round={r2}_client{c2}_pdf.pt"), weights_only=False)
+r2_cdf = torch.load(os.path.join(root_dir, f"round_{r2}/round={r2}_client{c2}_cdf.pt"), weights_only=False)
 
 
 r3 = 10
 c3 = 75
-r3_pdf = torch.load(os.path.join(root_dir, f"round_{r3}/round={r3}_client{c3}_pdf.pt"))
-r3_cdf = torch.load(os.path.join(root_dir, f"round_{r3}/round={r3}_client{c3}_cdf.pt"))
+r3_pdf = torch.load(os.path.join(root_dir, f"round_{r3}/round={r3}_client{c3}_pdf.pt"), weights_only=False)
+r3_cdf = torch.load(os.path.join(root_dir, f"round_{r3}/round={r3}_client{c3}_cdf.pt"), weights_only=False)
 
 
 r4 = 20
 c4 = 58
-r4_pdf = torch.load(os.path.join(root_dir, f"round_{r4}/round={r4}_client{c4}_pdf.pt"))
-r4_cdf = torch.load(os.path.join(root_dir, f"round_{r4}/round={r4}_client{c4}_cdf.pt"))
+r4_pdf = torch.load(os.path.join(root_dir, f"round_{r4}/round={r4}_client{c4}_pdf.pt"), weights_only=False)
+r4_cdf = torch.load(os.path.join(root_dir, f"round_{r4}/round={r4}_client{c4}_cdf.pt"), weights_only=False)
 
 
 
 r5 = 100
 c5 = 34
-r5_pdf = torch.load(os.path.join(root_dir, f"round_{r5}/round={r5}_client{c5}_pdf.pt"))
-r5_cdf = torch.load(os.path.join(root_dir, f"round_{r5}/round={r5}_client{c5}_cdf.pt"))
+r5_pdf = torch.load(os.path.join(root_dir, f"round_{r5}/round={r5}_client{c5}_pdf.pt"), weights_only=False)
+r5_cdf = torch.load(os.path.join(root_dir, f"round_{r5}/round={r5}_client{c5}_cdf.pt"), weights_only=False)
 
 
 
 r6 = 200
 c6 = 78
-r6_pdf = torch.load(os.path.join(root_dir, f"round_{r6}/round={r6}_client{c6}_pdf.pt"))
-r6_cdf = torch.load(os.path.join(root_dir, f"round_{r6}/round={r6}_client{c6}_cdf.pt"))
-
-
-
+r6_pdf = torch.load(os.path.join(root_dir, f"round_{r6}/round={r6}_client{c6}_pdf.pt"), weights_only=False)
+r6_cdf = torch.load(os.path.join(root_dir, f"round_{r6}/round={r6}_client{c6}_cdf.pt"), weights_only=False)
 
 
 fig, axs = plt.subplots(2,1, figsize=(8, 10), constrained_layout=True)
@@ -204,9 +201,10 @@ axs[1].spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
 # 显示图表
 
 out_fig = plt.gcf()
-out_fig .savefig('./fig9.svg',   bbox_inches = 'tight')
-out_fig .savefig('./fig9.png', dpi = 500,  bbox_inches = 'tight')
+# out_fig .savefig('./fig9.svg',   bbox_inches = 'tight')
+# out_fig .savefig('./fig9.png', dpi = 500,  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
+plt.show()
 plt.close()
 
 

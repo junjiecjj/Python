@@ -13,7 +13,7 @@ import sys
 
 
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 #matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -36,8 +36,8 @@ home = os.path.expanduser('~')
 # from option import args
 sys.path.append("..")
 # checkpoint
-import Utility
-Utility.set_printoption(5)
+# import Utility
+# Utility.set_printoption(5)
 
 
 fontpath = "/usr/share/fonts/truetype/windows/"
@@ -79,9 +79,9 @@ class ResultPlot():
         ## local_batchsize=50, loc_epochs=5
         # self.noiid_unbla  = torch.load(os.path.join(self.rootdir, "2023-08-26-21:41:35_FedAvg/MeanVarL12OfClients.pt"))
         ##  2023-09-05-15:24:12_FedAvg
-        self.noiid_bla    = torch.load(os.path.join(self.rootdir, f"{self.noiid_bla_t}/MeanVarL12OfClients.pt"))
+        self.noiid_bla    = torch.load(os.path.join(self.rootdir, f"{self.noiid_bla_t}/MeanVarL12OfClients.pt"), weights_only = False)
         ## 2023-09-05-16:35:38_FedAvg    2023-09-11-22:16:54_FedAvg
-        self.iid_bla      = torch.load(os.path.join(self.rootdir, f"{self.iid_bla_t}/MeanVarL12OfClients.pt"))
+        self.iid_bla      = torch.load(os.path.join(self.rootdir, f"{self.iid_bla_t}/MeanVarL12OfClients.pt"), weights_only = False)
         return
 
 
@@ -249,9 +249,9 @@ class ResultPlot():
         out_fig = plt.gcf()
 
         savepath = self.savedir
-        out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
+        # out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.pdf") )
-        # plt.show()
+        plt.show()
         plt.close()
         return
 
@@ -458,11 +458,14 @@ smooth = True   #  True   False
 
 rs = ResultPlot()
 
+
 # rs.compare_no_iid_unblance_minmax(num_clients, stastic = ["Mean", "1-norm", "2-norm", "Variance"], model = model)
 
+# Fig 2a
 rs.compare_no_iid_unblance_avg(num_clients, stastic = ["Mean", "1-norm", "2-norm", "Variance"], model = model)
 
-rs.performanceIIDvsNonIID(model = model)
+# Fig 2b
+# rs.performanceIIDvsNonIID(model = model)
 
 # rs.compare_noiid_unblance_avg_minmax(num_clients, stastic = ["Mean", "1-norm", "2-norm", "Variance"], model = model)
 

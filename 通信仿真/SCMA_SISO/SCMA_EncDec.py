@@ -118,7 +118,7 @@ class SCMA_SISO(object):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
         return decoded_symbols, uu_hat
 
-    def MPAdetector_SISO_soft(self, yy, H, sigma2, Nit = 10):
+    def MPAdetector_SISO_soft(self, yy, H, sigma2 = 1, Nit = 10):
         N0 = sigma2
         CB_temp = np.zeros_like(self.CB)
         # decision = np.zeros((self.J, 1))

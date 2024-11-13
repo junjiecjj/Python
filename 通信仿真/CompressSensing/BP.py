@@ -33,7 +33,6 @@ def linear_programming(phi, y):
     b_eq = np.hstack([y, -y])
     result = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=(None, None), method='highs')
     return result.x if result.success else np.zeros(n)
-
 # 定义ISTA算法求解
 def ista(phi, y, alpha=0.001, max_iter=500):
     x = np.zeros(n)
@@ -41,7 +40,6 @@ def ista(phi, y, alpha=0.001, max_iter=500):
         grad = phi.T @ (phi @ x - y)
         x = np.sign(x - alpha * grad) * np.maximum(np.abs(x - alpha * grad) - alpha, 0)
     return x
-
 # 定义FISTA算法求解
 def fista(phi, y, alpha=0.001, max_iter=500):
     x = np.zeros(n)
@@ -62,29 +60,65 @@ x_fista = fista(phi, y)
 
 plt.figure(figsize=(8, 9), constrained_layout=True)
 plt.subplot(3, 1, 1)
-plt.plot(x_true, label="真实稀疏信号", color="navy", linewidth=2)
-plt.plot(x_lp, linestyle="--", color="darkred", label="线性规划重建", linewidth=2)
+plt.plot(x_true, label="真实稀疏信号", color="blue", linewidth=2)
+plt.plot(x_lp, linestyle="--", color="red", label="线性规划重建", linewidth=2)
 plt.xlabel("信号索引", fontsize=14)
 plt.ylabel("幅值", fontsize=14)
 plt.title("线性规划重建效果", fontsize=16)
 plt.legend(loc="upper right", fontsize=12, frameon=False)
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.subplot(3, 1, 2)
-plt.plot(x_true, label="真实稀疏信号", color="navy", linewidth=2)
-plt.plot(x_ista, linestyle="-.", color="darkgreen", label="ISTA重建", linewidth=2)
+plt.plot(x_true, label="真实稀疏信号", color="blue", linewidth=2)
+plt.plot(x_ista, linestyle="-.", color="red", label="ISTA重建", linewidth=2)
 plt.xlabel("信号索引", fontsize=14)
 plt.ylabel("幅值", fontsize=14)
 plt.title("ISTA 重建效果", fontsize=16)
 plt.legend(loc="upper right", fontsize=12, frameon=False)
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.subplot(3, 1, 3)
-plt.plot(x_true, label="真实稀疏信号", color="navy", linewidth=2)
-plt.plot(x_fista, linestyle=":", color="purple", label="FISTA重建", linewidth=2)
+plt.plot(x_true, label="真实稀疏信号", color="blue", linewidth=2)
+plt.plot(x_fista, linestyle=":", color="red", label="FISTA重建", linewidth=2)
 plt.xlabel("信号索引", fontsize=14)
 plt.ylabel("幅值", fontsize=14)
 plt.title("FISTA 重建效果", fontsize=16)
 plt.legend(loc="upper right", fontsize=12, frameon=False)
 plt.grid(True, linestyle='--', alpha=0.6)
-
-plt.tight_layout()
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

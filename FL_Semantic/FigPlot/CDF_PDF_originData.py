@@ -13,7 +13,7 @@ import os
 import sys
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,41 +37,41 @@ root_dir = f"/home/jack/FL_semantic/results/{now}/cdf_pdf"
 
 r1 = 1
 c1 = 99
-r1_pdf = torch.load(os.path.join(root_dir, f"round_{r1}/round={r1}_client{c1}.pt"))
+r1_pdf = torch.load(os.path.join(root_dir, f"round_{r1}/round={r1}_client{c1}.pt"), weights_only=False)
 # r1_pdf[torch.where(abs(r1_pdf)>0.1)] = 0
 
 r2 = 5
 c2 = 35
-r2_pdf = torch.load(os.path.join(root_dir, f"round_{r2}/round={r2}_client{c2}.pt"))
+r2_pdf = torch.load(os.path.join(root_dir, f"round_{r2}/round={r2}_client{c2}.pt"), weights_only=False)
 # r2_pdf[torch.where(abs(r2_pdf)>0.1)] = 0
 
 
 r3 = 10
 c3 = 75
-r3_pdf = torch.load(os.path.join(root_dir, f"round_{r3}/round={r3}_client{c3}.pt"))
+r3_pdf = torch.load(os.path.join(root_dir, f"round_{r3}/round={r3}_client{c3}.pt"), weights_only=False)
 # r3_pdf[torch.where(abs(r3_pdf)>0.1)] = 0
 
 
 # r4 = 20
 # c4 = 58
-# r4_pdf = torch.load(os.path.join(root_dir, f"round_{r4}/round={r4}_client{c4}.pt"))
+# r4_pdf = torch.load(os.path.join(root_dir, f"round_{r4}/round={r4}_client{c4}.pt"), weights_only=False)
 # # r4_pdf[torch.where(abs(r4_pdf)>0.1)] = 0
 
 
 # r5 = 100
 # c5 = 34
-# r5_pdf = torch.load(os.path.join(root_dir, f"round_{r5}/round={r5}_client{c5}.pt"))
+# r5_pdf = torch.load(os.path.join(root_dir, f"round_{r5}/round={r5}_client{c5}.pt"), weights_only=False)
 # # r5_pdf[torch.where(abs(r5_pdf)>0.1)] = 0
 
 
 # r6 = 200
 # c6 = 78
-# r6_pdf = torch.load(os.path.join(root_dir, f"round_{r6}/round={r6}_client{c6}.pt"))
+# r6_pdf = torch.load(os.path.join(root_dir, f"round_{r6}/round={r6}_client{c6}.pt"), weights_only=False)
 # # r6_pdf[torch.where(abs(r6_pdf)>0.1)] = 0
 
 
 
-fig, axs = plt.subplots(2,1, figsize=(8, 10), constrained_layout=True)
+fig, axs = plt.subplots(1,2, figsize=(12, 5), constrained_layout=True)
 ##===================================================== 1 =================================================
 
 axs[0].hist(r1_pdf, bins = 1000, density = True, histtype='step',color='red', linewidth = 3,  alpha=0.8,  label='Round 1')
@@ -136,13 +136,13 @@ axs[1].hist(r3_pdf, bins = 1000, density = True, histtype='step',color='blue',li
 # axs[1].hist(r6_pdf, bins = 200, density = True, histtype='step',color='#800080', cumulative=True, alpha=0.75, label='round 200')
 
 # 设置图表属性
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size = 35)
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size = 30)
 # axs[1].set_title('RUNOOB hist() TEST', fontproperties = font2)
 axs[1].set_xlabel('值', fontproperties = font2)
 axs[1].set_ylabel('概率分布', fontproperties = font2)
 axs[1].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 28}
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
 #font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
 legend1 = axs[1].legend(loc='lower right', borderaxespad=0, edgecolor='black', prop=font2,)
 # frame1 = legend1.get_frame()
@@ -173,10 +173,11 @@ fontt = {'family':'Times New Roman','style':'normal','size':30}
 # plt.suptitle("non-IID MNIST,  AutoEncoder", fontproperties = fontt, )
 out_fig = plt.gcf()
 
-out_fig.savefig('./eps/fig9.eps',   bbox_inches = 'tight')
-out_fig.savefig('./eps/fig9.png', dpi = 1000,  bbox_inches = 'tight')
-out_fig.savefig('./eps/fig9.jpg', dpi = 1000,  bbox_inches = 'tight')
+# out_fig.savefig('./eps/fig9.eps',   bbox_inches = 'tight')
+out_fig.savefig('./fig9.png', dpi = 1000,  bbox_inches = 'tight')
+# out_fig.savefig('./eps/fig9.jpg', dpi = 1000,  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
+plt.show()
 plt.close()
 
 

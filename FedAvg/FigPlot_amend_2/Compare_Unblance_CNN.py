@@ -13,7 +13,7 @@ import sys
 
 
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 #matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -36,8 +36,8 @@ home = os.path.expanduser('~')
 # from option import args
 sys.path.append("..")
 # checkpoint
-import Utility
-Utility.set_printoption(5)
+# import Utility
+# Utility.set_printoption(5)
 
 
 fontpath = "/usr/share/fonts/truetype/windows/"
@@ -66,23 +66,23 @@ class ResultPlot():
         os.makedirs(self.savedir, exist_ok=True)
         # local epoch = 5, local batchsize = 128
         # 2023-08-25-21:36:58_FedAvg    2023-08-25-03:19:20_FedAvg  2023-08-26-21:41:35_FedAvg
-        self.noiid_unbla  = torch.load(os.path.join(self.rootdir, "2023-08-26-21:41:35_FedAvg/MeanVarL12OfClients.pt"))
+        self.noiid_unbla  = torch.load(os.path.join(self.rootdir, "2023-08-26-21:41:35_FedAvg/MeanVarL12OfClients.pt"), weights_only = False)
 
         ## 2023-08-24-18:19:03_FedAvg    2023-08-26-20:01:49_FedAvg   2023-09-12-11:30:18_FedAvg
-        self.noiid_bla    = torch.load(os.path.join(self.rootdir, "2023-08-26-20:01:49_FedAvg/MeanVarL12OfClients.pt"))
+        self.noiid_bla    = torch.load(os.path.join(self.rootdir, "2023-08-26-20:01:49_FedAvg/MeanVarL12OfClients.pt"), weights_only = False)
 
         ##  2023-08-24-23:43:37_FedAvg   2023-08-26-17:14:32_FedAvg   2023-09-12-10:13:45_FedAvg
-        self.iid_bla      = torch.load(os.path.join(self.rootdir, "2023-08-26-17:14:32_FedAvg/MeanVarL12OfClients.pt"))
+        self.iid_bla      = torch.load(os.path.join(self.rootdir, "2023-08-26-17:14:32_FedAvg/MeanVarL12OfClients.pt"), weights_only = False)
 
         # ## local epoch = 5/10, local batchsize = 50
         # ## 2023-08-25-21:36:58_FedAvg    2023-08-25-03:19:20_FedAvg  2023-08-26-21:41:35_FedAvg
-        # self.noiid_unbla  = torch.load(os.path.join(self.rootdir, "2023-08-26-21:41:35_FedAvg/MeanVarL12OfClients.pt"))
+        # self.noiid_unbla  = torch.load(os.path.join(self.rootdir, "2023-08-26-21:41:35_FedAvg/MeanVarL12OfClients.pt"), weights_only = False)
 
-        # ## 2023-08-24-18:19:03_FedAvg    2023-08-26-20:01:49_FedAvg
-        # self.noiid_bla    = torch.load(os.path.join(self.rootdir, "2023-09-05-21:08:49_FedAvg/MeanVarL12OfClients.pt"))
+        # # ## 2023-08-24-18:19:03_FedAvg    2023-08-26-20:01:49_FedAvg
+        # self.noiid_bla    = torch.load(os.path.join(self.rootdir, "2023-09-05-21:08:49_FedAvg/MeanVarL12OfClients.pt"), weights_only = False)
 
-        # ##  2023-08-24-23:43:37_FedAvg   2023-08-26-17:14:32_FedAvg
-        # self.iid_bla      = torch.load(os.path.join(self.rootdir, "2023-08-26-17:14:32_FedAvg/MeanVarL12OfClients.pt"))
+        # # ##  2023-08-24-23:43:37_FedAvg   2023-08-26-17:14:32_FedAvg
+        # self.iid_bla      = torch.load(os.path.join(self.rootdir, "2023-08-26-17:14:32_FedAvg/MeanVarL12OfClients.pt"), weights_only = False)
 
         return
 
@@ -244,10 +244,10 @@ class ResultPlot():
         out_fig = plt.gcf()
 
         savepath = self.savedir
-        out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
+        # out_fig.savefig(f"./figures/{model}_NonIID_UnBlance_avg.eps")
         # out_fig.savefig(os.path.join(savepath, f"{model}_NonIID_UnBlance_avg.pdf") )
-        # plt.show()
-        plt.close()
+        plt.show()
+        # plt.close()
         return
 
 
@@ -459,8 +459,10 @@ rs = ResultPlot()
 
 # rs.compare_no_iid_unblance_minmax(num_clients, stastic = ["Mean", "1-norm", "2-norm", "Variance"], model = model)
 
+# Fig 3a
 rs.compare_no_iid_unblance_avg(num_clients, stastic = ["Mean", "1-norm", "2-norm", "Variance"], model = model)
 
+# Fig 3b
 # rs.performanceIIDvsNonIID(model = model)
 
 
