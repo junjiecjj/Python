@@ -96,7 +96,8 @@ source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 ## 遍历SNR
 # sigma2dB = np.arange(0, 12, 2)  # dB
 # sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
-sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
+# sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
+sigma2dB = np.array([-85, -90, -95])  # dBm
 sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
