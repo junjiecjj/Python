@@ -41,11 +41,10 @@ pdf_true = norm.pdf(x, true_mu, true_sigma)
 pdf_mle = norm.pdf(x, mle_mu, mle_sigma)
 
 plt.figure(figsize=(12, 6))
-
 plt.subplot(1, 2, 1)
 plt.hist(data, bins=30, density=True, alpha=0.6, color='g', label='Histogram of data')
-plt.plot(x, pdf_true, 'r--', label=f'True Gaussian\n($\mu={true_mu}$, $\sigma={true_sigma}$)')
-plt.plot(x, pdf_mle, 'b-', label=f'MLE Gaussian\n($\mu={mle_mu:.2f}$, $\sigma={mle_sigma:.2f}$)')
+plt.plot(x, pdf_true, 'r--', label=f'True Gaussian\n($\\mu$={true_mu}, $\\sigma$={true_sigma})')
+plt.plot(x, pdf_mle, 'b-', label=f'MLE Gaussian\n($\\mu$={mle_mu:.2f}, $\\sigma$={mle_sigma:.2f})')
 plt.title('Data Histogram and Fitted Gaussian')
 plt.xlabel('Data')
 plt.ylabel('Density')
@@ -132,16 +131,16 @@ axs[0, 0].set_title('Data Distribution with Posterior Samples')
 # 均值mu的后验分布
 sns.histplot(mu_samples, kde=True, ax=axs[0, 1])
 axs[0, 1].axvline(x=true_mu, color='red', linestyle='--')
-axs[0, 1].set_title('Posterior Distribution of $\mu$')
+axs[0, 1].set_title('Posterior Distribution of $\\mu$')
 
 # 方差sigma的后验分布
 sns.histplot(sigma_samples, kde=True, ax=axs[1, 0])
 axs[1, 0].axvline(x=true_sigma, color='red', linestyle='--')
-axs[1, 0].set_title('Posterior Distribution of $\sigma$')
+axs[1, 0].set_title('Posterior Distribution of $\\sigma$')
 
 # 均值与方差的联合后验分布
 sns.scatterplot(x=mu_samples, y=sigma_samples, ax=axs[1, 1], s=10, alpha=0.5)
-axs[1, 1].set_title('Joint Posterior Distribution of $\mu$ and $\sigma$')
+axs[1, 1].set_title('Joint Posterior Distribution of $\\mu$ and $\\sigma$')
 
 plt.tight_layout()
 plt.show()

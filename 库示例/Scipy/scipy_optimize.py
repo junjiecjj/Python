@@ -359,8 +359,6 @@ res = minimize(partial_rosen, x0, method='nelder-mead', options={'xatol': 1e-8,}
 print(res.x)
 
 
-
-
 #%% >>>>>>>>>>>>>>>>>>>>> Broyden-Fletcher-Goldfarb-Shanno algorithm (method='BFGS')
 def rosen(x):
     """The Rosenbrock function"""

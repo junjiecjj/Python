@@ -20,6 +20,16 @@ https://github.com/artificialIntelligenceStudy/Kalman-and-Bayesian-Filters-in-Py
 
 https://mp.weixin.qq.com/s?__biz=MzkxNTcyMDI1Nw==&mid=2247485974&idx=1&sn=19fd8a052e51ae5b1d58c90f0d003cd9&chksm=c0be54ef5436b0d785d56a14488f85545e8e58f5d2d7c76c0102fab52a673acd902c4cdaed23&mpshare=1&scene=1&srcid=0920DsqVnH9yCUA5l9G0vwWD&sharer_shareinfo=b9c8cc13821f77027d5207eda71df00f&sharer_shareinfo_first=b9c8cc13821f77027d5207eda71df00f&exportkey=n_ChQIAhIQJZvTmaMZ3j16lnOYkpz%2FjRKfAgIE97dBBAEAAAAAABvsNvBDFIgAAAAOpnltbLcz9gKNyK89dVj0QzG7cK9WTpQEmBvhgzDRqacFS5f6SYIUCYgukp17iE0GkopoIwz2kJEIvOX31ql42mA8%2Fi7MzBTMkTXz2g8etC6AmS77Ds579lLzRWffU5Cdde6MDAVw%2BpKyUL8aYOT8LXkra9IG07JclLperqXaR0yCMv8M4BR4zHvpXW3ohjksBITUbHQhyswSjhzxTl90hvCXzlqS16tbUkVGLJ075wJgKTbllT57rHkbq3n2%2FUeL1fa%2B5eJIDvqnpn3IWAQXgHGM2p4Jb23C8u4GRpi1Ribu0cfjYOoZsD6%2F0P7KEaO6HEyC2STo1MRaaHWpHBAlhbsdBeP5sJBA&acctmode=0&pass_ticket=EJImrC01GRqrn0cLq8b%2Bl%2F9eDdpYuPNlRtI0mVed5RD%2BgCVPPJc823cBz2L6pDYI&wx_header=0#rd
 
+# https://github.com/loveuav/Kalman-and-Bayesian-Filters-in-Python
+
+# https://github.com/dougszumski/KalmanFilter/tree/master
+
+# https://github.com/zziz/kalman-filter
+
+# https://github.com/rlabbe/filterpy
+
+# https://github.com/milsto/robust-kalman/tree/master
+
 
 """
 
@@ -83,13 +93,12 @@ R = measurement_noise_std**2                                                    
 # 卡尔曼滤波器迭代
 for t in range(1, n_timesteps):
     ###>>>>>>>>>>>>>>>> 预测阶段
-    predicted_state = A @ estimated_states[t-1]  # 预测下一个状态(当前时刻的状态预测): hat{x}_{t|t-1} = A @ hat{x}_{t-1|t-1}
-    P = A @ P @ A.T + Q                          # 预测下一个协方差(更新预测误差协方差): P_{t|t-1} = A@P_{t-1|t-1}@A^T + Q
+    predicted_state = A @ estimated_states[t-1]  # 预测下一个状态(状态预测,当前时刻的状态预测): hat{x}_{t|t-1} = A @ hat{x}_{t-1|t-1}
+    P = A @ P @ A.T + Q                          # 预测下一个协方差(更新误差协方差): P_{t|t-1} = A@P_{t-1|t-1}@A^T + Q
     ###>>>>>>>>>>>>>>>> 更新阶段
-    y_tilde = measurements[t] - H @ predicted_state   # z_t - H @ hat{x}_{t|t-1}
     K = P @ H.T @ np.linalg.inv(H @ P @ H.T + R)      # 计算卡尔曼增益: K_t = P_{t|t-1} @ H^T @ (H @ P_{t|t-1} @ H^T + R)^{-1}
     ### 结合观测值修正预测
-    estimated_states[t] = predicted_state + K @ y_tilde  # 更新状态估计: hat{x}_{t-1|t-1} = hat{x}_{t|t-1} + K_t @ (z_t - H @ hat{x}_{t|t-1})
+    estimated_states[t] = predicted_state + K @ (measurements[t] - H @ predicted_state)  # 更新状态估计: hat{x}_{t|t} = hat{x}_{t|t-1} + K_t @ (z_t - H @ hat{x}_{t|t-1})
     P = (np.eye(2) - K @ H) @ P                          # 更新误差协方差：P_{t|t} = (I - K_t @ H) @ P_{t|t-1}
 
 # 绘制结果
@@ -120,42 +129,106 @@ plt.show()
 
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# https://mp.weixin.qq.com/s?__biz=MzkxNTcyMDI1Nw==&mid=2247485974&idx=1&sn=19fd8a052e51ae5b1d58c90f0d003cd9&chksm=c0be54ef5436b0d785d56a14488f85545e8e58f5d2d7c76c0102fab52a673acd902c4cdaed23&mpshare=1&scene=1&srcid=0920DsqVnH9yCUA5l9G0vwWD&sharer_shareinfo=b9c8cc13821f77027d5207eda71df00f&sharer_shareinfo_first=b9c8cc13821f77027d5207eda71df00f&exportkey=n_ChQIAhIQJZvTmaMZ3j16lnOYkpz%2FjRKfAgIE97dBBAEAAAAAABvsNvBDFIgAAAAOpnltbLcz9gKNyK89dVj0QzG7cK9WTpQEmBvhgzDRqacFS5f6SYIUCYgukp17iE0GkopoIwz2kJEIvOX31ql42mA8%2Fi7MzBTMkTXz2g8etC6AmS77Ds579lLzRWffU5Cdde6MDAVw%2BpKyUL8aYOT8LXkra9IG07JclLperqXaR0yCMv8M4BR4zHvpXW3ohjksBITUbHQhyswSjhzxTl90hvCXzlqS16tbUkVGLJ075wJgKTbllT57rHkbq3n2%2FUeL1fa%2B5eJIDvqnpn3IWAQXgHGM2p4Jb23C8u4GRpi1Ribu0cfjYOoZsD6%2F0P7KEaO6HEyC2STo1MRaaHWpHBAlhbsdBeP5sJBA&acctmode=0&pass_ticket=EJImrC01GRqrn0cLq8b%2Bl%2F9eDdpYuPNlRtI0mVed5RD%2BgCVPPJc823cBz2L6pDYI&wx_header=0#rd
+# 1 | 数据滤波：探讨卡尔曼滤波、SG滤波与组合滤波
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import linprog
+from sklearn.linear_model import OrthogonalMatchingPursuit
+from matplotlib import rcParams, font_manager
 
-# https://github.com/loveuav/Kalman-and-Bayesian-Filters-in-Python
+def find_chinese_font():
+    font_list = font_manager.fontManager.ttflist
+    for font in font_list:
+        if "SimHei" in font.name:
+            return font.fname
+        elif "SimSun" in font.name:
+            return font.fname
+    return None
 
-# https://github.com/dougszumski/KalmanFilter/tree/master
+font_path = find_chinese_font()
+if font_path:
+    my_font = font_manager.FontProperties(fname=font_path)
+else:
+    print("未找到中文字体")
 
-# https://github.com/zziz/kalman-filter
+def predict(F, B, u, x_est, P_est, Q):
+    x_pred = F @ x_est + B * u
+    P_pred = F @ P_est @ F.T + Q
+    return x_pred, P_pred
 
-# https://github.com/rlabbe/filterpy
-
-# https://github.com/milsto/robust-kalman/tree/master
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def update(x_pred, P_pred, H, z, R):
+    K = P_pred @ H.T @ np.linalg.inv(H @ P_pred @ H.T + R)
+    x_est = x_pred + K @ (z - H @ x_pred)
+    P_est = (np.eye(H.shape[0]) - K @ H) @ P_pred
+    return x_est, P_est
 
 
+Q_vals = [0.1, 1, 10]
+R_vals = [0.1, 1, 10]
+dt = 1
+t1 = np.linspace(0, 100, 101)
+n_timesteps = len(t1)
+F = np.array([[1, dt], [0, 1]]) # 状态转移矩阵，描述了状态如何从  时刻转移到  时刻
+H = np.array([[1, 0]]) # 观测矩阵，将状态空间映射到观测空间。
+B = np.array([0, 0]) # 控制矩阵（如果有控制输入）。
+u = 0
+
+num_experiments = len(Q_vals) * len(R_vals);
+errs = {}
+ests = {}
+leg = {}
+idx = 0
+
+# % 生成真实轨迹
+x_true = np.zeros((n_timesteps, 2))
+x_true[0] = np.array([0, 1])
+measurements = np.zeros(n_timesteps)
+
+for t in range(1, n_timesteps):
+    x = F @ x_true[t-1] + B * u + np.random.randn(2 )
+    z = H @ x + np.random.randn()
+    x_true[t] = x
+    measurements[t] = z[0]
+
+for Q1 in Q_vals:
+    for R in R_vals:
+        Q = Q1 * np.eye(2)
+        P_est = np.eye(2)
+        x_est = np.zeros((n_timesteps, 2))
+        x_est[0] = np.array([0,0])  # 初始位置和速度的估计值
+
+        for t in range(1, n_timesteps):
+            predicted_state, P_pred = predict(F, B, u, x_est[t-1], P_est, Q)
+            x_est_tmp, P_est = update(predicted_state, P_pred, H, measurements[t], R)
+            x_est[t] = x_est_tmp
+
+        err = np.sqrt(np.sum(np.abs(x_true - x_est)**2, axis = 1), )
+        errs[idx] = err
+        ests[idx] = x_est
+        leg[idx] = f"Q={Q1:.2f}, R = {R:.2f}"
+        idx = idx + 1
+
+# plot_errors(t, errs, leg);
+# plot_trajectories(t, x_true_hist, measurements, ests, leg);
+
+##############
+fig, axs = plt.subplots(1, 1, figsize=(12, 6), constrained_layout = True)# constrained_layout=True
+for i in range(len(errs)):
+    axs.plot(t1, errs[i], lw = 2, label = leg[i])
+
+font1 = {'family':'Times New Roman','style':'normal','size':18, }
+legend1 = axs.legend(loc = 'upper right', borderaxespad = 0, edgecolor = 'black', prop = font1,)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+# font = {'family':'Times New Roman','style':'normal','size':22}
+axs.set_xlabel("时间", fontproperties = my_font, fontsize = 18)
+axs.set_ylabel("误差 (欧几里得范数)", fontproperties = my_font, fontsize = 18 )
 
 
-
-
-
-
+##############
 
 
 
