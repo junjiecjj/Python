@@ -5,9 +5,7 @@ Created on Sat Oct 19 20:05:31 2024
 
 @author: jack
 
-求解高斯混合模型 (Gaussian Mixture Model, GMM) 绕不开 EM 算法，即最大期望算法 (Expectation
-Maximization, EM)。EM 算法是一种迭代算法，其核心思想是在不完全观测的情况下，通过已知的观测
-数据来估计模型参数。
+求解高斯混合模型 (Gaussian Mixture Model, GMM) 绕不开 EM 算法，即最大期望算法 (Expectation Maximization, EM)。EM 算法是一种迭代算法，其核心思想是在不完全观测的情况下，通过已知的观测数据来估计模型参数。
 
 
 https://mp.weixin.qq.com/s?__biz=Mzk0MjUxMzg3OQ==&mid=2247490595&idx=1&sn=9335034ba71f4f98bc143e06aa51304a&chksm=c338eb9f637eec3e2a78fb5f0102531502d092582abc26f5ba30c824bf18e0cf3063dae29f26&mpshare=1&scene=1&srcid=1018Tk3Y9YtNMqB8wd7CFCl2&sharer_shareinfo=b082064b4c80ab618ebd49916f06c64b&sharer_shareinfo_first=b082064b4c80ab618ebd49916f06c64b&exportkey=n_ChQIAhIQucSHC8B8deoxJf8ZsNs%2FVRKfAgIE97dBBAEAAAAAAH67I2VRst0AAAAOpnltbLcz9gKNyK89dVj0zYm3%2FdtA2BcDjjFYARJMD%2BfpSTz4CpWI5yYsKTLqpZ3qa8yqe4wlxguLZYVKPSQ6CkiiWos2xsKvaT%2BaefBp4NMZ2hRHs7hWJW2eLk2GROOAUtIXvdbJ0FQnTCMe%2BfUJltgkGi6DuJDmGWbxg0IY8J%2ByLpVJABwI6OfyAbWBkd8SNk%2BJea7vsPmVIZd5mh5SnSpBNn9ZG0UAVYwRphOT5KZCRpVn%2FlK9OxKcNcB8PlhXWsiMDvHT73zXEtHT3hJGkQf4zcZgYALY%2FDW1YbeOelD1Wbti6To1aGyz%2Fuss8OxF5sTv3%2B1F%2FB25F%2Fwml6sORgVvmPZmfXhG&acctmode=0&pass_ticket=Eo%2BW2qCUJ9xYdPUQ%2BnmICxd4VHefuZfpjIzjxZFHlFwBWbSsfKkIvE9PGcAEGPW8&wx_header=0#rd
@@ -65,7 +63,6 @@ def maximization_step(X, gamma):
         X_centered = X - mu[k]
         gamma_diag = np.diag(gamma[:, k])
         sigma[k] = np.dot(X_centered.T, np.dot(gamma_diag, X_centered)) / Nk[k]
-
     return pi, mu, sigma
 
 # 计算对数似然
@@ -180,24 +177,24 @@ def initialize_parameters(data, k):
 
 # E-step: 计算责任度
 def e_step(data, weights, means, variances):
-    responsibilities = np.zeros((len(data), len(means)))
+    post_prob = np.zeros((len(data), len(means)))
     for i in range(len(means)):
-        responsibilities[:, i] = weights[i] * norm.pdf(data, means[i], np.sqrt(variances[i]))
-    responsibilities /= responsibilities.sum(1, keepdims=True)
-    return responsibilities
+        post_prob[:, i] = weights[i] * norm.pdf(data, means[i], np.sqrt(variances[i]))  ## 书上公式(3)(4)
+    post_prob /= post_prob.sum(1, keepdims=True)   ## 书上公式(6,7)
+    return post_prob
 
 # M-step: 更新参数
-def m_step(data, responsibilities):
-    nk = responsibilities.sum(axis=0)
-    weights = nk / len(data)
-    means = (responsibilities.T @ data) / nk
+def m_step(data, post_prob):
+    nk = post_prob.sum(axis=0)
+    weights = nk / len(data)  ## 书上公式(8), 更新比例参数
+    means = (post_prob.T @ data) / nk  ## 书上公式(10), 更新均值
     variances = np.zeros(len(means))
     for i in range(len(means)):
-        variances[i] = (responsibilities[:, i] * (data - means[i])**2).sum() / nk[i]
+        variances[i] = (post_prob[:, i] * (data - means[i])**2).sum() / nk[i] ## 书上公式(11), 更新标准差
     return weights, means, variances
 
 # 计算对数似然函数
-def compute_log_likelihood(data, weights, means, variances):
+def Compute_log_likelihood(data, weights, means, variances):
     log_likelihood = 0
     for i in range(len(means)):
         log_likelihood += weights[i] * norm.pdf(data, means[i], np.sqrt(variances[i]))
@@ -208,11 +205,10 @@ def em_algorithm(data, k, max_iter=100, tol=1e-6):
     weights, means, variances = initialize_parameters(data, k)
     log_likelihoods = []
     for iteration in range(max_iter):
-        responsibilities = e_step(data, weights, means, variances)
-        weights, means, variances = m_step(data, responsibilities)
-        log_likelihood = compute_log_likelihood(data, weights, means, variances)
+        post_prob = e_step(data, weights, means, variances)
+        weights, means, variances = m_step(data, post_prob)
+        log_likelihood = Compute_log_likelihood(data, weights, means, variances)
         log_likelihoods.append(log_likelihood)
-
         if iteration > 0 and abs(log_likelihood - log_likelihoods[-2]) < tol:
             break
     return weights, means, variances, log_likelihoods

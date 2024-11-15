@@ -1,0 +1,14 @@
+***MappingChart***
+number_of_signal
+8
+length_of_signal
+3
+signal_set
+-1  -1  -1 
+1  -1  -1  
+-1  1  -1  
+1  1  -1  
+-1  -1  1  
+1  -1  1  
+-1  1  1  
+1  1  1  

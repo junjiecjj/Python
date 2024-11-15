@@ -133,9 +133,9 @@ plt.show()
 # 1 | 数据滤波：探讨卡尔曼滤波、SG滤波与组合滤波
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import linprog
-from sklearn.linear_model import OrthogonalMatchingPursuit
 from matplotlib import rcParams, font_manager
+
+np.random.seed(1)  # 固定随机数种子
 
 def find_chinese_font():
     font_list = font_manager.fontManager.ttflist
@@ -163,7 +163,6 @@ def update(x_pred, P_pred, H, z, R):
     P_est = (np.eye(H.shape[0]) - K @ H) @ P_pred
     return x_est, P_est
 
-
 Q_vals = [0.1, 1, 10]
 R_vals = [0.1, 1, 10]
 dt = 1
@@ -174,7 +173,6 @@ H = np.array([[1, 0]]) # 观测矩阵，将状态空间映射到观测空间。
 B = np.array([0, 0]) # 控制矩阵（如果有控制输入）。
 u = 0
 
-num_experiments = len(Q_vals) * len(R_vals);
 errs = {}
 ests = {}
 leg = {}
@@ -192,28 +190,24 @@ for t in range(1, n_timesteps):
     measurements[t] = z[0]
 
 for Q1 in Q_vals:
-    for R in R_vals:
-        Q = Q1 * np.eye(2)
-        P_est = np.eye(2)
+    for R in R_vals: # # 测量噪声协方差
+        Q = Q1 * np.eye(2) # 过程噪声协方差
+        P_est = np.eye(2)  # 初始估计误差协方差矩阵
         x_est = np.zeros((n_timesteps, 2))
-        x_est[0] = np.array([0,0])  # 初始位置和速度的估计值
+        x_est[0] = np.array([0, 0])  # 初始位置和速度的估计值
 
         for t in range(1, n_timesteps):
-            predicted_state, P_pred = predict(F, B, u, x_est[t-1], P_est, Q)
-            x_est_tmp, P_est = update(predicted_state, P_pred, H, measurements[t], R)
+            x_pred, P_pred = predict(F, B, u, x_est[t-1], P_est, Q)
+            x_est_tmp, P_est = update(x_pred, P_pred, H, measurements[t], R)
             x_est[t] = x_est_tmp
-
         err = np.sqrt(np.sum(np.abs(x_true - x_est)**2, axis = 1), )
         errs[idx] = err
         ests[idx] = x_est
         leg[idx] = f"Q={Q1:.2f}, R = {R:.2f}"
         idx = idx + 1
 
-# plot_errors(t, errs, leg);
-# plot_trajectories(t, x_true_hist, measurements, ests, leg);
-
-##############
-fig, axs = plt.subplots(1, 1, figsize=(12, 6), constrained_layout = True)# constrained_layout=True
+############## plot_errors
+fig, axs = plt.subplots(1, 1, figsize=(10, 6), constrained_layout = True)# constrained_layout=True
 for i in range(len(errs)):
     axs.plot(t1, errs[i], lw = 2, label = leg[i])
 
@@ -226,14 +220,44 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 # font = {'family':'Times New Roman','style':'normal','size':22}
 axs.set_xlabel("时间", fontproperties = my_font, fontsize = 18)
 axs.set_ylabel("误差 (欧几里得范数)", fontproperties = my_font, fontsize = 18 )
+plt.show()
+plt.close()
+############## plot_trajectories
 
+fig, axs = plt.subplots(2, 1, figsize=(10, 12), constrained_layout = True)
+axs[0].plot(t1, x_true[:,0], lw = 2, label = "真实位置", color = 'k', ls = 'none',  marker = 'o', mfc = 'none', ms = 18, markevery = 10)
+axs[0].plot(t1, measurements, lw = 2, label = "测量值", color = 'r', ls = 'none',  marker = '*', mfc = 'none', ms = 18, markevery = 10)
+for i in range(len(ests)):
+    axs[0].plot(t1, ests[i][:,0], lw = 2, label = leg[i])
 
-##############
+font1 = {'family':'Times New Roman','style':'normal','size':14, }
+legend1 = axs[0].legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = my_font, fontsize = 18)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+# font = {'family':'Times New Roman','style':'normal','size':22}
+axs[0].set_xlabel("时间", fontproperties = my_font, fontsize = 18)
+axs[0].set_ylabel("位置", fontproperties = my_font, fontsize = 18 )
+axs[0].set_title("位置估计", fontproperties = my_font, fontsize = 18 )
 
+axs[1].plot(t1, x_true[:,1], lw = 2, label = "真实速度", color = 'r', ls = 'none',  marker = '*', mfc = 'none', ms = 18, markevery = 10)
+for i in range(len(ests)):
+    axs[1].plot(t1, ests[i][:,1], lw = 2, label = leg[i])
 
+font1 = {'family':'Times New Roman','style':'normal','size':12, }
+legend1 = axs[1].legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = my_font, fontsize = 18)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+# font = {'family':'Times New Roman','style':'normal','size':22}
+axs[1].set_xlabel("时间", fontproperties = my_font, fontsize = 18)
+axs[1].set_ylabel("速度", fontproperties = my_font, fontsize = 18 )
+axs[1].set_title("速度估计", fontproperties = my_font, fontsize = 18 )
 
+plt.show()
+plt.close()
 
 
 

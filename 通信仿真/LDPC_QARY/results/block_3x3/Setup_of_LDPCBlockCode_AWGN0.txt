@@ -1,0 +1,14 @@
+m_min_snr
+0
+m_max_snr
+8
+m_inc_snr
+1.0
+m_max_blk_err
+10000
+m_max_blk_num
+10000000
+code_file_name
+Golay(24,12)_Block3x3.txt
+mapping_file_name
+SignalSet_BPSK-3.txt
