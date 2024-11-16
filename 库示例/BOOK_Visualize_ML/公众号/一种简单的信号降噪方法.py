@@ -83,7 +83,7 @@ xt = np.zeros((N,1))# estimate of signal
 dt = np.zeros((N,1))# derivative of denoiser
 rt = np.zeros((M,1))# residual
 
-for iter in range(0,max_iter):
+for iter in range(0, max_iter):
     # update residual
     rt = y - np.dot(A,xt) + 1/delta*np.mean(dt)*rt
     # compute pseudo-data
