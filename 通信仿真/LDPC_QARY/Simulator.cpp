@@ -118,7 +118,6 @@ Simulator:: ~Simulator(){
 	}
 }
 
-
 void Simulator:: StartSimulator() {
     int setup_no;
     char filename[80];
@@ -126,7 +125,6 @@ void Simulator:: StartSimulator() {
     char code_file_name[80];
 	char mapping_file_name[80];
     FILE *fp;
-
     setup_no = 0;
 
     sprintf(filename, "Setup_of_LDPCBlockCode_AWGN%d.txt", setup_no);
@@ -275,7 +273,7 @@ void Simulator:: EndSimulator() {
 void Simulator:: Simulate() {
 
     FILE *fp;
-    
+
     StartSimulator();
 
     for (double snr = m_min_snr; snr < m_max_snr + 1.0*m_inc_snr; snr += m_inc_snr) {
@@ -308,7 +306,7 @@ void Simulator:: Simulate() {
 
 			m_sourcesink->CntErr(m_uu, m_uu_hat, m_len_uu, 1);
 			err = m_sourcesink->ErrBlk();
-			
+
 #ifdef SHOW_PROCESS
             if ((int)(m_sourcesink->TolBlk()) % 1000 == 0) {
                 printf("temp = (%le  %le  %le)    %%%%ebn = %f    err = (%d/%d  %d/%d)\n",

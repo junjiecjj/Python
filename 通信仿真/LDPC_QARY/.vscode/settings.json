@@ -7,5 +7,10 @@
         "*.tcc": "cpp",
         "unordered_map": "cpp",
         "istream": "cpp"
+    },
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#531244",
+        "titleBar.activeBackground": "#74195F",
+        "titleBar.activeForeground": "#FDF8FC"
     }
 }
