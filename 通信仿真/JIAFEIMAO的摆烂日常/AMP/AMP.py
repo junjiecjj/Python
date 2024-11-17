@@ -76,14 +76,11 @@ def AMP(A, y, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon = 0.2 )
 def OMP1(phi, y, sparsity):
     """
     OMP算法的Python实现
-
-    参数：
-    A: 测量矩阵，形状为(m, n)
-    y: 观测向量，形状为(m,)
-    k: 稀疏度，即信号的非零元素个数
-
-    返回：
-    x: 重构的稀疏信号，形状为(n, 1)
+        参数：
+        A: 测量矩阵，形状为(m, n)
+        y: 观测向量，形状为(m,)
+        k: 稀疏度，即信号的非零元素个数
+    返回： x: 重构的稀疏信号，形状为(n, 1)
     """
     N = phi.shape[1]
     y = y.flatten()
@@ -100,7 +97,7 @@ def OMP1(phi, y, sparsity):
         for i, idx in enumerate(index_set):
             theta[idx] = theta_selected[i]
         residual = y - phi @ theta
-        if np.linalg.norm(residual) < 1e-6:
+        if np.linalg.norm(residual) < 1e-10:
             break
     return theta
 
@@ -143,7 +140,6 @@ omp = OrthogonalMatchingPursuit(n_nonzero_coefs = K)
 omp.fit(A, y)
 reconstructed_signal = omp.coef_
 
-
 ##>>>>>>>>>>>  AMP plot result
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
 axs.plot(mse,'o-')
@@ -184,7 +180,7 @@ plt.close()
 #%%
 # Plot with Varying MSE vs SNR values
 mse_snr = [] #np.zeros((max_iter,1)) # store mean square error
-SNR = [10,20,30,40,50,60,70,80,90,100]
+SNR = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 for snr in SNR:
     y = np.dot(A,x) + np.random.randn(M,1)/np.sqrt(snr)# measurements
     x_amp, mse = AMP(A, y, epsilon = epsilon)
