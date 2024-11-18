@@ -119,14 +119,11 @@ from matplotlib import rcParams, font_manager
 def OMP2(A, y, sparsity):
     """
     OMP算法的Python实现
-
     参数：
-    A: 测量矩阵，形状为(m, n)
-    y: 观测向量，形状为(m, 1)
-    k: 稀疏度，即信号的非零元素个数
-
-    返回：
-    x: 重构的稀疏信号，形状为(n, 1)
+        A: 测量矩阵，形状为(m, n)
+        y: 观测向量，形状为(m, 1)
+        k: 稀疏度，即信号的非零元素个数
+    返回： x: 重构的稀疏信号，形状为(n, 1)
     """
     m, n = A.shape
     y = y.reshape(-1,1)
@@ -140,10 +137,9 @@ def OMP2(A, y, sparsity):
         index = np.argmax(projections)
         support.append(index)
         # 更新估计信号
-        x = np.linalg.lstsq(A[:, support], y, rcond=None)[0]
+        x = np.linalg.lstsq(A[:, support], y, rcond = None)[0]
         # 更新残差
         residual = y - A[:, support] @ x
-
     # 构造稀疏信号
     x_sparse = np.zeros((n, 1))
     x_sparse[support] = x
@@ -153,26 +149,22 @@ def OMP2(A, y, sparsity):
 def OMP1(phi, y, sparsity):
     """
     OMP算法的Python实现
-
-    参数：
-    A: 测量矩阵，形状为(m, n)
-    y: 观测向量，形状为(m,)
-    k: 稀疏度，即信号的非零元素个数
-
-    返回：
-    x: 重构的稀疏信号，形状为(n, 1)
+        参数：
+        A: 测量矩阵，形状为(m, n)
+        y: 观测向量，形状为(m,)
+        k: 稀疏度，即信号的非零元素个数
+    返回： x: 重构的稀疏信号，形状为(n, 1)
     """
     N = phi.shape[1]
     residual = y.copy()
     index_set = []
     theta = np.zeros(N)
-
     for _ in range(sparsity):
         correlations = phi.T @ residual
         best_index = np.argmax(np.abs(correlations))
         index_set.append(best_index)
         phi_selected = phi[:, index_set]
-        theta_selected, _, _, _ = np.linalg.lstsq(phi_selected, y, rcond=None)
+        theta_selected, _, _, _ = np.linalg.lstsq(phi_selected, y, rcond = None)
         for i, idx in enumerate(index_set):
             theta[idx] = theta_selected[i]
         residual = y - phi @ theta

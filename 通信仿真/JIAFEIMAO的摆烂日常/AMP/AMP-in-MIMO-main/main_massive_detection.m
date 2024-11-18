@@ -48,7 +48,7 @@ end
  
 figure(1)
     for j=algorithms
-semilogy(SNR_range,SER(j,:),[linestyles{j} Markers(j)],'Color',SetColors(j,:),'Linewidth',2);
+        semilogy(SNR_range,SER(j,:),[linestyles{j} Markers(j)],'Color',SetColors(j,:),'Linewidth',2);
         hold on;
         grid on;
     end

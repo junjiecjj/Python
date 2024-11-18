@@ -51,7 +51,7 @@ max_iter = 40 # number of AMP iterations
 lamda = 0.3 # damping parameter can't use 'lambda' since that is a python keyword
 var_x = 1
 ## AMP algorithm
-def AMP(A, y, real_x, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon = 0.2 ):
+def AMPforCS(A, y, real_x, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon = 0.2 ):
     M, N = A.shape
     delta = M/N          # measurement rate
     # initialization
@@ -61,7 +61,7 @@ def AMP(A, y, real_x, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon
     rt = np.zeros((M,1))# residual
     for iter in range(0, max_iter):
         # update residual
-        rt = y - A @ xt + 1/delta*np.mean(dt)*rt
+        rt = y - A @ xt + 1 / delta * np.mean(dt) * rt
         # compute pseudo-data
         vt = xt + A.T @ rt
         # estimate scalar channel noise variance estimator is due to Montanari
@@ -129,7 +129,7 @@ y = np.dot(A, x) + np.random.randn(M, 1)/np.sqrt(snr)# measurements
 # y = y/np.sqrt(snr)
 
 ###### AMP
-xt_AMP, mse = AMP(A, y, x, epsilon = epsilon)
+xt_AMP, mse = AMPforCS(A, y, x, epsilon = epsilon)
 # print('AMP error = {}\n'.format(min(mse)))
 
 ###### OMP
@@ -182,8 +182,8 @@ plt.close()
 mse_snr = [] #np.zeros((max_iter,1)) # store mean square error
 SNR = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 for snr in SNR:
-    y = np.dot(A,x) + np.random.randn(M,1)/np.sqrt(snr)# measurements
-    x_amp, mse = AMP(A, y, x, epsilon = epsilon)
+    y = np.dot(A,x) + np.random.randn(M,1)/np.sqrt(snr) # measurements
+    x_amp, mse = AMPforCS(A, y, x, epsilon = epsilon)
     mse_snr.append(np.mean((x_amp - x)**2))
 
     ## plot result

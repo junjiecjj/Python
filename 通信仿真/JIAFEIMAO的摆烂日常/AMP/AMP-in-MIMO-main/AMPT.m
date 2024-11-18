@@ -24,23 +24,20 @@ alphabar=1e4;
 Theta=diag(1./(diag(H'*H)));
 
 for t=1:20
-    
-r=y-H*x_hat+(n/m)*alphabar/alpha*r; 
-alpha=sigma2+(n/m)*alphabar; 
-
-x_in=Theta*H.'*r+x_hat;
-u=x_in;v=Theta*alpha*ones(n,1);
-for i=1:n
-    x_hat(i)=sinh(u(i)/v(i))/((1-epsi)/epsi*exp(1/(2*v(i)))+cosh(u(i)/v(i)));
-    l_hat(i)=((1-epsi)/epsi*exp(1/(2*v(i)))*cosh(u(i)/v(i))+1)/(((1-epsi)/epsi*exp(1/(2*v(i)))+cosh(u(i)/v(i)))^2);
-end
-alphabar=mean(Theta^(-1)*l_hat);
-
-x_hat_all(1:n,t)=round(x_hat);
-FIT(t)=norm(y-H*x_hat_all(1:n,t));
-if FIT(t)>=1e5
-    break;
-end
+    r=y-H*x_hat+(n/m)*alphabar/alpha*r; 
+    alpha=sigma2+(n/m)*alphabar; 
+    x_in=Theta*H.'*r+x_hat;
+    u=x_in;v=Theta*alpha*ones(n,1);
+    for i=1:n
+        x_hat(i)=sinh(u(i)/v(i))/((1-epsi)/epsi*exp(1/(2*v(i)))+cosh(u(i)/v(i)));
+        l_hat(i)=((1-epsi)/epsi*exp(1/(2*v(i)))*cosh(u(i)/v(i))+1)/(((1-epsi)/epsi*exp(1/(2*v(i)))+cosh(u(i)/v(i)))^2);
+    end
+    alphabar=mean(Theta^(-1)*l_hat);
+    x_hat_all(1:n,t)=round(x_hat);
+    FIT(t)=norm(y-H*x_hat_all(1:n,t));
+    if FIT(t)>=1e5
+        break;
+    end
 end
  
 ind=find(FIT==min(FIT));
