@@ -51,7 +51,7 @@ max_iter = 40 # number of AMP iterations
 lamda = 0.3 # damping parameter can't use 'lambda' since that is a python keyword
 var_x = 1
 ## AMP algorithm
-def AMP(A, y, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon = 0.2 ):
+def AMP(A, y, real_x, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon = 0.2 ):
     M, N = A.shape
     delta = M/N          # measurement rate
     # initialization
@@ -70,7 +70,7 @@ def AMP(A, y, max_iter = max_iter, lamda = lamda, var_x = var_x, epsilon = 0.2 )
         xt1, dt = denoise(vt, var_x, var_t, epsilon)
         # damping step
         xt = lamda*xt1 + (1-lamda)*xt
-        mse[iter] = np.mean((xt - x)**2)
+        mse[iter] = np.mean((xt - real_x)**2)
     return xt , mse
 
 def OMP1(phi, y, sparsity):
@@ -129,7 +129,7 @@ y = np.dot(A, x) + np.random.randn(M, 1)/np.sqrt(snr)# measurements
 # y = y/np.sqrt(snr)
 
 ###### AMP
-xt_AMP, mse = AMP(A, y, epsilon = epsilon)
+xt_AMP, mse = AMP(A, y, x, epsilon = epsilon)
 # print('AMP error = {}\n'.format(min(mse)))
 
 ###### OMP
@@ -183,7 +183,7 @@ mse_snr = [] #np.zeros((max_iter,1)) # store mean square error
 SNR = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 for snr in SNR:
     y = np.dot(A,x) + np.random.randn(M,1)/np.sqrt(snr)# measurements
-    x_amp, mse = AMP(A, y, epsilon = epsilon)
+    x_amp, mse = AMP(A, y, x, epsilon = epsilon)
     mse_snr.append(np.mean((x_amp - x)**2))
 
     ## plot result

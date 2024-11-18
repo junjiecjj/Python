@@ -6,8 +6,6 @@ Created on Thu Nov  7 13:27:55 2024
 @author: jack
 """
 
-
-
 import numpy as np
 # import matplotlib.pyplot as plt
 # import scipy

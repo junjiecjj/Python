@@ -25,15 +25,27 @@ import socket, getpass , os
 ##  自己编写的库
 from sourcesink import SourceSink
 # from config import args
-from mimo_channel import  SignalNorm, SVD_Precoding
+from mimo_channel import  SignalNorm
 from mimo_channel import channelConfig, Generate_hd, PassChannel
 import utility
 import Modulator
 
 
+def AMP(H, y, sigma2, sigmas2, maxiter):
+    M, N = H.shape
+    L = y.shape[-1]
+    r = np.zeros((M, L))
+    xhat = np.zeros((N, L))
+    alpha = sigmas2
+    for i in range(maxiter):
+        r = y - H@xhat + (N/M) * sigmas2 / (sigmas2 + alpha) * r
+        alpha = sigma2 + (N/M) * sigmas2*alpha/(sigmas2+alpha)
+        xhat = (sigmas2/(sigmas2+alpha))*(H.conjugate().T @ r + xhat)
+    return xhat
+
+
 def parameters():
     home = os.path.expanduser('~')
-
     Args = {
     "minimum_snr" : 2 ,
     "maximum_snr" : 13,
@@ -45,11 +57,9 @@ def parameters():
     "max_iteration" : 50,
     "encoder_active" : 1,
     "file_name_of_the_H" : "PEG1024regular0.5.txt",
-
     ## others
     "home" : home,
     "smallprob": 1e-15,
-
     "Nt" : 10,
     "Nr" : 16,
     "P" : 1,
@@ -69,7 +79,6 @@ def parameters():
 args = parameters()
 utility.set_random_seed()
 
-
 M = args.M
 Nr = args.Nr
 Nt = args.Nt
@@ -81,23 +90,22 @@ if modutype == 'qam':
 elif modutype == 'psk':
     modem =  cpy.PSKModem(M)
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
-
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(Nt)
 
 # 接收方估计
 # def main_mmseSIC():
-sigma2dBm = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
-sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
 
 source = SourceSink()
 
 ## 'zf', 'mmse', 'sinr', 'snrmmse', 'snrzf', 'normMmseHc', 'normZfHc', 'normMmseHf', 'normZfHf',
-case = 'normZfHf'
+case = 'amp'
 
 if case == 'zf':
     logf = "SIC_BerFer_zf.txt"
 elif case == 'mmse':
     logf = "SIC_BerFer_mmse.txt"
+elif case == 'amp':
+    logf = "SIC_BerFer_amp.txt"
 elif case == 'sinr':
     logf = "SIC_BerFer_sinr.txt"
 elif case == 'snrmmse':
@@ -115,8 +123,10 @@ elif case == 'normZfHf':
 
 source.InitLog(logfile = logf, promargs = args, codeargs = {} )
 
-for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
 
+sigma2dBm = np.array([-50, -55, -60, -65, -70, -75, -77, -80,])  # dBm
+sigma2W = 10**(sigma2dBm/10.0)/1000    # 噪声功率
+for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2dbm}(dBm), {sigma2w}(w):")
     while source.tot_blk <= args.maximum_block_number and source.err_blk <= args.maximum_error_number:
@@ -153,6 +163,13 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
             rx_data_mmse = G_MMSE @ rx_sig
             rx_symb_mmse = rx_data_mmse.reshape(-1)
             rx_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), rx_symb_mmse, 'hard', Es = Es, )
+
+        elif case == 'amp':  # AMP在有大尺度衰落下无效，需要专门设计，此处未解决
+            H = copy.deepcopy(H0)
+            symbols_hat = AMP(H, rx_sig, P_noise, 1, 6)
+            symbols_hat = symbols_hat.reshape(-1)
+            rx_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), symbols_hat, 'hard', Es = Es, )
+
         elif case == 'sinr':
             #%%============================================
             ##     (一) mmse sic 基于SINR排序, 书上(11.15)
