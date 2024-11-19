@@ -120,7 +120,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         symbols = scma.mapping(cc, )
         yy = scma.encoder(symbols, H, )
         rx_sig = PassChannel(yy, noise_var = 1, )
-        symbols_hat, uu_hat, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2 = 1, Nit = args.Nit)
+        symbols_hat, uu_hard, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2 = 1, Nit = args.Nit)
 
         uu_hat = np.array([], dtype = np.int8)
         for j in range(scma.J):

@@ -22,7 +22,7 @@ https://mp.weixin.qq.com/s?__biz=MzI1NzU4ODgwMg==&mid=2247493413&idx=1&sn=e5684f
 
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy import optimize as op
+# from scipy import optimize as op
 from scipy.stats import norm
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
@@ -114,7 +114,7 @@ A = 1/np.sqrt(M)*np.random.randn(M, N) # unit norm columns
 
 x = np.zeros((N, 1))
 x[np.random.choice(N, K, replace=False)] = np.random.randn(K, 1)
-epsilon = K/M # probability of nonzero signal
+epsilon = K/N # probability of nonzero signal
 
 # signal parameters
 # generate signal
@@ -197,7 +197,7 @@ for snr in SNR:
 
     fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
     axs.plot(x_amp, ls = '--', color = 'orange', marker = "o", )
-    axs.set_title(f'recover under snr = {snr}')
+    axs.set_title(f'AMP, recover under snr = {snr}')
     plt.show()
     plt.close()
 
