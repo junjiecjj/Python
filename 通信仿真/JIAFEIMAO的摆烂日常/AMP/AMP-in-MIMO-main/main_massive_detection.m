@@ -22,7 +22,7 @@ for monte=1:4e3 % the number of MonteCarlo simulations
     A=7;% size of constellations
     u=1*randi([-A,A],n,1);% symbols in users 
     
-    sigmas2=A*(A+1)/3;              % theoretical signal power;  
+    sigmas2=A*(A+1)/3;              % theoretical signal power;
     sigma2=sigmas2/((10^(SNR/10))); % noise power
     y=H*u+sqrt(sigma2)*randn(m,1);  %the received signal
  

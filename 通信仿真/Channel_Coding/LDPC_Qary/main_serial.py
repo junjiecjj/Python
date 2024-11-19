@@ -23,10 +23,9 @@ import  os
 
 ##  自己编写的库
 from sourcesink import SourceSink
-# from Channel import AWGN
-# from Channel import Rayleigh
+
 from Channel import channelConfig
-from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician
+from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician, PassChannel
 import utility
 from LDPC import LDPC_Coder_llr
 import Modulator
@@ -88,6 +87,8 @@ source.InitLog(logfile = logf, promargs = args, codeargs = coderargs, )
 
 ## modulator
 M = args.M
+bps = int(np.log2(M))
+framelen = int(ldpc.codelen/bps)
 modutype = args.type
 if modutype == 'qam':
     modem = cpy.QAMModem(M)
@@ -106,11 +107,11 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
         if args.channel_type == 'AWGN':
-            H = AWGN(args.K, ldpc.codelen)
+            H = AWGN(args.K, framelen)
         elif args.channel_type == 'block-fading':
-            H = QuasiStaticRayleigh(args.K, ldpc.codelen)
+            H = QuasiStaticRayleigh(args.K, framelen)
         elif args.channel_type == 'fast-fading':
-            H = FastFadingRayleigh(args.K, ldpc.codelen)
+            H = FastFadingRayleigh(args.K, framelen)
         elif args.channel_type == 'large-small':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args.K, r = 100)
             H = LargeRician(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
@@ -121,15 +122,15 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             cc = np.hstack((cc, ldpc.encoder(uu[k,:])))
         cc = cc.reshape(args.K, -1)
 
-        ## modulate
+        ## Modulate
         syms = modem.modulate(cc)
         ## 符号能量归一化
         syms  = syms / np.sqrt(Es)
 
-        ## channel
-        yy, H = channel.forward(syms)
+        ## Pass Channel
+        yy = PassChannel(syms, H, sigma2w)
 
-        ## decoding
+        ## Decoding
         llr_yy = Modulator.demod_fading(copy.deepcopy(modem.constellation), yy, "soft", H, Es, noise_var)
 
         uu_hat, iter_num = ldpcCoder.decoder_spa(llr_yy)
