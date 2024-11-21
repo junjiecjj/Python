@@ -42,7 +42,7 @@ public:
 
     void set(int row, int col, const int& pai_e);
 
-    void Permutation(int direction);  // 0 represent permutation from variable node to check node 
+    void Permutation(int direction);  // 0 represent permutation from variable node to check node
 	                                  // 1 represent permutation from check node to variable node
 
 	void Transform(int direction);  // 0 represent forward transform
@@ -50,11 +50,11 @@ public:
 
 	void Norm(int direction);  // 0 represent normilize the vector v2c
 	                           // 1 represent normilize the vector c2v
-    
+
     void HadamardTransform(double *data_in, double *data_out, int stage);
 
     static void init(int q_ary, int degree);
-	
+
 };
 
 
@@ -65,8 +65,8 @@ public:
     CLDPCQARYCodec(string filename, int max_iterations, string mapping_name);
     ~CLDPCQARYCodec();
 
-    int m_q_ary;
-    int m_degree;
+    int m_q_ary;  // 8
+    int m_degree; // 3
     int sym_satisfied_num;
     CModem m_modem;
 
@@ -77,27 +77,27 @@ public:
     void transfer2qary(double *yy, double **channel_for_spa);
     int qary_decoder(double **channel_for_spa, int *uu_hat);
     void transfer2binary(int *uu_q, int *uu_b);
-    
+
 private:
     // code parameters
-    int m_codedim;
-	int m_codelen;
-    int m_codechk;
+    int m_codedim; // 12
+	int m_codelen;  // 24
+    int m_codechk; // 12 = 24 - 12
 
     // generator matrix
-    int m_num_row;
-    int m_num_col;
+    int m_num_row;  // 4
+    int m_num_col; // 8
 
     // block parameters
-    int m_blk_dim;
-    int m_blk_len;
-    int m_blk_rownum;
-    int m_blk_colnum;
-    int **m_seq_table;
+    int m_blk_dim;  // 3
+    int m_blk_len; // 3
+    int m_blk_rownum; // 4 = 12 / 3
+    int m_blk_colnum; // 8 = 24 / 3
+    int **m_seq_table; // 8 x 3的0、1矩阵
     int *m_blk_parity;
 
     // SPA parameters
-    int m_max_iter;    
+    int m_max_iter;
     double *temp_fwd;
     double *temp_bwd;
     double *m_prob_H2S;
@@ -116,10 +116,10 @@ private:
     Edge *m_col_link;
 
     // matrix
-    int **m_matrixG;
-    int **m_matrixH;
-    int **m_matrixHb;
-    int **m_matrixB;
+    int **m_matrixG; // 12 x 24
+    int **m_matrixH; // 12 x 24
+    int **m_matrixHb; // 4 x 8
+    int **m_matrixB; // 3 x 3
 
     void load_matrixG(string filename);
     void load_matrixH(string filename);

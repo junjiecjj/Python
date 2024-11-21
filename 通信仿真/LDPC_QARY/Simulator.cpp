@@ -197,7 +197,6 @@ void Simulator:: StartSimulator() {
     return;
 }
 
-
 void Simulator:: EndSimulator() {
 	m_codec->Free();
     if (m_uu != NULL) {
@@ -269,31 +268,23 @@ void Simulator:: EndSimulator() {
 	}
 }
 
-
 void Simulator:: Simulate() {
-
     FILE *fp;
-
     StartSimulator();
-
     for (double snr = m_min_snr; snr < m_max_snr + 1.0*m_inc_snr; snr += m_inc_snr) {
-
         fp = fopen("snrferber.txt", "a+");
 		if (fp == NULL) {
 			printf("open file error\n");
 			system("pause");
 			exit(1);
 		}
-
         double var = pow(10, -0.1 * snr);
 		m_sourcesink->ClrCnt();
         m_channel->AWGN_Initial(var);
 
         int err = 0;
 		double iter = 0.0;
-
 		while (err < m_max_blk_err && m_sourcesink->TolBlk() < m_max_blk_num) {
-
 			m_sourcesink->GetBitStr(m_uu, m_len_uu);
 			m_codec->encoder(m_uu, m_cc);
 			m_modem->BPSK_Modulation(m_cc, m_xx, m_len_cc);
@@ -321,15 +312,11 @@ void Simulator:: Simulate() {
             }
 #endif
         }
-
         fprintf(fp, "%f  %le  %le  %le   %%%%err = (%d/%d  %d/%d)\n", snr, m_sourcesink->BER(), m_sourcesink->FER(), iter / m_sourcesink->TolBlk(),
 			(int)m_sourcesink->ErrBit(), (int)m_sourcesink->TolBit(), (int)m_sourcesink->ErrBlk(), (int)m_sourcesink->TolBlk());
 		fclose(fp);
-
     }
-
     EndSimulator();
-
 }
 
 

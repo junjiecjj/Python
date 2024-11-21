@@ -27,7 +27,7 @@ from sourcesink import SourceSink
 from Channel import channelConfig
 from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician, PassChannel
 import utility
-from LDPC import LDPC_Coder_llr
+from QaryLDPC import QLDPC_Codeing
 import Modulator
 
 utility.set_random_seed()
@@ -42,7 +42,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 500,
     "maximum_block_number" : 1000000,
-    "K" : 10,    # User num
+    "K" : 8,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -63,7 +63,7 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'large-small', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
+    'channel_type': 'block-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
     }
     args = argparse.Namespace(**ldpc_args)
     return args
@@ -73,7 +73,7 @@ args = parameters()
 
 ## Rayleigh Fading 信道，BPSK/QAM下，LPDC编码，串行
 # def QaryLDPC(args, ):
-ldpc =  LDPC_Coder_llr(args)
+ldpc =  QLDPC_Codeing(args)
 coderargs = {'codedim':ldpc.codedim,
              'codelen':ldpc.codelen,
              'codechk':ldpc.codechk,
@@ -121,28 +121,31 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         for k in range(args.K):
             cc = np.hstack((cc, ldpc.encoder(uu[k,:])))
         cc = cc.reshape(args.K, -1)
-
         ## Modulate
-        syms = modem.modulate(cc)
+        symbs = np.zeros((args.K, int(ldpc.codelen/bps)), dtype = complex)
+        for k in range(args.K):
+            symbs[k] = modem.modulate(cc[k])
+
         ## 符号能量归一化
-        syms  = syms / np.sqrt(Es)
+        symbs  = symbs / np.sqrt(Es)
 
         ## Pass Channel
-        yy = PassChannel(syms, H, sigma2w)
+        yy = PassChannel(symbs, H, sigma2w)
+
+        ## llr
+        llr_yy = ldpc.post_probability(yy, H, sigma2w)
 
         ## Decoding
-        llr_yy = Modulator.demod_fading(copy.deepcopy(modem.constellation), yy, "soft", H, Es, noise_var)
-
-        uu_hat, iter_num = ldpcCoder.decoder_spa(llr_yy)
+        uu_hat, iter_num = ldpc.decoder_qary_spa(llr_yy)
         source.tot_iter += iter_num
         source.CntErr(uu, uu_hat)
         if source.tot_blk % 2 == 0:
-            source.PrintScreen(snr = snr)
+            source.PrintScreen(snr = sigma2db)
             # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
     print("  *** *** *** *** ***")
-    source.PrintScreen(snr = snr)
+    source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***\n")
-    source.SaveToFile(snr = snr)
+    source.SaveToFile(snr = sigma2db)
     # return
 
 # QaryLDPC(args)

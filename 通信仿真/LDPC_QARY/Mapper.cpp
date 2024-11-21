@@ -26,12 +26,12 @@ void CModem:: Malloc(const char *filename) {
         fscanf(fp, "%s", temp_str);
 
     fscanf(fp, "%s", temp_str);
-    fscanf(fp, "%d", &m_num_signal);
+    fscanf(fp, "%d", &m_num_signal); // 8
     fscanf(fp, "%s", temp_str);
-    fscanf(fp, "%d", &m_len_signal);
+    fscanf(fp, "%d", &m_len_signal); // 3
     fscanf(fp, "%s", temp_str);
 
-    m_signal_set = new double*[m_num_signal];
+    m_signal_set = new double*[m_num_signal];  // 8 x 3
     for (int i = 0; i < m_num_signal; i++)
         m_signal_set[i] = new double[m_len_signal];
 
@@ -107,8 +107,8 @@ void CModem:: Demapping(double *yy, double **sym_prob, double sigma, int len_sig
 				sqr_sum = m_sym_prob[q];
 		}
 		//norm the probability
-		for (q = 0; q < m_num_signal; q++) {	
-			m_sym_prob[q] -= sqr_sum;		
+		for (q = 0; q < m_num_signal; q++) {
+			m_sym_prob[q] -= sqr_sum;
 			if(m_sym_prob[q] > 40)
 				m_sym_prob[q] = 40;
 		}
