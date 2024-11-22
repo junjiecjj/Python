@@ -25,7 +25,7 @@ import  os
 from sourcesink import SourceSink
 
 from Channel import channelConfig
-from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician, PassChannel
+from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician
 import utility
 from QaryLDPC import QLDPC_Codeing
 import Modulator
@@ -42,7 +42,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 500,
     "maximum_block_number" : 1000000,
-    "K" : 8,    # User num
+    "K" : 4,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -130,7 +130,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         symbs  = symbs / np.sqrt(Es)
 
         ## Pass Channel
-        yy = PassChannel(symbs, H, sigma2w)
+        yy = ldpc.PassChannel(symbs, H, sigma2w)
 
         ## llr
         llr_yy = ldpc.post_probability(yy, H, sigma2w)

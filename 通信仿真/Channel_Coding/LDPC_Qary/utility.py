@@ -50,6 +50,52 @@ def set_random_seed(seed = 1, deterministic = False, benchmark = False):
         torch.backends.cudnn.benchmark = True
     return
 
+
+
+def Gauss_Elimination(encH, num_row, num_col):
+    codechk = 0
+    col_exchange = np.arange(num_col)
+    ##======================================================================
+    ##  开始 Gauss 消元，建立系统阵(生成矩阵G )，化简为: [I, P]的形式
+    ##======================================================================
+    for i in range(num_row):
+        ## 获取当前对角线位置 [i, i] 右下角元素中的不为0的元素的索引;
+        flag = 0
+        for jj in range(i, num_col):
+            for ii in range(i, num_row):
+                if encH[ii, jj] != 0:
+                    flag = 1
+                    break
+            if flag == 1:
+                codechk += 1
+                break
+        if flag == 0:
+            print("I am break")
+            break
+        else:     ## 如果右下角有非零元素,则找出第一个非零元素的行和列;
+            ## 交换 i 行和 ii 行;
+            if ii != i:
+                # print(f"{i} 行交换")
+                encH[[i, ii], :] = encH[[ii, i], :]
+            if jj != i:
+                # print("1: 列交换")
+                ## 记录列交换
+                temp = col_exchange[i]
+                col_exchange[i] = col_exchange[jj]
+                col_exchange[jj] = temp
+                ## 交换 i 列和 jj 列;
+                encH[:, [i, jj]] = encH[:, [jj, i]]
+            ## 消去 [I, P] 形式的前半部分 mxm 矩阵的第 i 列主对角线外的其他元素
+            for m in range(num_row):
+                if m != i and (encH[m, i] == 1):
+                    ## encH[m, :] = encH[m, :] ^ encH[i, :]
+                    encH[m, :] = np.logical_xor(encH[m, :], encH[i, :])
+                    ## encH[m, :] = np.bitwise_xor(encH[m, :], encH[i, :])
+                    ## for n in range(num_col):
+                        # encH[m, n] ^= encH[i, n]
+    ##====================== Gauss 消元 end =================================
+    return encH, col_exchange
+
 ##  yy --> 对数域LLR
 def yyToLLR(yy, noise_var = 1.0):
     LLr = np.zeros_like(yy)
@@ -104,47 +150,6 @@ def err_count(bits0, bits1):
             err += 1
     err_rate = err/total
     return err, err_rate
-
-
-class  EdgeLDPC(object):
-    def __init__(self):
-        self.m_row_no = 0
-        self.m_col_no = 0
-        self.m_alpha  = [0, 0]
-        self.m_beta   = [0, 0]
-        self.m_v2c    = [0, 0]
-        self.m_c2v    = [0, 0]
-
-        self.left     = None
-        self.right    = None
-        self.up       = None
-        self.down     = None
-        return
-
-# a = EdgeLDPC()
-# a.m_row_no = 6
-# a.m_col_no = 7
-# aa = EdgeLDPC()
-# aa.m_row_no = 12
-# aa.m_col_no = 3
-
-# a.right = aa
-
-
-# b = EdgeLDPC()
-# b.m_row_no = 4
-# b.m_col_no = 9
-
-# L = []
-
-# L.append(a)
-# L.append(b)
-
-
-
-
-
-
 
 
 

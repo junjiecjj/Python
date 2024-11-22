@@ -286,7 +286,6 @@ void CLDPCQARYCodec:: Malloc_graph(int len_uu, int len_pp) { // 4, 8
 		(m_row_head + row_no)->up = m_row_head + row_no;
 		(m_row_head + row_no)->down = m_row_head + row_no;
 	}
-
 	for (col_no = 0; col_no < m_num_col; col_no++) {
 		(m_col_head + col_no)->m_row_no = -1;
 		(m_col_head + col_no)->m_col_no = col_no;
@@ -295,7 +294,6 @@ void CLDPCQARYCodec:: Malloc_graph(int len_uu, int len_pp) { // 4, 8
 		(m_col_head + col_no)->up = m_col_head + col_no;
 		(m_col_head + col_no)->down = m_col_head + col_no;
 	}
-
     for (row_no = 0; row_no < m_num_row; row_no++) {
         for (col_no = 0; col_no < m_num_col; col_no++) {
             if (m_matrixHb[row_no][col_no] == 1) {  // caution!
@@ -313,7 +311,6 @@ void CLDPCQARYCodec:: Malloc_graph(int len_uu, int len_pp) { // 4, 8
             }
         }
     }
-
     return;
 }
 
@@ -596,37 +593,37 @@ int CLDPCQARYCodec::SoftInSoftOutDecoderPartition(double **U2E, int *cc_hat){
     for (iter = 0; iter < m_max_iter; iter++) {
         // V node ==========>>> H node
         for (j = 0; j < m_num_col; j++) {
-                // forward
-                p_edge = (m_col_head+j)->down;
+            // forward
+            p_edge = (m_col_head+j)->down;
+            for (q = 0; q < m_q_ary; q++)
+                p_edge->m_alpha[q] = U2E[j][q];
+            while (p_edge->m_row_no != -1) {
+                process_Enode(p_edge->m_alpha, p_edge->m_h2e, temp_fwd);
                 for (q = 0; q < m_q_ary; q++)
-                    p_edge->m_alpha[q] = U2E[j][q];
-                while (p_edge->m_row_no != -1) {
-                    process_Enode(p_edge->m_alpha, p_edge->m_h2e, temp_fwd);
-                    for (q = 0; q < m_q_ary; q++)
-                        p_edge->down->m_alpha[q] = temp_fwd[q];
-                    p_edge = p_edge->down;
+                    p_edge->down->m_alpha[q] = temp_fwd[q];
+                p_edge = p_edge->down;
+            }
+            // decision
+            temp_prob = -1.0;
+            for (q = 0; q < m_q_ary; q++) {
+                if (temp_prob < (m_col_head+j) -> m_alpha[q]){
+                    temp_prob = (m_col_head+j) -> m_alpha[q];
+                    cc_hat[j] = q;
                 }
-                // decision
-                temp_prob = -1.0;
-                for (q = 0; q < m_q_ary; q++) {
-                    if (temp_prob < (m_col_head+j) -> m_alpha[q]){
-                        temp_prob = (m_col_head+j) -> m_alpha[q];
-                        cc_hat[j] = q;
-                    }
-                }
-                // backward
-                p_edge = (m_col_head+j)->up;
+            }
+            // backward
+            p_edge = (m_col_head+j)->up;
+            for (q = 0; q < m_q_ary; q++)
+                p_edge->m_beta[q] = 1.0;
+            while (p_edge->m_row_no != -1) {
+                process_Enode(p_edge->m_alpha, p_edge->m_beta, temp_bwd);
                 for (q = 0; q < m_q_ary; q++)
-                    p_edge->m_beta[q] = 1.0;
-                while (p_edge->m_row_no != -1) {
-                    process_Enode(p_edge->m_alpha, p_edge->m_beta, temp_bwd);
-                    for (q = 0; q < m_q_ary; q++)
-                        p_edge->m_e2h[q] = temp_bwd[q];
-                    process_Enode(p_edge->m_beta, p_edge->m_h2e, temp_bwd);
-                    for (q = 0; q < m_q_ary; q++)
-                        p_edge->up->m_beta[q] = temp_bwd[q];
-                    p_edge = p_edge->up;
-                }
+                    p_edge->m_e2h[q] = temp_bwd[q];
+                process_Enode(p_edge->m_beta, p_edge->m_h2e, temp_bwd);
+                for (q = 0; q < m_q_ary; q++)
+                    p_edge->up->m_beta[q] = temp_bwd[q];
+                p_edge = p_edge->up;
+            }
         }
         // termination
         m_success = 1;
@@ -695,7 +692,47 @@ int CLDPCQARYCodec::SoftInSoftOutDecoderPartition(double **U2E, int *cc_hat){
     return iter + (iter<m_max_iter);
 }
 
-void CLDPCQARYCodec:: process_Enode(double *prob_in1, double *prob_in2, double *prob_out) {
+void CLDPCQARYCodec:: process_Hnode(int Pb_row_no, int Pb_col_no, double *prob_in, double *prob_out, int direction) {
+    int i, j, q, m, temp;
+
+    for (i = 0; i < m_q_ary; i++)
+        prob_out[i] = 0.0;
+
+    for (i = 0; i < m_blk_dim; i++)
+        for (j = 0; j < m_blk_len; j++)
+            m_matrixB[i][j] = m_matrixH[Pb_row_no*m_blk_dim+i][Pb_col_no*m_blk_len+j];
+    for (q = 0; q < m_q_ary; q++){
+        for (i = 0; i < m_blk_dim; i++){
+            temp = 0;
+            for (m = 0; m < m_degree; m++)
+                temp += (m_matrixB[i][m] * m_seq_table[q][m]);
+            m_blk_parity[i] = temp % 2;
+        }
+        temp = 0;
+        for (j = m_blk_len-1; j >= 0; j--)
+            temp += (m_blk_parity[j] << (m_blk_len-j-1));
+
+        if (direction == 0)  // V ---> H ---> C
+            prob_out[temp] += prob_in[q];
+        else                 // V <--- H <--- C
+            prob_out[q] = prob_in[temp];
+    }
+    double temp_sum = 0.0;
+    for (q = 0; q < m_q_ary; q++)
+        temp_sum += prob_out[q];
+    for (q = 0; q < m_q_ary; q++)
+        prob_out[q] /= temp_sum;
+
+    for (q = 0; q < m_q_ary; q++) {
+        if (prob_out[q] < SMALLPROB)
+            prob_out[q] = SMALLPROB;
+        if (prob_out[q] > 1 - SMALLPROB)
+            prob_out[q] = 1 - SMALLPROB;
+    }
+    return;
+}
+
+void CLDPCQARYCodec::  process_Enode(double *prob_in1, double *prob_in2, double *prob_out) {
     int q;
 
     for (q = 0; q < m_q_ary; q++)
@@ -729,47 +766,6 @@ void CLDPCQARYCodec:: process_Snode(double *prob_in1, double *prob_in2, double *
         for (j = 0; j < m_q_ary; j++)
             prob_out[i^j] += prob_in1[i] * prob_in2[j];
 
-    double temp_sum = 0.0;
-    for (q = 0; q < m_q_ary; q++)
-        temp_sum += prob_out[q];
-    for (q = 0; q < m_q_ary; q++)
-        prob_out[q] /= temp_sum;
-
-    for (q = 0; q < m_q_ary; q++) {
-        if (prob_out[q] < SMALLPROB)
-            prob_out[q] = SMALLPROB;
-        if (prob_out[q] > 1 - SMALLPROB)
-            prob_out[q] = 1 - SMALLPROB;
-    }
-    return;
-}
-
-void CLDPCQARYCodec:: process_Hnode(int Pb_row_no, int Pb_col_no, double *prob_in, double *prob_out, int direction) {
-    int i, j, q, m, temp;
-
-    for (i = 0; i < m_q_ary; i++)
-        prob_out[i] = 0.0;
-
-    for (i = 0; i < m_blk_dim; i++)
-        for (j = 0; j < m_blk_len; j++)
-            m_matrixB[i][j] = m_matrixH[Pb_row_no*m_blk_dim+i][Pb_col_no*m_blk_len+j];
-
-    for (q = 0; q < m_q_ary; q++) {
-        for (i = 0; i < m_blk_dim; i++) {
-            temp = 0;
-            for (m = 0; m < m_degree; m++)
-                temp += (m_matrixB[i][m] * m_seq_table[q][m]);
-            m_blk_parity[i] = temp % 2;
-        }
-        temp = 0;
-        for (j = m_blk_len-1; j >= 0; j--)
-            temp += (m_blk_parity[j] << (m_blk_len-j-1));
-
-        if (direction == 0)  // E ---> H ---> S
-            prob_out[temp] += prob_in[q];
-        else                 // E <--- H <--- S
-            prob_out[q] = prob_in[temp];
-    }
     double temp_sum = 0.0;
     for (q = 0; q < m_q_ary; q++)
         temp_sum += prob_out[q];

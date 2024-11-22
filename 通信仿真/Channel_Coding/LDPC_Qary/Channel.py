@@ -72,13 +72,6 @@ def channelConfig(K, r = 100):
     return BS_locate, users_locate, beta_Au, PL_Au
 
 
-def PassChannel(symbs, H, noise_var):
-    yy = symbs * H
-    noise = np.sqrt(noise_var/2) * (np.random.normal(0, 1, size = symbs.shape[-1] ) + 1j*np.random.normal(0, 1, size = symbs.shape[-1] ))
-    yy = yy.sum(axis  = 0) + noise
-    return yy
-
-
 
 
 
