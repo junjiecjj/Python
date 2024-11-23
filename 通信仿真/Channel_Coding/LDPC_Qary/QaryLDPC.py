@@ -15,6 +15,7 @@ import galois
 import numpy as np
 import copy
 import sys, os
+import itertools
 from functools import reduce
 import commpy as comm
 
@@ -106,146 +107,20 @@ class QLDPC_Codeing(object):
 
     def NoneZeros(self):
         ## 字典  {行号: {不为 0 的列号}}
-        self.SetRows  = {f'{i}': set(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
+        self.SetRows  = {i: set(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
         ## 字典  {列号: {不为 0 的行号}}
-        self.SetCols = {f'{j}': set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
+        self.SetCols = {j: set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
 
         self.qbits = comm.utilities.dec2bitarray(np.arange(self.q), self.p).reshape(-1, self.p)
 
+        row_weigh = self.decH.sum(axis = 1)[0]
+        GF = galois.GF(2**self.p, repr = "int")
+        self.qcomb = {}
+        for i in range(self.q):
+            self.qcomb[i] = []
+        for comb in itertools.product(GF.elements, repeat = row_weigh - 1):
+            self.qcomb[int(np.sum(GF([int(g) for g in comb])))].append([int(g) for g in comb])
         return
-
-    ## 对数域的和积算法
-    def decoder_spa(self, yy_llr):
-        MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-        MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-        iter_num = 0
-        uu_hat = np.zeros(self.codedim, dtype = np.int8)
-        ##===========================================
-        ## (初始化) 变量节点 到 校验节点 的初始化信息
-        ##===========================================
-        for col in self.SetCols.keys():
-            for row in self.SetCols[f'{col}']:
-                MV2C[int(row), int(col)] = yy_llr[int(col)]
-
-        ## 开始迭代，对数域的消息传播,
-        for iter_num in range(self.max_iter):
-            ##==========================================================
-            ## (一) 更新 [校验节点] 到 [变量节点] 的消息,
-            ##==========================================================
-            for row in self.SetRows:
-                for col in self.SetRows[f'{row}']:
-                    Mes = 1.0
-                    for cin in self.SetRows[f'{row}']:
-                        if cin != col:
-                            Mes *= np.tanh(MV2C[int(row), int(cin)]/2)
-                    # Mes = np.sign(Mes) * min(abs(Mes), 1-1e-15 )  ## 解决数值不稳定性问题
-                    Mes = np.clip(Mes, self.smallprob - 1, 1 - self.smallprob)  ## 解决数值不稳定性问题
-                    MC2V[int(row), int(col)] = np.log((1 + Mes)/(1 - Mes))
-            ##=============================================================================
-            ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
-            ##=============================================================================
-            dec_llr = np.zeros(self.codelen, dtype = np.float64)
-            for col in self.SetCols.keys():
-                Mes = 0
-                for row in self.SetCols[f'{col}']:
-                    Mes += MC2V[int(row), int(col)]
-                dec_llr[int(col)] = Mes + yy_llr[int(col)]
-
-            # 对等号节点判决
-            cc_hat = np.zeros(self.codelen, dtype = np.int8 )
-            cc_hat[np.where(dec_llr < 0)] = 1
-
-            uu_hat = cc_hat[self.codechk:]
-
-            success = 1
-            # parity checking，校验
-            for i in range(self.num_row):
-                # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
-                parity_check = np.bitwise_xor.reduce(cc_hat & self.decH[i,:])
-                if parity_check != 0:
-                    success = 0
-                    break
-
-            if success == 1:
-                return uu_hat, iter_num + 1
-            #==========================================================
-            ## (三) 更新 [变量节点] 到 [校验节点] 的消息，半边输入信息也要考虑进去
-            #==========================================================
-            for col in self.SetCols.keys():
-                for row in self.SetCols[f'{col}']:
-                    Mes = 0
-                    for cout in self.SetCols[f'{col}']:
-                        if cout != row:
-                            Mes += MC2V[int(cout),int(col)]
-                    MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
-        return uu_hat, iter_num + 1
-
-    ## 对数域的最小和算法
-    def decoder_msa(self, yy_llr, alpha = 0.75):
-        MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-        MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-        iter_num = 0
-        uu_hat = np.zeros(self.codedim, dtype = np.int8)
-        cc_hat = np.zeros(self.codelen, dtype = np.int8 )
-        ##===========================================
-        ## (初始化) 变量节点 到 校验节点 的初始化信息
-        ##===========================================
-        for col in self.SetCols.keys():
-            for row in self.SetCols[f'{col}']:
-                MV2C[int(row), int(col)] = yy_llr[int(col)]
-
-        ## 开始迭代，对数域的消息传播,
-        for iter_num in range(self.max_iter):
-            ##==========================================================
-            ## (一) 更新 [校验节点] 到 [变量节点] 的消息,
-            ##==========================================================
-            for row in self.SetRows:
-                for col in self.SetRows[f'{row}']:
-                    Sign = 1.0
-                    Min = min([abs(MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col])
-                    sign_list = [np.sign(MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col]
-                    Sign = reduce(lambda a,b: a*b, sign_list)
-                    MC2V[int(row), int(col)] = Sign * Min * alpha
-
-            ##=============================================================================
-            ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
-            ##=============================================================================
-            dec_llr = np.zeros(self.codelen, dtype = np.float64)
-            for col in self.SetCols.keys():
-                Mes = 0
-                for row in self.SetCols[f'{col}']:
-                    Mes += MC2V[int(row), int(col)]
-                dec_llr[int(col)] = Mes + yy_llr[int(col)]
-
-            # 对等号节点判决
-            cc_hat.fill(0)
-            cc_hat[np.where(dec_llr < 0)] = 1
-            uu_hat = cc_hat[self.codechk:]
-
-            success = 1
-            # parity checking，校验
-            for i in range(self.num_row):
-                # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
-                parity_check = np.bitwise_xor.reduce(cc_hat & self.decH[i,:])
-                if parity_check != 0:
-                    success = 0
-                    break
-            if success == 1:
-                return uu_hat, iter_num + 1
-            #==========================================================
-            ## (三) 更新 [变量节点] 到 [校验节点] 的消息，半边输入信息也要考虑进去
-            #==========================================================
-            for col in self.SetCols.keys():
-                for row in self.SetCols[f'{col}']:
-                    Mes = 0
-                    for cout in self.SetCols[f'{col}']:
-                        if cout != row:
-                            Mes += MC2V[int(cout),int(col)]
-                    MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
-
-        return uu_hat, iter_num + 1
-
-
 
     def PassChannel(self, symbs, H, noise_var):
         yy = symbs * H
@@ -255,19 +130,92 @@ class QLDPC_Codeing(object):
 
     def post_probability(self, yy, H, noise_var):
         frame_len = yy.shape[-1]
-        pp = np.zeros((frame_len, self.q))
+        pp = np.zeros((self.q, frame_len))
         for f in range(frame_len):
             for i, vec in enumerate(self.qbits):
-                pp[f, i] = np.exp(np.abs(yy - vec @ bpsk(copy.deepcopy(yy[:, f])))**2/noise_var)
+                pp[i, f] = np.exp(np.abs(yy[f] - H[:,f] @ bpsk(vec))**2/(2 * noise_var)) / (np.sqrt(2 * np.pi * noise_var))
         return pp
 
-    def decoder_qary_spa(self, yy_llr, H, maxiter = 50):
+# ##  yy --> 概率域
+# def yyToProb(yy, noise_var = 1.0):
+#     prob = np.zeros_like(yy)
+#     prob = 1.0 / (1.0 + np.exp(-2.0*yy/noise_var))
+#     return prob
+
+    def decoder_qary_spa(self, pp, maxiter = 50):
         MV2C = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
         MC2V = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
+        # uu_hat = np.zeros(self.codedim, dtype = np.int8)
+        ##===========================================
+        ## (初始化) V 到 C 的初始化信息
+        ##===========================================
+        for col in self.SetCols.keys():
+            for row in self.SetCols[col]:
+                for q in range(self.q):
+                    MV2C[row, col, q] = pp[q, col]
+        ## 开始迭代，概率域的消息传播,
+        for iter_num in range(maxiter):
+            print(f"  {iter_num}")
+            ##==========================================================
+            ## (一) 更新 C 到 V 的消息,
+            ##==========================================================
+            for row in self.SetRows:
+                for col in self.SetRows[row]:
+                    col_in = copy.deepcopy(self.SetRows[row])
+                    col_in.remove(col)
+                    for q in range(self.q):
+                        Sum = 0
+                        for comb in self.qcomb[q]:
+                            # print(comb)
+                            tmp = 1
+                            for v, q in zip(col_in, comb):
+                                tmp *= MV2C[row, v, q]
+                            Sum += tmp
+                        MC2V[row, col, q] = Sum
+            ##=============================================================================
+            ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
+            ##=============================================================================
+            PQ = np.zeros_like(pp, dtype = np.float64)
+            for col in self.SetCols.keys():
+                for q in range(self.q):
+                    tmp = pp[q, col]
+                    for row in self.SetCols[col]:
+                        tmp *= MC2V[row, col, q]
+                    PQ[q, col] = tmp
+            Pdecision = PQ.argmax(axis = 0)
+            cc_hat = comm.utilities.dec2bitarray(Pdecision, self.p).reshape(-1, self.p).T
+            # print(f"  {iter_num}: cc_hat.shape = {cc_hat.shape}")
+            uu_hat = np.flipud(cc_hat[:, self.codechk:])
+            # print(f"  {iter_num}: uu_hat.shape = {uu_hat.shape}")
+            success = 1
+            # parity checking，校验
+            for k in range(self.p):
+                for i in range(self.num_row):
+                    # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
+                    parity_check = np.bitwise_xor.reduce(cc_hat[k] & self.decH[i,:])
+                    if parity_check != 0:
+                        success = 0
+                        break
+                if success == 0:
+                    break
+            if success == 1:
+                return uu_hat, iter_num + 1
+            #========================================================================
+            ## (三) 更新 v 到 c 的消息，半边输入信息也要考虑进去
+            #========================================================================
+            for col in self.SetCols.keys():
+                for row in self.SetCols[col]:
+                    row_in = copy.deepcopy(self.SetCols[col])
+                    row_in.remove(row)
+                    for q in range(self.q):
+                        tmp = pp[q, col]
+                        for c in row_in:
+                            tmp *= MC2V[c, col, q]
+                        MV2C[row, col, q] = tmp
+        return uu_hat, iter_num + 1
 
-        return
-
-def bpsk(bits):
+def bpsk(bins):
+    bits = copy.deepcopy(bins)
     bits[np.where(bits == 1)] = -1
     bits[np.where(bits == 0)] = 1
     return bits

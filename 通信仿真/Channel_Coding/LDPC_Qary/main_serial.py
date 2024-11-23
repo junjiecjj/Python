@@ -42,7 +42,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 500,
     "maximum_block_number" : 1000000,
-    "K" : 4,    # User num
+    "K" : 2,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -97,7 +97,7 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 12, 2)  # dB
+sigma2dB = np.arange(6, 12, 2)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
 # sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率w
@@ -133,14 +133,14 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         yy = ldpc.PassChannel(symbs, H, sigma2w)
 
         ## llr
-        llr_yy = ldpc.post_probability(yy, H, sigma2w)
+        post_prob = ldpc.post_probability(yy, H, sigma2w)
 
         ## Decoding
-        uu_hat, iter_num = ldpc.decoder_qary_spa(llr_yy)
+        uu_hat, iter_num = ldpc.decoder_qary_spa(post_prob, maxiter = 50)
         source.tot_iter += iter_num
-        source.CntErr(uu, uu_hat)
-        if source.tot_blk % 2 == 0:
-            source.PrintScreen(snr = sigma2db)
+        source.CntBerFer(uu, uu_hat)
+        # if source.tot_blk % 2 == 0:
+        source.PrintScreen(snr = sigma2db)
             # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
     print("  *** *** *** *** ***")
     source.PrintScreen(snr = sigma2db)

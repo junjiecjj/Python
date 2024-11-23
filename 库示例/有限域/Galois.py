@@ -8,11 +8,12 @@ Created on Fri Nov 22 10:57:29 2024
 
 import galois
 import numpy as np
+import itertools
 
 
-GF = galois.GF(2**2, repr = "poly")
-# GF = galois.GF(2**2, repr = "int")
-
+# GF = galois.GF(2**2, repr = "poly")
+GF = galois.GF(2**3, repr = "int")
+# GF = galois.GF(2**3, repr = "power")
 
 # 访问有限域的不可约多项式
 print(GF.irreducible_poly)
@@ -26,6 +27,36 @@ print(GF.elements)
 # 具体有限域的最小生成元
 print(GF.primitive_element)
 
+GF = galois.GF(2**3, repr = "int")
+a_poly = galois.Poly([1, 2, 3, 4], field = GF)
+print(a_poly)
+
+b_poly = galois.Poly([1, 1],  field = GF)
+print(b_poly)
+
+p = GF.characteristic
+print(p)
+
+a = GF(3)
+b = GF(5)
+a_int = 3
+b_int = 5
+print((a_int + b_int) % p)
+print(a + b)
+
+print((a_int - b_int) % p)
+print(a - b)
+
+print((a_int * b_int) % p)
+print(a * b)
+
+print()
+print()
+
+print()
+print()
+
+
 # 输出有限域的算数表(加减乘）
 # 以加法为例:
 print(GF.arithmetic_table("+"), '\n')
@@ -35,11 +66,20 @@ print(GF.arithmetic_table("/"), '\n')
 
 # 输出有限域的生成元表
 print(GF.repr_table())
+#  Power    Polynomial     Vector    Integer
+# ------- ------------- ----------- ---------
+#    0          0        [0, 0, 0]      0
+#   x^0         1        [0, 0, 1]      1
+#   x^1         x        [0, 1, 0]      2
+#   x^2        x^2       [1, 0, 0]      4
+#   x^3       x + 1      [0, 1, 1]      3
+#   x^4      x^2 + x     [1, 1, 0]      6
+#   x^5    x^2 + x + 1   [1, 1, 1]      7
+#   x^6      x^2 + 1     [1, 0, 1]      5
 
 # 构建有限域上的多项式
 f = galois.Poly([1, 1, 1, 1], field = GF)
 print(f)
-
 
 # 以多项式形式查看有限域上的元素
 x1 = [23, 123, 56, 64]
@@ -111,10 +151,18 @@ r = GF.Random((3, 2), seed=1)
 print(r)
 
 
+GF = galois.GF(2**3, repr = "int")
+for i in GF.elements:
+    for j in GF.elements:
+        print(f"{i} + {j} = {i+j}")
 
-
-
-
+# np.array(list(itertools.product(GF.elements, repeat = 3)))
+res = {}
+for i in range(2**3):
+    res[i] = []
+for comb in itertools.product(GF.elements, repeat = 2):
+    # res[int(i+j+k)] = []
+    res[int(np.sum(GF([int(g) for g in comb])))].append([int(g) for g in comb])
 
 
 
