@@ -62,10 +62,25 @@ class SourceSink(object):
         self.err_symb = 0.0
         self.tot_iter = 0.0
         self.ave_iter = 0.0
-        # self.ber  = 0.0
-        # self.fer  = 0.0
-        # self.ser = 0.0
+
         return
+
+    def CntErr(self, uu, uu_hat, accumulator = 1):
+        assert uu.shape == uu_hat.shape
+        Len = uu.shape[-1]
+        temp_err = np.sum(uu != uu_hat)
+
+        if accumulator == 1:
+            if temp_err > 0:
+                self.err_bit += temp_err
+                self.err_blk += 1
+            self.tot_blk += 1.0
+            self.tot_bit += Len
+            self.ber = self.err_bit / self.tot_bit
+            self.fer = self.err_blk / self.tot_blk
+        self.ave_iter =  self.tot_iter / self.tot_blk
+        return
+
 
     def CntBerFer(self, uu, uu_hat, ):
         assert uu.shape == uu_hat.shape

@@ -134,6 +134,8 @@ class QLDPC_Codeing(object):
         for f in range(frame_len):
             for i, vec in enumerate(self.qbits):
                 pp[i, f] = np.exp(np.abs(yy[f] - H[:,f] @ bpsk(vec))**2/(2 * noise_var)) / (np.sqrt(2 * np.pi * noise_var))
+        pp = pp/ pp.sum(axis = 0)
+        pp = np.clip(pp, self.smallprob, 1-self.smallprob)
         return pp
 
 # ##  yy --> 概率域
@@ -142,7 +144,7 @@ class QLDPC_Codeing(object):
 #     prob = 1.0 / (1.0 + np.exp(-2.0*yy/noise_var))
 #     return prob
 
-    def decoder_qary_spa(self, pp, maxiter = 50):
+    def decoder_qary_spa(self, pp, GF, I, maxiter = 50):
         MV2C = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
         MC2V = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
         # uu_hat = np.zeros(self.codedim, dtype = np.int8)
@@ -184,22 +186,22 @@ class QLDPC_Codeing(object):
                     PQ[q, col] = tmp
             Pdecision = PQ.argmax(axis = 0)
             cc_hat = comm.utilities.dec2bitarray(Pdecision, self.p).reshape(-1, self.p).T
-            # print(f"  {iter_num}: cc_hat.shape = {cc_hat.shape}")
-            uu_hat = np.flipud(cc_hat[:, self.codechk:])
-            # print(f"  {iter_num}: uu_hat.shape = {uu_hat.shape}")
+            cc_hat_fun = np.array(I@GF(cc_hat), dtype = np.int8)
+            uu_hat_fun = cc_hat_fun[ self.codechk:]
+
             success = 1
             # parity checking，校验
-            for k in range(self.p):
-                for i in range(self.num_row):
-                    # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
-                    parity_check = np.bitwise_xor.reduce(cc_hat[k] & self.decH[i,:])
-                    if parity_check != 0:
-                        success = 0
-                        break
-                if success == 0:
+            # for k in range(cc_hat_fun.shape[0]):
+            for i in range(self.num_row):
+                # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
+                parity_check = np.bitwise_xor.reduce(cc_hat_fun & self.decH[i,:])
+                if parity_check != 0:
+                    success = 0
                     break
+                # if success == 0:
+                    # break
             if success == 1:
-                return uu_hat, iter_num + 1
+                return uu_hat_fun, iter_num + 1
             #========================================================================
             ## (三) 更新 v 到 c 的消息，半边输入信息也要考虑进去
             #========================================================================
@@ -212,7 +214,7 @@ class QLDPC_Codeing(object):
                         for c in row_in:
                             tmp *= MC2V[c, col, q]
                         MV2C[row, col, q] = tmp
-        return uu_hat, iter_num + 1
+        return uu_hat_fun, iter_num + 1
 
 def bpsk(bins):
     bits = copy.deepcopy(bins)

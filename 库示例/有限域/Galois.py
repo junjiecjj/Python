@@ -147,11 +147,11 @@ print(x)
 I = GF.Identity(4)
 print(I)
 # generate a random array of given shape call Random().
-r = GF.Random((3, 2), seed=1)
+r = GF.Random((3, 2), seed = 1)
 print(r)
 
 
-GF = galois.GF(2**3, repr = "int")
+GF = galois.GF(2**1, repr = "int")
 for i in GF.elements:
     for j in GF.elements:
         print(f"{i} + {j} = {i+j}")
@@ -164,13 +164,25 @@ for comb in itertools.product(GF.elements, repeat = 2):
     # res[int(i+j+k)] = []
     res[int(np.sum(GF([int(g) for g in comb])))].append([int(g) for g in comb])
 
+##################
+import commpy as comm
 
+l = 2
+uu = np.random.randint(0, 2, size = (l, 10))
+q = 2**l
+GF = galois.GF(2**l, repr = "int")
+I = GF.Identity(l)
+I[0] = 1
+# I = [1]*p
+# I = GF(I)
 
+print(f"uu = \n  {uu}")
+print(f"I@GF(uu) = \n  {I@GF(uu)}")
 
-
-
-
-
+qbits = comm.utilities.dec2bitarray(np.arange(q), l).reshape(-1, l).T
+qfun = I @ GF(qbits)
+print(f"qbits = \n  {qbits}")
+print(f"I@GF(qbits) = \n  {I@GF(qbits)}")
 
 
 
