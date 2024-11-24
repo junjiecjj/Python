@@ -28,7 +28,7 @@ from sourcesink import SourceSink
 from Channel import channelConfig
 from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician
 import utility
-from QaryLDPC import QLDPC_Codeing
+from QaryLDPC import QLDPC_Coding, bpsk
 import Modulator
 
 utility.set_random_seed()
@@ -74,7 +74,7 @@ args = parameters()
 
 ## Rayleigh Fading 信道，BPSK/QAM下，LPDC编码，串行
 # def QaryLDPC(args, ):
-ldpc =  QLDPC_Codeing(args)
+ldpc =  QLDPC_Coding(args)
 coderargs = {'codedim':ldpc.codedim,
              'codelen':ldpc.codelen,
              'codechk':ldpc.codechk,
@@ -138,7 +138,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         ## Modulate
         symbs = np.zeros((args.K, int(ldpc.codelen/bps)), dtype = complex)
         for k in range(args.K):
-            symbs[k] = modem.modulate(cc[k])
+            symbs[k] = bpsk(cc[k])
 
         ## 符号能量归一化
         symbs  = symbs / np.sqrt(Es)
@@ -147,13 +147,13 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         yy = ldpc.PassChannel(symbs, H, sigma2w)
 
         ## llr
-        post_prob = ldpc.post_probability(yy, H, sigma2w)
+        pp = ldpc.post_probability(yy, H, sigma2w)
 
         ## Decoding
-        uu_fun_hat, iter_num = ldpc.decoder_qary_spa(post_prob, GF, I, maxiter = 50)
+        uu_hat, iter_num = ldpc.decoder_qary_spa(pp, maxiter = 50)
         source.tot_iter += iter_num
 
-        source.CntErr(uu_fun, uu_fun_hat)
+        source.CntBerFer(uu, uu_hat)
         # if source.tot_blk % 2 == 0:
         source.PrintScreen(snr = sigma2db)
             # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")

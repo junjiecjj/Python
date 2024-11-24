@@ -528,7 +528,7 @@ void CLDPCQARYCodec:: encoder(int *uu, int *cc) {
     return;
 }
 
-void CLDPCQARYCodec:: transfer2qary(double *m_yy_pr0, double **channel_for_spa) {
+void CLDPCQARYCodec::transfer2qary(double *m_yy_pr0, double **channel_for_spa) {
     int i, m, q;
     double temp_sum;
     for (i = 0; i < m_codelen; i += m_degree) {

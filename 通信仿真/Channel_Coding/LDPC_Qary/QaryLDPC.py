@@ -21,8 +21,13 @@ import commpy as comm
 
 from utility import Gauss_Elimination
 
+def bpsk(bins):
+    bits = copy.deepcopy(bins)
+    bits[np.where(bits == 1)] = -1
+    bits[np.where(bits == 0)] = 1
+    return bits
 
-class QLDPC_Codeing(object):
+class QLDPC_Coding(object):
     def __init__(self, args):
         ## code parameters
         self.args = args
@@ -46,7 +51,7 @@ class QLDPC_Codeing(object):
         self.SetCols = {}                   # 每列不为0的行号
         self.MV2C = None                    # 变量节点 到 校验节点 的消息
         self.MC2V = None                    # 校验节点 到 变量节点 的消息
-        self.Qelems = None
+        self.qcomb = None
         self.readH()
         ## print("读取H完成...\n")
         self.systemH()
@@ -83,7 +88,6 @@ class QLDPC_Codeing(object):
         tmpH = copy.deepcopy(self.decH)
         self.encH = copy.deepcopy(self.decH)
         col_exchange = np.arange(self.num_col)
-
         ##=======================================================
         ##  开始 Gauss 消元，建立系统阵(生成矩阵G )，化简为: [I, P]的形式
         ##=======================================================
@@ -107,12 +111,10 @@ class QLDPC_Codeing(object):
 
     def NoneZeros(self):
         ## 字典  {行号: {不为 0 的列号}}
-        self.SetRows  = {i: set(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
+        self.SetRows  = {i: list(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
         ## 字典  {列号: {不为 0 的行号}}
-        self.SetCols = {j: set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
-
+        self.SetCols = {j: list(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
         self.qbits = comm.utilities.dec2bitarray(np.arange(self.q), self.p).reshape(-1, self.p)
-
         row_weigh = self.decH.sum(axis = 1)[0]
         GF = galois.GF(2**self.p, repr = "int")
         self.qcomb = {}
@@ -133,7 +135,7 @@ class QLDPC_Codeing(object):
         pp = np.zeros((self.q, frame_len))
         for f in range(frame_len):
             for i, vec in enumerate(self.qbits):
-                pp[i, f] = np.exp(np.abs(yy[f] - H[:,f] @ bpsk(vec))**2/(2 * noise_var)) / (np.sqrt(2 * np.pi * noise_var))
+                pp[i, f] = np.exp(np.abs(yy[f] - H[:,f] @ bpsk(vec))**2/(2 * noise_var)) # / (np.sqrt(2 * np.pi * noise_var))
         pp = pp/ pp.sum(axis = 0)
         pp = np.clip(pp, self.smallprob, 1-self.smallprob)
         return pp
@@ -144,7 +146,7 @@ class QLDPC_Codeing(object):
 #     prob = 1.0 / (1.0 + np.exp(-2.0*yy/noise_var))
 #     return prob
 
-    def decoder_qary_spa(self, pp, GF, I, maxiter = 50):
+    def decoder_qary_spa_fun(self, pp, GF, I, maxiter = 50):
         MV2C = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
         MC2V = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
         # uu_hat = np.zeros(self.codedim, dtype = np.int8)
@@ -216,11 +218,82 @@ class QLDPC_Codeing(object):
                         MV2C[row, col, q] = tmp
         return uu_hat_fun, iter_num + 1
 
-def bpsk(bins):
-    bits = copy.deepcopy(bins)
-    bits[np.where(bits == 1)] = -1
-    bits[np.where(bits == 0)] = 1
-    return bits
+    def decoder_qary_spa(self, pp, maxiter = 50):
+        MV2C = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
+        MC2V = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
+        # uu_hat = np.zeros(self.codedim, dtype = np.int8)
+        ##===========================================
+        ## (初始化) V 到 C 的初始化信息
+        ##===========================================
+        for col in self.SetCols:
+            for row in self.SetCols[col]:
+                for q in range(self.q):
+                    MV2C[row, col, q] = pp[q, col]
+        ## 开始迭代，概率域的消息传播,
+        for iter_num in range(maxiter):
+            print(f"  {iter_num}")
+            ##==========================================================
+            ## (一) 更新 C 到 V 的消息,
+            ##==========================================================
+            for row in self.SetRows:
+                for col in self.SetRows[row]:
+                    col_in = copy.deepcopy(self.SetRows[row])
+                    col_in.remove(col)
+                    for q in range(self.q):
+                        Sum = 0
+                        for comb in self.qcomb[q]:
+                            # print(comb)
+                            tmp = 1
+                            for v, q in zip(col_in, comb):
+                                tmp *= MV2C[row, v, q]
+                            Sum += tmp
+                        MC2V[row, col, q] = Sum
+                # print(f"  {iter_num}:MC2V = {MC2V}")
+            # MC2V = MC2V/MC2V.sum(axis = -1, keepdims=1)
+            # MC2V = np.clip(MC2V, self.smallprob, 1-self.smallprob)
+            ##=============================================================================
+            ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
+            ##=============================================================================
+            PQ = np.zeros_like(pp, dtype = np.float64)
+            for col in self.SetCols:
+                row_in = copy.deepcopy(self.SetCols[col])
+                for q in range(self.q):
+                    tmp = pp[q, col]
+                    for row in row_in:
+                        tmp *= MC2V[row, col, q]
+                    PQ[q, col] = tmp
+            Pdecision = PQ.argmax(axis = 0)
+            print(f"  {iter_num}:{Pdecision}")
+            cc_hat = comm.utilities.dec2bitarray(Pdecision, self.p).reshape(-1, self.p).T
+            uu_hat  = cc_hat[:, self.codechk:]
+
+            success = 1
+            # parity checking，校验
+            for k in range(cc_hat.shape[0]):
+                for i in range(self.num_row):
+                    parity_check = np.bitwise_xor.reduce(cc_hat[k] & self.decH[i,:])
+                    if parity_check != 0:
+                        success = 0
+                        break
+                if success == 0:
+                    break
+            if success == 1:
+                return uu_hat, iter_num + 1
+            #========================================================================
+            ## (三) 更新 v 到 c 的消息，半边输入信息也要考虑进去
+            #========================================================================
+            for col in self.SetCols:
+                for row in self.SetCols[col]:
+                    row_in = copy.deepcopy(self.SetCols[col])
+                    row_in.remove(row)
+                    for q in range(self.q):
+                        tmp = pp[q, col]
+                        for c in row_in:
+                            tmp *= MC2V[c, col, q]
+                        MV2C[row, col, q] = tmp
+            # MV2C = MV2C/MV2C.sum(axis = -1, keepdims=1)
+            # MV2C = np.clip(MV2C, self.smallprob, 1-self.smallprob)
+        return uu_hat, iter_num + 1
 
 
 
