@@ -55,7 +55,6 @@ def NormFactor(mod_type = 'qam', M = 16,):
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
 def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_var=0):
-
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
@@ -65,7 +64,6 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
         idx = np.abs(input_symbols.reshape(-1,1) - H[:,None] @ constellation.reshape(1, -1)).argmin(1)
         # index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(idx, bitsPerSym)
-
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):
@@ -82,9 +80,7 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
                 demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
     else:
         raise ValueError('demod_type must be "hard" or "soft"')
-
     return demod_bits
-
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + AWGN
 def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):

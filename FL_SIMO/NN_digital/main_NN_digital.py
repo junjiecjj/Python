@@ -50,7 +50,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True     # True, False
+args.IID = False     # True, False
 args.model = "CNN"
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
@@ -60,9 +60,9 @@ args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
 args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
-args.local_bs = 128
+args.local_bs = 64
 args.local_up = 1
-args.local_epoch = 1
+args.local_epoch = 2
 args.snr_dB = None
 args.norm_fact = 2**8
 
@@ -73,7 +73,7 @@ set_printoption(5)
 
 ##>>>>>>>>>>>>>>>>> channel
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args)
-args.sigmaK2 = -55                        # dBm
+args.sigmaK2 = -60                        # dBm
 sigmaK2 = 10**(args.sigmaK2/10.0)/1000    # 噪声功率
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -143,7 +143,7 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
                 print(f"  {args.case} -> quantize -> MIMO -> {args.norm_fact}")
-                mess_recv, err  =  OneBit_SNRzf(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBit_SINR(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
                 print(f"  {args.case} -> quantize -> LDPC -> {args.norm_fact}")
                 mess_recv, err  =  OneBit_LPDC_SINR(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)

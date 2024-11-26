@@ -136,9 +136,6 @@ for i in aa:
 
 
 """
-Created on Sat Sep 23 00:26:03 2023
-
-@author: jack
 
 https://blog.csdn.net/qq_35516360/article/details/122066046
 

@@ -15,17 +15,17 @@ rcParams['font.sans-serif'] = ['SimHei']
 rcParams['axes.unicode_minus'] = False
 # rcParams['figure.dpi'] = 300
 
-def generate_data(n_samples=100, n_features=50, sparsity=5, noise_level=0.1):
+def generate_data(n_samples = 100, n_features = 50, sparsity = 5, noise_level = 0.1):
     np.random.seed(0)
     X = np.random.randn(n_samples, n_features)
     true_coef = np.zeros(n_features)
-    indices = np.random.choice(n_features, sparsity, replace=False)
+    indices = np.random.choice(n_features, sparsity, replace = False)
     true_coef[indices] = np.random.randn(sparsity) * 10
     y = X @ true_coef + noise_level * np.random.randn(n_samples)
     return X, y, true_coef
 
 # ISTA算法
-def ista(X, y, lambda_, eta, max_iter=1000, tol=1e-6):
+def ISTA(X, y, lambda_, eta, max_iter = 1000, tol = 1e-6):
     beta = np.zeros(X.shape[1])
     cost_history = []
     mse_history = []
@@ -45,7 +45,7 @@ def ista(X, y, lambda_, eta, max_iter=1000, tol=1e-6):
     return beta, cost_history, mse_history
 
 # FISTA算法
-def fista(X, y, lambda_, eta, max_iter=1000, tol=1e-6):
+def FISTA(X, y, lambda_, eta, max_iter = 1000, tol = 1e-6):
     beta = np.zeros(X.shape[1])
     beta_old = beta.copy()
     t = 1
@@ -76,8 +76,8 @@ def fista(X, y, lambda_, eta, max_iter=1000, tol=1e-6):
 n_samples, n_features, sparsity = 100, 50, 5
 lambda_, eta = 0.1, 0.001
 X, y, true_coef = generate_data(n_samples, n_features, sparsity)
-beta_ista, cost_history_ista, mse_history_ista = ista(X, y, lambda_, eta)
-beta_fista, cost_history_fista, mse_history_fista = fista(X, y, lambda_, eta)
+beta_ista, cost_history_ista, mse_history_ista = ISTA(X, y, lambda_, eta)
+beta_fista, cost_history_fista, mse_history_fista = FISTA(X, y, lambda_, eta)
 
 fig, axs = plt.subplots(3, 2, figsize=(14, 15), constrained_layout=True)
 fig.suptitle("ISTA与FISTA算法对比", fontsize=16, weight='bold')

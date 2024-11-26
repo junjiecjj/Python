@@ -94,6 +94,7 @@ class SourceSink(object):
         self.tot_bit += J * Len
         self.ber = self.err_bit / self.tot_bit
         self.fer = self.err_blk / self.tot_blk
+        self.ave_iter =  self.tot_iter / self.tot_blk
         return
 
     def CntSer(self, symbol, symbol_hat, ):
@@ -113,7 +114,7 @@ class SourceSink(object):
         return
 
     def PrintScreen(self, snr = '',  ):
-        print(f"  snr = {snr:.2f}(dB): tot_bits = {self.tot_bit}, err_bits = {self.err_bit}, tot_blk = {self.tot_blk}, err_blk = {self.err_blk}, fer = {self.fer:.10f}, ber = {self.ber:.10f}, ser = {self.ser:.10f}")
+        print(f"  snr = {snr:.2f}(dB): tot_bits = {self.tot_bit}, err_bits = {self.err_bit}, tot_blk = {self.tot_blk}, err_blk = {self.err_blk}, iter = {self.ave_iter:.3} fer = {self.fer:.10f}, ber = {self.ber:.10f}")
         return
 
 

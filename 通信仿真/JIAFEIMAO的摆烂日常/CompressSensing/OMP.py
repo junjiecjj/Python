@@ -230,9 +230,7 @@ for i, estimated_K in enumerate(estimated_sparsities, 1):
     plt.plot(reconstructed_signal, linestyle="--", color="red", label="重建信号", linewidth=1.5)
     plt.title(f"预设稀疏度: {estimated_K}", fontproperties=my_font, fontsize = 18)
     plt.legend(prop=my_font, fontsize = 18)
-
 plt.suptitle("OMP 对不同预设稀疏度的重建效果", fontproperties = my_font, fontsize = 20)
-
 plt.show()
 
 #%% ############# 3. 适用范围实验（不同信号稀疏度）
@@ -246,15 +244,15 @@ for i, current_K in enumerate(true_sparsities, 1):
     reconstructed_signal = OMP1(phi, y, sparsity=current_K)
 
     plt.subplot(2, 3, i)
-    plt.plot(signal, label="原始信号", color="blue", linewidth=1.5)
-    plt.plot(reconstructed_signal, linestyle="--", color="red", label="重建信号", linewidth=1.5)
-    plt.title(f"信号稀疏度: {current_K}", fontproperties=my_font, fontsize = 18)
-    plt.legend(prop=my_font, fontsize = 18)
+    plt.plot(signal, label = "原始信号", color = "blue", linewidth = 1.5)
+    plt.plot(reconstructed_signal, linestyle = "--", color = "red", label = "重建信号", linewidth = 1.5)
+    plt.title(f"信号稀疏度: {current_K}", fontproperties = my_font, fontsize = 18)
+    plt.legend(prop = my_font, fontsize = 18)
 
 plt.suptitle("OMP 对不同信号稀疏度的重建效果", fontproperties = my_font, fontsize = 20)
 
 plt.show()
-
+plt.close('all')
 
 
 

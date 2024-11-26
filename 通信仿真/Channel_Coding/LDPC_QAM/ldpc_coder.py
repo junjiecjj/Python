@@ -149,11 +149,9 @@ class LDPC_Coder_llr(object):
                 for row in self.SetCols[f'{col}']:
                     Mes += self.MC2V[int(row), int(col)]
                 dec_llr[int(col)] = Mes + yy_llr[int(col)]
-
             # 对等号节点判决
             cc_hat = np.zeros(self.codelen, dtype = np.int8 )
             cc_hat[np.where(dec_llr < 0)] = 1
-
             uu_hat = cc_hat[self.codechk:]
 
             success = 1
