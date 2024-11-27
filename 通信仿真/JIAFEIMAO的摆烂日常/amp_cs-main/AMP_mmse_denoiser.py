@@ -39,9 +39,6 @@ from matplotlib.colors import LogNorm
 from amp4cs import initialise_CS, opt_tuning_param, amp, amp_3pt, amp_bg
 
 
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>  1. Three-point distribution
 # 1.1. Single decoding instance¶
 N     = 1000  # dimension of signal

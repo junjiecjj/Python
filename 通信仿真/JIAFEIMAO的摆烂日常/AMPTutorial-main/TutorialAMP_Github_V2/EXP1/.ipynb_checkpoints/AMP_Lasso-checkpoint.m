@@ -1,4 +1,4 @@
-function [hatx, MSE, error] = AMP_Lasso(Input, obj)
+function [MSE, error] = AMP_Lasso(Input, obj)
     %% Load parameters
     IterNum=Input.IterNum;
     M=Input.M;
@@ -42,6 +42,3 @@ function [x, x_old]=damping(x, x_old, mes)
     x=mes*x+(1-mes)*x_old;
     x_old=x;
 end
-
-
-

@@ -6,9 +6,11 @@ https://blog.csdn.net/qq_44648285/article/details/143363030
 @author: jack
 """
 
-import numpy as np
-import copy
 
+import numpy as np
+from matplotlib import pyplot as plt
+import copy
+from scipy.stats import norm
 
 # def soft_thresholding(x, tau):
 #     """
@@ -87,17 +89,57 @@ import copy
 # # plot(x,y)
 
 
-import numpy as np
-from matplotlib import pyplot as plt
 
 # 初始化输入数据 A 和 b
-def generate_data(n, m, sparsity = 0.1, scale_factor = 1000.0):
-    A = np.random.randn(m, n)  # 随机生成一个 m x n 的矩阵
+def generate_data(n, m, sparsity = 0.1, scale_factor = 1000.0, noise_var = 0.00001):
+    A = np.random.randn(m, n)/np.sqrt(m)  # 随机生成一个 m x n 的矩阵
     x = np.zeros(n)
     non_zero_indices = np.random.choice(n, size=int(n * sparsity), replace=False)
     x[non_zero_indices] = scale_factor * np.random.randn(len(non_zero_indices))  # 放大信号
-    b = A @ x + 0.0001 * np.random.randn(m)  # 降低噪声强度
+    b = A @ x + noise_var * np.random.randn(m)  # 降低噪声强度
     return A, b, x
+
+
+# AMP算法
+def amp(A, b, max_iter=50, threshold=1e-6, alpha=1e-4, regularization_strength=0.1):
+    m, n = A.shape
+    x = np.zeros(n)  # 初始化信号
+    r = b - A @ x  # 初始残差
+    signal_change = []
+    residual_change = []
+
+    for iter in range(max_iter):
+        # 计算新的信号
+        x_new = A.T @ r + x
+        # 软阈值操作
+        x_new = np.sign(x_new) * np.maximum(np.abs(x_new) - regularization_strength, 0)
+        # 对 x_new 进行裁剪，避免数值过大
+        x_new = np.sign(x_new) * np.minimum(np.abs(x_new), 1e3)
+
+        r_new = b - A @ x_new  # 更新残差
+
+        # 自适应调整 alpha（学习率）
+        if iter % 50 == 0:  # 每50轮迭代调整一次学习率
+            alpha = alpha * 0.95  # 使用更慢的学习率衰减
+
+        # 更新信号：x_new是加权后的新估计
+        x_new = alpha * x_new + (1 - alpha) * x  # 更新信号
+
+        # 计算变化量
+        signal_change.append(np.linalg.norm(x_new - x))
+        residual_change.append(np.linalg.norm(r_new - r))
+
+        if signal_change[-1] < threshold and residual_change[-1] < threshold:
+            print(f'Converged at iteration {iter + 1}')
+            break
+
+        x = x_new
+        r = r_new
+
+        if iter % 10 == 0:
+            print(f"Iteration {iter + 1}: Signal change = {signal_change[-1]:.6e}, Residual change = {residual_change[-1]:.6e}")
+    return x, signal_change, residual_change
+
 
 # OMP 算 法
 def OMP(phi, y, sparsity):
@@ -175,62 +217,61 @@ def FISTA(X, y, lambda_ = 0.1, eta = 0.001, max_iter = 1000, tol = 1e-6):
             break
     return beta, cost_history, mse_history
 
-# AMP算法
-def amp(A, b, max_iter=50, threshold=1e-6, alpha=1e-4, regularization_strength=0.1):
-    m, n = A.shape
-    x = np.zeros(n)  # 初始化信号
-    r = b - A @ x  # 初始残差
-    signal_change = []
-    residual_change = []
+def denoise(v, var_x, var_z, epsilon):
+    term1 = (1-epsilon)*norm.pdf(v, 0, np.sqrt(var_z))
+    term2 = epsilon*norm.pdf(v, 0, np.sqrt(var_x+var_z))
+    xW = var_x / (var_x + var_z)*v # Wiener filter
+    added_term = term1 + term2
+    div_term = np.divide(term2, added_term)
+    xhat = np.multiply(div_term, xW) # denoised version, x(t+1)
 
-    for iter in range(max_iter):
-        # 计算新的信号
-        x_new = A.T @ r + x
-        # 软阈值操作
-        x_new = np.sign(x_new) * np.maximum(np.abs(x_new) - regularization_strength, 0)
-        # 对 x_new 进行裁剪，避免数值过大
-        x_new = np.sign(x_new) * np.minimum(np.abs(x_new), 1e3)
+    # empirical derivative
+    Delta = 0.0000000001 # perturbation
+    term1_d = (1-epsilon) * norm.pdf((v+Delta), 0, np.sqrt(var_z))
+    term2_d = epsilon * norm.pdf((v + Delta), 0, np.sqrt(var_x + var_z))
+    xW2 = var_x / (var_x + var_z)*(v + Delta) # Wiener filter
 
-        r_new = b - A @ x_new  # 更新残差
-
-        # 自适应调整 alpha（学习率）
-        if iter % 50 == 0:  # 每50轮迭代调整一次学习率
-            alpha = alpha * 0.95  # 使用更慢的学习率衰减
-
-        # 更新信号：x_new是加权后的新估计
-        x_new = alpha * x_new + (1 - alpha) * x  # 更新信号
-
-        # 计算变化量
-        signal_change.append(np.linalg.norm(x_new - x))
-        residual_change.append(np.linalg.norm(r_new - r))
-
-        if signal_change[-1] < threshold and residual_change[-1] < threshold:
-            print(f'Converged at iteration {iter + 1}')
-            break
-
-        x = x_new
-        r = r_new
-
-        if iter % 10 == 0:
-            print(f"Iteration {iter + 1}: Signal change = {signal_change[-1]:.6e}, Residual change = {residual_change[-1]:.6e}")
-
-    return x, signal_change, residual_change
+    added_term = term1_d + term2_d
+    mul_term = np.multiply(xW2, term2_d)
+    xhat2 = np.divide(mul_term, added_term)
+    d = (xhat2 - xhat)/Delta
+    return xhat, d
 
 
-def AMP(A, b, max_iter=50,):
-    m, n = A.shape
+## AMP algorithm
+def AMPforCS(A, y, real_x, max_iter = 100, lamda = 0.1, var_x = 1, epsilon = 0.2 ):
+    y = y.reshape(-1,1)
+    M, N = A.shape
+    delta = M/N          # measurement rate
+    # initialization
+    mse = np.zeros((max_iter,1)) # store mean square error
+    xt = np.zeros((N,1))# estimate of signal
+    dt = np.zeros((N,1))# derivative of denoiser
+    rt = np.zeros((M,1))# residual
+    for iter in range(0, max_iter):
+        # update residual
+        rt = y - A @ xt + 1 / delta * np.mean(dt) * rt
+        # compute pseudo-data
+        vt = xt + A.T @ rt
+        # estimate scalar channel noise variance estimator is due to Montanari
+        var_t = np.mean(rt**2)
+        # denoising
+        xt1, dt = denoise(vt, var_x, var_t, epsilon)
+        # damping step
+        xt = lamda*xt1 + (1-lamda)*xt
+        mse[iter] = np.mean((xt - real_x)**2)
+    return xt , mse
 
-    return
 
 np.random.seed(42)
 
 # Example usage
-n, m = 100, 50
+m, n = 50, 100
 sparsity = 0.05
 A, b, x_true = generate_data(n, m, sparsity, scale_factor = 1.0)
 
 # 运行 AMP 算法
-x_amp, signal_change, residual_change = amp(A, b)
+x_amp, _ = AMPforCS(A, b, x_true, epsilon = sparsity)
 
 # 运行 OMP 算法
 x_omp = OMP(A, b, int(n*sparsity))
@@ -247,14 +288,46 @@ x_fista, _, _ = FISTA(A, b, )
 # print(f'True signal: {x_true}')
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
 axs.stem(x_true, linefmt = 'm--', markerfmt = 'mD',  label="真实系数", basefmt='none')
-# axs.stem(x_omp, linefmt = 'g--', markerfmt = 'g*',  label="OMP真实系数" , basefmt='none')
-axs.stem(x_ista, linefmt = 'k--', markerfmt = 'kh', label="ISTA真实系数" , basefmt='none')
-# axs.stem(x_fista, linefmt = 'c--', markerfmt = 'cv', label="FISTA真实系数" , basefmt='none')
-# axs.stem(x_amp, linefmt = 'b--', markerfmt = 'b^',  label="AMP估计系数", basefmt='none' )
-
 axs.legend()
-axs.set_xlabel('Iteration')
-axs.set_ylabel('MSE')
+axs.set_xlabel('Index')
+axs.set_ylabel('value')
+plt.show()
+plt.close()
+
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_omp, linefmt = 'g--', markerfmt = 'g*',  label="OMP估计系数" , basefmt='none')
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_ista, linefmt = 'k--', markerfmt = 'kh', label="ISTA估计系数" , basefmt='none')
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_fista, linefmt = 'c--', markerfmt = 'cv', label="FISTA估计系数" , basefmt='none')
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_amp, linefmt = 'b--', markerfmt = 'b^',  label="AMP估计系数", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('value')
 plt.show()
 plt.close()
 

@@ -52,36 +52,33 @@ mse1 = np.ones(iter_max)*np.mean(x_init**2) # Store empirical MSE across iterati
 mse2 = np.ones(iter_max)*np.mean(x_init**2)
 
 for t in range(iter_max-1):
-
     ### Original soft-threholding AMP ###
-
     # Estimate vector
     theta1 = alpha*np.sqrt(LA.norm(z1)**2/M) # alpha*tau (tau is std deviation)
-    x1     = soft_thresh(x1 + np.dot(A.T,z1), theta1)
+    x1     = soft_thresh(x1 + np.dot(A.T, z1), theta1)
 
     # Calculate residual with the Onsager term
-    b1 = LA.norm(x1,0)/M
-    z1 = y - np.dot(A,x1) + b1*z1
+    b1 = LA.norm(x1, 0)/M
+    z1 = y - np.dot(A, x1) + b1*z1
 
     # Calculate MSE
-    mse1[t+1] = np.mean((x1-x_init)**2)
+    mse1[t+1] = np.mean((x1 - x_init)**2)
 
     ### Soft-threholding AMP w/ approx. Onsager term ###
 
     # Estimate vector
     tau    = np.sqrt(LA.norm(z2)**2/M)
     theta2 = alpha * tau
-    x2     = soft_thresh(x2 + np.dot(A.T,z2), theta2)
+    x2     = soft_thresh(x2 + np.dot(A.T, z2), theta2)
 
     # Calculate residual with the APPROX. Onsager term
     X = np.random.choice([-1,0,1], nsamples, p=[eps/2, 1-eps, eps/2])
     G = tau * np.random.randn(nsamples) # noise
-    b2 = (N/M) * (1/tau**2) * np.mean(soft_thresh(X+G,theta2) * G)
-    z2 = y - np.dot(A,x2) + b2*z2
+    b2 = (N/M) * (1/tau**2) * np.mean(soft_thresh(X+G, theta2) * G)
+    z2 = y - np.dot(A, x2) + b2*z2
 
     # Calculate MSE
     mse2[t+1] = np.mean((x2-x_init)**2)
-
 
 # State evolution, tau in SE is a variance not standard deviation
 nsamples = 1000000
@@ -134,11 +131,8 @@ psi1 = np.zeros((len(eps_list), len(tau_list)))
 psi2 = np.zeros((len(eps_list), len(tau_list)))
 
 for i, eps in enumerate(eps_list):
-
     alpha  = opt_tuning_param(eps) # Find optimal alpha
-
     for j, tau in enumerate(tau_list):
-
         theta = alpha * tau
         X = np.random.choice([-1,0,1], nsamples, p=[eps/2, 1-eps, eps/2])
         G = tau * np.random.randn(nsamples) # noise
@@ -147,9 +141,7 @@ for i, eps in enumerate(eps_list):
         psi2[i,j] = np.mean((soft_thresh(X+G,theta) - X)**2)
 
 plt.figure(figsize=(12,6))
-
 figextent = [tau_list[0], tau_list[-1], eps_list[0] , eps_list[-1]]
-
 plt.subplot(121)
 plt.imshow(psi1, cmap='jet', vmin=0, vmax=1, extent=figextent, interpolation='none', origin='lower')
 plt.title(r'$\mathbb{E}\{\eta(X+\tau G) * \tau G\}$' +'\n'+'3-point prior, soft-thresholding')

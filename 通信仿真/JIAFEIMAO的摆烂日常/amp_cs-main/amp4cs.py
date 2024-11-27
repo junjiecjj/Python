@@ -1,3 +1,6 @@
+
+
+
 # AMP for signal recovery in compressed sensing.
 # CS model: y = Ax + noise
 # Goal    : recover x given y and A
@@ -16,8 +19,7 @@ import scipy
 # shouldn't sample row 1 and row N/2.
 
 ##### Compressed Sensing #####
-
-def initialise_CS(N, M, K, sigma=0, x_choice=0, A_choice=0):
+def initialise_CS(N, M, K, sigma = 0, x_choice = 0, A_choice = 0):
     ''' Initialises compressed sensing (CS) problem, y = Ax + noise.
 
     Inputs:
@@ -27,20 +29,16 @@ def initialise_CS(N, M, K, sigma=0, x_choice=0, A_choice=0):
       sigma: noise standard deviation
       A_choice: type of sensing matrix
           0: With iid normal entries N(0,1/M)
-          1: With iid entries in {+1/sqrt(M), -1/sqrt(M)} with
-             uniform probability
+          1: With iid entries in {+1/sqrt(M), -1/sqrt(M)} with uniform probability
           2: Random partial Fourier matrix
       x_choice: type of signal
-          0: Elements in {+1, 0, -1}, with K +-1's with
-             uniform probability of +1 and -1's
+          0: Elements in {+1, 0, -1}, with K +-1's with uniform probability of +1 and -1's
           1: K non-zero entries drawn from the standard normal distribution
-
     Outputs:
         y: measurment vector
         A: sensing matrix
         x: signal vector
     '''
-
     # Generate signal x
     if x_choice == 0:
         x = 1*(np.random.rand(K)<0.5)
@@ -77,9 +75,7 @@ def initialise_CS(N, M, K, sigma=0, x_choice=0, A_choice=0):
     return y, A, x
 
 ##### AMP #####
-
 ### AMP with soft-thresholding denoiser
-
 def plus_op(x):
     '''Plus operator.
 
@@ -90,21 +86,17 @@ def soft_thresh(x, L):
     '''Soft-thresholding function.
 
     x is the signal, L is the threshold lambda
-    x = sign(x)(abs(x)-lambda)_+
-    ()_+ is the element-wise plus operator which equals
-    the +ve part of x if x>0, otherwise = 0.'''
+    x = sign(x)(abs(x)-lambda)_+ ()_+ is the element-wise plus operator which equals the +ve part of x if x>0, otherwise = 0.'''
     return np.multiply(np.sign(x), plus_op(np.absolute(x)-L))
 
 def opt_tuning_param(eps, limit=3):
-    '''Find optimal tuning parameter for given sparsity ratio (epsilon)
-       for the AMP algorithm.
-
+    '''Find optimal tuning parameter for given sparsity ratio (epsilon) for the AMP algorithm.
     Equation on p8 of "Graphical Models Concepts in Compressed Sensing"
     Inputs
         eps: epsilon = K/N = delta*rho
         limit: Limits the search for optimal tuning parameter alpha
     '''
-    res   = minimize_scalar(M_pm,bracket=(0,limit),args=(eps))
+    res   = minimize_scalar(M_pm, bracket=(0, limit), args = (eps))
     alpha = res.x
     return alpha
 
@@ -114,24 +106,20 @@ def M_pm(alpha, eps):
 def amp(y, A, x, z, alpha):
     '''Approximate message passing (AMP) iteration
        with soft-thresholding denoiser.
-
     Inputs
         y: measurement vector (length M 1d np.array)
         A: sensing matrix     (M-by-N 2d np.array)
         x: signal estimate    (length N 1d np.array)
         z: residual           (length M 1d np.array)
         alpha: threshold tuning parameter
-
     Outputs
         x: signal estimate
         z: residual
-
     Note
         Need to initialise AMP iteration with
         x = np.zeros(N)
         z = y
     '''
-
     M = len(y)
 
     # Estimate vector
@@ -147,13 +135,9 @@ def amp(y, A, x, z, alpha):
     return (x, z)
 
 ### AMP with Bayes-optimal denoiser for different signals
-
 def amp_3pt(y, A, x, z, eps, c=1):
-    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE)
-    denoiser for signals with iid entries drawn from the 3-point distribution:
-    probability (1-eps) equal to 0 and probability eps/2 equal to each +c and
+    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE) denoiser for signals with iid entries drawn from the 3-point distribution: probability (1-eps) equal to 0 and probability eps/2 equal to each +c and
     -c.
-
     Inputs
         y: measurement vector (length M 1d np.array)
         A: sensing matrix     (M-by-N 2d np.array)
@@ -161,11 +145,9 @@ def amp_3pt(y, A, x, z, eps, c=1):
         z: residual           (length M 1d np.array)
         eps: sparsity ratio (fraction of non-zero entries)
         c: the values of the non-zero entries of the signal equal to +c and -c
-
     Outputs
         x: signal estimate
         z: residual
-
     Note
         Need to initialise AMP iteration with
         x = np.zeros(N)
@@ -190,11 +172,7 @@ def amp_3pt(y, A, x, z, eps, c=1):
     return (x, z)
 
 def amp_bg(y, A, x, z, eps, v=1):
-    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE)
-    denoiser for signals with iid entries drawn from the Bernoulli-Gaussian
-    distribution: probability (1-eps) equal to 0 and probability eps drawn
-    from a Gaussian distribution with standard deviation v.
-
+    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE) denoiser for signals with iid entries drawn from the Bernoulli-Gaussian distribution: probability (1-eps) equal to 0 and probability eps drawn from a Gaussian distribution with standard deviation v.
     Inputs
         y: measurement vector (length M 1d np.array)
         A: sensing matrix     (M-by-N 2d np.array)
@@ -203,17 +181,14 @@ def amp_bg(y, A, x, z, eps, v=1):
         eps: sparsity ratio (fraction of non-zero entries)
         v: the standard deviation of the non-zero entries of the signal which
            are drawn from a Gaussian distribution
-
     Outputs
         x: signal estimate
         z: residual
-
     Note
         Need to initialise AMP iteration with
         x = np.zeros(N)
         z = y
     '''
-
     M,N = np.shape(A)
     tau = np.sqrt(np.mean(z**2)) # Estimate of effective noise std deviation
 
@@ -235,18 +210,13 @@ def amp_bg(y, A, x, z, eps, v=1):
 ##### State evolution #####
 
 def se(eps, delta, sigma, iter_max, nsamples=10000):
-    '''State evolution (SE) for AMP decoder with soft-thresholding
-    denoiser and signal entries drawn from 3-point distribution with
-    probability (1-eps) equal to 0 and probability eps/2 equal to
-    either +1 or -1.
-
+    '''State evolution (SE) for AMP decoder with soft-thresholding denoiser and signal entries drawn from 3-point distribution with probability (1-eps) equal to 0 and probability eps/2 equal to either +1 or -1.
     Inputs
         eps  : sparsity ratio (num of non-zero entries / signal dimension)
         delta: sensing matrix (num of measurements / signal dimension)
         sigma: measurement noise standard deviation
         iter_max: number of iterations to run SE
         nsamples: num of Monte Carlo samples used to evaluate expectation
-
     Outputs
         psi: SE variable that tracks AMP's per-iteration MSE
         tau: SE variable that tracks per-iteration effective noise variance.
@@ -272,11 +242,9 @@ def se(eps, delta, sigma, iter_max, nsamples=10000):
 
 def sub_dct(m, n, seed=0, order0=None, order1=None):
     """
-    Returns functions to compute the sub-sampled Discrete Cosine Transform,
-    i.e., matrix-vector multiply with subsampled rows from the DCT matrix.
+    Returns functions to compute the sub-sampled Discrete Cosine Transform, i.e., matrix-vector multiply with subsampled rows from the DCT matrix.
 
-    This is a direct modification of Adam Greig's pyfht source code which can
-    be found at https://github.com/adamgreig/pyfht/blob/master/pyfht.py
+    This is a direct modification of Adam Greig's pyfht source code which can be found at https://github.com/adamgreig/pyfht/blob/master/pyfht.py
 
     [Inputs]
     m: number of rows
@@ -284,17 +252,13 @@ def sub_dct(m, n, seed=0, order0=None, order1=None):
     m < n
     Most efficient (but not required) for max(m+1,n+1) to be a power of 2.
     seed:   determines choice of random matrix
-    order0: optional m-long array of row indices in [1, max(m+1,n+1)] to
-            implement subsampling of rows; generated by seed if not specified.
-    order1: optional n-long array of row indices in [1, max(m+1,n+1)] to
-            implement subsampling of columns; generated by seed if not specified.
-
+    order0: optional m-long array of row indices in [1, max(m+1,n+1)] to implement subsampling of rows; generated by seed if not specified.
+    order1: optional n-long array of row indices in [1, max(m+1,n+1)] to implement subsampling of columns; generated by seed if not specified.
     [Outputs]
-    Ax(x):    computes A.x (of length m), with x having length n
-    Ay(y):    computes A*.y (of length n), with y having length m
-
+        Ax(x):    computes A.x (of length m), with x having length n
+        Ay(y):    computes A*.y (of length n), with y having length m
     [Notes]
-    There is a scaling of 1/sqrt(m) in the outputs of Ax() and Ay().
+        There is a scaling of 1/sqrt(m) in the outputs of Ax() and Ay().
     """
 
     assert type(m)==int and m>0
@@ -328,6 +292,24 @@ def sub_dct(m, n, seed=0, order0=None, order1=None):
         return x_ext[order1]/np.sqrt(m)
 
     return Ax, Ay
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,4 @@
-
-clc;
-clear all;
+clc;clear all;close all;
 
 
 %% Parameters
@@ -25,7 +23,7 @@ Input.lambda=lambda;
 parfor_progress(TestNum);
 for ii=1:TestNum
     obj=system_model(Input);
-    [MSE_AMP(:,ii),  error_AMP(:,ii)] = AMP_Lasso(Input, obj);
+    [x_amp, MSE_AMP(:,ii),  error_AMP(:,ii)] = AMP_Lasso(Input, obj);
     [MSE_ISTA(:,ii), error_ISTA(:,ii)]= ISTA_Lasso(Input, obj);
     [MSE_FISTA(:,ii), error_FISTA(:,ii)]= FISTA_Lasso(Input, obj);
      parfor_progress;   
@@ -49,3 +47,11 @@ semilogy(MSE_ISTA_mean,'-*k');
 hold on
 legend('AMP', 'FISTA', 'ISTA');
 hold on
+
+
+figure (2);
+plot(obj.x, 'r');
+hold on;
+plot(x_amp, '--b');
+hold on;
+legend('real x','AMP x');

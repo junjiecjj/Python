@@ -103,7 +103,7 @@ def OMP1(phi, y, sparsity):
 
 
 # y = np.sqrt(snr)*A*x + z
-# solve for x given y,A
+# solve for x given y, A
 snr = 90 # SNR
 N = 2000 # length of signal
 M = 1000 # number of measurements
