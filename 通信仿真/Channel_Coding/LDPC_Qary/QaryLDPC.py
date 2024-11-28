@@ -3,7 +3,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Aug 12 21:45:57 2023
+Created on 2024/11/22
 
 @author: JunJie Chen
 
@@ -305,16 +305,31 @@ class QLDPC_Coding(object):
         return uu_hat, iter_num + 1
 
 
+p = 3
+q = 2**p
+qbits = comm.utilities.dec2bitarray(np.arange(q), p).reshape(-1, p)
+
+Len = 100
+pp = np.random.rand(qbits.shape[0], Len)
+pp = pp / pp.sum(axis = 0)
+
+real_ary = bpsk(qbits) # .astype(np.float32)
+rowsum = np.unique(real_ary.sum(axis = 1))
+ordered_sum = sorted(rowsum)
 
 
+mapp = {}
 
+for i, bins in enumerate(real_ary):
+    if int(np.sum(bins)) in mapp.keys():
+        mapp[int(np.sum(bins))].append(i)
+    else:
+        mapp[int(np.sum(bins))] = []
+        mapp[int(np.sum(bins))].append(i)
 
-
-
-
-
-
-
+pp1 = np.zeros((len(rowsum), pp.shape[-1]))
+for i, S in enumerate(ordered_sum):
+    pp1[i] = pp[mapp[S]].sum(axis = 0)
 
 
 

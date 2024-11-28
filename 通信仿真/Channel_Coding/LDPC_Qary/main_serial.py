@@ -44,7 +44,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 2,    # User num
+    "K" : 3,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -84,7 +84,8 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "BER_QaryLDPC_hadmard.txt"
+# logf = "BER_QaryLDPC_hadmard.txt"
+logf = "tmp.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
