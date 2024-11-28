@@ -21,7 +21,6 @@ import scipy
 ##### Compressed Sensing #####
 def initialise_CS(N, M, K, sigma = 0, x_choice = 0, A_choice = 0):
     ''' Initialises compressed sensing (CS) problem, y = Ax + noise.
-
     Inputs:
       N: Signal dimension
       M: Number of measurements
@@ -66,19 +65,16 @@ def initialise_CS(N, M, K, sigma = 0, x_choice = 0, A_choice = 0):
         # With odd number of rows cannot normaize columns to have unit norm
         print('M must be an even number for random partial Fourier sensing matrix ')
     # print(LA.norm(A,axis=0)) # Checks the norm of the columns are 1
-
     # Calculate measurement vector y
     y = np.dot(A,x)
     if sigma != 0:
         y += sigma * np.random.randn(M)
-
     return y, A, x
 
 ##### AMP #####
 ### AMP with soft-thresholding denoiser
 def plus_op(x):
     '''Plus operator.
-
     plus_op(x) = x if x>0, = 0 otherwise'''
     return x*(x>0)
 
@@ -104,8 +100,7 @@ def M_pm(alpha, eps):
     return eps*(1+alpha**2) + (1-eps)*(2*(1+alpha**2)*norm.cdf(-alpha)-2*alpha*norm.pdf(alpha))
 
 def amp(y, A, x, z, alpha):
-    '''Approximate message passing (AMP) iteration
-       with soft-thresholding denoiser.
+    '''Approximate message passing (AMP) iteration with soft-thresholding denoiser.
     Inputs
         y: measurement vector (length M 1d np.array)
         A: sensing matrix     (M-by-N 2d np.array)
@@ -127,6 +122,7 @@ def amp(y, A, x, z, alpha):
     x     = soft_thresh(x + np.dot(A.T,z), theta)
 
     # Calculate residual with the Onsager term
+    # print(x.shape)
     b = LA.norm(x,0)/M
     z = y - np.dot(A,x) + b*z
 
@@ -135,9 +131,8 @@ def amp(y, A, x, z, alpha):
     return (x, z)
 
 ### AMP with Bayes-optimal denoiser for different signals
-def amp_3pt(y, A, x, z, eps, c=1):
-    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE) denoiser for signals with iid entries drawn from the 3-point distribution: probability (1-eps) equal to 0 and probability eps/2 equal to each +c and
-    -c.
+def amp_3pt(y, A, x, z, eps, c = 1):
+    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE) denoiser for signals with iid entries drawn from the 3-point distribution: probability (1-eps) equal to 0 and probability eps/2 equal to each +c and -c.
     Inputs
         y: measurement vector (length M 1d np.array)
         A: sensing matrix     (M-by-N 2d np.array)
@@ -153,7 +148,6 @@ def amp_3pt(y, A, x, z, eps, c=1):
         x = np.zeros(N)
         z = y
     '''
-
     M,N = np.shape(A)
     tau = np.sqrt(np.mean(z**2)) # Estimate of effective noise std deviation
 
@@ -179,8 +173,7 @@ def amp_bg(y, A, x, z, eps, v=1):
         x: signal estimate    (length N 1d np.array)
         z: residual           (length M 1d np.array)
         eps: sparsity ratio (fraction of non-zero entries)
-        v: the standard deviation of the non-zero entries of the signal which
-           are drawn from a Gaussian distribution
+        v: the standard deviation of the non-zero entries of the signal which are drawn from a Gaussian distribution
     Outputs
         x: signal estimate
         z: residual
@@ -189,7 +182,7 @@ def amp_bg(y, A, x, z, eps, v=1):
         x = np.zeros(N)
         z = y
     '''
-    M,N = np.shape(A)
+    M, N = np.shape(A)
     tau = np.sqrt(np.mean(z**2)) # Estimate of effective noise std deviation
 
     # Estimate vector
@@ -208,7 +201,6 @@ def amp_bg(y, A, x, z, eps, v=1):
     return (x, z)
 
 ##### State evolution #####
-
 def se(eps, delta, sigma, iter_max, nsamples=10000):
     '''State evolution (SE) for AMP decoder with soft-thresholding denoiser and signal entries drawn from 3-point distribution with probability (1-eps) equal to 0 and probability eps/2 equal to either +1 or -1.
     Inputs
@@ -221,25 +213,19 @@ def se(eps, delta, sigma, iter_max, nsamples=10000):
         psi: SE variable that tracks AMP's per-iteration MSE
         tau: SE variable that tracks per-iteration effective noise variance.
     '''
-
     alpha = opt_tuning_param(eps) # Soft-threshold threshold parameter
     psi = np.ones(iter_max) * eps # Variance of signal entries
     tau = np.zeros(iter_max)
-
     for t in range(iter_max-1):
-
         tau[t] = sigma**2 + psi[t]/delta
-
         X = np.random.choice([-1,0,1], nsamples, p=[eps/2, 1-eps, eps/2])
         Z = np.random.randn(nsamples) # noise
         S = X + np.sqrt(tau[t]) * Z
         theta    = alpha * np.sqrt(tau[t])
         psi[t+1] = np.mean((soft_thresh(S, theta) - X)**2)
-
     return psi, tau
 
 ##### Subsampled DCT transform #####
-
 def sub_dct(m, n, seed=0, order0=None, order1=None):
     """
     Returns functions to compute the sub-sampled Discrete Cosine Transform, i.e., matrix-vector multiply with subsampled rows from the DCT matrix.

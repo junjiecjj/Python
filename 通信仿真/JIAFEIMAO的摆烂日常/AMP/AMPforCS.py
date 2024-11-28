@@ -140,8 +140,7 @@ def amp(A, b, max_iter=50, threshold=1e-6, alpha=1e-4, regularization_strength=0
             print(f"Iteration {iter + 1}: Signal change = {signal_change[-1]:.6e}, Residual change = {residual_change[-1]:.6e}")
     return x, signal_change, residual_change
 
-
-# OMP 算 法
+# OMP 算法
 def OMP(phi, y, sparsity):
     """
     OMP算法的Python实现

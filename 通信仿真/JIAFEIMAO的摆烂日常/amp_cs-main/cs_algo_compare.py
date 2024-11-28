@@ -34,7 +34,7 @@ iter_max  = 140  # max num of iterations
 # Generate signal vector x, sensing matrix A and measurement vector y
 y, A, x_init = initialise_CS(N, M, K, sigma)
 
-# Run AMP and IST first
+#%% Run AMP and IST first
 alpha_amp = opt_tuning_param(K/N) # Find optimal alpha parameter for AMP
 alpha_ist = 2.0                   # Find optimal alpha parameter for IST
 mse_amp   = np.ones(iter_max)*np.mean(x_init**2) # Store signal reconstruction MSE
@@ -50,10 +50,9 @@ for t in range(iter_max-1):
     mse_amp[t+1] = np.mean((x_amp-x_init)**2)     # Empirical MSE
     mse_ist[t+1] = np.mean((x_ist-x_init)**2)     # Empirical MSE
 
-# Run convex solvers for the LASSO with regularisation parameter Lambda
+#%% Run convex solvers for the LASSO with regularisation parameter Lambda
 # Set Lambda as follows to match the alpha parameter used for AMP.
-# See Equation 5.8 of "Graphical Models Concepts in Compressed Sensing"
-# by Montanari for more details.
+# See Equation 5.8 of "Graphical Models Concepts in Compressed Sensing" by Montanari for more details.
 L = alpha_amp*LA.norm(z_amp)*(1-LA.norm(x_amp,0)/M)/np.sqrt(M) # Lambda
 
 # Set the step size (guarantees convergence)
@@ -71,11 +70,11 @@ theta_nest  = x_nest  # Initialize for Nesterov momentum
 
 for t in range(iter_max-1):
     x_prox = prox_grad(y, A, x_prox, stepsize, L) # Proximal gradient
-    (x_nest, theta_nest)   = nesterov(y,A,x_nest,stepsize,L,t,theta_nest) # With Nesterov momentum
+    (x_nest, theta_nest)   = nesterov(y, A, x_nest, stepsize, L, t, theta_nest) # With Nesterov momentum
     mse_prox[t+1]  = np.mean((x_prox-x_init)**2)  # Empirical MSE
     mse_nest[t+1]  = np.mean((x_nest-x_init)**2)
 
-# Run OMP and CoSaMP
+#%% Run OMP and CoSaMP
 tol   = LA.norm(y)*1e-6 # Convergence tolerance
 x_omp = np.zeros_like(x_init) # Initial signal estimate
 z_omp = y                     # Initial residual
@@ -103,15 +102,15 @@ for t in range(iter_max-1):
     (x_cosamp2, z_cosamp2) = cosamp(A, y, K_est2, x_cosamp2, z_cosamp2)
     mse_cosamp2[t+1] = np.mean((x_cosamp2-x_init)**2)     # Empirical MSE
 
-# Plot all
+#%% Plot all
 plt.figure(figsize=(12,7))
-plt.plot(mse_amp, linewidth=2.0, label='AMP')
-plt.plot(mse_ist, linewidth=2.0, label='IST')
-plt.plot(mse_prox,linewidth=2.0, label='Proximal GD')
-plt.plot(mse_nest,linewidth=2.0, label='Proximal GD w/ Nesterov momentum')
-plt.plot(mse_omp,linewidth=2.0, label='OMP')
-plt.plot(mse_cosamp,linewidth=2.0, label='CoSaMP (K_est=K)')
-plt.plot(mse_cosamp2,linewidth=2.0, label='CoSaMP (K_est=2K)')
+plt.plot(mse_amp, linewidth = 2.0, label = 'AMP')
+plt.plot(mse_ist, linewidth = 2.0, label = 'IST')
+plt.plot(mse_prox, linewidth = 2.0, label = 'Proximal GD')
+plt.plot(mse_nest, linewidth = 2.0, label = 'Proximal GD w/ Nesterov momentum')
+plt.plot(mse_omp, linewidth = 2.0, label = 'OMP')
+plt.plot(mse_cosamp, linewidth = 2.0, label = 'CoSaMP (K_est=K)')
+plt.plot(mse_cosamp2, linewidth = 2.0, label = 'CoSaMP (K_est=2K)')
 # plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('Iteration', fontsize=16)

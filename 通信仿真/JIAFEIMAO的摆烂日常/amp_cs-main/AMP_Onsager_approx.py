@@ -65,7 +65,6 @@ for t in range(iter_max-1):
     mse1[t+1] = np.mean((x1 - x_init)**2)
 
     ### Soft-threholding AMP w/ approx. Onsager term ###
-
     # Estimate vector
     tau    = np.sqrt(LA.norm(z2)**2/M)
     theta2 = alpha * tau
@@ -107,7 +106,6 @@ plt.plot(x2)
 
 
 # 2. Testing Onsager approx. method
-
 # Using Stein's lemma, we evaluate E{eta'(X + tau*Z)} in the Onsager term
 # using E{eta(X+tau*Z) * tau*Z}/tau^2, where X is a random variable drawn
 # according to the signal distribution and Z is a standard Gaussian.
@@ -116,11 +114,9 @@ plt.plot(x2)
 # then E{eta(X+tau*Z) * tau*Z} = E{[eta(X+tau*Z) - X]^2}, which is the
 # expected MMSE, which in turn is a quantity computed in state evolution.
 #
-# Want to see how E{eta(X+tau*Z) * tau*Z} compared with
-# E{[eta(X+tau*Z) - X]^2} for eta(.) denoisers which are not MMSE estimators.
+# Want to see how E{eta(X+tau*Z) * tau*Z} compared with E{[eta(X+tau*Z) - X]^2} for eta(.) denoisers which are not MMSE estimators.
 #
-# In the following I will consider the 3-point distribution with the
-# soft-thresholding denoiser.
+# In the following I will consider the 3-point distribution with the soft-thresholding denoiser.
 
 nsamples = 1000000
 

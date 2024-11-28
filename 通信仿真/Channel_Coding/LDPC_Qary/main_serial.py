@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -10,7 +12,6 @@ numpy.nonzero() 函数返回输入数组中非零元素的索引。
 
 numpy.where()
 numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
-
 
 """
 ## system lib
@@ -43,7 +44,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 4,    # User num
+    "K" : 2,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -83,7 +84,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "BER_QaryLDPC_hadmard4.1.txt"
+logf = "BER_QaryLDPC_hadmard.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -97,16 +98,8 @@ elif modutype == 'psk':
     modem =  cpy.PSKModem(M)
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
-l = ldpc.p
-q = 2**l
-GF = galois.GF(2**l, repr = "int")
-# I = GF.Identity(l)
-# I[0] = 1
-I = [1]*l
-I = GF(I)
-
 ## 遍历SNR
-sigma2dB = np.arange(4.1, 12, 1)  # dB
+sigma2dB = np.arange(0, 12, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
 # sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率w
@@ -126,7 +119,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             H = LargeRician(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         ## 编码
         uu = source.SourceBits(args.K, ldpc.codedim)
-        # uu_fun = np.array(I @ GF(uu), dtype = np.int8)
+
         cc = np.array([], dtype = np.int8)
         for k in range(args.K):
             cc = np.hstack((cc, ldpc.encoder(uu[k,:])))

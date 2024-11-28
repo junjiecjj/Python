@@ -112,7 +112,6 @@ for run in range(numOfRuns):
     z_ist = y
 
     for t in range(iter_max):
-
         # AMP estimate vector
         theta = alpha_amp * np.sqrt(LA.norm(z_amp)**2/M) # alpha*tau
         s_amp = x_amp + np.dot(A.T,z_amp)
@@ -134,8 +133,6 @@ for run in range(numOfRuns):
     s_err_ist[run] = s_ist[idxs]
 
 print('time elapsed (s):', time.perf_counter() - start)
-
-
 
 numOfBins = 40
 plt.figure(figsize=(12,5))

@@ -51,6 +51,7 @@ class QLDPC_Coding(object):
         self.SetCols = {}                   # 每列不为0的行号
         self.MV2C = None                    # 变量节点 到 校验节点 的消息
         self.MC2V = None                    # 校验节点 到 变量节点 的消息
+        self.qbits = None
         self.qcomb = None
         self.Hadm = None
         self.readH()
@@ -64,7 +65,7 @@ class QLDPC_Coding(object):
 
     def readH(self):
         current_dir = os.path.dirname(os.path.abspath(__file__)) + '/'
-        with open(current_dir+self.args.file_name_of_the_H, 'r', encoding='utf-8') as f:
+        with open(current_dir + self.args.file_name_of_the_H, 'r', encoding = 'utf-8') as f:
             tmp = f.readline()
             ## print(tmp)
             tmp = f.readline()
@@ -145,7 +146,7 @@ class QLDPC_Coding(object):
     def post_probability(self, yy, H, noise_var):
         pp = np.exp(-np.abs(yy - bpsk(self.qbits) @ H)**2 /(2 * noise_var))
         pp = pp/ pp.sum(axis = 0)
-        pp = np.clip(pp, self.smallprob, 1-self.smallprob)
+        pp = np.clip(pp, self.smallprob, 1 - self.smallprob)
         return pp
 
     def decoder_qary_spa(self, pp, maxiter = 50):
@@ -300,7 +301,7 @@ class QLDPC_Coding(object):
                             tmp *= self.MC2V[c, col, q]
                         self.MV2C[row, col, q] = tmp
                     self.MV2C[row, col, :] = self.MV2C[row, col, :]/self.MV2C[row, col, :].sum()
-                    self.MV2C[row, col, :] = np.clip(self.MV2C[row, col, :], self.smallprob, 1-self.smallprob)
+                    self.MV2C[row, col, :] = np.clip(self.MV2C[row, col, :], self.smallprob, 1 - self.smallprob)
         return uu_hat, iter_num + 1
 
 
