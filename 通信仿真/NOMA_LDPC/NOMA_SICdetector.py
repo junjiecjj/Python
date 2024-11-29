@@ -146,7 +146,7 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
         rx_sig = PassChannel(tx_sig, H0, power = 1, )
         P_noise = 1  # 1*(10**(-1*snr/10))
         if case == 'zf':
-            #%%============================================
+            #%%===========================================
             #          (0)  ZF
             ##============================================
             H = copy.deepcopy(H0)
@@ -155,7 +155,7 @@ for sigma2dbm, sigma2w in zip(sigma2dBm, sigma2W):
             rx_symb_zf = rx_data_zf.reshape(-1)
             rx_bits = Modulator.demod_MIMO(copy.deepcopy(modem.constellation), rx_symb_zf, 'hard', Es = Es, )
         elif case == 'mmse':
-            # # #%%============================================
+            # # #%%===========================================
             # # #      (0)  WMMSE
             # # ##============================================
             H = copy.deepcopy(H0)

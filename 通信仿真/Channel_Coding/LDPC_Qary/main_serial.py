@@ -29,8 +29,8 @@ from sourcesink import SourceSink
 from Channel import channelConfig
 from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician
 import utility
-from QaryLDPC import QLDPC_Coding, bpsk
-from SICdetector_LDPC  import SeparatedDetectDecoding
+from QaryLDPC import QLDPC_Coding, bpsk, BPSK
+from SICdetector_LDPC import SeparatedDecoding_BlockFading, SeparatedDecoding_FastFading
 import Modulator
 
 utility.set_random_seed()
@@ -40,7 +40,7 @@ def parameters():
     home = os.path.expanduser('~')
 
     ldpc_args = {
-    "minimum_snr" : 2 ,
+    "minimum_snr" : 0,
     "maximum_snr" : 13,
     "increment_snr" : 1,
     "maximum_error_number" : 300,
@@ -66,15 +66,13 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
+    'channel_type': 'block-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
     }
     args = argparse.Namespace(**ldpc_args)
     return args
 
 args = parameters()
-## print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
 
-## Rayleigh Fading 信道，BPSK/QAM下，LPDC编码，串行
 # def QaryLDPC(args, ):
 ldpc =  QLDPC_Coding(args)
 coderargs = {'codedim':ldpc.codedim,
@@ -85,8 +83,8 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-# logf = "BER_QaryLDPC_hadmard.txt"
-logf = "tmp.txt"
+logf = "BER_Seperate_FastFading.txt"
+# logf = "tmp1.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -99,14 +97,13 @@ if modutype == 'qam':
 elif modutype == 'psk':
     modem =  cpy.PSKModem(M)
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
-
+# modem.plot_constellation("BPSK")
 ## 遍历SNR
 sigma2dB = np.arange(0, 12, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
 # sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率w
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
-    # channel = Rayleigh(snr)
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
@@ -130,7 +127,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         ## Modulate
         symbs = np.zeros((args.K, int(ldpc.codelen/bps)), dtype = complex)
         for k in range(args.K):
-            symbs[k] = bpsk(cc[k])
+            symbs[k] = BPSK(cc[k])
 
         ## 符号能量归一化
         symbs  = symbs / np.sqrt(Es)
@@ -139,13 +136,14 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         yy = ldpc.PassChannel(symbs, H, sigma2w)
 
         ##>>>>> Joint detecting & decoding
-        ## llr
-        pp = ldpc.post_probability(yy, H, sigma2w)
-        ## Decoding
-        uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
+        # ## llr
+        # pp = ldpc.post_probability(yy, H, sigma2w)
+        # ## Decoding
+        # uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
 
         ##>>>>>> SIC detecting Then decoding
-        uu_hat, uu_hat_sum, iter_num = SeparatedDetectDecoding(H, yy, ldpc, maxiter = 50)
+        P = [Es] * args.K
+        uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_FastFading(H, yy, P, sigma2w, Es, modem, Modulator, ldpc, maxiter = 50)
 
         source.tot_iter += iter_num
         source.CntSumErr(uu_sum, uu_hat_sum)

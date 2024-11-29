@@ -11,11 +11,6 @@ import matplotlib.pyplot as plt
 import commpy
 
 def BPSK(c):
-    # for i in range(cc.shape[-1]):
-    #     if cc[i] == 0:
-    #         cc[i] = 1
-    #     else:
-    #         cc[i] = -1
     c = 1 - 2*c
     return c
 
@@ -52,10 +47,38 @@ def NormFactor(mod_type = 'qam', M = 16,):
             Es = 2 * (M - 1) / 3
     return Es
 
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + block Fading
+def demod_blockfading(constellation, input_symbols, demod_type, h = None, Es = None, noise_var = 0):
+    M = len(constellation)
+    bitsPerSym = int(np.log2(M))
+    if Es != None:
+        constellation = constellation / np.sqrt(Es)
+
+    ##
+    if demod_type == 'hard':
+        index_list = np.abs(input_symbols - h * constellation[:, None]).argmin(0)
+        demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
+    elif demod_type == 'soft':
+        demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
+        for i in np.arange(len(input_symbols)):
+            current_symbol = input_symbols[i]
+            for bit_index in np.arange(bitsPerSym):
+                llr_num = 0
+                llr_den = 0
+                for bit_value, symbol in enumerate(h * constellation):
+                    if (bit_value >> bit_index) & 1:
+                        llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                    else:
+                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
+    else:
+        raise ValueError('demod_type must be "hard" or "soft"')
+
+    return demod_bits
+
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
-def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_var=0):
-
+def demod_fastfading(constellation, input_symbols, demod_type, H, Es = None, noise_var = 0):
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
@@ -65,7 +88,6 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
         idx = np.abs(input_symbols.reshape(-1,1) - H[:,None] @ constellation.reshape(1, -1)).argmin(1)
         # index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(idx, bitsPerSym)
-
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):
@@ -88,16 +110,13 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + AWGN
 def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):
-
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-
     if demod_type == 'hard':
         index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
-
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):

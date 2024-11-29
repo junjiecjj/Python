@@ -5,12 +5,6 @@ Created on Thu Aug 10 21:08:38 2023
 
 @author: jack
 
-numpy.nonzero()
-numpy.nonzero() 函数返回输入数组中非零元素的索引。
-
-numpy.where()
-numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
-
 
 """
 ## system lib

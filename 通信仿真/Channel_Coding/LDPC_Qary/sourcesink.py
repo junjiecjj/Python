@@ -122,7 +122,7 @@ class SourceSink(object):
         return
 
     def SaveToFile(self, filename = "SNR_BerFer.txt", snr = '', open_type = 'a+'):
-        log = f"[{snr:.2f}, {self.fer:.8f}, {self.ber:.8f}, {self.sumerr}, {self.ser:.8f}, {self.ave_iter}],"
+        log = f"[{snr:.2f}, {self.fer:.8f}, {self.ber:.8f}, {self.sumerr:.8f}, {self.ser:.8f}, {self.ave_iter:.3f}],"
         with open(filename, open_type) as f:
             f.write(log + "\n")
         return

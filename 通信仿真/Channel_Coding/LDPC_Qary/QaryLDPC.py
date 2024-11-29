@@ -27,6 +27,11 @@ def bpsk(bins):
     bits[np.where(bits == 0)] = 1
     return bits
 
+def BPSK(bins):
+    c = 1 - 2*bins
+    return c
+
+
 class QLDPC_Coding(object):
     def __init__(self, args):
         ## code parameters
@@ -172,7 +177,7 @@ class QLDPC_Coding(object):
         return
 
     def bits2sum(self, bits):
-        real_ary = bpsk(bits)
+        real_ary = BPSK(bits)
         real_sum = real_ary.sum(axis = 0)
         return real_sum
 

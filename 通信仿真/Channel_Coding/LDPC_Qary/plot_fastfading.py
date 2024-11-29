@@ -58,7 +58,7 @@ alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
 
 # 第一组数据，第一列是Eb/N0或SNR, 第二列是BER，第三列是WER，下同。
-fastfading_4 = np.array([[0.00, 1.00000000, 0.22974609, 0.00000000],
+Joint_fastfading_4 = np.array([[0.00, 1.00000000, 0.22974609, 0.00000000],
                         [1.00, 1.00000000, 0.20391276, 0.00000000],
                         [2.00, 1.00000000, 0.17126302, 0.00000000],
                         [3.00, 1.00000000, 0.12468750, 0.00000000],
@@ -67,19 +67,33 @@ fastfading_4 = np.array([[0.00, 1.00000000, 0.22974609, 0.00000000],
                         [3.60, 0.39062500, 0.03249359, 0.00000000],
                         [3.80, 0.05584320, 0.00429232, 0.00000000],
                         [4.00, 0.0037257824, 0.0002743762, 0.0000],
-                        [4.10, 0.0006524815, 0.0000486007, 0.00000]
+                        [4.10, 0.0006524815, 0.0000486007, 0.00000],
+                        [4.20, 0.0000623960, 0.0000048747, 0.00000],
                         ])
 
-fastfading_2 = np.array([[0.00, 1.00000000, 0.14276693, 0.00000000],
-[0.50, 1.00000000, 0.12561198, 0.00000000],
-[1.00, 1.00000000, 0.10027344, 0.00000000],
-[1.50, 0.84269663, 0.06209950, 0.00000000],
-[2.00, 0.09804560, 0.00501832, 0.00000000],
-[2.50, 0.0001631920, 0.0000088050, 0.00000000]
-                        ])
+Joint_fastfading_2 = np.array([[0.00, 1.00000000, 0.14276693, 0.23450520833333333, 0.00000000, 25.0],
+                                [0.50, 1.00000000, 0.12561198, 0.20567708333333334, 0.00000000, 25.0],
+                                [1.00, 1.00000000, 0.10027344, 0.16825520833333332, 0.00000000, 25.0],
+                                [1.50, 0.84269663, 0.06209950, 0.1063575316011236, 0.00000000, 23.76685393258427],
+                                [2.00, 0.09804560, 0.00501832, 0.00876806799674267, 0.00000000, 11.50586319218241],
+                                [2.50, 0.0001938736, 0.0000068159, 0.000024, 0.00000000, 5.23]
+                                ])
+Joint_blockfading_2 = np.array([[0.00, 0.61680328, 0.14722080, 0.2450531506147541, 0.00000000, 21.598360655737704],
+                                [0.50, 0.58593750, 0.12818146, 0.21350860595703125, 0.00000000, 21.0625],
+                                [1.00, 0.56179775, 0.12101694, 0.20212283473782772, 0.00000000, 19.88951310861423],
+                                [1.50, 0.49833887, 0.11036778, 0.18298380398671096, 0.00000000, 18.51827242524917],
+                                [2.00, 0.44378698, 0.09619141, 0.16417806952662722, 0.00000000, 17.618343195266274],
+                                [2.50, 0.41346154, 0.08605555, 0.14639315762362637, 0.00000000, 16.673076923076923],
+                                [3.00, 0.38461538, 0.07742638, 0.13671875, 0.00000000, 16.002564102564104],
+                                [3.50, 0.35128806, 0.07023703, 0.12093365778688525, 0.00000000, 14.600702576112413],
+                                [4.00, 0.32822757, 0.06682508, 0.1126230853391685, 0.00000000, 13.408096280087527],
+                                ])
 
 
-def QLDPC_SISO_fastfad_4user():
+
+
+
+def SISO_4user():
     lw = 2
     width = 10
     high  = 8
@@ -89,7 +103,7 @@ def QLDPC_SISO_fastfad_4user():
 
     ##=========================   ===============================
     lb = "4 User, Fastfading"
-    axs.semilogy(fastfading_4[:, 0], fastfading_4[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+    axs.semilogy(Joint_fastfading_4[:, 0], Joint_fastfading_4[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
 
     # #=========================  ===============================
     # lb = "MPA, large fading, SISO, w/ LDPC"
@@ -148,7 +162,7 @@ def QLDPC_SISO_fastfad_4user():
     return
 
 
-def QLDPC_SISO_fastfad_2user():
+def SISO_2user():
     lw = 2
     width = 10
     high  = 8
@@ -157,12 +171,12 @@ def QLDPC_SISO_fastfad_2user():
     ##=============================== LDPC =========================================
 
     ##=========================   ===============================
-    lb = "2 User, Fastfading"
-    axs.semilogy(fastfading_2[:, 0], fastfading_2[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+    lb = "2 User, Fastfading, Joint"
+    axs.semilogy(Joint_fastfading_2[:, 0], Joint_fastfading_2[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
 
     # #=========================  ===============================
-    # lb = "MPA, large fading, SISO, w/ LDPC"
-    # axs.semilogy(fastfading_4[:, 0], fastfading_4[:, cols], color = 'r', ls='--', lw = 3, marker = '*', ms = 16,  mew = 2, label = lb)
+    lb = "2 User, Blockfading, Joint"
+    axs.semilogy(Joint_blockfading_2[:, 0], Joint_blockfading_2[:, cols], color = 'r', ls='--', lw = 3, marker = '*', ms = 16,  mew = 2, label = lb)
     #=========================   ===============================
     # markeredgecolor # 圆边缘的颜色
     # markeredgewidth # 圆的线宽
@@ -206,20 +220,19 @@ def QLDPC_SISO_fastfad_2user():
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/fastfading_2user_ser.eps")
-        out_fig.savefig("./Figures/fastfading_2user_ser.png")
+        out_fig.savefig("./Figures/2user_ser.eps")
+        out_fig.savefig("./Figures/2user_ser.png")
     elif cols == 2:
-        out_fig.savefig( "./Figures/fastfading_2user_ber.eps")
-        out_fig.savefig( "./Figures/fastfading_2user_ber.png")
+        out_fig.savefig( "./Figures/2user_ber.eps")
+        out_fig.savefig( "./Figures/2user_ber.png")
 
     plt.show()
     plt.close()
     return
 
 
-
-QLDPC_SISO_fastfad_4user()
-QLDPC_SISO_fastfad_2user()
+SISO_4user()
+SISO_2user()
 
 
 

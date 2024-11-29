@@ -82,18 +82,15 @@ def NormFactor(mod_type = 'qam', M = 16,):
 #     return demod_bits
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
-def demod_MIMO(constellation, input_symbols, demod_type, Es = None, h = None,  noise_var=0):
-
+def demod_MIMO(constellation, input_symbols, demod_type, Es = None, h = None, noise_var = 0):
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-
     ##
     if demod_type == 'hard':
         index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
-
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):

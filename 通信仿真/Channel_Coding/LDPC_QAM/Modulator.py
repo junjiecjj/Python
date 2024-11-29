@@ -84,16 +84,13 @@ def demod_fading(constellation, input_symbols, demod_type, H, Es = None, noise_v
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + AWGN
 def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):
-
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-
     if demod_type == 'hard':
         index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
-
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):
