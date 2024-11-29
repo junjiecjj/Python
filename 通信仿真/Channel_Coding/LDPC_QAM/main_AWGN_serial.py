@@ -63,7 +63,7 @@ def parameters():
     home = os.path.expanduser('~')
 
     ldpc_args = {
-    "minimum_snr" : 5 ,
+    "minimum_snr" : 10,
     "maximum_snr" : 13,
     "increment_snr" : 1,
     "maximum_error_number" : 500,
@@ -94,57 +94,57 @@ args = parameters()
 # print(datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
 
 ## AWGN信道，BPSK/QAM下，LPDC编码，串行
-def AWGN_Simulation(args):
-    ldpcCoder =  LDPC_Coder_llr(args)
-    coderargs = {'codedim':ldpcCoder.codedim,
-                 'codelen':ldpcCoder.codelen,
-                 'codechk':ldpcCoder.codechk,
-                 'coderate':ldpcCoder.coderate,
-                 'row':ldpcCoder.num_row,
-                 'col':ldpcCoder.num_col}
+# def AWGN_Simulation(args):
+ldpcCoder =  LDPC_Coder_llr(args)
+coderargs = {'codedim':ldpcCoder.codedim,
+             'codelen':ldpcCoder.codelen,
+             'codechk':ldpcCoder.codechk,
+             'coderate':ldpcCoder.coderate,
+             'row':ldpcCoder.num_row,
+             'col':ldpcCoder.num_col}
 
-    source = SourceSink()
-    logf = "BerFer_AWGN.txt"
-    source.InitLog(promargs = args, codeargs = coderargs, logfile = logf)
+source = SourceSink()
+logf = "BerFer_AWGN.txt"
+source.InitLog(promargs = args, codeargs = coderargs, logfile = logf)
 
-    ## 16QAM + fading
-    M = args.M
-    modutype = args.type
-    if modutype == 'qam':
-        modem = cpy.QAMModem(M)
-    elif modutype == 'psk':
-        modem =  cpy.PSKModem(M)
-    Es = Modulator.NormFactor(mod_type = modutype, M = M,)
+## 16QAM + fading
+M = args.M
+modutype = args.type
+if modutype == 'qam':
+    modem = cpy.QAMModem(M)
+elif modutype == 'psk':
+    modem =  cpy.PSKModem(M)
+Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
-    for snr in np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr):
-        channel = AWGN(snr)
-        source.ClrCnt()
-        noise_var = 10.0 ** (-snr / 10.0)
-        print( f"\nsnr = {snr}(dB):\n")
-        while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
-            uu = source.GenerateBitStr(ldpcCoder.codedim)
-            cc = ldpcCoder.encoder(uu)
-            syms = modem.modulate(cc)
-            ## 符号能量归一化
-            syms  = syms / np.sqrt(Es)
+for snr in np.arange(args.minimum_snr, args.maximum_snr + args.increment_snr/2.0, args.increment_snr):
+    channel = AWGN(snr)
+    source.ClrCnt()
+    noise_var = 10.0 ** (-snr / 10.0)
+    print( f"\nsnr = {snr}(dB):\n")
+    while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
+        uu = source.GenerateBitStr(ldpcCoder.codedim)
+        cc = ldpcCoder.encoder(uu)
+        syms = modem.modulate(cc)
+        ## 符号能量归一化
+        syms  = syms / np.sqrt(Es)
 
-            yy = channel.forward(syms)
+        yy = channel.forward(syms)
 
-            llr_yy = Modulator.demod_awgn(copy.deepcopy(modem.constellation), yy, 'soft', Es, noise_var)
+        llr_yy = Modulator.demod_awgn(copy.deepcopy(modem.constellation), yy, 'soft', Es, noise_var)
 
-            uu_hat, iter_num = ldpcCoder.decoder_spa(llr_yy)
-            source.tot_iter += iter_num
-            source.CntErr(uu, uu_hat)
-            if source.tot_blk % 2 == 0:
-                source.PrintScreen(snr = snr)
-                # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
-        print("  *** *** *** *** ***");
-        source.PrintScreen(snr = snr);
-        print("  *** *** *** *** ***\n");
-        source.SaveToFile(filename = logf, snr = snr,)
-    return
+        uu_hat, iter_num = ldpcCoder.decoder_msa(llr_yy)
+        source.tot_iter += iter_num
+        source.CntErr(uu, uu_hat)
+        if source.tot_blk % 2 == 0:
+            source.PrintScreen(snr = snr)
+            # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
+    print("  *** *** *** *** ***");
+    source.PrintScreen(snr = snr);
+    print("  *** *** *** *** ***\n");
+    source.SaveToFile(filename = logf, snr = snr,)
+    # return
 
-AWGN_Simulation(args)
+# AWGN_Simulation(args)
 
 
 

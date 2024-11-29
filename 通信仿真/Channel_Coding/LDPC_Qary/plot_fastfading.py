@@ -70,7 +70,16 @@ fastfading_4 = np.array([[0.00, 1.00000000, 0.22974609, 0.00000000],
                         [4.10, 0.0006524815, 0.0000486007, 0.00000]
                         ])
 
-def SCMA_SISO_large():
+fastfading_2 = np.array([[0.00, 1.00000000, 0.14276693, 0.00000000],
+[0.50, 1.00000000, 0.12561198, 0.00000000],
+[1.00, 1.00000000, 0.10027344, 0.00000000],
+[1.50, 0.84269663, 0.06209950, 0.00000000],
+[2.00, 0.09804560, 0.00501832, 0.00000000],
+[2.50, 0.0001631920, 0.0000088050, 0.00000000]
+                        ])
+
+
+def QLDPC_SISO_fastfad_4user():
     lw = 2
     width = 10
     high  = 8
@@ -128,22 +137,89 @@ def SCMA_SISO_large():
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/fastfading_ser.eps")
-        out_fig.savefig("./Figures/fastfading_ser.png")
+        out_fig.savefig("./Figures/fastfading_4user_ser.eps")
+        out_fig.savefig("./Figures/fastfading_4user_ser.png")
     elif cols == 2:
-        out_fig.savefig( "./Figures/fastfading_ber.eps")
-        out_fig.savefig( "./Figures/fastfading_ber.png")
+        out_fig.savefig( "./Figures/fastfading_4user_ber.eps")
+        out_fig.savefig( "./Figures/fastfading_4user_ber.png")
 
     plt.show()
     plt.close()
     return
 
-SCMA_SISO_large()
+
+def QLDPC_SISO_fastfad_2user():
+    lw = 2
+    width = 10
+    high  = 8
+    fig, axs = plt.subplots(1, 1, figsize=(width, high), constrained_layout = True)# constrained_layout=True
+    cols = 2
+    ##=============================== LDPC =========================================
+
+    ##=========================   ===============================
+    lb = "2 User, Fastfading"
+    axs.semilogy(fastfading_2[:, 0], fastfading_2[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+
+    # #=========================  ===============================
+    # lb = "MPA, large fading, SISO, w/ LDPC"
+    # axs.semilogy(fastfading_4[:, 0], fastfading_4[:, cols], color = 'r', ls='--', lw = 3, marker = '*', ms = 16,  mew = 2, label = lb)
+    #=========================   ===============================
+    # markeredgecolor # 圆边缘的颜色
+    # markeredgewidth # 圆的线宽
+    # # 注意如果令markerfacecolor='none'，那线就会穿过圆
+    # lb = "EPA, large fading, SIMO, w/ LDPC"
+    # axs.semilogy(EPA_LPDC_SIMO_large[:, 0], EPA_LPDC_SIMO_large[:, cols], color = 'b', ls='--', lw = 3, marker = 'd', ms = 16,  mew = 2, label = lb)
+
+    ##===========================================================
+    # plt.gca().invert_xaxis()
+
+    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+    # label
+    font = {'family':'Times New Roman','style':'normal','size':35}
+    axs.set_xlabel("SNR (dB)", fontproperties=font)
+    if cols == 1:
+        axs.set_ylabel( "SER",      fontproperties = font )# , fontdict = font1
+    elif cols == 2:
+        axs.set_ylabel( "BER",      fontproperties = font )# , fontdict = font1
+
+    #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+    # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
+    font1 = {'family':'Times New Roman','style':'normal','size':18, }
+    legend1 = axs.legend(loc = 'upper right', borderaxespad = 0, edgecolor = 'black', prop = font1,)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+    bw = 2.5
+    axs.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+    axs.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+    axs.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+    axs.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+    axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 16, width = bw)
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(30) for label in labels] #刻度值字号
+
+    fontt = {'family':'Times New Roman','style':'normal','size':35 }
+    plt.suptitle("2 User, [1024, 512], regular LDPC", fontproperties = fontt, )
+    out_fig = plt.gcf()
+
+    if cols == 1:
+        out_fig.savefig("./Figures/fastfading_2user_ser.eps")
+        out_fig.savefig("./Figures/fastfading_2user_ser.png")
+    elif cols == 2:
+        out_fig.savefig( "./Figures/fastfading_2user_ber.eps")
+        out_fig.savefig( "./Figures/fastfading_2user_ber.png")
+
+    plt.show()
+    plt.close()
+    return
 
 
 
-
-
+QLDPC_SISO_fastfad_4user()
+QLDPC_SISO_fastfad_2user()
 
 
 

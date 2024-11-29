@@ -30,6 +30,7 @@ from Channel import channelConfig
 from Channel import AWGN, QuasiStaticRayleigh, FastFadingRayleigh, LargeRician
 import utility
 from QaryLDPC import QLDPC_Coding, bpsk
+from SICdetector_LDPC  import SeparatedDetectDecoding
 import Modulator
 
 utility.set_random_seed()
@@ -44,7 +45,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 3,    # User num
+    "K" : 2,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -120,6 +121,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             H = LargeRician(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         ## 编码
         uu = source.SourceBits(args.K, ldpc.codedim)
+        uu_sum = ldpc.bits2sum(uu)
 
         cc = np.array([], dtype = np.int8)
         for k in range(args.K):
@@ -136,13 +138,17 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         ## Pass Channel
         yy = ldpc.PassChannel(symbs, H, sigma2w)
 
+        ##>>>>> Joint detecting & decoding
         ## llr
         pp = ldpc.post_probability(yy, H, sigma2w)
-
         ## Decoding
-        uu_hat, iter_num = ldpc.decoder_FFTQSPA(pp, maxiter = 50)
-        source.tot_iter += iter_num
+        uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
 
+        ##>>>>>> SIC detecting Then decoding
+        uu_hat, uu_hat_sum, iter_num = SeparatedDetectDecoding(H, yy, ldpc, maxiter = 50)
+
+        source.tot_iter += iter_num
+        source.CntSumErr(uu_sum, uu_hat_sum)
         source.CntBerFer(uu, uu_hat)
         # if source.tot_blk % 2 == 0:
         source.PrintScreen(snr = sigma2db)

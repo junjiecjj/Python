@@ -21,13 +21,16 @@ class SourceSink(object):
         self.tot_bit = 0  # 总的比特数 = 总的帧数 x 信源序列长度
         self.err_blk = 0  # 总的错误帧数
         self.err_bit = 0  # 总的错误比特数 = 每帧的错误比特之和
-        self.tot_symb = 0
-        self.err_symb = 0
-        self.tot_iter = 0  #
+        self.tot_symb = 0 # 总的错误符号数
+        self.err_symb = 0 # 总的符号数
+        self.tot_iter = 0    #
         self.ave_iter = 0.0  #
+        self.err_sum = 0.0   # 多用户实数和错误数
+        self.tot_sum = 0.0   # 多用户实数和总数
         self.ber  = 0.0   # 误比特率
-        self.fer  = 0    # 误帧率
-        self.ser = 0
+        self.fer  = 0     # 误帧率
+        self.ser = 0      # 误符号率
+        self.sumerr = 0   #
         # self.InitLog()
         return
 
@@ -62,7 +65,8 @@ class SourceSink(object):
         self.err_symb = 0.0
         self.tot_iter = 0.0
         self.ave_iter = 0.0
-
+        self.err_sum = 0.0
+        self.tot_sum = 0.0
         return
 
     def CntErr(self, uu, uu_hat, accumulator = 1):
@@ -80,7 +84,6 @@ class SourceSink(object):
             self.fer = self.err_blk / self.tot_blk
         self.ave_iter =  self.tot_iter / self.tot_blk
         return
-
 
     def CntBerFer(self, uu, uu_hat, ):
         assert uu.shape == uu_hat.shape
@@ -107,14 +110,25 @@ class SourceSink(object):
         self.ser = self.err_symb / self.tot_symb
         return
 
+    def CntSumErr(self, uu_sum, uu_hat_sum, ):
+        assert uu_sum.shape == uu_hat_sum.shape
+        Len = uu_sum.shape[-1]
+        temp_err = np.sum(uu_sum != uu_hat_sum)
+
+        if temp_err > 0:
+            self.err_sum += temp_err
+        self.tot_sum += Len
+        self.sumerr = self.err_sum / self.tot_sum
+        return
+
     def SaveToFile(self, filename = "SNR_BerFer.txt", snr = '', open_type = 'a+'):
-        log = f"[{snr:.2f}, {self.fer:.8f}, {self.ber:.8f}, {self.ser:.8f}],"
+        log = f"[{snr:.2f}, {self.fer:.8f}, {self.ber:.8f}, {self.sumerr}, {self.ser:.8f}, {self.ave_iter}],"
         with open(filename, open_type) as f:
             f.write(log + "\n")
         return
 
     def PrintScreen(self, snr = '',  ):
-        print(f"  snr = {snr:.2f}(dB): tot_bits = {self.tot_bit}, err_bits = {self.err_bit}, tot_blk = {self.tot_blk}, err_blk = {self.err_blk}, iter = {self.ave_iter:.3} fer = {self.fer:.10f}, ber = {self.ber:.10f}")
+        print(f"  snr = {snr:.2f}(dB):iter = {self.ave_iter:.3}, bits = {self.err_bit}/{self.tot_bit}, blk = {self.err_blk}/{self.tot_blk}, sumerr = {self.sumerr:.6f}={self.err_sum}/{self.tot_sum}, fer = {self.fer:.10f}, ber = {self.ber:.10f}")
         return
 
 
