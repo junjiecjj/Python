@@ -19,7 +19,7 @@ def BPSK(bins):
     c = 1 - 2*bins
     return c
 
-def SeparatedDecoding_BlockFading(H, yy, P, noise_var, Es, modem, Modulator, ldpc, maxiter = 50):
+def SeparatedDecoding_BlockFading(H, yy, P, noise_var, Es, modem, ldpc, maxiter = 50):
     yy0 = copy.deepcopy(yy)
     K, frameLen = H.shape
     H0 = H[:,0]
@@ -47,7 +47,7 @@ def SeparatedDecoding_BlockFading(H, yy, P, noise_var, Es, modem, Modulator, ldp
     return uu_hat, uu_sum, tot_iter/K
 
 
-def SeparatedDecoding_FastFading(H, yy, P, noise_var, Es, modem, Modulator, ldpc, maxiter = 50):
+def SeparatedDecoding_FastFading(H, yy, P, noise_var, Es, modem, ldpc, maxiter = 50):
     YY = copy.deepcopy(yy)
     K, frameLen = H.shape
     uu_hat = np.zeros((K, ldpc.codedim), dtype = np.int8)

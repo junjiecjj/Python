@@ -166,6 +166,10 @@ class QLDPC_Coding(object):
     def post_probability(self, yy, H, noise_var):
         pp = np.exp(-np.abs(yy - bpsk(self.qbits) @ H)**2 /(2 * noise_var))
         pp = pp/ pp.sum(axis = 0)
+
+        mean = pp[[1,2]].mean(axis = 0)
+        pp[[1,2]] = mean
+
         pp = np.clip(pp, self.smallprob, 1 - self.smallprob)
         return pp
 
@@ -416,7 +420,6 @@ class QLDPC_Coding(object):
         outputSum = np.array(self.ordered_sum)[po.argmax(axis = 0)]
         return uu_hat, outputSum, iter_num + 1
 
-
     ## 对数域的和积算法, 二元域
     def decoder_spa(self, yy_llr):
         self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
@@ -543,7 +546,6 @@ class QLDPC_Coding(object):
                     for r in row_in:
                         Mes += self.MC2V[r, col]
                     self.MV2C[row, col] = Mes +  yy_llr[col]
-
         return uu_hat, iter_num + 1
 
 

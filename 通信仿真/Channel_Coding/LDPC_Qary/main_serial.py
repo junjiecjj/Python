@@ -66,7 +66,7 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'block-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
+    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
     }
     args = argparse.Namespace(**ldpc_args)
     return args
@@ -83,8 +83,8 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "BER_Seperate_FastFading.txt"
-# logf = "tmp1.txt"
+# logf = "BER_Seperate_FastFading.txt"
+logf = "BER_messup.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -136,14 +136,15 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         yy = ldpc.PassChannel(symbs, H, sigma2w)
 
         ##>>>>> Joint detecting & decoding
-        # ## llr
-        # pp = ldpc.post_probability(yy, H, sigma2w)
-        # ## Decoding
-        # uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
+        ## llr
+        pp = ldpc.post_probability(yy, H, sigma2w)
+        ## Decoding
+        uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
 
         ##>>>>>> SIC detecting Then decoding
-        P = [Es] * args.K
-        uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_FastFading(H, yy, P, sigma2w, Es, modem, Modulator, ldpc, maxiter = 50)
+        # P = [Es] * args.K
+        # uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_FastFading(H, yy, P, sigma2w, Es, modem, ldpc, maxiter = 50)
+        # uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_BlockFading(H, yy, P, sigma2w, Es, modem, ldpc, maxiter = 50)
 
         source.tot_iter += iter_num
         source.CntSumErr(uu_sum, uu_hat_sum)
