@@ -44,10 +44,10 @@ from torch.utils.data import TensorDataset
 import torch
 from torch.utils.data import DataLoader
 
-a = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9]])
+# a = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 2, 3], [4, 5, 6], [7, 8, 9]])
 a = torch.arange(36).reshape(12, 3)
 
-b = torch.tensor([44, 55, 66, 44, 55, 66, 44, 55, 66, 44, 55, 66])
+# b = torch.tensor([44, 55, 66, 44, 55, 66, 44, 55, 66, 44, 55, 66])
 b = torch.arange(44, 44+12)
 train_ids = TensorDataset(a, b)
 # 切片输出
@@ -58,10 +58,11 @@ for x_train, y_label in train_ids:
     print(x_train, y_label)
 # DataLoader进行数据封装
 print('=' * 80)
-train_loader = DataLoader(dataset=train_ids, batch_size=4, shuffle=True)
-for i, data in enumerate(train_loader):  # 注意enumerate返回值有两个,一个是序号，一个是数据（包含训练数据和标签）
-    x_data, label = data
-    print(f"batch {i}: \n  x_data:{x_data}\n  label: {label}")
+train_loader = DataLoader(dataset=train_ids, batch_size = 4, shuffle = True)
+for e in range(2):
+    for i, data in enumerate(train_loader):  # 注意enumerate返回值有两个,一个是序号，一个是数据（包含训练数据和标签）
+        x_data, label = data
+        print(f"batch {i}: \n  x_data:{x_data}\n  label: {label}")
 
 
 
@@ -192,7 +193,6 @@ local_dt_dict = {}
 for user_id in range (num_clients):
     local_dt_dict[user_id] = DatasetSplit(train_set, dict_users[user_id])
 
-
 #================
 train_loader_dict = {}
 for user_id in range (num_clients):
@@ -203,8 +203,6 @@ for batch, (X, y) in enumerate(train_loader_dict[1]):
     print(f"X.shape = {X.shape}, y.shape = {y.shape}")   # X的每个元素都是 0 - 1的.
     if batch ==  0:
         break
-
-
 
 
 ## (2) IID

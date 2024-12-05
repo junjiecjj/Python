@@ -11,7 +11,7 @@ import copy
 
 #==============================================================================================
 #  https://www.yiibai.com/pytorch/pytorch_implementing_first_neural_network.html
-import torch 
+import torch
 import torch.nn as nn
 
 
@@ -23,7 +23,7 @@ n_in, n_h, n_out, batch_size = 10, 5, 1, 10
 
 # Create dummy input and target tensors (data)
 x = torch.randn(batch_size, n_in)
-y = torch.tensor([[1.0], [0.0], [0.0], 
+y = torch.tensor([[1.0], [0.0], [0.0],
 [1.0], [1.0], [1.0], [0.0], [0.0], [1.0], [1.0]])
 
 
@@ -120,18 +120,6 @@ plt.show()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # https://zhuanlan.zhihu.com/p/340379189?utm_id=0
 
 from __future__ import print_function
@@ -176,14 +164,10 @@ class Net(nn.Module):
         # print("after log_softmax: {}".format(output.shape))
         return output
 
-
-
-
-
 def train(args, model, device, train_loader, optimizer, epoch):
     # 设置为train模式
     model.train()
-    
+
     # 分批次读入数据
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -204,8 +188,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
             if args.dry_run:
                 break
 
-
-
 def test(model, device, test_loader):
     # 设置为test模式
     model.eval()
@@ -225,8 +207,6 @@ def test(model, device, test_loader):
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
-
-
 
 def main():
     # Training settings

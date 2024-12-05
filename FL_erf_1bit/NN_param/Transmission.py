@@ -28,7 +28,7 @@ def FedAvg_grad(w_glob, grad, device):
     return w_return
 
 # 1-bit error-free transmission
-def OneBitNR(message_lst, args, ):
+def OneBitNR(message_lst, args, normfactor):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -50,7 +50,7 @@ def OneBitNR(message_lst, args, ):
     sz = np.where(symbols == 0)[0].shape
     symbols[np.where(symbols == 0)] = np.random.choice([-1, 1], size = sz, replace = True, p = [0.5, 0.5] )
 
-    symbols_hat = copy.deepcopy(symbols) / (2**8)
+    symbols_hat = copy.deepcopy(symbols) / normfactor
     mess_recov = []
     for k in range(len(message_lst)):
         symbolsK = symbols_hat[k,:]
@@ -66,7 +66,7 @@ def OneBitNR(message_lst, args, ):
     return mess_recov
 
 # 1-bit error-free transmission, stochastic rounding (SR),
-def OneBitSR(message_lst, args, ):
+def OneBitSR(message_lst, args, normfactor):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 

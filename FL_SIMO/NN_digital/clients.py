@@ -3,17 +3,12 @@
 
 
 
-
-
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on 2023/08/19
 @author: Junjie Chen
 """
-
-
 
 
 import numpy as np
@@ -31,7 +26,7 @@ class Client(object):
         self.id               = client_name
         self.datasize         = len(data)
         # args.local_bs         = int(self.datasize/2)
-        self.trainloader      = DataLoader(data, batch_size = args.local_bs, shuffle = True)
+        self.trainloader      = data  # DataLoader(data, batch_size = args.local_bs, shuffle = True)
         self.model            = model
         self.num_local_update = args.local_up
         if args.optimizer == 'sgd':
@@ -127,9 +122,7 @@ class Client(object):
         for key in copyw.keys():
             message[key] = copyw[key] - init_weight[key]
         return message
-        # for param in self.model.state_dict():
-        #     model_diff[param] = self.model.state_dict()[param] - model_diff[param]
-        # return model_diff
+
 
 def GenClientsGroup(args, local_dt_dict, model):
     ClientsGroup = {}

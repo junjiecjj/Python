@@ -50,21 +50,22 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False     # True, False
-args.model = "CNN"
+args.IID = True     # True, False
+args.dataset = "CIFAR10"  #  MNIST,  CIFAR10
 cur_lr = args.lr = 0.01
-args.num_of_clients = 100
+args.num_of_clients = 50
 args.active_client = 10
 args.case = 'diff'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = True     # True, False
-args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
-args.local_bs = 64
+args.quantway = 'mimo'    # 'nr',  'mimo', 'ldpc'
+args.local_bs = 128
 args.local_up = 1
-args.local_epoch = 2
+args.local_epoch = 5
 args.snr_dB = None
 args.norm_fact = 2**8
+
 
 ## seed
 args.seed = 1
@@ -73,7 +74,7 @@ set_printoption(5)
 
 ##>>>>>>>>>>>>>>>>> channel
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args)
-args.sigmaK2 = -60                        # dBm
+args.sigmaK2 = -50                        # dBm
 sigmaK2 = 10**(args.sigmaK2/10.0)/1000    # 噪声功率
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -81,8 +82,11 @@ sigmaK2 = 10**(args.sigmaK2/10.0)/1000    # 噪声功率
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
-# global_model = models.Mnist_1MLP().to(args.device)
-global_model = models.CNNMnist(1, 10, True).to(args.device)
+if args.dataset.lower() == "MNIST":
+    # global_model = models.Mnist_1MLP().to(args.device)
+    global_model = models.CNNMnist(1, 10, True).to(args.device)
+else:
+    global_model = models.CNNCifar1(3, 10,).to(args.device)
 global_weight = global_model.state_dict()
 ##============================= 完成以上准备工作 ================================#
 Users = GenClientsGroup(args, local_dt_dict, copy.deepcopy(global_model) )
@@ -113,7 +117,6 @@ for comm_round in range(args.num_comm):
         for name in candidates:
             message = Users[name].local_update_gradient1(copy.deepcopy(global_weight), cur_lr)
             message_lst.append(message)
-
         if args.quantize == True:
             if args.quantway == 'nr':
                 print(f"  {args.case} -> quantize -> NR -> {args.norm_fact}")
@@ -143,10 +146,10 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = OneBitNR(message_lst, args, normfactor = args.norm_fact)
             elif args.quantway == 'mimo':
                 print(f"  {args.case} -> quantize -> MIMO -> {args.norm_fact}")
-                mess_recv, err  =  OneBit_SINR(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBit_NormZF(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             elif args.quantway == 'ldpc':
                 print(f"  {args.case} -> quantize -> LDPC -> {args.norm_fact}")
-                mess_recv, err  =  OneBit_LPDC_SINR(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
+                mess_recv, err  =  OneBit_LDPC_NormZF(message_lst, args, copy.deepcopy(h), snr_dB = args.snr_dB, normfactor = args.norm_fact)
             server.aggregate_diff_erf(mess_recv)
         else:
             print(f"  {args.case} -> without quantization")
@@ -156,7 +159,7 @@ for comm_round in range(args.num_comm):
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
     # if (comm_round + 1) % 2 == 0:
-    print(f"  [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f}, {err}]")
+    print(f"  [  round = {comm_round+1}, lr = {cur_lr:.3f}, train los = {test_los:.3f}, test acc = {acc:.3f}, ber = {err}]")
     recorder.assign([acc, test_los, cur_lr, ])
     # recorder.plot(ckp.savedir, args)
     # if (comm_round + 1) % 20 == 0:

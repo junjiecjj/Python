@@ -588,21 +588,19 @@ class TxtDataset(Dataset):#这是一个Dataset子类
         return idx
 
 
-Txt=TxtDataset()
+Txt  = TxtDataset()
 print(f"Txt[1] = {Txt[1]}")
 print(f"Txt.__len__() = {Txt.__len__()}")
 
 
 
-test_loader = DataLoader(Txt, batch_size=2, shuffle=False,
-                          num_workers=4)
+test_loader = DataLoader(Txt, batch_size=2, shuffle=False, num_workers=4)
 for i,traindata in enumerate(test_loader):
     print('i:',i)
     Data,Label=traindata
     print('data:',Data)
     print('Label:',Label)
 #这里的enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中
-
 
 
 #======================================================================================================
@@ -625,16 +623,14 @@ class GaussDataset(Dataset):#这是一个Dataset子类
         return idx % len(self.Data)
         return idx
 
-
-Txt=TxtDataset()
+Txt = TxtDataset()
 print(f"Txt[1] = {Txt[1]}")
 print(f"Txt.__len__() = {Txt.__len__()}")
 
 
 
-test_loader = DataLoader(Txt, batch_size=2, shuffle=False,
-                          num_workers=4)
-for i,traindata in enumerate(test_loader):
+test_loader = DataLoader(Txt, batch_size=2, shuffle=False, num_workers=4)
+for i, traindata in enumerate(test_loader):
     print('i:',i)
     Data,Label=traindata
     print('data:',Data)

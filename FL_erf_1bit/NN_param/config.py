@@ -26,8 +26,8 @@ def args_parser():
     parser.add_argument('--seed',   type = int, default = 9999,      help = 'random seed')
 
     # 模型和数据
-    parser.add_argument('--dataset', type=str, default = 'MNIST', help = "name of dataset")      ## 所用的数据集
-    parser.add_argument('--dir_data', type = str, default = home+'/ErfFL/Dataset', help = 'dataset directory')
+    parser.add_argument('--dataset', type=str, default = 'cifar10', help = "name of dataset")      ## 所用的数据集
+    parser.add_argument('--dir_data', type = str, default = home+'/ErfFL/Dataset/CIFAR10/', help = 'dataset directory')
     parser.add_argument('--IID', type = bool, default = False, help = 'Default set to IID. Set to 0 for non-IID.') ## 数据是否 IID
 
     ## 联邦学习相关参数

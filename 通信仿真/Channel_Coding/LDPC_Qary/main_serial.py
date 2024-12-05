@@ -74,7 +74,7 @@ def parameters():
 args = parameters()
 
 # def QaryLDPC(args, ):
-ldpc =  QLDPC_Coding(args)
+ldpc = QLDPC_Coding(args)
 coderargs = {'codedim':ldpc.codedim,
              'codelen':ldpc.codelen,
              'codechk':ldpc.codechk,
@@ -84,7 +84,7 @@ coderargs = {'codedim':ldpc.codedim,
 
 source = SourceSink()
 # logf = "BER_Seperate_FastFading.txt"
-logf = "BER_messup.txt"
+logf = "BER_messup1.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -137,7 +137,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
 
         ##>>>>> Joint detecting & decoding
         ## llr
-        pp = ldpc.post_probability(yy, H, sigma2w)
+        pp = ldpc.post_probability_mess(yy, H, sigma2w)
         ## Decoding
         uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
 

@@ -30,10 +30,10 @@ def args_parser():
     "local_up": 1,
     "local_bs": 128,
     "test_bs" : 128,
-    "num_of_clients" : 100,
+    "num_of_clients" : 50,
     "active_client" : 10,
     "num_comm" : 1000,
-    "save_path" : home + '/DigitalFL/CNN_SINR/',
+    "save_path" : home + '/DigitalFL/CNN_NormZF/',
     "lr" : 0.01,
 
 

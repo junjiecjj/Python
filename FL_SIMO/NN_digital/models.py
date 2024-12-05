@@ -127,129 +127,53 @@ class CNNMnist(nn.Module):
 # data_valum = np.sum([param.numel() for param in model.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
-# sum = 0
-# for key, var in model.named_parameters():
-#     sum += var.numel()
+class CNNCifar(nn.Module):
+    def __init__(self, input_channels = 3, output_channels = 10):
+        super(CNNCifar, self).__init__()
+        self.conv1 = nn.Conv2d(input_channels, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, output_channels)
 
-# # data_valum = np.sum([param.numel() for param in model.named_parameters().values()])
-# print(f"Data volume = {sum} (floating point number) ")
-
-# for key, var in model.state_dict().items():
-#     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()} " )
-
-
-# loss_fn = nn.CrossEntropyLoss()
-# optimizer = optim.SGD(model.parameters(), lr=1e-1)  # 传入的是所有的参数
-# x = torch.randn((1, 1, 28, 28))
-# label = torch.randint(0, 10,[1]).long()
-
-# for key, var in model.named_parameters():
-#     print(f"{key:<10}, {var.is_leaf}, {var.size()}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad}")
-
-
-# for key, var in model.named_parameters():
-#     print(f"0: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-
-# optimizer.zero_grad()
-# for key, var in model.named_parameters():
-#     print(f"2: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-# print("\n\n")
-
-# output = model(x)
-# #print(f"epoch = {epoch}, x.shape = {x.shape}, output.shape = {output.shape}")
-
-# loss = loss_fn(output, label)
-# for key, var in model.named_parameters():
-#     print(f"1: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-# print("\n\n")
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 5 * 5)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
 
-# # 计算每个参数的梯度
-# loss.backward()
-# for key, var in model.named_parameters():
-#     print(f"3: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-# print("\n\n")
-
-# ##梯度剪裁
-# torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
-# for key, var in model.named_parameters():
-#     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-# print("\n\n")
-
-# # 更新每个可学习参数的值
-# optimizer.step()
-# for key, var in model.named_parameters():
-#     print(f"5: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
-# print("\n\n")
+# # # # ## Data volume = 61706 (floating point number)
+# model = CNNCifar(1, 10, )
+# data_valum = np.sum([param.numel() for param in model.state_dict().values()])
+# print(f"Data volume = {data_valum} (floating point number) ")
 
 
-# # for key, var in model.state_dict().items():
-# #     print(f"4: {key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var} " )
-# # for key, var in model.named_parameters():
-#     # print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}, {var.grad} \n  {var.data} ")
+class CNNCifar1(nn.Module):
+     def __init__(self, input_channels = 3, output_channels = 10):
+         super(CNNCifar1, self).__init__()
+         self.conv1 = nn.Conv2d(3, 6, 5)
+         self.conv2 = nn.Conv2d(6, 16, 5)
+         self.fc1 = nn.Linear(16*5*5, 120)
+         self.fc2 = nn.Linear(120, 84)
+         self.fc3 = nn.Linear(84, 10)
+     def forward(self,x):
+         x = F.max_pool2d(F.relu(self.conv1(x)),(2, 2))
+         x = F.max_pool2d(F.relu(self.conv2(x)), 2)
+         x = x.view(x.size()[0],-1)
+         x = F.relu(self.fc1(x))
+         x = F.relu(self.fc2(x))
+         x = self.fc3(x)
+         return  x
 
-# model = CNNMnist(1, 10, batch_norm = True)
-
-# D = np.sum([param.numel() for param in model.state_dict().values()])
-# D1 = 0
-# for key, var in model.named_parameters():
-#     D1 += var.numel()
-
-# vec = np.array([], dtype = np.float32)
-
-# key_lst = []
-# info_lst = []
-
-# for key, val in model.state_dict().items():
-#     key_lst.append(key)
-
-#     info_lst.append([key, val.size(), val.numel(), val.dtype])
-#     vec = np.hstack((vec,  val.detach().cpu().numpy().flatten()))
-
-# for key, val in model.named_parameters():
-#     key_lst.append(key)
-#     # shape_lst.append(np.array(val.size()))
-#     # size_lst.append(val.numel())
-
-#     info_lst.append({key:[np.array(val.size()), var.numel()]})
-#     vec = np.hstack((vec,  val.detach().cpu().numpy().flatten()))
-
-# param = {}
-# start = 0
-# end = 0
-# for info in info_lst:
-#     end += info[2]
-#     param[info[0]] = torch.tensor(vec[start:end].reshape(info[1]), dtype = info[3])
-#     start += info[2]
-
-# ###############################
-# model = CNNMnist(1, 10, batch_norm = True)
-
-# key_lst = []
-# info_lst = []
-# for key, val in model.state_dict().items():
-#     key_lst.append(key)
-#     info_lst.append([key, val.size(), val.numel(), val.dtype])
-
-# vec = np.array([], dtype = np.float32)
-# for key in key_lst:
-#     vec = np.hstack((vec,  model.state_dict()[key].detach().cpu().numpy().flatten()))
-
-# param = {}
-# start = 0
-# end = 0
-# for info in info_lst:
-#     end += info[2]
-#     param[info[0]] = torch.tensor(vec[start:end].reshape(info[1]), dtype = info[3])
-#     start += info[2]
-
-
-
-
-
-
-
-
+# # # # ## Data volume = 62006 (floating point number)
+# model = CNNCifar1( )
+# data_valum = np.sum([param.numel() for param in model.state_dict().values()])
+# print(f"Data volume = {data_valum} (floating point number) ")
 
 
 

@@ -122,7 +122,6 @@ trainset =  datasets.CIFAR10(root = root, # 表示 MNIST 数据的加载的目�
                                       download = True, # 表示是否自动下载 MNIST 数据集
                                       transform = transform) # 表示是否需要对数据进行预处理，none为不进行预处理
 
-
 testset =  datasets.CIFAR10(root = root,
                                       train = False,
                                       download = True,
@@ -133,7 +132,7 @@ if sys.platform.startswith('win'):
 else:
     num_workers = 0
 
-train_iter = DataLoader(trainset, batch_size=batch_size, shuffle = False,  )
+train_iter = DataLoader(trainset, batch_size=batch_size, shuffle = False, )
 test_iter = DataLoader(testset, batch_size=batch_size, shuffle = False, )
 
 print(f"len(trainset) = {len(trainset)}, len(testset) = {len(testset)}, len(train_iter) = {len(train_iter)}, len(test_iter) = {len(test_iter)}")
@@ -178,8 +177,8 @@ print(f"len(testset.targets) = {len(testset.targets)}")
 # plt.title('%i'%train_data.train_labels[2])
 # plt.show()
 
-# for epoch, (X, y) in enumerate(train_iter):
-    # print(f"X.shape = {X.shape}, y.shape = {y.shape}, ")   # X的每个元素都是 0 - 1的.
+for epoch, (X, y) in enumerate(train_iter):
+    print(f"X.shape = {X.shape}, y.shape = {y.shape}, ")   # X的每个元素都是 0 - 1的.
     # draw_images1(tmpout, X,  epoch, 1, H = 32, W = 32, examples = 28,  dim = (5, 5), figsize = (10, 10))
 
 

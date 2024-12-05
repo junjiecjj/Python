@@ -70,7 +70,7 @@ class QLDPC_Coding(object):
         return
 
     def Init(self, ):
-        real_ary = bpsk(self.qbits) # .astype(np.float32)
+        real_ary = BPSK(self.qbits) # .astype(np.float32)
         rowsum = np.unique(real_ary.sum(axis = 1))
         self.ordered_sum = sorted(rowsum)
 
@@ -153,23 +153,20 @@ class QLDPC_Coding(object):
         yy = yy.sum(axis  = 0) + noise
         return yy
 
-    def post_probability1(self, yy, H, noise_var):
-        frame_len = yy.shape[-1]
-        pp = np.zeros((self.q, frame_len))
-        for f in range(frame_len):
-            for i, vec in enumerate(self.qbits):
-                pp[i, f] = np.exp(-np.abs(yy[f] - H[:,f] @ bpsk(vec))**2/(2 * noise_var)) # / (np.sqrt(2 * np.pi * noise_var))
+    def post_probability_mess(self, yy, H, noise_var):
+        pp = np.exp(-np.abs(yy - BPSK(self.qbits) @ H)**2 /(2 * noise_var))
         pp = pp/ pp.sum(axis = 0)
-        pp = np.clip(pp, self.smallprob, 1-self.smallprob)
+
+        tmp = copy.deepcopy(pp[1,:])
+        pp[1,:] = pp[2,:]
+        pp[2,:] = tmp
+
+        pp = np.clip(pp, self.smallprob, 1 - self.smallprob)
         return pp
 
     def post_probability(self, yy, H, noise_var):
-        pp = np.exp(-np.abs(yy - bpsk(self.qbits) @ H)**2 /(2 * noise_var))
+        pp = np.exp(-np.abs(yy - BPSK(self.qbits) @ H)**2 /(2 * noise_var))
         pp = pp/ pp.sum(axis = 0)
-
-        mean = pp[[1,2]].mean(axis = 0)
-        pp[[1,2]] = mean
-
         pp = np.clip(pp, self.smallprob, 1 - self.smallprob)
         return pp
 
