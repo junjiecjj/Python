@@ -305,9 +305,8 @@ def SISO_2user():
     #=========================   ===============================
 
     lb = "2 User, Fastfading, Joint, mess"
-    axs.semilogy(Joint_fastfading_2_mess2[:, 0], Joint_fastfading_2_mess2[:, cols], color = 'k', ls='--', lw = 3, marker = 'd', mfc = 'none', ms = 16,  mew = 2, label = lb)
+    # axs.semilogy(Joint_fastfading_2_mess2[:, 0], Joint_fastfading_2_mess2[:, cols], color = 'k', ls='--', lw = 3, marker = 'd', mfc = 'none', ms = 16,  mew = 2, label = lb)
     #=========================   ===============================
-
 
     ##===========================================================
     # plt.gca().invert_xaxis()
@@ -341,19 +340,19 @@ def SISO_2user():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(30) for label in labels] #刻度值字号
 
-    fontt = {'family':'Times New Roman','style':'normal','size':35 }
-    plt.suptitle("2 User, BPSK, [1024, 512], regular LDPC", fontproperties = fontt, )
+    # fontt = {'family':'Times New Roman','style':'normal','size':35 }
+    # plt.suptitle("2 User, BPSK, [1024, 512], regular LDPC", fontproperties = fontt, )
     out_fig = plt.gcf()
 
     if cols == 1:
         out_fig.savefig("./Figures/2user_fer.eps")
-        out_fig.savefig("./Figures/2user_fer.png")
+        out_fig.savefig("./Figures/2user_fer.pdf")
     elif cols == 2:
         out_fig.savefig( "./Figures/2user_ber.eps")
-        out_fig.savefig( "./Figures/2user_ber.png")
+        out_fig.savefig( "./Figures/2user_ber.pdf")
     elif cols == 3:
         out_fig.savefig( "./Figures/2user_aggerr.eps")
-        out_fig.savefig( "./Figures/2user_aggerr.png")
+        out_fig.savefig( "./Figures/2user_aggerr.pdf")
     plt.show()
     plt.close()
     return
