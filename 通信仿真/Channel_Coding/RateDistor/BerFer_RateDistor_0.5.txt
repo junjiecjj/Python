@@ -1,0 +1,390 @@
+#=====================================================================================
+                      2024-12-12-09:37:14
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:15:16
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:19:09
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:22:52
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:44:39
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:46:13
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:46:24
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:47:29
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:48:26
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:50:18
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:52:22
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:54:43
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-11:55:32
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-13:15:34
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-12-13:16:03
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 2                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 500                                     
+maximum_block_number     : 1000000                                 
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : qam                                     
+M                        : 16                                      
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================

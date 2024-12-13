@@ -6,6 +6,78 @@ Created on Thu Nov 28 15:44:19 2024
 @author: jack
 """
 
+
+
+
+# Python 两个list交集、并集、差集的方法
+
+############ 二、交集的方法
+# 方法一：使用set类型的intersection()方法
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+
+set1 = set(list1)
+set2 = set(list2)
+
+intersection = set1.intersection(set2)
+result = list(intersection)
+
+print(result)
+
+# 方法二：使用列表推导式
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+
+intersection = [x for x in list1 if x in list2]
+
+print(intersection)
+
+
+######## 三、并集的方法
+# 方法一：使用set类型的union()方法
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+
+set1 = set(list1)
+set2 = set(list2)
+
+union = set1.union(set2)
+result = list(union)
+
+print(result)
+
+# 方法二：使用+操作符和列表推导式
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+
+union = list1 + [x for x in list2 if x not in list1]
+
+print(union)
+
+########## 四、差集的方法
+# 方法一：使用set类型的difference()方法
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+
+set1 = set(list1)
+set2 = set(list2)
+
+difference = set1.difference(set2)
+result = list(difference)
+
+print(result)
+
+# 方法二：使用列表推导式
+list1 = [1, 2, 3, 4, 5]
+list2 = [4, 5, 6, 7, 8]
+
+difference = [x for x in list1 if x not in list2]
+
+print(difference)
+
+
+
+
 import numpy as np
 
 # numpy 中有以下类似 set 集合的操作：

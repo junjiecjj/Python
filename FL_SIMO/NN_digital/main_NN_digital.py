@@ -51,14 +51,14 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 args = args_parser()
 
 args.IID = True     # True, False
-args.dataset = "CIFAR10"  #  MNIST,  CIFAR10
+args.dataset = "MNIST"  #  MNIST,  CIFAR10
 cur_lr = args.lr = 0.01
-args.num_of_clients = 50
-args.active_client = 10
-args.case = 'diff'        # "grad", "diff"
+args.num_of_clients = 10
+args.active_client = 4
+args.case = 'grad'        # "grad", "diff"
 args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
-args.quantize = True     # True, False
+args.quantize = False     # True, False
 args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
 args.local_bs = 128
 args.local_up = 1

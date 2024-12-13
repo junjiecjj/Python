@@ -493,7 +493,6 @@ class QLDPC_Coding(object):
         for col in self.SetCols.keys():
             for row in self.SetCols[col]:
                 self.MV2C[row, col] = yy_llr[col]
-
         ## 开始迭代，对数域的消息传播,
         for iter_num in range(self.max_iter):
             ##==========================================================
@@ -506,7 +505,6 @@ class QLDPC_Coding(object):
                     sign_list = [np.sign(self.MV2C[row, i]) for i in self.SetRows[row] if i != col]
                     Sign = reduce(lambda a,b: a*b, sign_list)
                     self.MC2V[row, col] = Sign * Min * alpha
-
             ##=============================================================================
             ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
             ##=============================================================================
@@ -516,7 +514,6 @@ class QLDPC_Coding(object):
                 for row in self.SetCols[col]:
                     Mes += self.MC2V[row, col]
                 dec_llr[col] = Mes + yy_llr[col]
-
             # 对等号节点判决
             cc_hat.fill(0)
             cc_hat[np.where(dec_llr < 0)] = 1

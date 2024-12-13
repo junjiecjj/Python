@@ -45,7 +45,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 4,    # User num
+    "K" : 6,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -83,8 +83,8 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-# logf = "BER_Joint_FastFading.txt"
-logf = "BER_Seperate_FastFading.txt"
+logf = "BER_Joint_awgn.txt"
+# logf = "BER_Seperate_FastFading.txt"
 # logf = "BER_messup1.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
@@ -100,7 +100,7 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 # modem.plot_constellation("BPSK")
 ## 遍历SNR
-sigma2dB = np.arange(0, 12, 0.5)  # dB
+sigma2dB = np.arange(6.5, 21, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
 # sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率w
@@ -137,22 +137,24 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         yy = ldpc.PassChannel(symbs, H, sigma2w)
 
         ##>>>>> Joint detecting & decoding
-        # ## llr
-        # pp = ldpc.post_probability(yy, H, sigma2w)
-        # ## Decoding
-        # uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
+        ## llr
+        pp = ldpc.post_probability(yy, H, sigma2w)
+        ## Decoding
+        uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
 
         ##>>>>>> SIC detecting Then decoding
-        P = [Es] * args.K
-        uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_FastFading(H, yy, P, sigma2w, Es, modem, ldpc, maxiter = 50)
+        # P = [Es] * args.K
+        # uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_FastFading(H, yy, P, sigma2w, Es, modem, ldpc, maxiter = 50)
         # uu_hat, uu_hat_sum, iter_num = SeparatedDecoding_BlockFading(H, yy, P, sigma2w, Es, modem, ldpc, maxiter = 50)
 
         source.tot_iter += iter_num
         source.CntSumErr(uu_sum, uu_hat_sum)
+        # break
         source.CntBerFer(uu, uu_hat)
         # if source.tot_blk % 2 == 0:
         source.PrintScreen(snr = sigma2db)
             # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
+    # break
     print("  *** *** *** *** ***")
     source.PrintScreen(snr = sigma2db)
     print("  *** *** *** *** ***\n")

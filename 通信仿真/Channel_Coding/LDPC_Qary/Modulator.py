@@ -53,7 +53,6 @@ def demod_blockfading(constellation, input_symbols, demod_type, h = None, Es = N
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-
     ##
     if demod_type == 'hard':
         index_list = np.abs(input_symbols - h * constellation[:, None]).argmin(0)
@@ -70,12 +69,15 @@ def demod_blockfading(constellation, input_symbols, demod_type, h = None, Es = N
                         llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
                     else:
                         llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
-                demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
+
+                try:#
+                    demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
+                except:
+                    print(f"{llr_num}/{llr_den}")
+                    quit()
     else:
         raise ValueError('demod_type must be "hard" or "soft"')
-
     return demod_bits
-
 
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
 def demod_fastfading(constellation, input_symbols, demod_type, H, Es = None, noise_var = 0):
@@ -93,18 +95,18 @@ def demod_fastfading(constellation, input_symbols, demod_type, H, Es = None, noi
         for i in np.arange(len(input_symbols)):
             current_symbol = input_symbols[i]
             h = H[i]
+            sigma2 = noise_var[i]
             for bit_index in np.arange(bitsPerSym):
                 llr_num = 0
                 llr_den = 0
                 for bit_value, symbol in enumerate(h * constellation):
                     if (bit_value >> bit_index) & 1:
-                        llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                        llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / sigma2)
                     else:
-                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / sigma2)
                 demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
     else:
         raise ValueError('demod_type must be "hard" or "soft"')
-
     return demod_bits
 
 
@@ -178,44 +180,6 @@ def plot_constellation(constellation = "None", map_table = "None", Modulation_ty
     plt.show()
 
     return
-
-
-def qam8_32_mod(M):
-    """
-        Generate M-QAM mapping table and demapping table.
-
-        Parameters
-        ----------
-        M: int. Modulation order, must be a positive integer power of 2 and a perfect square number, or one of 8 and 32.
-        Returns
-        -------
-        map_table: dict. M-QAM mapping table.
-        demap_table: dict.M-QAM demapping table
-    """
-    sqrtM = int(math.sqrt(M))
-    assert (sqrtM ** 2 == M and M & (M-1) == 0) or (M == 32) or (M == 8), "M must be a positive integer power of 2 and a perfect square number, or one of 8 and 32."
-    if M == 8:
-        graycode = np.array([0, 1, 3, 7, 5, 4, 6, 2])
-        constellation = [(-2-2j), (-2+0j), (-2+2j), (0+2j), (2+2j), (2+0j), (2-2j), (0-2j)]
-    elif M == 32:
-        temp1 = np.bitwise_xor(np.arange(8), np.right_shift(np.arange(8), 1))
-        temp2 = np.bitwise_xor(np.arange(4), np.right_shift(np.arange(4), 1))
-        graycode = np.zeros(M, dtype=int)
-        num = 0
-        for i in temp1:
-            for j in temp2:
-                graycode[num] = 4 * i + j
-                num += 1
-        constellation = [(-7 - 3j) + 2 * (x + y * 1j) for x, y in np.ndindex(8, 4)]
-    map_table = dict(zip(graycode, constellation))
-    demap_table = {v: k for k, v in map_table.items()}
-    return map_table, demap_table
-
-
-
-
-
-
 
 
 

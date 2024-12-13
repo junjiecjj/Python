@@ -123,7 +123,6 @@ class LDPC_Coder_llr(object):
         self.SetCols = {f"{j}": set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
         return
 
-
     ## 对数域的和积算法
     def decoder_spa1(self, yy_llr):
         iter_num = 0
