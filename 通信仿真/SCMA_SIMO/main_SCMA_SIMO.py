@@ -55,7 +55,7 @@ def parameters():
     "Nit" : 6,
     "Nr" : 4,
     ## channel
-    'channel_type': 'large + quasi-static rician', # 'AWGN', 'quasi-static rayleigh', 'fast fading rayleigh', 'large + quasi-static rician'
+    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -103,11 +103,11 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         # print(f"{source.tot_blk}")
         if args.channel_type == 'AWGN':
             H = AWGN(K, args.Nr, J, frame_len)
-        elif args.channel_type == 'quasi-static rayleigh':
+        elif args.channel_type == 'block-fading':
             H = QuasiStaticRayleigh(K, args.Nr, J, frame_len)
-        elif args.channel_type == 'fast fading rayleigh':
+        elif args.channel_type == 'fast-fading':
             H = FastFadingRayleigh(K, args.Nr, J, frame_len)
-        elif args.channel_type == 'large + quasi-static rician':
+        elif args.channel_type == 'large':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(J, r = 100)
             H = LargeRician(K, args.Nr, J, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         ## 编码
