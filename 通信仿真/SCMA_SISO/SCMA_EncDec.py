@@ -175,7 +175,8 @@ class SCMA_SISO(object):
                     for m, bits in enumerate(self.bits):
                         pro_bit[bits[b], b, j] += result1[j, m]
             llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
-            llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
+            llr_tmp[np.isinf(llr_tmp)] = np.sign(llr_tmp[np.isinf(llr_tmp)])/N0
+            # llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
 
@@ -211,7 +212,7 @@ class SCMA_SISO(object):
                                 tmp = yy[k, f] - CB_temp[k, m, j]
                                 for idx, u in enumerate(col_in):
                                     tmp -= CB_temp[k, comb[idx], u]
-                                tmp = np.exp(-np.abs(tmp)**2/N0)
+                                tmp = (-np.abs(tmp)**2/N0)
                                 for idx, u in enumerate(col_in):
                                     tmp += MU2R[u, k, comb[idx]]
                                 F2V[i] = tmp
@@ -225,7 +226,6 @@ class SCMA_SISO(object):
                         for m in range(self.M):
                             for r in row_in:
                                 MU2R[j, k, m] += MR2U[r, j, m]
-                        # MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
             ## hard decision
             result = np.log(np.ones((self.J, self.M))/self.M)
             for j in range(self.J):
@@ -238,6 +238,73 @@ class SCMA_SISO(object):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
         return decoded_symbols, uu_hat
 
+    def LogMPAdetector_SISO_soft(self, yy, H, sigma2, Nit = 10):
+        N0 = sigma2
+        CB_temp = np.zeros_like(self.CB)
+        decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
+        uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
+        llr_bits = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.float32)
+        frame_len = yy.shape[-1]
+        F2V = np.zeros(self.combination.shape[0])
+        for f in range(frame_len):
+            pro_bit = np.zeros((2, self.bps, self.J))  # 存储每个用户所有码字比特0/1的概率
+            # MR2U = np.zeros((self.K, self.J, self.M))
+            MU2R = np.log(np.ones((self.J, self.K, self.M))/self.M)
+            ## channel reverse
+            for j in range(self.J):
+                CB_temp[:,:,j] = self.CB[:,:,j] * (H[:, j, f].reshape(-1,1))
+
+            for it in range(Nit):
+                ## update FN to VN
+                MR2U = np.zeros((self.K, self.J, self.M))
+                for k in range(self.K):
+                    for j in self.SetRows[k]:
+                        col_in = copy.deepcopy(self.SetRows[k])
+                        col_in.remove(j)
+                        for m in range(self.M):
+                            for i, comb in enumerate(self.combination):
+                                tmp = yy[k, f] - CB_temp[k, m, j]
+                                for idx, u in enumerate(col_in):
+                                    tmp -= CB_temp[k, comb[idx], u]
+                                tmp = (-np.abs(tmp)**2/N0)
+                                for idx, u in enumerate(col_in):
+                                    tmp += MU2R[u, k, comb[idx]]
+                                F2V[i] = tmp
+                            MR2U[k, j, m] = np.log(np.sum(np.exp(F2V)))
+                ## update VN to FN
+                MU2R = np.log(np.ones((self.J, self.K, self.M))/self.M)
+                for j in range(self.J):
+                    for k in self.SetCols[j]:
+                        row_in = copy.deepcopy(self.SetCols[j])
+                        row_in.remove(k)
+                        for m in range(self.M):
+                            for r in row_in:
+                                MU2R[j, k, m] += MR2U[r, j, m]
+            ## hard decision
+            result = np.log(np.ones((self.J, self.M))/self.M)
+            for j in range(self.J):
+                row_in = copy.deepcopy(self.SetCols[j])
+                for m in range(self.M):
+                    for r in row_in:
+                        result[j, m] += MR2U[r, j, m]
+            decoded_symbols[:, f] = np.argmax(result, axis = 1)
+
+            ## get LLR
+            result1 = result / result.sum(axis = 1).reshape(-1,1)
+            for j in range(self.J):
+                for b in range(self.bps):
+                    for m, bits in enumerate(self.bits):
+                        pro_bit[bits[b], b, j] += result1[j, m]
+            llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
+            llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
+            llr_tmp[np.isnan(llr_tmp)]  = 1/N0
+            llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
+
+        ## hard decoded bits
+        for j in range(self.J):
+            uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
+
+        return decoded_symbols, uu_hat, llr_bits
 
     def maxLogMPAdetector_SISO_hard(self, yy, H, sigma2, Nit = 10):
         N0 = sigma2
@@ -265,7 +332,7 @@ class SCMA_SISO(object):
                                 tmp = yy[k, f] - CB_temp[k, m, j]
                                 for idx, u in enumerate(col_in):
                                     tmp -= CB_temp[k, comb[idx], u]
-                                tmp = np.exp(-np.abs(tmp)**2/N0)
+                                tmp = (-np.abs(tmp)**2/N0)
                                 for idx, u in enumerate(col_in):
                                     tmp += MU2R[u, k, comb[idx]]
                                 F2V[i] = tmp
@@ -291,6 +358,78 @@ class SCMA_SISO(object):
         for j in range(self.J):
             uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
         return decoded_symbols, uu_hat
+
+    def maxLogMPAdetector_SISO_soft(self, yy, H, sigma2, Nit = 10):
+        N0 = sigma2
+        CB_temp = np.zeros_like(self.CB)
+        decoded_symbols = np.zeros((self.J, yy.shape[-1]), dtype = np.int32)
+        uu_hat = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.int8)
+        llr_bits = np.zeros((self.J, yy.shape[-1]*self.bps), dtype = np.float32)
+        frame_len = yy.shape[-1]
+        F2V = np.zeros(self.combination.shape[0])
+        for f in range(frame_len):
+            pro_bit = np.zeros((2, self.bps, self.J))  # 存储每个用户所有码字比特0/1的概率
+            MR2U = np.zeros((self.K, self.J, self.M))
+            MU2R = np.log(np.ones((self.J, self.K, self.M))/self.M)
+            ## channel reverse
+            for j in range(self.J):
+                CB_temp[:,:,j] = self.CB[:,:,j] * (H[:, j, f].reshape(-1,1))
+
+            for it in range(Nit):
+                ## update FN to VN
+                MR2U = np.zeros((self.K, self.J, self.M))
+                for k in range(self.K):
+                    for j in self.SetRows[k]:
+                        col_in = copy.deepcopy(self.SetRows[k])
+                        col_in.remove(j)
+                        for m in range(self.M):
+                            for i, comb in enumerate(self.combination):
+                                tmp = yy[k, f] - CB_temp[k, m, j]
+                                for idx, u in enumerate(col_in):
+                                    tmp -= CB_temp[k, comb[idx], u]
+                                tmp = (-np.abs(tmp)**2/N0)
+                                for idx, u in enumerate(col_in):
+                                    tmp += MU2R[u, k, comb[idx]]
+                                F2V[i] = tmp
+                            MR2U[k, j, m] = np.max(F2V)
+                ## update VN to FN
+                MU2R = np.log(np.ones((self.J, self.K, self.M))/self.M)
+                for j in range(self.J):
+                    for k in self.SetCols[j]:
+                        row_in = copy.deepcopy(self.SetCols[j])
+                        row_in.remove(k)
+                        for m in range(self.M):
+                            for r in row_in:
+                                MU2R[j, k, m] += MR2U[r, j, m]
+                        # MU2R[j, k, :] = MU2R[j, k, :] / np.sum(MU2R[j, k, :])
+            ## hard decision
+            result = np.log(np.ones((self.J, self.M))/self.M)
+            for j in range(self.J):
+                row_in = copy.deepcopy(self.SetCols[j])
+                for m in range(self.M):
+                    for r in row_in:
+                        result[j, m] += MR2U[r, j, m]
+            decoded_symbols[:, f] = np.argmax(result, axis = 1)
+
+            ## get LLR
+            llr_tmp = np.zeros((self.bps, self.J))
+            # result1 = result / result.sum(axis = 1).reshape(-1,1)
+            for j in range(self.J):
+                for b in range(self.bps):
+                    Max = np.array([-np.inf, -np.inf])
+                    for m, bits in enumerate(self.bits):
+                        Max[bits[b]] = max(Max[bits[b]], result[j, m])
+                        # pro_bit[bits[b], b, j] += result1[j, m]
+                    llr_tmp[b, j] = Max[0] - Max[1]
+            # llr_tmp = (pro_bit[0] - pro_bit[1]).reshape(self.bps, self.J)
+            llr_tmp[np.isinf(llr_tmp)] = np.sign(llr_tmp[np.isinf(llr_tmp)])/N0
+            llr_tmp[np.isnan(llr_tmp)]  = 1/N0
+            llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
+
+        ## hard decoded bits
+        for j in range(self.J):
+            uu_hat[j, :] = comm.utilities.dec2bitarray(decoded_symbols[j, :], self.bps)
+        return decoded_symbols, uu_hat, llr_bits
 
 
 

@@ -199,7 +199,8 @@ class SCMA_SIMO(object):
                     for m, bits in enumerate(self.bits):
                         pro_bit[bits[b], b, j] += result1[j, m]
             llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
-            llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
+            llr_tmp[np.isinf(llr_tmp)] = np.sign(llr_tmp[np.isinf(llr_tmp)])/N0
+            # llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
         ## hard decoded bits
@@ -363,7 +364,8 @@ class SCMA_SIMO(object):
                     for m, bits in enumerate(self.bits):
                         pro_bit[bits[b], b, j] += result1[j, m]
             llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
-            llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
+            llr_tmp[np.isinf(llr_tmp)] = np.sign(llr_tmp[np.isinf(llr_tmp)])/N0
+            # llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
         ## hard decoded bits

@@ -88,11 +88,11 @@ frame_len = int(ldpc.codedim/bitsPerSym)
 ## Source
 source = SourceSink()
 # logf = "SCMA_MPAdetector_SISO_large.txt"
-logf = "tmp.txt"
+logf = "xxxxxxx.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(25, 31, 2)  # dB
+sigma2dB = np.arange(10, 31, 2)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -95])  # dBm
 # sigma2dB = np.array([-85, -90, -95])  # dBm
@@ -115,8 +115,8 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         symbols = scma.mapping(uu, )
         yy = scma.encoder(symbols, H, )
         rx_sig = PassChannel(yy, noise_var = sigma2w, )
-        # symbols_hat, uu_hat = scma.MPAdetector_SISO_hard(rx_sig, H, sigma2w, Nit = args.Nit)
-        symbols_hat, uu_hat = scma.LogMPAdetector_SISO_hard(rx_sig, H, sigma2w, Nit = args.Nit)
+        symbols_hat, uu_hat = scma.MPAdetector_SISO_hard(rx_sig, H, sigma2w, Nit = args.Nit)
+        # symbols_hat, uu_hat = scma.LogMPAdetector_SISO_hard(rx_sig, H, sigma2w, Nit = args.Nit)
         # symbols_hat, uu_hat = scma.maxLogMPAdetector_SISO_hard(rx_sig, H, sigma2w, Nit = args.Nit)
         source.CntBerFer(uu, uu_hat)
         source.CntSer(symbols, symbols_hat)

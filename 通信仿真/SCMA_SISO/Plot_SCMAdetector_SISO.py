@@ -75,6 +75,36 @@ MPA_SISO_fastfading = np.array([[0.00, 1.00000000, 0.27089921, 0.46235584],
                         [30.00, 0.00347790, 0.00000705, 0.00001358]
                         ])
 
+LogMPA_SISO_fastfading = np.array([[0.00, 1.00000000, 0.27089921, 0.46235584],
+[2.00, 1.00000000, 0.23752945, 0.41048177],
+[4.00, 1.00000000, 0.20113312, 0.35018291],
+[6.00, 1.00000000, 0.16187686, 0.28354415],
+[8.00, 1.00000000, 0.12021019, 0.21171255],
+[10.00, 1.00000000, 0.07624938, 0.13378131],
+[12.00, 1.00000000, 0.04196506, 0.07396298],
+[14.00, 1.00000000, 0.01932199, 0.03435020],
+[16.00, 0.96743295, 0.00741963, 0.01341744],
+[18.00, 0.67876344, 0.00249653, 0.00454679],
+[20.00, 0.38127854, 0.00097805, 0.00179259],
+[22.00, 0.15493827, 0.00034722, 0.00064863],
+
+                        ])
+
+maxLogMPA_SISO_fastfading = np.array([[0.00, 1.00000000, 0.28389292, 0.47951544],
+                                        [2.00, 1.00000000, 0.25451079, 0.43421379],
+                                        [4.00, 1.00000000, 0.21749829, 0.37455047],
+                                        [6.00, 1.00000000, 0.17619978, 0.30547030],
+                                        [8.00, 1.00000000, 0.13015796, 0.22664776],
+                                        [10.00, 1.00000000, 0.08250016, 0.14398096],
+                                        [12.00, 1.00000000, 0.04461961, 0.07813275],
+                                        [14.00, 1.00000000, 0.02044581, 0.03610181],
+                                        [16.00, 0.97674419, 0.00777465, 0.01402011],
+                                        [18.00, 0.69008264, 0.00259341, 0.00470795],
+                                        [20.00, 0.38302752, 0.00098851, 0.00180679],
+                                        [22.00, 0.15699126, 0.00034929, 0.00065470],
+
+                        ])
+
 MPA_SIMO_fastfading = np.array([[0.00, 1.00000000, 0.07347083, 0.13926866],
                         [1.00, 1.00000000, 0.05152142, 0.09881882],
                         [2.00, 1.00000000, 0.03498186, 0.06733631],
@@ -160,6 +190,13 @@ EPA_LDPC_SIMO_fastfading = np.array([[-5.00, 1.00000000, 0.18725586, 0.35522073]
                                     [-1.00, 0.0016772447, 0.0000881693, 0.1817875924]
                                     ])
 
+MPA_LDPC_SIMO_fastfading = np.array([[-5.00, 1.00000000, 0.18730624, 0.35516261],
+                                    [-4.00, 1.00000000, 0.15177796, 0.31451513],
+                                    [-3.00, 0.98062016, 0.10471551, 0.27056080],
+                                    [-2.00, 0.28993056, 0.02048634, 0.22657606],
+                                    [-1.00, 0.0010121457, 0.0000711665, 0.1818923435]
+                                    ])
+
 
 MPA_SISO_largesmall = np.array([[-50.00, 0.61975309, 0.18900463, 0.31180556],
                         [-55.00, 0.46316759, 0.11736375, 0.19927270],
@@ -179,7 +216,14 @@ def SCMAdetector_SISO():
 
     ##=========================   ===============================
     lb = "Fast fading, MPA, SISO, w/o LDPC"
-    axs.semilogy(MPA_SISO_fastfading[:, 0], MPA_SISO_fastfading[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+    axs.semilogy(MPA_SISO_fastfading[:, 0], MPA_SISO_fastfading[:, cols], color = 'k', ls = 'none',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+
+    lb = "Fast fading, LogMPA, SISO, w/o LDPC"
+    axs.semilogy(LogMPA_SISO_fastfading[:, 0], LogMPA_SISO_fastfading[:, cols], color = 'k', ls = '-',  marker = 'o', mfc = 'none', ms = 18, label = lb,)
+
+    lb = "Fast fading, maxLogMPA, SISO, w/o LDPC"
+    axs.semilogy(maxLogMPA_SISO_fastfading[:, 0], maxLogMPA_SISO_fastfading[:, cols], color = 'b', ls = '--',  marker = '*', mfc = 'none', ms = 18, label = lb,)
+
 
     # #=========================  ===============================
     lb = "Fast fading, MPA, SISO,  w/ LDPC"
@@ -201,7 +245,11 @@ def SCMAdetector_SISO():
 
     # #=========================   ===============================
     lb = "Fast fading, MPA, SIMO, w/o LDPC"
-    axs.semilogy(MPA_SIMO_fastfading[:, 0], MPA_SIMO_fastfading[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'D', ms = 13, mfc = 'none', mew = 2, label = lb)
+    axs.semilogy(MPA_SIMO_fastfading[:, 0], MPA_SIMO_fastfading[:, cols], color = '#1E90FF', ls='--', lw = 3, marker = 'o', ms = 15, mfc = 'none', mew = 2, label = lb)
+
+    lb = "Fast fading, MPA, SIMO, w/ LDPC"
+    axs.semilogy(MPA_LDPC_SIMO_fastfading[:, 0], MPA_LDPC_SIMO_fastfading[:, cols], color = '#1E90FF', ls='none', lw = 3, marker = 'D', ms = 12, mfc = 'none',  mew = 2, label = lb)
+
 
     # #=========================  ===============================
     lb = "Fast fading, EPA, SIMO, w/o LDPC"
@@ -209,7 +257,9 @@ def SCMAdetector_SISO():
 
     # #=========================  ===============================
     lb = "Fast fading, EPA, SIMO, w/ LDPC"
-    axs.semilogy(EPA_LDPC_SIMO_fastfading[:, 0], EPA_LDPC_SIMO_fastfading[:, cols], color = '#FFA500', ls='--', lw = 3, marker = 'd', ms = 14, mfc = 'none',  mew = 2, label = lb)
+    axs.semilogy(EPA_LDPC_SIMO_fastfading[:, 0], EPA_LDPC_SIMO_fastfading[:, cols], color = '#FFA500', ls='--', lw = 3,  mew = 2, label = lb)
+
+
 
     # #========================= ===============================
     # lb = " "
