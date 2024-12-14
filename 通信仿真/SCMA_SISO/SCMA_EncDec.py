@@ -175,6 +175,7 @@ class SCMA_SISO(object):
                     for m, bits in enumerate(self.bits):
                         pro_bit[bits[b], b, j] += result1[j, m]
             llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
+            print(f"  llr_tmp = {llr_tmp}")
             llr_tmp[np.isinf(llr_tmp)] = np.sign(llr_tmp[np.isinf(llr_tmp)])/N0
             # llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
@@ -290,15 +291,6 @@ class SCMA_SISO(object):
             decoded_symbols[:, f] = np.argmax(result, axis = 1)
 
             ## get LLR
-            result1 = result / result.sum(axis = 1).reshape(-1,1)
-            for j in range(self.J):
-                for b in range(self.bps):
-                    for m, bits in enumerate(self.bits):
-                        pro_bit[bits[b], b, j] += result1[j, m]
-            llr_tmp = np.log(pro_bit[0]/pro_bit[1]).reshape(self.bps, self.J)
-            llr_tmp[np.where(llr_tmp == np.inf)] = np.sign(llr_tmp[np.where(llr_tmp == np.inf)])/N0
-            llr_tmp[np.isnan(llr_tmp)]  = 1/N0
-            llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
 
         ## hard decoded bits
         for j in range(self.J):
@@ -368,7 +360,7 @@ class SCMA_SISO(object):
         frame_len = yy.shape[-1]
         F2V = np.zeros(self.combination.shape[0])
         for f in range(frame_len):
-            pro_bit = np.zeros((2, self.bps, self.J))  # 存储每个用户所有码字比特0/1的概率
+            pro_bit = np.full((2, self.bps, self.J), -np.inf)  # 存储每个用户所有码字比特0/1的概率
             MR2U = np.zeros((self.K, self.J, self.M))
             MU2R = np.log(np.ones((self.J, self.K, self.M))/self.M)
             ## channel reverse
@@ -413,15 +405,12 @@ class SCMA_SISO(object):
 
             ## get LLR
             llr_tmp = np.zeros((self.bps, self.J))
-            # result1 = result / result.sum(axis = 1).reshape(-1,1)
             for j in range(self.J):
                 for b in range(self.bps):
-                    Max = np.array([-np.inf, -np.inf])
                     for m, bits in enumerate(self.bits):
-                        Max[bits[b]] = max(Max[bits[b]], result[j, m])
-                        # pro_bit[bits[b], b, j] += result1[j, m]
-                    llr_tmp[b, j] = Max[0] - Max[1]
-            # llr_tmp = (pro_bit[0] - pro_bit[1]).reshape(self.bps, self.J)
+                        pro_bit[bits[b], b, j] = max(pro_bit[bits[b], b, j], result[j, m])
+            llr_tmp = (pro_bit[0] - pro_bit[1])# .reshape(self.bps, self.J)
+
             llr_tmp[np.isinf(llr_tmp)] = np.sign(llr_tmp[np.isinf(llr_tmp)])/N0
             llr_tmp[np.isnan(llr_tmp)]  = 1/N0
             llr_bits[:, f*self.bps:(f+1)*self.bps]  = llr_tmp.T
