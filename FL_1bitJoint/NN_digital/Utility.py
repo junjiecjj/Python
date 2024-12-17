@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 
 #### 本项目自己编写的库
 # sys.path.append("..")
-from  ColorPrint import ColoPrint
-color =  ColoPrint()
+# from  ColorPrint import ColoPrint
+# color =  ColoPrint()
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"

@@ -13,11 +13,18 @@ import numpy as np
 # import cvxpy as cp
 import matplotlib.pyplot as plt
 # import math
-# import matplotlib
+import matplotlib
 from matplotlib.font_manager import FontProperties
 # from pylab import tick_params
 from matplotlib.pyplot import MultipleLocator
 # 使用Savitzky-Golay 滤波器后得到平滑图线
+from scipy.signal import savgol_filter
+
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from matplotlib.patches import ConnectionPatch
+
+import socket, getpass
 from scipy.signal import savgol_filter
 
 
@@ -28,33 +35,37 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
 
-def Large_small_acc():
+def LocalBatchIID():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 500
+    L = 1000
     ## erf
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_sgd_0.01_U50_bs128_2024-12-05-14:26:36/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 18, mfc = 'white', markevery = 50, label = 'Error-free',)
+    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_sgd_0.01_U100+6_bs32_2024-12-16-17:16:49/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], data[:,1], color = 'k', lw = 1.5, linestyle='-', marker = 'o', ms = 18, mfc = 'white', markevery = 100, label = 'Error-free',)
 
     ## 1-bit erf
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_nr_sgd_0.01_U50_bs128_2024-12-05-16:49:42/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'b', lw = 3, linestyle='-', label = '1-bit Error-free',)
+    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_1bits_sr_erf_sgd_0.01_U100+6_bs32_2024-12-16-17:35:50/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], data[:,1], color = 'r', lw = 2, linestyle='-', label = '1-bit Error-free',)
 
-    ## 1-bit -60dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-60(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:23:04/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = '#008000', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -60dBm',)
+    ## 1-bit, 0.1ber
+    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_1bits_sr_flip0.1_sgd_0.01_U100+6_bs32_2024-12-16-18:06:33/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], data[:,1], color = 'b', lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
 
-    ## 1-bit -55dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-55(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:24:03/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'olive', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -55dBm',)
+    ## 1-bit, 0.2ber
+    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_1bits_sr_flip0.2_sgd_0.01_U100+6_bs32_2024-12-16-18:09:49/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], data[:,1], color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
 
-    ## 1-bit -50dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-50(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:56:29/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'r', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -50dBm',)
+    # ## 1-bit 0.3ber
+    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_1bits_sr_flip0.3_sgd_0.01_U100+6_bs32_2024-12-16-19:29:00/TraRecorder.npy")[:L]
+    Y4 = data[:, 1]
+    axs.plot(data[:,0], data[:,1], color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
+    # axins.plot(data[:,0], data[:,1], color = '#CD853F', linestyle = '--', linewidth = 2)
 
-    ## 1-bit -50dBm, LDPC
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_ldpc-50(dBm)_sgd_0.01_U50_bs128_2024-12-06-10:26:20/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'r', lw = 3, linestyle='-', marker = '*', ms = 14,  markevery = 50, label = 'Proposed 1-bit w/ LDPC, -50dBm',)
+    # ## 1-bit 0.4ber
+    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_1bits_sr_flip0.4_sgd_0.01_U100+6_bs32_2024-12-16-19:29:05/TraRecorder.npy")[:L]
+    Y5 = data[:, 1]
+    axs.plot(data[:,0], data[:,1], color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
+    # axins.plot(data[:,0], data[:,1], color = '#00BFFF', linestyle = '--', linewidth = 2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
@@ -84,8 +95,8 @@ def Large_small_acc():
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     out_fig = plt.gcf()
-    out_fig.savefig('./Figures/Cifar10_IID_laregesmall_acc.eps' )
-    out_fig.savefig('./Figures/Cifar10_IID_laregesmall_acc.pdf' )
+    out_fig.savefig('./Figures/Cifar10_IID_localBatch_acc.eps' )
+    out_fig.savefig('./Figures/Cifar10_IID_localBatch_acc.pdf' )
     plt.show()
     return
 
@@ -94,28 +105,28 @@ def Large_small_loss():
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     L = 500
     ## erf
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_sgd_0.01_U50_bs128_2024-12-05-14:26:36/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 18, mfc = 'white', markevery = 50, label = 'Error-free',)
+    # data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_sgd_0.01_U50_bs128_2024-12-05-14:26:36/TraRecorder.npy")[:L]
+    # axs.plot(data[:,0], data[:,2], color = 'k', lw = 3, linestyle='--', marker = 'o', ms = 18, mfc = 'white', markevery = 50, label = 'Error-free',)
 
-    ## 1-bit erf
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_nr_sgd_0.01_U50_bs128_2024-12-05-16:49:42/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'b', lw = 3, linestyle='-', label = '1-bit Error-free',)
+    # ## 1-bit erf
+    # data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_nr_sgd_0.01_U50_bs128_2024-12-05-16:49:42/TraRecorder.npy")[:L]
+    # axs.plot(data[:,0], data[:,2], color = 'b', lw = 3, linestyle='-', label = '1-bit Error-free',)
 
-    ## 1-bit -60dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-60(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:23:04/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#008000', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -60dBm',)
+    # ## 1-bit -60dBm, MIMO
+    # data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-60(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:23:04/TraRecorder.npy")[:L]
+    # axs.plot(data[:,0], data[:,2], color = '#008000', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -60dBm',)
 
-    ## 1-bit -55dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-55(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:24:03/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'olive', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -55dBm',)
+    # ## 1-bit -55dBm, MIMO
+    # data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-55(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:24:03/TraRecorder.npy")[:L]
+    # axs.plot(data[:,0], data[:,2], color = 'olive', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -55dBm',)
 
-    ## 1-bit -50dBm, MIMO
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-50(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:56:29/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'r', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -50dBm',)
+    # ## 1-bit -50dBm, MIMO
+    # data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_mimo-50(dBm)_sgd_0.01_U50_bs128_2024-12-05-20:56:29/TraRecorder.npy")[:L]
+    # axs.plot(data[:,0], data[:,2], color = 'r', lw = 3, linestyle='--', label = '1-bit w/o LDPC, -50dBm',)
 
-    ## 1-bit -50dBm, LDPC
-    data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_ldpc-50(dBm)_sgd_0.01_U50_bs128_2024-12-06-10:26:20/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'r', lw = 3, linestyle='-', marker = '*', ms = 14,  markevery = 50, label = 'Proposed 1-bit w/ LDPC, -50dBm',)
+    # ## 1-bit -50dBm, LDPC
+    # data = np.load("/home/jack/DigitalFL/CNN_NormZF/CIFAR10_IID_diff_epoch5_1bits_ldpc-50(dBm)_sgd_0.01_U50_bs128_2024-12-06-10:26:20/TraRecorder.npy")[:L]
+    # axs.plot(data[:,0], data[:,2], color = 'r', lw = 3, linestyle='-', marker = '*', ms = 14,  markevery = 50, label = 'Proposed 1-bit w/ LDPC, -50dBm',)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
@@ -153,8 +164,8 @@ def Large_small_loss():
 
 
 
-Large_small_acc()
-Large_small_loss()
+LocalBatchIID()
+# Large_small_loss()
 
 
 plt.close('all')

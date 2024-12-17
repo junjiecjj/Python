@@ -43,10 +43,6 @@ from LDPC.quantiation import Quantization1bits_NP_int,  deQuantization1bits_NP_i
 
 # utility.WrLogHead(promargs = topargs, codeargs = coderargs)
 
-
-
-
-
 ## 将联邦学习得到的浮点数依次：量化、以指定概率 bit flipping、反量化;
 def Quant_BbitFlipping(param_W = '', err_rate = 0.0001, quantBits = 8, com_round = 1, client = "",  dic_parm = "", dic_berfer="", rdm = ""):
     np.random.seed()
@@ -248,7 +244,7 @@ def  Quant_LDPC_BPSK_AWGN_equa(com_round = 1, client = '', param_W = '', snr = 2
         if frame_err[fidx] == 1:
             num_err_bits = np.random.choice(np.arange(codedim), 1, p= err_dist[raw, 1:]/err_dist[raw, 1:].sum())[0]
             bits_flip = np.zeros(codedim, dtype = np.int8 )
-            where = np.random.choice(np.arange(codedim), num_err_bits ,replace=False )
+            where = np.random.choice(np.arange(codedim), num_err_bits ,replace = False )
             bits_flip[where] = 1
             uu_hat = uu ^ bits_flip
             binary_recv = np.append(binary_recv, uu_hat)

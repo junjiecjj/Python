@@ -121,9 +121,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         symbols = scma.mapping(cc, )
         yy = scma.encoder(symbols, H, )
         rx_sig = PassChannel(yy, noise_var = sigma2w, )
-        # symbols_hat, uu_hard, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2 = sigma2w, Nit = args.Nit)
-        # symbols_hat, uu_hard, llr_bits = scma.LogMPAdetector_SISO_soft(rx_sig, H, sigma2 = sigma2w, Nit = args.Nit)
-        symbols_hat, uu_hard, llr_bits = scma.maxLogMPAdetector_SISO_soft(rx_sig, H, sigma2 = sigma2w, Nit = args.Nit)
+        symbols_hat, uu_hard, llr_bits = scma.MPAdetector_SISO_soft(rx_sig, H, sigma2 = sigma2w, Nit = args.Nit)
         uu_hat = np.array([], dtype = np.int8)
         for j in range(scma.J):
             uu_hat = np.hstack((uu_hat, ldpc.decoder_spa(llr_bits[j,:])[0] ))

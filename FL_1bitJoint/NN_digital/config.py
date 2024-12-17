@@ -30,12 +30,11 @@ def args_parser():
     "local_up": 1,
     "local_bs": 128,
     "test_bs" : 128,
-    "num_of_clients" : 50,
+    "num_of_clients" : 100,
     "active_client" : 10,
     "num_comm" : 1000,
     "save_path" : home + '/FL_1bitJoint/NN/',
     "lr" : 0.01,
-
 
     ## Codes
     "minimum_snr" : 2 ,

@@ -20,8 +20,8 @@ import torch
 import matplotlib
 #### 本项目自己编写的库
 # sys.path.append("..")
-from  ColorPrint import ColoPrint
-color =  ColoPrint()
+# from  ColorPrint import ColoPrint
+# color =  ColoPrint()
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
@@ -37,12 +37,19 @@ class checkpoint(object):
             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         else:
             self.now =  now
-        tempp = '_' + args.diff_case + str([args.local_up if args.diff_case == 'batchs' else args.local_epoch][0])
-        if args.snr_dB != None:
-            quantway = '_1bits_' + args.quantway + '_' if args.quantway == 'nr' or args.quantway == 'sr' else '_1bits_' + args.quantway + str(args.snr_dB) + '(dB)_'
-        elif args.sigmaK2 != None:
-            quantway = '_1bits_' + args.quantway + '_' if args.quantway == 'nr' or args.quantway == 'sr' else '_1bits_' + args.quantway + str(args.sigmaK2) + '(dBm)_'
-        tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{quantway if args.quantize else '_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}_bs{args.local_bs}_" + self.now
+        tempp = '_' + args.diff_case + str( args.local_up if args.diff_case == 'batchs' else args.local_epoch )
+
+        if args.quantize:
+            if args.transmitWay == 'erf':
+                way = 'erf_'
+            elif args.transmitWay == 'flip':
+                way = args.transmitWay + str(args.flip_rate) + '_'
+            elif args.transmitWay == 'scma' or args.transmitWay == 'sic':
+                way = args.transmitWay + str(args.snr_dB) + '(dB)_'
+            quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
+
+        tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{quantway if args.quantize else '_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
+
         self.savedir = os.path.join(args.save_path, tmp)
         os.makedirs(self.savedir, exist_ok = True)
 
@@ -55,11 +62,9 @@ class checkpoint(object):
             f.write('====================================================================================\n')
             f.write(self.now + '\n')
             f.write('====================================================================================\n\n')
-
             f.write("###############################################################################\n")
             f.write("################################  args  #######################################\n")
             f.write("###############################################################################\n")
-
             for k, v in self.args.__dict__.items():
                 f.write(f"{k: <25}: {str(v): <40}  {str(type(v)): <20}\n")
             f.write("\n################################ args end  ##################################\n")
@@ -67,7 +72,6 @@ class checkpoint(object):
 
     def getSavePath(self, *subdir):
         return os.path.join(self.savedir, *subdir)
-
     # 写日志
     def write_log(self, log, train = True ):
         if train == True:

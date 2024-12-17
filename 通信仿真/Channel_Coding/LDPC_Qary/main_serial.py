@@ -66,7 +66,7 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large-small'
+    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
     }
     args = argparse.Namespace(**ldpc_args)
     return args
@@ -83,7 +83,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "BER_Joint_awgn.txt"
+logf = "BER_Joint_fast_6.txt"
 # logf = "BER_Seperate_FastFading.txt"
 # logf = "BER_messup1.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
@@ -100,7 +100,7 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 # modem.plot_constellation("BPSK")
 ## 遍历SNR
-sigma2dB = np.arange(6.5, 21, 0.5)  # dB
+sigma2dB = np.arange(0, 21, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
 # sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率w
@@ -114,7 +114,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             H = QuasiStaticRayleigh(args.K, framelen)
         elif args.channel_type == 'fast-fading':
             H = FastFadingRayleigh(args.K, framelen)
-        elif args.channel_type == 'large-small':
+        elif args.channel_type == 'large':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args.K, r = 100)
             H = LargeRician(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
         ## 编码
