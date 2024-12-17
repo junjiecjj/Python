@@ -54,19 +54,19 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False              # True, False
-args.dataset = "MNIST"     #  MNIST,  CIFAR10
-cur_lr = args.lr = 0.01
+args.IID = True              # True, False
+args.dataset = "CIFAR10"     #  MNIST,  CIFAR10
+cur_lr = args.lr = 0.1
 args.num_of_clients = 100
 args.active_client = 6
 args.case = 'diff'          # "diff"
 args.diff_case = 'epoch'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
-args.quantize = False       # True, False
+args.quantize = True       # True, False
 if args.quantize == True:
     args.bitswidth = 1         #  1,  8
     args.rounding = 'sr'       # 'nr', 'sr',
-    args.transmitWay = 'flip'    # 'erf', 'flip', 'scma', 'sic'
+    args.transmitWay = 'erf'    # 'erf', 'flip', 'scma', 'sic'
     args.norm_fact = 2**8
 
     if args.transmitWay.lower() == 'flip':
@@ -81,7 +81,7 @@ if args.IID == True:
         args.local_up = 3
         args.local_bs = 128
     elif args.dataset == "CIFAR10":
-        args.local_up = 15
+        args.local_up = 5
         args.local_bs = 32
 elif args.IID == False:
     args.diff_case = 'epoch'
@@ -93,7 +93,7 @@ elif args.IID == False:
         args.local_bs = 64
 
 ## seed
-# args.seed = 1
+args.seed = 1
 set_random_seed(args.seed) ## args.seed
 set_printoption(5)
 
@@ -119,7 +119,7 @@ server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight),
 ckp =  checkpoint(args, now)
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
-    cur_lr = args.lr/(1 + 0.001 * comm_round)
+    # cur_lr = args.lr/(1 + 0.001 * comm_round)
     candidates = np.random.choice(args.num_of_clients, args.active_client, replace = False)
     # print(f"candidates = {candidates}")
     message_lst = []
@@ -147,7 +147,7 @@ for comm_round in range(args.num_comm):
                     pass
                 if args.transmitWay == 'sic':
                     pass
-            elif args.bitswidth == 8:
+            elif args.bitswidth > 1:
                 if args.transmitWay == 'erf' or args.transmitWay == 'flip':
                     mess_recv, err = B_Bit(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, normfactor = args.norm_fact)
                 if args.transmitWay == 'scma':

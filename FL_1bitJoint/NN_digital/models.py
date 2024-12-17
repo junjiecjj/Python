@@ -213,8 +213,7 @@ class myModel(nn.Module):
         self.inchannel = 3   # 初始输入通道数
         self.futures = self.make_layer()
         # 构建卷积层之后的全连接层以及分类器：
-        self.classifier = nn.Sequential(nn.Dropout(0.4),            # 两层fc效果还差一些
-                                        nn.Linear(4 * 512, 10), )   # fc，最终Cifar10输出是10类
+        self.classifier = nn.Sequential(nn.Dropout(0.4), nn.Linear(4 * 512, 10), )   # fc，最终Cifar10输出是10类
 
     def make_layer(self):
         layers = []
@@ -236,6 +235,13 @@ class myModel(nn.Module):
 # data_valum = np.sum([param.numel() for param in model.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 # 4887702
+
+
+
+
+
+
+
 
 
 
