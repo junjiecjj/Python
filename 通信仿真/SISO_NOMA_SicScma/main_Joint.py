@@ -30,7 +30,7 @@ from Channel import channelConfig
 from Channel import AWGN_mac, BlockFading_mac, FastFading_mac, Large_mac
 import utility
 from QLDPCcoder import QLDPC_Coding, BPSK
-from SICdetector_LDPC import SeparatedDecoding_BlockFading, SeparatedDecoding_FastFading
+# from SICdetector_LDPC import SeparatedDecoding_BlockFading, SeparatedDecoding_FastFading
 import Modulator
 
 utility.set_random_seed()
@@ -83,7 +83,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "./resultsTXT/BER_Joint_fast_6.txt"
+logf = "./resultsTXT/BER_Joint_fast_noma_6.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -98,19 +98,24 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 21, 0.5)  # dB
+sigma2dB = np.arange(0, 31, 1)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
-
+P = np.sqrt(2**np.arange(args.K)/np.sum(2**np.arange(args.K)))
+# P = np.sqrt(np.ones(args.K) / args.K)
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
+
         if args.channel_type == 'AWGN':
             H = AWGN_mac(args.K, framelen)
+            H = H * P.reshape(-1,1)
         elif args.channel_type == 'block-fading':
             H = BlockFading_mac(args.K, framelen)
+            H = H * P.reshape(-1,1)
         elif args.channel_type == 'fast-fading':
             H = FastFading_mac(args.K, framelen)
+            H = H * P.reshape(-1,1)
         elif args.channel_type == 'large':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args.K, r = 100)
             H = Large_mac(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
@@ -129,7 +134,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
 
         ## 符号能量归一化
         symbs  = symbs / np.sqrt(Es)
-
+        symbs = symbs * P.reshape(-1,1)
         ## Pass Channel
         yy = ldpc.MACchannel(symbs, H, sigma2w)
 

@@ -14,6 +14,18 @@ import copy
 import sys, os
 import functools
 
+
+def bpsk(bins):
+    bits = copy.deepcopy(bins)
+    bits[np.where(bits == 1)] = -1
+    bits[np.where(bits == 0)] = 1
+    return bits
+
+def BPSK(bins):
+    c = 1 - 2*bins
+    return c
+
+
 def Gauss_Elimination(encH, num_row, num_col):
     codechk = 0
     col_exchange = np.arange(num_col)
@@ -287,8 +299,10 @@ class LDPC_Coder(object):
         return uu_hat, iter_num + 1
 
 
-
-
+    def bits2sum(self, bits):
+        real_ary = BPSK(bits)
+        real_sum = real_ary.sum(axis = 0)
+        return real_sum
 
 
 
