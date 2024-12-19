@@ -40,3 +40,87 @@ col                      : 1024
 [5.50, 1.00000000, 0.16739583, 0.37847656, 0.00000000, 8.333],
 [6.00, 0.79427083, 0.09958903, 0.23559570, 0.00000000, 7.620],
 [6.50, 0.00389766, 0.00041917, 0.00102119, 0.00000000, 1.987],
+#=====================================================================================
+                      2024-12-19-09:44:53
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 0                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 300                                     
+maximum_block_number     : 1000000                                 
+K                        : 6                                       
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : psk                                     
+M                        : 2                                       
+channel_type             : fast-fading                             
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-19-09:45:26
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 0                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 300                                     
+maximum_block_number     : 1000000                                 
+K                        : 6                                       
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : psk                                     
+M                        : 2                                       
+channel_type             : fast-fading                             
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================
+#=====================================================================================
+                      2024-12-19-09:45:52
+#=====================================================================================
+
+######### [program config] #########
+minimum_snr              : 0                                       
+maximum_snr              : 13                                      
+increment_snr            : 1                                       
+maximum_error_number     : 300                                     
+maximum_block_number     : 1000000                                 
+K                        : 6                                       
+max_iteration            : 50                                      
+encoder_active           : 1                                       
+file_name_of_the_H       : PEG1024regular0.5.txt                   
+home                     : /home/jack                              
+smallprob                : 1e-15                                   
+type                     : psk                                     
+M                        : 2                                       
+channel_type             : fast-fading                             
+######### [code config] ##########
+codedim                  : 512                                     
+codelen                  : 1024                                    
+codechk                  : 512                                     
+coderate                 : 0.5                                     
+row                      : 512                                     
+col                      : 1024                                    
+
+#=============================== args end  ===============================

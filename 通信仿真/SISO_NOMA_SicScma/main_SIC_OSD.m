@@ -216,7 +216,6 @@ for i_vec = 1 : length(vec)
             total_operation_num(i_vec) = total_operation_num(i_vec) + 3*N_u;%********信道增益的复杂度，信道系数模的平方需要3个操作
         end
         
-        
         for i_Nu = 1:N_u
             y_temp = y./h_ric(i_Nu,:);%对信噪比最高的信号均衡
             llr = 2/sigma^2*real(y_temp).*(abs(h_ric(i_Nu,:))).^2;%LLR
@@ -224,40 +223,10 @@ for i_vec = 1 : length(vec)
             llr(inteleaver_matrix(i_Nu,:)) = llr;%解交织
             
             %***************************译码器选择*************************************
-            %原始OSD
-            %[test_num(i_vec), c_esti] = conventional_OSD_decoder(llr, G, order);
+ 
             %原始OSD,统计操作数
             [operation_num(i_vec),test_num(i_vec), c_esti] = OperationNum_conventional_OSD_decoder(llr, G, order);
-            %原始OSD,加入trivial discard准则，速度较快，无性能损失
-            %[test_num(i_vec), c_esti] = trivial_discard_conventional_OSD_decoder(llr, G, order);
-            %fast-OSD
-            %[test_num(i_vec), c_esti] = fast_OSD_decoder(llr, G, order, T_fastOSD, lambda_fastOSD);
-            %fast-OSD,统计操作数
-            %[operation_num(i_vec), test_num(i_vec), c_esti] = OperationNum_fast_OSD_decoder(llr, G, order, T_fastOSD, lambda_fastOSD, max_test_num);
-            %proposed
-            %[test_num(i_vec), c_esti] = OLD1_decoder(llr, G);
-            %proposed,限制最大TEPs数量
-            %[test_num(i_vec), c_esti] = max_test_OLD1_decoder(llr, G, max_test_num);
-            %proposed，多段拟合
-            %[test_num(i_vec), c_esti] = OLDn_decoder(llr, G, D);
-            %proposed，多段拟合,限制最大TEPs数量
-            %[test_num(i_vec), c_esti] = max_test_OLDn_decoder(llr, G, D, max_test_num);
-            %proposed，多段拟合,统计操作数
-            %[operation_num(i_vec), test_num(i_vec), c_esti] = OperationNum_OLDn_decoder(llr, G, D);
-            %proposed，统计操作数，原停止准则（LRB取min）
-            %[operation_num(i_vec), test_num(i_vec), c_esti] = old_OperationNum_OLD1_decoder(llr, G);
-            %proposed，原停止准则（LRB取min），限制最大TEP数量
-            %[test_num(i_vec), c_esti] = old_max_test_OLD1_decoder(llr, G, max_test_num);
-            %proposed，多段拟合,统计操作数，原停止准则（LRB取min）
-            %[operation_num(i_vec), test_num(i_vec), c_esti] = old_OperationNum_OLDn_decoder(llr, G, D);
-            %proposed，多段拟合，原停止准则（LRB取min），限制最大TEP数量
-            %[test_num(i_vec), c_esti] = old_max_test_OLDn_decoder(llr, G, D, max_test_num);
-            %PB-OSD
-            %[test_num(i_vec), c_esti] = PB_OSD_decoder(llr, sigma, G, order);
-            %PB-OSD，统计操作数
-            %[operation_num(i_vec), test_num(i_vec), c_esti] = OperationNum_PB_OSD_decoder(llr, sigma, G, order);
-            %SPB-OSD
-            %[test_num(i_vec), c_esti] = SPB_OSD_decoder(llr, sigma, G, order);
+ 
             %*************************************译码器选择*************************************
             %剔除已译出的信号
             temp = 1-2*c_esti;

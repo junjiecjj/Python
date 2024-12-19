@@ -45,7 +45,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 6,    # User num
+    "K" : 2,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -83,7 +83,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "./resultsTXT/BER_Joint_fast_noma_6.txt"
+logf = "./resultsTXT/BER_Joint_fast_2_w_powerdiv.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -98,15 +98,16 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 31, 1)  # dB
+sigma2dB = np.arange(0, 61, 0.2)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
-P = np.sqrt(2**np.arange(args.K)/np.sum(2**np.arange(args.K)))
+
+P = np.sqrt(4**np.arange(args.K)/np.sum(4**np.arange(args.K)))
 # P = np.sqrt(np.ones(args.K) / args.K)
+
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
-
         if args.channel_type == 'AWGN':
             H = AWGN_mac(args.K, framelen)
             H = H * P.reshape(-1,1)
@@ -134,7 +135,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
 
         ## 符号能量归一化
         symbs  = symbs / np.sqrt(Es)
-        symbs = symbs * P.reshape(-1,1)
+
         ## Pass Channel
         yy = ldpc.MACchannel(symbs, H, sigma2w)
 

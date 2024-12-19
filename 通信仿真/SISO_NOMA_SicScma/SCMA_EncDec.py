@@ -32,7 +32,7 @@ class SCMA_SISO(object):
         ## normlized CodeBook
         for k in range(CB.shape[0]):
             tmp = np.sum(np.abs(CB[k])**2) / self.M
-            CB[k] /= np.sqrt(tmp)
+            CB[k] /= np.sqrt(2*tmp)
         self.CB = CB
         ## factor Graph
         F = np.zeros((self.K, self.J), dtype = np.int8)

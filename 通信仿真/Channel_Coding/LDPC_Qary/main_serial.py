@@ -100,10 +100,13 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 # modem.plot_constellation("BPSK")
 ## 遍历SNR
-sigma2dB = np.arange(0, 21, 0.5)  # dB
+sigma2dB = np.arange(16, 21, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 # sigma2dB = np.array([-50, -55, -60, -65, -70, -75, -77, -80, -85, -90, -92])  # dBm
 # sigma2W = 10**(sigma2dB/10.0)/1000    # 噪声功率w
+
+P = np.sqrt(np.ones(args.K) / args.K)
+
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
     source.ClrCnt()
     print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
@@ -114,6 +117,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             H = QuasiStaticRayleigh(args.K, framelen)
         elif args.channel_type == 'fast-fading':
             H = FastFadingRayleigh(args.K, framelen)
+            H = H * P.reshape(-1,1)
         elif args.channel_type == 'large':
             BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args.K, r = 100)
             H = LargeRician(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)

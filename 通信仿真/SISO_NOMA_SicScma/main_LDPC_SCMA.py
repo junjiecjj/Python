@@ -55,7 +55,7 @@ def parameters():
     # "M":  8,  # 8PSK
     "Nit" : 6,
     ## channel
-    'channel_type': 'block-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
+    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
     }
     args = argparse.Namespace(**Args)
     return args
@@ -82,12 +82,12 @@ frame_len = int(ldpc.codelen/bitsPerSym)
 
 ## Source
 source = SourceSink()
-logf = "./resultsTXT/SCMA_MPA_LDPC_block.txt"
+logf = "./resultsTXT/SCMA_MPA_LDPC_fast.txt"
 
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 12, 2)  # dB
+sigma2dB = np.arange(0, 20, 1)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
 
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):

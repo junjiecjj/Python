@@ -86,7 +86,7 @@ logf = "./resultsTXT/SCMA_MPAdetector_block.txt"
 source.InitLog(logfile = logf, promargs = args,  codeargs = coderargs )
 
 ## 遍历SNR
-sigma2dB = np.arange(16, 31, 2)  # dB
+sigma2dB = np.arange(0, 31, 2)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率w
 
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
