@@ -53,10 +53,6 @@ for ix in range(len(SNRdB)):
     Pout2_theory[ix]=1-np.exp(-phi/(rhos*beta2));
 
 
-
-
-
-
 plt.yscale('log')
 plt.plot(SNRdB, Pout1,'r-');
 plt.plot(SNRdB, Pout1_theory,'rs');

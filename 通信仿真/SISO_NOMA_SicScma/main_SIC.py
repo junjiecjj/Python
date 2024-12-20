@@ -46,7 +46,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 2,    # User num
+    "K" : 6,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -84,7 +84,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "./resultsTXT/BER_SIC_fast_2_w_powerdiv.txt"
+logf = "./resultsTXT/BER_SIC_fast_6u_w_powerdiv_3.txt"
 # logf = "./resultsTXT/xxxxxx.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
@@ -100,10 +100,10 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 61, 1)  # dB
+sigma2dB = np.arange(15, 61, 5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 
-P = np.sqrt(4**np.arange(args.K)/np.sum(4**np.arange(args.K)))
+P = np.sqrt(3**np.arange(args.K)/np.sum(3**np.arange(args.K)))
 # P = np.sqrt(np.ones(args.K) / args.K)
 
 for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
@@ -147,8 +147,8 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         # uu_hat, uu_hat_sum, iter_num = SIC_LDPC_BlockFading_BPSK(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
         # uu_hat, uu_hat_sum, iter_num = SIC_LDPC_BlockFading(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
 
-        # uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading_BPSK(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
-        # uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading_P(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
+        ### uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading_BPSK(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
+        ### uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading_P(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
         uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
         source.tot_iter += iter_num
         source.CntSumErr(uu_sum, uu_hat_sum)

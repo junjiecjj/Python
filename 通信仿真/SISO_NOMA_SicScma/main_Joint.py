@@ -45,7 +45,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 300,
     "maximum_block_number" : 1000000,
-    "K" : 2,    # User num
+    "K" : 6,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -83,7 +83,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-logf = "./resultsTXT/BER_Joint_fast_2_w_powerdiv.txt"
+logf = "./resultsTXT/BER_Joint_fast_6_w_powerdiv.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -98,7 +98,7 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 ## 遍历SNR
-sigma2dB = np.arange(0, 61, 0.2)  # dB
+sigma2dB = np.arange(7, 61, 1)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 
 P = np.sqrt(4**np.arange(args.K)/np.sum(4**np.arange(args.K)))
