@@ -128,7 +128,7 @@ class SourceSink(object):
         return
 
     def PrintScreen(self, snr = '',  ):
-        print(f"  snr = {snr:.2f}(dB):iter = {self.ave_iter:.3}, bits = {self.err_bit}/{self.tot_bit}, blk = {self.err_blk}/{self.tot_blk}, sumerr = {self.sumerr:.6f}={self.err_sum}/{self.tot_sum}, fer = {self.fer:.10f}, ber = {self.ber:.10f}")
+        print(f"  snr = {snr:.2f}(dB):iter = {self.ave_iter:.3}, bits = {self.err_bit}/{self.tot_bit}, blk = {self.err_blk}/{self.tot_blk}, fer = {self.fer:.10f}, ber = {self.ber:.10f}, sumerr = {self.sumerr:.6f}={self.err_sum}/{self.tot_sum}")
         return
 
 

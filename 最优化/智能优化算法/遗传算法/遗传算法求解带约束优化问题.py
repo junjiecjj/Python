@@ -38,7 +38,6 @@ def calc_f(X):
     y = X[:, 1]
     return 2 * a + x ** 2 - a * np.cos(2 * pi * x) + y ** 2 - a * np.cos(2 * 3.14 * y)
 
-
 def calc_e(X):
     """计算群体粒子的目惩罚项，X 的维度是 size * 2 """
     sumcost=[]
@@ -55,7 +54,6 @@ def calc_e(X):
     return sumcost
 
 ##############遗传操作方法#########
-
 def select(X, fitness):
     """根据轮盘赌法选择优秀个体"""
     fitness = 1 / fitness  # fitness越小表示越优秀，被选中的概率越大，做 1/fitness 处理
@@ -140,7 +138,6 @@ def update_best(parent,parent_fitness,parent_e,child,child_fitness,child_e):
     else:
         return child, child_fitness, child_e
 
-
 def ga():
     """遗传算法主函数"""
     best_fitness = []  # 记录每次迭代的效果
@@ -163,7 +160,7 @@ def ga():
 
         # 更新群体
         for j in range(NP):#遍历每一个个体
-            X4[j],fitness[j],ee[j] = update_best(f[j], parentfitness[j], parentee[j], X4[j], childfitness[j],childee[j])
+            X4[j], fitness[j], ee[j] = update_best(f[j], parentfitness[j], parentee[j], X4[j], childfitness[j], childee[j])
 
         best_fitness.append(fitness.min())
         x, y = X4[fitness.argmin()]

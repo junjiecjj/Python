@@ -82,6 +82,9 @@ sic_fastfading_2u_wo_powdiv = np.array([[0.00, 1.00000000, 0.25546875, 0.3912500
                                         [11.00, 0.18750000, 0.01560791, 0.02573975, 0.00000000, 16.983],
                                         [12.00, 0.07552870, 0.00599755, 0.00990527, 0.00000000, 11.275],
                                         [13.00, 0.03085150, 0.00243638, 0.00397093, 0.00000000, 8.316],
+                                        [14.00, 0.01600683, 0.00121739, 0.00202670, 0.00000000, 6.865],
+                                        [15.00, 0.00611197, 0.00047364, 0.00078007, 0.00000000, 5.875],
+                                        [16.00, 0.00262798, 0.00019193, 0.00031861, 0.00000000, 5.324],
 
                                         ])
 
@@ -97,17 +100,31 @@ Joint_fastfading_2u_w_powdiv = np.array([[0.00, 1.00000000, 0.23845052, 0.386992
                                        [9., 0.0002882398, 0.0000161384, 0.000032, 0.00000000, 4.015]
                                         ])
 
-## 不等功率分配, 4倍等间隔
-sic_fastfading_2u_w_powdiv_4 = np.array([[0.00, 1.00000000, 0.24682292, 0.39505208, 0.00000000, 50.000],
-                                        # [1.00, 0.98684211, 0.21955952, 0.36262593, 0.00000000, 49.760],
-                                        [2.00, 0.92331288, 0.18192221, 0.31672977, 0.00000000, 47.991],
-                                        # [3.00, 0.58593750, 0.12744904, 0.24619293, 0.00000000, 36.422],
-                                        [4.00, 0.50675676, 0.10365089, 0.20672113, 0.00000000, 30.078],
-                                        # [5.00, 0.50000000, 0.08607096, 0.17214193, 0.00000000, 28.452],
-                                        [6.00, 0.49833887, 0.06590986, 0.13181972, 0.00000000, 27.648],
-                                        [7.00, 0.38167939, 0.03382683, 0.06765367, 0.00000000, 23.934],
-                                        [8.00, 0.03512881, 0.00233277, 0.00466554, 0.00000000, 10.015],
-                                        [9, 0.0001237317, 0.0000072326, 0.000013, 0.00000000, 5.015]
+## 不等功率分配, 1.5倍等间隔
+sic_fastfading_2u_w_powdiv_1p5 = np.array([[0.00, 1.00000000, 0.25028646, 0.38450521, 0.00000000, 50.000],
+                                            # [1.00, 1.00000000, 0.23151042, 0.35795573, 0.00000000, 50.000],
+                                            [2.00, 1.00000000, 0.20904948, 0.32929687, 0.00000000, 50.000],
+                                            # [3.00, 1.00000000, 0.18849609, 0.29678385, 0.00000000, 50.000],
+                                            [4.00, 0.99337748, 0.15950305, 0.25573003, 0.00000000, 49.868],
+                                            [5.00, 0.86494253, 0.12026311, 0.19487473, 0.00000000, 46.247],
+                                            [6.00, 0.54945055, 0.06560139, 0.10799422, 0.00000000, 33.912],
+                                            [7.00, 0.16910936, 0.01777190, 0.02963157, 0.00000000, 17.579],
+                                            [8.00, 0.02521856, 0.00257210, 0.00425957, 0.00000000, 8.936],
+                                            [9.00, 0.00279106, 0.00025901, 0.00043076, 0.00000000, 6.262],
+                                            [10.0, 0.0002386374, 0.0000226150, 0.000038, 0.00000000, 5.11],
+                                            ])
+
+## 不等功率分配, 2倍等间隔
+sic_fastfading_2u_w_powdiv_2 = np.array([[0.00, 1.00000000, 0.24831380, 0.38549479, 0.00000000, 50.000],
+                                        # [1.00, 1.00000000, 0.22752604, 0.35559896, 0.00000000, 50.000],
+                                        [2.00, 1.00000000, 0.20391276, 0.32436198, 0.00000000, 50.000],
+                                        # [3.00, 0.99013158, 0.17608321, 0.28619706, 0.00000000, 49.720],
+                                        [4.00, 0.88235294, 0.13060087, 0.22153033, 0.00000000, 46.847],
+                                        [5.00, 0.50675676, 0.05751161, 0.10180664, 0.00000000, 35.106],
+                                        [6.00, 0.05224660, 0.00545154, 0.00943568, 0.00000000, 14.158],
+                                        [7.00, 0.00196464, 0.00020931, 0.00035443, 0.00000000, 7.790],
+                                        [7.20, 0.00113911, 0.00011877, 0.00020179, 0.00000000, 7.264],
+                                        [7.4, 0.0004751848, 0.0000505468, 0.000083, 0.00000000, 6.264],
                                         ])
 
 ## 不等功率分配, 3倍等间隔
@@ -119,45 +136,79 @@ sic_fastfading_2u_w_powdiv_3 = np.array([[0.00, 1.00000000, 0.24841797, 0.391223
                                         # [5.00, 0.49668874, 0.06756713, 0.13490144, 0.00000000, 29.588],
                                         [6.00, 0.38461538, 0.03489333, 0.06978666, 0.00000000, 25.585],
                                         [7.00, 0.03983006, 0.00264989, 0.00529978, 0.00000000, 11.193],
+                                        [7.20, 0.01733503, 0.00110263, 0.00220525, 0.00000000, 9.319],
+                                        [7.40, 0.00564929, 0.00035312, 0.00070624, 0.00000000, 8.005],
+                                        [7.60, 0.00196618, 0.00011885, 0.00023771, 0.00000000, 7.130],
+                                        [7.8, 0.0004673795, 0.0000288236, 0.000058, 0.00000000, 6.130],
                                         ])
 
-## 不等功率分配, 2倍等间隔
-sic_fastfading_2u_w_powdiv_2 = np.array([[0.00, 1.00000000, 0.24831380, 0.38549479, 0.00000000, 50.000],
-                                        # [1.00, 1.00000000, 0.22752604, 0.35559896, 0.00000000, 50.000],
-                                        [2.00, 1.00000000, 0.20391276, 0.32436198, 0.00000000, 50.000],
-                                        # [3.00, 0.99013158, 0.17608321, 0.28619706, 0.00000000, 49.720],
-                                        [4.00, 0.88235294, 0.13060087, 0.22153033, 0.00000000, 46.847],
-                                        [5.00, 0.50675676, 0.05751161, 0.10180664, 0.00000000, 35.106],
-                                        [6.00, 0.05224660, 0.00545154, 0.00943568, 0.00000000, 14.158],
+## 不等功率分配, 4倍等间隔
+sic_fastfading_2u_w_powdiv_4 = np.array([[0.00, 1.00000000, 0.24682292, 0.39505208, 0.00000000, 50.000],
+                                        # [1.00, 0.98684211, 0.21955952, 0.36262593, 0.00000000, 49.760],
+                                        [2.00, 0.92331288, 0.18192221, 0.31672977, 0.00000000, 47.991],
+                                        # [3.00, 0.58593750, 0.12744904, 0.24619293, 0.00000000, 36.422],
+                                        [4.00, 0.50675676, 0.10365089, 0.20672113, 0.00000000, 30.078],
+                                        # [5.00, 0.50000000, 0.08607096, 0.17214193, 0.00000000, 28.452],
+                                        [6.00, 0.49833887, 0.06590986, 0.13181972, 0.00000000, 27.648],
+                                        [7.00, 0.38167939, 0.03382683, 0.06765367, 0.00000000, 23.934],
+                                        [8.00, 0.03512881, 0.00233277, 0.00466554, 0.00000000, 10.015],
+                                        [8.20, 0.01473839, 0.00090834, 0.00181668, 0.00000000, 8.332],
+                                        [8.40, 0.00508595, 0.00031201, 0.00062402, 0.00000000, 7.161],
+                                        [8.60, 0.00148485, 0.00008858, 0.00017717, 0.00000000, 6.349],
+                                        [9, 0.0001011307, 0.0000057563, 0.000012, 0.00000000, 5.015]
                                         ])
+
+
+## 不等功率分配, 5倍等间隔
+sic_fastfading_2u_w_powdiv_5 = np.array([[0.00, 1.00000000, 0.24684245, 0.39881510, 0.00000000, 50.000],
+                                            # [1.00, 0.98366013, 0.21710963, 0.36532373, 0.00000000, 49.497],
+                                            [2.00, 0.79210526, 0.17134560, 0.31281867, 0.00000000, 44.216],
+                                            # [3.00, 0.52264808, 0.13038641, 0.25881969, 0.00000000, 32.321],
+                                            [4.00, 0.50000000, 0.11374023, 0.22748047, 0.00000000, 28.903],
+                                            [5.00, 0.50000000, 0.09905924, 0.19811849, 0.00000000, 27.912],
+                                            [6.00, 0.50000000, 0.08172201, 0.16344401, 0.00000000, 27.350],
+                                            [7.00, 0.49668874, 0.06149433, 0.12298867, 0.00000000, 26.927],
+                                            [8.00, 0.28301887, 0.02308741, 0.04617482, 0.00000000, 20.786],
+                                            [9.00, 0.01366494, 0.00085957, 0.00171915, 0.00000000, 7.932],
+                                            [9.20, 0.00469704, 0.00028598, 0.00057196, 0.00000000, 6.790],
+                                            [9.40, 0.00153467, 0.00009275, 0.00018550, 0.00000000, 6.024],
+                                            # [10., 0.0000669344, 0.0000044449, 0.000009, 0.00000000, 4.932],
+                                            ])
 
 
 def SISO_2user():
-    width = 10
-    high  = 8
+    width = 8
+    high  = 6
     fig, axs = plt.subplots(1, 1, figsize=(width, high), constrained_layout = True)# constrained_layout=True
     cols = 2
     ##=============================== LDPC =========================================
 
     ##=========================   ===============================
-    lb = "Proposed, w/o PowAllo"
-    axs.semilogy(Joint_fastfading_2u_wo_powdiv[:, 0], Joint_fastfading_2u_wo_powdiv[:, cols], color = 'r', ls = '--',  marker = '*', mfc = 'none', ms = 16, mew = 2, label = lb,)
+    lb = "Proposed"
+    axs.semilogy(Joint_fastfading_2u_wo_powdiv[:, 0], Joint_fastfading_2u_wo_powdiv[:, cols], color = 'r', ls = '--',  marker = '*', mfc = 'none', ms = 16, mew = 2, label = lb, zorder = 12)
 
     # #=========================  ===============================
-    lb = "SIC, w/o pow div"
-    axs.semilogy(sic_fastfading_2u_wo_powdiv[:, 0], sic_fastfading_2u_wo_powdiv[:, cols], color = 'b',ls = '--', lw = 2,  marker = 'o', mfc = 'none', ms = 16, mew = 2, label = lb)
+    lb = r"SIC,  $\rho$=1"
+    axs.semilogy(sic_fastfading_2u_wo_powdiv[:, 0], sic_fastfading_2u_wo_powdiv[:, cols], color = 'b',ls = '--', lw = 2,  marker = 'x', mfc = 'none', ms = 12, mew = 2, label = lb)
 
     lb = r"Joint, w/ PowAllo, $\rho$=4"
-    axs.semilogy(Joint_fastfading_2u_w_powdiv[:, 0], Joint_fastfading_2u_w_powdiv[:, cols], color = 'r', ls = '--', lw = 2,  marker = 'o', mfc = 'none', ms = 18, mew = 2, label = lb,)
+    # axs.semilogy(Joint_fastfading_2u_w_powdiv[:, 0], Joint_fastfading_2u_w_powdiv[:, cols], color = 'r', ls = '--', lw = 2,  marker = 'o', mfc = 'none', ms = 18, mew = 2, label = lb,)
 
-    lb = r"SIC, w/ PowAllo, $\rho$=2"
+    lb = r"SIC, $\rho$=1.5"
+    axs.semilogy(sic_fastfading_2u_w_powdiv_1p5[:, 0], sic_fastfading_2u_w_powdiv_1p5[:, cols], color = 'b', ls='--', lw = 2,  marker = 'o', mfc = 'none', ms = 12, mew = 2, label = lb)
+
+
+    lb = r"SIC, $\rho$=2"
     axs.semilogy(sic_fastfading_2u_w_powdiv_2[:, 0], sic_fastfading_2u_w_powdiv_2[:, cols], color = 'b', ls='--', lw = 2,  marker = 's', mfc = 'none', ms = 12, mew = 2, label = lb)
 
-    lb = r"SIC, w/ PowAllo, $\rho$=3"
-    axs.semilogy(sic_fastfading_2u_w_powdiv_3[:, 0], sic_fastfading_2u_w_powdiv_3[:, cols], color = 'b', ls='--', lw = 2,  marker = 'p', mfc = 'none', ms = 16, mew = 2, label = lb)
+    lb = r"SIC, $\rho$=3"
+    axs.semilogy(sic_fastfading_2u_w_powdiv_3[:, 0], sic_fastfading_2u_w_powdiv_3[:, cols], color = 'b', ls='--', lw = 2,  marker = 'p', mfc = 'none', ms = 12, mew = 2, label = lb)
 
-    lb = r"SIC, w/ PowAllo, $\rho$=4"
-    axs.semilogy(sic_fastfading_2u_w_powdiv_4[:, 0], sic_fastfading_2u_w_powdiv_4[:, cols], color = 'b', ls='--', lw = 2,  marker = '*', mfc = 'none', ms = 16, mew = 2, label = lb)
+    lb = r"SIC, $\rho$=4"
+    axs.semilogy(sic_fastfading_2u_w_powdiv_4[:, 0], sic_fastfading_2u_w_powdiv_4[:, cols], color = 'b', ls='--', lw = 2,  marker = '*', mfc = 'none', ms = 14, mew = 2, label = lb)
+
+    lb = r"SIC, $\rho$=5"
+    axs.semilogy(sic_fastfading_2u_w_powdiv_5[:, 0], sic_fastfading_2u_w_powdiv_5[:, cols], color = 'b', ls='--', lw = 2,  marker = '+', mfc = 'none', ms = 12, mew = 4, label = lb)
 
     ##===========================================================
     # plt.gca().invert_xaxis()
@@ -165,17 +216,17 @@ def SISO_2user():
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     # label
     font = {'family':'Times New Roman','style':'normal','size':35}
-    axs.set_xlabel("SNR (dB)", fontproperties=font)
+    axs.set_xlabel("SNR (dB)", fontproperties=font, labelpad = 0.2 )
     if cols == 1:
-        axs.set_ylabel( "FER",      fontproperties = font )# , fontdict = font1
+        axs.set_ylabel( "FER",      fontproperties = font, labelpad = 0.2  )# , fontdict = font1
     elif cols == 2:
-        axs.set_ylabel( "BER",      fontproperties = font )# , fontdict = font1
+        axs.set_ylabel( "BER",      fontproperties = font, labelpad = 0.2  )# , fontdict = font1
     elif cols == 3:
         axs.set_ylabel( "Aggregation error rate",      fontproperties = font )# , fontdict = font1
     #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
     font1 = {'family':'Times New Roman','style':'normal','size':22, }
-    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1,)
+    legend1 = axs.legend(loc = 'lower left', borderaxespad = 0, edgecolor = 'black', prop = font1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')  # 设置图例legend背景透明
@@ -191,19 +242,19 @@ def SISO_2user():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(30) for label in labels] #刻度值字号
 
-    fontt = {'family':'Times New Roman','style':'normal','size':35 }
-    plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
+    # fontt = {'family':'Times New Roman','style':'normal','size':35 }
+    # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/2user_fer.eps")
-        out_fig.savefig("./Figures/2user_fer.pdf")
+        out_fig.savefig("./Figures/2user_fast_fer.eps")
+        out_fig.savefig("./Figures/2userfast__fer.pdf")
     elif cols == 2:
-        out_fig.savefig( "./Figures/2user_ber.eps")
-        out_fig.savefig( "./Figures/2user_ber.pdf")
+        out_fig.savefig( "./Figures/2user_fast_ber.eps")
+        out_fig.savefig( "./Figures/2user_fast_ber.pdf")
     elif cols == 3:
-        out_fig.savefig( "./Figures/2user_aggerr.eps")
-        out_fig.savefig( "./Figures/2user_aggerr.pdf")
+        out_fig.savefig( "./Figures/2user_fast_aggerr.eps")
+        out_fig.savefig( "./Figures/2user_fast_aggerr.pdf")
     plt.show()
     plt.close()
     return
@@ -256,7 +307,6 @@ SIC_fastfading_6u_wo_powdiv = np.array([[0.00, 1.00000000, 0.38196615, 0.7370703
                                         # [21.00, 1.00000000, 0.35669271, 0.71898438, 0.00000000, 41.247],
                                         # [22.00, 1.00000000, 0.36072266, 0.71769531, 0.00000000, 40.607],
                                         [23.00, 1.00000000, 0.36246745, 0.73414062, 0.00000000, 39.437],
-
                                         ])
 
 Joint_fastfading_6u_w_powdiv = np.array([[0.00, 1.00000000, 0.39086589, 0.67398437, 0.00000000, 8.333],
@@ -281,8 +331,17 @@ Joint_fastfading_6u_w_powdiv = np.array([[0.00, 1.00000000, 0.39086589, 0.673984
                                         # [18.00, 0.50000000, 0.15246419, 0.52503906, 0.00000000, 8.333],
                                         # [19.00, 0.50000000, 0.14383789, 0.51310547, 0.00000000, 8.333],
                                         [20.00, 0.50000000, 0.13218099, 0.50048828, 0.00000000, 8.333],
-                                        [21.00, 0.48237179, 0.11660219, 0.47348257, 0.00000000, 8.333],
-
+                                        # [21.00, 0.48237179, 0.11660219, 0.47348257, 0.00000000, 8.333],
+                                        # [22.00, 0.34482759, 0.09790544, 0.44602640, 0.00000000, 8.333],
+                                        # [23.00, 0.33333333, 0.08999783, 0.42105469, 0.00000000, 8.333],
+                                        # [24.00, 0.33333333, 0.08231337, 0.39817708, 0.00000000, 8.333],
+                                        [25.00, 0.33333333, 0.07405599, 0.36815104, 0.00000000, 8.333],
+                                        # [26.00, 0.33333333, 0.06329861, 0.32794271, 0.00000000, 8.333],
+                                        # [27.00, 0.27117117, 0.04769496, 0.26735642, 0.00000000, 8.333],
+                                        # [28.00, 0.16835017, 0.03549931, 0.21268676, 0.00000000, 8.333],
+                                        # [29.00, 0.16666667, 0.03051649, 0.18309896, 0.00000000, 8.333],
+                                        [30.00, 0.16666667, 0.02522352, 0.15134115, 0.00000000, 8.333],
+                                        [31.00, 0.16666667, 0.01915690, 0.11494141, 0.00000000, 8.333],
                                         ])
 
 ## 不等功率分配, 4倍等间隔
@@ -319,7 +378,7 @@ sic_fastfading_6u_w_powdiv_4 = np.array([[0.00, 1.00000000, 0.39744792, 0.744531
                                         [30.00, 0.16666667, 0.02507704, 0.15046224, 0.00000000, 11.218],
                                         [31.00, 0.15243902, 0.01596541, 0.09579244, 0.00000000, 10.715],
                                         [32.00, 0.04139073, 0.00288469, 0.01730812, 0.00000000, 6.780],
-                                        [33., 0.0003456885, 0.0000211304, 0.000127, 0.00000000, 3.780],
+                                        [33., 0.0044967470, 0.0002094770, 0.001257, 0.00000000, 2.280],
                                         ])
 ## 不等功率分配, 3倍等间隔
 sic_fastfading_6u_w_powdiv_3 = np.array([[0.00, 1.00000000, 0.39220703, 0.73699219, 0.00000000, 50.000],
@@ -335,41 +394,53 @@ sic_fastfading_6u_w_powdiv_3 = np.array([[0.00, 1.00000000, 0.39220703, 0.736992
                                         [10.00, 0.72463768, 0.23678574, 0.65800498, 0.00000000, 39.053],
                                         [15.00, 0.53191489, 0.15652704, 0.56025598, 0.00000000, 30.784],
                                         [20.00, 0.34597701, 0.08153287, 0.38201778, 0.00000000, 21.732],
-
+                                        [25.00, 0.16393443, 0.01926016, 0.11540727, 0.00000000, 12.407],
+                                        [26.00, 0.07911392, 0.00625134, 0.03750804, 0.00000000, 9.472],
+                                        [27, 0.0017472267, 0.0001057433, 0.000640, 0.00000000, 5.33],
                                         ])
 ## 不等功率分配, 2倍等间隔
 sic_fastfading_6u_w_powdiv_2 = np.array([[0.00, 1.00000000, 0.38400391, 0.73773438, 0.00000000, 50.000],
                                          [5.00, 1.00000000, 0.34078776, 0.70523437, 0.00000000, 50.000],
                                          [10.00, 0.97115385, 0.28774164, 0.66150841, 0.00000000, 49.340],
+                                         [15.00, 0.82240437, 0.21132706, 0.56605405, 0.00000000, 43.792],
+                                         [20.00, 0.35328638, 0.10103066, 0.27083792, 0.00000000, 20.985],
+                                         [25.00, 0.14685990, 0.04657967, 0.13018003, 0.00000000, 12.007],
+                                         [30.00, 0.21367521, 0.07103032, 0.19119758, 0.00000000, 12.145],
+                                         [35.00, 0.16292735, 0.05393943, 0.14831230, 0.00000000, 11.022],
+                                         [40.00, 0.14272300, 0.04780755, 0.12958297, 0.00000000, 10.543],
+                                         [45.00, 0.18417874, 0.06166615, 0.16537874, 0.00000000, 11.153],
+                                         [50.00, 0.14499037, 0.04934557, 0.13173433, 0.00000000, 10.391],
+                                         [55.00, 0.16286645, 0.05428351, 0.14827209, 0.00000000, 11.036],
+                                         [60.00, 0.11273408, 0.03842609, 0.10208041, 0.00000000, 10.053],
                                          ])
 
 
 def SISO_6user():
-    width = 10
-    high  = 8
+    width = 8
+    high  = 6
     fig, axs = plt.subplots(1, 1, figsize=(width, high), constrained_layout = True) # constrained_layout = True
     cols = 2
     ##=============================== LDPC =========================================
 
     ##=========================   ===============================
-    lb = "Proposed, w/o PowAllo"
-    axs.semilogy(Joint_fastfading_6u_wo_powdiv[:, 0], Joint_fastfading_6u_wo_powdiv[:, cols], color = 'r', ls = '--',  marker = 'o', mfc = 'none', ms = 12, mew = 2, label = lb,)
+    lb = "Proposed"
+    axs.semilogy(Joint_fastfading_6u_wo_powdiv[:, 0], Joint_fastfading_6u_wo_powdiv[:, cols], color = 'r', ls = '--',  marker = '*', mfc = 'none', ms = 12, mew = 2, label = lb , zorder = 12)
 
     # #=========================  ===============================
-    lb = "SIC, w/o PowAllo"
-    # axs.semilogy(SIC_fastfading_6u_wo_powdiv[:, 0], SIC_fastfading_6u_wo_powdiv[:, cols], color = 'r', ls = '-', lw = 3,marker = '*', mfc = 'none', ms = 12, mew = 2,  label = lb)
+    lb = r"SIC, $\rho$=1"
+    # axs.semilogy(SIC_fastfading_6u_wo_powdiv[:, 0], SIC_fastfading_6u_wo_powdiv[:, cols], color = 'b', ls = '-', lw = 2, marker = 'o', mfc = 'none', ms = 12, mew = 2,  label = lb)
 
     lb = "Proposed, w/ PowAllo"
-    axs.semilogy(Joint_fastfading_6u_w_powdiv[:, 0], Joint_fastfading_6u_w_powdiv[:, cols], color = 'r', ls = '--', lw = 2,  marker = 'o', mfc = 'none', ms = 18, mew = 2,  label = lb,)
+    # axs.semilogy(Joint_fastfading_6u_w_powdiv[:, 0], Joint_fastfading_6u_w_powdiv[:, cols], color = 'r', ls = '--', lw = 2,  marker = 'o', mfc = 'none', ms = 18, mew = 2,  label = lb,)
 
-    lb = r"SIC, w/ PowAllo, $\rho$=2"
+    lb = r"SIC, $\rho$=2"
     axs.semilogy(sic_fastfading_6u_w_powdiv_2[:, 0], sic_fastfading_6u_w_powdiv_2[:, cols], color = 'b', ls='--', lw = 2, marker = 's', mfc = 'none', ms = 12, mew = 2,  label = lb)
 
 
-    lb = r"SIC, w/ PowAllo, $\rho$=3"
+    lb = r"SIC, $\rho$=3"
     axs.semilogy(sic_fastfading_6u_w_powdiv_3[:, 0], sic_fastfading_6u_w_powdiv_3[:, cols], color = 'b', ls='--', lw = 2, marker = 'p', mfc = 'none', ms = 12, mew = 2,  label = lb)
 
-    lb = r"SIC, w/ PowAllo, $\rho$=4"
+    lb = r"SIC, $\rho$=4"
     axs.semilogy(sic_fastfading_6u_w_powdiv_4[:, 0], sic_fastfading_6u_w_powdiv_4[:, cols], color = 'b', ls='--', lw = 2, marker = '*', mfc = 'none', ms = 12, mew = 2,  label = lb)
     #=========================   ===============================
 
@@ -379,17 +450,17 @@ def SISO_6user():
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     # label
     font = {'family':'Times New Roman','style':'normal','size':35}
-    axs.set_xlabel("SNR (dB)", fontproperties=font)
+    axs.set_xlabel("SNR (dB)", fontproperties=font, labelpad = 0.2 )
     if cols == 1:
-        axs.set_ylabel( "FER",      fontproperties = font )# , fontdict = font1
+        axs.set_ylabel( "FER",  fontproperties = font, labelpad = 0.2 )# , fontdict = font1
     elif cols == 2:
-        axs.set_ylabel( "BER",      fontproperties = font )# , fontdict = font1
+        axs.set_ylabel( "BER", fontproperties = font, labelpad = 0.2 )# , fontdict = font1
     elif cols == 3:
         axs.set_ylabel( "Aggregation error rate",      fontproperties = font )# , fontdict = font1
     #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
     font1 = {'family':'Times New Roman','style':'normal','size':22, }
-    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1,)
+    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')  # 设置图例legend背景透明
@@ -405,19 +476,19 @@ def SISO_6user():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(30) for label in labels] #刻度值字号
 
-    fontt = {'family':'Times New Roman','style':'normal','size':35 }
-    plt.suptitle("6 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
+    # fontt = {'family':'Times New Roman','style':'normal','size':35 }
+    # plt.suptitle("6 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/6user_fer.eps")
-        out_fig.savefig("./Figures/6user_fer.pdf")
+        out_fig.savefig("./Figures/6user_fast_fer.eps")
+        out_fig.savefig("./Figures/6user_fast_fer.pdf")
     elif cols == 2:
-        out_fig.savefig( "./Figures/6user_ber.eps")
-        out_fig.savefig( "./Figures/6user_ber.pdf")
+        out_fig.savefig( "./Figures/6user_fast_ber.eps")
+        out_fig.savefig( "./Figures/6user_fast_ber.pdf")
     elif cols == 3:
-        out_fig.savefig( "./Figures/6user_aggerr.eps")
-        out_fig.savefig( "./Figures/6user_aggerr.pdf")
+        out_fig.savefig( "./Figures/6user_fast_aggerr.eps")
+        out_fig.savefig( "./Figures/6user_fast_aggerr.pdf")
     plt.show()
     plt.close()
     return

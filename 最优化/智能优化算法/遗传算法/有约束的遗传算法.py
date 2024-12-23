@@ -42,7 +42,7 @@ def select(pop, fitness):
     fitness = 1 / fitness  # fitness越小表示越优秀，被选中的概率越大，做 1/fitness 处理
     fitness = fitness / fitness.sum()  # 归一化
     idx = np.arange(NP)
-    pop2_idx = np.random.choice(idx, size=NP, p=fitness)  # 根据概率选择
+    pop2_idx = np.random.choice(idx, size = NP, p = fitness)  # 根据概率选择
     pop2 = pop[pop2_idx, :]                 ##把适应度高的个体给选择出来组成pop2
     return pop2
 
@@ -92,15 +92,13 @@ def mutation(pop, Pm):
 def update_best(parent, parent_fitness, parent_e, child, child_fitness, child_e):
     """
         判
-        :param parent: 父辈个体
-        :param parent_fitness:父辈适应度值
-        :param parent_e    ：父辈惩罚项
-        :param child:  子代个体
-        :param child_fitness 子代适应度值
-        :param child_e  ：子代惩罚项
-
+            :param parent: 父辈个体
+            :param parent_fitness:父辈适应度值
+            :param parent_e    ：父辈惩罚项
+            :param child:  子代个体
+            :param child_fitness 子代适应度值
+            :param child_e  ：子代惩罚项
         :return: 父辈 和子代中较优者、适应度、惩罚项
-
         """
     # 规则1，如果 parent 和 child 都没有违反约束，则取适应度小的
     if parent_e <= 0.0000001 and child_e <= 0.0000001:
@@ -123,7 +121,7 @@ def update_best(parent, parent_fitness, parent_e, child, child_fitness, child_e)
 
 
 ####################初始化参数#####################
-NP = 50  # 种群数量
+NP = 200  # 种群数量
 L = 2  # 对应x,y
 Pc = 0.5  # 交叉率
 Pm = 0.1  # 变异率
@@ -144,7 +142,7 @@ for i in range(G):  # 遍历每一次迭代
     parentee = calc_e(pop)  # 计算父辈惩罚项
     # parentfitness = get_fitness(pop)  # 计算父辈适应度值   适应度值=目标函数值+惩罚项
     parentfitness = parentfit + parentee
-    print(parentfitness )
+    # print(parentfitness )
     pop1 = select(pop, parentfitness)  # 选择
     pop2= crossover(pop1, Pc)  # 交叉
     pop3 = mutation(pop2, Pm)  # 变异    这是选择、交叉、变异完最终的子代，
@@ -156,7 +154,7 @@ for i in range(G):  # 遍历每一次迭代
 
     # 更新群体，看看保留子代还是父代
     for j in range(NP):  # 遍历每一个个体,使每一个个体产生的子代和父代比较，哪个好就保留哪个，最后组成一个新的种群参与后面的迭代
-        pop[j], fitness[j], ee[j] = update_best(pop[j], parentfitness[j], parentee[j], pop3[j], childfitness[j],childee[j])
+        pop[j], fitness[j], ee[j] = update_best(pop[j], parentfitness[j], parentee[j], pop3[j], childfitness[j], childee[j])
     best_fitness.append(fitness.min())    ###在保留下来的这个种群里面再挑一个适应度最小的作为最优解
     x, y = pop[fitness.argmin()]
     best_xy.append((x, y))
