@@ -37,10 +37,10 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.case = "gradient"        # "gradient", "diff", "model"
-args.channel = 'erf'       # 'erf', rician'
+args.case = "diff"        # "gradient", "diff", "model"
+args.channel = 'rician'       # 'erf', rician'
 args.model = "mnist_cnn"   # "mnist_2nn", "mnist_1mlp", "mnist_2mlp", "mnist_cnn"
-args.SNR = 20
+args.SNR = 15
 args.local_up = 5
 
 print(f">>> Info: {args.case}({args.local_up if args.case != 'gradient' else '1'}), channel: {args.channel}(snr: {args.SNR if args.channel != 'erf' else 'none'})")

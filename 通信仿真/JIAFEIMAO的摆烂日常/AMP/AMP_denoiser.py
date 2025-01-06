@@ -21,7 +21,7 @@ from scipy.optimize import minimize_scalar
 
 
 # 初始化输入数据 A 和 b
-def generate_data(M, N, noise_var = 0.0001, x_choice = 0):
+def generate_data(M, N, K, noise_var = 0.0001, x_choice = 0):
     A = np.random.randn(M, N) / np.sqrt(M)  # 随机生成一个 m x n 的矩阵
     if x_choice == 1:
         x = np.zeros((N,))
@@ -52,6 +52,48 @@ def opt_tuning_param(eps, limit=3):
     return alpha
 
 def AMP(H, y, x_true, alpha, maxIter = 300 , lambda_ = 0.05,):
+    '''Approximate message passing (AMP) iteration with soft-thresholding denoiser.
+    Inputs
+        y: measurement vector (length M 1d np.array)
+        A: sensing matrix     (M-by-N 2d np.array)
+        x: signal estimate    (length N 1d np.array)
+        z: residual           (length M 1d np.array)
+        alpha: threshold tuning parameter
+    Outputs
+        x: signal estimate
+        z: residual
+    Note
+        Need to initialise AMP iteration with
+        x = np.zeros(N)
+        z = y
+    '''
+    x_true = x_true.flatten() # not must
+    y = y.flatten() # not must
+    x = np.zeros_like(x_true)
+    z = copy.deepcopy(y)
+    M = len(y)
+    mse_history = []
+    cost_history = []
+
+    for i in range(maxIter):
+        # Estimate vector
+        theta = alpha*np.sqrt(LA.norm(z)**2/M) # alpha*tau
+        r = x + H.T @ z
+        x =  np.sign(r) * np.maximum(np.abs(r) - theta, 0) #  soft_thresh
+
+        # Calculate residual with the Onsager term
+        b = LA.norm(x.flatten(), 0)/M
+        z = y - H @ x + b*z
+
+        cost = 0.5 * np.linalg.norm(y - H @ x) ** 2 + lambda_ * np.sum(np.abs(x))
+        mse = np.linalg.norm(x_true - x)**2 / np.linalg.norm(x_true)**2
+
+        cost_history.append(cost)
+        mse_history.append(mse)
+    # L = theta*(1 - b) # The last L is the actual lambda of the LASSO we're minimizing
+    return x, mse_history, cost_history, z
+
+def AMPKuanCS(H, y, x_true, alpha, maxIter = 300, lambda_ = 0.05,):
     '''Approximate message passing (AMP) iteration with soft-thresholding denoiser.
     Inputs
         y: measurement vector (length M 1d np.array)
@@ -191,7 +233,7 @@ sparsity = K/N
 alpha    = opt_tuning_param(sparsity) # Find optimal alpha
 iter_max = 20 # Max num of iterations
 
-H, y, x_true = generate_data(M, N, noise_var = sigma, x_choice = 0)
+H, y, x_true = generate_data(M, N, K, noise_var = sigma, x_choice = 0)
 
 ## 原始AMP
 x_amp, mse_amp, cost_amp, _ = AMP(H, y, x_true, alpha, maxIter = iter_max , lambda_ = lambda_,)
@@ -241,7 +283,7 @@ sparsity = K/N
 alpha    = opt_tuning_param(sparsity) # Find optimal alpha
 iter_max = 20 # Max num of iterations
 
-H, y, x_true = generate_data(M, N, noise_var = sigma, x_choice = 1)
+H, y, x_true = generate_data(M, N, K, noise_var = sigma, x_choice = 1)
 
 ## 原始AMP
 x_amp, mse_amp, cost_amp, _ = AMP(H, y, x_true, alpha, maxIter = iter_max , lambda_ = lambda_,)

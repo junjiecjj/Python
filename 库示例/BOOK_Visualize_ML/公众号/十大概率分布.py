@@ -62,9 +62,6 @@ plt.tight_layout()
 plt.show()
 
 
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>>> 2. 均匀分布 (Uniform Distribution)
 
 

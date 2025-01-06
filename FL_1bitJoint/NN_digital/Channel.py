@@ -48,9 +48,6 @@ def forward(Tx_sig, H, power = None, SNR_dB = None, ):
     Rx_sig =  H @ Tx_sig + noise
     return Rx_sig
 
-
-
-
 def AWGN_scma(K, J, frame_len):
     H = np.ones((K, J, frame_len))
     return H

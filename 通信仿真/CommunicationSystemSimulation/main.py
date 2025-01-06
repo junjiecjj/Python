@@ -596,7 +596,6 @@ for idx, snr in enumerate(SNR):
     time = np.arange(s_t.size)/ fs
     y_coherent = y * np.exp(-1j * 2 * np.pi * fc * time )
 
-
     #%% 相干解调后信号的频谱
     if isplot:
         if idx == ebn0.size - 1:
@@ -927,7 +926,6 @@ N = 50
 axs.plot(t[:N], x[:N], label = 'transmit', linewidth = 2, color = 'b',  )
 t1 = t[x.size - x_hat.size:]
 axs.plot(t1[:N], x_hat[:N], label = 'receive', linewidth = 2, color = 'r', linestyle = '-' )
-
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
 axs.set_xlabel('Time(s)',fontproperties=font)

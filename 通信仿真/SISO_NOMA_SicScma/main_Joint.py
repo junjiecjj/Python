@@ -45,7 +45,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 200,
     "maximum_block_number" : 1000000,
-    "K" : 2,    # User num
+    "K" : 10,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -66,7 +66,7 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'block-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
+    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
     }
     args = argparse.Namespace(**ldpc_args)
     return args
@@ -84,7 +84,7 @@ coderargs = {'codedim':ldpc.codedim,
 
 source = SourceSink()
 rho = 1
-logf = f"./resultsTXT/Block/BER_Joint_Block_{args.K}u_w_powerdiv_{rho}.txt"
+logf = f"./resultsTXT/{args.channel_type.split('-')[0]}/BER_Joint_Block_{args.K}u_w_powerdiv_{rho}.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -99,7 +99,7 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 ## 遍历SNR
-sigma2dB = np.arange(18, 61, 1)  # dB
+sigma2dB = np.arange(30, 61, )  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
 
 P = np.sqrt(rho**np.arange(args.K)/np.sum(rho**np.arange(args.K)))
@@ -150,7 +150,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         source.CntSumErr(uu_sum, uu_hat_sum)
         # break
         source.CntBerFer(uu, uu_hat)
-        if source.tot_blk % 10 == 0:
+        if source.tot_blk % 1 == 0:
             source.PrintScreen(snr = sigma2db)
             # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
     # break

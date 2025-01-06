@@ -94,7 +94,7 @@ class Server(object):
             for key, val in w_avg.items():
                 val += torch.normal(torch.zeros_like(val), np.sqrt(noise_var/eta/len(mess_lst))).to(device);
         for param in self.global_weight:
-            self.global_weight[param] += w_avg[param]
+            self.global_weight[param] += w_avg[param].type(self.global_weight[param].dtype)
         return
 
 

@@ -75,7 +75,6 @@ def SR_np(param):
     param = np.floor(param) + f1(p).astype('float32')
     return  param
 
-
 """
 ## 功能: 将浮点数序列量化为 0/1 比特序列
 ## Input:
@@ -94,9 +93,7 @@ def QuantizationBbits_NP_int(params,  B = 8, rounding = "nr"):
 
     # print(f"{B} Bit quantization..")
     G =  2**(B - 1)
-    # Scale_up = params * G
-    # Round = np.round(Scale_up)
-    # Clip = np.clip(Round, a_min = -1*G, a_max = G - 1,)
+
     if rounding == "sr":
         Clip = np.clip(SR_np(params * G), a_min = -1*G, a_max = G - 1,)
     elif rounding == "nr":
@@ -167,6 +164,7 @@ def deQuantizationBbits_NP_int(bin_recv, B = 8):
     for idx in range(num_dig):
         param_recv[idx] = signed_bin2dec(''.join([str(num) for num in bin_recv[idx*B:(idx+1)*B]]))
     param_recv = (param_recv*1.0 )/G
+    # param_recv = (param_recv*1.0 )/256
     return param_recv.astype(np.float32).reshape(K,-1)
 
 ## 用在并行中的np的1比特的反量化

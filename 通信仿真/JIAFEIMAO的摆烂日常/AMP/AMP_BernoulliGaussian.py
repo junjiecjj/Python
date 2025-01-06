@@ -14,6 +14,32 @@ from scipy.stats import norm
 from numpy import linalg as LA
 from scipy.optimize import minimize_scalar
 
+# 初始化输入数据 A 和 b
+def generate_data(m, n, rho = 0.1, noise_var = 0.0001):
+    A = np.random.randn(m, n) / np.sqrt(m)  # 随机生成一个 m x n 的矩阵
+    x = (np.random.rand(n, 1) < rho) * np.random.randn(n, 1) / np.sqrt(rho)
+    noise = np.sqrt(noise_var) * np.random.randn(m, 1)  # 降低噪声强度
+    b = A @ x + noise
+    return A, b, x
+
+# 初始化输入数据 A 和 b
+def generate_data1(M, N, K, noise_var = 0.0001, x_choice = 0):
+    A = np.random.randn(M, N) / np.sqrt(M)  # 随机生成一个 m x n 的矩阵
+    if x_choice == 1:
+        x = np.zeros((N,))
+        x[np.random.choice(N, K, replace = False)] = np.random.randn(K,)
+    elif x_choice == 0:
+        x = np.zeros((N,))
+        idx = np.random.choice(N, K, replace = False)
+        idx1 = np.random.choice(idx, int(K/2), replace = False)
+        idx_1 = np.setdiff1d(idx, idx1)
+        x[idx1] = 1
+        x[idx_1] = -1
+
+    noise = np.sqrt(noise_var) * np.random.randn(M,)
+    b = A @ x + noise
+    return A, b, x
+
 # OMP 算 法
 def OMP(H, y, sparsity):
     y = y.flatten()
@@ -102,44 +128,21 @@ def FISTA(H, y, x_true, lambda_ = 0.1, eta = 0.01, max_iter = 1000, tol = 1e-6):
             break
     return xhat, mse_history, cost_history
 
-# 初始化输入数据 A 和 b
-def generate_data(m, n, rho = 0.1, noise_var = 0.0001):
-    A = np.random.randn(m, n) / np.sqrt(m)  # 随机生成一个 m x n 的矩阵
-    x = (np.random.rand(n, 1) < rho) * np.random.randn(n, 1) / np.sqrt(rho)
-    noise = np.sqrt(noise_var) * np.random.randn(m, 1)  # 降低噪声强度
-    b = A @ x + noise
-    return A, b, x
 
-# 初始化输入数据 A 和 b
-def generate_data1(M, N, K, noise_var = 0.0001, x_choice = 0):
-    A = np.random.randn(M, N) / np.sqrt(M)  # 随机生成一个 m x n 的矩阵
-    if x_choice == 1:
-        x = np.zeros((N,))
-        x[np.random.choice(N, K, replace = False)] = np.random.randn(K,)
-    elif x_choice == 0:
-        x = np.zeros((N,))
-        idx = np.random.choice(N, K, replace = False)
-        idx1 = np.random.choice(idx, int(K/2), replace = False)
-        idx_1 = np.setdiff1d(idx, idx1)
-        x[idx1] = 1
-        x[idx_1] = -1
 
-    noise = np.sqrt(noise_var) * np.random.randn(M,)
-    b = A @ x + noise
-    return A, b, x
-
-def damping(x, x_old, mes):
-    x = mes * x + (1 - mes) * x_old
-    x_old = x
-    return x, x_old
-def mean_partial(R, sigma):
-    N = len(R)
-    tem = np.zeros((N, 1))
-    tem[np.abs(R) > sigma] = 1
-    mean_o = np.mean(tem)
-    return mean_o
-
+# from matlab
 def AMP_Lasso(H, y, x_true, maxIter = 1000, lambda_ = 0.05, ):
+    def damping(x, x_old, mes):
+        x = mes * x + (1 - mes) * x_old
+        x_old = x
+        return x, x_old
+    def mean_partial(R, sigma):
+        N = len(R)
+        tem = np.zeros((N, 1))
+        tem[np.abs(R) > sigma] = 1
+        mean_o = np.mean(tem)
+        return mean_o
+
     x_true = x_true.flatten() # not must
     y = y.flatten() # not must
     M, N = H.shape
@@ -381,19 +384,18 @@ def CosOMP(H, y, x_true, K_est, maxIter = 300, lambda_ = 0.05,):
 
     return x, mse_history, cost_history
 
-
 np.random.seed(42)
-m, n = 512, 1024
+m, n = 500, 1000
 maxIter = 300
-rho = 0.05
+rho = 0.03
 lambda_ = 0.05
 noise_varDB = 50
 noise_var = 10**(-noise_varDB/10)
+# noise_var = 0.02  # 0.00009 ~ 0.02
 
-H, y, x_true = generate_data(m, n, rho = rho, noise_var = noise_var)
-# H, y, x_true = generate_data1(m, n, int(rho * n), noise_var = noise_var, x_choice = 0)
-
-
+# H, y, x_true = generate_data(m, n, rho = rho, noise_var = noise_var)
+# H, y, x_true = generate_data1(m, n, int(rho * n), noise_var = noise_var, x_choice = 1)
+H, y, x_true = generate_data1(m, n, int(rho * n), noise_var = noise_var, x_choice = 0)
 # 运行 AMP 算法
 x_amp, mse_amp, cost_amp = AMP_Lasso(H, y, x_true, maxIter = maxIter, lambda_ = lambda_)
 x_amp1, mse_amp1, cost_amp1 = AMPforCS(H, y, x_true, max_iter = 600, lamda = lambda_, epsilon = rho)

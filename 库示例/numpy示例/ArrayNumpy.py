@@ -161,6 +161,23 @@ np.cumprod(b,axis=1)
 np.cumprod(b,axis=0)
 
 
+import numpy as np
+
+
+def get_k_max(array, k):
+    _k_sort = np.argpartition(array, -k)[-k:]  # 最大的k个数据的下标
+    return array[_k_sort]
+
+
+def get_k_min(array, k):
+    _k_sort = np.argpartition(array, k)[:k]  # 最小的k个数据的下标
+    return array[_k_sort]
+
+
+if __name__ == '__main__':
+    a = np.array([10, 2, 3, 40, 5, 6, 7, 8, 9])
+    print("得到TOP3的数据：", get_k_max(a, 3))
+    print("得到3个最小的数据：", get_k_min(a, 3))
 
 
 

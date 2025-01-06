@@ -17,7 +17,7 @@ from Quantizer import Quantization1bits_NP_int, deQuantization1bits_NP_int
 from Quantizer import QuantizationBbits_NP_int, deQuantizationBbits_NP_int
 
 # B-bit error-free transmission, stochastic rounding (SR), Nearest rounding (NR)
-def B_Bit(message_lst, args, rounding = 'nr', err_rate = 0, normfactor = 1):
+def B_Bit(message_lst, args, rounding = 'nr', err_rate = 0, B = 8):
     D = np.sum([param.numel() for param in message_lst[0].values()])
     # print(f"Dimension = {D}")
 
@@ -35,13 +35,14 @@ def B_Bit(message_lst, args, rounding = 'nr', err_rate = 0, normfactor = 1):
         SS[k,:] = vec
 
     # B-bit Quantization
-    B = 8
+    # B = 8
     uu = QuantizationBbits_NP_int(SS, B = B, rounding = rounding)
     flip_mask = np.random.binomial(n = 1, p = err_rate, size = uu.shape )
     uu_flipped = uu ^ flip_mask
     err_rate = (uu_flipped != uu).sum(axis = 1)/uu.shape[-1]
 
     ## recv
+    # B1 = 8
     uu_hat = deQuantizationBbits_NP_int(uu_flipped, B = B)
 
     # uu_hat = uu / normfactor
@@ -60,6 +61,10 @@ def B_Bit(message_lst, args, rounding = 'nr', err_rate = 0, normfactor = 1):
 
 
 
+# S = np.random.randn(4, 10)
+# B = 2
+# uu = QuantizationBbits_NP_int(S, B = B, rounding = 'nr')
+# s = deQuantizationBbits_NP_int(uu, B = B)
 
 
 
