@@ -298,7 +298,6 @@ class LDPC_Coder(object):
 
         return uu_hat, iter_num + 1
 
-
     def bits2sum(self, bits):
         real_ary = BPSK(bits)
         real_sum = real_ary.sum(axis = 0)

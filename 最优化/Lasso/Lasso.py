@@ -477,6 +477,357 @@ if __name__ == "__main__":
     A_hat, A_star = lowrank_approx_demo()
 
 
+#%% https://mp.weixin.qq.com/s?__biz=MzI3MzkyMzE5Mw==&mid=2247484248&idx=1&sn=ecc4277e80bc3f355b45668450409490&chksm=eaba5ea6cacd7a7cdb6359b0c305c6c7885e9e2f65d7d3a6bd31788940fa6da8a97c6af36b7e&mpshare=1&scene=1&srcid=0108Dhn6Cvnt00VS8FV3Nop7&sharer_shareinfo=a7ea0763f7e5a219e101eb842bc47515&sharer_shareinfo_first=a7ea0763f7e5a219e101eb842bc47515&exportkey=n_ChQIAhIQ7rnC6DLsAG%2B%2BhSr35iwCyhKfAgIE97dBBAEAAAAAAEi1MYcGxd0AAAAOpnltbLcz9gKNyK89dVj076HLyUbfG%2B%2FDckAZ0PbcEVgNuIYeuPiqYLMSUkKf5dGUT4nP%2BDLoPgGGqhUhnhEApcDnK%2Fj7%2FB8hEqrSBHhvNprpxdJBIZ3f%2FiYfcJ85DI2VgFJ6ew3gLVHsE7eCuamPL%2FzetyIZC0W%2BOPesFP0asly0i4mxQXy0mTrJMigkviOdpoBOesffD36oZumpv26uXNEoIRwUi25gYQPLKVG%2BhJntA%2FIpyj7OxL6TpgaaoQWrMMlPG9IJwNKrDIiwe1OzmG5D%2Bnqs%2BDKllIUxHmWbvhe%2B0t5sqGZfT4ugB7fO6XUB8lddZBG8BWJjDSWAjRQdLgxVezyMphd8&acctmode=0&pass_ticket=HJ9IHHr8aRBHw9nQIKWFfqbctQ6wbw9mUFlFHCaoOwp7odY%2BlEB9CoambnP7%2BJfG&wx_header=0#rd
+
+import numpy as np
+import random
+ASize = (50, 100)
+XSize = 100
+A = np.random.normal(0, 1, ASize)
+X = np.zeros(XSize)
+e = np.random.normal(0, 0.1, 50)
+XIndex = random.sample(list(range(XSize)), 5)  # 5 稀疏度
+for xi in XIndex:
+    X[xi] = np.random.randn()
+
+b = np.dot(A, X) + e
+
+# np.save("A.npy", A)
+# np.save("X.npy", X)
+# np.save("b.npy", b)
+
+# A = np.load('A.npy')
+# b = np.load('b.npy')
+# X = np.load('X.npy')
+
+ASize = (50, 100)
+BSize = 50
+XSize = 100
+alpha = 0.001
+P_half = 0.01
+Xk = np.zeros(XSize)
+zero = np.zeros(XSize)
+while True:
+    Xk_half = Xk - alpha * np.dot(A.T, np.dot(A, Xk) - b)
+    # 软门限算子
+    Xk_new = zero.copy()
+    for i in range(XSize):
+        if Xk_half[i] < - alpha * P_half:
+            Xk_new[i] = Xk_half[i] + alpha * P_half
+        elif Xk_half[i] > alpha * P_half:
+            Xk_new[i] = Xk_half[i] - alpha * P_half
+    if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
+        break
+    else:
+        Xk = Xk_new.copy()
+
+print(Xk)
+print(X)
+
+# 邻近点梯度下降法
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+ASize = (50, 100)
+BSize = 50
+XSize = 100
+alpha = 0.005
+P_half = 0.01
+Xk = np.zeros(XSize)
+zero = np.zeros(XSize)
+
+X_opt_dst_steps = []
+X_dst_steps = []
+while True:
+    Xk_half = Xk - alpha * np.dot(A.T, np.dot(A, Xk) - b)
+    # 软门限算子
+    Xk_new = zero.copy()
+    for i in range(XSize):
+        if Xk_half[i] < - alpha * P_half:
+            Xk_new[i] = Xk_half[i] + alpha * P_half
+        elif Xk_half[i] > alpha * P_half:
+            Xk_new[i] = Xk_half[i] - alpha * P_half
+    X_dst_steps.append(np.linalg.norm(Xk_new - X, ord=2))
+    X_opt_dst_steps.append(Xk_new)
+    if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
+        break
+    else:
+        Xk = Xk_new.copy()
+
+print(Xk)
+print(X)
+
+X_opt = X_opt_dst_steps[-1]
+
+for i, data in enumerate(X_opt_dst_steps):
+    X_opt_dst_steps[i] = np.linalg.norm(data - X_opt, ord=2)
+plt.title("Distance")
+plt.plot(X_opt_dst_steps, label='X-opt-distance')
+plt.plot(X_dst_steps, label='X-real-distance')
+plt.legend()
+plt.show()
+
+
+
+# 交替方向乘子法
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# A = np.load('A.npy')
+# b = np.load('b.npy')
+# X = np.load('X.npy')
+
+# ASize = (50, 100)
+# BSize = 50
+# XSize = 100
+
+P_half = 0.01
+c = 0.005
+Xk = np.zeros(XSize)
+Zk = np.zeros(XSize)
+Vk = np.zeros(XSize)
+
+X_opt_dst_steps = []
+X_dst_steps = []
+
+while True:
+    Xk_new = np.dot(
+        np.linalg.inv(np.dot(A.T, A) + c * np.eye(XSize, XSize)),
+        c*Zk + Vk + np.dot(A.T, b)
+    )
+
+    # 软门限算子
+    Zk_new = np.zeros(XSize)
+    for i in range(XSize):
+        if Xk_new[i] - Vk[i] / c < - P_half / c:
+            Zk_new[i] = Xk_new[i] - Vk[i] / c + P_half / c
+        elif Xk_new[i] - Vk[i] / c > P_half / c:
+            Zk_new[i] = Xk_new[i] - Vk[i] / c - P_half / c
+
+    Vk_new = Vk + c * (Zk_new - Xk_new)
+
+    # print(np.linalg.norm(Xk_new - Xk, ord=2))
+
+    X_dst_steps.append(np.linalg.norm(Xk_new - X, ord=2))
+    X_opt_dst_steps.append(Xk_new)
+    if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
+        break
+    else:
+        Xk = Xk_new.copy()
+        Zk = Zk_new.copy()
+        Vk = Vk_new.copy()
+
+print(Xk)
+print(X)
+
+X_opt = X_opt_dst_steps[-1]
+
+for i, data in enumerate(X_opt_dst_steps):
+    X_opt_dst_steps[i] = np.linalg.norm(data - X_opt, ord=2)
+plt.title("Distance")
+plt.plot(X_opt_dst_steps, label='X-opt-distance')
+plt.plot(X_dst_steps, label='X-real-distance')
+plt.legend()
+plt.show()
+
+
+# 次梯度法
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def g_right(x):
+    Xnew = x.copy()
+    for i, data in enumerate(x):
+        if data == 0:
+            Xnew[i] = 2 * np.random.random() - 1
+        else:
+            Xnew[i] = np.sign(x[i])
+    return Xnew
+
+# ASize = (50, 100)
+# BSize = 50
+# XSize = 100
+alpha = 0.001
+p_half = 0.001
+alphak = alpha
+i = 0
+
+g = lambda x: 2 * np.dot(A.T, (np.dot(A, x) - b)) + p_half * g_right(x)
+Xk = np.zeros(XSize)
+X_opt_dst_steps = []
+X_dst_steps = []
+
+while True:
+    Xk_new = Xk - alphak * g(Xk)
+    alphak = alpha / (i + 1)
+    i += 1
+    X_dst_steps.append(np.linalg.norm(Xk_new - X, ord=2))
+    X_opt_dst_steps.append(Xk_new)
+    print(np.linalg.norm(Xk_new - Xk, ord=2))
+    if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
+        break
+    else:
+        Xk = Xk_new.copy()
+
+print(Xk)
+print(X)
+
+X_opt = X_opt_dst_steps[-1]
+
+for i, data in enumerate(X_opt_dst_steps):
+    X_opt_dst_steps[i] = np.linalg.norm(data - X_opt, ord=2)
+plt.title("Distance")
+plt.plot(X_opt_dst_steps, label='X-opt-distance')
+plt.plot(X_dst_steps, label='X-real-distance')
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
