@@ -28,6 +28,7 @@ def lasso_coordinate_descent(X, y, lmbda, max_iter=1000, tol=1e-5):
 # 近端梯度下降（Proximal Gradient Descent）
 def proximal_operator(z, lambda_, L):
     return np.sign(z) * np.maximum(np.abs(z) - lambda_ / L, 0)
+
 def proximal_gradient_descent(X, y, lambda_, L=1.0, tol=1e-4, max_iter=1000):
     n_samples, n_features = X.shape
     beta = np.zeros(n_features)
@@ -314,8 +315,6 @@ def coordinate_descent(z, x, nu, rho, lamb):
     # print(z_t)
     return(z_t)
 
-
-
 d = 20
 n = 100
 
@@ -328,7 +327,6 @@ X_t = np.random.randn(d, 1)
 z_t = np.zeros((d,1))
 
 rho = 1
-
 # nu_t = np.random.randn(d, 1)
 nu_t = np.zeros((d,1))
 
@@ -360,121 +358,6 @@ for iter in range(num_iterations):
 
 val = 0.5*np.linalg.norm(A.dot(X_t) - b, ord='fro')**2 + lamb*np.linalg.norm(X_t, ord=1)
 print(val)
-
-
-# %%https://github.com/nirum/ADMM/blob/master/admm.py
-"""
-ADMM python implementation
-author: Niru Maheswaranathan
-01:20 PM Aug 12, 2014
-"""
-import numpy as np
-import proxops as po
-from functools import partial
-
-class ADMM(object):
-    def __init__(self, lmbda):
-        self.objectives = list()  # prox. operators for objectives
-        self.lmbda = lmbda  # prox. op. trade-off parameter
-        self.rho = 1.0 / lmbda  # inverse of trade-off parameter
-
-    def add_operator(self, proxfun, **kwargs):
-        # add proximal operator to the list
-        proxop = partial(proxfun, lmbda=self.lmbda, **kwargs)
-        self.objectives.append(proxop)
-
-def lowrank_approx_demo():
-    """
-    solve a low-rank matrix approximation problem
-    """
-
-    # parameters
-    n = 50  # dimension
-    k = 3  # rank
-    eta = 0.01  # noise strength
-    gamma = 0.1  # low-rank penalty
-    lmbda = 100.0  # ADMM parameter
-    num_batches = 25
-
-    # reproducible
-    np.random.seed(1234)
-
-    # build data matrix
-    A_star = np.random.randn(n, k).dot(np.random.randn(k, n))
-    data = [A_star + eta * np.random.randn(n, n) for j in range(num_batches)]
-
-    # define objective and gradient (fro-norm)
-    f = lambda x, d: 0.5 * np.sum((x.reshape(d.shape) - d) ** 2)
-    fgrad = lambda x, d: (x.reshape(d.shape) - d).ravel()
-
-    # initialize proximal operators and ADMM object
-    lowrank = ADMM(lmbda)
-
-    from sfo.sfo import SFO
-    def f_df(x, d):
-        return f(x,d), fgrad(x,d)
-
-     # optimizer = SFO(f_df, 0.1*np.random.randn(n*n), data, display=1, admm_lambda=lmbda)
-
-    ## set up SFO for ADMM iteration
-    # def sfo_admm(v, lmbda):
-    #     optimizer.set_theta(v)
-    #     optimizer.theta_admm_prev = optimizer.theta_original_to_flat(v)
-    #     return optimizer.optimize(num_steps=5)
-
-    # lowrank.add(po.bfgs, f=f, fgrad=fgrad)
-    lowrank.add_operator(po.sfo, f=f, fgrad=fgrad, data=data)
-    # lowrank.add(sfo_admm)
-
-    # theta_init = [0.1 * np.random.randn(n*n) for dummy in range(2)]
-    # from sfo.sfo import SFO
-    # optimizer = SFO(po.get_f_df(theta_init, lmbda, f, fgrad, data), theta_init, data, display=1)
-    # lowrank.add(po.sfo_persist, optimizer=optimizer, f=f, fgrad=fgrad, data=data)
-
-    lowrank.add_operator(po.nucnorm, gamma=gamma, array_shape=A_star.shape)
-
-    # optimize
-    A_hat = lowrank.optimize((n, n), maxiter=20)[0]
-    print('\nLow-rank matrix approximation\n----------')
-    print('Final Error: %4.4f' % np.linalg.norm(A_hat - A_star))
-    print('')
-
-    return A_hat, A_star
-
-
-def lasso_demo():
-    """
-    solve a LASSO problem via ADMM
-    """
-
-    # generate problem instance
-    n = 150
-    p = 500
-    A = np.random.randn(n, p)
-    x_star = np.random.randn(p) * (np.random.rand(p) < 0.05)
-    b = A.dot(x_star)
-
-    # parameters
-    sparsity = 0.8  # sparsity penalty
-    lmbda = 2  # ADMM parameter
-
-    # initialize prox operators and problem instance
-    lasso = ADMM(lmbda)
-    lasso.add_operator(po.linsys, P=A.T.dot(A), q=A.T.dot(b))
-    lasso.add_operator(po.sparse, gamma=sparsity)
-
-    # optimize
-    x_hat = lasso.optimize(x_star.shape, maxiter=50)[0]
-    print('\nLasso\n----------')
-    print('Final Error: %4.4f' % np.sum((x_hat - x_star) ** 2))
-    print('')
-
-    return x_hat, x_star
-
-
-if __name__ == "__main__":
-    # x_hat, x_star = lasso_demo()
-    A_hat, A_star = lowrank_approx_demo()
 
 
 #%% https://mp.weixin.qq.com/s?__biz=MzI3MzkyMzE5Mw==&mid=2247484248&idx=1&sn=ecc4277e80bc3f355b45668450409490&chksm=eaba5ea6cacd7a7cdb6359b0c305c6c7885e9e2f65d7d3a6bd31788940fa6da8a97c6af36b7e&mpshare=1&scene=1&srcid=0108Dhn6Cvnt00VS8FV3Nop7&sharer_shareinfo=a7ea0763f7e5a219e101eb842bc47515&sharer_shareinfo_first=a7ea0763f7e5a219e101eb842bc47515&exportkey=n_ChQIAhIQ7rnC6DLsAG%2B%2BhSr35iwCyhKfAgIE97dBBAEAAAAAAEi1MYcGxd0AAAAOpnltbLcz9gKNyK89dVj076HLyUbfG%2B%2FDckAZ0PbcEVgNuIYeuPiqYLMSUkKf5dGUT4nP%2BDLoPgGGqhUhnhEApcDnK%2Fj7%2FB8hEqrSBHhvNprpxdJBIZ3f%2FiYfcJ85DI2VgFJ6ew3gLVHsE7eCuamPL%2FzetyIZC0W%2BOPesFP0asly0i4mxQXy0mTrJMigkviOdpoBOesffD36oZumpv26uXNEoIRwUi25gYQPLKVG%2BhJntA%2FIpyj7OxL6TpgaaoQWrMMlPG9IJwNKrDIiwe1OzmG5D%2Bnqs%2BDKllIUxHmWbvhe%2B0t5sqGZfT4ugB7fO6XUB8lddZBG8BWJjDSWAjRQdLgxVezyMphd8&acctmode=0&pass_ticket=HJ9IHHr8aRBHw9nQIKWFfqbctQ6wbw9mUFlFHCaoOwp7odY%2BlEB9CoambnP7%2BJfG&wx_header=0#rd
@@ -593,10 +476,7 @@ X_opt_dst_steps = []
 X_dst_steps = []
 
 while True:
-    Xk_new = np.dot(
-        np.linalg.inv(np.dot(A.T, A) + c * np.eye(XSize, XSize)),
-        c*Zk + Vk + np.dot(A.T, b)
-    )
+    Xk_new = np.dot( np.linalg.inv(np.dot(A.T, A) + c * np.eye(XSize, XSize)), c*Zk + Vk + np.dot(A.T, b) )
 
     # 软门限算子
     Zk_new = np.zeros(XSize)
@@ -687,6 +567,121 @@ plt.show()
 
 
 
+
+
+# %%https://github.com/nirum/ADMM/blob/master/admm.py
+"""
+ADMM python implementation
+author: Niru Maheswaranathan
+01:20 PM Aug 12, 2014
+"""
+import numpy as np
+import proxops as po
+from functools import partial
+
+class ADMM(object):
+    def __init__(self, lmbda):
+        self.objectives = list()  # prox. operators for objectives
+        self.lmbda = lmbda  # prox. op. trade-off parameter
+        self.rho = 1.0 / lmbda  # inverse of trade-off parameter
+
+    def add_operator(self, proxfun, **kwargs):
+        # add proximal operator to the list
+        proxop = partial(proxfun, lmbda=self.lmbda, **kwargs)
+        self.objectives.append(proxop)
+
+def lowrank_approx_demo():
+    """
+    solve a low-rank matrix approximation problem
+    """
+
+    # parameters
+    n = 50  # dimension
+    k = 3  # rank
+    eta = 0.01  # noise strength
+    gamma = 0.1  # low-rank penalty
+    lmbda = 100.0  # ADMM parameter
+    num_batches = 25
+
+    # reproducible
+    np.random.seed(1234)
+
+    # build data matrix
+    A_star = np.random.randn(n, k).dot(np.random.randn(k, n))
+    data = [A_star + eta * np.random.randn(n, n) for j in range(num_batches)]
+
+    # define objective and gradient (fro-norm)
+    f = lambda x, d: 0.5 * np.sum((x.reshape(d.shape) - d) ** 2)
+    fgrad = lambda x, d: (x.reshape(d.shape) - d).ravel()
+
+    # initialize proximal operators and ADMM object
+    lowrank = ADMM(lmbda)
+
+    from sfo.sfo import SFO
+    def f_df(x, d):
+        return f(x,d), fgrad(x,d)
+
+     # optimizer = SFO(f_df, 0.1*np.random.randn(n*n), data, display=1, admm_lambda=lmbda)
+
+    ## set up SFO for ADMM iteration
+    # def sfo_admm(v, lmbda):
+    #     optimizer.set_theta(v)
+    #     optimizer.theta_admm_prev = optimizer.theta_original_to_flat(v)
+    #     return optimizer.optimize(num_steps=5)
+
+    # lowrank.add(po.bfgs, f=f, fgrad=fgrad)
+    lowrank.add_operator(po.sfo, f=f, fgrad=fgrad, data=data)
+    # lowrank.add(sfo_admm)
+
+    # theta_init = [0.1 * np.random.randn(n*n) for dummy in range(2)]
+    # from sfo.sfo import SFO
+    # optimizer = SFO(po.get_f_df(theta_init, lmbda, f, fgrad, data), theta_init, data, display=1)
+    # lowrank.add(po.sfo_persist, optimizer=optimizer, f=f, fgrad=fgrad, data=data)
+
+    lowrank.add_operator(po.nucnorm, gamma=gamma, array_shape=A_star.shape)
+
+    # optimize
+    A_hat = lowrank.optimize((n, n), maxiter=20)[0]
+    print('\nLow-rank matrix approximation\n----------')
+    print('Final Error: %4.4f' % np.linalg.norm(A_hat - A_star))
+    print('')
+
+    return A_hat, A_star
+
+
+def lasso_demo():
+    """
+    solve a LASSO problem via ADMM
+    """
+
+    # generate problem instance
+    n = 150
+    p = 500
+    A = np.random.randn(n, p)
+    x_star = np.random.randn(p) * (np.random.rand(p) < 0.05)
+    b = A.dot(x_star)
+
+    # parameters
+    sparsity = 0.8  # sparsity penalty
+    lmbda = 2  # ADMM parameter
+
+    # initialize prox operators and problem instance
+    lasso = ADMM(lmbda)
+    lasso.add_operator(po.linsys, P=A.T.dot(A), q=A.T.dot(b))
+    lasso.add_operator(po.sparse, gamma=sparsity)
+
+    # optimize
+    x_hat = lasso.optimize(x_star.shape, maxiter=50)[0]
+    print('\nLasso\n----------')
+    print('Final Error: %4.4f' % np.sum((x_hat - x_star) ** 2))
+    print('')
+
+    return x_hat, x_star
+
+
+if __name__ == "__main__":
+    # x_hat, x_star = lasso_demo()
+    A_hat, A_star = lowrank_approx_demo()
 
 
 

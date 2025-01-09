@@ -33,8 +33,10 @@ def args_parser():
     "num_of_clients" : 100,
     "active_client" : 10,
     "num_comm" : 1000,
-    "save_path" : home + '/FL_1bitJoint/test/',
+    "save_path" : home + '/FL_1bitJoint/CIFAR10_IID/',
     "lr" : 0.01,
+    "mu" : 0.1,
+
 
     ## Codes
     "minimum_snr" : 2 ,

@@ -21,7 +21,8 @@ import torch.optim as optim
 
 class Client(object):
     def __init__(self, args, data, model, client_name = "clientxx",):
-        # self.args             = args
+        self.args             = args
+        self.mu = args.mu
         self.device           = args.device
         self.id               = client_name
         self.datasize         = len(data)
@@ -39,6 +40,7 @@ class Client(object):
     ## 返回本地梯度,直接得到梯度
     def local_update_gradient(self, cur_weight, lr = 0.01):
         self.model.load_state_dict(cur_weight, strict = True)
+        global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -46,6 +48,12 @@ class Client(object):
             data, label = data.to(self.device), label.to(self.device)
             preds = self.model(data)
             loss = self.los_fn(preds, label)
+            # fedprox, add proximal term
+            if not self.args.IID: # self.fedprox:
+                proximal_term = torch.tensor(0., device = self.device)
+                for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+                    proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
+                loss += (self.mu / 2 * proximal_term)
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
@@ -60,6 +68,7 @@ class Client(object):
     def local_update_gradient1(self, cur_weight, lr = 0.01):
         init_weight = copy.deepcopy(cur_weight)
         self.model.load_state_dict(cur_weight, strict = True)
+        global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -67,6 +76,13 @@ class Client(object):
             data, label = data.to(self.device), label.to(self.device)
             preds = self.model(data)
             loss = self.los_fn(preds, label)
+            # fedprox, add proximal term
+            if not self.args.IID: # self.fedprox:
+                proximal_term = torch.tensor(0., device = self.device)
+                for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+                    proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
+                loss += (self.mu / 2 * proximal_term)
+
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
@@ -81,8 +97,9 @@ class Client(object):
     ## 返回更新前后的差值，本地多次mini-batch
     def local_update_diff(self, cur_weight, lr = 0.01, local_up = 1):
         init_weight = copy.deepcopy(cur_weight)
-        # model_diff = copy.deepcopy(cur_weight)
+
         self.model.load_state_dict(cur_weight, strict = True)
+        global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -90,6 +107,14 @@ class Client(object):
             data, label = data.to(self.device), label.to(self.device)
             preds = self.model(data)
             loss = self.los_fn(preds, label)
+
+            # fedprox, add proximal term
+            if not self.args.IID: # self.fedprox:
+                proximal_term = torch.tensor(0., device = self.device)
+                for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+                    proximal_term += torch.norm(w - w_global, 2)
+                loss += (self.mu / 2 * proximal_term)
+
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
@@ -104,8 +129,9 @@ class Client(object):
     ## 返回更新前后的差值，本地多次epoch，每次epoch遍历所有本地数据
     def local_update_diff1(self, cur_weight, lr = 0.01, local_epoch = 3 ):
         init_weight = copy.deepcopy(cur_weight)
-        # model_diff = copy.deepcopy(cur_weight)
+
         self.model.load_state_dict(cur_weight, strict = True)
+        global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -114,6 +140,13 @@ class Client(object):
                 data, label = data.to(self.device), label.to(self.device)
                 preds = self.model(data)
                 loss = self.los_fn(preds, label)
+                # fedprox, add proximal term
+                if not self.args.IID: # self.fedprox:
+                    proximal_term = torch.tensor(0., device = self.device)
+                    for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+                        proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
+                    loss += (self.mu / 2 * proximal_term)
+
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()

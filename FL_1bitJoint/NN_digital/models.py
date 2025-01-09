@@ -146,18 +146,20 @@ class CNNCifar(nn.Module):
         x = self.fc3(x)
         return x
 
-
 # # # # ## Data volume = 61706 (floating point number)
 # model = CNNCifar(1, 10, )
 # data_valum = np.sum([param.numel() for param in model.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
-
 class CNNCifar1(nn.Module):
-     def __init__(self, input_channels = 3, output_channels = 10):
+     def __init__(self, input_channels = 3, output_channels = 10, batch_norm = False):
          super(CNNCifar1, self).__init__()
          self.conv1 = nn.Conv2d(3, 6, 5)
          self.conv2 = nn.Conv2d(6, 16, 5)
+         if batch_norm:
+             self.conv2_norm=nn.BatchNorm2d(16)
+         else:
+             self.conv2_norm = nn.Dropout2d()
          self.fc1 = nn.Linear(16*5*5, 120)
          self.fc2 = nn.Linear(120, 84)
          self.fc3 = nn.Linear(84, 10)
@@ -174,6 +176,31 @@ class CNNCifar1(nn.Module):
 # model = CNNCifar1( )
 # data_valum = np.sum([param.numel() for param in model.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
+
+
+# for key, var in global_model.state_dict().items():
+#     print(f"{key}, {var.is_leaf}, {var.shape},  " )
+
+
+# for name, param in  global_model.named_parameters():
+#     print(f"{name: <25}: size={param.size()}, requires_grad={param.requires_grad} ")
+
+# for key, var in global_model.state_dict().items():
+#     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}  " )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Block(nn.Module):
     def __init__(self, inchannel, outchannel, res=True, stride=2):
         super(Block, self).__init__()

@@ -86,47 +86,52 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-
 def LocalBatchIID():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
+    axins = axs.inset_axes((0.62, 0.52, 0.3, 0.32))
     L = 1000
     ## erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2024-12-16-15:26:49/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-09-21:17:46/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
     axins.plot(data[:,0], data[:,1], color = 'k', linestyle = '-', linewidth = 2)
 
     ## 1-bit erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2024-12-16-15:27:31/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-09-21:23:37/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = '#E918B5', lw = 3, linestyle='--', label = '1-bit Error-free',)
     axins.plot(data[:,0], data[:,1], color = '#E918B5', linestyle = '--', linewidth = 2)
 
     ## 1-bit, 0.1ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2024-12-16-15:27:59/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-09-21:24:00/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = 'b' , lw = 3, linestyle='--', label = '1-bit, BER=0.1',)
     axins.plot(data[:,0], data[:,1], color = 'b', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.2ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2024-12-16-16:13:05/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-09-21:24:38/TraRecorder.npy")[:L]
+    Y4 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = 'g', lw = 3, linestyle='--', label = '1-bit, BER=0.2',)
     axins.plot(data[:,0], data[:,1], color = 'g', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.3ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2024-12-16-16:13:16/TraRecorder.npy")[:L]
-    Y4 = data[:, 1]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-09-21:25:50/TraRecorder.npy")[:L]
+    Y5 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = '#CD853F', lw = 3, linestyle='--',  label = '1-bit, BER=0.3',)
     axins.plot(data[:,0], data[:,1], color = '#CD853F', linestyle = '--', linewidth = 2)
 
-    # ## 1-bit 0.4ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2024-12-16-16:13:20/TraRecorder.npy")[:L]
-    Y5 = data[:, 1]
+    ## 1-bit 0.4ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2025-01-09-21:43:47/TraRecorder.npy")[:L]
+    Y6 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = '#00BFFF', lw = 3, linestyle='--',  label = '1-bit, BER=0.4',)
     axins.plot(data[:,0], data[:,1], color = '#00BFFF', linestyle = '--', linewidth = 2)
+
+    ## 1-bit 0.5ber
+    data1 = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.5_sgd_0.01_U100+6_bs128_2025-01-09-21:51:40/TraRecorder.npy")
+    Y7 = data[:, 1]
+    axs.plot(data1[:,0], data1[:,1], color = '#778899', lw = 3, linestyle='--',  label = '1-bit, BER=0.5',)
+    # axins.plot(data1[:,0], data1[:,1], color = '#778899', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -134,7 +139,7 @@ def LocalBatchIID():
     axs.set_ylabel('Test accuracy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -145,11 +150,10 @@ def LocalBatchIID():
     axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(24) for label in labels]  # 刻度值字号
+    [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
     # axs.set_ylim(0.2, 1.06)  #拉开坐标轴范围显示投影
-
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -157,10 +161,9 @@ def LocalBatchIID():
     axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
-
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y1, Y2, Y3, Y4, Y5, Y6], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -174,49 +177,49 @@ def LocalBatchIID():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('./Figures/MNIST_IID_1bit_bitflip_acc.eps' )
-    out_fig.savefig('./Figures/MNIST_IID_1bit_bitflip_acc.pdf' )
+    out_fig.savefig('../Figures/MNIST_IID_1bit_bitflip_acc.eps' )
+    out_fig.savefig('../Figures/MNIST_IID_1bit_bitflip_acc.pdf' )
     plt.show()
 
 def LocalBatchIID_loss():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 1000
+    L = 700
     ## erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2024-12-16-15:26:49/TraRecorder.npy")[:L]
-    Y1 = data[:, 1]
-    axs.plot(data[:,0], data[:,2], color = 'k', linestyle= '-', lw = 1.3,  marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
-    # axins.plot(data[:,0], data[:,1], color = 'k', linestyle = '-', linewidth = 2)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-09-21:17:46/TraRecorder.npy")[:L]
+    Y1 = data[:, 2]
+    axs.plot(data[:,0], data[:,2], color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    # axins.plot(data[:,0], data[:,2], color = 'k', linestyle = '-', linewidth = 2)
 
     ## 1-bit erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2024-12-16-15:27:31/TraRecorder.npy")[:L]
-    Y2 = data[:, 1]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-09-21:23:37/TraRecorder.npy")[:L]
+    Y2 = data[:, 2]
     axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 3, linestyle='--', label = '1-bit Error-free',)
-    # axins.plot(data[:,0], data[:,1], color = 'r', linestyle = '--', linewidth = 2)
+    # axins.plot(data[:,0], data[:,2], color = '#E918B5', linestyle = '--', linewidth = 2)
 
     ## 1-bit, 0.1ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2024-12-16-15:27:59/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-09-21:24:00/TraRecorder.npy")[:L]
+    Y3 = data[:, 2]
     axs.plot(data[:,0], data[:,2], color = 'b' , lw = 3, linestyle='--', label = '1-bit, BER=0.1',)
-    # axins.plot(data[:,0], data[:,1], color = 'b', linestyle = '--', linewidth = 2)
+    # axins.plot(data[:,0], data[:,2], color = 'b', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.2ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2024-12-16-16:13:05/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-09-21:24:38/TraRecorder.npy")[:L]
+    Y3 = data[:, 2]
     axs.plot(data[:,0], data[:,2], color = 'g', lw = 3, linestyle='--', label = '1-bit, BER=0.2',)
-    # axins.plot(data[:,0], data[:,1], color = 'g', linestyle = '--', linewidth = 2)
+    # axins.plot(data[:,0], data[:,2], color = 'g', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.3ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2024-12-16-16:13:16/TraRecorder.npy")[:L]
-    Y4 = data[:, 1]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-09-21:25:50/TraRecorder.npy")[:L]
+    Y4 = data[:, 2]
     axs.plot(data[:,0], data[:,2], color = '#CD853F', lw = 3, linestyle='--',  label = '1-bit, BER=0.3',)
-    # axins.plot(data[:,0], data[:,1], color = '#CD853F', linestyle = '--', linewidth = 2)
+    # axins.plot(data[:,0], data[:,2], color = '#CD853F', linestyle = '--', linewidth = 2)
 
-    # ## 1-bit 0.4ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/MNIST_IID_diff_batchs3_1bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2024-12-16-16:13:20/TraRecorder.npy")[:L]
-    Y5 = data[:, 1]
+    ## 1-bit 0.4ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2025-01-09-21:43:47/TraRecorder.npy")[:L]
+    Y5 = data[:, 2]
     axs.plot(data[:,0], data[:,2], color = '#00BFFF', lw = 3, linestyle='--',  label = '1-bit, BER=0.4',)
-    # axins.plot(data[:,0], data[:,1], color = '#00BFFF', linestyle = '--', linewidth = 2)
+    # axins.plot(data[:,0], data[:,2], color = '#00BFFF', linestyle = '--', linewidth = 2)
 
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -247,8 +250,8 @@ def LocalBatchIID_loss():
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     out_fig = plt.gcf()
-    out_fig.savefig('./Figures/MNIST_IID_1bit_bitflip_loss.eps' )
-    out_fig.savefig('./Figures/MNIST_IID_1bit_bitflip_loss.pdf' )
+    out_fig.savefig('../Figures/MNIST_IID_1bit_bitflip_loss.eps' )
+    out_fig.savefig('../Figures/MNIST_IID_1bit_bitflip_loss.pdf' )
     plt.show()
 
 

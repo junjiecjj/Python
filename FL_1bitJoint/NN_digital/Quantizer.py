@@ -88,25 +88,19 @@ def SR_np(param):
 ##         长度为 n*B 的0，1整数序列, 量化后的结果, np.array(np.int8);
 """
 ## 用在并行中的np的多比特的量化
-def QuantizationBbits_NP_int(params,  B = 8, rounding = "nr"):
-    # print("      QuantizationBbits_NP_int\n")
-
-    # print(f"{B} Bit quantization..")
-    G =  2**(B - 1)
-
+def QuantizationBbits_NP_int(params, G, B = 8, rounding = "nr"):
+    Ub =  2**(B - 1)
     if rounding == "sr":
-        Clip = np.clip(SR_np(params * G), a_min = -1*G, a_max = G - 1,)
+        Clip = np.clip(SR_np(params * G), a_min = -1*Ub, a_max = Ub - 1,)
     elif rounding == "nr":
-        Clip = np.clip(np.round(params * G), a_min = -1*G, a_max = G - 1,)
-    # Shift = Clip
-    K, Len = params.shape
-    Int =  np.array(Clip, dtype = np.int32).flatten()
+        Clip = np.clip(np.round(params * G), a_min = -1*Ub, a_max = Ub - 1,)
+    Int =  np.array(Clip, dtype = np.int32)
 
     bin_len = int(Int.size * B)
     binary_send = np.zeros(bin_len, dtype = np.int8 )
     for idx, num in enumerate(Int):
         binary_send[idx*B : (idx+1)*B] = [int(b) for b in  np.binary_repr(num, width = B)]
-    return binary_send.reshape(K, -1)
+    return binary_send
 
 ## 用在并行中的np的1比特的量化, stochastic rounding (SR),
 # def Quantization1bits_NP_int(params,  BG = 8,):
@@ -119,7 +113,8 @@ def QuantizationBbits_NP_int(params,  B = 8, rounding = "nr"):
 def Quantization1bits_NP_int(params,  G = 256,):
     # G =  2**BG
     p = (params * G + 1)/2
-    p = np.clip(p, a_min = 1e-15, a_max = 1 - 1e-15, )
+    p = np.clip(p, a_min = 0, a_max = 1, )
+    # print(p)
     Int =  np.random.binomial(1, p).astype(np.int8)
     return Int
 
@@ -155,21 +150,17 @@ def signed_bin2dec(bin_str: str) -> int:
         return a - 2**len(bin_str)
 
 ## 用在并行中的np的多比特的反量化
-def deQuantizationBbits_NP_int(bin_recv, B = 8):
-    G = 2**(B-1)
-    K, Len = bin_recv.shape
-    bin_recv = bin_recv.flatten()
+def deQuantizationBbits_NP_int(bin_recv, G, B = 8):
     num_dig = int(bin_recv.size/B)
     param_recv = np.zeros(num_dig, dtype = np.int32 )
     for idx in range(num_dig):
         param_recv[idx] = signed_bin2dec(''.join([str(num) for num in bin_recv[idx*B:(idx+1)*B]]))
     param_recv = (param_recv*1.0 )/G
-    # param_recv = (param_recv*1.0 )/256
-    return param_recv.astype(np.float32).reshape(K,-1)
+
+    return param_recv.astype(np.float32)
 
 ## 用在并行中的np的1比特的反量化
 def deQuantization1bits_NP_int(bin_recv, G = 1, ):
-    # G = 2**BG
     param_recv = np.where(bin_recv < 1, -1, bin_recv).astype(np.float32)/G
     return param_recv
 

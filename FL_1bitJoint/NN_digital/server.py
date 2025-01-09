@@ -42,6 +42,15 @@ class Server(object):
         return
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%% Error-free %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    def aggregate_signSGD(self, mess_lst, lr, ):
+        w_avg = copy.deepcopy(mess_lst[0])
+        for key in w_avg.keys():
+            for i in range(1, len(mess_lst)):
+                w_avg[key] += mess_lst[i][key]
+        for param in w_avg.keys():
+            self.global_weight[param] -= (lr * torch.sign(w_avg[param])).type(self.global_weight[param].dtype)
+        return
+
     def aggregate_gradient_erf(self, mess_lst, lr, ):
         w_avg = copy.deepcopy(mess_lst[0])
         for key in w_avg.keys():
