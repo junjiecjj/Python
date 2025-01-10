@@ -19,7 +19,6 @@ class Mnist_2NN(nn.Module):
         tensor = self.fc3(tensor)
         return tensor
 
-
 # # Data volume = 199210 (floating point number)
 # net = Mnist_2NN()
 # data_valum = 0

@@ -42,8 +42,6 @@ fig, ax = plt.subplots(figsize = (8,6))
 sns.kdeplot(data=iris_sns, x="sepal_length", bw_adjust=0.3, fill = True)
 sns.rugplot(data=iris_sns, x="sepal_length")
 
-
-
 # 绘制花萼长度样本数据，高斯核密度估计，考虑鸢尾花类别
 fig, ax = plt.subplots(figsize = (8,6))
 

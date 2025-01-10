@@ -99,8 +99,6 @@ class Mnist_CNN(nn.Module):
 # data_valum = np.sum([param.numel() for param in net.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
-
-
 class CNNMnist(nn.Module):
     def __init__(self, num_channels, num_classes, batch_norm=False):
         super(CNNMnist, self).__init__()
@@ -152,14 +150,10 @@ class CNNCifar(nn.Module):
 # print(f"Data volume = {data_valum} (floating point number) ")
 
 class CNNCifar1(nn.Module):
-     def __init__(self, input_channels = 3, output_channels = 10, batch_norm = False):
+     def __init__(self, input_channels = 3, output_channels = 10, ):
          super(CNNCifar1, self).__init__()
          self.conv1 = nn.Conv2d(3, 6, 5)
          self.conv2 = nn.Conv2d(6, 16, 5)
-         if batch_norm:
-             self.conv2_norm=nn.BatchNorm2d(16)
-         else:
-             self.conv2_norm = nn.Dropout2d()
          self.fc1 = nn.Linear(16*5*5, 120)
          self.fc2 = nn.Linear(120, 84)
          self.fc3 = nn.Linear(84, 10)
@@ -185,8 +179,6 @@ class CNNCifar1(nn.Module):
 # for name, param in  global_model.named_parameters():
 #     print(f"{name: <25}: size={param.size()}, requires_grad={param.requires_grad} ")
 
-# for key, var in global_model.state_dict().items():
-#     print(f"{key}, {var.is_leaf}, {var.shape}, {var.device}, {var.requires_grad}, {var.type()}  " )
 
 
 
@@ -194,74 +186,6 @@ class CNNCifar1(nn.Module):
 
 
 
-
-
-
-
-
-
-
-class Block(nn.Module):
-    def __init__(self, inchannel, outchannel, res=True, stride=2):
-        super(Block, self).__init__()
-        self.res = res     # 是否带残差连接
-        self.left = nn.Sequential(
-            nn.Conv2d(inchannel, outchannel, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(outchannel),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(outchannel, outchannel, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(outchannel),
-        )
-        if stride != 1 or inchannel != outchannel:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(inchannel, outchannel, kernel_size=1, bias=False),
-                nn.BatchNorm2d(outchannel),
-            )
-        else:
-            self.shortcut = nn.Sequential()
-
-        self.relu = nn.Sequential(
-            nn.ReLU(inplace=True),
-        )
-
-    def forward(self, x):
-        out = self.left(x)
-        if self.res:
-            out += self.shortcut(x)
-        out = self.relu(out)
-        return out
-
-
-class myModel(nn.Module):
-    def __init__(self, cfg=[64, 'M', 128,  'M', 256, 'M', 512, 'M'], res=True):
-        super(myModel, self).__init__()
-        self.res = res       # 是否带残差连接
-        self.cfg = cfg       # 配置列表
-        self.inchannel = 3   # 初始输入通道数
-        self.futures = self.make_layer()
-        # 构建卷积层之后的全连接层以及分类器：
-        self.classifier = nn.Sequential(nn.Dropout(0.4), nn.Linear(4 * 512, 10), )   # fc，最终Cifar10输出是10类
-
-    def make_layer(self):
-        layers = []
-        for v in self.cfg:
-            if v == 'M':
-                layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
-            else:
-                layers.append(Block(self.inchannel, v, self.res))
-                self.inchannel = v    # 输入通道数改为上一层的输出通道数
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        out = self.futures(x)
-        # view(out.size(0), -1): change tensor size from (N ,H , W) to (N, H*W)
-        out = out.view(out.size(0), -1)
-        out = self.classifier(out)
-        return out
-# model = myModel( )
-# data_valum = np.sum([param.numel() for param in model.state_dict().values()])
-# print(f"Data volume = {data_valum} (floating point number) ")
-# 4887702
 
 
 

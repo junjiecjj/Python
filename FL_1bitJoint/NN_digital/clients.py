@@ -22,7 +22,7 @@ import torch.optim as optim
 class Client(object):
     def __init__(self, args, data, model, client_name = "clientxx",):
         self.args             = args
-        self.mu = args.mu
+        self.mu               = args.mu
         self.device           = args.device
         self.id               = client_name
         self.datasize         = len(data)

@@ -7,21 +7,9 @@ Created on Sun Aug 18 22:25:47 2024
 """
 
 import os, sys
-import math
+# import math
 import datetime
-import imageio
-# import cv2
-import skimage
-import glob
-import random
-import numpy as np
-import torch
 
-import matplotlib
-#### 本项目自己编写的库
-# sys.path.append("..")
-# from  ColorPrint import ColoPrint
-# color =  ColoPrint()
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"

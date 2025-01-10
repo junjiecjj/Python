@@ -33,7 +33,7 @@ def args_parser():
     "num_of_clients" : 100,
     "active_client" : 10,
     "num_comm" : 1000,
-    "save_path" : home + '/FL_1bitJoint/CIFAR10_IID/',
+    "save_path" : home + '/FL_1bitJoint/MNIST_nonIID/',
     "lr" : 0.01,
     "mu" : 0.1,
 

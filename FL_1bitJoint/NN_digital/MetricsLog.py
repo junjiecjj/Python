@@ -14,11 +14,10 @@ import numpy as np
 from scipy import stats
 import torch
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import pickle
 import matplotlib.pyplot as plt
-# from matplotlib.font_manager import FontProperties
-# from matplotlib.pyplot import MultipleLocator
+
 import warnings
 warnings.filterwarnings("ignore")
 

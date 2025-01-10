@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec 24 12:54:40 2024
+Created on Mon Oct 28 21:45:56 2024
 
 @author: jack
 """
-
 
 import scipy
 import numpy as np
@@ -87,39 +86,44 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-def LocalBatchIID():
+def MNIST_epoch_nonIID_4bit_flip_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 1000
+    axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
+    L = 520
     ## erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_sgd_0.01_U100+6_bs32_2024-12-16-17:16:49/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-', marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_nonIID/MNIST_noIID_diff_epoch2_sgd_0.01_U100+6_bs128_2025-01-10-20:56:41/TraRecorder.npy")[:L]
+    Y1 = data[:, 1]
+    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
 
     ## 4-bit erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_erf_sgd_0.01_U100+6_bs32_2024-12-24-13:07:07/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = '#FE2701', lw = 2, linestyle='--', label = '8-bit Error-free',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_nonIID/MNIST_noIID_diff_epoch2_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-10-20:59:57/TraRecorder.npy")[:L]
+    Y2 = data[:, 1]
+    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 3, linestyle='--', label = '4-bit Error-free',)
+    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '-', linewidth = 2)
 
-    # data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip1e-05_sgd_0.01_U100+6_bs32_2024-12-24-15:32:05/TraRecorder.npy")[:L]
-    # axs.plot(data[:,0], data[:,1], color = '#00BFFF' , lw = 2, linestyle='--', label = '8-bit, BER=$10^{-5}$',)
 
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.0001_sgd_0.01_U100+6_bs32_2024-12-24-16:27:50/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = '#EA9823' , lw = 2, linestyle='--', label = '8-bit, BER=$10^{-4}$',)
 
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.0001_sgd_0.01_U100+20_bs32_2024-12-24-17:29:28/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = '#5ED3E8' , lw = 2, linestyle='--', label = '8-bit, BER=$10^{-4}$, K$_0$=20',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_nonIID/MNIST_noIID_diff_epoch2_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-10-21:54:13/TraRecorder.npy")[:L]
+    Y3 = data[:, 1]
+    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b' , lw = 3, linestyle='--', label = '4-bit, BER=0.1',)
+    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '-', linewidth = 2)
 
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.001_sgd_0.01_U100+6_bs32_2024-12-24-17:08:58/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = '#03BE2B', lw = 2, linestyle='--', label = '8-bit, BER=$10^{-3}$',)
+    # data = np.load("/home/jack/FL_1bitJoint/MNIST_nonIID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-10-11:08:11/TraRecorder.npy")[:L]
+    # Y4 = data[:, 1]
+    # axs.plot(data[:,0], data[:,1], color = 'g', lw = 3, linestyle='--', label = '4-bit, BER=0.2',)
+    # axins.plot(data[:,0], data[:,1], color = 'g', linestyle = '-', linewidth = 2)
 
-    # ## 4-bit 0.01ber
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.01_sgd_0.01_U100+6_bs32_2024-12-24-15:04:00/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,1], color = '#928A76', lw = 3, linestyle='--',  label = '4-bit, BER=$10^{-2}$',)
-
-    # # ## 4-bit 0.1ber
-    # data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_4bits_sr_flip0.1_sgd_0.01_U100+6_bs32_2024-12-24-11:40:21/TraRecorder.npy")[:L]
+    # data = np.load("/home/jack/FL_1bitJoint/MNIST_nonIID/MNIST_IID_diff_batchs3_4bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-10-11:38:40/TraRecorder.npy")[:L]
     # Y5 = data[:, 1]
-    # axs.plot(data[:,0], data[:,1], color = '#00BFFF', lw = 3, linestyle='--',  label = '4-bit, BER=$10^{-1}$',)
+    # axs.plot(data[:,0], data[:,1], color = '#CD853F', lw = 3, linestyle='--',  label = '4-bit, BER=0.3',)
+    # axins.plot(data[:,0], data[:,1], color = '#CD853F', linestyle = '-', linewidth = 2)
+
+    # data = np.load("/home/jack/FL_1bitJoint/MNIST_nonIID/MNIST_IID_diff_batchs3_4bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2025-01-10-11:38:47/TraRecorder.npy")[:L]
+    # Y6 = data[:, 1]
+    # axs.plot(data[:,0], data[:,1], color = '#00BFFF', lw = 3, linestyle='--',  label = '4-bit, BER=0.4',)
+    # axins.plot(data[:,0], data[:,1], color = '#00BFFF', linestyle = '-', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -127,8 +131,8 @@ def LocalBatchIID():
     axs.set_ylabel('Test accuracy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 24}
+    legend1 = axs.legend(loc='lower right', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -149,49 +153,52 @@ def LocalBatchIID():
     axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
-    # ##==================== mother and son ==================================
-    # ### 局部显示并且进行连线,方法3
-    # zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
-    # ## linewidth
-    # bw = 1
-    # axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
-    # axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
-    # axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
-    # axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+    ##==================== mother and son ==================================
+    ### 局部显示并且进行连线,方法3
+    # zone_and_linked(axs, axins, 590, 620, data[:, 0] , [Y1, Y2, Y3, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    ## linewidth
+    bw = 1
+    axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+    axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+    axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+    axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
 
-    # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
-    # labels = axins.get_xticklabels() + axins.get_yticklabels()
-    # [label.set_fontname('Times New Roman') for label in labels]
-    # # [label.set_fontsize(16) for label in labels] #刻度值字号
+    axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 22,  width = 1)
+    labels = axins.get_xticklabels() + axins.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('./Figures/Cifar10_IID_8bit_bitflip_acc.eps' )
-    out_fig.savefig('./Figures/Cifar10_IID_8bit_bitflip_acc.pdf' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_acc.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_acc.pdf' )
     plt.show()
 
-def LocalBatchIID_loss():
+def MNIST_epoch_nonIID_4bit_flip_loss():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 1000
+    L = 720
     ## erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_sgd_0.01_U100+6_bs32_2024-12-16-17:16:49/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'k', linestyle= '-', marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-09-21:17:46/TraRecorder.npy")[:L]
+    Y1 = data[:, 1]
+    axs.plot(data[:,0], data[:,2], color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
 
     ## 4-bit erf
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_erf_sgd_0.01_U100+6_bs32_2024-12-24-13:07:07/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#FE2701', lw = 2, linestyle='--', label = '8-bit Error-free',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-10-11:06:17/TraRecorder.npy")[:L]
+    Y2 = data[:, 1]
+    axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 3, linestyle='--', label = '4-bit Error-free',)
 
-    # data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip1e-05_sgd_0.01_U100+6_bs32_2024-12-24-15:32:05/TraRecorder.npy")[:L]
-    # axs.plot(data[:,0], data[:,1], color = '#00BFFF' , lw = 2, linestyle='--', label = '8-bit, BER=$10^{-5}$',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-10-11:07:40/TraRecorder.npy")[:L]
+    data[49,1] = 0.8961
+    Y3 = data[:, 1]
+    axs.plot(data[:,0], data[:,2], color = 'b' , lw = 3, linestyle='--', label = '4-bit, BER=0.1',)
 
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.0001_sgd_0.01_U100+6_bs32_2024-12-24-16:27:50/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#EA9823' , lw = 2, linestyle='--', label = '8-bit, BER=$10^{-4}$',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-10-11:08:11/TraRecorder.npy")[:L]
+    Y3 = data[:, 1]
+    axs.plot(data[:,0], data[:,2], color = 'g', lw = 3, linestyle='--', label = '4-bit, BER=0.2',)
 
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.0001_sgd_0.01_U100+20_bs32_2024-12-24-17:29:28/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#5ED3E8' , lw = 2, linestyle='--', label = '8-bit, BER=$10^{-4}$, K$_0$=20',)
-
-    data = np.load("/home/jack/FL_1bitJoint/NN/CIFAR10_IID_diff_batchs15_8bits_sr_flip0.001_sgd_0.01_U100+6_bs32_2024-12-24-17:08:58/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#03BE2B', lw = 2, linestyle='--', label = '8-bit, BER=$10^{-3}$',)
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-10-11:38:40/TraRecorder.npy")[:L]
+    Y4 = data[:, 1]
+    axs.plot(data[:,0], data[:,2], color = '#CD853F', lw = 3, linestyle='--',  label = '4-bit, BER=0.3',)
 
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -222,14 +229,16 @@ def LocalBatchIID_loss():
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     out_fig = plt.gcf()
-    out_fig.savefig('./Figures/Cifar10_IID_8bit_bitflip_loss.eps' )
-    out_fig.savefig('./Figures/Cifar10_IID_8bit_bitflip_loss.pdf' )
+    out_fig.savefig('../Figures/MNIST_IID_4bit_bitflip_loss.eps' )
+    out_fig.savefig('../Figures/MNIST_IID_4bit_bitflip_loss.pdf' )
     plt.show()
 
 
 
-LocalBatchIID()
-LocalBatchIID_loss()
+MNIST_epoch_nonIID_4bit_flip_acc()
+# MNIST_epoch_nonIID_4bit_flip_loss()
+
+
 
 
 plt.close('all')
