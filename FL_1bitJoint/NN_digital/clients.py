@@ -68,7 +68,7 @@ class Client(object):
     def local_update_gradient1(self, cur_weight, lr = 0.01):
         init_weight = copy.deepcopy(cur_weight)
         self.model.load_state_dict(cur_weight, strict = True)
-        global_model = copy.deepcopy(self.model)
+        # global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -76,12 +76,12 @@ class Client(object):
             data, label = data.to(self.device), label.to(self.device)
             preds = self.model(data)
             loss = self.los_fn(preds, label)
-            # fedprox, add proximal term
-            if not self.args.IID: # self.fedprox:
-                proximal_term = torch.tensor(0., device = self.device)
-                for w, w_global in zip(self.model.parameters(), global_model.parameters()):
-                    proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
-                loss += (self.mu / 2 * proximal_term)
+            # # fedprox, add proximal term
+            # if not self.args.IID: # self.fedprox:
+            #     proximal_term = torch.tensor(0., device = self.device)
+            #     for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+            #         proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
+            #     loss += (self.mu / 2 * proximal_term)
 
             self.optimizer.zero_grad()
             loss.backward()

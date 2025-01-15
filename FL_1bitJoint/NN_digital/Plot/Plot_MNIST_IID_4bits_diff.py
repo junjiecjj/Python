@@ -90,7 +90,7 @@ def MNIST_BatchIID_4bit_flip_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 720
+    L = 1000
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-09-21:17:46/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
@@ -98,18 +98,18 @@ def MNIST_BatchIID_4bit_flip_acc():
     axins.plot(data[:,0], data[:,1], color = 'k', linestyle = '-', linewidth = 2)
 
     ## 4-bit erf
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-10-11:06:17/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-11-15:57:37/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = '#E918B5', lw = 3, linestyle='--', label = '4-bit Error-free',)
     axins.plot(data[:,0], data[:,1], color = '#E918B5', linestyle = '-', linewidth = 2)
 
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-10-11:07:40/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-11-15:58:13/TraRecorder.npy")[:L]
     data[49,1] = 0.8961
     Y3 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = 'b' , lw = 3, linestyle='--', label = '4-bit, BER=0.1',)
     axins.plot(data[:,0], data[:,1], color = 'b', linestyle = '-', linewidth = 2)
 
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-10-11:08:11/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-11-15:58:28/TraRecorder.npy")[:L]
     Y4 = data[:, 1]
     axs.plot(data[:,0], data[:,1], color = 'g', lw = 3, linestyle='--', label = '4-bit, BER=0.2',)
     axins.plot(data[:,0], data[:,1], color = 'g', linestyle = '-', linewidth = 2)
@@ -154,7 +154,7 @@ def MNIST_BatchIID_4bit_flip_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 590, 620, data[:, 0] , [Y1, Y2, Y3, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y1, Y2, Y3, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -175,22 +175,22 @@ def MNIST_BatchIID_4bit_flip_acc():
 def MNIST_BatchIID_4bit_flip_loss():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    L = 720
+    L = 1000
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-09-21:17:46/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
     axs.plot(data[:,0], data[:,2], color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
 
     ## 4-bit erf
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-10-11:06:17/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-11-15:57:37/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
     axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 3, linestyle='--', label = '4-bit Error-free',)
 
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-10-11:07:40/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-11-15:58:13/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
     axs.plot(data[:,0], data[:,2], color = 'b' , lw = 3, linestyle='--', label = '4-bit, BER=0.1',)
 
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-10-11:08:11/TraRecorder.npy")[:L]
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-11-15:58:28/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
     axs.plot(data[:,0], data[:,2], color = 'g', lw = 3, linestyle='--', label = '4-bit, BER=0.2',)
 
@@ -201,7 +201,7 @@ def MNIST_BatchIID_4bit_flip_loss():
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    axs.set_ylabel('Cross Entropy', fontproperties=font2, )
+    axs.set_ylabel('Training loss', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
@@ -236,7 +236,7 @@ def MNIST_BatchIID_K0_4bit_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.52, 0.3, 0.32))
-    L = 300
+    L = 500
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+2_bs128_2025-01-10-12:55:39/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
@@ -283,7 +283,7 @@ def MNIST_BatchIID_K0_4bit_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 230, 250, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 430, 450, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -372,8 +372,8 @@ def MNIST_BatchIID_K0_4bit_flip_acc():
     plt.show()
 
 MNIST_BatchIID_4bit_flip_acc()
-MNIST_BatchIID_4bit_flip_loss()
-MNIST_BatchIID_K0_4bit_acc()
+# MNIST_BatchIID_4bit_flip_loss()
+# MNIST_BatchIID_K0_4bit_acc()
 MNIST_BatchIID_K0_4bit_flip_acc()
 
 

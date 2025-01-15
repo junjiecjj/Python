@@ -15,7 +15,7 @@ import os
 
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
-from Transmit_1bit import OneBit, OneBit_cifar10, Sign
+# from Transmit_1bit import OneBit
 from Transmit_Bbit import B_Bit, mess_stastic
 
 from read_data import GetDataSet
@@ -32,35 +32,31 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True              # True, False
+args.IID = False              # True, False
 args.dataset = "CIFAR10"       #  MNIST,  CIFAR10
 
 datapart = "IID" if args.IID else "nonIID"
 
-cur_lr = args.lr = 0.01
+cur_lr = args.lr = 0.1
 args.num_of_clients = 100
 args.active_client = 6
 args.case = 'grad'          # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
-
+args.local_bs = 128
 if args.IID == True:
     args.diff_case = 'batchs'
-    cur_lr = args.lr = 0.01
     if args.dataset == "MNIST":
         args.local_up = 3
-        args.local_bs = 128
     elif args.dataset == "CIFAR10":
         args.local_up = 10
-        args.local_bs = 32
 elif args.IID == False:
     args.diff_case = 'epoch'
     if args.dataset == "MNIST":
         args.local_epoch = 1
-        args.local_bs = 64
     elif args.dataset == "CIFAR10":
         args.local_epoch = 4
-        args.local_bs = 64
+
 
 ## seed
 args.seed = 1
@@ -80,7 +76,8 @@ global_weight = global_model.state_dict()
 
 key_grad = []
 for name, param in global_model.named_parameters():
-    key_grad.append(name)
+    if 'norm' not in name:
+        key_grad.append(name)
 
 ##============================= 完成以上准备工作 ================================#
 Users = GenClientsGroup(args, local_dt_dict, copy.deepcopy(global_model) )
@@ -107,11 +104,11 @@ for comm_round in range(args.num_comm):
     ### grdient
     if args.case == 'grad':
         for name in candidates:
-            message = Users[name].local_update_gradient1(copy.deepcopy(global_weight), cur_lr)
+            message = Users[name].local_update_gradient(copy.deepcopy(global_weight), cur_lr)
             message_lst.append(message)
         os.makedirs(args.home + '/FL_1bitJoint/statistics/', exist_ok = True)
         savename = args.home + f'/FL_1bitJoint/statistics/distribution_{args.case}_{args.dataset}_{datapart}.pdf'
-        if comm_round in [0, 50, 100 ]:
+        if comm_round in [1, 50, 100 ]:
             statistics3.append(message_lst[-1])
         err = 0
         server.aggregate_gradient_erf(message_lst, cur_lr)
@@ -125,7 +122,7 @@ for comm_round in range(args.num_comm):
             message_lst.append(message)
         os.makedirs(args.home + '/FL_1bitJoint/statistics/', exist_ok = True)
         savename = args.home + f'/FL_1bitJoint/statistics/distribution_{args.case}_{args.dataset}_{datapart}.pdf'
-        if comm_round in [0, 50, 100 ]:
+        if comm_round in [1, 50, 100 ]:
             statistics3.append(message_lst[-1])
         err = 0
         server.aggregate_diff_erf(message_lst)

@@ -9,23 +9,6 @@ Created on 2024/08/25
 @author: Junjie Chen
 
 
-(1) IID, diff本地5轮，lr=0.01, SGD， 1bit-NR, U=100, BS =128, 接收方/2**8;
-(2) IID, grad，lr=0.01, SGD， 1bit-NR, U=100, BS = 64, 接收方 / 1;
-
-non-IID:
-    (1) non-IID, diff本地5轮，lr = 0.01, SGD，no-quantize, U = 100, BS = 128;
-        non-IID, diff本地5轮，lr = 0.01, SGD，no-quantize, U = 100, BS = 64;
-        non-IID, diff本地5轮，lr = 0.01, SGD，1bit-quantize, U = 100, BS = 64, 接收方/2**8;
-    (2) non-IID, grad，lr = 0.1, SGD，no-quantize, U = 200, 10,  BS = 128;
-        non-IID, grad，lr = 0.1, SGD，no-quantize, U = 100, 10,  BS = 128;
-
-MNIST:
-    (一) IID:
-        no-quantize: diff本地1轮，lr=0.01, SGD， 1bit-NR, U = 100, BS = 128, 接收方/2**8;
-        1bit:        diff本地1轮，lr=0.01, SGD， 1bit-NR, U = 100, BS = 128, 接收方/2**8;
-
-    (二) Non-IID:
-
 """
 
 import numpy as np
@@ -36,7 +19,7 @@ import torch
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
 
-from Transmit_1bit import OneBit, OneBit_CIFAR10, Sign
+from Transmit_1bit import OneBit, OneBit_CIFAR10, OneBit_Grad_G, Sign
 from Transmit_Bbit import B_Bit
 
 from read_data import GetDataSet
@@ -54,39 +37,34 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 args = args_parser()
 
 args.IID = True              # True, False
-args.dataset = "CIFAR10"       #  MNIST,  CIFAR10
-
 datapart = "IID" if args.IID else "nonIID"
-args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_{datapart}/'
+args.dataset = "CIFAR10"       #  CIFAR10
 
 cur_lr = args.lr = 0.01
-args.num_of_clients = 100
+# args.num_of_clients = 20
 args.active_client = 12
 args.case = 'diff'          # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
+
 args.quantize = True       # True, False
 if args.quantize == True:
     args.rounding = 'sr'       # 'nr', 'sr',
 
     args.bitswidth = 1         #  1,  8
-    args.transmitWay = 'erf'    # 'erf', 'flip', 'scma', 'sic'
-
+    args.transmitWay = 'flip'    # 'erf', 'flip', 'scma', 'sic'
+    args.G = 2**8
     if args.transmitWay.lower() == 'flip':
         args.flip_rate = 0.1
     if args.transmitWay.lower() == 'erf':
         args.flip_rate = 0
-    # if  args.transmitWay.lower() =='scma' or args.transmitWay.lower() == 'sic':
-        # args.snr_dB = 1
+
 if args.IID == True:
-    args.diff_case = 'batchs'
-    cur_lr = args.lr = 0.01
-    if args.dataset == "MNIST":
-        args.local_up = 3
-        args.local_bs = 128
-    elif args.dataset == "CIFAR10":
-        args.local_up = 10
-        args.local_bs = 32
+    args.num_of_clients = 100
+    args.diff_case = 'epoch'
+    if args.dataset == "CIFAR10":
+        args.local_epoch = 2
+        args.local_bs = 64
 
 ## seed
 args.seed = 1
@@ -95,17 +73,21 @@ set_printoption(5)
 ##>>>>>>>>>>>>>>>>> channel >>>>>>>>>>>>>>>>>>>
 ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
-
 local_dt_dict, testloader = GetDataSet(args)
-if args.dataset.lower() == "mnist":
-    global_model = models.CNNMnist(1, 10, True).to(args.device)
-else:
-    global_model = models.CNNCifar1(3, 10,).to(args.device)
 
+if args.IID == True:
+    # global_model = models.CNNCifar1(3, 10,).to(args.device)
+    global_model = models.resnet20().to(args.device)
+    args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_resnet20_{datapart}/'
+
+elif args.IID == False:
+    global_model = models.resnet20().to(args.device)
+    args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_resnet20_{datapart}/'
 global_weight = global_model.state_dict()
 
 key_grad = []
 for name, param in global_model.named_parameters():
+    # if "norm" not in name:
     key_grad.append(name)
 
 ##============================= 完成以上准备工作 ================================#
@@ -135,10 +117,8 @@ for comm_round in range(args.num_comm):
             if args.bitswidth == 1:
                 if args.transmitWay == 'erf' or args.transmitWay == 'flip':
                     print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-                    if args.dataset == "CIFAR10":
-                        mess_recv, err = OneBit_CIFAR10(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, G = 2**8)
-                    elif args.dataset == "MNIST":
-                        mess_recv, err = OneBit(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad)
+                    # mess_recv, err = OneBit(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad,)
+                    mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad, G = args.G)
             elif args.bitswidth > 1:
                 if args.transmitWay == 'erf' or args.transmitWay == 'flip':
                     print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")

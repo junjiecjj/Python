@@ -16,7 +16,6 @@ import copy
 # import matplotlib.pyplot as plt
 from Quantizer import Quantization1bits_NP_int, deQuantization1bits_NP_int
 
-
 # 1-bit  transmission, user-wise G
 def OneBit(message_lst, args, rounding = 'nr', err_rate = 0, key_grad = None):
     key_lst_wo_grad = []
@@ -145,7 +144,7 @@ def OneBit_CIFAR10(message_lst, args, rounding = 'sr', err_rate = 0, G = 2**8):
     return mess_recov, err_rate
 
 # 1-bit  transmission, same-G, only-Grad
-def OneBit_MNIST(message_lst, args, rounding = 'nr', err_rate = 0, key_grad = None, G = 2**8):
+def OneBit_Grad_G(message_lst, args, rounding = 'nr', err_rate = 0, key_grad = None, G = 2**8):
     key_lst_wo_grad = []
     info_lst = []
     for key, val in message_lst[0].items():

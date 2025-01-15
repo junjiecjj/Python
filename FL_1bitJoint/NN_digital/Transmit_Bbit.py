@@ -149,7 +149,7 @@ def mess_stastic(message_lst, args, savename, key_grad ):
     axs.tick_params(which = 'major', axis='both', direction='in', left = True, right = True, top=True, bottom=True, width=3, length = 5,  labelsize=20, labelfontfamily = 'Times New Roman', pad = 1)
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
 
-    axs.set_xlim(-0.25, 0.25)  #拉开坐标轴范围显示投影
+    axs.set_xlim(-0.1, 0.1)  #拉开坐标轴范围显示投影
     # 显示图形
     out_fig = plt.gcf()
     out_fig.savefig(savename, pad_inches = 0,)

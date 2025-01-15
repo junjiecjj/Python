@@ -186,7 +186,7 @@ def Cifar10_BatchIID_1bit_flip_loss():
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    axs.set_ylabel('Cross Entropy', fontproperties=font2, )
+    axs.set_ylabel('Training loss', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
@@ -268,7 +268,7 @@ def Cifar10_BatchIID_K0_1bit_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 830, 850, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 870, 880, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -286,7 +286,7 @@ def Cifar10_BatchIID_K0_1bit_acc():
     out_fig.savefig('../Figures/Cifar10_IID_1bit_erf_K0_acc.pdf' )
     plt.show()
 
-def CIFAR10_BatchIID_K0_14bit_erf_acc():
+def CIFAR10_BatchIID_14bit_erf_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.46, 0.3, 0.32))
@@ -295,7 +295,7 @@ def CIFAR10_BatchIID_K0_14bit_erf_acc():
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_IID/CIFAR10_IID_diff_batchs10_sgd_0.01_U100+6_bs32_2025-01-09-22:08:00/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
     axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3) , color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100,  label = 'Perfect',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+    axins.plot(data[:,0],savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_IID/CIFAR10_IID_diff_batchs10_1bits_sr_erf_sgd_0.01_U100+6_bs32_2025-01-10-10:03:14/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
@@ -337,7 +337,7 @@ def CIFAR10_BatchIID_K0_14bit_erf_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 872, 880, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 876, 882, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -351,16 +351,84 @@ def CIFAR10_BatchIID_K0_14bit_erf_acc():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Figures/Cifar10_IID_14bit_erf_K0_acc.eps' )
-    out_fig.savefig('../Figures/Cifar10_IID_14bit_erf_K0_acc.pdf' )
+    out_fig.savefig('../Figures/Cifar10_IID_14bit_erf_acc.eps' )
+    out_fig.savefig('../Figures/Cifar10_IID_14bit_erf_acc.pdf' )
     plt.show()
 
+def Cifar10_BatchIID_K0_1bit_flip_acc():
+    # %% 画图
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.62, 0.42, 0.3, 0.32))
+    L = 1000
+    ## erf
+    data = np.load("/home/jack/FL_1bitJoint/CIFAR10_IID/CIFAR10_IID_diff_batchs10_1bits_sr_flip0.2_sgd_0.01_U100+2_bs32_2025-01-11-14:55:47/TraRecorder.npy")[:L]
+    Y1 = data[:, 1]
+    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.2, K$_0$=2',)
+    axins.plot(data[:,0], data[:,1], color = 'k', linestyle = '-', linewidth = 2)
 
-# Cifar10_BatchIID_1bit_flip_acc()
+    data = np.load("/home/jack/FL_1bitJoint/CIFAR10_IID/CIFAR10_IID_diff_batchs10_1bits_sr_flip0.2_sgd_0.01_U100+6_bs32_2025-01-10-10:06:06/TraRecorder.npy")[:L]
+    Y2 = data[:, 1]
+    axs.plot(data[:,0], data[:,1], color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.2, K$_0$=6',)
+    axins.plot(data[:,0], data[:,1], color = '#E918B5', linestyle = '--', linewidth = 2)
+
+    data = np.load("/home/jack/FL_1bitJoint/CIFAR10_IID/CIFAR10_IID_diff_batchs10_1bits_sr_flip0.2_sgd_0.01_U100+12_bs32_2025-01-11-14:58:01/TraRecorder.npy")[:L]
+    Y3 = data[:, 1]
+    axs.plot(data[:,0], data[:,1], color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.2, K$_0$=12',)
+    axins.plot(data[:,0], data[:,1], color = 'b', linestyle = '--', linewidth = 2)
+
+    ###########
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+    axs.set_ylabel('Test accuracy', fontproperties=font2, )
+    # axs.set_title("CNN, IID", fontproperties=font2)
+
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
+    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')                         # 设置图例legend背景透明
+
+    # x_major_locator = MultipleLocator(5)               # 把x轴的刻度间隔设置为1，并存在变量里
+    # axs.xaxis.set_major_locator(x_major_locator)       # 把x轴的主刻度设置为1的倍数
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels]  # 刻度值字号
+
+    # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.2, 1.06)  #拉开坐标轴范围显示投影
+
+    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+    ##==================== mother and son ==================================
+    ### 局部显示并且进行连线,方法3
+    zone_and_linked(axs, axins, 870, 880, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    ## linewidth
+    bw = 1
+    axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+    axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+    axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+    axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+    axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
+    labels = axins.get_xticklabels() + axins.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    # [label.set_fontsize(16) for label in labels] #刻度值字号
+
+    out_fig = plt.gcf()
+    out_fig.savefig('../Figures/Cifar10_IID_1bit_flip_K0_acc.eps' )
+    out_fig.savefig('../Figures/Cifar10_IID_1bit_flip_K0_acc.pdf' )
+    plt.show()
+
+Cifar10_BatchIID_1bit_flip_acc()
 # Cifar10_BatchIID_1bit_flip_loss()
-Cifar10_BatchIID_K0_1bit_acc()
-CIFAR10_BatchIID_K0_14bit_erf_acc()
-
+CIFAR10_BatchIID_14bit_erf_acc()
+# Cifar10_BatchIID_K0_1bit_acc()
+# Cifar10_BatchIID_K0_1bit_flip_acc()
 
 plt.close('all')
 
