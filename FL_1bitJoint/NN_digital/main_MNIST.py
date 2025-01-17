@@ -39,11 +39,11 @@ args.IID = False             # True, False
 args.dataset = "MNIST"       #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
-args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_{datapart}/'
+args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_CNN_{datapart}/'
 
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
-args.active_client = 6
+args.active_client = 12
 args.case = 'diff'          # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
@@ -51,30 +51,29 @@ args.optimizer = 'sgd'      # 'sgd', 'adam'
 args.quantize = True       # True, False
 if args.quantize == True:
     args.rounding = 'sr'       # 'nr', 'sr',
-    args.bitswidth = 4         #  1,  8
+    args.bitswidth = 1         #  1,  8
     args.G         = 2**8
     args.transmitWay = 'flip'    # 'erf', 'flip', 'joint', 'sic'
 
     if args.transmitWay.lower() == 'flip':
-        args.flip_rate = 0.001
+        args.flip_rate = 0.1
     if args.transmitWay.lower() == 'erf':
         args.flip_rate = 0
     # if  args.transmitWay.lower() =='scma' or args.transmitWay.lower() == 'sic':
         # args.snr_dB = 1
 if args.IID == True:
     args.diff_case = 'batchs'
-    cur_lr = args.lr = 0.01
     if args.dataset == "MNIST":
         args.local_up = 3
         args.local_bs = 128
 elif args.IID == False:
     args.diff_case = 'epoch'
     if args.dataset == "MNIST":
-        args.local_epoch = 2
+        args.local_epoch = 1
         args.local_bs = 64
 
 ## seed
-args.seed = 1
+args.seed = 42
 set_random_seed(args.seed) ## args.seed
 set_printoption(5)
 ##>>>>>>>>>>>>>>>>> channel >>>>>>>>>>>>>>>>>>>
@@ -82,10 +81,7 @@ set_printoption(5)
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
-if args.IID == True:
-    global_model = models.CNNMnist(1, 10, True).to(args.device)
-else:
-    global_model = models.CNNMnist(1, 10, True).to(args.device)
+global_model = models.CNNMnist(1, 10, True).to(args.device)
 
 global_weight = global_model.state_dict()
 key_grad = []
@@ -121,7 +117,8 @@ for comm_round in range(args.num_comm):
                 if args.transmitWay == 'erf' or args.transmitWay == 'flip':
                     print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                     if args.IID == True:
-                        mess_recv, err = OneBit(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad)
+                        # mess_recv, err = OneBit(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad)
+                        mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad, G = args.G)
                     elif args.IID == False:
                         mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad, G = args.G)
                         # mess_recv, err = OneBit(message_lst, args, rounding = args.rounding, err_rate = args.flip_rate, key_grad = key_grad)

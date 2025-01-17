@@ -79,7 +79,6 @@ if args.IID == True:
     # global_model = models.CNNCifar1(3, 10,).to(args.device)
     global_model = models.resnet20().to(args.device)
     args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_resnet20_{datapart}/'
-
 elif args.IID == False:
     global_model = models.resnet20().to(args.device)
     args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_resnet20_{datapart}/'
