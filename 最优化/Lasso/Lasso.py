@@ -375,13 +375,7 @@ for xi in XIndex:
 
 b = np.dot(A, X) + e
 
-# np.save("A.npy", A)
-# np.save("X.npy", X)
-# np.save("b.npy", b)
-
-# A = np.load('A.npy')
-# b = np.load('b.npy')
-# X = np.load('X.npy')
+#### 邻近点梯度下降法
 
 ASize = (50, 100)
 BSize = 50
@@ -407,7 +401,7 @@ while True:
 print(Xk)
 print(X)
 
-# 邻近点梯度下降法
+#### 邻近点梯度下降法
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -453,7 +447,7 @@ plt.show()
 
 
 
-# 交替方向乘子法
+#### 交替方向乘子法
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -513,7 +507,7 @@ plt.legend()
 plt.show()
 
 
-# 次梯度法
+#### 次梯度法
 import matplotlib.pyplot as plt
 import numpy as np
 

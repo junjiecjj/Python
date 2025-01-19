@@ -32,7 +32,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False              # True, False
+args.IID = False               # True, False
 args.dataset = "CIFAR10"       #  MNIST,  CIFAR10
 
 datapart = "IID" if args.IID else "nonIID"
@@ -43,7 +43,7 @@ args.active_client = 6
 args.case = 'grad'          # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
-args.local_bs = 128
+args.local_bs = 64
 if args.IID == True:
     args.diff_case = 'batchs'
     if args.dataset == "MNIST":
@@ -55,8 +55,7 @@ elif args.IID == False:
     if args.dataset == "MNIST":
         args.local_epoch = 1
     elif args.dataset == "CIFAR10":
-        args.local_epoch = 4
-
+        args.local_epoch = 1
 
 ## seed
 args.seed = 1
@@ -70,8 +69,7 @@ local_dt_dict, testloader = GetDataSet(args)
 if args.dataset.lower() == "mnist":
     global_model = models.CNNMnist(1, 10, True).to(args.device)
 else:
-    global_model = models.CNNCifar1(3, 10,).to(args.device)
-    # global_model = models.myModel().to(args.device)
+    global_model = models.resnet20().to(args.device)
 global_weight = global_model.state_dict()
 
 key_grad = []
@@ -104,7 +102,7 @@ for comm_round in range(args.num_comm):
     ### grdient
     if args.case == 'grad':
         for name in candidates:
-            message = Users[name].local_update_gradient(copy.deepcopy(global_weight), cur_lr)
+            message = Users[name].local_update_gradient1(copy.deepcopy(global_weight), cur_lr)
             message_lst.append(message)
         os.makedirs(args.home + '/FL_1bitJoint/statistics/', exist_ok = True)
         savename = args.home + f'/FL_1bitJoint/statistics/distribution_{args.case}_{args.dataset}_{datapart}.pdf'

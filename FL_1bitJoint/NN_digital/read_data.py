@@ -125,7 +125,7 @@ def cifar10_part_noniid(train_data_size, labels, num_clients):
     Each device randomly sample
     """
     # num_clients = args.num_users
-    lenRandom = 0.8 * train_data_size
+    lenRandom = 0.65 * train_data_size
     num_items = int(lenRandom/num_clients)
     dict_users, all_idxs = {}, [i for i in range(train_data_size)]
     for ii in range(num_clients):

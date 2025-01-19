@@ -36,18 +36,18 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True              # True, False
+args.IID = False              # True, False
 datapart = "IID" if args.IID else "nonIID"
 args.dataset = "CIFAR10"       #  CIFAR10
 
 cur_lr = args.lr = 0.01
 # args.num_of_clients = 20
-args.active_client = 12
+args.active_client = 6
 args.case = 'diff'          # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
 
-args.quantize = True       # True, False
+args.quantize = False       # True, False
 if args.quantize == True:
     args.rounding = 'sr'       # 'nr', 'sr',
 
@@ -65,7 +65,12 @@ if args.IID == True:
     if args.dataset == "CIFAR10":
         args.local_epoch = 2
         args.local_bs = 64
-
+elif args.IID == False:
+    args.num_of_clients = 100
+    args.diff_case = 'epoch'
+    if args.dataset == "CIFAR10":
+        args.local_epoch = 1
+        args.local_bs = 64
 ## seed
 args.seed = 1
 set_random_seed(args.seed) ## args.seed
@@ -99,7 +104,8 @@ server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight),
 ckp =  checkpoint(args, now)
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
-    # cur_lr = args.lr/(1 + 0.001 * comm_round)
+    if args.IID == False:
+        cur_lr = args.lr/(1 + 0.001 * comm_round)
     candidates = np.random.choice(args.num_of_clients, args.active_client, replace = False)
     # print(f"candidates = {candidates}")
     message_lst = []

@@ -251,17 +251,17 @@ def MNIST_BatchIID_K0_1bit_flip_acc():
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+2_bs128_2025-01-16-16:07:08/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.2, K$_0$=2',)
+    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
     axins.plot(data[:,0], data[:,1], color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-16-13:36:08/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.2, K$_0$=6',)
+    axs.plot(data[:,0], data[:,1], color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=6',)
     axins.plot(data[:,0], data[:,1], color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+12_bs128_2025-01-16-16:07:12/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.2, K$_0$=12',)
+    axs.plot(data[:,0], data[:,1], color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=12',)
     axins.plot(data[:,0], data[:,1], color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
@@ -354,7 +354,7 @@ def MNIST_BatchIID_14bit_erf_acc():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.3, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.95, 0.993)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -383,10 +383,10 @@ def MNIST_BatchIID_14bit_erf_acc():
     plt.show()
 
 
-MNIST_BatchIID_flip_acc()
-MNIST_BatchIID_flip_loss()
+# MNIST_BatchIID_flip_acc()
+# MNIST_BatchIID_flip_loss()
 
-MNIST_BatchIID_K0_1bit_flip_acc()
+# MNIST_BatchIID_K0_1bit_flip_acc()
 
 MNIST_BatchIID_14bit_erf_acc()
 

@@ -244,24 +244,24 @@ def Cifar10_IID_1bit_flip_loss():
 def CIFAR10_IID_14bit_erf_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    # axins = axs.inset_axes((0.62, 0.46, 0.3, 0.32))
+    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
     L = 1000
 
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_sgd_0.01_U100+6_bs64_2025-01-14-14:15:05/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
     axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3) , color = 'k', linestyle= '-',lw = 1.2, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100,  label = 'Perfect',)
-    # axins.plot(data[:,0],savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+    axins.plot(data[:,0],savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-22:30:24/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
     axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = '1-bit, Error-free',)
-    # axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '--', linewidth = 2)
+    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-15:40:27/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
     axs.plot(data[:,0], savgol_filter(data[:,1], 20, 3), color = 'b' , lw = 2, linestyle='--', label = '4-bit, Error-free',)
-    # axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '--', linewidth = 2)
+    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -283,7 +283,7 @@ def CIFAR10_IID_14bit_erf_acc():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.4, 1.06)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.3, 0.88)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -291,20 +291,20 @@ def CIFAR10_IID_14bit_erf_acc():
     axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
-    ##==================== mother and son ==================================
-    # ### 局部显示并且进行连线,方法3
-    # zone_and_linked(axs, axins, 720, 740, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
-    # ## linewidth
-    # bw = 1
-    # axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
-    # axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
-    # axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
-    # axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+    ###==================== mother and son ==================================
+    ### 局部显示并且进行连线,方法3
+    zone_and_linked(axs, axins, 530, 550, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    ## linewidth
+    bw = 1
+    axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+    axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+    axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+    axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
 
-    # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
-    # labels = axins.get_xticklabels() + axins.get_yticklabels()
-    # [label.set_fontname('Times New Roman') for label in labels]
-    # # [label.set_fontsize(16) for label in labels] #刻度值字号
+    axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
+    labels = axins.get_xticklabels() + axins.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
     # out_fig.savefig('../Figures/Cifar10_IID_14bit_erf_acc.eps' )
@@ -319,17 +319,17 @@ def Cifar10_BatchIID_K0_1bit_flip_acc():
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+2_bs64_2025-01-15-22:02:03/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.2, K$_0$=2',)
+    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
     axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-15-09:44:54/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.2, K$_0$=6',)
+    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=6',)
     axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+12_bs64_2025-01-15-22:02:17/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.2, K$_0$=12',)
+    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=12',)
     axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
@@ -362,7 +362,7 @@ def Cifar10_BatchIID_K0_1bit_flip_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 870, 880, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 850, 900, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
