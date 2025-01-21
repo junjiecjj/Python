@@ -70,8 +70,6 @@ c = scipy.signal.upfirdn([1,1,1], np.arange(10), 1)
 c = np.convolve([1,1,1], np.arange(10))
 # array([ 0,  1,  3,  6,  9, 12, 15, 18, 21, 24, 17,  9])
 
-
-
 c = scipy.signal.upfirdn([1,1,1], np.arange(10), 2, 3)  # decimation by 3
 # array([ 0.,  1.,  5.,  4., 11.,  7., 17.])
 c = scipy.signal.upfirdn([1,1,1], np.arange(10), 2)
@@ -181,7 +179,7 @@ s_fc = np.exp(1j * 2 * np.pi * fc * t)
 y_fc = y * s_fc
 
 # ==================== 噪声 ====================
-r = y_fc + 1 * ( np.random.normal(size=(y.size,)) + 1j * np.random.normal(size=(y.size,)))
+r = y_fc + 0.01 * ( np.random.normal(size=(y.size,)) + 1j * np.random.normal(size=(y.size,)))
 
 # ==================== 相干解调 ====================
 r_coherent = r * np.exp(-1j * 2 * np.pi * fc * t)

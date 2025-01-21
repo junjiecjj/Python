@@ -86,44 +86,50 @@ def Cifar10_IID_1bit_flip_acc():
     L = 1000
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_sgd_0.01_U100+6_bs64_2025-01-14-14:15:05/TraRecorder.npy")[:L]
-    Y1 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', lw = 1.2, linestyle='-', marker = 'o', ms = 18, mfc = 'white', markevery = 100, label = 'Perfect',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1, color = 'k', lw = 1.3, linestyle='-', marker = 'o', ms = 18, mfc = 'white', markevery = 100, label = 'Perfect',)
+    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     ## 1-bit erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-22:30:24/TraRecorder.npy")[:L]
-    Y2 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 2, linestyle='-', label = '1-bit Error-free',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '-', linewidth = 2)
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit Error-free',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
+
+    ## 1-bit, 0.01ber
+    data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.001_sgd_0.01_U100+6_bs64_2025-01-21-20:19:27/TraRecorder.npy")[:L]
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = '#556B2F', lw = 2, linestyle='-', label = '1-bit, BER=10$^{-2}$',)
+    axins.plot(data[:,0], Y3, color = '#556B2F', linestyle = '-', linewidth = 2)
 
     ## 1-bit, 0.1ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-15-09:44:54/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '-', linewidth = 2)
+    Y4 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y4, color = 'b', lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
+    axins.plot(data[:,0], Y4, color = 'b', linestyle = '--', linewidth = 2)
 
     ## 1-bit, 0.2ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.2_sgd_0.01_U100+6_bs64_2025-01-15-09:44:58/TraRecorder.npy")[:L]
-    Y4 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'g', linestyle = '-', linewidth = 2)
+    Y5 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y5, color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
+    axins.plot(data[:,0], Y5, color = 'g', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.3ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.3_sgd_0.01_U100+6_bs64_2025-01-15-11:20:42/TraRecorder.npy")[:L]
-    Y5 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#CD853F', linestyle = '--', linewidth = 2)
+    Y6 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y6, color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
+    axins.plot(data[:,0], Y6, color = '#CD853F', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.4ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.4_sgd_0.01_U100+6_bs64_2025-01-15-11:21:01/TraRecorder.npy")[:L]
-    Y6 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#00BFFF', linestyle = '--', linewidth = 2)
+    Y7 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y7, color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
+    axins.plot(data[:,0], Y7, color = '#00BFFF', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.5ber
-    data1 = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.5_sgd_0.01_U100+6_bs64_2025-01-15-13:30:37/TraRecorder.npy")[:L]
-    Y7 = data[:, 1]
-    axs.plot(data1[:,0], data1[:,1], color = '#778899', lw = 2, linestyle='--',  label = '1-bit, BER=0.5',)
+    data1 = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.5_sgd_0.01_U100+6_bs64_2025-01-15-13:30:37/TraRecorder.npy")[:500]
+    Y8 = savgol_filter(data1[:,1], 10, 3)
+    axs.plot(data1[:,0], Y8, color = '#778899', lw = 2, linestyle='--',  label = '1-bit, BER=0.5',)
     # axins.plot(data[:,0], data[:,1], color = '#778899', linestyle = '--', linewidth = 2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -131,8 +137,8 @@ def Cifar10_IID_1bit_flip_acc():
     axs.set_ylabel('Test accuracy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 20}
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 21}
+    legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.15, 0.06), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -155,7 +161,7 @@ def Cifar10_IID_1bit_flip_acc():
 
     ##==================== mother and son ==================================
     ## 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 870, 880, data[:, 0] , [Y1, Y2, Y3, Y4 ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 850, 900, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -213,7 +219,7 @@ def Cifar10_IID_1bit_flip_loss():
     axs.set_ylabel('Training loss', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -249,19 +255,19 @@ def CIFAR10_IID_14bit_erf_acc():
 
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_sgd_0.01_U100+6_bs64_2025-01-14-14:15:05/TraRecorder.npy")[:L]
-    Y1 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3) , color = 'k', linestyle= '-',lw = 1.2, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100,  label = 'Perfect',)
-    axins.plot(data[:,0],savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 1.2, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100,  label = 'Perfect',)
+    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-22:30:24/TraRecorder.npy")[:L]
-    Y2 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = '1-bit, Error-free',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '--', linewidth = 2)
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit, Error-free',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-15:40:27/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 20, 3), color = 'b' , lw = 2, linestyle='--', label = '4-bit, Error-free',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '--', linewidth = 2)
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = '4-bit, Error-free',)
+    axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -293,7 +299,7 @@ def CIFAR10_IID_14bit_erf_acc():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 530, 550, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 535, 550, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -318,19 +324,19 @@ def Cifar10_BatchIID_K0_1bit_flip_acc():
     L = 1000
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+2_bs64_2025-01-15-22:02:03/TraRecorder.npy")[:L]
-    Y1 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
+    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-15-09:44:54/TraRecorder.npy")[:L]
-    Y2 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=6',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '--', linewidth = 2)
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=6',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+12_bs64_2025-01-15-22:02:17/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=12',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '--', linewidth = 2)
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=12',)
+    axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -338,7 +344,7 @@ def Cifar10_BatchIID_K0_1bit_flip_acc():
     axs.set_ylabel('Test accuracy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)

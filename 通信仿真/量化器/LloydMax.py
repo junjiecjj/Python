@@ -78,8 +78,7 @@ def maxlloyd(t,x,error_threshold):
         e = MSE(t,x)
         error.append(e)
         print(e)
-    return x,t,error
-
+    return x, t, error
 
 # Test of maxlloyd function
 def test_maxlloyd():

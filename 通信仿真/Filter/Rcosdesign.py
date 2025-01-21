@@ -68,16 +68,14 @@ def rcosdesign_srv(rolloff, span, sps):
     # 查找非零的分母索引
     idx2 = np.where(np.abs(np.abs(4*rolloff*t) - 1.0) < np.sqrt(np.finfo(float).eps))[0]
     if len(idx2) > 0:
-        rrc_filter[idx2] = 1.0/(2*np.pi*sps) * (np.pi*(rolloff+1) * np.sin(np.pi*(rolloff+1)/(4*rolloff)) \
-            - 4*rolloff*np.sin(np.pi*(rolloff-1)/(4*rolloff)) + np.pi*(rolloff-1) * np.cos(np.pi*(rolloff-1)/(4*rolloff)))
+        rrc_filter[idx2] = 1.0/(2*np.pi*sps) * (np.pi*(rolloff+1) * np.sin(np.pi*(rolloff+1)/(4*rolloff)) - 4*rolloff*np.sin(np.pi*(rolloff-1)/(4*rolloff)) + np.pi*(rolloff-1) * np.cos(np.pi*(rolloff-1)/(4*rolloff)))
 
     # 计算非零分母索引的值
     ind = np.arange(len(t))
     ind = np.delete(ind, [idx1, *idx2])
     nind = t[ind]
 
-    rrc_filter[ind] = -4*rolloff/sps * (np.cos((1+rolloff)*np.pi*nind) + np.sin((1-rolloff)*np.pi*nind) / (4*rolloff*nind)) \
-        / (np.pi * ((4*rolloff*nind)**2 - 1))
+    rrc_filter[ind] = -4*rolloff/sps * (np.cos((1+rolloff)*np.pi*nind) + np.sin((1-rolloff)*np.pi*nind) / (4*rolloff*nind)) / (np.pi * ((4*rolloff*nind)**2 - 1))
 
     # 能量归一化
     rrc_filter = rrc_filter / np.sqrt(sum(rrc_filter ** 2))
@@ -184,9 +182,7 @@ span = 6
 sps = 4
 shape = 'sqrt'
 
-
 h =  rcosdesign(beta, span, sps, shape)
-
 t = np.arange(h.size)
 
 width = 10

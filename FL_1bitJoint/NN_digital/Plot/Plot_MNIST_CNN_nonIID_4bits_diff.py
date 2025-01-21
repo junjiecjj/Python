@@ -93,30 +93,30 @@ def MNIST_epoch_nonIID_4bit_flip_acc():
     L = 1000
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
-    Y1 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     ## 4-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:23/TraRecorder.npy")[:L]
-    Y2 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = '4-bit, Error-free',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '-', linewidth = 2)
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '4-bit, Error-free',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.001_sgd_0.01_U100+6_bs64_2025-01-17-14:32:20/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b' , lw = 2, linestyle='--', label = '4-bit, BER=0.001',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '-', linewidth = 2)
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-3}$',)
+    axins.plot(data[:,0], Y3, color = 'b', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.01_sgd_0.01_U100+6_bs64_2025-01-17-14:31:54/TraRecorder.npy")[:L]
-    Y4 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'g' , lw = 2, linestyle='--', label = '4-bit, BER=0.01',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'g', linestyle = '-', linewidth = 2)
+    Y4 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y4, color = 'g' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-2}$',)
+    axins.plot(data[:,0], Y4, color = 'g', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-17-13:00:02/TraRecorder.npy")[:L]
-    Y5 = data[:, 1]
-    axs.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#CD853F' , lw = 2, linestyle='--', label = '4-bit, BER=0.1',)
-    axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#CD853F', linestyle = '-', linewidth = 2)
+    Y5 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y5, color = '#CD853F' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-1}$',)
+    axins.plot(data[:,0], Y5, color = '#CD853F', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -125,7 +125,7 @@ def MNIST_epoch_nonIID_4bit_flip_acc():
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 24}
-    legend1 = axs.legend(bbox_to_anchor=(0.51,0.1), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.08, 0.2), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -148,7 +148,7 @@ def MNIST_epoch_nonIID_4bit_flip_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 850, 860, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 850, 900, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -179,17 +179,17 @@ def MNIST_epoch_nonIID_4bit_flip_loss():
     axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = '4-bit, Error-free',)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.001_sgd_0.01_U100+6_bs64_2025-01-17-14:32:20/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'b' , lw = 2, linestyle='--', label = '4-bit, BER=0.001',)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'b' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-3}$',)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.01_sgd_0.01_U100+6_bs64_2025-01-17-14:31:54/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'g' , lw = 2, linestyle='--', label = '4-bit, BER=0.01',)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'g' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-2}$',)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('Cross Entropy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)

@@ -94,39 +94,39 @@ def MNIST_BatchIID_4bit_flip_acc():
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-16-13:29:21/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
-    axins.plot(data[:,0], data[:,1], color = 'k', linestyle = '-', linewidth = 2)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-', marker = 'o', ms = 15, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     ## 4-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:33/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = '#E918B5', lw = 3, linestyle='--', label = '4-bit, Error-free',)
-    axins.plot(data[:,0], data[:,1], color = '#E918B5', linestyle = '-', linewidth = 2)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = '4-bit, Error-free',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.01_sgd_0.01_U100+6_bs128_2025-01-16-20:42:07/TraRecorder.npy")[:L]
-    Y2 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = 'b', lw = 3, linestyle='--', label = '4-bit, BER=10$^{-2}$',)
-    axins.plot(data[:,0], data[:,1], color = 'b', linestyle = '-', linewidth = 2)
+    Y3 = data[:, 1]
+    axs.plot(data[:,0], Y3, color = 'b', lw = 3, linestyle='--', label = '4-bit, BER=10$^{-2}$',)
+    axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-16-16:14:49/TraRecorder.npy")[:L]
-    Y3 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = 'g' , lw = 3, linestyle='--', label = '4-bit, BER=0.1',)
-    axins.plot(data[:,0], data[:,1], color = 'g', linestyle = '-', linewidth = 2)
+    Y4 = data[:, 1]
+    axs.plot(data[:,0], Y4, color = 'g' , lw = 3, linestyle='--', label = '4-bit, BER=0.1',)
+    axins.plot(data[:,0], Y4, color = 'g', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-16-16:32:55/TraRecorder.npy")[:L]
-    Y4 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = '#CD853F', lw = 3, linestyle='--', label = '4-bit, BER=0.2',)
-    axins.plot(data[:,0], data[:,1], color = '#CD853F', linestyle = '-', linewidth = 2)
+    Y5 = data[:, 1]
+    axs.plot(data[:,0], Y5, color = '#CD853F', lw = 3, linestyle='--', label = '4-bit, BER=0.2',)
+    axins.plot(data[:,0],Y5, color = '#CD853F', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-16-17:21:37/TraRecorder.npy")[:L]
-    Y5 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = '#00BFFF', lw = 3, linestyle='--',  label = '4-bit, BER=0.3',)
-    axins.plot(data[:,0], data[:,1], color = '#00BFFF', linestyle = '-', linewidth = 2)
+    Y6 = data[:, 1]
+    axs.plot(data[:,0], Y6, color = '#00BFFF', lw = 3, linestyle='--',  label = '4-bit, BER=0.3',)
+    axins.plot(data[:,0], Y6, color = '#00BFFF', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2025-01-16-17:21:43/TraRecorder.npy")[:L]
-    Y6 = data[:, 1]
-    axs.plot(data[:,0], data[:,1], color = '#778899', lw = 3, linestyle='--',  label = '4-bit, BER=0.4',)
-    axins.plot(data[:,0], data[:,1], color = '#778899', linestyle = '-', linewidth = 2)
+    Y7 = data[:, 1]
+    axs.plot(data[:,0], Y7, color = '#778899', lw = 3, linestyle='--',  label = '4-bit, BER=0.4',)
+    axins.plot(data[:,0], Y7, color = '#778899', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -134,8 +134,8 @@ def MNIST_BatchIID_4bit_flip_acc():
     axs.set_ylabel('Test accuracy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
-    legend1 = axs.legend(loc='lower right', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 24}
+    legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.1, 0.12), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -158,7 +158,7 @@ def MNIST_BatchIID_4bit_flip_acc():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y1, Y2, Y3, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 800, 850, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -206,7 +206,7 @@ def MNIST_BatchIID_4bit_flip_loss():
     axs.set_ylabel('Training loss', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)

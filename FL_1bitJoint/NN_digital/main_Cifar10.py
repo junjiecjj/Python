@@ -36,7 +36,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False              # True, False
+args.IID = True              # True, False
 datapart = "IID" if args.IID else "nonIID"
 args.dataset = "CIFAR10"       #  CIFAR10
 
@@ -47,7 +47,7 @@ args.case = 'diff'          # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'      # 'sgd', 'adam'
 
-args.quantize = False       # True, False
+args.quantize = True       # True, False
 if args.quantize == True:
     args.rounding = 'sr'       # 'nr', 'sr',
 
@@ -55,7 +55,7 @@ if args.quantize == True:
     args.transmitWay = 'flip'    # 'erf', 'flip', 'scma', 'sic'
     args.G = 2**8
     if args.transmitWay.lower() == 'flip':
-        args.flip_rate = 0.1
+        args.flip_rate = 0.001
     if args.transmitWay.lower() == 'erf':
         args.flip_rate = 0
 

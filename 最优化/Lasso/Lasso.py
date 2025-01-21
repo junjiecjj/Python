@@ -511,7 +511,6 @@ plt.show()
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 def g_right(x):
     Xnew = x.copy()
     for i, data in enumerate(x):
