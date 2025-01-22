@@ -514,7 +514,6 @@ for i in range(max_iters):
     f_v.append(f)
     L_v.append(L)
 
-
     if(abs(f - L) < tol):
         print(i + 1)
         break
