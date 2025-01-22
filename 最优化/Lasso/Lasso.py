@@ -29,7 +29,7 @@ def lasso_coordinate_descent(X, y, lmbda, max_iter=1000, tol=1e-5):
 def proximal_operator(z, lambda_, L):
     return np.sign(z) * np.maximum(np.abs(z) - lambda_ / L, 0)
 
-def proximal_gradient_descent(X, y, lambda_, L=1.0, tol=1e-4, max_iter=1000):
+def proximal_gradient_descent(X, y, lambda_, L = 1.0, tol = 1e-4, max_iter = 1000):
     n_samples, n_features = X.shape
     beta = np.zeros(n_features)
     for k in range(max_iter):
@@ -43,7 +43,7 @@ def proximal_gradient_descent(X, y, lambda_, L=1.0, tol=1e-4, max_iter=1000):
             break
     return beta
 
-def lasso_penalty_method(X, y, lambda_, rho, max_iter=1000, tol=1e-5):
+def lasso_penalty_method(X, y, lambda_, rho, max_iter = 1000, tol = 1e-5):
     n_samples, n_features = X.shape
     beta = np.zeros(n_features)
     for _ in range(max_iter):
@@ -58,7 +58,7 @@ def lasso_penalty_method(X, y, lambda_, rho, max_iter=1000, tol=1e-5):
             break
     return beta
 
-def fista(A, b, lambda_, x0, L0=1.05, eta=1.01, tol=1e-5, max_iter=1000):
+def fista(A, b, lambda_, x0, L0 = 1.05, eta = 1.01, tol = 1e-5, max_iter = 1000):
     m, n = A.shape
     x = x0.copy()
     y = x0.copy()
@@ -85,80 +85,6 @@ def fista(A, b, lambda_, x0, L0=1.05, eta=1.01, tol=1e-5, max_iter=1000):
             L /= eta  # 步长调整
             g = g_new  # 更新梯度
     return x
-
-
-#%% https://blog.csdn.net/qq_57730943/article/details/136859386
-
-# 对偶上升法
-import numpy as np
-import matplotlib.pyplot as plt
-
-x = np.array([[100], [-120]])
-lambda_ = np.zeros_like(x)
-
-x_v, f_v, G_v, L_v, lambda_v = [], [], [], [], []
-
-t_x = 0.1
-t_lambda = 0.1
-max_iters = 10000
-tol = 10 ** (-5)
-
-for i in range(max_iters):
-    x[0] = x[0] - t_x * (4 * (x[0] - 1) - lambda_[0])
-    x[1] = x[1] - t_x * (2 * (x[1] + 2) - lambda_[1])
-    if(x[0] < 2):
-        x[0] = 2
-
-    Grad = np.array([[2 - x[0].item()], [- x[1].item()]])
-    lambda_ = np.maximum(lambda_ + t_lambda * Grad, 0)
-
-    f = 2 * (x[0] - 1) ** 2 + (x[1] + 2) ** 2
-    L = f + lambda_[0] * (2 - x[0]) + lambda_[1] * (-x[1])
-
-    x_v.append(x.copy())
-    G_v.append(Grad)
-    f_v.append(f)
-    L_v.append(L)
-
-
-    if(abs(f - L) < tol):
-        print(i + 1)
-        break
-print(x)
-plt.figure()
-plt.plot(range(2, len(L_v) + 1), np.array(f_v[1:]) - np.array(L_v[1:]), '-b*', linewidth = 2)
-plt.show()
-
-
-
-# ADMM
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import minimize_scalar
-
-def f_x(x, y, rho, u):
-    return (x - 1) ** 2 + (rho / 2) * np.linalg.norm(2 * x + 3 * y - 5 + u) ** 2
-def f_y(x, y, rho, u):
-    return (y - 2) ** 2 + (rho / 2) * np.linalg.norm(2 * x + 3 * y - 5 + u) ** 2
-
-x = 1
-y = 1
-rho = 1
-u = 0
-max_iters = 100
-for i in range(max_iters):
-    # print(x,y)
-    resx = minimize_scalar(lambda x: f_x(x, y, rho, u), bounds = (0, 3), method = 'bounded')
-    x = resx.x
-    resy = minimize_scalar(lambda y: f_y(x, y, rho, u), bounds = (1, 4), method = 'bounded')
-    y = resy.x
-    u = u + 2 * x + 3 * y - 5
-    rho = min(2000, 1.1 * rho)
-print(x,y)
-
-
-
-
 
 #%% https://zhuanlan.zhihu.com/p/432897936
 # 1. 近端梯度下降法Proximal Gradient Descent
@@ -559,126 +485,74 @@ plt.legend()
 plt.show()
 
 
+#%% https://blog.csdn.net/qq_57730943/article/details/136859386
 
-
-
-# %%https://github.com/nirum/ADMM/blob/master/admm.py
-"""
-ADMM python implementation
-author: Niru Maheswaranathan
-01:20 PM Aug 12, 2014
-"""
+# 对偶上升法
 import numpy as np
-import proxops as po
-from functools import partial
+import matplotlib.pyplot as plt
 
-class ADMM(object):
-    def __init__(self, lmbda):
-        self.objectives = list()  # prox. operators for objectives
-        self.lmbda = lmbda  # prox. op. trade-off parameter
-        self.rho = 1.0 / lmbda  # inverse of trade-off parameter
+x = np.array([[100], [-120]])
+lambda_ = np.zeros_like(x)
 
-    def add_operator(self, proxfun, **kwargs):
-        # add proximal operator to the list
-        proxop = partial(proxfun, lmbda=self.lmbda, **kwargs)
-        self.objectives.append(proxop)
+x_v, f_v, G_v, L_v, lambda_v = [], [], [], [], []
 
-def lowrank_approx_demo():
-    """
-    solve a low-rank matrix approximation problem
-    """
+t_x = 0.1
+t_lambda = 0.1
+max_iters = 10000
+tol = 10 ** (-5)
 
-    # parameters
-    n = 50  # dimension
-    k = 3  # rank
-    eta = 0.01  # noise strength
-    gamma = 0.1  # low-rank penalty
-    lmbda = 100.0  # ADMM parameter
-    num_batches = 25
+for i in range(max_iters):
+    x[0] = x[0] - t_x * (4 * (x[0] - 1) - lambda_[0])
+    x[1] = x[1] - t_x * (2 * (x[1] + 2) - lambda_[1])
+    if(x[0] < 2):
+        x[0] = 2
 
-    # reproducible
-    np.random.seed(1234)
+    Grad = np.array([[2 - x[0].item()], [- x[1].item()]])
+    lambda_ = np.maximum(lambda_ + t_lambda * Grad, 0)
 
-    # build data matrix
-    A_star = np.random.randn(n, k).dot(np.random.randn(k, n))
-    data = [A_star + eta * np.random.randn(n, n) for j in range(num_batches)]
+    f = 2 * (x[0] - 1) ** 2 + (x[1] + 2) ** 2
+    L = f + lambda_[0] * (2 - x[0]) + lambda_[1] * (-x[1])
 
-    # define objective and gradient (fro-norm)
-    f = lambda x, d: 0.5 * np.sum((x.reshape(d.shape) - d) ** 2)
-    fgrad = lambda x, d: (x.reshape(d.shape) - d).ravel()
-
-    # initialize proximal operators and ADMM object
-    lowrank = ADMM(lmbda)
-
-    from sfo.sfo import SFO
-    def f_df(x, d):
-        return f(x,d), fgrad(x,d)
-
-     # optimizer = SFO(f_df, 0.1*np.random.randn(n*n), data, display=1, admm_lambda=lmbda)
-
-    ## set up SFO for ADMM iteration
-    # def sfo_admm(v, lmbda):
-    #     optimizer.set_theta(v)
-    #     optimizer.theta_admm_prev = optimizer.theta_original_to_flat(v)
-    #     return optimizer.optimize(num_steps=5)
-
-    # lowrank.add(po.bfgs, f=f, fgrad=fgrad)
-    lowrank.add_operator(po.sfo, f=f, fgrad=fgrad, data=data)
-    # lowrank.add(sfo_admm)
-
-    # theta_init = [0.1 * np.random.randn(n*n) for dummy in range(2)]
-    # from sfo.sfo import SFO
-    # optimizer = SFO(po.get_f_df(theta_init, lmbda, f, fgrad, data), theta_init, data, display=1)
-    # lowrank.add(po.sfo_persist, optimizer=optimizer, f=f, fgrad=fgrad, data=data)
-
-    lowrank.add_operator(po.nucnorm, gamma=gamma, array_shape=A_star.shape)
-
-    # optimize
-    A_hat = lowrank.optimize((n, n), maxiter=20)[0]
-    print('\nLow-rank matrix approximation\n----------')
-    print('Final Error: %4.4f' % np.linalg.norm(A_hat - A_star))
-    print('')
-
-    return A_hat, A_star
+    x_v.append(x.copy())
+    G_v.append(Grad)
+    f_v.append(f)
+    L_v.append(L)
 
 
-def lasso_demo():
-    """
-    solve a LASSO problem via ADMM
-    """
-
-    # generate problem instance
-    n = 150
-    p = 500
-    A = np.random.randn(n, p)
-    x_star = np.random.randn(p) * (np.random.rand(p) < 0.05)
-    b = A.dot(x_star)
-
-    # parameters
-    sparsity = 0.8  # sparsity penalty
-    lmbda = 2  # ADMM parameter
-
-    # initialize prox operators and problem instance
-    lasso = ADMM(lmbda)
-    lasso.add_operator(po.linsys, P=A.T.dot(A), q=A.T.dot(b))
-    lasso.add_operator(po.sparse, gamma=sparsity)
-
-    # optimize
-    x_hat = lasso.optimize(x_star.shape, maxiter=50)[0]
-    print('\nLasso\n----------')
-    print('Final Error: %4.4f' % np.sum((x_hat - x_star) ** 2))
-    print('')
-
-    return x_hat, x_star
-
-
-if __name__ == "__main__":
-    # x_hat, x_star = lasso_demo()
-    A_hat, A_star = lowrank_approx_demo()
+    if(abs(f - L) < tol):
+        print(i + 1)
+        break
+print(x)
+plt.figure()
+plt.plot(range(2, len(L_v) + 1), np.array(f_v[1:]) - np.array(L_v[1:]), '-b*', linewidth = 2)
+plt.show()
 
 
 
+# ADMM
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize_scalar
 
+def f_x(x, y, rho, u):
+    return (x - 1) ** 2 + (rho / 2) * np.linalg.norm(2 * x + 3 * y - 5 + u) ** 2
+def f_y(x, y, rho, u):
+    return (y - 2) ** 2 + (rho / 2) * np.linalg.norm(2 * x + 3 * y - 5 + u) ** 2
+
+x = 1
+y = 1
+rho = 1
+u = 0
+max_iters = 100
+for i in range(max_iters):
+    # print(x,y)
+    resx = minimize_scalar(lambda x: f_x(x, y, rho, u), bounds = (0, 3), method = 'bounded')
+    x = resx.x
+    resy = minimize_scalar(lambda y: f_y(x, y, rho, u), bounds = (1, 4), method = 'bounded')
+    y = resy.x
+    u = u + 2 * x + 3 * y - 5
+    rho = min(2000, 1.1 * rho)
+print(x,y)
 
 
 

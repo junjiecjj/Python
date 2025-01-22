@@ -193,7 +193,8 @@ def ConjugateGradient_optimizer(theta_init,  num_iters = 1000,  perturbation = 0
         lst = np.linspace(0, 1, 101)
         idx = np.array([f(theta + ss * direction) for ss in lst]).argmin()
         step_size = lst[idx] # 通过线搜索确定步长
-        theta = theta + step_size * direction; history.append([theta[0], theta[1], f(theta)]) # 保存参数的历史记录
+        theta = theta + step_size * direction
+        history.append([theta[0], theta[1], f(theta)]) # 保存参数的历史记录
         next_gradient = grad_f(theta)
         beta = np.dot(next_gradient, next_gradient) / np.dot(gradient, gradient)
         direction = -next_gradient + beta * direction

@@ -83,7 +83,7 @@ def soft_thresh(x, L):
 
     x is the signal, L is the threshold lambda
     x = sign(x)(abs(x)-lambda)_+ ()_+ is the element-wise plus operator which equals the +ve part of x if x>0, otherwise = 0.'''
-    return np.multiply(np.sign(x), plus_op(np.absolute(x)-L))
+    return np.multiply(np.sign(x), plus_op(np.absolute(x)-L) )
 
 def opt_tuning_param(eps, limit=3):
     '''Find optimal tuning parameter for given sparsity ratio (epsilon) for the AMP algorithm.

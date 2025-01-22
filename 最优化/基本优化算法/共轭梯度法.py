@@ -96,8 +96,6 @@ plt.show()
 # 添加偏置项 x0 = 1 到 X 中
 X_b = np.c_[np.ones((1000, 1)), X]
 
-
-
 # 共轭梯度法实现
 def ConjugateGradientMethod(X, y, theta_initial, iterations=100):
     # 初始化参数

@@ -54,7 +54,7 @@ opts.ftol = 1e-8;
 opts.alpha0 = 1 / L;
 %%%
 % 添加连续化策略函数所在的目录。
-% addpath('../LASSO_con')
+addpath('/home/jack/公共的/Python/最优化/Lasso/Matlab/LASSO_con')
 [x, out] = LASSO_con(x0, A, b, mu, opts);
 f_star = min(out.fvec);
 %%%

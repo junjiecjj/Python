@@ -13,18 +13,28 @@ from matplotlib import pyplot as plt
 from scipy.stats import norm
 from numpy import linalg as LA
 from scipy.optimize import minimize_scalar
+from sklearn.metrics import mean_squared_error
+
 
 # 初始化输入数据 A 和 b
-def generate_data(m, n, rho = 0.1, noise_var = 0.0001):
-    A = np.random.randn(m, n) / np.sqrt(m)  # 随机生成一个 m x n 的矩阵
-    x = (np.random.rand(n, 1) < rho) * np.random.randn(n, 1) / np.sqrt(rho)
-    noise = np.sqrt(noise_var) * np.random.randn(m, 1)  # 降低噪声强度
-    b = A @ x + noise
-    return A, b, x
-
-# 初始化输入数据 A 和 b
-def generate_data1(M, N, K, noise_var = 0.0001, x_choice = 0):
-    A = np.random.randn(M, N) / np.sqrt(M)  # 随机生成一个 m x n 的矩阵
+def generate_data(M, N, K, noise_var = 0.0001, x_choice = 0, Achoice = 0):
+    """
+      N: Signal dimension
+      M: Number of measurements
+      K: Sparsity, number of non-zero entries in signal vector
+      A_choice: type of sensing matrix
+          0: With iid normal entries N(0,1/M)
+          1: With iid entries in {+1/sqrt(M), -1/sqrt(M)} with uniform probability
+      x_choice: type of signal
+          0: Elements in {+1, 0, -1}, with K +-1's with uniform probability of +1 and -1's
+          1: K non-zero entries drawn from the standard normal distribution
+    """
+    if Achoice == 0:
+        A = np.random.randn(M, N) / np.sqrt(M)  # 随机生成一个 m x n 的矩阵
+    elif Achoice == 1:
+        A = np.random.rand(M,N)
+        A = (A<0.5)/np.sqrt(M)
+        A[np.logical_not(A)] = -1/np.sqrt(M)
     if x_choice == 1:
         x = np.zeros((N,))
         x[np.random.choice(N, K, replace = False)] = np.random.randn(K,)
@@ -40,8 +50,8 @@ def generate_data1(M, N, K, noise_var = 0.0001, x_choice = 0):
     b = A @ x + noise
     return A, b, x
 
-# OMP 算 法
-def OMP(H, y, sparsity):
+# OMP 算法
+def OMP(H, y, K, x_true, lambda_ = 0.05, maxIter = 1000, tol = 1e-6, ):
     y = y.flatten()
     """
     OMP算法的Python实现
@@ -51,25 +61,30 @@ def OMP(H, y, sparsity):
         k: 稀疏度，即信号的非零元素个数
     返回： x: 重构的稀疏信号，形状为(n, 1)
     """
-    N = H.shape[1]
+    M, N = H.shape
     residual = y.copy()
-    index_set = []
-    theta = np.zeros(N)
-    for _ in range(sparsity):
-        correlations = H.T @ residual
-        best_index = np.argmax(np.abs(correlations))
-        index_set.append(best_index)
-        phi_selected = H[:, index_set]
-        theta_selected, _, _, _ = np.linalg.lstsq(phi_selected, y, rcond = None)
-        for i, idx in enumerate(index_set):
-            theta[idx] = theta_selected[i]
-        residual = y - H @ theta
-        if np.linalg.norm(residual) < 1e-6:
-            break
-    return theta
+    support = []
+    x = np.zeros(N)
+    cost_history = []
+    mse_history = []
 
-def OMP2(A, y, sparsity):
-    y = y.reshape(-1,1)
+    for _ in range(maxIter):
+        best_index = np.argmax(np.abs(H.T @ residual))
+        support.append(best_index)
+        theta_selected = np.linalg.lstsq(H[:, support], y, rcond = None)[0]
+        for i, idx in enumerate(support):
+            x[idx] = theta_selected[i]
+        residual = y - H @ x
+        # if np.linalg.norm(residual) < 1e-6:
+            # break
+        cost = 0.5 * np.linalg.norm(y - H @ x) ** 2 + lambda_ * np.sum(np.abs(x))
+        mse = np.linalg.norm(x_true - x)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+    return x, mse_history, cost_history
+
+def OMP1(H, y, K, x_true, lambda_ = 0.05, maxIter = 1000, tol = 1e-6, ):
+    y = y.flatten()
     """
     OMP算法的Python实现
     参数：
@@ -78,35 +93,61 @@ def OMP2(A, y, sparsity):
         k: 稀疏度，即信号的非零元素个数
     返回： x: 重构的稀疏信号，形状为(n, 1)
     """
-    m, n = A.shape
+    M, N = H.shape
     residual = y.copy()  # 初始化残差
     support = []  # 初始化支持集合
+    cost_history = []
+    mse_history = []
 
-    for _ in range(sparsity):
+    for _ in range(maxIter):
         # 计算投影系数
-        projections = np.abs(A.T @ residual)
+        projections = np.abs(H.T @ residual)
         # 选择最相关的原子
         index = np.argmax(projections)
         support.append(index)
         # 更新估计信号
-        x = np.linalg.lstsq(A[:, support], y, rcond = None)[0]
+        x = np.linalg.lstsq(H[:, support], y, rcond = None)[0]
         # 更新残差
-        residual = y - A[:, support] @ x
-    # 构造稀疏信号
-    x_sparse = np.zeros((n, 1))
-    x_sparse[support] = x
+        residual = y - H[:, support] @ x
 
-    return x_sparse
+        # 构造稀疏信号
+        x_sparse = np.zeros((N,))
+        x_sparse[support] = x
+
+        cost = 0.5 * np.linalg.norm(y - H @ x_sparse) ** 2 + lambda_ * np.sum(np.abs(x_sparse))
+        mse = np.linalg.norm(x_true - x_sparse)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+    return x_sparse, mse_history, cost_history
+
+# ISTA算法
+def ISTA(H, y, x_true, lambda_ = 0.05, eta = 0.01, maxIter = 1000, tol = 1e-6,  ):
+    xhat = np.zeros(H.shape[1])
+    cost_history = []
+    mse_history = []
+
+    for i in range(maxIter):
+        gradient = H.T @ (H @ xhat - y)
+        beta_temp = xhat - eta * gradient
+        xhat = np.sign(beta_temp) * np.maximum(np.abs(beta_temp) - eta * lambda_, 0)
+
+        cost = 0.5 * np.linalg.norm(y - H @ xhat) ** 2 + lambda_ * np.sum(np.abs(xhat))
+        mse = np.linalg.norm(x_true - xhat)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+        if i > 0 and abs(cost_history[-2] - cost_history[-1]) < tol:
+            break
+    return xhat, cost_history, mse_history
 
 # FISTA算法
-def FISTA(H, y, x_true, lambda_ = 0.1, eta = 0.01, max_iter = 1000, tol = 1e-6):
+def FISTA(H, y, x_true, lambda_ = 0.1, eta = 0.01, maxIter = 1000, tol = 1e-6, ):
     xhat = np.zeros_like(x_true)
     xhat_old = xhat.copy()
     t = 1
     cost_history = []
     mse_history = []
 
-    for i in range(max_iter):
+    for i in range(maxIter):
         # print(f"  {i}: {xhat.shape}")
         gradient = H.T @ (H @ xhat - y)
         xhat_temp = xhat - eta * gradient
@@ -120,18 +161,14 @@ def FISTA(H, y, x_true, lambda_ = 0.1, eta = 0.01, max_iter = 1000, tol = 1e-6):
 
         cost = 0.5 * np.linalg.norm(y - H @ xhat) ** 2 + lambda_ * np.sum(np.abs(xhat))
         mse = np.linalg.norm(x_true - xhat)**2 / np.linalg.norm(x_true)**2
-
         cost_history.append(cost)
         mse_history.append(mse)
-
         if i > 0 and abs(cost_history[-2] - cost_history[-1]) < tol:
             break
     return xhat, mse_history, cost_history
 
-
-
 # from matlab
-def AMP_Lasso(H, y, x_true, maxIter = 1000, lambda_ = 0.05, ):
+def AMP_tutorial(H, y, x_true, lambda_ = 0.05, maxIter = 1000, ):
     def damping(x, x_old, mes):
         x = mes * x + (1 - mes) * x_old
         x_old = x
@@ -165,14 +202,12 @@ def AMP_Lasso(H, y, x_true, maxIter = 1000, lambda_ = 0.05, ):
 
         cost = 0.5 * np.linalg.norm(y - H @ xhat) ** 2 + lambda_ * np.sum(np.abs(xhat))
         mse = np.linalg.norm(x_true - xhat)**2 / np.linalg.norm(x_true)**2
-
         cost_history.append(cost)
         mse_history.append(mse)
     return xhat, mse_history, cost_history
 
-
 ## AMP algorithm, converges slow,
-def AMPforCS(A, y, x_true, max_iter = 100, lamda = 0.1, var_x = 1, epsilon = 0.2, lambda_ = 0.05,):
+def AMPforCS(H, y, x_true, lambda_ = 0.05, maxIter = 100, var_x = 1, sparsity = 0.1, ):
     def denoise(v, var_x, var_z, epsilon):
         term1 = (1-epsilon)*norm.pdf(v, 0, np.sqrt(var_z))
         term2 = epsilon*norm.pdf(v, 0, np.sqrt(var_x+var_z))
@@ -194,34 +229,34 @@ def AMPforCS(A, y, x_true, max_iter = 100, lamda = 0.1, var_x = 1, epsilon = 0.2
         return xhat, d
 
     y = y.reshape(-1,1)
-    M, N = A.shape
+    M, N = H.shape
     delta = M/N          # measurement rate
-    # initialization
-    # mse = np.zeros((max_iter,1)) # store mean square error
-    xt = np.zeros((N,1))# estimate of signal
+
+    ## initialization
+    xhat = np.zeros((N,1))# estimate of signal
     dt = np.zeros((N,1))# derivative of denoiser
     rt = np.zeros((M,1))# residual
 
     mse_history = []
     cost_history = []
-    for _ in range(max_iter):
+    for _ in range(maxIter):
         # update residual
-        rt = y - A @ xt + 1 / delta * np.mean(dt) * rt
+        rt = y - H @ xhat + 1 / delta * np.mean(dt) * rt
         # compute pseudo-data
-        vt = xt + A.T @ rt
+        vt = xhat + H.T @ rt
         # estimate scalar channel noise variance estimator is due to Montanari
         var_t = np.mean(rt**2)
         # denoising
-        xt1, dt = denoise(vt, var_x, var_t, epsilon)
+        xt1, dt = denoise(vt, var_x, var_t, sparsity)
         # damping step
-        xt = lamda*xt1 + (1-lamda)*xt
+        xhat = lambda_*xt1 + (1-lambda_)*xhat
 
-        cost = 0.5 * np.linalg.norm(y - H @ xt) ** 2 + lambda_ * np.sum(np.abs(xt))
-        mse = np.linalg.norm(x_true - xt)**2 / np.linalg.norm(x_true)**2
+        cost = 0.5 * np.linalg.norm(y - H @ xhat) ** 2 + lambda_ * np.sum(np.abs(xhat))
+        mse = np.linalg.norm(x_true - xhat)**2 / np.linalg.norm(x_true)**2
 
         cost_history.append(cost)
         mse_history.append(mse)
-    return xt, mse_history, cost_history
+    return xhat, mse_history, cost_history
 
 ## https://github.com/kuanhsieh/amp_cs
 def opt_tuning_param(eps, limit=3):
@@ -233,9 +268,10 @@ def opt_tuning_param(eps, limit=3):
     '''
     def M_pm(alpha, eps):
         return eps*(1+alpha**2) + (1-eps)*(2*(1+alpha**2)*norm.cdf(-alpha)-2*alpha*norm.pdf(alpha))
-    res   = minimize_scalar(M_pm, bracket=(0, limit), args = (eps))
+    res = minimize_scalar(M_pm, bracket=(0, limit), args = (eps))
     alpha = res.x
     return alpha
+
 def AMPKuanCS(H, y, x_true, alpha, maxIter = 300, lambda_ = 0.05,):
     '''Approximate message passing (AMP) iteration with soft-thresholding denoiser.
     Inputs
@@ -254,7 +290,7 @@ def AMPKuanCS(H, y, x_true, alpha, maxIter = 300, lambda_ = 0.05,):
     '''
     x_true = x_true.flatten() # not must
     y = y.flatten() # not must
-    x = np.zeros_like(x_true)
+    xhat = np.zeros_like(x_true)
     z = copy.deepcopy(y)
     M = len(y)
     mse_history = []
@@ -263,20 +299,20 @@ def AMPKuanCS(H, y, x_true, alpha, maxIter = 300, lambda_ = 0.05,):
     for i in range(maxIter):
         # Estimate vector
         theta = alpha*np.sqrt(LA.norm(z)**2/M) # alpha*tau
-        r = x + H.T @ z
-        x =  np.sign(r) * np.maximum(np.abs(r) - theta, 0) #  soft_thresh
+        r = xhat + H.T @ z
+        xhat =  np.sign(r) * np.maximum(np.abs(r) - theta, 0) #  soft_thresh
 
         # Calculate residual with the Onsager term
-        b = LA.norm(x.flatten(), 0)/M
-        z = y - H @ x + b*z
+        b = LA.norm(xhat.flatten(), 0)/M
+        z = y - H @ xhat + b*z
 
-        cost = 0.5 * np.linalg.norm(y - H @ x) ** 2 + lambda_ * np.sum(np.abs(x))
-        mse = np.linalg.norm(x_true - x)**2 / np.linalg.norm(x_true)**2
+        cost = 0.5 * np.linalg.norm(y - H @ xhat) ** 2 + lambda_ * np.sum(np.abs(xhat))
+        mse = np.linalg.norm(x_true - xhat)**2 / np.linalg.norm(x_true)**2
 
         cost_history.append(cost)
         mse_history.append(mse)
     # L = theta*(1 - b) # The last L is the actual lambda of the LASSO we're minimizing
-    return x, mse_history, cost_history, z
+    return xhat, mse_history, cost_history, z
 
 ## 凸优化算法
 def prox_grad(H, y, x_true, stepsize, L, maxIter = 300, lambda_ = 0.05,):
@@ -352,10 +388,10 @@ def OMPKuan(H, y, x_true, maxIter = 1000, lambda_ = 0.05,):
 
     return x, mse_history, cost_history
 
-def CosOMP(H, y, x_true, K_est, maxIter = 300, lambda_ = 0.05,):
+def CoSaMP(H, y, x_true, K_est, maxIter = 300, lambda_ = 0.05,):
     x_true = x_true.flatten()
     y = y.flatten()
-    """CoSaMP algorithm iteration.
+    """CoSaMP algorithm iteration. 压缩采样匹配追踪.
     See "CoSaMP: Iterative Signal Recovery from Incomplete and Inaccurate Samples" by Needell and Tropp for more details. Notation follows paper.
     Inputs
         y: measurement vector
@@ -385,51 +421,54 @@ def CosOMP(H, y, x_true, K_est, maxIter = 300, lambda_ = 0.05,):
     return x, mse_history, cost_history
 
 np.random.seed(42)
-m, n = 500, 1000
+M, N = 500, 1000
 maxIter = 300
-rho = 0.03
+sparsity = 0.03
+K = int(N * sparsity)
 lambda_ = 0.05
 noise_varDB = 50
-noise_var = 10**(-noise_varDB/10)
-# noise_var = 0.02  # 0.00009 ~ 0.02
+noise_var = 10**(-noise_varDB/10)   ## 0.00009 ~ 0.02
 
-# H, y, x_true = generate_data(m, n, rho = rho, noise_var = noise_var)
-# H, y, x_true = generate_data1(m, n, int(rho * n), noise_var = noise_var, x_choice = 1)
-H, y, x_true = generate_data1(m, n, int(rho * n), noise_var = noise_var, x_choice = 0)
-# 运行 AMP 算法
-x_amp, mse_amp, cost_amp = AMP_Lasso(H, y, x_true, maxIter = maxIter, lambda_ = lambda_)
-x_amp1, mse_amp1, cost_amp1 = AMPforCS(H, y, x_true, max_iter = 600, lamda = lambda_, epsilon = rho)
+H, y, x_true = generate_data(M, N, K, noise_var = noise_var, x_choice = 0)
 
-alpha_amp = opt_tuning_param(rho)
-x_amp2, mse_amp2, cost_amp2, z_amp2 = AMPKuanCS(H, y, x_true, alpha_amp, maxIter = maxIter,  lambda_ =lambda_,)
 
-# 运行 prox_grad / nesterov 算法
-L = alpha_amp*LA.norm(z_amp2.flatten())*(1-LA.norm(x_amp2.flatten(), 0)/m)/np.sqrt(m) # Lambda
+##>>>>>>>>>>>>>> 运行 AMP 算法
+x_amp_tuto, mse_amp_tuto, cost_amp_tuto = AMP_tutorial(H, y, x_true, maxIter = maxIter, lambda_ = lambda_)
+x_amp_cs, mse_amp_cs, cost_amp_cs = AMPforCS(H, y, x_true, maxIter = 600, lambda_ = lambda_, sparsity = sparsity)
+
+alpha_amp = opt_tuning_param(sparsity)
+x_amp_Ku, mse_amp_Ku, cost_amp_Ku, z_amp_Ku = AMPKuanCS(H, y, x_true, alpha_amp, maxIter = maxIter,  lambda_ =lambda_,)
+
+##>>>>>>>>>>>>>> 运行 prox_grad / nesterov 算法
+L = alpha_amp*LA.norm(z_amp_Ku.flatten())*(1-LA.norm(x_amp_Ku.flatten(), 0)/M)/np.sqrt(M) # Lambda
 stepsize = np.real(1/(np.max(LA.eigvals(H.T @ H)))) # Step size
 
 x_prox, mse_prox, cost_prox = prox_grad(H, y, x_true, stepsize, L, maxIter = 500 , lambda_ =lambda_,)
 x_nesterov, mse_nesterov, cost_nesterov = nesterov(H, y, x_true, stepsize, L, maxIter = 500 , lambda_ =lambda_,)
 
-# 运行 FISTA 算法
-x_fista, mse_fista, cost_fista = FISTA(H, y, x_true, lambda_ = lambda_ ,  )
+##>>>>>>>>>>>>>> 运行 FISTA 算法
+x_ista, mse_ista, cost_ista = ISTA(H, y, x_true, lambda_ = lambda_,  maxIter = maxIter,  )
+x_fista, mse_fista, cost_fista = FISTA(H, y, x_true, lambda_ = lambda_ , maxIter = maxIter, )
 
-# 运行 OMP 算法
-x_omp = OMP2(H, y, int(n*rho))
-x_omp1, mse_omp, cost_omp = OMPKuan(H, y, x_true, maxIter = 300  , lambda_ =lambda_,)
-K_est = np.nonzero(x_true)[0].shape[0]
-x_omp2, mse_omp2, cost_omp2 = CosOMP(H, y, x_true, K_est, maxIter = 300 , lambda_ =lambda_,)
+##>>>>>>>>>>>>>> 运行 OMP 算法
+x_omp, mse_omp, cost_omp = OMP(H, y, K, x_true, maxIter = maxIter,)
+x_omp1, mse_omp1, cost_omp1 = OMP1(H, y, K, x_true, maxIter = maxIter,)
+x_omp_Ku, mse_omp_Ku, cost_omp_Ku = OMPKuan(H, y, x_true, maxIter = 300  , lambda_ =lambda_,)
+x_omp_CoSaMP, mse_omp_CoSaMP, cost_omp_CoSaMP = CoSaMP(H, y, x_true, K, maxIter = 300 , lambda_ =lambda_,)
 
-
-##
+##>>>>>>>>>>>>>> Figs
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout = True)
-axs.semilogy(mse_amp, ls = '--', color = '#FF8C00', label = "AMP MSE" )
-axs.semilogy(mse_amp1, ls = '--', color = '#00BFFF', label = "AMP denoise MSE" )
-axs.semilogy(mse_amp2, ls = '--', color = '#8B0000', label = "AMP Kuan MSE" )
-axs.semilogy(mse_prox, ls = '--', color = '#000000', label = "Prox MSE" )
-axs.semilogy(mse_omp, ls = '--', color = '#28a428', label = "OMPKuan MSE" )
-axs.semilogy(mse_omp2, ls = '--', color = '#00FF00', label = "CosOMP MSE" )
-axs.semilogy(mse_nesterov, ls = '--', color = '#FF0000', label = "nesterov MSE" )
-axs.semilogy(mse_fista, ls = '--', color = '#0000FF', label = "FISTA MSE" )
+axs.semilogy(mse_amp_tuto, ls = '--',  abel = "AMP_tutorial MSE" )
+axs.semilogy(mse_amp_cs, ls = '--', label = "AMPforCS MSE" )
+axs.semilogy(mse_amp_Ku, ls = '--', label = "AMPKuanCS MSE" )
+axs.semilogy(mse_prox, ls = '--', label = "prox_grad MSE" )
+axs.semilogy(mse_nesterov, ls = '--', label = "nesterov MSE" )
+axs.semilogy(mse_ista, ls = '--', label = "ISTA MSE" )
+axs.semilogy(mse_fista, ls = '--', label = "FISTA MSE" )
+axs.semilogy(mse_omp, ls = '--', label = "OMP" )
+axs.semilogy(mse_omp1, ls = '--', label = "OMP1 MSE" )
+axs.semilogy(mse_omp_Ku, ls = '--', label = "OMPKuan MSE" )
+axs.semilogy(mse_omp_CoSaMP, ls = '--', label = "CoSaMP MSE" )
 axs.legend(fontsize = 22)
 axs.set_xlabel('Iteration')
 axs.set_ylabel('MSE')
@@ -437,17 +476,20 @@ plt.show()
 plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout = True)
-axs.semilogy(cost_amp, ls = '--', color = '#FF8C00', label = "AMP Cost" )
-axs.semilogy(cost_amp1, ls = '--', color = '#00BFFF', label = "AMP denoise Cost" )
-axs.semilogy(cost_amp2, ls = '--', color = '#8B0000', label = "AMP Kuan Cost" )
-axs.semilogy(cost_prox, ls = '--', color = '#000000', label = "Prox Cost" )
-axs.semilogy(cost_omp, ls = '--', color = '#28a428', label = "OMPKuan Cost" )
-axs.semilogy(cost_omp2, ls = '--', color = '#00FF00', label = "CosOMP Cost" )
-axs.semilogy(cost_nesterov, ls = '--', color = '#FF0000', label = "nesterov Cost" )
-axs.semilogy(cost_fista, ls = '--', color = '#0000FF', label = "FISTA Cost" )
+axs.semilogy(mse_amp_tuto, ls = '--',  abel = "AMP MSE" )
+axs.semilogy(mse_amp_cs, ls = '--', label = "AMP denoise MSE" )
+axs.semilogy(mse_amp_Ku, ls = '--', label = "AMP Kuan MSE" )
+axs.semilogy(mse_prox, ls = '--', label = "Prox MSE" )
+axs.semilogy(mse_nesterov, ls = '--', label = "OMPKuan MSE" )
+axs.semilogy(mse_ista, ls = '--', label = "CoSaMP MSE" )
+axs.semilogy(mse_fista, ls = '--', label = "nesterov MSE" )
+axs.semilogy(mse_omp, ls = '--', label = "FISTA MSE" )
+axs.semilogy(mse_omp1, ls = '--', label = "FISTA MSE" )
+axs.semilogy(mse_omp_Ku, ls = '--', label = "FISTA MSE" )
+axs.semilogy(mse_omp_CoSaMP, ls = '--', label = "FISTA MSE" )
 axs.legend(fontsize = 22)
 axs.set_xlabel('Iteration')
-axs.set_ylabel('Cost')
+axs.set_ylabel('MSE')
 plt.show()
 plt.close()
 
@@ -476,7 +518,7 @@ plt.show()
 plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_omp2, linefmt = 'g--', markerfmt = 'g*',  label="CosOMP Kuan X" , basefmt='none')
+axs.stem(x_omp2, linefmt = 'g--', markerfmt = 'g*',  label="CoSaMP Kuan X" , basefmt='none')
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')

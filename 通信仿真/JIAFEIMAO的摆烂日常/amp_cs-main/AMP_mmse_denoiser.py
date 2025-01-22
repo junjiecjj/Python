@@ -37,19 +37,18 @@ from amp4cs import initialise_CS, opt_tuning_param, amp, amp_3pt, amp_bg
 #%%>>>>>>>>>>>>>>>>>>>>>>  1. Three-point distribution
 # 1.1. Single decoding instance
 N     = 1000  # dimension of signal
-M     = 500  # num of measurements
-K     = 30   # num of non-zero coefficients
-sigma = 0.1  # Noise standard deviation, 把sigma 换成np.sqrt(0.1) = 0.36就不行了
+M     = 500   # num of measurements
+K     = 30    # num of non-zero coefficients
+sigma = 0.1   # Noise standard deviation, 把sigma 换成np.sqrt(0.1) = 0.3162 就不行了
 
 eps      = K / N
 alpha    = opt_tuning_param(eps) # Find optimal alpha
-iter_max = 20 # Max num of iterations
+iter_max = 20                    # Max num of iterations
 
-y, A, x_init = initialise_CS(N, M, K, sigma, x_choice=0)
+y, A, x_init = initialise_CS(N, M, K, sigma, x_choice = 0)
 # Plot N-dim signal vector to recover
 # Entries generated from 3-point distribution with probability (1-eps) at 0
 plt.plot(x_init)
-
 
 # Run AMP decoder with both soft-thresholding and MMSE denoiser
 x_amp   = np.zeros_like(x_init) # Initial signal estimate
@@ -171,9 +170,7 @@ y, A, x_init = initialise_CS(N, M, K, sigma, x_choice=1)
 # K non-entries generated i.i.d. from standard Gaussian
 plt.plot(x_init)
 
-
 # Run AMP decoder with both soft-thresholding and MMSE denoiser
-
 x_amp   = np.zeros_like(x_init) # Initial signal estimate
 x_amp_b = np.zeros_like(x_init)
 z_amp   = y                     # Initial residual
@@ -200,10 +197,8 @@ plt.subplot(133)
 plt.plot(x_amp_b)
 plt.title('AMP w/ MMSE denoiser')
 
-
 # 2.2. Plot undersampling-sparsity MSE phase diagram
 start = time.perf_counter()
-
 N         = 500   # Dimension of signal
 iter_max  = 50    # Iteration limit
 numOfRuns = 10    # Number of runs to calculate the median

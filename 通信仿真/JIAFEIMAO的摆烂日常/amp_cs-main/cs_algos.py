@@ -111,7 +111,7 @@ def omp(y, A, x, z, Omega):
     return x, z, Omega
 
 def cosamp(Phi, u, s, a, v):
-    '''CoSaMP algorithm iteration.
+    '''CoSaMP algorithm iteration.压缩采样匹配追踪
     See "CoSaMP: Iterative Signal Recovery from Incomplete and Inaccurate Samples" by Needell and Tropp for more details. Notation follows paper.
     Inputs
         u  : measurement vector

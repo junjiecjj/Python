@@ -1,8 +1,0 @@
-***MappingChart***
-number_of_signal
-2
-length_of_signal
-1
-signal_set
--1
-1

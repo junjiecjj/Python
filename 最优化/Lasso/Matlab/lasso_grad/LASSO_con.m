@@ -160,7 +160,7 @@ while k < opts.maxit
     [x, out1] = algf(x, A, b, mu_t, mu0, opts1);
     f = out1.fvec(end);
     out.fvec = [out.fvec, out1.fvec];
-    k = k + 1;
+    k = k + 1
     
     %%%
     % 由于 $\ell_1$-范数不可导，这里 |nrmG| 表示 LASSO 问题的最优性条件的违反度来
@@ -171,10 +171,7 @@ while k < opts.maxit
     if opts.verbose
         fprintf('itr: %d\tmu_t: %e\titr_inn: %d\tfval: %e\tnrmG: %.1e\n', k, mu_t, out1.itr, f, nrmG);
     end
-    %%%
-    % 当内层循环因达到收敛条件而退出时，缩减当前正则化系数 $\mu_t$，
-    % 并判断收敛。外层循环的收敛条件：当 $\mu$ 已经减小到与 $\mu_0$
-    % 相同并且函数值或梯度满足收敛条件时，停止外层循环。
+
     if ~out1.flag
         mu_t = max(mu_t * opts.factor, mu0);
     end
@@ -206,27 +203,3 @@ out.itr = k;
         y = sign(x) .* y;
     end
 end
-%% 参考页面
-% 该连续化策略调用具体的某一算法的内部迭代器，具体包括：
-%
-% * <../lasso_grad/LASSO_grad_huber_inn.html LASSO
-% 问题的梯度下降法>
-% * <../lasso_subgrad/LASSO_subgrad_inn.html LASSO
-% 问题的次梯度法>
-% * <../lasso_proxg/LASSO_proximal_grad_inn.html LASSO
-% 问题的近似点梯度法>
-% * <../lasso_proxg/LASSO_Nesterov_inn.html LASSO 问题的
-% FISTA 算法>
-% * <../lasso_proxg/LASSO_Nesterov2nd_inn.html LASSO
-% 问题的第二类 Nesterov 加速算法>
-% * <../lasso_bcd/LASSO_bcd_inn.html LASSO
-% 问题的分块坐标下降法>
-% * <../lasso_dualalg/LASSO_pdhg_inn.html LASSO
-% 问题的原始-对偶混合梯度算法>
-%
-% 此页面的源代码请见： <../download_code/LASSO_con/LASSO_con.m LASSO_con.m>。
-%% 版权声明
-% 此页面为《最优化：建模、算法与理论》、《最优化计算方法》配套代码。
-% 代码作者：文再文、刘浩洋、户将，代码整理与页面制作：杨昊桐。
-%
-% 著作权所有 (C) 2020 文再文、刘浩洋、户将
