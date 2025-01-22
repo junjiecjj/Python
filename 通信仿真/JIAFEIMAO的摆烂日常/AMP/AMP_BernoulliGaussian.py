@@ -121,7 +121,7 @@ def OMP1(H, y, K, x_true, lambda_ = 0.05, maxIter = 1000, tol = 1e-6, ):
     return x_sparse, mse_history, cost_history
 
 # ISTA算法
-def ISTA(H, y, x_true, lambda_ = 0.05, eta = 0.01, maxIter = 1000, tol = 1e-6,  ):
+def ISTA(H, y, x_true, lambda_ = 0.05, eta = 0.1, maxIter = 1000, tol = 1e-8,  ):
     xhat = np.zeros(H.shape[1])
     cost_history = []
     mse_history = []
@@ -137,7 +137,7 @@ def ISTA(H, y, x_true, lambda_ = 0.05, eta = 0.01, maxIter = 1000, tol = 1e-6,  
         mse_history.append(mse)
         if i > 0 and abs(cost_history[-2] - cost_history[-1]) < tol:
             break
-    return xhat, cost_history, mse_history
+    return xhat, mse_history, cost_history
 
 # FISTA算法
 def FISTA(H, y, x_true, lambda_ = 0.1, eta = 0.01, maxIter = 1000, tol = 1e-6, ):
@@ -253,10 +253,94 @@ def AMPforCS(H, y, x_true, lambda_ = 0.05, maxIter = 100, var_x = 1, sparsity = 
 
         cost = 0.5 * np.linalg.norm(y - H @ xhat) ** 2 + lambda_ * np.sum(np.abs(xhat))
         mse = np.linalg.norm(x_true - xhat)**2 / np.linalg.norm(x_true)**2
-
         cost_history.append(cost)
         mse_history.append(mse)
     return xhat, mse_history, cost_history
+
+
+### AMP with Bayes-optimal denoiser for different signals
+def AMP_3pt(H, y, x_true, eps, c = 1, maxIter = 300, lambda_ = 0.05, ):
+    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE) denoiser for signals with iid entries drawn from the 3-point distribution: probability (1-eps) equal to 0 and probability eps/2 equal to each +c and -c.
+    Inputs
+        y: measurement vector (length M 1d np.array)
+        H: sensing matrix     (M-by-N 2d np.array)
+        x: signal estimate    (length N 1d np.array)
+        z: residual           (length M 1d np.array)
+        eps: sparsity ratio (fraction of non-zero entries)
+        c: the values of the non-zero entries of the signal equal to +c and -c
+    Outputs:
+    Note
+        Need to initialise AMP iteration with x = np.zeros(N), z = y
+    '''
+    M, N = np.shape(H)
+    x = np.zeros_like(x_true)
+    z = copy.deepcopy(y)
+    mse_history = []
+    cost_history = []
+
+    for i in range(maxIter):
+        tau = np.sqrt(np.mean(z**2)) # Estimate of effective noise std deviation
+        # Estimate vector
+        s = x + H.T @ z # Effective (noisy) observation of signal x
+        u = s*c / tau**2       # Temporary variable
+        top = c * eps * np.sinh(u, dtype = np.float128)
+        bot = eps * np.cosh(u, dtype = np.float128) + (1 - eps) * np.exp(c**2/(2*tau**2), dtype = np.float128)
+        x   = (top / bot).astype(np.float128)
+        # Calculate residual with the Onsager term
+        eta_der = x * (c/np.tanh(u) - x) / tau**2
+        b = (N/M) * np.mean(eta_der)
+        z = y - H @ x + b*z
+
+        cost = 0.5 * np.linalg.norm(y - H @ x) ** 2 + lambda_ * np.sum(np.abs(x))
+        mse = np.linalg.norm(x_true - x)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+    return x, mse_history, cost_history
+
+def AMP_bg(H, y, x_true, sparsity, sig_pow = 1, maxIter = 300, lambda_ = 0.05, ):
+    '''Approximate message passing (AMP) iteration with Bayes-optimal (MMSE) denoiser for signals with iid entries drawn from the Bernoulli-Gaussian distribution: probability (1-eps) equal to 0 and probability eps drawn from a Gaussian distribution with standard deviation v.
+    Inputs
+        y: measurement vector (length M 1d np.array)
+        A: sensing matrix     (M-by-N 2d np.array)
+        x: signal estimate    (length N 1d np.array)
+        z: residual           (length M 1d np.array)
+        sparsity: sparsity ratio (fraction of non-zero entries)
+        v: the standard deviation of the non-zero entries of the signal which
+           are drawn from a Gaussian distribution
+    Outputs
+        x: signal estimate
+        z: residual
+    Note
+        Need to initialise AMP iteration with
+        x = np.zeros(N)
+        z = y
+    '''
+    M, N = np.shape(H)
+    x = np.zeros_like(x_true)
+    z = copy.deepcopy(y)
+    mse_history = []
+    cost_history = []
+
+    for i in range(maxIter):
+        tau = np.sqrt(np.mean(z**2)) # Estimate of effective noise std deviation
+        # Estimate vector
+        s = x + H.T @ z # Effective (noisy) observation of signal x
+        u = sig_pow / tau**2       # Temporary variable
+        term1 = 1 + tau**2/sig_pow
+        term2 = 1 + (1-sparsity)/sparsity * np.sqrt(1+u) * np.exp(-(s**2/(2*tau**2))*u/(1+u))
+        denom = term1 * term2
+        x = s / denom
+        # Calculate residual with the Onsager term
+        eta_der = (1/denom) + (x/tau**2) * (s/(1+tau**2/sig_pow) - x)
+        b = (N/M) * np.mean(eta_der)
+        z = y - H @ x + b*z
+
+        cost = 0.5 * np.linalg.norm(y - H @ x) ** 2 + lambda_ * np.sum(np.abs(x))
+        mse = np.linalg.norm(x_true - x)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+    return x, mse_history, cost_history
+
 
 ## https://github.com/kuanhsieh/amp_cs
 def opt_tuning_param(eps, limit=3):
@@ -422,29 +506,29 @@ def CoSaMP(H, y, x_true, K_est, maxIter = 300, lambda_ = 0.05,):
 
 np.random.seed(42)
 M, N = 500, 1000
-maxIter = 300
 sparsity = 0.03
 K = int(N * sparsity)
+maxIter = 300
 lambda_ = 0.05
 noise_varDB = 50
-noise_var = 10**(-noise_varDB/10)   ## 0.00009 ~ 0.02
-
-H, y, x_true = generate_data(M, N, K, noise_var = noise_var, x_choice = 0)
-
+noise_var = 10**(-noise_varDB/10)   ##  0.02  # 0.00009 ~ 0.02
+H, y, x_true = generate_data(M, N, K, noise_var = noise_var, x_choice = 1)
 
 ##>>>>>>>>>>>>>> 运行 AMP 算法
 x_amp_tuto, mse_amp_tuto, cost_amp_tuto = AMP_tutorial(H, y, x_true, maxIter = maxIter, lambda_ = lambda_)
-x_amp_cs, mse_amp_cs, cost_amp_cs = AMPforCS(H, y, x_true, maxIter = 600, lambda_ = lambda_, sparsity = sparsity)
+x_amp_cs, mse_amp_cs, cost_amp_cs = AMPforCS(H, y, x_true, maxIter = maxIter, lambda_ = lambda_, sparsity = sparsity)
 
 alpha_amp = opt_tuning_param(sparsity)
 x_amp_Ku, mse_amp_Ku, cost_amp_Ku, z_amp_Ku = AMPKuanCS(H, y, x_true, alpha_amp, maxIter = maxIter,  lambda_ =lambda_,)
+# x_amp_3pt, mse_amp_3pt, cost_amp_3pt = AMP_3pt(H, y, x_true, eps = sparsity, c = 1, maxIter = maxIter, lambda_ = lambda_,)
+x_amp_bg, mse_amp_bg, cost_amp_bg = AMP_bg(H, y, x_true, sparsity = sparsity, sig_pow = 1, maxIter = maxIter, lambda_ = lambda_,)
 
 ##>>>>>>>>>>>>>> 运行 prox_grad / nesterov 算法
 L = alpha_amp*LA.norm(z_amp_Ku.flatten())*(1-LA.norm(x_amp_Ku.flatten(), 0)/M)/np.sqrt(M) # Lambda
 stepsize = np.real(1/(np.max(LA.eigvals(H.T @ H)))) # Step size
 
-x_prox, mse_prox, cost_prox = prox_grad(H, y, x_true, stepsize, L, maxIter = 500 , lambda_ =lambda_,)
-x_nesterov, mse_nesterov, cost_nesterov = nesterov(H, y, x_true, stepsize, L, maxIter = 500 , lambda_ =lambda_,)
+x_prox, mse_prox, cost_prox = prox_grad(H, y, x_true, stepsize, L, maxIter = maxIter , lambda_ =lambda_,)
+x_nesterov, mse_nesterov, cost_nesterov = nesterov(H, y, x_true, stepsize, L, maxIter = maxIter , lambda_ =lambda_,)
 
 ##>>>>>>>>>>>>>> 运行 FISTA 算法
 x_ista, mse_ista, cost_ista = ISTA(H, y, x_true, lambda_ = lambda_,  maxIter = maxIter,  )
@@ -453,45 +537,51 @@ x_fista, mse_fista, cost_fista = FISTA(H, y, x_true, lambda_ = lambda_ , maxIter
 ##>>>>>>>>>>>>>> 运行 OMP 算法
 x_omp, mse_omp, cost_omp = OMP(H, y, K, x_true, maxIter = maxIter,)
 x_omp1, mse_omp1, cost_omp1 = OMP1(H, y, K, x_true, maxIter = maxIter,)
-x_omp_Ku, mse_omp_Ku, cost_omp_Ku = OMPKuan(H, y, x_true, maxIter = 300  , lambda_ =lambda_,)
-x_omp_CoSaMP, mse_omp_CoSaMP, cost_omp_CoSaMP = CoSaMP(H, y, x_true, K, maxIter = 300 , lambda_ =lambda_,)
+x_omp_Ku, mse_omp_Ku, cost_omp_Ku = OMPKuan(H, y, x_true, maxIter = maxIter  , lambda_ =lambda_,)
+x_omp_CoSaMP, mse_omp_CoSaMP, cost_omp_CoSaMP = CoSaMP(H, y, x_true, K, maxIter = maxIter , lambda_ =lambda_,)
 
 ##>>>>>>>>>>>>>> Figs
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout = True)
-axs.semilogy(mse_amp_tuto, ls = '--',  abel = "AMP_tutorial MSE" )
-axs.semilogy(mse_amp_cs, ls = '--', label = "AMPforCS MSE" )
-axs.semilogy(mse_amp_Ku, ls = '--', label = "AMPKuanCS MSE" )
-axs.semilogy(mse_prox, ls = '--', label = "prox_grad MSE" )
-axs.semilogy(mse_nesterov, ls = '--', label = "nesterov MSE" )
-axs.semilogy(mse_ista, ls = '--', label = "ISTA MSE" )
-axs.semilogy(mse_fista, ls = '--', label = "FISTA MSE" )
-axs.semilogy(mse_omp, ls = '--', label = "OMP" )
-axs.semilogy(mse_omp1, ls = '--', label = "OMP1 MSE" )
-axs.semilogy(mse_omp_Ku, ls = '--', label = "OMPKuan MSE" )
-axs.semilogy(mse_omp_CoSaMP, ls = '--', label = "CoSaMP MSE" )
+axs.semilogy(mse_amp_tuto, ls = '--', marker = 'o', ms = '12', markevery = 50, label = "AMP_tutorial MSE" )
+axs.semilogy(mse_amp_cs, ls = '-',lw = 3, marker = 'v', ms = '12', markevery = 50, label = "AMPforCS MSE" )
+axs.semilogy(mse_amp_Ku, ls = '--', marker = '^', ms = '12', markevery = 50, label = "AMPKuanCS MSE" )
+# axs.semilogy(mse_amp_3pt, ls = '--', marker = '1', ms = '12', markevery = 50, label = "AMP_3pt MSE" )
+axs.semilogy(mse_amp_bg, ls = '--', marker = '2', ms = '12', markevery = 50, label = "AMP_bg MSE" )
+axs.semilogy(mse_prox, ls = '--', marker = '*', ms = '12', markevery = 50, label = "prox_grad MSE" )
+axs.semilogy(mse_nesterov, ls = '--', marker = '>', ms = '12', markevery = 50, label = "nesterov MSE" )
+axs.semilogy(mse_ista, ls = '--', lw = 3, marker = '<', ms = '12', markevery = 50,  label = "ISTA MSE" )
+axs.semilogy(mse_fista, ls = '--', marker = 's', ms = '12', markevery = 50,  label = "FISTA MSE" )
+axs.semilogy(mse_omp, ls = '--', marker = 'p', ms = '12', markevery = 50, label = "OMP" )
+axs.semilogy(mse_omp1, ls = '--', marker = 'h', ms = '12', markevery = 50, label = "OMP1 MSE" )
+axs.semilogy(mse_omp_Ku, ls = '--', marker = 'd', ms = '12', markevery = 50, label = "OMPKuan MSE" )
+axs.semilogy(mse_omp_CoSaMP, ls = '--', marker = 'x', ms = '12', markevery = 50, label = "CoSaMP MSE" )
 axs.legend(fontsize = 22)
 axs.set_xlabel('Iteration')
 axs.set_ylabel('MSE')
 plt.show()
 plt.close()
 
+
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout = True)
-axs.semilogy(mse_amp_tuto, ls = '--',  abel = "AMP MSE" )
-axs.semilogy(mse_amp_cs, ls = '--', label = "AMP denoise MSE" )
-axs.semilogy(mse_amp_Ku, ls = '--', label = "AMP Kuan MSE" )
-axs.semilogy(mse_prox, ls = '--', label = "Prox MSE" )
-axs.semilogy(mse_nesterov, ls = '--', label = "OMPKuan MSE" )
-axs.semilogy(mse_ista, ls = '--', label = "CoSaMP MSE" )
-axs.semilogy(mse_fista, ls = '--', label = "nesterov MSE" )
-axs.semilogy(mse_omp, ls = '--', label = "FISTA MSE" )
-axs.semilogy(mse_omp1, ls = '--', label = "FISTA MSE" )
-axs.semilogy(mse_omp_Ku, ls = '--', label = "FISTA MSE" )
-axs.semilogy(mse_omp_CoSaMP, ls = '--', label = "FISTA MSE" )
+axs.semilogy(cost_amp_tuto, ls = '--', marker = 'o', ms = '12', markevery = 50, label = "AMP_tutorial Cost" )
+axs.semilogy(cost_amp_cs, ls = '--', marker = 'v', ms = '12', markevery = 50, label = "AMPforCS Cost" )
+axs.semilogy(cost_amp_Ku, ls = '--', marker = '^', ms = '12', markevery = 50, label = "AMPKuanCS Cost" )
+# axs.semilogy(cost_amp_3pt, ls = '--', marker = '1', ms = '12', markevery = 50, label = "AMP_3pt Cost" )
+axs.semilogy(cost_amp_bg, ls = '--', marker = '2', ms = '12', markevery = 50, label = "AMP_bg Cost" )
+axs.semilogy(cost_prox, ls = '--', marker = '*', ms = '12', markevery = 50, label = "prox_grad Cost" )
+axs.semilogy(cost_nesterov, ls = '--', marker = '>', ms = '12', markevery = 50,  label = "nesterov Cost" )
+axs.semilogy(cost_ista, ls = '-',lw = 3, marker = '<', ms = '12', markevery = 50,  label = "ISTA Cost" )
+axs.semilogy(cost_fista, ls = '--', marker = 's', ms = '12', markevery = 50, label = "FISTA Cost" )
+axs.semilogy(cost_omp, ls = '--',marker = 'p', ms = '12', markevery = 50,   label = "OMP Cost" )
+axs.semilogy(cost_omp1, ls = '--',marker = 'h', ms = '12', markevery = 50,  label = "OMP1 Cost" )
+axs.semilogy(cost_omp_Ku, ls = '--', marker = 'd', ms = '12', markevery = 50, label = "OMPKuan Cost" )
+axs.semilogy(cost_omp_CoSaMP, ls = '--',marker = 'x', ms = '12', markevery = 50, label = "CoSaMP Cost" )
 axs.legend(fontsize = 22)
 axs.set_xlabel('Iteration')
-axs.set_ylabel('MSE')
+axs.set_ylabel('Cost')
 plt.show()
 plt.close()
+
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
 axs.stem(x_true, linefmt = 'm--', markerfmt = 'mD',  label="True X", basefmt='none')
@@ -502,7 +592,7 @@ plt.show()
 plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_omp, linefmt = 'g--', markerfmt = 'g*',  label="OMP X" , basefmt='none')
+axs.stem(x_amp_tuto, linefmt = 'g--', markerfmt = 'g*',  label="AMP_tutorial X" , basefmt='none')
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
@@ -510,7 +600,7 @@ plt.show()
 plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_omp1, linefmt = 'g--', markerfmt = 'g*',  label="OMP Kuan X" , basefmt='none')
+axs.stem(x_amp_cs, linefmt = 'g--', markerfmt = 'g*',  label="AMPforCS X" , basefmt='none')
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
@@ -518,33 +608,23 @@ plt.show()
 plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_omp2, linefmt = 'g--', markerfmt = 'g*',  label="CoSaMP Kuan X" , basefmt='none')
+axs.stem(x_amp_Ku, linefmt = 'g--', markerfmt = 'g*',  label="AMPKuanCS X" , basefmt='none')
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
 plt.show()
 plt.close()
 
-fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_fista, linefmt = 'c--', markerfmt = 'cv', label="FISTA X" , basefmt='none')
-axs.legend()
-axs.set_xlabel('Index')
-axs.set_ylabel('Value')
-plt.show()
-plt.close()
-
-
-fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_amp, linefmt = 'b--', markerfmt = 'b^',  label="AMP X", basefmt='none' )
-axs.legend()
-axs.set_xlabel('Index')
-axs.set_ylabel('Value')
-plt.show()
-plt.close()
-
+# fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+# axs.stem(x_amp_3pt, linefmt = 'g--', markerfmt = 'g*',  label="AMP_3pt X" , basefmt='none')
+# axs.legend()
+# axs.set_xlabel('Index')
+# axs.set_ylabel('Value')
+# plt.show()
+# plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_amp1, linefmt = 'b--', markerfmt = 'b^',  label="AMP denoise X", basefmt='none' )
+axs.stem(x_amp_bg, linefmt = 'g--', markerfmt = 'g*',  label="AMP_bg X" , basefmt='none')
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
@@ -552,8 +632,9 @@ plt.show()
 plt.close()
 
 
+
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_amp2, linefmt = 'b--', markerfmt = 'b^',  label="AMP Kuan X", basefmt='none' )
+axs.stem(x_prox, linefmt = 'c--', markerfmt = 'cv', label="prox_grad X" , basefmt='none')
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
@@ -562,7 +643,34 @@ plt.close()
 
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_prox, linefmt = 'k--', markerfmt = 'k^',  label="Prox X", basefmt='none' )
+axs.stem(x_nesterov, linefmt = 'b--', markerfmt = 'b^',  label="nesterov X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_ista, linefmt = 'b--', markerfmt = 'b^',  label="ISTA X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_fista, linefmt = 'b--', markerfmt = 'b^',  label="FISTA X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_omp, linefmt = 'k--', markerfmt = 'k^',  label="OMP X", basefmt='none' )
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
@@ -570,7 +678,7 @@ plt.show()
 plt.close()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
-axs.stem(x_nesterov, linefmt = 'k--', markerfmt = 'k^',  label="nesterov X", basefmt='none' )
+axs.stem(x_omp1, linefmt = 'k--', markerfmt = 'k^',  label="OMP1 X", basefmt='none' )
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
@@ -578,6 +686,22 @@ plt.show()
 plt.close()
 
 
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_omp_Ku, linefmt = 'k--', markerfmt = 'k^',  label="OMPKuan X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+plt.close()
+
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_omp_CoSaMP, linefmt = 'k--', markerfmt = 'k^',  label="CoSaMP X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+plt.close()
 
 
 

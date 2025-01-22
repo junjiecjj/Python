@@ -265,15 +265,15 @@ val = 0.5*np.linalg.norm(A.dot(X_t) - b, ord='fro')**2 + lamb*np.linalg.norm(X_t
 print(val)
 for iter in range(num_iterations):
 
-    # STEP 1: Calculate X_t
-    # This has a closed form solution
+    ## STEP 1: Calculate X_t
+    ## This has a closed form solution
     term1 = np.linalg.inv(A.T.dot(A) + rho)
     term2 = A.T.dot(b) + rho*z_t -  nu_t
     X_t = term1.dot(term2)
-    # print(term1.shape, term2.shape, X_t.shape)
+    ## print(term1.shape, term2.shape, X_t.shape)
 
-    # STEP 2: Calculate z_t
-    # Taking the prox, we get the lasso problem again, so, using coordinate_descent
+    ## STEP 2: Calculate z_t
+    ## Taking the prox, we get the lasso problem again, so, using coordinate_descent
     lamb = 0.1
     z_t = coordinate_descent(z_t, X_t, nu_t, rho, lamb)
 
@@ -295,14 +295,13 @@ XSize = 100
 A = np.random.normal(0, 1, ASize)
 X = np.zeros(XSize)
 e = np.random.normal(0, 0.1, 50)
-XIndex = random.sample(list(range(XSize)), 5)  # 5 稀疏度
+XIndex = random.sample(list(range(XSize)), 5)  ## 5 稀疏度
 for xi in XIndex:
     X[xi] = np.random.randn()
 
 b = np.dot(A, X) + e
 
 #### 邻近点梯度下降法
-
 ASize = (50, 100)
 BSize = 50
 XSize = 100
@@ -312,14 +311,14 @@ Xk = np.zeros(XSize)
 zero = np.zeros(XSize)
 while True:
     Xk_half = Xk - alpha * np.dot(A.T, np.dot(A, Xk) - b)
-    # 软门限算子
+    ## 软门限算子
     Xk_new = zero.copy()
     for i in range(XSize):
         if Xk_half[i] < - alpha * P_half:
             Xk_new[i] = Xk_half[i] + alpha * P_half
         elif Xk_half[i] > alpha * P_half:
             Xk_new[i] = Xk_half[i] - alpha * P_half
-    if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
+    if np.linalg.norm(Xk_new - Xk, ord = 2) < 1e-5:
         break
     else:
         Xk = Xk_new.copy()
@@ -330,7 +329,6 @@ print(X)
 #### 邻近点梯度下降法
 import matplotlib.pyplot as plt
 import numpy as np
-
 
 ASize = (50, 100)
 BSize = 50
@@ -372,15 +370,9 @@ plt.legend()
 plt.show()
 
 
-
 #### 交替方向乘子法
-
 import matplotlib.pyplot as plt
 import numpy as np
-
-# A = np.load('A.npy')
-# b = np.load('b.npy')
-# X = np.load('X.npy')
 
 # ASize = (50, 100)
 # BSize = 50
@@ -483,6 +475,10 @@ plt.plot(X_opt_dst_steps, label='X-opt-distance')
 plt.plot(X_dst_steps, label='X-real-distance')
 plt.legend()
 plt.show()
+
+
+
+
 
 
 #%% https://blog.csdn.net/qq_57730943/article/details/136859386
