@@ -5,136 +5,96 @@ Created on Wed Jan 22 21:15:25 2025
 
 @author: jack
 """
-
+## sys lib
 import numpy as np
 import copy
 from matplotlib import pyplot as plt
+import scipy
 from scipy.stats import norm
 from numpy import linalg as LA
 from scipy.optimize import minimize_scalar
 from sklearn.metrics import mean_squared_error
 
+## my lib
+from LassoOptimizer import generate_data, OMP1, FISTA
 
-# 初始化输入数据 A 和 b
-def generate_data(M, N, K, noise_var = 0.0001, x_choice = 0, Achoice = 0):
-    """
-      N: Signal dimension
-      M: Number of measurements
-      K: Sparsity, number of non-zero entries in signal vector
-      A_choice: type of sensing matrix
-          0: With iid normal entries N(0,1/M)
-          1: With iid entries in {+1/sqrt(M), -1/sqrt(M)} with uniform probability
-      x_choice: type of signal
-          0: Elements in {+1, 0, -1}, with K +-1's with uniform probability of +1 and -1's
-          1: K non-zero entries drawn from the standard normal distribution
-    """
-    if Achoice == 0:
-        A = np.random.randn(M, N) / np.sqrt(M)  # 随机生成一个 m x n 的矩阵
-    elif Achoice == 1:
-        A = np.random.rand(M,N)
-        A = (A<0.5)/np.sqrt(M)
-        A[np.logical_not(A)] = -1/np.sqrt(M)
-    if x_choice == 1:
-        x = np.zeros((N,))
-        x[np.random.choice(N, K, replace = False)] = np.random.randn(K,)
-    elif x_choice == 0:
-        x = np.zeros((N,))
-        idx = np.random.choice(N, K, replace = False)
-        idx1 = np.random.choice(idx, int(K/2), replace = False)
-        idx_1 = np.setdiff1d(idx, idx1)
-        x[idx1] = 1
-        x[idx_1] = -1
+def proximal_operator(x, alpha):
+    return np.sign(x) * np.maximum(np.abs(x) - alpha, 0)
 
-    noise = np.sqrt(noise_var) * np.random.randn(M,)
-    b = A @ x + noise
-    return A, b, x
+def ADMM4lasso(H, y, x_true, mu = 0.01, rho = 0.005, maxIter = 1000, tol = 1e-6, ):
+    """
+    Parameters
+    ----------
+    H :
+    y :
+    x_true :
+    mu : mu ||x||_1 The default is 0.01.
+    rho : 二次罚项的系数, The default is 0.005.
+    maxIter :  The default is 1000.
+    tol :   The default is 1e-6.
 
-def OMP1(H, y, K, x_true, lambda_ = 0.05, maxIter = 1000, tol = 1e-6, ):
-    y = y.flatten()
+    Returns
+    -------
+    None.
+
     """
-    OMP算法的Python实现
-    参数：
-        A: 测量矩阵，形状为(m, n)
-        y: 观测向量，形状为(m, 1)
-        k: 稀疏度，即信号的非零元素个数
-    返回： x: 重构的稀疏信号，形状为(n, 1)
-    """
+    # rho = max(np.linalg.eig(H.T@H)[0])
     M, N = H.shape
-    residual = y.copy()  # 初始化残差
-    support = []  # 初始化支持集合
+    Xk = np.zeros(N)
+    Zk = np.zeros(N)
+    Vk = np.zeros(N)
+
     cost_history = []
     mse_history = []
 
+    Inverse = scipy.linalg.inv(H.T@H + rho * np.eye(N, N))
     for _ in range(maxIter):
-        # 计算投影系数
-        projections = np.abs(H.T @ residual)
-        # 选择最相关的原子
-        index = np.argmax(projections)
-        support.append(index)
-        # 更新估计信号
-        x = np.linalg.lstsq(H[:, support], y, rcond = None)[0]
-        # 更新残差
-        residual = y - H[:, support] @ x
-
-        # 构造稀疏信号
-        x_sparse = np.zeros((N,))
-        x_sparse[support] = x
-
-        cost = 0.5 * np.linalg.norm(y - H @ x_sparse) ** 2 + lambda_ * np.sum(np.abs(x_sparse))
-        mse = np.linalg.norm(x_true - x_sparse)**2 / np.linalg.norm(x_true)**2
-        cost_history.append(cost)
-        mse_history.append(mse)
-    return x_sparse, mse_history, cost_history
-
-
-def ADMM4lasso(H, y, K, x_true, lambda_ = 0.05, maxIter = 1000, tol = 1e-6, ):
-    P_half = 0.01
-    c = 0.005
-    Xk = np.zeros(XSize)
-    Zk = np.zeros(XSize)
-    Vk = np.zeros(XSize)
-
-    X_opt_dst_steps = []
-    X_dst_steps = []
-
-    while True:
-        Xk_new = np.dot( np.linalg.inv(A.T@A + c * np.eye(XSize, XSize)), c*Zk + Vk + np.dot(A.T, b) )
-
-        # 软门限算子
-        Zk_new = np.zeros(XSize)
-        for i in range(XSize):
-            if Xk_new[i] - Vk[i] / c < - P_half / c:
-                Zk_new[i] = Xk_new[i] - Vk[i] / c + P_half / c
-            elif Xk_new[i] - Vk[i] / c > P_half / c:
-                Zk_new[i] = Xk_new[i] - Vk[i] / c - P_half / c
-
-        Vk_new = Vk + c * (Zk_new - Xk_new)
-
-        # print(np.linalg.norm(Xk_new - Xk, ord=2))
-
-        X_dst_steps.append(np.linalg.norm(Xk_new - X, ord=2))
-        X_opt_dst_steps.append(Xk_new)
-        if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
+        # update X
+        Xk_new = Inverse @ (H.T@y + rho * Zk - Vk)
+        ## update Z
+        Zk_new =  proximal_operator(Xk_new + Vk/rho, mu/rho)  # np.zeros(N) #
+        ## update 拉格朗日乘子
+        Vk_new = Vk + rho * (Xk_new - Zk_new)
+        if np.linalg.norm(Xk_new - Xk, ord=2) < tol:
             break
         else:
             Xk = Xk_new.copy()
             Zk = Zk_new.copy()
             Vk = Vk_new.copy()
+        cost = 0.5 * np.linalg.norm(y - H @ Xk_new) ** 2 + mu * np.sum(np.abs(Xk_new))
+        mse = np.linalg.norm(x_true - Xk_new)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
 
-    print(Xk)
-    print(X)
+    return Xk_new, mse_history, cost_history
 
-    X_opt = X_opt_dst_steps[-1]
+# 近端梯度下降
+def ProximalGradientDescent(H, y, x_true, mu = 0.01, maxIter = 1000, tol = 1e-6, ):
+    M, N = H.shape
 
-    for i, data in enumerate(X_opt_dst_steps):
-        X_opt_dst_steps[i] = np.linalg.norm(data - X_opt, ord=2)
-    plt.title("Distance")
-    plt.plot(X_opt_dst_steps, label='X-opt-distance')
-    plt.plot(X_dst_steps, label='X-real-distance')
-    plt.legend()
-    plt.show()
-    return
+    # alpha = 0.005
+    alpha = 1 / max(np.linalg.eig(H.T@H)[0])  ## 固定步长，取为A^T@A的最大特征值的倒数
 
+    Xk = np.zeros(N)
+
+    cost_history = []
+    mse_history = []
+
+    for _ in range(maxIter):
+        Xk_half = Xk - alpha *  (H.T@(H@Xk - y))
+        # 软门限算子
+        Xk_new = proximal_operator(Xk_half, mu * alpha)
+
+        if np.linalg.norm(Xk_new - Xk, ord=2) < tol:
+            break
+        else:
+            Xk = Xk_new.copy()
+        cost = 0.5 * np.linalg.norm(y - H @ Xk_new) ** 2 + mu * np.sum(np.abs(Xk_new))
+        mse = np.linalg.norm(x_true - Xk_new)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+
+    return Xk_new, mse_history, cost_history
 
 
 np.random.seed(42)
@@ -142,19 +102,68 @@ M, N = 500, 1000
 sparsity = 0.03
 K = int(N * sparsity)
 maxIter = 300
-lambda_ = 0.05
+lambda_ = 0.01
 noise_varDB = 50
 noise_var = 10**(-noise_varDB/10)   ##  0.02  # 0.00009 ~ 0.02
 H, y, x_true = generate_data(M, N, K, noise_var = noise_var, x_choice = 1)
 
+x_omp, mse_omp, cost_omp = OMP1(H, y, K, x_true, lambda_ = lambda_, maxIter = maxIter,)
+x_admm, mse_admm, cost_admm = ADMM4lasso(H, y, x_true, mu = lambda_, maxIter = maxIter,)
+x_prox, mse_prox, cost_prox = ProximalGradientDescent(H, y, x_true, mu = lambda_, maxIter = maxIter,)
 
 
+fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout = True)
+# axs.semilogy(mse_amp_tuto, ls = '--', marker = 'o', ms = '12', markevery = 50, label = "AMP_tutorial MSE" )
+# axs.semilogy(mse_amp_cs, ls = '-',lw = 3, marker = 'v', ms = '12', markevery = 50, label = "AMPforCS MSE" )
+# axs.semilogy(mse_amp_Ku, ls = '--', marker = '^', ms = '12', markevery = 50, label = "AMPKuanCS MSE" )
+# # axs.semilogy(mse_amp_3pt, ls = '--', marker = '1', ms = '12', markevery = 50, label = "AMP_3pt MSE" )
+# axs.semilogy(mse_amp_bg, ls = '--', marker = '2', ms = '12', markevery = 50, label = "AMP_bg MSE" )
+# axs.semilogy(mse_prox, ls = '--', marker = '*', ms = '12', markevery = 50, label = "prox_grad MSE" )
+# axs.semilogy(mse_nesterov, ls = '--', marker = '>', ms = '12', markevery = 50, label = "nesterov MSE" )
+# axs.semilogy(mse_ista, ls = '--', lw = 3, marker = '<', ms = '12', markevery = 50,  label = "ISTA MSE" )
+axs.semilogy(mse_prox, ls = '--', marker = 's', ms = '12', markevery = 50,  label = "prox_grad MSE" )
+axs.semilogy(mse_omp, ls = '--', marker = 'p', ms = '12', markevery = 50, label = "OMP" )
+axs.semilogy(mse_admm, ls = '--', marker = 'h', ms = '12', markevery = 50, label = "ADMM MSE" )
+# axs.semilogy(mse_omp_Ku, ls = '--', marker = 'd', ms = '12', markevery = 50, label = "OMPKuan MSE" )
+# axs.semilogy(mse_omp_CoSaMP, ls = '--', marker = 'x', ms = '12', markevery = 50, label = "CoSaMP MSE" )
+axs.legend(fontsize = 22)
+axs.set_xlabel('Iteration')
+axs.set_ylabel('MSE')
+plt.show()
+# plt.close()
 
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_true, linefmt = 'm--', markerfmt = 'mD',  label="True X", basefmt='none')
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+# plt.close()
 
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_omp, linefmt = 'k--', markerfmt = 'k^',  label="OMP X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+# plt.close()
 
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_admm, linefmt = 'k--', markerfmt = 'k^',  label="ADMM X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
 
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_prox, linefmt = 'c--', markerfmt = 'c^',  label="Prox X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
 
-
+# plt.close()
+# plt.close('all')
 
 
 

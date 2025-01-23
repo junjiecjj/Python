@@ -82,7 +82,7 @@ def fista(A, b, lambda_, x0, L0 = 1.05, eta = 1.01, tol = 1e-5, max_iter = 1000)
         L = eta * L
         g_new = A.T @ (A @ x - b)
         if np.dot(g_new, g_new - g) < -0.5 * L * np.linalg.norm(g_new - g, 'fro') ** 2:
-            L /= eta  # 步长调整
+            L /= eta   # 步长调整
             g = g_new  # 更新梯度
     return x
 
@@ -96,7 +96,7 @@ def Beta(A):#A^\top @A的最大特征值
     return max(np.linalg.eig(A.T@A)[0])
 def z(A, x, b):
     beta = Beta(A)
-    z=(np.eye(len(x)) - A.T@A/beta) @ x + A.T @ b / beta
+    z = (np.eye(len(x)) - A.T@A/beta) @ x + A.T @ b / beta
     return z
 def xp(z, mu, A):#临近点算子
     temp = abs(z) - mu/Beta(A)
@@ -132,8 +132,6 @@ x_ = np.zeros([100, 1])
 x_[:5, 0] += np.array([i+1 for i in range(5)]) # x_denotes expected x
 b = np.matmul(A, x_) + np.random.randn(500, 1) * 0.1 #add a noise to b
 lam = 10 # try some different values in {0.1, 1, 10}
-
-
 
 prox(A,x_,b,lam,100)
 prox(A,x_,b,1,1000)
@@ -288,6 +286,9 @@ print(val)
 
 #%% https://mp.weixin.qq.com/s?__biz=MzI3MzkyMzE5Mw==&mid=2247484248&idx=1&sn=ecc4277e80bc3f355b45668450409490&chksm=eaba5ea6cacd7a7cdb6359b0c305c6c7885e9e2f65d7d3a6bd31788940fa6da8a97c6af36b7e&mpshare=1&scene=1&srcid=0108Dhn6Cvnt00VS8FV3Nop7&sharer_shareinfo=a7ea0763f7e5a219e101eb842bc47515&sharer_shareinfo_first=a7ea0763f7e5a219e101eb842bc47515&exportkey=n_ChQIAhIQ7rnC6DLsAG%2B%2BhSr35iwCyhKfAgIE97dBBAEAAAAAAEi1MYcGxd0AAAAOpnltbLcz9gKNyK89dVj076HLyUbfG%2B%2FDckAZ0PbcEVgNuIYeuPiqYLMSUkKf5dGUT4nP%2BDLoPgGGqhUhnhEApcDnK%2Fj7%2FB8hEqrSBHhvNprpxdJBIZ3f%2FiYfcJ85DI2VgFJ6ew3gLVHsE7eCuamPL%2FzetyIZC0W%2BOPesFP0asly0i4mxQXy0mTrJMigkviOdpoBOesffD36oZumpv26uXNEoIRwUi25gYQPLKVG%2BhJntA%2FIpyj7OxL6TpgaaoQWrMMlPG9IJwNKrDIiwe1OzmG5D%2Bnqs%2BDKllIUxHmWbvhe%2B0t5sqGZfT4ugB7fO6XUB8lddZBG8BWJjDSWAjRQdLgxVezyMphd8&acctmode=0&pass_ticket=HJ9IHHr8aRBHw9nQIKWFfqbctQ6wbw9mUFlFHCaoOwp7odY%2BlEB9CoambnP7%2BJfG&wx_header=0#rd
 
+
+#### 邻近点梯度下降法
+
 import numpy as np
 import random
 ASize = (50, 100)
@@ -301,7 +302,6 @@ for xi in XIndex:
 
 b = np.dot(A, X) + e
 
-#### 邻近点梯度下降法
 ASize = (50, 100)
 BSize = 50
 XSize = 100
@@ -369,14 +369,21 @@ plt.plot(X_dst_steps, label='X-real-distance')
 plt.legend()
 plt.show()
 
-
 #### 交替方向乘子法
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ASize = (50, 100)
-# BSize = 50
-# XSize = 100
+
+ASize = (500, 1000)
+XSize = 1000
+A = np.random.normal(0, 1, ASize)
+X = np.zeros(XSize)
+e = np.random.normal(0, 0.1, 500)
+XIndex = random.sample(list(range(XSize)), 30)  ## 5 稀疏度
+for xi in XIndex:
+    X[xi] = np.random.randn()
+
+b = np.dot(A, X) + e
 
 P_half = 0.01
 c = 0.005
@@ -397,11 +404,9 @@ while True:
             Zk_new[i] = Xk_new[i] - Vk[i] / c + P_half / c
         elif Xk_new[i] - Vk[i] / c > P_half / c:
             Zk_new[i] = Xk_new[i] - Vk[i] / c - P_half / c
-
     Vk_new = Vk + c * (Zk_new - Xk_new)
 
     # print(np.linalg.norm(Xk_new - Xk, ord=2))
-
     X_dst_steps.append(np.linalg.norm(Xk_new - X, ord=2))
     X_opt_dst_steps.append(Xk_new)
     if np.linalg.norm(Xk_new - Xk, ord=2) < 1e-5:
@@ -414,8 +419,22 @@ while True:
 print(Xk)
 print(X)
 
-X_opt = X_opt_dst_steps[-1]
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(X, linefmt = 'k--', markerfmt = 'k^',  label="True X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
 
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(Xk, linefmt = 'k--', markerfmt = 'k^',  label="ADMM X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+# plt.close()
+
+X_opt = X_opt_dst_steps[-1]
 for i, data in enumerate(X_opt_dst_steps):
     X_opt_dst_steps[i] = np.linalg.norm(data - X_opt, ord=2)
 plt.title("Distance")
