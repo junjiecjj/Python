@@ -1,5 +1,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
 %     Copyright (C) 2020 Zaiwen Wen, Haoyang Liu, Jiang Hu
 % 
 %     This program is free software: you can redistribute it and/or modify
@@ -14,20 +13,16 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
 % Change log:
 %
 %   2020.2.15 (Jiang Hu):
 %     First version
 %
 %   2020.7.16 (Jiang Hu):
-%     Code improving 
-%
+%     Code improving
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% 利用交替方向乘子法 (ADMM) 求解 LASSO 对偶问题
