@@ -314,7 +314,12 @@ def BP_penaltyFunctionMethod(H, b, x_true, maxIter = 1000, ftol = 1e-6, steptype
     return x, mse_history, cost_history
 
 ## 基追踪问题的增广拉格朗日函数法(Augmented Lagrange function method)
-def BP_ALM(H, b, x_true, mu = 0.01, maxIter = 1000, ftol = 1e-6, steptype = 'diminishing2'):
+def BP_ALM(H, b, x_true, maxIter = 1000, ftol = 1e-6, steptype = 'diminishing2'):
+    M, N = H.shape
+    cost_history = []
+    mse_history = []
+    x = np.zeros(N)
+
 
     return
 
@@ -336,7 +341,6 @@ x_admm_dual, mse_admm_dual, cost_admm_dual = LASSO_admm_dual(H, y, x_true, mu = 
 x_prox, mse_prox, cost_prox = ProximalGradientDescent(H, y, x_true, mu = lambda_,  maxIter = maxIter,)
 x_grad, mse_grad, cost_grad = GradientDescent(H, y, x_true, mu = lambda_, delta = 0.01, maxIter = maxIter,)
 x_gradBB, mse_gradBB, cost_gradBB = GradientDescent_BB(H, y, x_true, mu = lambda_, delta = 0.01, maxIter = maxIter,)
-
 x_sub, mse_sub, cost_sub = L1_subgrad(H, y, x_true, mu = lambda_, maxIter = maxIter, ftol = 1e-6, steptype = 'fixed')
 x_pf, mse_pf, cost_pf = BP_penaltyFunctionMethod(H, y, x_true, maxIter = 600, ftol = 1e-6, steptype = 'fixed')
 
