@@ -6,6 +6,10 @@
 Created on Wed Jan 22 21:15:25 2025
 
 @author: jack
+
+http://faculty.bicmr.pku.edu.cn/~wenzw/optbook/pages/contents/contents.html
+
+
 """
 ## sys lib
 import numpy as np
@@ -200,7 +204,7 @@ def ProximalGradientDescent_BB(H, b, x_true, mu = 0.01, maxIter = 1000, ):
         alpha =  min(1e12*1.0,  max(alpha, alpha0))
         Qp = Q
         Q = gamma * Qp + 1
-        Cval = (gamma * Qp * Cval + tmp)/Q
+        Cval = (gamma * Qp * Cval + f)/Q
 
         cost = 0.5 * 0.5 * np.linalg.norm(b - H @ xk) ** 2 + mu * np.sum(np.abs(xk))
         mse = np.linalg.norm(x_true - xk)**2 / np.linalg.norm(x_true)**2
