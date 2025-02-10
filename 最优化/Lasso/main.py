@@ -117,7 +117,7 @@ def LASSO_admm_dual(H, b, x_true, mu = 0.01, rho = 0.005, maxIter = 1000, tol = 
 
     return Xk_new, mse_history, cost_history
 
-### 近似点梯度下降法
+### 近似点梯度下降法, 没有(Barzilai-Borwein)BB步长(即固定步长)
 def ProximalGradientDescent(H, b, x_true, mu = 0.01, maxIter = 1000, tol = 1e-6, ):
     M, N = H.shape
 
@@ -144,6 +144,70 @@ def ProximalGradientDescent(H, b, x_true, mu = 0.01, maxIter = 1000, tol = 1e-6,
         mse_history.append(mse)
 
     return Xk_new, mse_history, cost_history
+
+## LASSO 问题的近似点梯度法求解,有非精确线搜索的 BB 步长梯度下降法
+def ProximalGradientDescent_BB(H, b, x_true, mu = 0.01, maxIter = 1000, ):
+    M, N = H.shape
+    cost_history = []
+    mse_history = []
+
+    ftol = 1e-12
+    gtol = 1e-6
+    alpha0 = 0.001
+    alpha = alpha0
+    fp = np.inf
+
+    xk = np.zeros(N)
+    g = H.T @ (H @ xk - b)
+    f = 0.5 * np.linalg.norm(b - H @ xk) ** 2 + mu * np.sum(np.abs(xk))
+    nrmG = np.linalg.norm(xk - proximal_operator(xk - g, mu))
+    # 线搜索参数
+    Cval = f
+    Q = 1
+    gamma = 0.85
+    rhols = 1e-6
+    # 当达到最大迭代次数，或梯度或函数值的变化大于阈值时，退出迭代
+    for k in range (maxIter):
+        if nrmG < gtol or np.abs(f - fp) < ftol:
+            break
+        gp = g
+        fp = f
+        xp = xk
+        xk = proximal_operator(xp - alpha * g, alpha * mu)
+        ## 线搜索循环
+        nls = 0
+        for _ in range(5):
+            tmp = 0.5 * np.linalg.norm(H @ xk - b) ** 2 + mu * np.sum(np.abs(xk))
+            if tmp <= Cval - rhols/2 * alpha * np.linalg.norm(xk - xp)**2 :
+                break
+            alpha *= 0.2
+            nls += 1
+            xk = proximal_operator(xp - alpha * g, alpha * mu)
+        f = tmp
+        nrmG = np.linalg.norm(xk - xp) / alpha
+        g = H.T @ (H @ xk - b)
+
+        # 计算 BB 步长作为下一步迭代的初始步长
+        dx = xk - xp
+        dg = g - gp
+        dxg = np.abs(dx @ dg)
+        if dxg > 0:
+            if k % 2 == 0:
+                alpha = np.abs(dx @ dx)/dxg
+            else:
+                alpha = dxg/np.abs(dg @ dg)
+            ## 保证步长的合理范围
+        alpha =  min(1e12*1.0,  max(alpha, alpha0))
+        Qp = Q
+        Q = gamma * Qp + 1
+        Cval = (gamma * Qp * Cval + tmp)/Q
+
+        cost = 0.5 * 0.5 * np.linalg.norm(b - H @ xk) ** 2 + mu * np.sum(np.abs(xk))
+        mse = np.linalg.norm(x_true - xk)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(cost)
+        mse_history.append(mse)
+
+    return xk, mse_history, cost_history
 
 ## 梯度下降法: 没有(Barzilai-Borwein)BB步长(即固定步长)，没有连续化策略
 def Huber(dt, delta):
@@ -289,6 +353,7 @@ def L1_subgrad(H, b, x_true, mu = 0.01, maxIter = 1000, ftol = 1e-6, steptype = 
         tmp = xk.copy()
         tmp[np.where(tmp < thres)] = 0
         xk = xk - alpha * (H.T @ (H @ xk - b) +  mu * np.sign(tmp))
+
         f_now = 0.5 * np.linalg.norm(b - H @ xk) ** 2 + mu * np.sum(np.abs(xk))
         mse = np.linalg.norm(x_true - xk)**2 / np.linalg.norm(x_true)**2
         cost_history.append(f_now)
@@ -314,14 +379,74 @@ def BP_penaltyFunctionMethod(H, b, x_true, maxIter = 1000, ftol = 1e-6, steptype
     return x, mse_history, cost_history
 
 ## 基追踪问题的增广拉格朗日函数法(Augmented Lagrange function method)
-def BP_ALM(H, b, x_true, maxIter = 1000, ftol = 1e-6, steptype = 'diminishing2'):
+def BP_ALM(H, b, x_true, maxIter = 1000, ):
     M, N = H.shape
     cost_history = []
     mse_history = []
-    x = np.zeros(N)
 
+    outIter = 100
+    innIter = 200
+    sigma = 1
+    tol0 = 0.1
+    gamma = 0.85
 
-    return
+    xk = np.zeros(N)
+    lambda_ = np.zeros(M)
+    L = sigma * np.real(max(np.linalg.eig(H.T@H)[0]))
+
+    ## 外循环
+    for k in range(outIter):
+        g = sigma * H.T @ (H @ xk - b + lambda_/sigma)
+        f = 0.5 * sigma * np.linalg.norm(H @ xk - b + lambda_/sigma) ** 2 + np.sum(np.abs(xk))
+        normG = np.linalg.norm(xk - proximal_operator(xk - g, 1))
+        tot_t = tol0 * 10**(-k)
+        alpha = 1 / L
+        Cval = 0.5 * sigma * np.linalg.norm(H @ xk - b + lambda_/sigma) ** 2
+        Q = 1
+
+        ## 内循环
+        for ink in range(innIter):
+            if normG < tot_t:
+                break
+            gp = g
+            xp = xk
+
+            xk = proximal_operator(xp - alpha * gp, alpha)
+            nls = 1
+            for _ in range(5):
+                tmp = 0.5 * sigma * np.linalg.norm(H @ xk - b + lambda_/sigma) ** 2
+                if tmp <= Cval + g @ (xk - xp) + 0.5 * sigma / alpha * np.linalg.norm(xk - xp) ** 2:
+                    break
+                alpha *= 0.2
+                nls += 1
+                xk = proximal_operator(xp - alpha * g, alpha)
+            # f = tmp + np.sum(np.abs(xk))
+            normG = np.linalg.norm(xk - xp) / alpha
+            g = sigma * H.T @ (H @ xk - b + lambda_/sigma)
+
+            ## 计算 BB 步长作为下一步迭代的初始步长。
+            dx = xk - xp
+            dg = g - gp
+            dxg = np.abs(dx @ dg)
+            if dxg > 0:
+                if k % 2 == 0:
+                    alpha = np.abs(dx @ dx)/dxg
+                else:
+                    alpha = dxg/np.abs(dg @ dg)
+                ## 保证步长的合理范围
+            alpha =  min(1e12*1.0,  max(alpha, 1/L))
+            Qp = Q
+            Q = gamma * Qp + 1
+            Cval = (gamma * Qp * Cval + tmp) / Q
+        lambda_ += sigma * (H @ xk - b)
+
+        mu = 0.001
+        f = 0.5 * np.linalg.norm(b - H @ xk) ** 2 + mu * np.sum(np.abs(xk))
+        mse = np.linalg.norm(x_true - xk)**2 / np.linalg.norm(x_true)**2
+        cost_history.append(f)
+        mse_history.append(mse)
+
+    return xk, mse_history, cost_history
 
 plt.close('all')
 np.random.seed(42)
@@ -339,20 +464,22 @@ x_omp, mse_omp, cost_omp = OMP1(H, y, K, x_true, lambda_ = lambda_, maxIter = ma
 x_admm, mse_admm, cost_admm = LASSO_admm_primal(H, y, x_true, mu = lambda_, rho = rho, maxIter = maxIter,)
 x_admm_dual, mse_admm_dual, cost_admm_dual = LASSO_admm_dual(H, y, x_true, mu = lambda_, rho = 1/rho, maxIter = maxIter,)
 x_prox, mse_prox, cost_prox = ProximalGradientDescent(H, y, x_true, mu = lambda_,  maxIter = maxIter,)
+x_proxBB, mse_proxBB, cost_proxBB = ProximalGradientDescent_BB(H, y, x_true, mu = lambda_, maxIter = maxIter, )
 x_grad, mse_grad, cost_grad = GradientDescent(H, y, x_true, mu = lambda_, delta = 0.01, maxIter = maxIter,)
 x_gradBB, mse_gradBB, cost_gradBB = GradientDescent_BB(H, y, x_true, mu = lambda_, delta = 0.01, maxIter = maxIter,)
 x_sub, mse_sub, cost_sub = L1_subgrad(H, y, x_true, mu = lambda_, maxIter = maxIter, ftol = 1e-6, steptype = 'fixed')
 x_pf, mse_pf, cost_pf = BP_penaltyFunctionMethod(H, y, x_true, maxIter = 600, ftol = 1e-6, steptype = 'fixed')
+x_alm, mse_alm, cost_alm = BP_ALM(H, y, x_true, maxIter = 600, )
 
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout = True)
 # axs.semilogy(mse_amp_tuto, ls = '--', marker = 'o', ms = '12', markevery = 50, label = "AMP_tutorial MSE" )
 # axs.semilogy(mse_amp_cs, ls = '-',lw = 3, marker = 'v', ms = '12', markevery = 50, label = "AMPforCS MSE" )
 # axs.semilogy(mse_amp_Ku, ls = '--', marker = '^', ms = '12', markevery = 50, label = "AMPKuanCS MSE" )
 # # axs.semilogy(mse_amp_3pt, ls = '--', marker = '1', ms = '12', markevery = 50, label = "AMP_3pt MSE" )
-# axs.semilogy(mse_amp_bg, ls = '--', marker = '2', ms = '12', markevery = 50, label = "AMP_bg MSE" )
 
-# axs.semilogy(mse_nesterov, ls = '--', marker = '>', ms = '12', markevery = 50, label = "nesterov MSE" )
+axs.semilogy(mse_alm, ls = '--', marker = '>', ms = '12', markevery = 50, label = "BP ALM MSE" )
 axs.semilogy(mse_prox, ls = '--', marker = 's', ms = '12', markevery = 50,  label = "prox_grad MSE" )
+axs.semilogy(mse_proxBB, ls = '--', marker = '2', ms = '12', markevery = 50, label = "prox_gradBB MSE" )
 axs.semilogy(mse_omp, ls = '--', marker = 'p', ms = '12', markevery = 50, label = "OMP" )
 axs.semilogy(mse_admm, ls = '--', marker = 'h', ms = '12', markevery = 50, label = "ADMM MSE" )
 axs.semilogy(mse_admm_dual, ls = '--', marker = 'd', ms = '12', markevery = 50, label = "ADMM dual MSE" )
@@ -413,6 +540,13 @@ axs.set_ylabel('Value')
 plt.show()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_alm, linefmt = 'k--', markerfmt = 'k^',  label="BP ALM descent X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
 axs.stem(x_sub, linefmt = 'k--', markerfmt = 'k^',  label="SubGrad descent X", basefmt='none' )
 axs.legend()
 axs.set_xlabel('Index')
@@ -428,6 +562,13 @@ plt.show()
 
 fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
 axs.stem(x_prox, linefmt = 'c--', markerfmt = 'c^',  label="Prox Gradient X", basefmt='none' )
+axs.legend()
+axs.set_xlabel('Index')
+axs.set_ylabel('Value')
+plt.show()
+
+fig, axs = plt.subplots(1, 1, figsize=(6, 4), constrained_layout = True)
+axs.stem(x_proxBB, linefmt = 'c--', markerfmt = 'c^',  label="Prox BB X", basefmt='none' )
 axs.legend()
 axs.set_xlabel('Index')
 axs.set_ylabel('Value')
