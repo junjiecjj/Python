@@ -50,13 +50,11 @@ def butter_lowpass(cutoff, fs, order=5):
     b, a = butter(order, normal_cutoff, btype="low", analog = False)
     return b, a
 
-
 def butter_lowpass_filter(data, cutoff, fs, order=5):
     b, a = butter_lowpass(cutoff, fs, order=order)
     y = filtfilt(b, a, data) # or
     y1 = lfilter(b, a, data)
     return y, y1
-
 
 # Setting standard filter requirements.
 order = 10
@@ -64,7 +62,6 @@ fs = 30.0
 cutoff = 3.667
 
 b, a = butter_lowpass(cutoff, fs, order)
-
 fig = plt.figure(figsize=(16,10), constrained_layout = True)
 # Plotting the frequency response.
 w, h = freqz(b, a, worN=8000)
@@ -102,7 +99,7 @@ plt.show()
 
 #%%===================================================================================
 # https://zhuanlan.zhihu.com/p/657425129
-# python中常用的巴特沃斯低通滤波器实现有两种方式，一种是filtfilt，一种是lfilter，两种区别很大。
+# python中常用的巴特沃斯低通滤波器实现有两种方式，一种是 filtfilt ，一种是 lfilter ，两种区别很大。
 
 # filtfilt 函数不适用于实时滤波，它用于离线信号处理，需要使用整个信号的历史数据进行滤波计算；
 # 对于实时应用，更适合使用 lfilter 函数来逐个样本地滤波数据。lfilter函数是一个递归滤波器，可以用于实时滤波；
