@@ -4,7 +4,7 @@
 Created on Mon Nov 21 21:59:54 2022
 @author: jack
 
-信号的频谱搬移
+sinc信号的频谱搬移
 
 """
 

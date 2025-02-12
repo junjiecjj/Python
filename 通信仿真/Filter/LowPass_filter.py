@@ -26,7 +26,7 @@ Fs = 3000 # 采样频率4000Hz
 t = np.arange(0, 0.1, 1/Fs)
 
 c50 = np.cos(2 * np.pi * 50 * t)     # 产生50Hz余弦波
-c500 = np.cos(2 * np.pi * 500 * t)   # 产生1000Hz余弦波
+c500 = np.cos(2 * np.pi * 500 * t)   # 产生500Hz余弦波
 c1000 = np.cos(2 * np.pi * 1000 * t) # 产生1000Hz余弦波
 
 x = 3*c50 + 2*c1000 + 1*c500 # 信号叠加
@@ -158,9 +158,6 @@ labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
-
-
-
 #%%==================== y =================================
 axs[1,0].plot(t, y, label = 'y')
 
@@ -211,15 +208,7 @@ labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
-
-
-
 plt.show()
-
-
-
-
-
 
 
 
@@ -240,24 +229,6 @@ plt.show()
 
 # Bf = lfilter(hn,1,s) # 进行高通滤波
 # # By = np.fft.fft(Bf,lens)  # 对高通滤波输出信号做len点FFT变换
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

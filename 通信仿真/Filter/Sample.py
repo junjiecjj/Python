@@ -11,7 +11,6 @@ from matplotlib.font_manager import FontProperties
 import scipy
 
 filepath2 = '/home/jack/snap/'
-
 font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
 
 fontpath = "/usr/share/fonts/truetype/windows/"
@@ -27,23 +26,24 @@ font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Comp
 ## ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
-ts = 0.1                          # x(t) = sinc(t/ts),
-B = 1/(2*ts)
-fs = 100                          # 冲击采样脉冲的频率
 Fs = 400                          # 信号采样频率
 Ts = 1/Fs                         # 采样时间间隔
-# N = 100
 
+ts = 0.1                          # x(t) = sinc(t/ts),
+B = 1/(2*ts)
 m = 10
 t = np.arange(-m*ts, m*ts, Ts)        # 定义信号采样的时间点 t
 N = t.size                            # 采样信号的长度
 ## 基带信号
 x =  np.sinc(t/ts)
+
 ## 采样脉冲序列
+fs = 100                          # 冲击采样脉冲的频率
 p = int(Fs/fs)
 bplus = [0]*p
 bplus[0] = 1
 plus = np.array(bplus*int(x.size/p))
+
 ## 采样后的信号
 x_sample = x * plus
 
@@ -122,7 +122,6 @@ IXsampled = scipy.fftpack.ifft(scipy.fftpack.fft(x_sample))
 #====================
 # 全谱图
 #====================
-
 # 消除相位混乱
 X_sampled[np.abs(X_sampled)<1e-8] = 0      # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
@@ -520,24 +519,3 @@ out_fig = plt.gcf()
 #out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

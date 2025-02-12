@@ -24,23 +24,24 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 ## ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
-ts = 0.1                          # x(t) = sinc(t/ts),
-B = 1/(2*ts)
-fs = 100                          # 冲击采样脉冲的频率
 Fs = 400                          # 信号采样频率
 Ts = 1/Fs                         # 采样时间间隔
-# N = 100
 
+ts = 0.1                          # x(t) = sinc(t/ts),
+B = 1/(2*ts)
 m = 10
 t = np.arange(-m*ts, m*ts, Ts)        # 定义信号采样的时间点 t
 N = t.size                            # 采样信号的长度
 ## 基带信号
 x =  np.sinc(t/ts)
+
 ## 采样脉冲序列
+fs = 100                          # 冲击采样脉冲的频率
 p = int(Fs/fs)
 bplus = [0]*p
 bplus[0] = 1
 plus = np.array(bplus*int(x.size/p))
+
 ## 采样后的信号
 x_sample = x * plus
 
@@ -745,24 +746,3 @@ out_fig = plt.gcf()
 out_fig.savefig('sample_recover.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
