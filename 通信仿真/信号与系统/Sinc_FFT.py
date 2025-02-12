@@ -83,8 +83,7 @@ vertical = 2
 fig, axs = plt.subplots(vertical, horvizen, figsize=(horvizen*width, vertical*high), constrained_layout=True)
 labelsize = 20
 
-
-#%% 半谱图
+#%% 全谱图
 #======================================= 0,0 =========================================
 axs[0,0].plot(t, x, color='b', linestyle='-', label='原始信号值',)
 
@@ -107,7 +106,6 @@ axs[0,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=
 labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 0,1 =========================================
 axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
@@ -132,7 +130,6 @@ labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-
 #======================================= 0,2 =========================================
 axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
 
@@ -156,7 +153,6 @@ labels = axs[0,2].get_xticklabels() + axs[0,2].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-
 #======================================= 0,3 =========================================
 axs[0,3].plot(f, R, color='cyan', linestyle='-', label='实部',)
 
@@ -175,12 +171,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[0,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[0,3].get_xticklabels() + axs[0,3].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 0,4 =========================================
 axs[0,4].plot(f, I, color='#FF8C00', linestyle='-', label='虚部',)
@@ -206,8 +200,7 @@ labels = axs[0,4].get_xticklabels() + axs[0,4].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-
-#%% 全谱图
+#%% 半谱图
 #======================================= 1,0 =========================================
 axs[1,0].plot(t, IX, color='b', linestyle='-', label='恢复的信号值',)
 
@@ -337,24 +330,3 @@ out_fig = plt.gcf()
 #out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

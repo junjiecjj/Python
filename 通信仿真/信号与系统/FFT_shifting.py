@@ -99,7 +99,7 @@ Y1 = scipy.fftpack.fftshift(X,)      # 新的频域序列 Y
 
 # 计算频域序列 Y 的幅值和相角
 A1 = abs(Y1);                       # 计算频域序列 Y 的幅值
-Pha1 = np.angle(Y1,deg=True)        # 计算频域序列 Y 的相角 (弧度制)
+Pha1 = np.angle(Y1, deg = True)        # 计算频域序列 Y 的相角 (弧度制)
 R1 = np.real(Y1)                    # 计算频域序列 Y 的实部
 I1 = np.imag(Y1)                    # 计算频域序列 Y 的虚部
 
@@ -602,25 +602,3 @@ out_fig = plt.gcf()
 # out_fig.savefig('fft_cosshift.eps',  bbox_inches = 'tight')
 out_fig.savefig('fft_expshift.eps',  bbox_inches = 'tight')
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -30,29 +30,25 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 # f1 = 200
 # f2 = 400
 # f3 = 600
-fs = 1000                  # 载波频率
+
 
 ## 定义时域采样信号 x
 Fs = 4000                     # 信号采样频率
 Ts = 1/Fs                     # 采样时间间隔
 # N = 1400                      # 采样信号的长度
 # t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
-
 # ## 基带信号
 # x = 7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.cos(2*np.pi*f3*t + np.pi/3) #+ 4.5 # (4.5是直流)
 
 ts = 0.0025     # x(t) = sinc(t/ts),
 B = 1/(2*ts)
-Fs = 4000                     # 信号采样频率
-Ts = 1/Fs                     # 采样时间间隔
-# N = 100                           # 采样信号的长度
-
 m = 20
 t = np.arange(-m*ts, m*ts, Ts)          # # 定义信号采样的时间点 t
 x =  np.sinc(t/ts)
 N = x.size
 
 ## 载波
+fs = 1000                  # 载波频率
 # s = np.exp(1j * 2 * np.pi * fs * t)
 s = np.cos(2 * np.pi * fs * t)
 h = x * s
@@ -613,25 +609,3 @@ out_fig = plt.gcf()
 out_fig.savefig('fft_sinc_expshift.eps',  bbox_inches = 'tight')
 # out_fig.savefig('fft_sinc_cosshift.eps',  bbox_inches = 'tight')
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

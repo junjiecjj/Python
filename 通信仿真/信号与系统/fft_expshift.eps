@@ -1,13 +1,14 @@
 %!PS-Adobe-3.0 EPSF-3.0
+%%LanguageLevel: 3
 %%Title: fft_expshift.eps
-%%Creator: Matplotlib v3.5.2, https://matplotlib.org/
-%%CreationDate: Wed May 15 14:03:04 2024
+%%Creator: Matplotlib v3.8.4, https://matplotlib.org/
+%%CreationDate: Thu Feb 13 00:51:56 2025
 %%Orientation: portrait
-%%BoundingBox: -130 175 743 617
-%%HiResBoundingBox: -130.169954 175.800240 742.169954 616.199760
+%%BoundingBox: 0 0 873 441
+%%HiResBoundingBox: 0.000000 0.000000 872.339909 440.399520
 %%EndComments
 %%BeginProlog
-/mpldict 12 dict def
+/mpldict 10 dict def
 mpldict begin
 /_d { bind def } bind def
 /m { moveto } _d
@@ -16,18 +17,6 @@ mpldict begin
 /c { curveto } _d
 /cl { closepath } _d
 /ce { closepath eofill } _d
-/box {
-      m
-      1 index 0 r
-      0 exch r
-      neg 0 r
-      cl
-    } _d
-/clipbox {
-      box
-      clip
-      newpath
-    } _d
 /sc { setcachedevice } _d
 %!PS-Adobe-3.0 Resource-Font
 %%Creator: Converted from TrueType to Type 3 by Matplotlib.
@@ -35,12 +24,12 @@ mpldict begin
 /FontName /TimesNewRomanPSMT def
 /PaintType 0 def
 /FontMatrix [0.00048828125 0 0 0.00048828125 0 0] def
-/FontBBox [-1164 -628 4154 2062] def
+/FontBBox [-1164 -628 4190 2129] def
 /FontType 3 def
-/Encoding [/period /zero /one /two /minus /three /five] def
+/Encoding [/uni00000011 /uni00000013 /uni00000014 /uni00000015 /uni000000ed /uni00000016 /uni00000018] def
 /CharStrings 8 dict dup begin
 /.notdef 0 def
-/period{512 0 145 -28 367 194 sc
+/uni00000011{512 0 145 -28 367 194 sc
 256 194 m
 287 194 314 183 335 161 c
 356 140 367 114 367 83 c
@@ -52,7 +41,7 @@ mpldict begin
 199 183 225 194 256 194 c
 
 ce} _d
-/zero{1024 0 74 -24 951 1384 sc
+/uni00000013{1024 0 74 -24 951 1384 sc
 74 670 m
 74 825 97 958 144 1069 c
 191 1181 253 1264 330 1319 c
@@ -79,7 +68,7 @@ ce} _d
 279 877 270 760 270 645 c
 
 ce} _d
-/one{1024 0 240 0 774 1384 sc
+/uni00000014{1024 0 240 0 774 1384 sc
 240 1223 m
 570 1384 l
 603 1384 l
@@ -101,7 +90,7 @@ ce} _d
 240 1223 l
 
 ce} _d
-/two{1024 0 44 0 939 1384 sc
+/uni00000015{1024 0 44 0 939 1384 sc
 939 261 m
 844 0 l
 44 0 l
@@ -127,7 +116,7 @@ ce} _d
 939 261 l
 
 ce} _d
-/minus{1155 0 37 640 1115 722 sc
+/uni000000ed{1155 0 37 640 1115 722 sc
 1115 640 m
 37 640 l
 37 722 l
@@ -135,7 +124,7 @@ ce} _d
 1115 640 l
 
 ce} _d
-/three{1024 0 83 -24 854 1384 sc
+/uni00000016{1024 0 83 -24 854 1384 sc
 104 1098 m
 143 1189 191 1260 250 1309 c
 309 1359 383 1384 471 1384 c
@@ -171,7 +160,7 @@ ce} _d
 104 1098 l
 
 ce} _d
-/five{1024 0 98 -24 889 1356 sc
+/uni00000018{1024 0 98 -24 889 1356 sc
 889 1356 m
 811 1186 l
 403 1186 l
@@ -2384,15 +2373,15 @@ FontName currentdict end definefont pop
 end
 %%EndProlog
 mpldict begin
--130.17 175.8 translate
-872.34 440.4 0 0 clipbox
+0 0 translate
+0 0 872.34 440.4 rectclip
 gsave
 0 0 m
 872.339909 0 l
 872.339909 440.39952 l
 0 440.39952 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
 gsave
@@ -2401,14 +2390,14 @@ gsave
 273.916381 433.19952 l
 45.95 433.19952 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
-3.000 setlinewidth
+3 setlinewidth
 1 setlinejoin
 0 setlinecap
 [] 0 setdash
-0.000 setgray
+0 setgray
 gsave
 /o {
 gsave
@@ -2423,7 +2412,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2445,7 +2434,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2456,11 +2445,11 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-43.812108 250.512500 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /zero glyphshow
+43.8121 250.512 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -2476,7 +2465,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2498,7 +2487,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2506,24 +2495,25 @@ grestore
 } bind def
 174.821 433.2 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-162.320851 250.512500 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /two glyphshow
+162.321 250.512 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000015 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-141.566003 232.918750 translate
-0.000000 rotate
-0.000000 0 m /uni00000e49 glyphshow
-12.000000 0 m /uni00000958 glyphshow
-24.000000 0 m /uni00000029 glyphshow
-28.025391 0 m /uni00000074 glyphshow
-32.695312 0 m /uni0000002a glyphshow
+141.566 232.919 translate
+0 rotate
+0 0 m /uni00000e49 glyphshow
+12 0 m /uni00000958 glyphshow
+24 0 m /uni00000029 glyphshow
+28.0254 0 m /uni00000074 glyphshow
+32.6953 0 m /uni0000002a glyphshow
 grestore
 gsave
 /o {
@@ -2539,7 +2529,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2561,7 +2551,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2572,9 +2562,9 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-32.450000 324.277813 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+32.45 324.278 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -2590,7 +2580,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2612,7 +2602,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -2620,29 +2610,30 @@ grestore
 } bind def
 273.916 400.293 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-22.450000 393.347364 translate
-0.000000 rotate
-0.000000 0 m /one glyphshow
-10.000000 0 m /zero glyphshow
+22.45 393.347 translate
+0 rotate
+0 0 m /uni00000014 glyphshow
+10 0 m /uni00000013 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-16.387500 320.551322 translate
-90.000000 rotate
-0.000000 0 m /uni000011f1 glyphshow
-12.000000 0 m /uni00000e54 glyphshow
-24.000000 0 m /uni00001091 glyphshow
-36.000000 0 m /uni0000087d glyphshow
-48.000000 0 m /uni000012b5 glyphshow
+16.3875 320.551 translate
+90 rotate
+0 0 m /uni000011f1 glyphshow
+12 0 m /uni00000e54 glyphshow
+24 0 m /uni00001091 glyphshow
+36 0 m /uni0000087d glyphshow
+48 0 m /uni000012b5 glyphshow
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 2 setlinecap
-0.000 0.000 1.000 setrgbcolor
+0 0 1 setrgbcolor
 gsave
-227.966 165.296 45.95 267.903 clipbox
+45.95 267.903 227.966 165.296 rectclip
 56.312108 375.771242 m
 56.60838 285.673938 l
 56.756516 275.416598 l
@@ -3208,9 +3199,9 @@ gsave
 263.554273 415.208506 l
 stroke
 grestore
-0.800 setlinewidth
+0.8 setlinewidth
 0 setlinejoin
-0.000 setgray
+0 setgray
 gsave
 45.95 267.903125 m
 45.95 433.19952 l
@@ -3231,7 +3222,7 @@ gsave
 273.916381 433.19952 l
 stroke
 grestore
-1.000 setlinewidth
+1 setlinewidth
 0 setlinecap
 gsave
 139.516381 336.64351 m
@@ -3247,27 +3238,27 @@ gsave
 cl
 stroke
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 1 setlinejoin
 2 setlinecap
-0.000 0.000 1.000 setrgbcolor
+0 0 1 setrgbcolor
 gsave
 142.716381 351.39351 m
 158.716381 351.39351 l
 174.716381 351.39351 l
 stroke
 grestore
-0.000 setgray
+0 setgray
 /UNAVAILABLE 16.000 selectfont
 gsave
 
-187.516381 345.793510 translate
-0.000000 rotate
-0.000000 0 m /uni000011f1 glyphshow
-16.000000 0 m /uni00000e54 glyphshow
-32.000000 0 m /uni00001091 glyphshow
-48.000000 0 m /uni0000087d glyphshow
-64.000000 0 m /uni000012b5 glyphshow
+187.516 345.794 translate
+0 rotate
+0 0 m /uni000011f1 glyphshow
+16 0 m /uni00000e54 glyphshow
+32 0 m /uni00001091 glyphshow
+48 0 m /uni0000087d glyphshow
+64 0 m /uni000012b5 glyphshow
 grestore
 gsave
 333.575 267.903125 m
@@ -3275,10 +3266,10 @@ gsave
 561.541381 433.19952 l
 333.575 433.19952 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
-3.000 setlinewidth
+3 setlinewidth
 0 setlinecap
 gsave
 /o {
@@ -3294,7 +3285,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3316,7 +3307,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3327,11 +3318,11 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-331.437108 250.512500 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /zero glyphshow
+331.437 250.512 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -3347,7 +3338,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3369,7 +3360,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3377,24 +3368,25 @@ grestore
 } bind def
 462.446 433.2 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-449.945851 250.512500 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /two glyphshow
+449.946 250.512 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000015 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-429.191003 232.918750 translate
-0.000000 rotate
-0.000000 0 m /uni00000e49 glyphshow
-12.000000 0 m /uni00000958 glyphshow
-24.000000 0 m /uni00000029 glyphshow
-28.025391 0 m /uni00000074 glyphshow
-32.695312 0 m /uni0000002a glyphshow
+429.191 232.919 translate
+0 rotate
+0 0 m /uni00000e49 glyphshow
+12 0 m /uni00000958 glyphshow
+24 0 m /uni00000029 glyphshow
+28.0254 0 m /uni00000074 glyphshow
+32.6953 0 m /uni0000002a glyphshow
 grestore
 gsave
 /o {
@@ -3410,7 +3402,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3432,7 +3424,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3443,10 +3435,10 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-308.793750 268.471285 translate
-0.000000 rotate
-0.000000 0 m /minus glyphshow
-11.279297 0 m /one glyphshow
+308.794 268.471 translate
+0 rotate
+0 0 m /uni000000ed glyphshow
+11.2793 0 m /uni00000014 glyphshow
 grestore
 gsave
 /o {
@@ -3462,7 +3454,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3484,7 +3476,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3492,11 +3484,12 @@ grestore
 } bind def
 561.541 350.551 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-320.075000 343.606010 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+320.075 343.606 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -3512,7 +3505,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3534,7 +3527,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -3542,25 +3535,26 @@ grestore
 } bind def
 561.541 425.686 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-320.075000 418.740735 translate
-0.000000 rotate
-0.000000 0 m /one glyphshow
+320.075 418.741 translate
+0 rotate
+0 0 m /uni00000014 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-302.731250 338.551322 translate
-90.000000 rotate
-0.000000 0 m /uni0000121c glyphshow
-12.000000 0 m /uni00000570 glyphshow
+302.731 338.551 translate
+90 rotate
+0 0 m /uni0000121c glyphshow
+12 0 m /uni00000570 glyphshow
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 2 setlinecap
-0.000 0.000 1.000 setrgbcolor
+0 0 1 setrgbcolor
 gsave
-227.966 165.296 333.575 267.903 clipbox
+333.575 267.903 227.966 165.296 rectclip
 343.937108 425.686047 m
 344.23338 275.416597 l
 344.529652 425.686047 l
@@ -4265,9 +4259,9 @@ gsave
 551.179273 350.551323 l
 stroke
 grestore
-0.800 setlinewidth
+0.8 setlinewidth
 0 setlinejoin
-0.000 setgray
+0 setgray
 gsave
 333.575 267.903125 m
 333.575 433.19952 l
@@ -4288,7 +4282,7 @@ gsave
 561.541381 433.19952 l
 stroke
 grestore
-1.000 setlinewidth
+1 setlinewidth
 0 setlinecap
 gsave
 475.141381 405.415145 m
@@ -4304,24 +4298,24 @@ gsave
 cl
 stroke
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 1 setlinejoin
 2 setlinecap
-0.000 0.000 1.000 setrgbcolor
+0 0 1 setrgbcolor
 gsave
 478.341381 420.165145 m
 494.341381 420.165145 l
 510.341381 420.165145 l
 stroke
 grestore
-0.000 setgray
+0 setgray
 /UNAVAILABLE 16.000 selectfont
 gsave
 
-523.141381 414.565145 translate
-0.000000 rotate
-0.000000 0 m /uni0000121c glyphshow
-16.000000 0 m /uni00000570 glyphshow
+523.141 414.565 translate
+0 rotate
+0 0 m /uni0000121c glyphshow
+16 0 m /uni00000570 glyphshow
 grestore
 gsave
 627.3875 267.903125 m
@@ -4329,10 +4323,10 @@ gsave
 855.353881 433.19952 l
 627.3875 433.19952 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
-3.000 setlinewidth
+3 setlinewidth
 0 setlinecap
 gsave
 /o {
@@ -4348,7 +4342,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4370,7 +4364,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4381,11 +4375,11 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-625.249608 250.512500 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /zero glyphshow
+625.25 250.512 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -4401,7 +4395,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4423,7 +4417,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4431,24 +4425,25 @@ grestore
 } bind def
 756.258 433.2 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-743.758351 250.512500 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /two glyphshow
+743.758 250.512 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000015 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-723.003503 232.918750 translate
-0.000000 rotate
-0.000000 0 m /uni00000e49 glyphshow
-12.000000 0 m /uni00000958 glyphshow
-24.000000 0 m /uni00000029 glyphshow
-28.025391 0 m /uni00000074 glyphshow
-32.695312 0 m /uni0000002a glyphshow
+723.004 232.919 translate
+0 rotate
+0 0 m /uni00000e49 glyphshow
+12 0 m /uni00000958 glyphshow
+24 0 m /uni00000029 glyphshow
+28.0254 0 m /uni00000074 glyphshow
+32.6953 0 m /uni0000002a glyphshow
 grestore
 gsave
 /o {
@@ -4464,7 +4459,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4486,7 +4481,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4497,11 +4492,11 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-592.606250 295.724984 translate
-0.000000 rotate
-0.000000 0 m /minus glyphshow
-11.279297 0 m /one glyphshow
-21.279297 0 m /zero glyphshow
+592.606 295.725 translate
+0 rotate
+0 0 m /uni000000ed glyphshow
+11.2793 0 m /uni00000014 glyphshow
+21.2793 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -4517,7 +4512,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4539,7 +4534,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -4547,27 +4542,28 @@ grestore
 } bind def
 855.354 376.8 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-613.887500 369.854597 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+613.888 369.855 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-586.543750 326.551322 translate
-90.000000 rotate
-0.000000 0 m /uni00001159 glyphshow
-12.000000 0 m /uni000006d9 glyphshow
-24.000000 0 m /uni00001091 glyphshow
-36.000000 0 m /uni0000087d glyphshow
+586.544 326.551 translate
+90 rotate
+0 0 m /uni00001159 glyphshow
+12 0 m /uni000006d9 glyphshow
+24 0 m /uni00001091 glyphshow
+36 0 m /uni0000087d glyphshow
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 2 setlinecap
-0.000 0.000 1.000 setrgbcolor
+0 0 1 setrgbcolor
 gsave
-227.966 165.296 627.388 267.903 clipbox
+627.388 267.903 227.966 165.296 rectclip
 637.749608 424.611638 m
 637.897744 376.799909 l
 638.04588 425.686047 l
@@ -5692,9 +5688,9 @@ gsave
 844.991773 376.799909 l
 stroke
 grestore
-0.800 setlinewidth
+0.8 setlinewidth
 0 setlinejoin
-0.000 setgray
+0 setgray
 gsave
 627.3875 267.903125 m
 627.3875 433.19952 l
@@ -5715,7 +5711,7 @@ gsave
 855.353881 433.19952 l
 stroke
 grestore
-1.000 setlinewidth
+1 setlinewidth
 0 setlinecap
 gsave
 630.5875 267.903125 m
@@ -5731,26 +5727,26 @@ gsave
 cl
 stroke
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 1 setlinejoin
 2 setlinecap
-0.000 0.000 1.000 setrgbcolor
+0 0 1 setrgbcolor
 gsave
 633.7875 282.653125 m
 649.7875 282.653125 l
 665.7875 282.653125 l
 stroke
 grestore
-0.000 setgray
+0 setgray
 /UNAVAILABLE 16.000 selectfont
 gsave
 
-678.587500 277.053125 translate
-0.000000 rotate
-0.000000 0 m /uni00001159 glyphshow
-16.000000 0 m /uni000006d9 glyphshow
-32.000000 0 m /uni00001091 glyphshow
-48.000000 0 m /uni0000087d glyphshow
+678.588 277.053 translate
+0 rotate
+0 0 m /uni00001159 glyphshow
+16 0 m /uni000006d9 glyphshow
+32 0 m /uni00001091 glyphshow
+48 0 m /uni0000087d glyphshow
 grestore
 gsave
 45.95 44.29375 m
@@ -5758,10 +5754,10 @@ gsave
 273.916381 209.590145 l
 45.95 209.590145 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
-3.000 setlinewidth
+3 setlinewidth
 0 setlinecap
 gsave
 /o {
@@ -5777,7 +5773,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5799,7 +5795,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5810,13 +5806,13 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-30.671483 26.903125 translate
-0.000000 rotate
-0.000000 0 m /minus glyphshow
-11.279297 0 m /two glyphshow
-21.279297 0 m /zero glyphshow
-31.279297 0 m /zero glyphshow
-41.279297 0 m /zero glyphshow
+30.6715 26.9031 translate
+0 rotate
+0 0 m /uni000000ed glyphshow
+11.2793 0 m /uni00000015 glyphshow
+21.2793 0 m /uni00000013 glyphshow
+31.2793 0 m /uni00000013 glyphshow
+41.2793 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -5832,7 +5828,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5854,7 +5850,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5862,11 +5858,12 @@ grestore
 } bind def
 160.007 209.59 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-155.007259 26.903125 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+155.007 26.9031 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -5882,7 +5879,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5904,7 +5901,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5912,26 +5909,27 @@ grestore
 } bind def
 263.702 209.59 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-243.702409 26.903125 translate
-0.000000 rotate
-0.000000 0 m /two glyphshow
-10.000000 0 m /zero glyphshow
-20.000000 0 m /zero glyphshow
-30.000000 0 m /zero glyphshow
+243.702 26.9031 translate
+0 rotate
+0 0 m /uni00000015 glyphshow
+10 0 m /uni00000013 glyphshow
+20 0 m /uni00000013 glyphshow
+30 0 m /uni00000013 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-136.269128 9.309375 translate
-0.000000 rotate
-0.000000 0 m /uni00000cd5 glyphshow
-12.000000 0 m /uni00000b72 glyphshow
-24.000000 0 m /uni00000029 glyphshow
-28.025391 0 m /uni00000049 glyphshow
-37.992188 0 m /uni0000007b glyphshow
-43.294922 0 m /uni0000002a glyphshow
+136.269 9.30938 translate
+0 rotate
+0 0 m /uni00000cd5 glyphshow
+12 0 m /uni00000b72 glyphshow
+24 0 m /uni00000029 glyphshow
+28.0254 0 m /uni00000049 glyphshow
+37.9922 0 m /uni0000007b glyphshow
+43.2949 0 m /uni0000002a glyphshow
 grestore
 gsave
 /o {
@@ -5947,7 +5945,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5969,7 +5967,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -5980,9 +5978,9 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-32.450000 44.861910 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+32.45 44.8619 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -5998,7 +5996,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6020,7 +6018,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6028,11 +6026,12 @@ grestore
 } bind def
 273.916 94.7414 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-32.450000 87.796039 translate
-0.000000 rotate
-0.000000 0 m /one glyphshow
+32.45 87.796 translate
+0 rotate
+0 0 m /uni00000014 glyphshow
 grestore
 gsave
 /o {
@@ -6048,7 +6047,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6070,7 +6069,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6078,11 +6077,12 @@ grestore
 } bind def
 273.916 137.675 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-32.450000 130.730167 translate
-0.000000 rotate
-0.000000 0 m /two glyphshow
+32.45 130.73 translate
+0 rotate
+0 0 m /uni00000015 glyphshow
 grestore
 gsave
 /o {
@@ -6098,7 +6098,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6120,7 +6120,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6128,25 +6128,26 @@ grestore
 } bind def
 273.916 180.61 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-32.450000 173.664296 translate
-0.000000 rotate
-0.000000 0 m /three glyphshow
+32.45 173.664 translate
+0 rotate
+0 0 m /uni00000016 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-26.387500 114.941948 translate
-90.000000 rotate
-0.000000 0 m /uni00000797 glyphshow
-12.000000 0 m /uni00000708 glyphshow
+26.3875 114.942 translate
+90 rotate
+0 0 m /uni00000797 glyphshow
+12 0 m /uni00000708 glyphshow
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 2 setlinecap
-1.000 0.000 0.000 setrgbcolor
+1 0 0 setrgbcolor
 gsave
-227.966 165.296 45.95 44.294 clipbox
+45.95 44.294 227.966 165.296 rectclip
 56.312108 51.807223 m
 128.750578 51.807223 l
 128.898713 116.208415 l
@@ -6170,9 +6171,9 @@ gsave
 263.554273 51.807223 l
 stroke
 grestore
-0.800 setlinewidth
+0.8 setlinewidth
 0 setlinejoin
-0.000 setgray
+0 setgray
 gsave
 45.95 44.29375 m
 45.95 209.590145 l
@@ -6193,15 +6194,16 @@ gsave
 273.916381 209.590145 l
 stroke
 grestore
+/UNAVAILABLE 12.000 selectfont
 gsave
 
-144.323816 215.590145 translate
-0.000000 rotate
-0.000000 0 m /uni00000079 glyphshow
-7.212891 0 m /uni00000d87 glyphshow
-19.212891 0 m /uni00000cf7 glyphshow
+144.324 215.59 translate
+0 rotate
+0 0 m /uni00000079 glyphshow
+7.21289 0 m /uni00000d87 glyphshow
+19.2129 0 m /uni00000cf7 glyphshow
 grestore
-1.000 setlinewidth
+1 setlinewidth
 0 setlinecap
 gsave
 177.891381 181.727645 m
@@ -6217,25 +6219,25 @@ gsave
 cl
 stroke
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 1 setlinejoin
 2 setlinecap
-1.000 0.000 0.000 setrgbcolor
+1 0 0 setrgbcolor
 gsave
 181.091381 196.477645 m
 197.091381 196.477645 l
 213.091381 196.477645 l
 stroke
 grestore
-0.000 setgray
+0 setgray
 /UNAVAILABLE 16.000 selectfont
 gsave
 
-225.891381 190.877645 translate
-0.000000 rotate
-0.000000 0 m /uni00000079 glyphshow
-9.617188 0 m /uni00000d87 glyphshow
-25.617188 0 m /uni00000cf7 glyphshow
+225.891 190.878 translate
+0 rotate
+0 0 m /uni00000079 glyphshow
+9.61719 0 m /uni00000d87 glyphshow
+25.6172 0 m /uni00000cf7 glyphshow
 grestore
 gsave
 333.575 44.29375 m
@@ -6243,10 +6245,10 @@ gsave
 561.541381 209.590145 l
 333.575 209.590145 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
-3.000 setlinewidth
+3 setlinewidth
 0 setlinecap
 gsave
 /o {
@@ -6262,7 +6264,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6284,7 +6286,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6295,13 +6297,13 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-318.296483 26.903125 translate
-0.000000 rotate
-0.000000 0 m /minus glyphshow
-11.279297 0 m /two glyphshow
-21.279297 0 m /zero glyphshow
-31.279297 0 m /zero glyphshow
-41.279297 0 m /zero glyphshow
+318.296 26.9031 translate
+0 rotate
+0 0 m /uni000000ed glyphshow
+11.2793 0 m /uni00000015 glyphshow
+21.2793 0 m /uni00000013 glyphshow
+31.2793 0 m /uni00000013 glyphshow
+41.2793 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -6317,7 +6319,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6339,7 +6341,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6347,11 +6349,12 @@ grestore
 } bind def
 447.632 209.59 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-442.632259 26.903125 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+442.632 26.9031 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -6367,7 +6370,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6389,7 +6392,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6397,26 +6400,27 @@ grestore
 } bind def
 551.327 209.59 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-531.327409 26.903125 translate
-0.000000 rotate
-0.000000 0 m /two glyphshow
-10.000000 0 m /zero glyphshow
-20.000000 0 m /zero glyphshow
-30.000000 0 m /zero glyphshow
+531.327 26.9031 translate
+0 rotate
+0 0 m /uni00000015 glyphshow
+10 0 m /uni00000013 glyphshow
+20 0 m /uni00000013 glyphshow
+30 0 m /uni00000013 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-423.894128 9.309375 translate
-0.000000 rotate
-0.000000 0 m /uni00000cd5 glyphshow
-12.000000 0 m /uni00000b72 glyphshow
-24.000000 0 m /uni00000029 glyphshow
-28.025391 0 m /uni00000049 glyphshow
-37.992188 0 m /uni0000007b glyphshow
-43.294922 0 m /uni0000002a glyphshow
+423.894 9.30938 translate
+0 rotate
+0 0 m /uni00000cd5 glyphshow
+12 0 m /uni00000b72 glyphshow
+24 0 m /uni00000029 glyphshow
+28.0254 0 m /uni00000049 glyphshow
+37.9922 0 m /uni0000007b glyphshow
+43.2949 0 m /uni0000002a glyphshow
 grestore
 gsave
 /o {
@@ -6432,7 +6436,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6454,7 +6458,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6465,11 +6469,11 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-305.075000 44.861910 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /zero glyphshow
+305.075 44.8619 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -6485,7 +6489,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6507,7 +6511,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6515,13 +6519,14 @@ grestore
 } bind def
 561.541 126.942 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-305.075000 119.996635 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /five glyphshow
+305.075 119.997 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000018 glyphshow
 grestore
 gsave
 /o {
@@ -6537,7 +6542,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6559,7 +6564,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6567,27 +6572,28 @@ grestore
 } bind def
 561.541 202.077 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-305.075000 195.131360 translate
-0.000000 rotate
-0.000000 0 m /one glyphshow
-10.000000 0 m /period glyphshow
-15.000000 0 m /zero glyphshow
+305.075 195.131 translate
+0 rotate
+0 0 m /uni00000014 glyphshow
+10 0 m /uni00000011 glyphshow
+15 0 m /uni00000013 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-299.012500 114.941948 translate
-90.000000 rotate
-0.000000 0 m /uni00000797 glyphshow
-12.000000 0 m /uni00000708 glyphshow
+299.013 114.942 translate
+90 rotate
+0 0 m /uni00000797 glyphshow
+12 0 m /uni00000708 glyphshow
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 2 setlinecap
-1.000 0.000 0.000 setrgbcolor
+1 0 0 setrgbcolor
 gsave
-227.966 165.296 333.575 44.294 clipbox
+333.575 44.294 227.966 165.296 rectclip
 343.937108 51.807223 m
 499.331698 51.807223 l
 499.479834 202.076673 l
@@ -6596,9 +6602,9 @@ gsave
 551.179273 51.807223 l
 stroke
 grestore
-0.800 setlinewidth
+0.8 setlinewidth
 0 setlinejoin
-0.000 setgray
+0 setgray
 gsave
 333.575 44.29375 m
 333.575 209.590145 l
@@ -6619,15 +6625,16 @@ gsave
 561.541381 209.590145 l
 stroke
 grestore
+/UNAVAILABLE 12.000 selectfont
 gsave
 
-433.222253 215.590145 translate
-0.000000 rotate
-0.000000 0 m /uni00000074 glyphshow
-4.669922 0 m /uni00000d87 glyphshow
-16.669922 0 m /uni00000cf7 glyphshow
+433.222 215.59 translate
+0 rotate
+0 0 m /uni00000074 glyphshow
+4.66992 0 m /uni00000d87 glyphshow
+16.6699 0 m /uni00000cf7 glyphshow
 grestore
-1.000 setlinewidth
+1 setlinewidth
 0 setlinecap
 gsave
 336.775 181.727645 m
@@ -6643,25 +6650,25 @@ gsave
 cl
 stroke
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 1 setlinejoin
 2 setlinecap
-1.000 0.000 0.000 setrgbcolor
+1 0 0 setrgbcolor
 gsave
 339.975 196.477645 m
 355.975 196.477645 l
 371.975 196.477645 l
 stroke
 grestore
-0.000 setgray
+0 setgray
 /UNAVAILABLE 16.000 selectfont
 gsave
 
-384.775000 190.877645 translate
-0.000000 rotate
-0.000000 0 m /uni00000074 glyphshow
-6.226562 0 m /uni00000d87 glyphshow
-22.226562 0 m /uni00000cf7 glyphshow
+384.775 190.878 translate
+0 rotate
+0 0 m /uni00000074 glyphshow
+6.22656 0 m /uni00000d87 glyphshow
+22.2266 0 m /uni00000cf7 glyphshow
 grestore
 gsave
 627.3875 44.29375 m
@@ -6669,10 +6676,10 @@ gsave
 855.353881 209.590145 l
 627.3875 209.590145 l
 cl
-1.000 setgray
+1 setgray
 fill
 grestore
-3.000 setlinewidth
+3 setlinewidth
 0 setlinecap
 gsave
 /o {
@@ -6688,7 +6695,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6710,7 +6717,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6721,13 +6728,13 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-612.108983 26.903125 translate
-0.000000 rotate
-0.000000 0 m /minus glyphshow
-11.279297 0 m /two glyphshow
-21.279297 0 m /zero glyphshow
-31.279297 0 m /zero glyphshow
-41.279297 0 m /zero glyphshow
+612.109 26.9031 translate
+0 rotate
+0 0 m /uni000000ed glyphshow
+11.2793 0 m /uni00000015 glyphshow
+21.2793 0 m /uni00000013 glyphshow
+31.2793 0 m /uni00000013 glyphshow
+41.2793 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -6743,7 +6750,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6765,7 +6772,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6773,11 +6780,12 @@ grestore
 } bind def
 741.445 209.59 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-736.444759 26.903125 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+736.445 26.9031 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -6793,7 +6801,7 @@ translate
 0 3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6815,7 +6823,7 @@ translate
 0 -3.5 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6823,26 +6831,27 @@ grestore
 } bind def
 845.14 209.59 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-825.139909 26.903125 translate
-0.000000 rotate
-0.000000 0 m /two glyphshow
-10.000000 0 m /zero glyphshow
-20.000000 0 m /zero glyphshow
-30.000000 0 m /zero glyphshow
+825.14 26.9031 translate
+0 rotate
+0 0 m /uni00000015 glyphshow
+10 0 m /uni00000013 glyphshow
+20 0 m /uni00000013 glyphshow
+30 0 m /uni00000013 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-717.706628 9.309375 translate
-0.000000 rotate
-0.000000 0 m /uni00000cd5 glyphshow
-12.000000 0 m /uni00000b72 glyphshow
-24.000000 0 m /uni00000029 glyphshow
-28.025391 0 m /uni00000049 glyphshow
-37.992188 0 m /uni0000007b glyphshow
-43.294922 0 m /uni0000002a glyphshow
+717.707 9.30938 translate
+0 rotate
+0 0 m /uni00000cd5 glyphshow
+12 0 m /uni00000b72 glyphshow
+24 0 m /uni00000029 glyphshow
+28.0254 0 m /uni00000049 glyphshow
+37.9922 0 m /uni0000007b glyphshow
+43.2949 0 m /uni0000002a glyphshow
 grestore
 gsave
 /o {
@@ -6858,7 +6867,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6880,7 +6889,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6891,9 +6900,9 @@ grestore
 /TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-613.887500 44.861910 translate
-0.000000 rotate
-0.000000 0 m /zero glyphshow
+613.888 44.8619 translate
+0 rotate
+0 0 m /uni00000013 glyphshow
 grestore
 gsave
 /o {
@@ -6909,7 +6918,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6931,7 +6940,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6939,11 +6948,12 @@ grestore
 } bind def
 855.354 94.7414 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-613.887500 87.796039 translate
-0.000000 rotate
-0.000000 0 m /one glyphshow
+613.888 87.796 translate
+0 rotate
+0 0 m /uni00000014 glyphshow
 grestore
 gsave
 /o {
@@ -6959,7 +6969,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6981,7 +6991,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -6989,11 +6999,12 @@ grestore
 } bind def
 855.354 137.675 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-613.887500 130.730167 translate
-0.000000 rotate
-0.000000 0 m /two glyphshow
+613.888 130.73 translate
+0 rotate
+0 0 m /uni00000015 glyphshow
 grestore
 gsave
 /o {
@@ -7009,7 +7020,7 @@ translate
 3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -7031,7 +7042,7 @@ translate
 -3.5 0 l
 
 gsave
-0.000 setgray
+0 setgray
 fill
 grestore
 stroke
@@ -7039,29 +7050,30 @@ grestore
 } bind def
 855.354 180.61 o
 grestore
+/TimesNewRomanPSMT 20.000 selectfont
 gsave
 
-613.887500 173.664296 translate
-0.000000 rotate
-0.000000 0 m /three glyphshow
+613.888 173.664 translate
+0 rotate
+0 0 m /uni00000016 glyphshow
 grestore
 /UNAVAILABLE 12.000 selectfont
 gsave
 
-607.825000 90.941948 translate
-90.000000 rotate
-0.000000 0 m /uni00001159 glyphshow
-12.000000 0 m /uni000006d9 glyphshow
-24.000000 0 m /uni00001091 glyphshow
-36.000000 0 m /uni0000087d glyphshow
-48.000000 0 m /uni00000d87 glyphshow
-60.000000 0 m /uni00000cf7 glyphshow
+607.825 90.9419 translate
+90 rotate
+0 0 m /uni00001159 glyphshow
+12 0 m /uni000006d9 glyphshow
+24 0 m /uni00001091 glyphshow
+36 0 m /uni0000087d glyphshow
+48 0 m /uni00000d87 glyphshow
+60 0 m /uni00000cf7 glyphshow
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 2 setlinecap
-1.000 0.000 0.000 setrgbcolor
+1 0 0 setrgbcolor
 gsave
-227.966 165.296 627.388 44.294 clipbox
+627.388 44.294 227.966 165.296 rectclip
 637.749608 51.807223 m
 762.035653 51.807223 l
 762.183789 116.208415 l
@@ -7085,9 +7097,9 @@ gsave
 844.991773 51.807223 l
 stroke
 grestore
-0.800 setlinewidth
+0.8 setlinewidth
 0 setlinejoin
-0.000 setgray
+0 setgray
 gsave
 627.3875 44.29375 m
 627.3875 209.590145 l
@@ -7108,7 +7120,7 @@ gsave
 855.353881 209.590145 l
 stroke
 grestore
-1.000 setlinewidth
+1 setlinewidth
 0 setlinecap
 gsave
 630.5875 181.602645 m
@@ -7124,28 +7136,28 @@ gsave
 cl
 stroke
 grestore
-1.500 setlinewidth
+1.5 setlinewidth
 1 setlinejoin
 2 setlinecap
-1.000 0.000 0.000 setrgbcolor
+1 0 0 setrgbcolor
 gsave
 633.7875 196.352645 m
 649.7875 196.352645 l
 665.7875 196.352645 l
 stroke
 grestore
-0.000 setgray
+0 setgray
 /UNAVAILABLE 16.000 selectfont
 gsave
 
-678.587500 190.752645 translate
-0.000000 rotate
-0.000000 0 m /uni00001159 glyphshow
-16.000000 0 m /uni000006d9 glyphshow
-32.000000 0 m /uni00001091 glyphshow
-48.000000 0 m /uni0000087d glyphshow
-64.000000 0 m /uni00000d87 glyphshow
-80.000000 0 m /uni00000cf7 glyphshow
+678.588 190.753 translate
+0 rotate
+0 0 m /uni00001159 glyphshow
+16 0 m /uni000006d9 glyphshow
+32 0 m /uni00001091 glyphshow
+48 0 m /uni0000087d glyphshow
+64 0 m /uni00000d87 glyphshow
+80 0 m /uni00000cf7 glyphshow
 grestore
 
 end

@@ -110,10 +110,9 @@ if FFTN%2 == 0:
     # 方法一
     f1 = np.arange(-int(FFTN/2),int(FFTN/2))*df      # 频率刻度,N为偶数
     #或者如下， 方法二：
-    # f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(N, 1/Fs))
+    # f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
 else:#奇数时下面的有问题
     f1 = np.arange(-int(FFTN/2),int(FFTN/2)+1)*df      # 频率刻度,N为奇数
-
 
 
 #====================================== 开始画图 ===============================================
@@ -123,7 +122,6 @@ horvizen = 5
 vertical = 1
 fig, axs = plt.subplots(vertical, horvizen, figsize=(horvizen*width, vertical*high), constrained_layout=True)
 labelsize = 20
-
 
 
 #%% 全谱图
@@ -246,9 +244,7 @@ axs[4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=la
 labels = axs[4].get_xticklabels() + axs[4].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
-
-
+ 
 #================================= super ===============================================
 out_fig = plt.gcf()
 #out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')

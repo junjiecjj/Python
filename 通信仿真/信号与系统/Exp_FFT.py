@@ -33,7 +33,6 @@ fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=20)
 
-
 # FFT变换，慢的版本
 def FFT(xx):
      N = len(xx)
@@ -57,13 +56,13 @@ def IFFT(XX):
 ## ======================================================
 ## ===========  定义时域采样信号 sin(x + np.pi/4)
 ## ======================================================
-Fs = 10                          # 信号采样频率
-Ts = 1/Fs                        # 采样时间间隔
-N_sample = 200                           # 采样信号的长度
-t = np.linspace(0, N_sample-1, N_sample)*Ts    # 定义信号采样的时间点 t， 采样/信号时长 = N_sample/Fs
+Fs = 10                                         # 信号采样频率
+Ts = 1/Fs                                       # 采样时间间隔
+N_sample = 200                                  # 采样信号的长度
+t = np.linspace(0, N_sample-1, N_sample)*Ts     # 定义信号采样的时间点 t， 采样/信号时长 = N_sample/Fs
 
-f1 = 2                             # 第一个余弦信号的频率
-x =  np.exp(1j * 2 * np.pi * f1 * t) # = cos(pi/4 - x) = sin(x - pi/4)
+f1 = 2
+x =  np.exp(1j * 2 * np.pi * f1 * t)
 
 #=====================================================
 # FFTN = N_sample   ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
@@ -89,7 +88,7 @@ X = X/N_sample               # 将频域序列 X 除以序列的长度 N
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if FFTN%2 == 0:
      Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
-     # Y[1 : int(FFTN/2)] =  Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+     Y[1 : int(FFTN/2)] =  Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
 else: #奇数时下面的有问题
      Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为奇数
      Y[1 : int(FFTN/2)+1] = 2*Y[1:int(FFTN/2)+1]   # 将 X 里负频率的部分合并到正频率,N为奇数
@@ -107,7 +106,6 @@ if FFTN%2==0:
       # f = scipy.fftpack.fftfreq(N, d=1/Fs)[0:int(N/2)+1]
 else:#奇数时下面的有问题
      f = np.arange(0, int(FFTN/2)+1)*df     # 频率刻度,N为奇数
-
 
 #==================================================
 # 全谱图
@@ -137,8 +135,8 @@ df = Fs/FFTN                           # 频率间隔
 if FFTN%2 == 0:
     # 方法一
     f1 = np.arange(-int(FFTN/2),int(FFTN/2))*df      # 频率刻度,N为偶数
-    #或者如下， 方法二：
-    f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
+    # 或者如下， 方法二：
+    # f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
 else:#奇数时下面的有问题
     f1 = np.arange(-int(FFTN/2),int(FFTN/2)+1)*df      # 频率刻度,N为奇数
 
@@ -172,7 +170,6 @@ A2 = abs(X2);                       # 计算频域序列 Y 的幅值
 Pha2 = np.angle(X2,deg=True)       # 计算频域序列 Y 的相角 (弧度制)
 R2 = np.real(X2)                   # 计算频域序列 Y 的实部
 I2 = np.imag(X2)                   # 计算频域序列 Y 的虚部
-
 
 df = Fs/FFTN                          # 频率间隔
 if FFTN%2 == 0:
@@ -539,24 +536,3 @@ out_fig = plt.gcf()
 #out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
