@@ -101,24 +101,28 @@ import numpy as np
 # Fixing random state for reproducibility
 np.random.seed(42)
 
-x, y = np.random.randn(2, 100)
+fs = 100
+f = 2
+t = np.arange(0, 1, 1/fs)
+x = np.sin(2 * np.pi * f * t)
+y = np.random.randn(x.size)
 # fig, [ax1, ax2] = plt.subplots(2, 1, sharex=True)
 fig, axs = plt.subplots(2, 1, figsize = (8, 6), constrained_layout = True,  sharex=True)
-idx_1, xcor_1, _, _ = axs[0].xcorr(x, y, usevlines=True, maxlags=50, normed=True, lw=2)
+idx_1, xcor_1, _, _ = axs[0].xcorr(x, y, usevlines = True, maxlags = 50, normed = True, lw = 2)
 axs[0].grid(True)
 axs[0].set_title('Cross-correlation (xcorr)')
 
-idx_2, acor_2, _, _  = axs[1].acorr(x, usevlines=True, normed=True, maxlags=50, lw=2)
+idx_2, acor_2, _, _  = axs[1].acorr(x, usevlines = True, normed = True, maxlags = 50, lw = 2)
 axs[1].grid(True)
-axs[1].set_title('Auto-correlation (acorr)')
+axs[1].set_title('Self-correlation (acorr)')
 
 plt.show()
 
-
+# https://blog.51cto.com/u_16213453/12732833
 # 计算自相关函数
 def autocorrelation(x):
     n = len(x)
-    variance = x.var()
+    # variance = x.var()
     mean = x.mean()
     c0 = np.sum((x - mean) ** 2) / n
     result = np.correlate(x - mean, x - mean, mode = 'same')
@@ -135,10 +139,10 @@ scorr = autocorrelation(x)
 # https://mp.weixin.qq.com/s?__biz=MzkxNTcyMDI1Nw==&mid=2247485665&idx=1&sn=657320b37df1a053cb9486888df066a4&chksm=c0433bf3cc988f20e4451ab260daa1fe94019f0a77a5869617e7c4e59e1f6254ad074afe6035&mpshare=1&scene=1&srcid=0211LzimJAebickSiZy5yhvg&sharer_shareinfo=5c628ed946d7332c6507b4fd15aebf24&sharer_shareinfo_first=522f6c581162c8ec98c461f62c781d2d&exportkey=n_ChQIAhIQvGBNrciFIxFVklHBGphjTRKfAgIE97dBBAEAAAAAAJtdKq50wGQAAAAOpnltbLcz9gKNyK89dVj0CEpWnFvD4NPv5QY6sd5ErmN2lb99E%2BiR6fh%2Brtm8MTWHjWqrhzjEFlO0gvvs8XlB13YCMh9%2FZROZpY0OabfqTG0%2BUcTEFghLGexNWsG5ZsNOIvw8vt4RFe3ynmd5dionQthsl9sp69hHRZToLpa0jKhIIC7Hvz1zFbKu6dDVEm%2BUiDP63tLG4eJxGqHqe4NOlg%2BMpe28TQLJp3XAYJ7IzqMjxbCSFMvDamJJFhqFOoeDer0HyLs2bcZcv9IpxahmCe32pRtPFTGQSPLTCj%2BKsmDbb%2BAb1JaOb538GzNnOB%2FtChXaQ4tNgDHWHLCTLWrcp3eWOpAqLyq3&acctmode=0&pass_ticket=OCj6%2BS1NlxkGxuDLzbqGWrpCOER33t6dnQoMRy4Scc9Gda%2Fj26o8746YuacZ8J6r&wx_header=0#rd
 
 
+# https://thinkdsp-cn.readthedocs.io/zh-cn/latest/05-autocorrelation.html#id8
 
 
-
-
+# https://blog.csdn.net/m0_47410750/article/details/127641729
 
 
 
