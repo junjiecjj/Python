@@ -57,25 +57,24 @@ if FFTN%2 == 0:
      fx = np.arange(0, int(FFTN/2)+1)*df      # 频率刻度,N为偶数
 
 #%%================================ IIR -巴特沃兹高通滤波器  =====================================
-lf = 700    # 通带截止频率200Hz
-# hf = 700
+hf = 700
 Fc = 1000   # 阻带截止频率1000Hz
 Rp = 1      # 通带波纹最大衰减为1dB
 Rs = 40     # 阻带衰减为40dB
 #-----------------------计算最小滤波器阶数-----------------------------
 na = np.sqrt(10**(0.1*Rp)-1)
 ea = np.sqrt(10**(0.1*Rs)-1)
-order  = np.ceil(np.log10(ea/na)/np.log10(Fc/lf))  #巴特沃兹阶数
-Wn = lf*2/Fs
+order  = np.ceil(np.log10(ea/na)/np.log10(Fc/hf))  #巴特沃兹阶数
+Wn = hf*2/Fs
 #---------------------- 高通滤波  -----------------------------
-### 方法1
-# [Bb, Ba] = scipy.signal.butter(order, Wn, 'high')
-# ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
-# y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
+## 方法1
+[Bb, Ba] = scipy.signal.butter(order, Wn, 'high')
+## [BW, BH] = scipy.signal.freqz(Bb, Ba)
+y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 
-## 方法2
-h = scipy.signal.firwin(int(31), lf, fs = Fs, pass_zero = "highpass")
-y = scipy.signal.lfilter(h, 1, x) # 进行滤波
+# ## 方法2
+# h = scipy.signal.firwin(int(31), hf, fs = Fs, pass_zero = "highpass")
+# y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 ### 方法3
 # h = scipy.signal.firwin(int(31), Wn,  pass_zero = "highpass" )

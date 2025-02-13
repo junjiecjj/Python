@@ -69,17 +69,17 @@ f1 = lf*2/Fs
 f2 = hf*2/Fs
 #---------------------- 带阻滤波  -----------------------------
 ##方法1
-# [Bb, Ba] = scipy.signal.butter(order, [f1, f2], 'bandstop')
-# # ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
-# y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
+[Bb, Ba] = scipy.signal.butter(order, [f1, f2], 'bandstop')
+# ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
+y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 
 # ###方法2
 # h = scipy.signal.firwin(int(31), [lf, hf], fs = Fs, pass_zero = "bandstop" )
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 # ###方法3
-h = scipy.signal.firwin(int(31), [f1, f2], pass_zero = "bandstop" )
-y = scipy.signal.lfilter(h, 1, x) # 进行滤波
+# h = scipy.signal.firwin(int(31), [f1, f2], pass_zero = "bandstop" )
+# y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 #----------------------- 滤波后信号的FFT变换 -----------------------------
 Y = scipy.fftpack.fft(y, n = FFTN)

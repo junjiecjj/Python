@@ -13,7 +13,7 @@ https://zhuanlan.zhihu.com/p/559711158
 https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
 
 """
- 
+
 import matplotlib.pyplot as plt
 import numpy as np
 # import math
@@ -108,7 +108,7 @@ x =  4 * np.cos(2*np.pi*f1*t + np.pi/4) # = cos(x) = sin(pi/2 - x)
 
 #=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-FFTN = N        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+FFTN = 200        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 X = scipy.fftpack.fft(x, n = FFTN)
 # X = FFT(x, n = FFTN)  # 或者用自己编写的，与 fft 一致
 
@@ -121,10 +121,11 @@ IX = scipy.fftpack.ifft(scipy.fftpack.fft(x))
 #==================================================
 
 # 消除相位混乱
-X[np.abs(X) < 1e-8] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+threshold = np.max(np.abs(X))/10000
+X[np.abs(X) < threshold] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X = X/x.size()               # 将频域序列 X 除以序列的长度 N
+X = X/x.size               # 将频域序列 X 除以序列的长度 N
 
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if FFTN%2 == 0:
@@ -159,7 +160,7 @@ X1 = scipy.fftpack.fft(x, n = FFTN)
 X1[np.abs(X1)<1e-8] = 0;   # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X1 = X1/N             # 将频域序列 X 除以序列的长度 N
+X1 = X1/x.size             # 将频域序列 X 除以序列的长度 N
 
 #%% 方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
 Y1 = scipy.fftpack.fftshift(X1,)      # 新的频域序列 Y
@@ -249,7 +250,7 @@ axs[0,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=
 labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
- 
+
 #======================================= 0,1 =========================================
 axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
 

@@ -73,7 +73,7 @@ plt.xlim(0, 0.5 * fs)
 plt.title("Lowpass Filter Frequency Response")
 plt.xlabel("Frequency [Hz]")
 plt.grid()
-
+plt.show()
 
 # Creating the data for filteration
 T = 5.0  # value taken in seconds
@@ -103,7 +103,7 @@ plt.show()
 
 # filtfilt 函数不适用于实时滤波，它用于离线信号处理，需要使用整个信号的历史数据进行滤波计算；
 # 对于实时应用，更适合使用 lfilter 函数来逐个样本地滤波数据。lfilter函数是一个递归滤波器，可以用于实时滤波；
-
+# lfilter 滤波后的波形有偏移，filtfilt滤波后的没有偏移。
 
 from scipy.signal import butter, filtfilt, lfilter, lfilter_zi
 import matplotlib
@@ -137,11 +137,11 @@ imu =  7*np.sin(2*np.pi*f1*t - np.pi/4) + 5*np.sin(2*np.pi*f2*t - np.pi/6) + 3*n
 
 # 定义低通滤波器参数
 order = 2  # 滤波器阶数
-sampling_freq = Fs  # 采样频率（Hz）
+# sampling_freq = Fs  # 采样频率（Hz）
 cutoff_freq = 3  # 截止频率（Hz）
 
 # 计算归一化截止频率
-nyquist_freq = 0.5 * sampling_freq
+nyquist_freq = 0.5 * Fs
 normalized_cutoff_freq = cutoff_freq / nyquist_freq
 
 # 使用巴特沃斯滤波器设计滤波器系数
@@ -199,7 +199,7 @@ plt.show()
 
 #%%===================================================================================
 # https://blog.csdn.net/dss875914213/article/details/90085199
-
+# lfilter 滤波后的波形有偏移，filtfilt滤波后的没有偏移。
 
 from scipy import signal
 import matplotlib.pyplot as plt
@@ -215,20 +215,24 @@ f1 = 0.75
 f2 = 1.25
 f3 = 3.85
 
-x = (np.sin(2*np.pi*f1*t*(1-t) + 2.1) + 0.1*np.sin(2*np.pi*f2*t + 1) +  0.18*np.cos(2*np.pi*f3*t))
+x = np.sin(2*np.pi*f1*t*(1-t) + np.pi/4) + 0.1*np.sin(2*np.pi*f2*t + np.pi/2) +  0.18*np.cos(2*np.pi*f3*t)
 xn = x + np.random.randn(len(t)) * 0.08
 
-normalized_cutoff_freq = 2 * 1 / Fs
+# normalized_cutoff_freq = 2 * 1 / Fs
 b, a = signal.butter(3, 0.05, btype="low",)
 zi = signal.lfilter_zi(b, a)  # 初始化滤波器状态
 dss = zi
-data = []
-data3, _ = signal.lfilter(b, a, xn, zi = dss, )
 print(dss)
+## 1: 是lfilter 波形，一个一个点滤波
+data = []
 for i in xn:
     z, dss = signal.lfilter(b, a, [i], zi = dss)
     data.append(z)
+
+##  2: 是filtfilt波形。好像只能多余12个点才能滤波。
 data2 = signal.filtfilt(b, a, xn)
+## 3: lfilter 波形，所有点一起滤波
+data3, _ = signal.lfilter(b, a, xn, zi = dss, )
 
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(t, xn, 'b', linewidth = 2, label = 'raw',  alpha=0.75)
@@ -258,7 +262,7 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
-# lfilter 滤波后的波形有偏移，filtfilt滤波后的没有偏移。
+
 axs.grid(True)
 plt.show()
 

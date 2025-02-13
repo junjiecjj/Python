@@ -58,7 +58,6 @@ if FFTN%2 == 0:
 
 #%%================================ IIR -巴特沃兹低通滤波器  =====================================
 lf = 200    # 通带截止频率200Hz
-hf = 700
 Fc = 1000   # 阻带截止频率1000Hz
 Rp = 1      # 通带波纹最大衰减为1dB
 Rs = 40     # 阻带衰减为40dB
@@ -74,7 +73,7 @@ Wn = lf*2/Fs
 y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 
 # ###方法2
-# h = scipy.signal.firwin(int(16), lf, fs = Fs, )
+# h = scipy.signal.firwin(int(16), lf, fs = Fs,  pass_zero = "lowpass")
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 # ## 方法3

@@ -5,7 +5,7 @@ Created on Sat Apr  6 15:58:12 2024
 
 @author: jack
 
-
+https://blog.csdn.net/dreamer_2001/article/details/130505733
 https://wenku.csdn.net/answer/1ihyhaf96f
 https://blog.csdn.net/qq_42580533/article/details/106950272
 
@@ -175,15 +175,15 @@ Raised cosine FIR filter design
     b = b / np.sqrt(np.sum(np.power(b, 2)))
     return b
 
-
-
 beta = 0.25
 span = 6
 sps = 4
 shape = 'sqrt'
 
-h =  rcosdesign(beta, span, sps, shape)
+# h =  rcosdesign_srv(beta, span, sps, )
+h =  rcosdesign(beta, span, sps, shape = 'root' )
 t = np.arange(h.size)
+print(h)
 
 width = 10
 high = 6
@@ -193,7 +193,6 @@ fig, axs = plt.subplots(1, 1, figsize = (horvizen*width, vertical*high), constra
 labelsize = 20
 
 axs.plot(t, h, label = 'raw')
-
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel('time',fontproperties=font)
@@ -218,7 +217,7 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
 plt.show()
-print(h)
+
 
 
 

@@ -213,7 +213,6 @@ labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
 [label.set_fontsize(25) for label in labels] #刻度值字号
 axs[0,0].grid(linestyle = '--', linewidth = 0.5, )
 
-
 ## x
 axs[0,1].stem(x,  linefmt='--' )
 
@@ -233,8 +232,6 @@ labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(25) for label in labels] #刻度值字号
 axs[0,1].grid( linestyle = '--', linewidth = 0.5, )
-
-
 
 ## y,r_coherent
 axs[1,0].plot(y, label = 'y', linewidth = 2, color = 'b',  )
@@ -261,7 +258,6 @@ labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(25) for label in labels] #刻度值字号
 axs[1,0].grid(linestyle = '--', linewidth = 0.5, )
-
 
 ##  s_fc
 axs[1,1].plot(np.real(s_fc), label = 'f_fc', linewidth = 2, color = 'b', )
@@ -332,8 +328,8 @@ axs[2,1].grid(linestyle = '--', linewidth = 0.5, )
 
 
 out_fig = plt.gcf()
-out_fig.savefig(f'upfirdn.eps', )
-out_fig.savefig(f'upfirdn.png', dpi = 1000,)
+# out_fig.savefig(f'upfirdn.eps', )
+# out_fig.savefig(f'upfirdn.png', dpi = 1000,)
 plt.show()
 
 
