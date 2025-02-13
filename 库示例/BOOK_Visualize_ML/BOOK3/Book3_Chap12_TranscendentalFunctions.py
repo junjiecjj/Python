@@ -71,11 +71,6 @@ plt.tight_layout()
 ax.set_box_aspect(1)
 
 
-
-
-
-
-
 # Bk3_Ch12_02
 
 import matplotlib.pyplot as plt
