@@ -70,14 +70,15 @@ Wn = lf*2/Fs
 ### 方法1
 [Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
 # ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
-y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
+# y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
+y = scipy.signal.filtfilt(Bb, Ba, x )
 
-# ###方法2
-# h = scipy.signal.firwin(int(16), lf, fs = Fs,  pass_zero = "lowpass")
+##方法2
+# h = scipy.signal.firwin(int(16),  cutoff = lf, fs = Fs, pass_zero = "lowpass")
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
-# ## 方法3
-# h = scipy.signal.firwin(int(20), Wn,  pass_zero = "lowpass" )
+#### 方法3
+# h = scipy.signal.firwin(int(20), cutoff =  Wn, pass_zero = "lowpass" )
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 #----------------------- 滤波后信号的FFT变换 -----------------------------

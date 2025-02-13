@@ -40,7 +40,7 @@ from   scipy  import   signal
 #%%===================================================================================
 # https://www.delftstack.com/zh/howto/python/low-pass-filter-python/
 import numpy as np
-from scipy.signal import butter, lfilter,filtfilt, freqz
+from scipy.signal import butter, lfilter,filtfilt, freqz, freqs
 import matplotlib.pyplot as plt
 
 
@@ -66,21 +66,36 @@ fig = plt.figure(figsize=(16,10), constrained_layout = True)
 # Plotting the frequency response.
 w, h = freqz(b, a, worN=8000)
 plt.subplot(2, 1, 1)
-plt.plot(0.5 * fs * w / np.pi, np.abs(h), "b")
+plt.plot(0.5 * fs * w / np.pi, 20 * np.log10(abs(h)), "b")
+# plt.plot(w, 20 * np.log10(abs(h)), "b")  ## plt.xlabel("Frequency in rad/sample")
 plt.plot(cutoff, 0.5 * np.sqrt(2), "ko")
 plt.axvline(cutoff, color="k")
 plt.xlim(0, 0.5 * fs)
-plt.title("Lowpass Filter Frequency Response")
+plt.title("Lowpass Filter Frequency Response (dB)")
 plt.xlabel("Frequency [Hz]")
 plt.grid()
-plt.show()
+# plt.show()
+
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html#scipy.signal.butter
+# fig = plt.figure(figsize=(8,6), constrained_layout = True)
+# # Plotting the frequency response.
+# w, h =  freqs(b, a)
+# plt.subplot(1, 1, 1)
+# plt.semilogx(w, 20 * np.log10(abs(h)), "b")
+# # plt.plot(cutoff, 0.5 * np.sqrt(2), "ko")
+# # plt.axvline(cutoff, color="k")
+# # plt.xlim(0, 0.5 * fs)
+# plt.title("Lowpass Filter Frequency Response")
+# plt.xlabel("Frequency [Hz]")
+# plt.grid()
+# plt.show()
+
 
 # Creating the data for filteration
 T = 5.0  # value taken in seconds
 n = int(T * fs)  # indicates total samples
 t = np.linspace(0, T, n, endpoint=False)
-
-data = ( np.sin(1.2 * 2 * np.pi * t) + 1.5 * np.cos(9 * 2 * np.pi * t) + 0.5 * np.sin(12.0 * 2 * np.pi * t))
+data = np.sin(1.2 * 2 * np.pi * t) + 1.5 * np.cos(9 * 2 * np.pi * t) + 0.5 * np.sin(12.0 * 2 * np.pi * t)
 
 # Filtering and plotting
 y, y1 = butter_lowpass_filter(data, cutoff, fs, order)
@@ -96,6 +111,26 @@ plt.legend()
 # plt.subplots_adjust(hspace=0.35)
 plt.show()
 
+
+#%% https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html#scipy.signal.butter
+from scipy import signal
+
+
+t = np.linspace(0, 1, 1000, False)  # 1 second
+sig = np.sin(2*np.pi*10*t) + np.sin(2*np.pi*20*t)
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+ax1.plot(t, sig)
+ax1.set_title('10 Hz and 20 Hz sinusoids')
+ax1.axis([0, 1, -2, 2])
+
+sos = signal.butter(10, 15, 'hp', fs=1000, output='sos')
+filtered = signal.sosfilt(sos, sig)
+ax2.plot(t, filtered)
+ax2.set_title('After 15 Hz high-pass filter')
+ax2.axis([0, 1, -2, 2])
+ax2.set_xlabel('Time [s]')
+plt.tight_layout()
+plt.show()
 
 #%%===================================================================================
 # https://zhuanlan.zhihu.com/p/657425129
@@ -159,7 +194,6 @@ for index in range(len(imu)):
     raw_value = imu[index ]
     filtered, zi = lfilter(b, a, [raw_value], zi = zi)
     acc_y_filtered_2[index] = filtered
-###
 
 width = 10
 high = 6
@@ -205,7 +239,6 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 Fs = 100                       # 信号采样频率
 Ts = 1/Fs                     # 采样时间间隔
 # N = 200                       # 采样信号的长度
@@ -223,22 +256,25 @@ b, a = signal.butter(3, 0.05, btype="low",)
 zi = signal.lfilter_zi(b, a)  # 初始化滤波器状态
 dss = zi
 print(dss)
+
+## 3: lfilter 波形，所有点一起滤波
+data, _ = signal.lfilter(b, a, xn, zi = dss, )
+
 ## 1: 是lfilter 波形，一个一个点滤波
-data = []
+data1 = []
 for i in xn:
     z, dss = signal.lfilter(b, a, [i], zi = dss)
-    data.append(z)
+    data1.append(z)
 
 ##  2: 是filtfilt波形。好像只能多余12个点才能滤波。
 data2 = signal.filtfilt(b, a, xn)
-## 3: lfilter 波形，所有点一起滤波
-data3, _ = signal.lfilter(b, a, xn, zi = dss, )
+
 
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
-axs.plot(t, xn, 'b', linewidth = 2, label = 'raw',  alpha=0.75)
-axs.plot(t, data, 'r--', linewidth = 2, label = 'lfilter, 1by1', )
-axs.plot(t, data2,'g',   linewidth = 2, label = 'filtfilt',)
-axs.plot(t, data3, color = 'cyan', marker ='d', ms = 12, linewidth = 2, label = 'lfilter, all', alpha=0.3)
+axs.plot(t, xn, color ='b', linewidth = 2, label = 'raw',  alpha=0.75)
+axs.plot(t, data, color = 'cyan', ls = '--', linewidth = 2,  marker ='d', ms = 12, label = 'lfilter, all', )
+axs.plot(t, data1, color = 'r',   linewidth = 2, label = 'lfilter, 1by1',)
+axs.plot(t, data2, color = 'g', linewidth = 2, label = 'filtfilt', )
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel('time',fontproperties=font)
@@ -268,78 +304,158 @@ plt.show()
 
 
 
+#%% lfilter
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html#scipy.signal.lfilter
+import numpy as np
+from scipy import signal
+import matplotlib.pyplot as plt
+rng = np.random.default_rng()
+t = np.linspace(-1, 1, 201)
+x = (np.sin(2*np.pi*0.75*t*(1-t) + 2.1) + 0.1*np.sin(2*np.pi*1.25*t + 1) + 0.18*np.cos(2*np.pi*3.85*t))
+xn = x + rng.standard_normal(len(t)) * 0.08
 
+b, a = signal.butter(3, 0.05)
 
+zi = signal.lfilter_zi(b, a)
+z, _ = signal.lfilter(b, a, xn, zi=zi*xn[0])
+
+z2, _ = signal.lfilter(b, a, z, zi=zi*z[0])
 
+y = signal.filtfilt(b, a, xn)
 
+plt.figure
+plt.plot(t, xn, 'b', alpha=0.75)
+plt.plot(t, z, 'r--', t, z2, 'r', t, y, 'k')
+plt.legend(('noisy signal', 'lfilter, once', 'lfilter, twice', 'filtfilt'), loc='best')
+plt.grid(True)
+plt.show()
 
+#%% lfilter_zi:
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter_zi.html#scipy.signal.lfilter_zi
 
+from numpy import array, ones
+from scipy.signal import lfilter, lfilter_zi, butter
+b, a = butter(5, 0.25)
+zi = lfilter_zi(b, a)
+y, zo = lfilter(b, a, ones(10), zi=zi)
+print(y)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+from numpy import array, ones
+from scipy.signal import lfilter, lfilter_zi, butter
+b, a = butter(5, 0.25)
+zi = lfilter_zi(b, a)
+y = lfilter(b, a, ones(10),  )
+print(y)
+
+x = array([0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0])
+y, zf = lfilter(b, a, x, zi=zi*x[0])
+print(y)
+
+
+
+
+#%% scipy.signal.filtfilt
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.filtfilt.html#scipy.signal.filtfilt
+
+import numpy as np
+from scipy import signal
+import matplotlib.pyplot as plt
+
+###
+t = np.linspace(0, 1.0, 2001)
+xlow = np.sin(2 * np.pi * 5 * t)
+xhigh = np.sin(2 * np.pi * 250 * t)
+x = xlow + xhigh
+b, a = signal.butter(8, 0.125)
+y = signal.filtfilt(b, a, x, padlen=150)
+np.abs(y - xlow).max()
+
+
+###
+b, a = signal.ellip(4, 0.01, 120, 0.125)  # Filter to be applied.
+
+rng = np.random.default_rng()
+n = 60
+sig = rng.standard_normal(n)**3 + 3*rng.standard_normal(n).cumsum()
+
+fgust = signal.filtfilt(b, a, sig, method="gust")
+fpad = signal.filtfilt(b, a, sig, padlen=50)
+plt.plot(sig, 'k-', label='input')
+plt.plot(fgust, 'b-', linewidth=4, label='gust')
+plt.plot(fpad, 'c-', linewidth=1.5, label='pad')
+plt.legend(loc='best')
+plt.show()
+
+
+
+#%% scipy.signal.sosfiltfilt
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html#scipy.signal.sosfiltfilt
+
+import numpy as np
+from scipy.signal import sosfiltfilt, butter
+import matplotlib.pyplot as plt
+from scipy.signal import sosfilt, sosfilt_zi
+rng = np.random.default_rng()
+
+# Create an interesting signal to filter.
+n = 201
+t = np.linspace(0, 1, n)
+x = 1 + (t < 0.5) - 0.25*t**2 + 0.05*rng.standard_normal(n)
+
+# Create a lowpass Butterworth filter, and use it to filter x.
+sos = butter(4, 0.125, output='sos')
+y = sosfiltfilt(sos, x)
+
+# For comparison, apply an 8th order filter using sosfilt. The filter is initialized using the mean of the first four values of x.
+sos8 = butter(8, 0.125, output='sos')
+zi = x[:4].mean() * sosfilt_zi(sos8)
+y2, zo = sosfilt(sos8, x, zi=zi)
+
+plt.plot(t, x, alpha=0.5, label='x(t)')
+plt.plot(t, y, label='y(t)')
+plt.plot(t, y2, label='y2(t)')
+plt.legend(framealpha=1, shadow=True)
+plt.grid(alpha=0.25)
+plt.xlabel('t')
+plt.show()
+
+
+
+#%% scipy.signal.freqz
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.freqz.html#scipy.signal.freqz
+from scipy import signal
+import numpy as np
+import matplotlib.pyplot as plt
+
+taps, f_c = 80, 1.0  # number of taps and cut-off frequency
+b = signal.firwin(taps, f_c, window = ('kaiser', 8), fs = 2*np.pi)
+w, h = signal.freqz(b)
+
+fig, ax1 = plt.subplots(tight_layout = True)
+ax1.set_title(f"Frequency Response of {taps} tap FIR Filter" + f"($f_c={f_c}$ rad/sample)")
+ax1.axvline(f_c, color = 'black', linestyle = ':', linewidth = 0.8)
+ax1.plot(w, 20 * np.log10(abs(h)), 'C0')
+ax1.set_ylabel("Amplitude in dB", color = 'C0')
+ax1.set(xlabel = "Frequency in rad/sample", xlim = (0, np.pi))
+
+ax2 = ax1.twinx()
+phase = np.unwrap(np.angle(h))
+ax2.plot(w, phase, 'C1')
+ax2.set_ylabel('Phase [rad]', color = 'C1')
+ax2.grid(True)
+ax2.axis('tight')
+plt.show()
+
+fig, ax1 = plt.subplots(tight_layout = True)
+ax1.set_title(f"Frequency Response of {taps} tap FIR Filter" + f"($f_c={f_c}$ rad/sample)")
+# ax1.axvline(f_c, color = 'black', linestyle = ':', linewidth = 0.8)
+# ax1.plot(w, 20 * np.log10(abs(h)), 'C0')
+ax1.plot(0.5 * fs * w / np.pi, 20 * np.log10(abs(h)), "b")
+
+ax1.set_ylabel("Amplitude in dB", color = 'C0')
+plt.xlabel("Frequency [Hz]")
+plt.show()
 
 
 

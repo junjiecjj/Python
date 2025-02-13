@@ -169,7 +169,7 @@ def IFFT(XX):
      x_p = np.zeros(N, dtype = complex)
      for n in range(N):
           for k in range(N):
-               x_p[n] = x_p[n] + 1/N*X[k]*np.exp(1j*2*np.pi*n*k/N)
+               x_p[n] = x_p[n] + 1/N*XX[k]*np.exp(1j*2*np.pi*n*k/N)
      return x_p
 
 #%%======================================================
@@ -244,6 +244,7 @@ f1 = 200
 f2 = 400
 f3 = 600
 x =  7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.cos(2*np.pi*f3*t + np.pi/3)  + 4.5 # (4.5是直流)
+
 
 #%%=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
