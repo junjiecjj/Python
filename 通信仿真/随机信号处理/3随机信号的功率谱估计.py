@@ -83,7 +83,7 @@ f1, Pxx_xcorr = correlogram_method(xn, fs, N)
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
 D = L//2              # 重叠长度
-f2, Pxx_welch = scipy.signal.welch(xn, fs, window = 'hann', nperseg = L, noverlap = D)
+f2, Pxx_welch = scipy.signal.welch(xn, fs, window = 'hann', nperseg = L, noverlap = D) # 窗函数类型window, 子段长度L, 重叠长度D
 
 ### 不同方法的估计方差比较
 var_periodogram = np.var(Pxx_periodogram);
