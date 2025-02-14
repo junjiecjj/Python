@@ -71,7 +71,6 @@ f1, S_ham         = correlogram_method(x_hamming, fs, x_hamming.size)
 f2, S_rect        = correlogram_method(r_rect, fs, x_rect.size)
 f3, S_blackman    = correlogram_method(r_blackman, fs, x_blackman.size)
 
-
 ##### plot
 fig, axs = plt.subplots(3, 4, figsize = (16, 10), constrained_layout = True)
 
@@ -136,13 +135,10 @@ axs[2,3].set_ylabel('功率谱密度',)
 axs[2,3].set_title("Blackman窗下的功率谱")
 axs[2,3].legend()
 
-
 plt.show()
 plt.close()
 
-
 #%% 7.2 快速傅里叶变换（FFT）法
-
 fs = 1000 # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
@@ -166,7 +162,7 @@ for i in range(len(Ns)):
     f = np.arange(0, N/2) * (fs/N)
 
     # 计算功率谱密度 (PSD)
-    Pxx = np.abs(X[:int(N/2)])**2 / (  N)
+    Pxx = np.abs(X[:int(N/2)])**2 / (N)
 
     plt.subplot(3, 3, i+1)
     plt.plot(f, 10 * np.log10(Pxx), 'b')
@@ -256,8 +252,6 @@ for i in range(len(windows)):
 plt.show()
 plt.close()
 
-
-
 #%% 7.3 滑动窗法（Welch 方法）
 # Welch 方法的步骤：
 #     信号分段：将输入信号划分为多个长度为L的重叠段。每段之间的重叠率通常为 50% 或更高。
@@ -273,24 +267,87 @@ t = np.arange(0, T, 1/fs) # 时间向量
 f1 = 100  # 通信信号频率 (Hz)
 f2 = 200
 x = np.cos(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t) + np.random.randn(t.size)
-segment_lengths = [64, 128, 256];  # 不同的分段长度
-overlap_ratios = [0.25, 0.5, 0.75];  # 不同的重叠率
-window_types = {'boxcar', 'hamming', 'hann', 'blackman'};  # 不同的窗口函数
+segment_lengths = [64, 128, 256]      # 不同的分段长度
+overlap_ratios = [0.25, 0.5, 0.75]    # 不同的重叠率
 
-#>>>>>>>>>>>>>>>>>>>>>  1. 分析分段长度的影响
+#>>>>>>>>>>>>>>>> 1. 分析分段长度的影响
+plt.figure(figsize = (6, 10), constrained_layout = True)
+for i in range(len(segment_lengths)):
+    [f, S] = scipy.signal.welch(x, fs, nperseg = segment_lengths[i], noverlap = segment_lengths[i]//2, )
+    plt.subplot(3, 1, i+1)
+    plt.plot(f, 10 * np.log10(S))
+    plt.xlabel('频率 (Hz)')
+    plt.ylabel('功率/频率 (dB/Hz)')
+    plt.title(f'分段长度 = {segment_lengths[i]}')
 
-for i in range(segment_lengths):
-[f, S] = scipy.signal.welch(x,  fs,  window = win, noverlap = n_overlap[i], nfft = N_padding[-1] )
+#>>>>>>>>>>>>>>>> 2. 分析重叠率的影响
+plt.figure(figsize = (6, 10), constrained_layout = True)
+for i in range(len(overlap_ratios)):
+    [f, S] = scipy.signal.welch(x, fs, nperseg = 128, noverlap = 128 * overlap_ratios[i], )
+    plt.subplot(3, 1, i+1)
+    plt.plot(f, 10 * np.log10(S))
+    plt.xlabel('频率 (Hz)')
+    plt.ylabel('功率/频率 (dB/Hz)')
+    plt.title(f'重叠率 = {overlap_ratios[i]}')
 
+#>>>>>>>>>>>>>>>> 3. 分析窗口函数的影响
+window_types = ['boxcar', 'hamming', 'hann', 'blackman']  # 不同的窗口函数
+windowfs = [scipy.signal.windows.boxcar, scipy.signal.windows.hamming, scipy.signal.windows.hann, scipy.signal.windows.blackman]
 
+plt.figure(figsize = (10, 8), constrained_layout = True)
+for i in range(len(window_types)):
+    widf = windowfs[i](128)
+    [f, S] = scipy.signal.welch(x, fs, window = widf, nperseg = 128, noverlap = 128 * 0.5, )
+    plt.subplot(2, 2, i+1)
+    plt.plot(f, 10 * np.log10(S))
+    plt.xlabel('频率 (Hz)')
+    plt.ylabel('功率/频率 (dB/Hz)')
+    plt.title(f'{window_types[i]}窗口')
 
 
 #%% 7.4 周期图法
 
+fs = 1000 # 采样频率
+T = 1       # 信号持续时间 (秒)
+t = np.arange(0, T, 1/fs) # 时间向量
+f1 = 50  # 通信信号频率 (Hz)
+f2 = 120
+x = np.sin(2*np.pi*f1*t) + np.sin(2*np.pi*f2*t) + 1/2 * np.random.randn(t.size)
+x = x - np.mean(x)
+
+N1 = 256
+N2 = 512
+f1, Pxx_periodogram1 = scipy.signal.periodogram(x, fs, nfft = N1 ) #
+f2, Pxx_periodogram2 = scipy.signal.periodogram(x, fs, nfft = N2 ) #
 
 
+window_hann = scipy.signal.windows.hann(N2)   # haning
+window_hamm = scipy.signal.windows.hamming(N2)   # haming
+fhan, Pxx_periodhan = scipy.signal.periodogram(x, fs, window = window_hann, nfft = N2 ) #
+fhamm, Pxx_periodhamm = scipy.signal.periodogram(x, fs, window = window_hamm, nfft = N2 ) #
 
+##### plot
+fig, axs = plt.subplots(2, 1, figsize = (8, 10), constrained_layout = True)
 
+# x
+axs[0].plot(f1, 10 * np.log10(Pxx_periodogram1), color = 'b', lw = 2, label = f'N = {N1}')
+axs[0].plot(f2, 10 * np.log10(Pxx_periodogram2), color = 'r', lw = 2, label = f'N = {N2}')
+axs[0].set_xlabel('频率 (Hz)',)
+axs[0].set_ylabel('功率谱 (dB)',)
+axs[0].set_title("不同信号长度下的功率谱")
+axs[0].legend()
+
+# 功率谱密度
+axs[1].plot(fhan, 10 * np.log10(Pxx_periodhan) , color = 'g', label = 'Hanning窗')
+axs[1].plot(fhamm, 10 * np.log10(Pxx_periodhamm) , color = 'r', label = 'Hamming窗')
+axs[1].set_xlabel('频率 (Hz)',)
+axs[1].set_ylabel('功率谱 (dB)',)
+axs[1].set_title("不同窗口函数下的功率谱")
+axs[1].legend()
+
+# plt.suptitle("welch")
+plt.show()
+plt.close()
 
 
 
