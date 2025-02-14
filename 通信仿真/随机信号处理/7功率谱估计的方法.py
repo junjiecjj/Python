@@ -259,16 +259,25 @@ plt.close()
 
 
 #%% 7.3 滑动窗法（Welch 方法）
+# Welch 方法的步骤：
+#     信号分段：将输入信号划分为多个长度为L的重叠段。每段之间的重叠率通常为 50% 或更高。
+#     窗口化处理：对每一段信号应用一个窗口函数w(t)，得到窗口化后的信号 X_w(t) = X_m(t)*w(t)
+#     FFT 计算：对每段窗口化后的信号 X_w(t)进行快速傅里叶变换（FFT），得到频谱 X_w(f)。
+#     功率谱密度计算：计算每段信号的功率谱密度 P_m(f) = |X_w(f)|^2/L
+#     功率谱密度平均：将所有段的功率谱密度进行平均，得到最终的功率谱估计 P_{wlech}(f) = \sum_{m=1}^M P_m(f) / M
+#     其中，M为段的数量。
 
 fs = 1000 # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
-f1 = 50  # 通信信号频率 (Hz)
-f2 = 150
-f3 = 300
+f1 = 100  # 通信信号频率 (Hz)
+f2 = 200
+x = np.cos(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t) + np.random.randn(t.size)
+segment_lengths = [64, 128, 256];  # 不同的分段长度
+overlap_ratios = [0.25, 0.5, 0.75];  # 不同的重叠率
+window_types = {'boxcar', 'hamming', 'hann', 'blackman'};  # 不同的窗口函数
 
-x = np.sin(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t) + 0.2 * np.sin(2 * np.pi * f3 * t) # 信号
-x = x - np.mean(x)
+#>>>>>>>>>>>>>>>>>>>>>  1. 分析分段长度的影响
 
 
 
