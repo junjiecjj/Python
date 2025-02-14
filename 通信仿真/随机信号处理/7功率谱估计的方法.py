@@ -279,7 +279,8 @@ window_types = {'boxcar', 'hamming', 'hann', 'blackman'};  # 不同的窗口函�
 
 #>>>>>>>>>>>>>>>>>>>>>  1. 分析分段长度的影响
 
-
+for i in range(segment_lengths):
+[f, S] = scipy.signal.welch(x,  fs,  window = win, noverlap = n_overlap[i], nfft = N_padding[-1] )
 
 
 
