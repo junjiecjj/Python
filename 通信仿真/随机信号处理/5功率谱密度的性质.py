@@ -94,7 +94,7 @@ axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
 # axs[1].set_title("功率谱密度的对称性")
 # # axs[1].legend()
 
-# % Parseval定理验证
+# % Parseval定理验证: 信号的总功率等于其功率谱密度在整个频域的积分。
 total_power_time_domain = np.mean(x**2)
 total_power_freq_domain = np.sum(Pxx_periodogram) * (f[2] - f[1])
 
@@ -323,7 +323,7 @@ labelsize = 20
 axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
-axs[0].set_title("含高频噪声的医学信号")
+axs[0].set_title("正弦波信号")
 axs[0].legend()
 
 axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
@@ -395,7 +395,7 @@ labelsize = 20
 axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
-axs[0].set_title("含高频噪声的医学信号")
+axs[0].set_title("方波信号")
 axs[0].legend()
 
 axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
@@ -468,7 +468,7 @@ labelsize = 20
 axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
-axs[0].set_title("含高频噪声的医学信号")
+axs[0].set_title("白噪声信号")
 axs[0].legend()
 
 axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
@@ -539,7 +539,7 @@ labelsize = 20
 axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
-axs[0].set_title("含高频噪声的医学信号")
+axs[0].set_title("短时脉冲信号")
 axs[0].legend()
 
 axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')

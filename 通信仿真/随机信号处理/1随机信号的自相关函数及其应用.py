@@ -309,7 +309,6 @@ import statsmodels.tsa.api as smt
 
 from Xcorrs import xcorr, correlate_maxlag, correlate_template
 
-
 f0 = 5
 T = 1
 fs = 1000

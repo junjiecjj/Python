@@ -23,8 +23,6 @@ signal = sin(2*pi*50*t) + sin(2*pi*120*t);
 spectral_analysis_comparison(signal, fs);
 
 
-
-
 function spectral_analysis_comparison(signal, fs)
     % signal: 输入信号
     % fs: 采样频率

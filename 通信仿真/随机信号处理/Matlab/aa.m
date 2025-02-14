@@ -15,8 +15,8 @@ Fs = 1000;
 t = 0:1/Fs:T;  
 X_sin = sin(2*pi*f0*t);
 X_rand = randn(size(t));
-[acf_sin, lags_sin] = xcorr(X_sin, 'coeff');
-[acf_rand, lags_rand] = xcorr(X_rand, 'coeff');
+[acf_sin, lags_sin] = xcorr(X_sin, 'biased');
+[acf_rand, lags_rand] = xcorr(X_rand, 'biased');
 
 figure;
 subplot(2,1,1);
