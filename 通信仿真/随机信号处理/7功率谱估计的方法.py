@@ -317,8 +317,10 @@ x = x - np.mean(x)
 
 N1 = 256
 N2 = 512
-f1, Pxx_periodogram1 = scipy.signal.periodogram(x, fs, nfft = N1 ) #
-f2, Pxx_periodogram2 = scipy.signal.periodogram(x, fs, nfft = N2 ) #
+window_hamm = scipy.signal.windows.hamming(N1)   # haming
+f1, Pxx_periodogram1 = scipy.signal.periodogram(x, fs, window = window_hamm, nfft = N1 ) #
+window_hamm = scipy.signal.windows.hamming(N2)   # haming
+f2, Pxx_periodogram2 = scipy.signal.periodogram(x, fs, window = window_hamm, nfft = N2 ) #
 
 
 window_hann = scipy.signal.windows.hann(N2)   # haning

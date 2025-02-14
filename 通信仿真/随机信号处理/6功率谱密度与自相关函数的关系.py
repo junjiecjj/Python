@@ -94,7 +94,6 @@ Wn = lf*2/fs
 y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 # y = scipy.signal.filtfilt(Bb, Ba, x )
 
-
 fx, Yx, Ax, Phax, Rx, Ix = freqDomainView(x, fs, x.size, type = 'double')
 fy, Yy, Ay, Phay, Ry, Iy = freqDomainView(y, fs, x.size, type = 'double')
 

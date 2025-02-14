@@ -75,7 +75,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -152,7 +152,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -228,7 +228,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -240,7 +240,7 @@ fig, axs = plt.subplots(4, 1, figsize = (8, 10), constrained_layout = True)
 labelsize = 20
 
 # x
-axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
+axs[0].plot(t, x, color = 'b', lw = 0.2, label = '模拟地震波信号')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
 axs[0].set_title("模拟地震波信号")
@@ -306,7 +306,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -321,7 +321,7 @@ labelsize = 20
 axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
-axs[0].set_title("模拟地震波信号")
+axs[0].set_title("音频处理和降噪")
 axs[0].legend()
 
 axs[1].plot(f, 10*np.log10(Pxx_periodogram), color = 'b', label = '周期图法')

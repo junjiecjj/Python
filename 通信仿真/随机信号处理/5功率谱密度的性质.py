@@ -68,7 +68,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 480              # Welch方法中的子段长度
@@ -235,7 +235,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-# fy, Pxxy = correlogram_method(y, fs, nfft)
+# fy, Pxxy = correlogram_method(y, fs, y.size)
 
 ######% 3 Welch 方法
 L = 480              # Welch方法中的子段长度
@@ -308,7 +308,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -361,7 +361,7 @@ nfft = 1024
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
@@ -380,7 +380,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -434,7 +434,7 @@ nfft = 1024
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
@@ -453,7 +453,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
@@ -505,7 +505,7 @@ nfft = 1024
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
@@ -524,7 +524,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度

@@ -105,7 +105,7 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1]) # 取前半部分（正频率）
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f1, Pxx_xcorr = correlogram_method(xn, fs, N)
+f1, Pxx_xcorr = correlogram_method(xn, fs, xn.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
