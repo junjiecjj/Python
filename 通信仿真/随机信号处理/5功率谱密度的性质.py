@@ -75,7 +75,7 @@ L = 480              # Welch方法中的子段长度
 D = L//2              # 重叠长度
 f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
-##### plot
+#####>>>>>>>>>>>>>>>>    plot 1 计算周期图法的功率谱密度
 fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)
 labelsize = 20
 
@@ -105,7 +105,7 @@ plt.suptitle("periodogram")
 plt.show()
 plt.close()
 
-##### plot
+#####>>>>>>>>>>>>>>>> plot 2 自相关函数法
 fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)
 labelsize = 20
 
@@ -135,7 +135,7 @@ plt.suptitle("xcorr")
 plt.show()
 plt.close()
 
-##### plot
+#####>>>>>>>>>>>>>>>>  plot 3 Welch 方法
 fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)
 labelsize = 20
 
@@ -271,54 +271,297 @@ axs[2].legend()
 plt.show()
 plt.close()
 
+
+# 信号的频率特征直接反映在功率谱密度中。例如：
+# 正弦波信号：功率谱密度集中在信号的频率处，体现了单一频率成分。
+# 方波信号：功率谱密度集中在基频及其奇次谐波处，反映了其周期性和谐波特性。
+# 白噪声信号：功率谱密度在整个频率范围内均匀分布，表明频率成分的均匀性。
+# 短时脉冲信号：功率谱密度分布较宽，显示了脉冲信号的宽频带特性。
 #%% 1. 正弦波信号的功率谱密度分析
 
+fs = 1000 # 采样频率
+T = 1       # 信号持续时间 (秒)
+t = np.arange(0, T, 1/fs) # 时间向量
+x =  np.cos(2*np.pi*100*t)  # 通信信号
 
+nfft = 1024
+######% 1 计算周期图法的功率谱密度
+N2 = nfft
+window_hann = scipy.signal.windows.hann(N2)   # haning
+window_hamm = scipy.signal.windows.hamming(N2)   # haming
+f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
 
+## 手写
+def periodogram_method(signal, fs, N):
+    X = np.fft.fft(signal, n = N)
+    Pxx = np.abs(X)**2/N
+    Pxx = Pxx[0:int(N/2) + 1]
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx,
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
+######% 2 自相关函数法
+def correlogram_method(signal, fs, N):
+    Rxx, lag = xcorr(signal, signal, normed = True, detrend = True, maxlags = signal.size - 1)
+    Rxx = Rxx[N-1:]
+    Rxx = np.fft.fft(Rxx, n = N)
+    Pxx = np.abs(Rxx[0: int(N/2) + 1])
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx
+f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
 
+######% 3 Welch 方法
+L = 256              # Welch方法中的子段长度
+D = L//2              # 重叠长度
+f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
+##### plot
+fig, axs = plt.subplots(4, 1, figsize = (8, 10), constrained_layout = True)
+labelsize = 20
 
+# x
+axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
+axs[0].set_xlabel('时间 (s)',)
+axs[0].set_ylabel('幅度',)
+axs[0].set_title("含高频噪声的医学信号")
+axs[0].legend()
 
+axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
+axs[1].set_xlabel('频率 (Hz)',)
+axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].legend()
 
+axs[2].plot(f1, Pxx_xcorr, color = 'b', label = '自相关函数法')
+axs[2].set_xlabel('频率 (Hz)',)
+axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].legend()
 
+axs[3].plot(f2, Pxx_welch, color = 'b', label = 'welch方法')
+axs[3].set_xlabel('频率 (Hz)',)
+axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].legend()
 
-
-
-
-
+plt.show()
+plt.close()
 
 
 #%% 2. 方波信号的功率谱密度分析
 
+fs = 1000 # 采样频率
+T = 1       # 信号持续时间 (秒)
+t = np.arange(0, T, 1/fs) # 时间向量
+x =  scipy.signal.square(2 * np.pi * 100 * t)  # 通信信号
 
+nfft = 1024
+######% 1 计算周期图法的功率谱密度
 
+N2 = nfft
+window_hann = scipy.signal.windows.hann(N2)   # haning
+window_hamm = scipy.signal.windows.hamming(N2)   # haming
+f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
 
+## 手写
+def periodogram_method(signal, fs, N):
+    X = np.fft.fft(signal, n = N)
+    Pxx = np.abs(X)**2/N
+    Pxx = Pxx[0:int(N/2) + 1]
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx,
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
+######% 2 自相关函数法
+def correlogram_method(signal, fs, N):
+    Rxx, lag = xcorr(signal, signal, normed = True, detrend = True, maxlags = signal.size - 1)
+    Rxx = Rxx[N-1:]
+    Rxx = np.fft.fft(Rxx, n = N)
+    Pxx = np.abs(Rxx[0: int(N/2) + 1])
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx
+f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
 
+######% 3 Welch 方法
+L = 256              # Welch方法中的子段长度
+D = L//2              # 重叠长度
+f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
+##### plot
+fig, axs = plt.subplots(4, 1, figsize = (8, 10), constrained_layout = True)
+labelsize = 20
 
+# x
+axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
+axs[0].set_xlabel('时间 (s)',)
+axs[0].set_ylabel('幅度',)
+axs[0].set_title("含高频噪声的医学信号")
+axs[0].legend()
 
+axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
+axs[1].set_xlabel('频率 (Hz)',)
+axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].legend()
 
+axs[2].plot(f1, Pxx_xcorr, color = 'b', label = '自相关函数法')
+axs[2].set_xlabel('频率 (Hz)',)
+axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].legend()
 
+axs[3].plot(f2, Pxx_welch, color = 'b', label = 'welch方法')
+axs[3].set_xlabel('频率 (Hz)',)
+axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].legend()
+
+plt.show()
+plt.close()
 
 
 
 #%% 3. 白噪声信号的功率谱密度分析
 
+fs = 1000 # 采样频率
+T = 1       # 信号持续时间 (秒)
+t = np.arange(0, T, 1/fs) # 时间向量
+x =  np.random.randn(t.size)  # 通信信号
 
+nfft = 1024
+######% 1 计算周期图法的功率谱密度
 
+N2 = nfft
+window_hann = scipy.signal.windows.hann(N2)   # haning
+window_hamm = scipy.signal.windows.hamming(N2)   # haming
+f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
 
+## 手写
+def periodogram_method(signal, fs, N):
+    X = np.fft.fft(signal, n = N)
+    Pxx = np.abs(X)**2/N
+    Pxx = Pxx[0:int(N/2) + 1]
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx,
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
+######% 2 自相关函数法
+def correlogram_method(signal, fs, N):
+    Rxx, lag = xcorr(signal, signal, normed = True, detrend = True, maxlags = signal.size - 1)
+    Rxx = Rxx[N-1:]
+    Rxx = np.fft.fft(Rxx, n = N)
+    Pxx = np.abs(Rxx[0: int(N/2) + 1])
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx
+f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
 
+######% 3 Welch 方法
+L = 256              # Welch方法中的子段长度
+D = L//2              # 重叠长度
+f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
+##### plot
+fig, axs = plt.subplots(4, 1, figsize = (8, 10), constrained_layout = True)
+labelsize = 20
 
+# x
+axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
+axs[0].set_xlabel('时间 (s)',)
+axs[0].set_ylabel('幅度',)
+axs[0].set_title("含高频噪声的医学信号")
+axs[0].legend()
 
+axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
+axs[1].set_xlabel('频率 (Hz)',)
+axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].legend()
 
+axs[2].plot(f1, Pxx_xcorr, color = 'b', label = '自相关函数法')
+axs[2].set_xlabel('频率 (Hz)',)
+axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].legend()
 
+axs[3].plot(f2, Pxx_welch, color = 'b', label = 'welch方法')
+axs[3].set_xlabel('频率 (Hz)',)
+axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].legend()
 
+plt.show()
+plt.close()
 
 #%% 4. 短时脉冲信号的功率谱密度分析
+
+fs = 1000 # 采样频率
+T = 1       # 信号持续时间 (秒)
+t = np.arange(0, T, 1/fs) # 时间向量
+x = np.hstack((np.zeros(450), np.ones(100), np.zeros(450)))
+
+nfft = 1024
+######% 1 计算周期图法的功率谱密度
+
+N2 = nfft
+window_hann = scipy.signal.windows.hann(N2)   # haning
+window_hamm = scipy.signal.windows.hamming(N2)   # haming
+f, Pxx_periodogram = scipy.signal.periodogram(x[:N2], fs, ) # window = window_hann, nfft = N2
+
+## 手写
+def periodogram_method(signal, fs, N):
+    X = np.fft.fft(signal, n = N)
+    Pxx = np.abs(X)**2/N
+    Pxx = Pxx[0:int(N/2) + 1]
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx,
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+
+######% 2 自相关函数法
+def correlogram_method(signal, fs, N):
+    Rxx, lag = xcorr(signal, signal, normed = True, detrend = True, maxlags = signal.size - 1)
+    Rxx = Rxx[N-1:]
+    Rxx = np.fft.fft(Rxx, n = N)
+    Pxx = np.abs(Rxx[0: int(N/2) + 1])
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx
+f1, Pxx_xcorr = correlogram_method(x, fs, nfft)
+
+######% 3 Welch 方法
+L = 256              # Welch方法中的子段长度
+D = L//2              # 重叠长度
+f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
+
+##### plot
+fig, axs = plt.subplots(4, 1, figsize = (8, 10), constrained_layout = True)
+labelsize = 20
+
+# x
+axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
+axs[0].set_xlabel('时间 (s)',)
+axs[0].set_ylabel('幅度',)
+axs[0].set_title("含高频噪声的医学信号")
+axs[0].legend()
+
+axs[1].plot(f, Pxx_periodogram, color = 'b', label = '周期图法')
+axs[1].set_xlabel('频率 (Hz)',)
+axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].legend()
+
+axs[2].plot(f1, Pxx_xcorr, color = 'b', label = '自相关函数法')
+axs[2].set_xlabel('频率 (Hz)',)
+axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].legend()
+
+axs[3].plot(f2, Pxx_welch, color = 'b', label = 'welch方法')
+axs[3].set_xlabel('频率 (Hz)',)
+axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
+axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].legend()
+
+plt.show()
+plt.close()
 
 
 
