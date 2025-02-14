@@ -99,14 +99,11 @@ axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
 axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
 axs[1].legend()
 
-
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
 axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
 axs[2].legend()
-
-
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)
@@ -125,7 +122,6 @@ t = np.arange(0, T, 1/fs) # 时间向量
 f_signal = 50  # 通信信号频率 (Hz)
 A_signal = 1    #  信号幅度
 
-
 signal = A_signal * np.sin(2*np.pi*f_signal*t);  # 通信信号
 interference = 0.5 * np.cos(2*np.pi*300*t);     # 高频噪声 (3000 Hz)
 noise = 0.1 * np.random.randn(t.size)              # 白噪声
@@ -134,11 +130,10 @@ x = signal + interference + noise;         # 最终信号
 nfft = 1024
 ######% 1 计算周期图法的功率谱密度
 
-
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, window = window_hann, nfft = N2)
+# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
@@ -181,14 +176,11 @@ axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
 axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
 axs[1].legend()
 
-
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
 axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
 axs[2].legend()
-
-
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)
@@ -198,7 +190,6 @@ axs[3].legend()
 
 plt.show()
 plt.close()
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%  场景 3: 地震波分  #%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -215,11 +206,10 @@ x = signal + noise;         # 最终信号
 nfft = 2048
 ######% 1 计算周期图法的功率谱密度
 
-
-N2 = nfft
+N2 = 512
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, window = window_hann, nfft = N2)
+# f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
@@ -262,14 +252,11 @@ axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
 axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
 axs[1].legend()
 
-
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
 axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
 axs[2].legend()
-
-
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)

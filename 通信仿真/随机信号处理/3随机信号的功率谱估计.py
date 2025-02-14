@@ -59,9 +59,9 @@ N = len(xn)           # 信号长度
 N2 = 1000
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, window = window_hann, nfft = N2)
+# f, Pxx_periodogram = scipy.signal.periodogram(xn, fs, ) # window = window_hann, nfft = N2
 
-## 手写
+## 手写:计算周期图法的功率谱密度
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
     Pxx = np.abs(X)**2/N
@@ -70,12 +70,12 @@ def periodogram_method(signal, fs, N):
     return f, Pxx,
 f, Pxx_periodogram = periodogram_method(xn, fs, N)
 
-######% 2 自相关函数法
+######% 2 自相关函数法:计算基于自相关函数法的功率谱密度
 def correlogram_method(signal, fs, N):
     Rxx, lag = xcorr(signal, signal, normed = True, detrend = True, maxlags = signal.size - 1)
-    Rxx = Rxx[N-1:]
+    Rxx = Rxx[N-1:] # 取正半轴部分
     Rxx = np.fft.fft(Rxx, n = N)
-    Pxx = np.abs(Rxx[0: int(N/2) + 1])
+    Pxx = np.abs(Rxx[0: int(N/2) + 1]) # 取前半部分（正频率）
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
 f1, Pxx_xcorr = correlogram_method(xn, fs, N)
