@@ -46,19 +46,27 @@ x = signal + noise;         # 最终信号
 nfft = x.size
 ######% 1 计算周期图法的功率谱密度
 
-N2 = 512
+N2 = x.size
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
+# f, Pxx_periodogram = scipy.signal.periodogram(x, fs, window = window_hann, nfft = N2) # window = window_hann, nfft = N2
 
-## 手写
+# ## 手写
+# def periodogram_method(signal, fs, N):
+#     X = np.fft.fft(signal, n = N)
+#     Pxx = np.abs(X)**2/N
+#     Pxx = Pxx[0:int(N/2) + 1]
+#     f = np.arange(0, N/2+1) * (fs/N)
+#     return f, Pxx,
+## 手写:计算周期图法的功率谱密度
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
-    Pxx = np.abs(X)**2/N
+    Pxx = np.abs(X)**2/(N * fs)
     Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
-    return f, Pxx,
-# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+    return f, Pxx
+f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
 def correlogram_method(signal, fs, N):
@@ -71,7 +79,7 @@ def correlogram_method(signal, fs, N):
 f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
-L = 480              # Welch方法中的子段长度
+L = 256              # Welch方法中的子段长度
 D = L//2              # 重叠长度
 f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
@@ -96,7 +104,7 @@ axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
 
 # % Parseval定理验证: 信号的总功率等于其功率谱密度在整个频域的积分。
 total_power_time_domain = np.mean(x**2)
-total_power_freq_domain = np.sum(Pxx_periodogram) * (f[2] - f[1])
+total_power_freq_domain = np.sum(Pxx_periodogram) * (f[2] - f[1]) # * 2/fs
 
 axs[2].bar(["时域总功率", "频域总功率", ], [total_power_time_domain, total_power_freq_domain], label = ["时域总功率", "频域总功率",  ], color = ["b","orange","g"])
 axs[2].legend()
@@ -181,7 +189,7 @@ nfft = x.size
 N2 = 512
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-f, Pxx = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
+# f, Pxx = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 # f, Pxx = periodogram_method(x, fs, nfft)
@@ -197,9 +205,9 @@ def correlogram_method(signal, fs, N):
 # f, Pxx = correlogram_method(x, fs, nfft)
 
 ######% 3 Welch 方法
-L = 480              # Welch方法中的子段长度
+L = 256              # Welch方法中的子段长度
 D = L//2              # 重叠长度
-# f, Pxx = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
+f, Pxx = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
 #============= IIR -巴特沃兹低通滤波器  ================
 lf = 100    # 通带截止频率200Hz
@@ -222,7 +230,7 @@ y = scipy.signal.filtfilt(Bb, Ba, x )
 N2 = 512
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-fy, Pxxy = scipy.signal.periodogram(y, fs, ) # window = window_hann, nfft = N2
+# fy, Pxxy = scipy.signal.periodogram(y, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 # fy, Pxxy = periodogram_method(y, fs, nfft)
@@ -238,9 +246,9 @@ def correlogram_method(signal, fs, N):
 # fy, Pxxy = correlogram_method(y, fs, y.size)
 
 ######% 3 Welch 方法
-L = 480              # Welch方法中的子段长度
+L = 256              # Welch方法中的子段长度
 D = L//2              # 重叠长度
-# fy, Pxxy = scipy.signal.welch(y, fs, window = 'hann', nperseg = L, noverlap = D)
+fy, Pxxy = scipy.signal.welch(y, fs, window = 'hann', nperseg = L, noverlap = D)
 
 ##### plot
 fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)
@@ -311,7 +319,7 @@ def correlogram_method(signal, fs, N):
 f1, Pxx_xcorr = correlogram_method(x, fs, x.size)
 
 ######% 3 Welch 方法
-L = 256              # Welch方法中的子段长度
+L = x.size              # Welch方法中的子段长度
 D = L//2              # 重叠长度
 f2, Pxx_welch = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
@@ -361,7 +369,7 @@ nfft = 1024
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
+# f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
@@ -370,7 +378,7 @@ def periodogram_method(signal, fs, N):
     Pxx = Pxx[0:int(N/2) + 1]
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx,
-# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
 def correlogram_method(signal, fs, N):

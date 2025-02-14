@@ -53,19 +53,20 @@ x = signal + interference + noise;         # 最终信号
 nfft = 2048
 ######% 1 计算周期图法的功率谱密度
 
-N2 = 1000
+N2 = x.size
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, window = window_hann, nfft = N2)
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, window = window_hann, nfft = N2) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
-    Pxx = np.abs(X)**2/N
+    Pxx = np.abs(X)**2/(N * fs)
     Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
-    return f, Pxx,
-f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+    return f, Pxx
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
 def correlogram_method(signal, fs, N):
@@ -130,19 +131,20 @@ x = signal + interference + noise;         # 最终信号
 nfft = 1024
 ######% 1 计算周期图法的功率谱密度
 
-N2 = nfft
+N2 = x.size
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, ) # window = window_hann, nfft = N2
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, window = window_hann, nfft = N2) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
-    Pxx = np.abs(X)**2/N
+    Pxx = np.abs(X)**2/(N * fs)
     Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
-    return f, Pxx,
-f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+    return f, Pxx
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
 def correlogram_method(signal, fs, N):
@@ -209,16 +211,23 @@ nfft = 2048
 N2 = 512
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, window = window_hann, nfft = N2) # window = window_hann, nfft = N2
 
 ## 手写
+# def periodogram_method(signal, fs, N):
+#     X = np.fft.fft(signal, n = N)
+#     Pxx = np.abs(X)**2/N
+#     Pxx = Pxx[0:int(N/2) + 1]
+#     f = np.arange(0, N/2+1) * (fs/N)
+#     return f, Pxx,
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
-    Pxx = np.abs(X)**2/N
+    Pxx = np.abs(X)**2/(N * fs)
     Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
-    return f, Pxx,
-f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+    return f, Pxx
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
 def correlogram_method(signal, fs, N):
@@ -283,20 +292,20 @@ x = signal + noise;         # 最终信号
 nfft = 2048
 ######% 1 计算周期图法的功率谱密度
 
-
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn[:N2], fs, window = window_hann, nfft = N2)
+f, Pxx_periodogram = scipy.signal.periodogram(x, fs, window = window_hann, nfft = N2) # window = window_hann, nfft = N2
 
 ## 手写
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
-    Pxx = np.abs(X)**2/N
+    Pxx = np.abs(X)**2/(N * fs)
     Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
-    return f, Pxx,
-f, Pxx_periodogram = periodogram_method(x, fs, nfft)
+    return f, Pxx
+# f, Pxx_periodogram = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
 def correlogram_method(signal, fs, N):

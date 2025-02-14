@@ -150,7 +150,7 @@ x = np.sin(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t) + 0.2 * np.sin(2 * np.pi *
 x = x - np.mean(x)
 window = scipy.signal.windows.hann(x.size)
 
-plt.figure(figsize = (16, 12))
+plt.figure(figsize = (16, 12), constrained_layout = True)
 #% -------- 信号长度的影响 --------
 #% 选择不同的信号长度 (确保信号长度不超过原始信号长度)
 Ns = [256, 512, 1000];  # 信号长度，不超过1000点
@@ -162,7 +162,7 @@ for i in range(len(Ns)):
     f = np.arange(0, N/2) * (fs/N)
 
     # 计算功率谱密度 (PSD)
-    Pxx = np.abs(X[:int(N/2)])**2 / (N)
+    Pxx = np.abs(X[:int(N/2)])**2 / (fs * N)
 
     plt.subplot(3, 3, i+1)
     plt.plot(f, 10 * np.log10(Pxx), 'b')
@@ -178,7 +178,7 @@ for i in range(len(N_padding)):
     N = N_padding[i]
     X = np.fft.fft(x_windowed, n = N)
     f = np.arange(0, N/2) * (fs/N)
-    Pxx = np.abs(X[:int(N/2)])**2 / (  N)
+    Pxx = np.abs(X[:int(N/2)])**2 / (fs * N)
     plt.subplot(3, 3, i+4)
     plt.plot(f, 10 * np.log10(Pxx), 'r')
     plt.xlabel('频率 (Hz)')
@@ -224,7 +224,7 @@ for i in range(len(windows)):
     X = np.fft.fft(windowed_signal, n = N)
     X_magnitude = 2 * np.abs(X/N)[:int(N/2)]
     f = np.arange(0, N/2) * (fs/N)
-    Pxx = np.abs(X[:int(N/2)])**2 / (N)
+    Pxx = np.abs(X[:int(N/2)])**2 / (fs * N)
 
     plt.subplot(3, 4, 1 + i*4)
     plt.plot(windowsf, 'r')
@@ -321,7 +321,6 @@ window_hamm = scipy.signal.windows.hamming(N1)   # haming
 f1, Pxx_periodogram1 = scipy.signal.periodogram(x, fs, window = window_hamm, nfft = N1 ) #
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
 f2, Pxx_periodogram2 = scipy.signal.periodogram(x, fs, window = window_hamm, nfft = N2 ) #
-
 
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming

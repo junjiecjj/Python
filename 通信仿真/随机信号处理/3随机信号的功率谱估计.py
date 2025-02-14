@@ -11,25 +11,23 @@ Created on Thu Feb 13 15:12:52 2025
               时间平均：对能量求时间平均，以减少瞬时波动的影响。
               极限处理：使时间趋于无限大，以得到长期稳定的频率特性。
 (2) 基于自相关函数的方法（Correlogram Method）:首先通过计算自相关函数来为信号的功率谱估计做准备。具体来说，自相关函数是通过对信号在不同的滞后下的点积进行求和得到的 。接下来，算法对计算得到的自相关函数进行快速傅里叶变换 (FFT)，以获得信号的功率谱密度。最后，算法返回估计的功率谱密度。
-    step1. 信号采样和预处理：去除均值，应用窗口函数（如 Hanning 或 Hamming 窗）。
-    step2. 计算自相关函数：对信号进行自相关计算，得到自相关函数 。
-    step3. 傅里叶变换：对自相关函数进行快速傅里叶变换（FFT），获得功率谱密度 。
-    step4. 结果分析：通过功率谱密度分析信号的频率特性，识别主要频率和能量分布。
+            step1. 信号采样和预处理：去除均值，应用窗口函数（如 Hanning 或 Hamming 窗）。
+            step2. 计算自相关函数：对信号进行自相关计算，得到自相关函数 。
+            step3. 傅里叶变换：对自相关函数进行快速傅里叶变换（FFT），获得功率谱密度 。
+            step4. 结果分析：通过功率谱密度分析信号的频率特性，识别主要频率和能量分布。
 
 (3) Welch 方法（Welch's Method）:信号分段, 加窗, 计算每个子段的周期图, 平均多个子段的周期图.
-    # Welch 方法的步骤：
-    #     信号分段：将输入信号划分为多个长度为L的重叠段。每段之间的重叠率通常为 50% 或更高。
-    #     窗口化处理：对每一段信号应用一个窗口函数w(t)，得到窗口化后的信号 X_w(t) = X_m(t)*w(t)
-    #     FFT 计算：对每段窗口化后的信号 X_w(t)进行快速傅里叶变换（FFT），得到频谱 X_w(f)。
-    #     功率谱密度计算：计算每段信号的功率谱密度 P_m(f) = |X_w(f)|^2/L
-    #     功率谱密度平均：将所有段的功率谱密度进行平均，得到最终的功率谱估计 P_{wlech}(f) = \sum_{m=1}^M P_m(f) / M
-    #     其中，M为段的数量。
+    Welch 方法的步骤： 信号分段：将输入信号划分为多个长度为L的重叠段。每段之间的重叠率通常为 50% 或更高。
+                     窗口化处理：对每一段信号应用一个窗口函数w(t)，得到窗口化后的信号 X_w(t) = X_m(t)*w(t)
+                     FFT 计算：对每段窗口化后的信号 X_w(t)进行快速傅里叶变换（FFT），得到频谱 X_w(f)。
+                     功率谱密度计算：计算每段信号的功率谱密度 P_m(f) = |X_w(f)|^2/L
+                     功率谱密度平均：将所有段的功率谱密度进行平均，得到最终的功率谱估计 P_{wlech}(f) = \sum_{m=1}^M P_m(f) / M, 其中，M为段的数量。
 (4) 快速傅里叶变换（FFT）法:
-    信号采样和预处理：
-    窗口化处理：
-    FFT 计算：
-    计算功率谱密度（PSD）：
-    结果分析与解释：
+            信号采样和预处理：
+            窗口化处理：
+            FFT 计算：
+            计算功率谱密度（PSD）：
+            结果分析与解释：
 
 """
 
@@ -83,18 +81,19 @@ N = len(xn)           # 信号长度
 ## 自带的库
 # from scipy import signal
 
-N2 = 1000
+N2 = N
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn, fs, ) # window = window_hann, nfft = N2
+# f, Pxx_periodogram = scipy.signal.periodogram(xn, fs, window = window_hamm, nfft = N2) # window = window_hann, nfft = N2
 
 ## 手写:计算周期图法的功率谱密度
 def periodogram_method(signal, fs, N):
     X = np.fft.fft(signal, n = N)
-    Pxx = np.abs(X)**2/N
+    Pxx = np.abs(X)**2/(N * fs)
     Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
-    return f, Pxx,
+    return f, Pxx
 f, Pxx_periodogram = periodogram_method(xn, fs, N)
 
 ######% 2 自相关函数法:计算基于自相关函数法的功率谱密度
