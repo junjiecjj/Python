@@ -446,7 +446,7 @@ T  = 1
 t  = np.arange(0, T, dt)  # 时间向量
 fc = 40  # 载波频率
 Ac = 2    # 载波幅度
-kf = 120  # 频率偏移常数,频偏常数, 表示调频器的调频灵敏度. 这个参数相当重要，直接决定解调的效果，需要学习一下确定这个参数的方法
+kf = 16  # 频率偏移常数,频偏常数, 表示调频器的调频灵敏度. 这个参数相当重要，直接决定解调的效果，需要学习一下确定这个参数的方法
 Am = 1.5  # 调制信号幅度
 fm = 3   # 调制信号频率
 
@@ -455,7 +455,7 @@ mt = Am * np.cos(2 * np.pi * fm * t)
 # 频率调制
 ct = Ac * np.cos(2 * np.pi * fc * t)  # 载波信号
 # https://blog.csdn.net/weixin_42553916/article/details/122225988
-x = Ac * np.cos(2 * np.pi * fc * t +   kf * Am * np.sin(2 * np.pi * fm * t) / (2 * np.pi * fm) ) # + 0.01 * np.random.randn(t.size)
+x = Ac * np.cos(2 * np.pi * fc * t +   kf * Am * np.sin(2 * np.pi * fm * t) / (fm) ) # + 0.01 * np.random.randn(t.size)
 
 # 非相干解调
 x_diff = np.diff(x) / dt
@@ -463,7 +463,7 @@ x_diff = np.hstack((np.array([0]), x_diff))
 # 使用希尔伯特变换提取瞬时频率
 z = scipy.signal.hilbert(x_diff)
 inst_amplitude = np.abs(z) # instantaneous amplitude
-mt_hat = (inst_amplitude / Ac - 2 * np.pi * fc) / kf
+mt_hat = (inst_amplitude / Ac - 2 * np.pi * fc) / (2 * np.pi * kf)
 
 # 为了对齐时间向量，去掉最后一个点
 # t_demod = t[:-1]
