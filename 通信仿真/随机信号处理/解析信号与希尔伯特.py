@@ -155,8 +155,8 @@ print(np.unwrap(l, period = 360))
 fs = 600
 t = np.arange(0, 1, 1/fs)
 at = 1 + 0.5 * np.sin(2 * np.pi * 3 * t)
-# ct = scipy.signal.chirp(t, 20, t[-1], 80)
-ct = np.sin(2 * np.pi * 40 * t)
+ct = scipy.signal.chirp(t, 20, t[-1], 80)
+# ct = np.sin(2 * np.pi * 40 * t)
 x = at * ct + 0.01 * np.random.randn(t.size)
 z = analytic_signal(x)
 # z = scipy.signal.hilbert(x)
@@ -167,7 +167,7 @@ inst_freq = np.diff(inst_phase) / (2 * np.pi) * fs
 regenerated_carrier = np.cos(inst_phase)
 
 ##### plot
-fig, axs = plt.subplots(5, 1, figsize = (8, 10), constrained_layout = True)
+fig, axs = plt.subplots(6, 1, figsize = (8, 12), constrained_layout = True)
 
 # x
 axs[0].plot(t, at, color = 'b', lw = 1, label = '原始波形')
@@ -202,6 +202,12 @@ axs[4].set_ylabel('cos[w(t)]',)
 axs[4].set_title("载波恢复")
 axs[4].legend()
 
+axs[5].plot(t[:-1], inst_freq, color = 'r', label = '瞬时时间频率')
+axs[5].set_xlabel('时间 (s)',)
+axs[5].set_ylabel('Hz',)
+axs[5].set_title("瞬时时间频率")
+axs[5].legend()
+
 plt.show()
 plt.close()
 
@@ -229,7 +235,7 @@ inst_freq = np.diff(inst_phase) / (2 * np.pi) * fs
 regenerated_carrier = np.cos(inst_phase)
 
 ##### plot
-fig, axs = plt.subplots(5, 1, figsize = (8, 10), constrained_layout = True)
+fig, axs = plt.subplots(6, 1, figsize = (8, 12), constrained_layout = True)
 labelsize = 20
 
 # x
@@ -262,6 +268,12 @@ axs[4].set_xlabel('时间 (s)',)
 axs[4].set_ylabel('幅度',)
 axs[4].set_title("载波恢复")
 axs[4].legend()
+
+axs[5].plot(t[:-1], inst_freq, color = 'r', label = '瞬时时间频率')
+axs[5].set_xlabel('时间 (s)',)
+axs[5].set_ylabel('Hz',)
+axs[5].set_title("瞬时时间频率")
+axs[5].legend()
 
 plt.show()
 plt.close()
@@ -339,120 +351,119 @@ axs[4].legend()
 plt.show()
 plt.close()
 
+#%% 频率调制（FM）是一种广泛应用于广播和通信系统的调制方式。其基本概念是通过改变信号的频率来传递信息。
+import numpy as np
+import matplotlib.pyplot as plt
 
+# 参数设置
+fs = 500         # 采样频率
+f_signal = 20    # 基带信号频率
+f_carrier = 100  # 载波频率
+T = 1            # 信号时长
+t = np.arange(0, T, 1/fs)
 
-# #%% 频率调制（FM）是一种广泛应用于广播和通信系统的调制方式。其基本概念是通过改变信号的频率来传递信息。
-# import numpy as np
-# import matplotlib.pyplot as plt
+# 生成基带信号（正弦波）
+baseband_signal = np.cos(2 * np.pi * f_signal * t)
 
-# # 参数设置
-# fs = 10000  # 采样频率
-# f_signal = 100  # 基带信号频率
-# f_carrier = 1000  # 载波频率
-# duration = 1  # 信号时长
-# t = np.linspace(0, duration, fs * duration, endpoint=False)  # 时间数组
+# 生成FM信号
+kf = 100  # 调频灵敏度
+fm_signal = np.cos(2 * np.pi * f_carrier * t + kf * np.cumsum(baseband_signal) / (2 * np.pi *fs))
 
-# # 生成基带信号（正弦波）
-# baseband_signal = np.sin(2 * np.pi * f_signal * t)
+# 绘制信号
+plt.figure(figsize=(12, 6))
+plt.subplot(3, 1, 1)
+plt.plot(t, baseband_signal)
+plt.title('Baseband Signal')
+plt.subplot(3, 1, 2)
+plt.plot(t, fm_signal)
+plt.title('FM Signal')
+plt.tight_layout()
+plt.show()
 
-# # 生成FM信号
-# kf = 100  # 调频灵敏度
-# fm_signal = np.cos(2 * np.pi * f_carrier * t + kf * np.cumsum(baseband_signal) / fs)
+# FM解调
+def fm_demodulate(fm_signal):
+    # 计算信号的瞬时相位
+    z = scipy.signal.hilbert(fm_signal)
+    instantaneous_phase = np.unwrap(np.angle(z))
+    # 计算瞬时频率
+    instantaneous_frequency = np.diff(instantaneous_phase) * (fs / (2.0 * np.pi))
+    # demodulated_signal = np.concatenate(([0], instantaneous_frequency))  # 补齐长度
+    return instantaneous_frequency
 
-# # 绘制信号
-# plt.figure(figsize=(12, 6))
-# plt.subplot(3, 1, 1)
-# plt.plot(t, baseband_signal)
-# plt.title('Baseband Signal')
-# plt.subplot(3, 1, 2)
-# plt.plot(t, fm_signal)
-# plt.title('FM Signal')
-# plt.tight_layout()
-# plt.show()
+# 解调
+demodulated_signal = fm_demodulate(fm_signal)
 
-# # FM解调
-# def fm_demodulate(fm_signal):
-#     # 计算信号的瞬时相位
-#     instantaneous_phase = np.unwrap(np.angle(fm_signal))
-#     # 计算瞬时频率
-#     instantaneous_frequency = np.diff(instantaneous_phase) * (fs / (2.0 * np.pi))
-#     demodulated_signal = np.concatenate(([0], instantaneous_frequency))  # 补齐长度
-#     return demodulated_signal
+# 绘制解调后的信号
+plt.figure(figsize=(12, 6))
+plt.plot(t[1:], demodulated_signal)
+plt.title('Demodulated Signal')
+plt.xlabel('Time (s)')
+plt.show()
 
-# # 解调
-# demodulated_signal = fm_demodulate(fm_signal)
+#%% 频率调制（FM）
+import numpy as np
+import matplotlib.pyplot as plt
 
-# # 绘制解调后的信号
-# plt.figure(figsize=(12, 6))
-# plt.plot(t, demodulated_signal)
-# plt.title('Demodulated Signal')
-# plt.xlabel('Time (s)')
-# plt.show()
+# 参数设置
+fs = 500  # 采样频率
+t = np.arange(0, 1, 1/fs)  # 时间向量
+fc = 100  # 载波频率
+kf = 100  # 频率偏移常数
+Am = 1  # 调制信号幅度
+fm = 10  # 调制信号频率
 
-# #%% 频率调制（FM）
-# import numpy as np
-# import matplotlib.pyplot as plt
+# 调制信号（假设为正弦波）
+modulating_signal = Am * np.sin(2 * np.pi * fm * t)
 
-# # 参数设置
-# fs = 10000  # 采样频率
-# t = np.arange(0, 1, 1/fs)  # 时间向量
-# fc = 1000  # 载波频率
-# kf = 100  # 频率偏移常数
-# Am = 1  # 调制信号幅度
-# fm = 10  # 调制信号频率
+# 频率调制
+carrier = np.cos(2 * np.pi * fc * t)  # 载波信号
+fm_signal = np.cos(2 * np.pi * fc * t + 2 * np.pi * kf * np.cumsum(modulating_signal) / fs)
 
-# # 调制信号（假设为正弦波）
-# modulating_signal = Am * np.sin(2 * np.pi * fm * t)
+# 绘制调制信号和FM信号
+plt.figure(figsize=(12, 6))
 
-# # 频率调制
-# carrier = np.cos(2 * np.pi * fc * t)  # 载波信号
-# fm_signal = np.cos(2 * np.pi * fc * t + 2 * np.pi * kf * np.cumsum(modulating_signal) / fs)
+plt.subplot(2, 1, 1)
+plt.plot(t, modulating_signal)
+plt.title('Modulating Signal')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
 
-# # 绘制调制信号和FM信号
-# plt.figure(figsize=(12, 6))
+plt.subplot(2, 1, 2)
+plt.plot(t, fm_signal)
+plt.title('FM Signal')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
 
-# plt.subplot(2, 1, 1)
-# plt.plot(t, modulating_signal)
-# plt.title('Modulating Signal')
-# plt.xlabel('Time (s)')
-# plt.ylabel('Amplitude')
+plt.tight_layout()
+plt.show()
 
-# plt.subplot(2, 1, 2)
-# plt.plot(t, fm_signal)
-# plt.title('FM Signal')
-# plt.xlabel('Time (s)')
-# plt.ylabel('Amplitude')
+# 频率解调
+# 计算信号的相位变化
+phase = np.unwrap(np.angle(np.exp(1j * 2 * np.pi * fc * t + 1j * 2 * np.pi * kf * np.cumsum(modulating_signal) / fs)))
 
-# plt.tight_layout()
-# plt.show()
+# 计算瞬时频率
+instantaneous_frequency = np.diff(phase) * fs / (2 * np.pi)
 
-# # 频率解调
-# # 计算信号的相位变化
-# phase = np.unwrap(np.angle(np.exp(1j * 2 * np.pi * fc * t + 1j * 2 * np.pi * kf * np.cumsum(modulating_signal) / fs)))
+# 为了对齐时间向量，去掉最后一个点
+t_demod = t[:-1]
 
-# # 计算瞬时频率
-# instantaneous_frequency = np.diff(phase) * fs / (2 * np.pi)
+# 绘制解调信号
+plt.figure(figsize=(12, 6))
 
-# # 为了对齐时间向量，去掉最后一个点
-# t_demod = t[:-1]
+plt.subplot(2, 1, 1)
+plt.plot(t_demod, instantaneous_frequency)
+plt.title('Demodulated Signal (Instantaneous Frequency)')
+plt.xlabel('Time (s)')
+plt.ylabel('Frequency (Hz)')
 
-# # 绘制解调信号
-# plt.figure(figsize=(12, 6))
+plt.subplot(2, 1, 2)
+plt.plot(t_demod, instantaneous_frequency - fc)  # 减去载波频率，得到原始调制信号
+plt.title('Recovered Modulating Signal')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
 
-# plt.subplot(2, 1, 1)
-# plt.plot(t_demod, instantaneous_frequency)
-# plt.title('Demodulated Signal (Instantaneous Frequency)')
-# plt.xlabel('Time (s)')
-# plt.ylabel('Frequency (Hz)')
-
-# plt.subplot(2, 1, 2)
-# plt.plot(t_demod, instantaneous_frequency - fc)  # 减去载波频率，得到原始调制信号
-# plt.title('Recovered Modulating Signal')
-# plt.xlabel('Time (s)')
-# plt.ylabel('Amplitude')
-
-# plt.tight_layout()
-# plt.show()
+plt.tight_layout()
+plt.show()
 
 
 
