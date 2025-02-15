@@ -397,7 +397,8 @@ labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
 #%% 频率刻度错位
 #======================================= 2,0 =========================================
 
-axs[2,0].plot(t[::4], x_sample[::4], color='b', marker = 'o',  label='x_sampled',)
+# axs[2,0].plot(t[::4], x_sample[::4], color='b', marker = 'o',  label='x_sampled',)
+axs[2,0].scatter(t[::4], x_sample[::4], color='b', marker = 'o',  label='x_sampled',)
 
 font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
 #font3  = {'family':'Times New Roman','style':'normal','size':22}

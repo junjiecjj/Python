@@ -41,8 +41,8 @@ t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 ## 基带信号
 x = 7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.cos(2*np.pi*f3*t + np.pi/3) #+ 4.5 # (4.5是直流)
 ## 载波
-s = np.exp(1j * 2 * np.pi * fs * t)
-# s = np.cos(2 * np.pi * fs * t)
+# s = np.exp(1j * 2 * np.pi * fs * t)
+s = np.cos(2 * np.pi * fs * t)
 h = x * s
 
 #%%======================= x ==============================
