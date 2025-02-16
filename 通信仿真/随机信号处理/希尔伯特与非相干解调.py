@@ -442,7 +442,7 @@ import matplotlib.pyplot as plt
 # 参数设置
 fs = 500  # 采样频率
 dt = 1/fs
-T  = 2
+T  = 1
 t  = np.arange(0, T, dt)  # 时间向量
 fc = 40  # 载波频率
 Ac = 2    # 载波幅度

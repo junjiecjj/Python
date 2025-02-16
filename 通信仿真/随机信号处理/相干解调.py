@@ -206,7 +206,6 @@ mt = Am * np.cos(2 * np.pi * fm * t)
 ct = Ac * np.cos(2 * np.pi * fc * t)  # 载波信号
 x = Ac * np.cos(2 * np.pi * fc * t +  2 * np.pi * kf * np.cumsum(mt) * dt )
 
-
 # 绘制调制信号和FM信号
 fig, axs = plt.subplots(4, 1, figsize = (8, 8), constrained_layout = True)
 
@@ -252,24 +251,71 @@ import matplotlib.pyplot as plt
 # 参数设置
 fs = 500  # 采样频率
 dt = 1/fs
-T  = 1
+T  = 2
 t  = np.arange(0, T, dt)  # 时间向量
 fc = 40    # 载波频率
-Ac = 2     # 载波幅度
-kf = 16    # 频率偏移常数,频偏常数, 表示调频器的调频灵敏度. 这个参数相当重要，直接决定解调的效果，需要学习一下确定这个参数的方法
-Am = 1.5   # 调制信号幅度
+Ac = 1     # 载波幅度
+kf = 20    # 频率偏移常数,频偏常数, 表示调频器的调频灵敏度. 这个参数相当重要，直接决定解调的效果，需要学习一下确定这个参数的方法
+Am = 1   # 调制信号幅度
 fm = 3     # 调制信号频率
 
 # 调制信号（假设为正弦波）
 mt = Am * np.cos(2 * np.pi * fm * t)
 # 频率调制
-ct = Ac * np.cos(2 * np.pi * fc * t)  # 载波信号
+ct = Ac * np.sin(2 * np.pi * fc * t)  # 载波信号
 # https://blog.csdn.net/weixin_42553916/article/details/122225988
-x = Ac * np.cos(2 * np.pi * fc * t +   kf * Am * np.sin(2 * np.pi * fm * t) / (fm) ) # + 0.01 * np.random.randn(t.size)
+x = Ac * np.sin(2 * np.pi * fc * t +   kf * Am * np.sin(2 * np.pi * fm * t) / (fm) ) # + 0.01 * np.random.randn(t.size)
 
+## PLL 锁相环相干解调, 相干解调法(同步解调),用锁相环同步
+L = t.size
+vco_phase = np.zeros(L) # 初始化vco相位
+rt = np.zeros(L) # 初始化压控振荡器vco输出
+et = np.zeros(L) # 初始化乘法鉴相器pd输出
+vt = np.zeros(L) # 初始化环路滤波器lf输出
+Av = 1                  # vco输出幅度
+kv = 900                 # vco频率灵敏度（）
+km = 1                  # 鉴相器增益pd增益
+k0 = 1                  # lf增益
+rt[0] = Av * np.cos(vco_phase[0])  #
+et[0] = km * x[0] * rt [0] #
+
+# [Bb, Ba] = scipy.signal.butter(1, 2 * 10 / fs, 'low')
+# b0 = Bb[0]
+# b1 = Bb[1]
+# a1 = Ba[1]
+# b0 = 0.07295965726826667;       # Fs = 40000，fcut = 1000的1阶巴特沃斯低通滤波器系数，由FDA生成
+# b1 = 0.07295965726826667;
+# a1 = -0.8540806854634666;
+#================================ IIR -巴特沃兹低通滤波器  =====================================
+lf = 10    # 通带截止频率200Hz
+Fc = 100   # 阻带截止频率1000Hz
+Rp = 1      # 通带波纹最大衰减为1dB
+Rs = 40     # 阻带衰减为40dB
+#-----------------------计算最小滤波器阶数-----------------------------
+na = np.sqrt(10**(0.1 * Rp)-1)
+ea = np.sqrt(10**(0.1 * Rs)-1)
+order  = np.ceil(np.log10(ea/na)/np.log10(Fc/lf))  #巴特沃兹阶数
+Wn = lf*2 / fs
+vt = scipy.signal.filtfilt(Bb, Ba, et)
+
+# vt[0] = k0 * b0 * et[0]
+for i in range(1, L):
+    vco_phase_change = 2 * np.pi * fc * dt + kv * vt[i-1] * dt
+    vco_phase[i] = vco_phase[i-1] + vco_phase_change
+
+    rt[i] = Av * np.cos(vco_phase[i]) # vco输出（会跟踪st的相位）
+    et[i] = km * rt[i] * x[i]         # 乘法鉴相器输出，式(16)
+
+    #------- 低通滤波 ---------
+    ### 方法1
+    [Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
+    # vt = scipy.signal.lfilter(Bb, Ba, s) * 2 # 进行滤波
+    vt = scipy.signal.filtfilt(Bb, Ba, et)
+
+    # vt[i] = k0 * (b0 * et[i] + b1 * et[i-1] - a1 * vt[i-1])
 
 # 绘制调制信号和FM信号
-fig, axs = plt.subplots(4, 1, figsize = (8, 8), constrained_layout = True)
+fig, axs = plt.subplots(5, 1, figsize = (8, 10), constrained_layout = True)
 
 axs[0].plot(t, mt, color = 'b', lw = 2, label = '原始波形 (时域)')
 axs[0].set_xlabel('时间 (s)',)
@@ -289,11 +335,18 @@ axs[2].set_ylabel('幅度',)
 axs[2].set_title("已调信号 (幅度调制AM, 时域)")
 axs[2].legend()
 
-axs[3].plot(t, y, color = 'b', label = '解调信号 (时域)')
+axs[3].plot(t, rt, color = 'b', label = 'vco信号 (时域)')
 axs[3].set_xlabel('时间 (s)',)
 axs[3].set_ylabel('幅度',)
-axs[3].set_title("解调信号 (时域)")
+axs[3].set_title("vco信号 (时域)")
 axs[3].legend()
+
+axs[4].plot(t, vt, color = 'b', label = '解调信号(时域)')
+axs[4].plot(t, mt, color = 'r', label = '原始信号 (时域)')
+axs[4].set_xlabel('时间 (s)',)
+axs[4].set_ylabel('幅度',)
+axs[4].set_title("解调信号(时域)")
+axs[4].legend()
 
 plt.show()
 plt.close()
