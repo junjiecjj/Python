@@ -44,7 +44,7 @@ EbN0dB = 10 * np.log10(EbN0)
 ##### plot
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
-axs.semilogy(EbN0dB, k, color = 'b', lw = 1, label = 'capacity boundary')
+axs.semilogy(EbN0dB, k, color = 'b', label = 'capacity boundary')
 axs.set_xlabel(r'$E_b/N_0$(dB)',)
 axs.set_ylabel('Spectral Efficiency (Bit/s/Hz)',)
 axs.set_title("Channel Capacity & Power efficiency limit")
