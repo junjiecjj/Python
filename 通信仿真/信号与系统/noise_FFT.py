@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 13 13:26:32 2025
+Created on Sun Feb 16 22:57:02 2025
 
 @author: jack
 """
@@ -62,20 +62,6 @@ def IFFT(XX):
                x_p[n] = x_p[n] + 1/N*XX[k]*np.exp(1j*2*np.pi*n*k/N)
      return x_p
 
-#%%======================================================
-## ===========  定义时域采样信号 x
-##======================================================
-# 定义时域采样信号 x
-Fs = 1400                     # 信号采样频率
-Ts = 1/Fs                     # 采样时间间隔
-N = 1400                      # 采样信号的长度
-t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
-
-f1 = 200
-f2 = 400
-f3 = 600
-x =  7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.cos(2*np.pi*f3*t + np.pi/3)  + 4.5 # (4.5是直流)
-
 def freqDomainView(x, Fs, FFTN, type = 'double'): # N为偶数
     X = scipy.fftpack.fft(x, n = FFTN)
     # 消除相位混乱
@@ -102,8 +88,17 @@ def freqDomainView(x, Fs, FFTN, type = 'double'): # N为偶数
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
     return f, Y, A, Pha, R, I
+#%%======================================================
+## ===========  定义时域采样信号 x
+##======================================================
+# 定义时域采样信号 x
+Fs = 1400                     # 信号采样频率
+Ts = 1/Fs                     # 采样时间间隔
+N = 1400                      # 采样信号的长度
+t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
+x =  np.random.randn(t.size)
 
-FFTN = 2000
+FFTN = x.size
 fs, Ys, As, PhaS, Rs, Is = freqDomainView(x, Fs, FFTN, type = 'single')
 fd, Yd, Ad, PhaD, Rd, Id = freqDomainView(x, Fs, FFTN, type = 'double')
 
