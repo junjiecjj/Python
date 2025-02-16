@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Feb 16 02:25:55 2025
+Created on Sat Feb 15 01:10:22 2025
 
 @author: jack
-"""
+实值信号的傅里叶变换是复对称的。这意味着负频率的内容相对于正频率是冗余的。在Gabor[12]和Ville[13]的工作中，旨在通过去除傅立叶变换产生的冗余负频率内容来创建一个分析信号。
+解析信号是复值信号，但其频谱是单侧的（只有正频率），保留了原始实值信号的频谱内容。用解析信号代替原来的实值信号，已被证明是有用的.
 
+"""
 import scipy
 import numpy as np
 import statsmodels.tsa.api as smt
@@ -62,34 +64,41 @@ def freqDomainView(x, Fs, FFTN, type = 'double'): # N为偶数
 
     return f, Y, A, Pha, R, I
 
+#%% 例2：信号调制与解调, 幅度调制（AM）: 调幅信号的解调，
+# 幅度调制（AM）:
+# 相干解调
 
-# 采用非相干解调，也称为包络检测技术。这要求基带信号为非负，可以通过在原基带信号中叠加一个直流信号实现。例如：
-# BOOK <wireless communication system in Matlab >
-#%% Applications of analytic signal: Extracting instantaneous amplitude, phase, frequency
-# 幅度调制（AM）:非相干解调
-# 对于AM，解调的关键是提取出包络（包络就是信息信号），而恢复出瞬时相位就可以得到载波信号，瞬时频率就是载波频率
-# 对于PM，关键是提取出瞬时相位，瞬时相位减去载波相位就是信息信号，而瞬时幅度就是载波幅度.
-fs = 600
+fs = 500
 dt = 1/fs
-T = 1
+T = 2
 fm = 3
 fc = 40
 t = np.arange(0, T, 1/fs)
-Am = 0.5
-at = 1 + Am * np.sin(2 * np.pi * fm * t + np.pi/4)
+Am = 1
+at = Am * np.cos(2 * np.pi * fm * t )
 # ct = scipy.signal.chirp(t, 20, t[-1], 80)
-ct = np.sin(2 * np.pi * fc * t+ np.pi/3)            # 载波
+ct = np.cos(2 * np.pi * fc * t)            # 载波
 x = at * ct + 0.01 * np.random.randn(t.size)        # 信号
-# z = analytic_signal(x)
-z = scipy.signal.hilbert(x)
-inst_amplitude = np.abs(z)                            # instantaneous amplitude, 取出包络 a(t)
-inst_phase = np.unwrap(np.angle(z))                   # instantaneous phase, 恢复出瞬时相位 Phi(t)
-# inst_freq = np.diff(inst_phase) * fs / (2 * np.pi)  # instantaneous temporal frequency, 瞬时频率 ~= fc, 这里乘以fs是因为求导数时要把时间的尺度作为分母，而时间尺度就是1/fs,除以1/fs等于乘以fs
-inst_freq = np.diff(inst_phase) / dt / (2 * np.pi)    # instantaneous temporal frequency, 瞬时频率 ~= fc,
-regenerated_carrier = np.cos(inst_phase)              # 载波恢复
+
+s = x * ct
+#================================ IIR -巴特沃兹低通滤波器  =====================================
+lf = 6    # 通带截止频率200Hz
+Fc = 400   # 阻带截止频率1000Hz
+Rp = 1      # 通带波纹最大衰减为1dB
+Rs = 40     # 阻带衰减为40dB
+#-----------------------计算最小滤波器阶数-----------------------------
+na = np.sqrt(10**(0.1*Rp)-1)
+ea = np.sqrt(10**(0.1*Rs)-1)
+order  = np.ceil(np.log10(ea/na)/np.log10(Fc/lf))  #巴特沃兹阶数
+Wn = lf*2/fs
+#---------------------- 低通滤波  -----------------------------
+### 方法1
+[Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
+# y = scipy.signal.lfilter(Bb, Ba, s) # 进行滤波
+y = scipy.signal.filtfilt(Bb, Ba, s) * 2
 
 ##### plot
-fig, axs = plt.subplots(6, 1, figsize = (8, 12), constrained_layout = True)
+fig, axs = plt.subplots(4, 1, figsize = (8, 8), constrained_layout = True)
 
 # x
 axs[0].plot(t, at, color = 'b', lw = 1, label = '原始波形')
@@ -105,116 +114,36 @@ axs[1].set_title("载波信号")
 axs[1].legend()
 
 axs[2].plot(t, x, color = 'b', lw = 1, label = '已调信号')
-axs[2].plot(t, np.real(z), color = 'g', ls = '--', lw = 0.5, label = 'Real(z[n])')
-axs[2].plot(t, np.imag(z), color = 'r', ls = '--', lw = 0.5, label = 'Imag(z[n])')
+# axs[2].plot(t, np.real(z), color = 'g', ls = '--', lw = 0.5, label = 'Real(z[n])')
+# axs[2].plot(t, np.imag(z), color = 'r', ls = '--', lw = 0.5, label = 'Imag(z[n])')
 axs[2].set_xlabel('时间 (s)',)
 axs[2].set_ylabel('幅度',)
 axs[2].set_title("已调信号")
 axs[2].legend()
 
-axs[3].plot(t, inst_amplitude, color = 'r', lw = 2, label = '解调信号')
+axs[3].plot(t, y, color = 'r', lw = 2, label = '解调信号')
 axs[3].set_xlabel('时间 (s)',)
 axs[3].set_ylabel('幅度',)
 axs[3].set_title("解调信号")
 axs[3].legend()
 
-axs[4].plot(t, regenerated_carrier, color = 'b', label = '载波恢复')
-axs[4].set_xlabel('时间 (s)',)
-axs[4].set_ylabel('cos[w(t)]',)
-axs[4].set_title("载波恢复")
-axs[4].legend()
-
-axs[5].plot(t[:-1], inst_freq, color = 'r', label = '瞬时时间频率')
-axs[5].set_xlabel('时间 (s)',)
-axs[5].set_ylabel('Hz',)
-axs[5].set_title("瞬时时间频率")
-axs[5].legend()
-
 plt.show()
 plt.close()
 
-#%% 例2：信号调制与解调, 幅度调制（AM）: 调幅信号的解调，涉及调幅信号包络的提取
-# 非相干解调
-fs = 500                    # 采样频率 (Hz)
-dt = 1/fs
-T = 1
-t = np.arange(0, T, 1/fs)    # 时间向量
 
-fc = 100                     # 载波频率 (Hz)
-Ac = 1                       # 载波信号幅度, 一般为1，如果不为1， 则后面的幅度要注意
-fm = 10                      # 调制信号频率 (Hz)
-Am = 0.5                     # 调制信号幅度
-
-m = 1 + Am * np.cos(2 * np.pi * fm * t + np.pi/4) # 信号
-c = Ac * np.cos(2 * np.pi * fc * t + np.pi/3)     # 载波
-s = m * c + 0.001 * np.random.randn(m.size)
-
-z = scipy.signal.hilbert(s)
-s_demod = np.abs(z) / Ac # inst_amplitude
-
-inst_phase = np.unwrap(np.angle(z)) # instantaneous phase
-# inst_freq = np.diff(inst_phase) / (2 * np.pi) * fs # instantaneous angular, 这里乘以fs是因为求导数时要把时间的尺度作为分母，而时间尺度就是1/fs,除以1/fs等于乘以fs
-inst_freq = np.diff(inst_phase) / (2 * np.pi) / dt # instantaneous angular,
-regenerated_carrier = np.cos(inst_phase) * Ac
-
-##### plot
-fig, axs = plt.subplots(6, 1, figsize = (8, 12), constrained_layout = True)
-
-# x
-axs[0].plot(t, m, color = 'b', lw = 2, label = '原始波形 (时域)')
-axs[0].set_xlabel('时间 (s)',)
-axs[0].set_ylabel('幅度',)
-axs[0].set_title("原始波形 (时域)")
-axs[0].legend()
-
-axs[1].plot(t[:500], c[:500], color = 'b', lw = 0.5, label = '载波信号')
-axs[1].set_xlabel('时间 (s)',)
-axs[1].set_ylabel('幅度',)
-axs[1].set_title("载波信号 (时域)")
-axs[1].legend()
-
-axs[2].plot(t, s, color = 'b', lw = 0.2, label = '已调信号 (AM, 时域)')
-axs[2].set_xlabel('时间 (s)',)
-axs[2].set_ylabel('幅度',)
-axs[2].set_title("已调信号 (幅度调制AM, 时域)")
-axs[2].legend()
-
-axs[3].plot(t, s_demod, color = 'b', label = '解调信号 (时域)')
-axs[3].set_xlabel('时间 (s)',)
-axs[3].set_ylabel('幅度',)
-axs[3].set_title("解调信号 (时域)")
-axs[3].legend()
-
-axs[4].plot(t[:500], regenerated_carrier[:500], color = 'b', lw = 0.5, label = '载波恢复')
-axs[4].set_xlabel('时间 (s)',)
-axs[4].set_ylabel('幅度',)
-axs[4].set_title("载波恢复")
-axs[4].legend()
-
-axs[5].plot(t[:-1], inst_freq, color = 'r', label = '瞬时时间频率')
-axs[5].set_xlabel('时间 (s)',)
-axs[5].set_ylabel('Hz',)
-axs[5].set_title("瞬时时间频率")
-axs[5].legend()
-
-plt.show()
-plt.close()
-
-# BOOK <wireless communication system in Matlab >
-#%% Applications of analytic signal: Phase demodulation (PM) using Hilbert transform
-## 相位调制 (PM), 非相干解调
-fc = 210         # 载波频率 (Hz)
-fm = 10          # 调制信号频率 (Hz)
-Ac = 1.5         # 载波幅度
-alpha = 2        # 信号幅度
-theta = np.pi/4  # 信号初始相位
-beta = np.pi/5   # 载波初始相位
-receiverKnowsCarrier = False
-fs = 4*fc       # 采样频率 (Hz)
+#%% 相位调制 (PM), 相干解调
+fc = 40         # 载波频率 (Hz)
+fm = 3          # 调制信号频率 (Hz)
+Ac = 1          # 载波幅度
+alpha = 1       # 信号幅度
+theta = 0       # 信号初始相位
+beta = 0        # 载波初始相位
+fs = 500        # 采样频率 (Hz)
 T = 1
 t = np.arange(0, T, 1/fs)
 
-mt = alpha * np.sin(2 * np.pi * fm * t + theta) # 信息承载信号
+mt = alpha * np.cos(2 * np.pi * fm * t + theta) # 信息承载信号
+ct = Ac * np.cos(2 * np.pi * fc * t + beta)
 x = Ac * np.cos(2 * np.pi * fc * t + beta + mt)  # 已调信号
 
 nMean = 0
@@ -222,20 +151,8 @@ nSigma = 0.01
 n = nMean + nSigma * np.random.randn(t.size)
 r = x + n
 
-z = scipy.signal.hilbert(r)
-inst_amplitude = np.abs(z) # instantaneous amplitude
-inst_phase = np.unwrap(np.angle(z)) # instantaneous phase, \phi(t)
-
-if receiverKnowsCarrier:
-    offsetTerm = 2 * np.pi * fc * t + beta
-else:
-    p = np.polyfit(t, inst_phase, 1)
-    offsetTerm = np.polyval(p, t)
-
-demodulated = inst_phase - offsetTerm  # alpha* sin(2*pi*fm*t+theta) = \phi(t) - 2*pi*fc*t - beta
-
 ##### plot
-fig, axs = plt.subplots(5, 1, figsize = (8, 12), constrained_layout = True)
+fig, axs = plt.subplots(4, 1, figsize = (8, 8), constrained_layout = True)
 labelsize = 20
 
 axs[0].plot(t, mt, color = 'b', lw = 2, label = '原始波形 (时域)')
@@ -256,58 +173,42 @@ axs[2].set_ylabel('幅度',)
 axs[2].set_title("接收信号(时域)")
 axs[2].legend()
 
-axs[3].plot(t, demodulated, color = 'b', label = '解调信号 (时域)')
+axs[3].plot(t, y, color = 'b', label = '解调信号 (时域)')
 axs[3].set_xlabel('时间 (s)',)
 axs[3].set_ylabel('幅度',)
 axs[3].set_title("解调信号(时域)")
 axs[3].legend()
 
-axs[4].plot(t, inst_amplitude, color = 'b', lw = 0.5, label = '提取的包络')
-axs[4].set_xlabel('时间 (s)',)
-axs[4].set_ylabel('幅度',)
-axs[4].set_title("提取的包络")
-axs[4].legend()
-
 plt.show()
 plt.close()
 
 #%% 频率调制（FM）是一种广泛应用于广播和通信系统的调制方式。其基本概念是通过改变信号的频率来传递信息。
-# 非相干解调
+# 相干解调
 import numpy as np
 import matplotlib.pyplot as plt
 # from scipy.signal import hilbert
 
 # 参数设置
-fs = 1000  # 采样频率
+fs = 500  # 采样频率
 dt = 1/fs
 T  = 1
 t  = np.arange(0, T, 1/fs)  # 时间向量
-fc = 100  # 载波频率
+fc = 40  # 载波频率
 Ac = 2    # 载波幅度
-kf = 420  # 频率偏移常数
+kf = 10  # 频率偏移常数, 这个参数相当重要，直接决定解调的效果，需要学习一下确定这个参数的方法
 Am = 1.5  # 调制信号幅度
-fm = 10   # 调制信号频率
+fm = 3   # 调制信号频率
 
 # 调制信号（假设为正弦波）
-mt = Am * np.sin(2 * np.pi * fm * t)
+mt = Am * np.cos(2 * np.pi * fm * t)
 
 # 频率调制
 ct = Ac * np.cos(2 * np.pi * fc * t)  # 载波信号
 x = Ac * np.cos(2 * np.pi * fc * t +  2 * np.pi * kf * np.cumsum(mt) * dt )
 
-# 频率解调
-# 使用希尔伯特变换提取瞬时频率
-z = scipy.signal.hilbert(x)
-inst_amplitude = np.abs(z) # instantaneous amplitude
-inst_phase = np.unwrap(np.angle(z)) # instantaneous phase
-inst_freq = np.diff(inst_phase) / (2 * np.pi * dt)
-mt_hat = (inst_freq - fc) / kf
-
-# 为了对齐时间向量，去掉最后一个点
-t_demod = t[:-1]
 
 # 绘制调制信号和FM信号
-fig, axs = plt.subplots(5, 1, figsize = (8, 10), constrained_layout = True)
+fig, axs = plt.subplots(4, 1, figsize = (8, 8), constrained_layout = True)
 
 # x
 axs[0].plot(t, mt, color = 'b', lw = 2, label = '原始波形 (时域)')
@@ -328,62 +229,48 @@ axs[2].set_ylabel('幅度',)
 axs[2].set_title("已调信号 (幅度调制AM, 时域)")
 axs[2].legend()
 
-axs[3].plot(t_demod, mt_hat, color = 'b', label = '解调信号 (时域)')
+axs[3].plot(t, y, color = 'b', label = '解调信号 (时域)')
 axs[3].set_xlabel('时间 (s)',)
 axs[3].set_ylabel('幅度',)
 axs[3].set_title("解调信号 (时域)")
 axs[3].legend()
 
-axs[4].plot(t, inst_amplitude, color = 'b', lw = 1, label = '提取的包络')
-axs[4].set_xlabel('时间 (s)',)
-axs[4].set_ylabel('幅度',)
-axs[4].set_title("提取的包络")
-axs[4].legend()
-print(f"提取的包络 = {np.abs(inst_amplitude).mean()}")
 plt.show()
 plt.close()
 
-# https://blog.csdn.net/weixin_42553916/article/details/122225988
+# https://blog.csdn.net/zhouxiangjun11211/article/details/71172164
+# https://www.cnblogs.com/gjblog/p/13494103.html#
 # https://blog.csdn.net/zhouxiangjun11211/article/details/71172164
 # https://blog.51cto.com/u_16213673/7540906
+# https://blog.csdn.net/weixin_42553916/article/details/122225988
 #%% 频率调制（FM）是一种广泛应用于广播和通信系统的调制方式。其基本概念是通过改变信号的频率来传递信息。
-# 非相干解调
+# 相干解调
 import numpy as np
 import matplotlib.pyplot as plt
 # from scipy.signal import hilbert
 
 # 参数设置
-fs = 1000  # 采样频率
+fs = 500  # 采样频率
 dt = 1/fs
 T  = 1
 t  = np.arange(0, T, dt)  # 时间向量
-fc = 100  # 载波频率
-Ac = 2    # 载波幅度
-kf = 420  # 频率偏移常数
-Am = 1.5  # 调制信号幅度
-fm = 10   # 调制信号频率
+fc = 40    # 载波频率
+Ac = 2     # 载波幅度
+kf = 16    # 频率偏移常数,频偏常数, 表示调频器的调频灵敏度. 这个参数相当重要，直接决定解调的效果，需要学习一下确定这个参数的方法
+Am = 1.5   # 调制信号幅度
+fm = 3     # 调制信号频率
 
 # 调制信号（假设为正弦波）
 mt = Am * np.cos(2 * np.pi * fm * t)
-
 # 频率调制
 ct = Ac * np.cos(2 * np.pi * fc * t)  # 载波信号
-x = Ac * np.cos(2 * np.pi * fc * t +   kf * Am * np.sin(2 * np.pi * fm * t) / (2 * np.pi * fm) ) # + 0.01 * np.random.randn(t.size)
+# https://blog.csdn.net/weixin_42553916/article/details/122225988
+x = Ac * np.cos(2 * np.pi * fc * t +   kf * Am * np.sin(2 * np.pi * fm * t) / (fm) ) # + 0.01 * np.random.randn(t.size)
 
-# 非相干解调
-x_diff = np.diff(x) / dt
-# 使用希尔伯特变换提取瞬时频率
-z = scipy.signal.hilbert(x_diff)
-inst_amplitude = np.abs(z) # instantaneous amplitude
-mt_hat = (inst_amplitude / Ac - 2 * np.pi * fc) / kf
-
-# 为了对齐时间向量，去掉最后一个点
-t_demod = t[:-1]
 
 # 绘制调制信号和FM信号
 fig, axs = plt.subplots(4, 1, figsize = (8, 8), constrained_layout = True)
 
-# x
 axs[0].plot(t, mt, color = 'b', lw = 2, label = '原始波形 (时域)')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
@@ -402,7 +289,7 @@ axs[2].set_ylabel('幅度',)
 axs[2].set_title("已调信号 (幅度调制AM, 时域)")
 axs[2].legend()
 
-axs[3].plot(t_demod, mt_hat, color = 'b', label = '解调信号 (时域)')
+axs[3].plot(t, y, color = 'b', label = '解调信号 (时域)')
 axs[3].set_xlabel('时间 (s)',)
 axs[3].set_ylabel('幅度',)
 axs[3].set_title("解调信号 (时域)")

@@ -19,6 +19,30 @@ https://zhuanlan.zhihu.com/p/570487666
 
 https://zhuanlan.zhihu.com/p/687473210
 
+https://blog.51cto.com/u_12413309/6242987
+
+https://www.cnblogs.com/kinologic/p/14105907.html
 """
 import numpy  as np
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
