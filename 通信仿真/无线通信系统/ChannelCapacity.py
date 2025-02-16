@@ -49,7 +49,7 @@ axs.set_xlabel(r'$E_b/N_0$(dB)',)
 axs.set_ylabel('Spectral Efficiency (Bit/s/Hz)',)
 axs.set_title("Channel Capacity & Power efficiency limit")
 
-
+axs.vlines(x = -1.59, ymin = 0.08 ,ymax = 13, color = 'red', ls = '--')
 
 axs.legend()
 
