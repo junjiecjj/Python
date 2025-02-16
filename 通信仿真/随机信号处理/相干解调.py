@@ -4,8 +4,8 @@
 Created on Sat Feb 15 01:10:22 2025
 
 @author: jack
-实值信号的傅里叶变换是复对称的。这意味着负频率的内容相对于正频率是冗余的。在Gabor[12]和Ville[13]的工作中，旨在通过去除傅立叶变换产生的冗余负频率内容来创建一个分析信号。
-解析信号是复值信号，但其频谱是单侧的（只有正频率），保留了原始实值信号的频谱内容。用解析信号代替原来的实值信号，已被证明是有用的.
+
+相干解调的关键是锁相环，这里的代码只是粗浅的仿真，只是表面的结果是对的，至于是否真的是按正确的理论实现的还得进一步学习以确认。搞清楚相干解调的前提是吃透数字锁相环。
 
 """
 import scipy
@@ -132,7 +132,7 @@ plt.show()
 plt.close()
 
 
-#%% 相位调制 (PM), 相干解调, 相位调制一般不用相干解调，所以这里的解调效果很差
+#%% 相位调制 (PM), 相干解调,
 fc = 40         # 载波频率 (Hz)
 fm = 3          # 调制信号频率 (Hz)
 Ac = 1          # 载波幅度
@@ -140,6 +140,7 @@ alpha = 1       # 信号幅度
 theta = 0       # 信号初始相位
 beta = 0        # 载波初始相位
 fs = 500        # 采样频率 (Hz)
+receiverKnowsCarrier = False
 T = 3
 t = np.arange(0, T, 1/fs)
 
@@ -150,7 +151,7 @@ x = Ac * np.cos(2 * np.pi * fc * t + beta + mt)  # 已调信号
 nMean = 0
 nSigma = 0.01
 n = nMean + nSigma * np.random.randn(t.size)
-x = x + n
+r = x + n
 
 ## PLL 锁相环相干解调, 相干解调法(同步解调),用锁相环同步
 L = t.size
@@ -163,15 +164,8 @@ kv = 100                # vco频率灵敏度
 km = 1                  # 鉴相器增益pd增益
 k0 = 1                  # lf增益
 rt[0] = Av * np.cos(vco_phase[0])  #
-et[0] = km * x[0] * rt [0]         #
+et[0] = km * r[0] * rt [0]         #
 
-# [Bb, Ba] = scipy.signal.butter(1, 2 * 4 * fm / fs, 'low')
-# b0 = Bb[0]
-# b1 = Bb[1]
-# a1 = Ba[1]
-## b0 = 0.07295965726826667;       # Fs = 40000, fcut = 1000的1阶巴特沃斯低通滤波器系数, 由FDA生成
-## b1 = 0.07295965726826667;
-## a1 = -0.8540806854634666;
 #================================ IIR -巴特沃兹低通滤波器  =====================================
 lf = 10     # 通带截止频率200Hz
 Fc = 200    # 阻带截止频率1000Hz
@@ -192,15 +186,28 @@ for i in range(1, L):
     vco_phase[i] = vco_phase[i-1] + vco_phase_change
 
     rt[i] = Av * np.cos(vco_phase[i]) # vco输出（会跟踪st的相位）
-    et[i] = km * rt[i] * x[i]         # 乘法鉴相器输出，式(16)
+    et[i] = km * rt[i] * r[i]         # 乘法鉴相器输出，式(16)
 
     # vt = scipy.signal.lfilter(Bb, Ba, et) * 2 # 进行滤波
     vt = scipy.signal.filtfilt(Bb, Ba, et)
-
     # vt[i] = k0 * (b0 * et[i] + b1 * et[i-1] - a1 * vt[i-1])
 
-# 绘制调制信号和FM信号
-fig, axs = plt.subplots(5, 1, figsize = (8, 10), constrained_layout = True)
+## 接下来根据VCO锁定的信号恢复出信息承载信号，这是PLL在这和FM中的不同之处，这里多个这个步骤
+z = scipy.signal.hilbert(rt)
+inst_amplitude = np.abs(z) # instantaneous amplitude
+inst_phase = np.unwrap(np.angle(z)) # instantaneous phase, \phi(t)
+
+if receiverKnowsCarrier:
+    offsetTerm = 2 * np.pi * fc * t + beta
+else:
+    p = np.polyfit(t, inst_phase, 1)
+    offsetTerm = np.polyval(p, t)
+
+demodulated = inst_phase - offsetTerm  # alpha* sin(2*pi*fm*t+theta) = \phi(t) - 2*pi*fc*t - beta
+
+##### plot
+fig, axs = plt.subplots(6, 1, figsize = (8, 12), constrained_layout = True)
+labelsize = 20
 
 axs[0].plot(t, mt, color = 'b', lw = 2, label = '原始波形 (时域)')
 axs[0].set_xlabel('时间 (s)',)
@@ -208,33 +215,40 @@ axs[0].set_ylabel('幅度',)
 axs[0].set_title("原始波形 (时域)")
 axs[0].legend()
 
-axs[1].plot(t, ct, color = 'b', lw = 0.5, label = '载波信号')
+axs[1].plot(t , x, color = 'b', lw = 0.5, label = '相位调制PM信号')
 axs[1].set_xlabel('时间 (s)',)
 axs[1].set_ylabel('幅度',)
-axs[1].set_title("载波信号 (时域)")
+axs[1].set_title("相位调制PM信号")
 axs[1].legend()
 
-axs[2].plot(t, x, color = 'b', lw = 0.2, label = '相位调制信号')
+axs[2].plot(t, r, color = 'b', lw = 0.2, label = '接收信号(时域)')
 axs[2].set_xlabel('时间 (s)',)
 axs[2].set_ylabel('幅度',)
-axs[2].set_title("相位调制信号")
+axs[2].set_title("接收信号(时域)")
 axs[2].legend()
 
-axs[3].plot(t, rt, color = 'b', lw = 0.2, label = 'vco信号 (时域)')
+axs[3].plot(t, demodulated, color = 'r', label = '解调信号 (时域)')
+axs[3].plot(t, mt, color = 'b', lw = 2, ls='--', label = '原始波形 (时域)')
 axs[3].set_xlabel('时间 (s)',)
 axs[3].set_ylabel('幅度',)
-axs[3].set_title("vco信号 (时域)")
+axs[3].set_title("解调信号(时域)")
 axs[3].legend()
 
-axs[4].plot(t, vt * 2, color = 'b', label = '解调信号(时域)')
-axs[4].plot(t, mt, color = 'r', label = '原始信号 (时域)')
+axs[4].plot(t, inst_amplitude, color = 'b', lw = 0.5, label = '提取的包络')
 axs[4].set_xlabel('时间 (s)',)
 axs[4].set_ylabel('幅度',)
-axs[4].set_title("解调信号(时域)")
+axs[4].set_title("提取的包络")
 axs[4].legend()
+
+axs[5].plot(t, rt, color = 'b', lw = 0.2, label = 'vco信号 (时域)')
+axs[5].set_xlabel('时间 (s)',)
+axs[5].set_ylabel('幅度',)
+axs[5].set_title("vco信号 (时域)")
+axs[5].legend()
 
 plt.show()
 plt.close()
+
 
 
 #%% 频率调制（FM）是一种广泛应用于广播和通信系统的调制方式。其基本概念是通过改变信号的频率来传递信息。

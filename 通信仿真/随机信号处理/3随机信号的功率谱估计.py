@@ -31,8 +31,6 @@ Created on Thu Feb 13 15:12:52 2025
 
 """
 
-
-
 import scipy
 import numpy as np
 import statsmodels.tsa.api as smt

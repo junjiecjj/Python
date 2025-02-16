@@ -98,7 +98,7 @@ for i in range(1, L):
     vco_phase_change = 2 * np.pi * fc * dt + 2 * np.pi * kv * vt[i-1] * dt
     vco_phase[i] = vco_phase[i-1] + vco_phase_change
 
-    rt[i] = Av * np.cos(vco_phase[i]) # vco输出（会跟踪st的相位）
+    rt[i] = Av * np.cos(vco_phase[i]) # vco输出（会跟踪x的相位）
     et[i] = km * rt[i] * x[i]         # 乘法鉴相器输出，式(16)
 
     # vt = scipy.signal.lfilter(Bb, Ba, et) * 2 # 进行滤波
