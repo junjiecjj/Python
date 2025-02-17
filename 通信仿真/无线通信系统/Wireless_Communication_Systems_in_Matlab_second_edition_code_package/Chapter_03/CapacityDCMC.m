@@ -12,14 +12,14 @@ plotColor =['b','g','c','m','k']; j=1; %plot colors/color index
 legendString = cell(1,length(arrayOfM)); %for legend entries
 for M = arrayOfM
     C = zeros(1,length(snrdB));%capacity
-    
-    d=ceil(M.*rand(1,nSym));%uniformly distributed source syms
+
+    d = ceil(M.*rand(1,nSym));%uniformly distributed source syms
     [s,constellation]=modulate(MOD_TYPE,M,d);%constellation mapping
     for i=1:length(snrdB),
-        if strcmpi(channelModel,'RAYLEIGH'),%rayleigh flat channel 
-            h = 1/sqrt(2)*(randn(1,nSym)+1i*randn(1,nSym)); 
+        if strcmpi(channelModel,'RAYLEIGH'),%rayleigh flat channel
+            h = 1/sqrt(2)*(randn(1,nSym)+1i*randn(1,nSym));
         else %else assume no channel effect
-            h = ones(1,nSym); 
+            h = ones(1,nSym);
         end
         hs = h.*s; %channel effect on the modulated symbols
         [r,~,N0] = add_awgn_noise(hs,snrdB(i));%r = h*s+n (received)

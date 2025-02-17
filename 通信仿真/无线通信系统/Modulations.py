@@ -35,7 +35,30 @@ plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
 
-
+def NormFactor(mod_type = 'qam', M = 16,):
+    """
+        Signal power normalization and de-normalization.
+        Parameters
+            signal: array(*, ). Signal to be transmitted or received.
+            M: int. Modulation order.
+            mod_type: str, default 'qam'. Type of modulation technique.
+            denorm: bool, default False. 0: Power normalization. 1: Power de-normalization.
+        Returns
+    """
+    if mod_type == 'psk':
+        Es = 1
+    # if mod_type == 'qpsk':
+    #     Es = 1
+    # if mod_type == '8psk':
+    #     Es = 1
+    if mod_type == 'qam':
+        if M == 8:
+            Es = 6
+        elif M == 32:
+            Es = 25.875
+        else: ##  https://blog.csdn.net/qq_41839588/article/details/135202875
+            Es = 2 * (M - 1) / 3
+    return Es
 
 
 

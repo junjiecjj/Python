@@ -98,7 +98,7 @@ if modutype == 'qam':
 elif modutype == 'psk':
     modem =  cpy.PSKModem(M)
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
-# modem.plot_constellation("BPSK")
+modem.plot_constellation("BPSK")
 ## 遍历SNR
 sigma2dB = np.arange(16, 21, 0.5)  # dB
 sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
