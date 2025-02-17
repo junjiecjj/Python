@@ -123,48 +123,18 @@ axs.legend(fontsize = 20)
 plt.show()
 plt.close()
 
-#%% Program 3.3: CapacityBSC.m: Simulate transmission through a BSC(Binary Symmetric Channel) channel and calculate capacity.
-# 只对均匀0/1无偏信源有效，有偏信源不同.
-nbits = int(1e5)
-errProbs = np.arange(0.01 , 1., 0.01)
-C_simulation = np.zeros(len(errProbs))
-
-for i, e in enumerate(errProbs):
-    x = np.random.randint(0,2, size = nbits, dtype = np.int8)        # 信源
-    error = np.random.binomial(1, e, size = nbits).astype(np.int8)   # 信道
-    y = x ^ error                                                    # 接受序列
-
-    Y = np.tile(A = y, reps = (2,1))
-    X = np.tile(np.array([[0], [1]]), reps = (1, nbits))
-    # probabilities with respect to each input[0,1]
-    prob = (Y == X) * (1 - e) + (Y != X) * e     # BSC p(y/x) equation
-    prob = np.maximum(prob, 1e-20)               # this used to avoid NAN in computation
-    p = prob / np.tile(A = np.sum(prob, axis = 0), reps = (2, 1)) # normalize probabilities
-    ## HYX = -\sum_x P(x) [\sum_y P(Y|X) log2(P(Y|X))],
-    HYX = np.mean(-np.sum(p * np.log2(p), axis = 0)) # senders uncertainity
-
-    py0 = np.sum(y == 0) / nbits
-    py1 = np.sum(y == 1)/nbits
-    HY = -py0 * np.log2(py0) - py1 * np.log2(py1)
-    C_simulation[i] = HY - HYX
-
-C_theory = 1 - (-errProbs * np.log2(errProbs) - (1 - errProbs) * np.log2(1 - errProbs))
-
-fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-axs.plot(errProbs, C_simulation, color = 'b', ls = '--',marker = 'o', ms = 8, mfc = 'none', markevery = 10, label = 'Simulation' )
-axs.plot(errProbs, C_theory, color = 'r', ls = '-', label = 'Theory' )
-
-axs.set_xlabel( 'Cross-over probability - e',)
-axs.set_ylabel('Capacity (bits/channel use)',)
-axs.set_title("Capacity over Binary Symmetric Channel")
-axs.legend(fontsize = 20)
-
-plt.show()
-plt.close()
-
-
 
 #%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel
+
+nSym = 10000
+channelModel = 'AWGN'
+snrdB = np.arange(-10, 30, 1)
+mod_type = 'PAM'
+arrayOfM = [2, 4, 8, 16]
+arrayOfM = [4, 16, 64, 256]
+
+plotColor = ['b', 'g', 'c', 'm', 'k']
+j = 1
 
 
 
