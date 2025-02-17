@@ -91,7 +91,7 @@ errProbs = np.arange(0.01 , 1., 0.01)
 C_simulation = np.zeros(len(errProbs))
 
 for i, e in enumerate(errProbs):
-    x = np.random.randint(0,2, size = nbits, dtype = np.int8)        # 信源
+    x = np.random.randint(0, 2, size = nbits, dtype = np.int8)        # 信源
     error = np.random.binomial(1, e, size = nbits).astype(np.int8)   # 信道
     y = x ^ error                                                    # 接受序列
 
@@ -105,7 +105,7 @@ for i, e in enumerate(errProbs):
     HYX = np.mean(-np.sum(p * np.log2(p), axis = 0)) # senders uncertainity
 
     py0 = np.sum(y == 0) / nbits
-    py1 = np.sum(y == 1)/nbits
+    py1 = np.sum(y == 1) / nbits
     HY = -py0 * np.log2(py0) - py1 * np.log2(py1)
     C_simulation[i] = HY - HYX
 
