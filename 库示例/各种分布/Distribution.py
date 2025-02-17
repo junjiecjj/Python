@@ -11,8 +11,8 @@ https://docs.scipy.org/doc/scipy/reference/stats.html
 
 import numpy as np
 import pandas as pd
-import scipy as sy
-import scipy.special as sps
+import scipy
+# import scipy.special as sps
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.font_manager import FontProperties
@@ -35,7 +35,7 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 #%%%%%%%%%%%%%%%%%%%%%%%% erf, erfc, Qfun %%%%%%%%%%%%%%%%%%%%%%%%
 
 def Qfun(x):
-    return 0.5 * sy.special.erfc(x / np.sqrt(2))
+    return 0.5 * scipy.special.erfc(x / np.sqrt(2))
 
 def QfunUPbound1(x):
     return 1/6*np.exp(-2*x**2) + 1/12 * np.exp(-x**2) + 1/4 * np.exp(-x**2/2)
@@ -82,15 +82,15 @@ plt.show()
 import numpy as np
 from scipy.special import factorial
 
-sy.special.gamma([0, 0.5, 1, 5])
+scipy.special.gamma([0, 0.5, 1, 5])
 z = 2.5 + 1j
-sy.special.gamma(z)
+scipy.special.gamma(z)
 
-sy.special.gamma(z+1), z*sy.special.gamma(z)  # Recurrence property
+scipy.special.gamma(z+1), z*scipy.special.gamma(z)  # Recurrence property
 
-sy.special.gamma(0.5)**2  # gamma(0.5) = sqrt(pi)
+scipy.special.gamma(0.5)**2  # gamma(0.5) = sqrt(pi)
 x = np.linspace(-3.5, 5.5, 2251)
-y = sy.special.gamma(x)
+y = scipy.special.gamma(x)
 
 fig, ax = plt.subplots(figsize = (10, 10))
 ax.plot(x, y, 'b', lw = 2, alpha=0.6, label='gamma(x)')
@@ -106,7 +106,7 @@ plt.show()
 
 #%%>>>>>>>>>  gamma  distribution %%%%%%%%%%%%%%%%%%%%%%%%%%
 a = 1.99
-mean, var, skew, kurt = sy.stats.gamma.stats(a, moments='mvsk')
+mean, var, skew, kurt = scipy.stats.gamma.stats(a, moments='mvsk')
 
 # α (shape) = 2.0, θ (scale) = 2.0
 a_array = [0.8, 1, 2, 4 ]
@@ -116,24 +116,24 @@ scale_array_, a_array_ = np.meshgrid(scale_array, a_array)
 ### PDF of Beta Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(scale_array), figsize=(len(scale_array)*4, len(a_array)*3))
 for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.ravel()):
-    mean, var, skew, kurt = sy.stats.gamma.stats(a_idx,scale = scale_idx, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.gamma.stats(a_idx,scale = scale_idx, moments='mvsk')
 
-    x = np.linspace(sy.stats.gamma.ppf(0.01, a_idx, scale = scale_idx), sy.stats.gamma.ppf(0.99, a_idx, scale = scale_idx), 100)
+    x = np.linspace(scipy.stats.gamma.ppf(0.01, a_idx, scale = scale_idx), scipy.stats.gamma.ppf(0.99, a_idx, scale = scale_idx), 100)
     title_idx = f"a = {a_idx:.2f}, scale = {scale_idx:.2f}"
-    ax.plot(x, sy.stats.gamma.pdf(x, a_idx, scale = scale_idx), 'b', lw=2, label = 'gamma pdf', zorder = 1)
+    ax.plot(x, scipy.stats.gamma.pdf(x, a_idx, scale = scale_idx), 'b', lw=2, label = 'gamma pdf', zorder = 1)
 
     ## frozen
-    rv = sy.stats.gamma(a_idx, scale = scale_idx)
+    rv = scipy.stats.gamma(a_idx, scale = scale_idx)
     ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
 
     ## scipy Random variates.
-    r = sy.stats.gamma.rvs(a_idx, scale = scale_idx, size = 10000)
+    r = scipy.stats.gamma.rvs(a_idx, scale = scale_idx, size = 10000)
     ax.hist(r, density=True, bins='auto', histtype='stepfilled', alpha=0.03, facecolor = "#FF3300", label= "rvs", zorder = 3)
 
     ## np
     s = np.random.gamma(a_idx, scale_idx, 1000)
     count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
-    y = bins**(a_idx-1)*(np.exp(-bins/scale_idx) / (sps.gamma(a_idx)*scale_idx**a_idx))
+    y = bins**(a_idx-1)*(np.exp(-bins/scale_idx) / (scipy.special.gamma(a_idx)*scale_idx**a_idx))
     ax.plot(bins, y, lw=2, color='r', label = "np pdf")
 
     print(f"mean = {mean:.2f}/{a_idx*scale_idx:.2f}/{np.mean(s)}, var = {var:.2f}/{a_idx*scale_idx**2:.2f}/{np.var(s)}")
@@ -153,9 +153,9 @@ for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.rave
 ### CDF of gamma Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(scale_array), figsize=(len(scale_array)*4, len(a_array)*3))
 for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.ravel()):
-    x = np.linspace(sy.stats.gamma.cdf(0.01, a_idx, scale = scale_idx), sy.stats.gamma.ppf(0.99999, a_idx, scale = scale_idx), 100)
+    x = np.linspace(scipy.stats.gamma.cdf(0.01, a_idx, scale = scale_idx), scipy.stats.gamma.ppf(0.99999, a_idx, scale = scale_idx), 100)
     title_idx = f"a = {a_idx:.2f}, scale = {scale_idx:.2f}"
-    ax.plot(x, sy.stats.gamma.cdf(x, a_idx, scale_idx), 'b', lw=1)
+    ax.plot(x, scipy.stats.gamma.cdf(x, a_idx, scale_idx), 'b', lw=1)
     ax.set_title(title_idx)
 
     ax.spines.right.set_visible(False)
@@ -213,7 +213,7 @@ plt.show()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beta分布 (Beta Distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-from scipy.stats import beta
+# from scipy.stats import beta
 
 a_array = [0.5, 0.8, 2, 4, 6]
 b_array = [0.5, 0.8, 2, 4, 6 ]
@@ -222,18 +222,18 @@ b_array_, a_array_ = np.meshgrid(b_array, a_array)
 ### PDF of Beta Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(b_array), figsize=(len(b_array)*4, len(a_array)*3))
 for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
-    mean, var, skew, kurt = beta.stats(a = a_idx, b = b_idx, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.beta.stats(a = a_idx, b = b_idx, moments='mvsk')
 
-    x = np.linspace(beta.ppf(0.01, a = a_idx, b = b_idx), beta.ppf(0.99, a = a_idx, b = b_idx), 100)
+    x = np.linspace(scipy.stats.beta.ppf(0.01, a = a_idx, b = b_idx), scipy.stats.beta.ppf(0.99, a = a_idx, b = b_idx), 100)
     title_idx = f"a = {a_idx:.2f}, b = {b_idx:.2f}"
-    ax.plot(x, beta.pdf(x, a = a_idx, b = b_idx), 'b', lw=2, label = 'gamma pdf', zorder = 1)
+    ax.plot(x, scipy.stats.beta.pdf(x, a = a_idx, b = b_idx), 'b', lw=2, label = 'gamma pdf', zorder = 1)
 
     ## frozen
-    rv = beta(a = a_idx, b = b_idx)
+    rv = scipy.stats.beta(a = a_idx, b = b_idx)
     ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
 
     ## scipy Random variates.
-    r = beta.rvs(a = a_idx, b = b_idx, size = 10000)
+    r = scipy.stats.beta.rvs(a = a_idx, b = b_idx, size = 10000)
     ax.hist(r, density=True, bins='auto', histtype='stepfilled', alpha=0.03, facecolor = "#FF3300", label= "rvs", zorder = 3)
 
     ## np
@@ -260,11 +260,11 @@ for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
 ### CDF of gamma Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(b_array), figsize=(len(b_array)*4, len(a_array)*3))
 for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
-    mean, var, skew, kurt = beta.stats(a = a_idx, b = b_idx, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.beta.stats(a = a_idx, b = b_idx, moments='mvsk')
 
-    x = np.linspace(beta.ppf(0.01, a = a_idx, b = b_idx), beta.ppf(0.99, a = a_idx, b = b_idx), 100)
+    x = np.linspace(scipy.stats.beta.ppf(0.01, a = a_idx, b = b_idx), scipy.stats.beta.ppf(0.99, a = a_idx, b = b_idx), 100)
     title_idx = f"a = {a_idx:.2f}, scale = {scale_idx:.2f}"
-    ax.plot(x, beta.cdf(x, a = a_idx, b = b_idx), 'b', lw=1)
+    ax.plot(x, scipy.stats.beta.cdf(x, a = a_idx, b = b_idx), 'b', lw=1)
     ax.set_title(title_idx)
 
     ax.spines.right.set_visible(False)
@@ -277,7 +277,7 @@ for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
 ###>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import beta
+# from scipy.stats import beta
 
 # 参数设置
 alpha_1, beta_1 = 2, 5
@@ -287,16 +287,16 @@ alpha_2, beta_2 = 5, 2
 x = np.linspace(0, 1, 1000)
 
 # 计算PDF（概率密度函数）
-pdf_1 = beta.pdf(x, alpha_1, beta_1)
-pdf_2 = beta.pdf(x, alpha_2, beta_2)
+pdf_1 = scipy.stats.beta.pdf(x, alpha_1, beta_1)
+pdf_2 = scipy.stats.beta.pdf(x, alpha_2, beta_2)
 
 # 计算CDF（累积分布函数）
-cdf_1 = beta.cdf(x, alpha_1, beta_1)
-cdf_2 = beta.cdf(x, alpha_2, beta_2)
+cdf_1 = scipy.stats.beta.cdf(x, alpha_1, beta_1)
+cdf_2 = scipy.stats.beta.cdf(x, alpha_2, beta_2)
 
 # 生成随机样本数据
-samples_1 = beta.rvs(alpha_1, beta_1, size=1000)
-samples_2 = beta.rvs(alpha_2, beta_2, size=1000)
+samples_1 = scipy.stats.beta.rvs(alpha_1, beta_1, size=1000)
+samples_2 = scipy.stats.beta.rvs(alpha_2, beta_2, size=1000)
 
 # 创建图形和子图
 fig, axs = plt.subplots(2, 2, figsize=(14, 10))
@@ -332,11 +332,11 @@ plt.show()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 瑞丽分布(rayleigh  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-from scipy.stats import rayleigh
+# from scipy.stats import rayleigh
 # loc一定要写明确，注意关键字参数和位置参数造成的错误
 loc = 0
 scale = 2
-mean, var, skew, kurt = rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
+mean, var, skew, kurt = scipy.stats.rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
 
 scale_array = [1, 2, 3, 4, 5, 6, ]
 
@@ -344,18 +344,18 @@ scale_array = [1, 2, 3, 4, 5, 6, ]
 fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
 
 for scale, ax in zip(scale_array, axs.ravel()):
-    mean, var, skew, kurt = rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
 
-    x = np.linspace(rayleigh.ppf(0.01, loc = loc, scale = scale), rayleigh.ppf(0.99, loc = loc, scale = scale), 100)
+    x = np.linspace(scipy.stats.rayleigh.ppf(0.01, loc = loc, scale = scale), scipy.stats.rayleigh.ppf(0.99, loc = loc, scale = scale), 100)
     title_idx = f"scale = {scale}"
-    ax.plot(x, rayleigh.pdf(x, loc = loc, scale = scale), 'b', lw=2, label = 'rayleigh pdf', zorder = 1)
+    ax.plot(x, scipy.stats.rayleigh.pdf(x, loc = loc, scale = scale), 'b', lw=2, label = 'rayleigh pdf', zorder = 1)
 
     ## frozen
-    rv = rayleigh(loc = loc, scale = scale)
+    rv = scipy.stats.rayleigh(loc = loc, scale = scale)
     ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
 
     ## scipy Random variates.
-    r = rayleigh.rvs(loc = loc, scale = scale, size = 10000)
+    r = scipy.stats.rayleigh.rvs(loc = loc, scale = scale, size = 10000)
     ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label =  "rvs", zorder = 3)
 
     ## np
@@ -381,11 +381,11 @@ for scale, ax in zip(scale_array, axs.ravel()):
 fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
 
 for scale, ax in zip(scale_array, axs.ravel()):
-    mean, var, skew, kurt = rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
 
-    x = np.linspace(rayleigh.cdf(0.01, loc = loc, scale = scale), rayleigh.ppf(0.99999, loc = loc, scale = scale), 100)
+    x = np.linspace(scipy.stats.rayleigh.cdf(0.01, loc = loc, scale = scale), scipy.stats.rayleigh.ppf(0.99999, loc = loc, scale = scale), 100)
     title_idx = f"scale = {scale}"
-    ax.plot(x, rayleigh.cdf(x, loc = loc, scale = scale), 'b', lw=1)
+    ax.plot(x, scipy.stats.rayleigh.cdf(x, loc = loc, scale = scale), 'b', lw=1)
     ax.set_title(title_idx)
 
     ax.spines.right.set_visible(False)
@@ -399,11 +399,11 @@ for scale, ax in zip(scale_array, axs.ravel()):
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 指数分布 (Exponential Distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-from scipy.stats import expon
+# from scipy.stats import expon
 # loc一定要写明确，注意关键字参数和位置参数造成的错误
 loc = 0
 scale = 2
-mean, var, skew, kurt = expon.stats(loc = loc, scale = scale, moments='mvsk')
+mean, var, skew, kurt = scipy.stats.expon.stats(loc = loc, scale = scale, moments='mvsk')
 
 scale_array = [0.1, 0.5, 1, 2, 3, ]
 
@@ -411,18 +411,18 @@ scale_array = [0.1, 0.5, 1, 2, 3, ]
 fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
 
 for scale, ax in zip(scale_array, axs.ravel()):
-    mean, var, skew, kurt = expon.stats(loc = loc, scale = scale, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.expon.stats(loc = loc, scale = scale, moments='mvsk')
 
-    x = np.linspace(expon.ppf(0.01, loc = loc, scale = scale), expon.ppf(0.99, loc = loc, scale = scale), 100)
+    x = np.linspace(scipy.stats.expon.ppf(0.01, loc = loc, scale = scale), scipy.stats.expon.ppf(0.99, loc = loc, scale = scale), 100)
     title_idx = f"scale = {scale}"
-    ax.plot(x, expon.pdf(x, loc = loc, scale = scale), 'b', lw=2, label = 'expon pdf', zorder = 1)
+    ax.plot(x, scipy.stats.expon.pdf(x, loc = loc, scale = scale), 'b', lw=2, label = 'expon pdf', zorder = 1)
 
     ## frozen
-    rv = expon(loc = loc, scale = scale)
+    rv = scipy.stats.expon(loc = loc, scale = scale)
     ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
 
     ## scipy Random variates.
-    r = expon.rvs(loc = loc, scale = scale, size = 1000)
+    r = scipy.stats.expon.rvs(loc = loc, scale = scale, size = 1000)
     ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label =  "rvs", zorder = 3)
 
     ## np
@@ -449,11 +449,11 @@ for scale, ax in zip(scale_array, axs.ravel()):
 fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
 
 for scale, ax in zip(scale_array, axs.ravel()):
-    mean, var, skew, kurt = expon.stats(loc = loc, scale = scale, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.expon.stats(loc = loc, scale = scale, moments='mvsk')
 
-    x = np.linspace(expon.cdf(0.01, loc = loc, scale = scale), expon.ppf(0.99999, loc = loc, scale = scale), 100)
+    x = np.linspace(scipy.stats.expon.cdf(0.01, loc = loc, scale = scale), scipy.stats.expon.ppf(0.99999, loc = loc, scale = scale), 100)
     title_idx = f"scale = {scale}"
-    ax.plot(x, expon.cdf(x, loc = loc, scale = scale), 'b', lw=1)
+    ax.plot(x, scipy.stats.expon.cdf(x, loc = loc, scale = scale), 'b', lw=1)
     ax.set_title(title_idx)
 
     ax.spines.right.set_visible(False)
@@ -509,8 +509,8 @@ plt.show()
 # X = (x1+jx2) ~ CN(0, sigma^2)
 # x1 ~ CN(0, sigma^2/2), x2 ~ CN(0, sigma^2/2)
 
-from scipy.stats import rayleigh
-from scipy.stats import expon
+# from scipy.stats import rayleigh
+# from scipy.stats import expon
 
 mu = 0
 sigma2_array = [1, 2]
@@ -528,8 +528,8 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     ax.plot(bins, y, lw=2, color='r', label = "theory pdf")
 
     ## scipy
-    x = np.linspace(rayleigh.ppf(0.01, loc = loc, scale = np.sqrt(sigma2/2)), rayleigh.ppf(0.99, loc = loc, scale = np.sqrt(sigma2/2)), 100)
-    ax.plot(x, rayleigh.pdf(x, loc = loc, scale = np.sqrt(sigma2/2)), 'b', lw=2, label = 'rayleigh pdf', zorder = 1)
+    x = np.linspace(scipy.stats.rayleigh.ppf(0.01, loc = loc, scale = np.sqrt(sigma2/2)), scipy.stats.rayleigh.ppf(0.99, loc = loc, scale = np.sqrt(sigma2/2)), 100)
+    ax.plot(x, scipy.stats.rayleigh.pdf(x, loc = loc, scale = np.sqrt(sigma2/2)), 'b', lw=2, label = 'rayleigh pdf', zorder = 1)
 
     print(f"mean = {np.sqrt(np.pi/2)*np.sqrt(sigma2/2):.2f}/{np.mean(X)}, var = {(2-np.pi/2)*sigma2/2:.2f}/{np.var(X)} ")
     # ax.set_xlim(0,60)
@@ -558,8 +558,8 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     ax.plot(bins, y, lw=2, color='r', label = "theory pdf", zorder = 1)
 
     ## scipy
-    x = np.linspace(expon.ppf(0.01, loc = loc, scale = sigma2), expon.ppf(0.99, loc = loc, scale = sigma2), 100)
-    ax.plot(x, expon.pdf(x, loc = loc, scale = sigma2), 'b--', lw=2, label = 'expon pdf', zorder = 2)
+    x = np.linspace(scipy.stats.expon.ppf(0.01, loc = loc, scale = sigma2), scipy.stats.expon.ppf(0.99, loc = loc, scale = sigma2), 100)
+    ax.plot(x, scipy.stats.expon.pdf(x, loc = loc, scale = sigma2), 'b--', lw=2, label = 'expon pdf', zorder = 2)
 
     print(f"mean = {sigma2:.2f}/{np.mean(X)}, var = {sigma2**2:.2f}/{np.var(X)} ")
     # ax.set_xlim(0,60)
@@ -577,35 +577,35 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡方分布(chi2  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-from scipy.stats import chi2
+# from scipy.stats import chi2
 
 df = 55
-mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
+mean, var, skew, kurt = scipy.stats.chi2.stats(df, moments='mvsk')
 
 df_array = [1, 2, 4, 5, 7, 9, 10 ]
 
 ### PDF of chi2 Distributions
 fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
 for df, ax in zip(df_array, axs.ravel()):
-    mean, var, skew, kurt = chi2.stats(df, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.chi2.stats(df, moments='mvsk')
     print(f"mean = {mean:.2f}/ , var = {var:.2f}/ ")
 
-    x = np.linspace(chi2.ppf(0.01, df), chi2.ppf(0.99, df), 100)
+    x = np.linspace(scipy.stats.chi2.ppf(0.01, df), scipy.stats.chi2.ppf(0.99, df), 100)
     title_idx = f"df = {df}"
-    ax.plot(x, chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
+    ax.plot(x, scipy.stats.chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
 
     ## frozen
-    rv = chi2(df)
+    rv = scipy.stats.chi2(df)
     ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
 
     ## scipy Random variates.
-    r = chi2.rvs(df, size = 10000)
+    r = scipy.stats.chi2.rvs(df, size = 10000)
     ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.03, facecolor = "#FF3300", label =  "rvs", zorder = 3)
 
     ## np
     s = np.random.chisquare(df = df, size = 1000)
     count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
-    y = (1/2)**(df/2) * bins**(df/2-1) * np.exp(-bins/2) / sps.gamma(df/2)
+    y = (1/2)**(df/2) * bins**(df/2-1) * np.exp(-bins/2) / scipy.special.gamma(df/2)
     ax.plot(bins, y, lw=2, color='r', label = "np pdf")
 
     # ax.set_xlim(0,60)
@@ -624,9 +624,9 @@ for df, ax in zip(df_array, axs.ravel()):
 ### CDF of gamma Distributions
 fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
 for df, ax in zip(df_array, axs.ravel()):
-    x = np.linspace(chi2.cdf(0.01, df), chi2.ppf(0.99999, df), 100)
+    x = np.linspace(scipy.stats.chi2.cdf(0.01, df), scipy.stats.chi2.ppf(0.99999, df), 100)
     title_idx = f"df = {df}"
-    ax.plot(x, chi2.cdf(x, df), 'b', lw=1)
+    ax.plot(x, scipy.stats.chi2.cdf(x, df), 'b', lw=1)
     ax.set_title(title_idx)
 
     ax.spines.right.set_visible(False)
