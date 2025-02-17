@@ -3,7 +3,7 @@ clc;clear all;close all;
 
 
 nBits=10^5; %number of bits to transmit 
-errorProbs = 0:0.1:0.6; %cross-over probabilities of BSC to simulate 
+errorProbs = 0.001:0.1:0.6; %cross-over probabilities of BSC to simulate 
 C = zeros(1,length(errorProbs)); %to store capacity for each point
  
 j=1; 
@@ -26,7 +26,11 @@ for e=errorProbs, %for each error probability
     j=j+1;
 
 end 
-plot(errorProbs,C); title('Capacity over Binary Symmetric Channel');
+C_theory = 1 - (-errorProbs .* log2(errorProbs) - (1-errorProbs) .* log2(1-errorProbs))
+
+plot(errorProbs,C,'r'); hold on;
+%plot(errorProbs,C_theory,'b'); 
+title('Capacity over Binary Symmetric Channel');
 xlabel('Cross-over probability - e'); 
 ylabel('Capacity (bits/channel use)');
 
