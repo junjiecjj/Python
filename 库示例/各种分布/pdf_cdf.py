@@ -12,7 +12,7 @@ Created on Fri Dec  1 14:53:49 2023
 
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -344,7 +344,7 @@ out_fig = plt.gcf()
 # plt.show()
 filepath2 = '/home/jack/snap/'
 out_fig = plt.gcf()
-out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
+# out_fig .savefig(filepath2+'smooth.eps', format='eps',  bbox_inches = 'tight')
 #out_fig .savefig(filepath2+'hh.png',format='png',dpi=1000, bbox_inches = 'tight')
 plt.show()
 

@@ -9,8 +9,6 @@ https://numpy.org/doc/stable/reference/random/generated/numpy.random.beta.html
 https://docs.scipy.org/doc/scipy/reference/stats.html
 """
 
-
-
 import numpy as np
 import pandas as pd
 import scipy as sy
@@ -49,7 +47,6 @@ Q = Qfun(x)
 QupBound1 = QfunUPbound1(x)
 QupBound2 = QfunUPbound2(x)
 
-
 fig, ax = plt.subplots(figsize = (8, 6))
 ax.plot(x, Q, 'b', lw = 2, alpha=0.6, label='Q(x)')
 ax.plot(x, QupBound1, 'r', lw = 2, alpha=0.6, label='QupBound1(x)')
@@ -59,8 +56,6 @@ font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 27}
 plt.xlabel('x')
 plt.legend(loc='best', prop=font2,)
 plt.show()
-
-
 
 import numpy as np
 from scipy import special
@@ -110,7 +105,6 @@ plt.show()
 
 
 #%%>>>>>>>>>  gamma  distribution %%%%%%%%%%%%%%%%%%%%%%%%%%
-
 a = 1.99
 mean, var, skew, kurt = sy.stats.gamma.stats(a, moments='mvsk')
 
@@ -170,8 +164,6 @@ for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.rave
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
-
-
 
 ###>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 import numpy as np
