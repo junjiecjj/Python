@@ -78,24 +78,29 @@ plt.show()
 
 #%%%%%%%%%%%%%%%%%%%%%% 伽马分布 (Gamma Distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#%%>>>>>>>>>>>>>>>>>>>>>>>>  gamma function.
+#%%>>>>>>>>>>>>>>>>>>>>>>>>  gamma function
 import numpy as np
-from scipy.special import factorial
+# from scipy.special import factorial
 
-scipy.special.gamma([0, 0.5, 1, 5])
+print(scipy.special.gamma([0, 0.5, 1, 5]))
 z = 2.5 + 1j
-scipy.special.gamma(z)
+print(scipy.special.gamma(z))
 
-scipy.special.gamma(z+1), z*scipy.special.gamma(z)  # Recurrence property
 
-scipy.special.gamma(0.5)**2  # gamma(0.5) = sqrt(pi)
+print(scipy.special.gamma(z+1), z*scipy.special.gamma(z))  # Recurrence property  for complex
+
+print(scipy.special.gamma(0.5)**2,  np.pi )  # gamma(0.5) = sqrt(pi)
+
 x = np.linspace(-3.5, 5.5, 2251)
 y = scipy.special.gamma(x)
 
+k = np.arange(1, 7)
+y1 = scipy.special.factorial(k-1)
+
 fig, ax = plt.subplots(figsize = (10, 10))
 ax.plot(x, y, 'b', lw = 2, alpha=0.6, label='gamma(x)')
-k = np.arange(1, 7)
-ax.plot(k, factorial(k-1), 'k*', ms = 10, alpha=0.6, label='(x-1)!, x = 1, 2, ...')
+ax.plot(k, y1, 'k*', ms = 10, alpha=0.6, label='(x-1)!, x = 1, 2, ...')
+
 ax.set_xlim(-3.5, 5.5)
 ax.set_ylim(-10, 25)
 plt.grid()
@@ -104,7 +109,10 @@ plt.legend(loc='lower right')
 plt.show()
 
 
-#%%>>>>>>>>>  gamma  distribution %%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%>>>>>>>>>  gamma  distribution: Gamma分布即为多个独立且相同分布（iid）的指数分布变量的和的分布 %%%%%%%%%%%%%%%%%%%%%%%%%%
+# 伽马分布（Gamma Distribution）是统计学中的一种连续概率函数，它包含两个参数α和β，其中α称为形状参数，β称为尺度参数。
+# 1.定义与概念：假设随机变量X为等到第α件事发生所需之等候时间，且每个事件之间的等待时间是互相独立的，α为事件发生的次数，β代表事件发生一次的概率，那么这α个事件的时间之和服从伽马分布。
+
 a = 1.99
 mean, var, skew, kurt = scipy.stats.gamma.stats(a, moments='mvsk')
 
@@ -116,9 +124,10 @@ scale_array_, a_array_ = np.meshgrid(scale_array, a_array)
 ### PDF of Beta Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(scale_array), figsize=(len(scale_array)*4, len(a_array)*3))
 for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.ravel()):
-    mean, var, skew, kurt = scipy.stats.gamma.stats(a_idx,scale = scale_idx, moments='mvsk')
+    mean, var, skew, kurt = scipy.stats.gamma.stats(a_idx, scale = scale_idx, moments='mvsk')
 
     x = np.linspace(scipy.stats.gamma.ppf(0.01, a_idx, scale = scale_idx), scipy.stats.gamma.ppf(0.99, a_idx, scale = scale_idx), 100)
+
     title_idx = f"a = {a_idx:.2f}, scale = {scale_idx:.2f}"
     ax.plot(x, scipy.stats.gamma.pdf(x, a_idx, scale = scale_idx), 'b', lw=2, label = 'gamma pdf', zorder = 1)
 
@@ -149,7 +158,6 @@ for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.rave
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-
 ### CDF of gamma Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(scale_array), figsize=(len(scale_array)*4, len(a_array)*3))
 for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.ravel()):
@@ -169,23 +177,23 @@ for a_idx, scale_idx, ax in zip(a_array_.ravel(), scale_array_.ravel(), axs.rave
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import gamma
+# from scipy.stats import gamma
 
-# 设置随机种子以确保可重复性
+## 设置随机种子以确保可重复性
 np.random.seed(42)
 
-# 伽马分布的参数
+## 伽马分布的参数
 shape, scale = 2.0, 2.0  # α (shape) = 2.0, θ (scale) = 2.0
 
-# 生成伽马分布的随机样本
-data = gamma.rvs(a=shape, scale=scale, size=1000)
+## 生成伽马分布的随机样本
+data = scipy.stats.gamma.rvs(a=shape, scale=scale, size=1000)
 
-# 创建图形和子图
+## 创建图形和子图
 fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
-# 子图1：伽马分布的概率密度函数 (PDF)
+## 子图1：伽马分布的概率密度函数 (PDF)
 x = np.linspace(0, 20, 1000)
-pdf = gamma.pdf(x, a=shape, scale=scale)
+pdf = scipy.stats.gamma.pdf(x, a=shape, scale=scale)
 axs[0, 0].plot(x, pdf, 'r-', lw=2, label=f'Gamma PDF\nα={shape}, θ={scale}')
 axs[0, 0].fill_between(x, pdf, color='red', alpha=0.3)
 axs[0, 0].set_title('Probability Density Function (PDF)')
@@ -202,7 +210,7 @@ axs[1, 0].set_title('Kernel Density Estimate (KDE)')
 axs[1, 0].set_ylabel('Density')
 
 # 子图4：样本的累积分布函数 (CDF)
-cdf = gamma.cdf(x, a=shape, scale=scale)
+cdf = scipy.stats.gamma.cdf(x, a=shape, scale=scale)
 axs[1, 1].plot(x, cdf, 'b-', lw=2, label='CDF')
 axs[1, 1].set_title('Cumulative Distribution Function (CDF)')
 axs[1, 1].legend()
@@ -210,6 +218,236 @@ axs[1, 1].legend()
 # 调整布局
 plt.tight_layout()
 plt.show()
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 验证 Gamma分布即为多个独立且相同分布（iid）的指数分布变量的和的分布 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+a = 4
+scale = np.sqrt(2)
+N = 100000
+
+x = np.linspace(scipy.stats.gamma.ppf(0.0001, a, scale = scale), scipy.stats.gamma.ppf(0.9999, a, scale = scale), 1000)
+
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+title_idx = f"a = {a_idx:.2f}, scale = {scale_idx:.2f}"
+axs.plot(x, scipy.stats.gamma.pdf(x, a, scale = scale), 'b', lw=2, label = 'gamma pdf', zorder = 1)
+
+Y = np.zeros(N)
+for i in range(a):
+    Y += scipy.stats.expon.rvs(loc = 0, scale = scale, size = N)
+
+    ## scipy Random variates.
+    # r = scipy.stats.expon.rvs(loc = loc, scale = scale, size = 1000)
+    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label =  "rvs", zorder = 3)
+
+axs.hist(Y, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label = f"sum of {a} exp rvs with {scale:.3f}", zorder = 3)
+
+axs.set_xlabel( 'x',)
+axs.set_ylabel('pdf',)
+axs.set_title("验证 Gamma分布即为多个独立且相同分布（iid）的指数分布变量的和的分布")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 验证 chi2 分布是独立的k标准正态变量，则其平方和服从自由度为 k 的卡方分布， %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+df = 4
+
+N = 100000
+
+x = np.linspace(scipy.stats.chi2.ppf(0.0001, df), scipy.stats.chi2.ppf(0.9999, df), 1000)
+
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+title_idx = f"df = {df:.2f}"
+axs.plot(x, scipy.stats.chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
+
+Y = np.zeros(N)
+for i in range(df):
+    Y += np.random.randn(N)**2
+
+axs.hist(Y, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label = f"sum of {a} tandard normal rvs", zorder = 3)
+
+axs.set_xlabel( 'x',)
+axs.set_ylabel('pdf',)
+axs.set_title("验证 chi2 分布是独立的k标准正态变量的平方和")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 验证 chi 分布是独立的k标准正态变量，则其平方和开方服从自由度为 k 的卡分布， %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+df = 4
+N = 100000
+
+x = np.linspace(scipy.stats.chi.ppf(0.0001, df), scipy.stats.chi.ppf(0.9999, df), 1000)
+
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+title_idx = f"df = {df:.2f}"
+axs.plot(x, scipy.stats.chi.pdf(x, df), 'b', lw=2, label = 'chi pdf', zorder = 1)
+
+Y = np.zeros(N)
+for i in range(df):
+    Y += np.random.randn(N)**2
+Y = np.sqrt(Y)
+axs.hist(Y, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label = f"sum of {a} tandard normal rvs", zorder = 3)
+
+axs.set_xlabel( 'x',)
+axs.set_ylabel('pdf',)
+axs.set_title("验证 chi 分布是独立的k标准正态变量的平方和开方")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡分布(chi distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+df = 55
+mean, var, skew, kurt = scipy.stats.chi.stats(df, moments='mvsk')
+
+df_array = [1, 2, 4, 5, 7, 9, 10 ]
+
+### PDF of chi Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
+for df, ax in zip(df_array, axs.ravel()):
+    mean, var, skew, kurt = scipy.stats.chi.stats(df, moments='mvsk')
+    print(f"mean = {mean:.2f}/ , var = {var:.2f}/ ")
+
+    x = np.linspace(scipy.stats.chi.ppf(0.01, df), scipy.stats.chi.ppf(0.99, df), 100)
+    title_idx = f"df = {df}"
+    ax.plot(x, scipy.stats.chi.pdf(x, df), 'b', lw=2, label = 'chi pdf', zorder = 1)
+
+    ## frozen
+    rv = scipy.stats.chi(df)
+    ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
+
+    ## scipy Random variates.
+    r = scipy.stats.chi.rvs(df, size = 10000)
+    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.03, facecolor = "#FF3300", label =  "rvs", zorder = 3)
+
+    ## np
+    # s = np.random.chi(df = df, size = 1000)
+    # count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
+    y = (1/2)**(df/2-1) * bins**(df-1) * np.exp(-bins**2/2) / scipy.special.gamma(df/2)
+    ax.plot(bins, y, lw=2, color='r', label = "np pdf")
+
+    # ax.set_xlim(0,60)
+    # ax.set_ylim(0,4)
+
+    ax.legend(loc='best', frameon=False)
+    ax.set_title(title_idx)
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+### CDF of gamma Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
+for df, ax in zip(df_array, axs.ravel()):
+    x = np.linspace(scipy.stats.chi.cdf(0.01, df), scipy.stats.chi.ppf(0.99999, df), 100)
+    title_idx = f"df = {df}"
+    ax.plot(x, scipy.stats.chi.cdf(x, df), 'b', lw=1)
+    ax.set_title(title_idx)
+
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡方分布(chi2  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# from scipy.stats import chi2
+
+df = 55
+mean, var, skew, kurt = scipy.stats.chi2.stats(df, moments='mvsk')
+
+df_array = [1, 2, 4, 5, 7, 9, 10 ]
+
+### PDF of chi2 Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
+for df, ax in zip(df_array, axs.ravel()):
+    mean, var, skew, kurt = scipy.stats.chi2.stats(df, moments='mvsk')
+    print(f"mean = {mean:.2f}/ , var = {var:.2f}/ ")
+
+    x = np.linspace(scipy.stats.chi2.ppf(0.01, df), scipy.stats.chi2.ppf(0.99, df), 100)
+    title_idx = f"df = {df}"
+    ax.plot(x, scipy.stats.chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
+
+    ## frozen
+    rv = scipy.stats.chi2(df)
+    ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
+
+    ## scipy Random variates.
+    r = scipy.stats.chi2.rvs(df, size = 10000)
+    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.03, facecolor = "#FF3300", label =  "rvs", zorder = 3)
+
+    ## np
+    s = np.random.chisquare(df = df, size = 1000)
+    count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
+    y = (1/2)**(df/2) * bins**(df/2-1) * np.exp(-bins/2) / scipy.special.gamma(df/2)
+    ax.plot(bins, y, lw=2, color='r', label = "np pdf")
+
+    # ax.set_xlim(0,60)
+    # ax.set_ylim(0,4)
+
+    ax.legend(loc='best', frameon=False)
+    ax.set_title(title_idx)
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+### CDF of gamma Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
+for df, ax in zip(df_array, axs.ravel()):
+    x = np.linspace(scipy.stats.chi2.cdf(0.01, df), scipy.stats.chi2.ppf(0.99999, df), 100)
+    title_idx = f"df = {df}"
+    ax.plot(x, scipy.stats.chi2.cdf(x, df), 'b', lw=1)
+    ax.set_title(title_idx)
+
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+
+#%% 卡方分布是特殊的gamma分布,  with gamma parameters a = df/2, loc = 0 and scale = 2.
+
+df = 5
+a = df/2
+scale = 2
+x = np.linspace(scipy.stats.gamma.ppf(0.001, a, scale = scale), scipy.stats.gamma.ppf(0.99, a, scale = scale), 100)
+
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+title_idx = f"a = {a:.2f}, scale = {scale:.2f}"
+axs.plot(x, scipy.stats.gamma.pdf(x, a, scale = scale), 'b', lw=2, label = 'gamma pdf', zorder = 1)
+
+title_idx = f"df = {df}"
+axs.plot(x, scipy.stats.chi2.pdf(x, df), 'r', lw=2,ls = '--', label = 'chi2 pdf', zorder = 1)
+
+axs.set_xlabel( 'x',)
+axs.set_ylabel('pdf',)
+axs.set_title("The chi-squared distribution is a special case of the gamma distribution")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beta分布 (Beta Distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -239,8 +477,8 @@ for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
     ## np
     s = np.random.beta(a = a_idx, b = b_idx, size = 10000)
     count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
-    # y = bins**(a_idx-1) * (1 - bins)**(b_idx-1) *sps.gamma(a_idx+b_idx)/ (sps.gamma(a_idx) * sps.gamma(b_idx))
-    # ax.plot(bins, y, lw=2, color='r', label = "np pdf")
+    y = bins**(a_idx-1) * (1 - bins)**(b_idx-1) * scipy.special.gamma(a_idx+b_idx)/ (scipy.special.gamma(a_idx) * scipy.special.gamma(b_idx))
+    ax.plot(bins, y, lw=2, color='r',ls = '--', label = "np pdf")
 
     print(f"mean = {mean:.2f}/{np.mean(s):.2f}, var = {var:.2f}/{np.var(s):.2f}")
 
@@ -255,7 +493,6 @@ for a_idx, b_idx, ax in zip(a_array_.ravel(), b_array_.ravel(), axs.ravel()):
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
-
 
 ### CDF of gamma Distributions
 fig, axs = plt.subplots(nrows = len(a_array), ncols = len(b_array), figsize=(len(b_array)*4, len(a_array)*3))
@@ -331,9 +568,8 @@ plt.tight_layout(rect=[0, 0, 1, 0.96])
 plt.show()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 瑞丽分布(rayleigh  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# from scipy.stats import rayleigh
-# loc一定要写明确，注意关键字参数和位置参数造成的错误
+# 瑞利分布（Rayleigh Distribution）：当一个随机二维向量的两个分量呈独立的、均值为0，有着相同的方差的正态分布时，这个向量的模呈瑞利分布。
+# loc一定要写明确，注意关键字参数和位置参数造成的错误.
 loc = 0
 scale = 2
 mean, var, skew, kurt = scipy.stats.rayleigh.stats(loc = loc, scale = scale, moments='mvsk')
@@ -362,7 +598,7 @@ for scale, ax in zip(scale_array, axs.ravel()):
     s = np.random.rayleigh(scale = scale, size = 1000)
     count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
     y = bins / scale**2 * np.exp(-bins**2/(2 * scale**2))
-    ax.plot(bins, y, lw=2, color='r', label = "np pdf")
+    ax.plot(bins, y, lw = 2, color = 'r', ls = '--', label = "np pdf")
 
     print(f"mean = {mean:.2f}/{np.sqrt(np.pi/2)*scale}/{np.mean(s)}, var = {var:.2f}/{(2-np.pi/2)*scale**2}/{np.var(s)} ")
     # ax.set_xlim(0,60)
@@ -394,8 +630,6 @@ for scale, ax in zip(scale_array, axs.ravel()):
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 指数分布 (Exponential Distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -444,10 +678,8 @@ for scale, ax in zip(scale_array, axs.ravel()):
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-
 ### CDF of exponential Distributions
 fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
-
 for scale, ax in zip(scale_array, axs.ravel()):
     mean, var, skew, kurt = scipy.stats.expon.stats(loc = loc, scale = scale, moments='mvsk')
 
@@ -475,7 +707,7 @@ np.random.seed(42)
 # 生成虚拟数据集（指数分布）
 lambda_param = 1.5  # 参数lambda
 size = 1000  # 数据集大小
-data = np.random.exponential(scale=1/lambda_param, size=size)
+data = np.random.exponential(scale = 1/lambda_param, size = size)
 
 # 将数据转换为DataFrame
 df = pd.DataFrame(data, columns=['Exponential'])
@@ -505,6 +737,7 @@ plt.tight_layout()
 plt.show()
 
 #%%>>>>>>>>>> 循环对称高斯分布( X~CN(0, sigma^2)  distribution) %%%%%%%%%%%%%%%%%%%%%%%%
+# 验证由两个均值为0，方差相同的独立同分布的正太分布分别为实部和虚部的复数向量分布符合瑞丽分布, 且这个复数的模的平方服从指数分布,
 
 # X = (x1+jx2) ~ CN(0, sigma^2)
 # x1 ~ CN(0, sigma^2/2), x2 ~ CN(0, sigma^2/2)
@@ -576,65 +809,8 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     ax.tick_params(axis="y", direction='in')
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡方分布(chi2  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# from scipy.stats import chi2
-
-df = 55
-mean, var, skew, kurt = scipy.stats.chi2.stats(df, moments='mvsk')
-
-df_array = [1, 2, 4, 5, 7, 9, 10 ]
-
-### PDF of chi2 Distributions
-fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
-for df, ax in zip(df_array, axs.ravel()):
-    mean, var, skew, kurt = scipy.stats.chi2.stats(df, moments='mvsk')
-    print(f"mean = {mean:.2f}/ , var = {var:.2f}/ ")
-
-    x = np.linspace(scipy.stats.chi2.ppf(0.01, df), scipy.stats.chi2.ppf(0.99, df), 100)
-    title_idx = f"df = {df}"
-    ax.plot(x, scipy.stats.chi2.pdf(x, df), 'b', lw=2, label = 'chi2 pdf', zorder = 1)
-
-    ## frozen
-    rv = scipy.stats.chi2(df)
-    ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
-
-    ## scipy Random variates.
-    r = scipy.stats.chi2.rvs(df, size = 10000)
-    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.03, facecolor = "#FF3300", label =  "rvs", zorder = 3)
-
-    ## np
-    s = np.random.chisquare(df = df, size = 1000)
-    count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
-    y = (1/2)**(df/2) * bins**(df/2-1) * np.exp(-bins/2) / scipy.special.gamma(df/2)
-    ax.plot(bins, y, lw=2, color='r', label = "np pdf")
-
-    # ax.set_xlim(0,60)
-    # ax.set_ylim(0,4)
-
-    ax.legend(loc='best', frameon=False)
-    ax.set_title(title_idx)
-    ax.spines.right.set_visible(False)
-    ax.spines.top.set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.tick_params(axis="x", direction='in')
-    ax.tick_params(axis="y", direction='in')
 
 
-### CDF of gamma Distributions
-fig, axs = plt.subplots(nrows = 1, ncols = len(df_array), figsize=(len(df_array)*4, 3))
-for df, ax in zip(df_array, axs.ravel()):
-    x = np.linspace(scipy.stats.chi2.cdf(0.01, df), scipy.stats.chi2.ppf(0.99999, df), 100)
-    title_idx = f"df = {df}"
-    ax.plot(x, scipy.stats.chi2.cdf(x, df), 'b', lw=1)
-    ax.set_title(title_idx)
-
-    ax.spines.right.set_visible(False)
-    ax.spines.top.set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.tick_params(axis="x", direction='in')
-    ax.tick_params(axis="y", direction='in')
 
 
 

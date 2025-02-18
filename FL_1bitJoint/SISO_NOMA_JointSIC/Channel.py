@@ -11,8 +11,6 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 
 
-
-
 def AWGN_mac(K,  frame_len):
     H = np.ones((K, frame_len))
     return H
@@ -33,7 +31,6 @@ def Large_mac(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1)
     h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
     H = np.expand_dims(h_d, -1).repeat(frame_len, axis = -1)
     return H
-
 
 def channelConfig(K, r = 100):
     C0 = -30                             # dB

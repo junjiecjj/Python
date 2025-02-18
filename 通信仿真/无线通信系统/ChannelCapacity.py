@@ -125,14 +125,13 @@ plt.close()
 
 
 #%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel
-
 from Modulations import NormFactor
 from ChannelModels import add_awgn_noise
 
 nSym = 10000
-channelModel = 'awgn'
 snrdB = np.arange(-10, 36, 1)
-C_theory = np.log2(1 + 10**(snrdB/10))
+channelModel = 'awgn'
+
 mod_type = 'qam'
 if mod_type == 'pam' or mod_type == 'psk':
     arrayOfM = [2, 4, 8, 16, 32, 64]
@@ -162,17 +161,25 @@ for m, M in enumerate(arrayOfM):
         if channelModel == 'rayleigh':
             h = (np.random.randn(1, nSym) + 1j * np.random.randn(1, nSym))/np.sqrt(2)
         elif channelModel == 'awgn':
-            h = np.ones(nSym)
+            h = np.ones((1, nSym))
         hs = h * s
         r, N0 = add_awgn_noise(hs, snrdb)
 
-        pdfs = np.exp(-np.abs( np.ones((M, 1)) @ r - modem.constellation[:,None] @ h[None,] )**2/N0)
+        pdfs = np.exp(-np.abs( np.ones((M, 1)) @ r - modem.constellation[:,None] @ h)**2/N0)
         p = np.maximum(pdfs, 1e-20)
         p = p / np.sum(p, axis = 0)
         symEntropy = -np.sum(p * np.log2(p), axis = 0)
         C_sim[i] = np.log2(M) - np.mean(symEntropy)# / M / (np.sqrt(np.pi))**2
     axs.plot(snrdB, C_sim, color = plotColor[m], ls = '-', label = f'{M}-{mod_type.upper()}' )
 
+if channelModel == 'awgn':
+    C_theory = np.log2(1 + 10**(snrdB/10))
+elif channelModel == 'rayleigh':
+    h = (np.random.randn(1, nSym) + 1j * np.random.randn(1, nSym))/np.sqrt(2)
+    sigma_z = 1
+    snr = 10**(snrdB/10)
+    P = (sigma_z**2) * snr / np.mean(np.abs(h)**2)
+    C_theory = np.mean(np.log2(1 + (np.abs(h)**2).T @ P.reshape(1, -1) / sigma_z**2 ), axis = 0)
 
 axs.plot(snrdB, C_theory, color = 'r', ls = '-',  )
 axs.text(20, 7.2, f"Capacity limit on {channelModel.upper()} channel", color='r', size = 20, rotation = 41., ha = "center", va="center",)
@@ -184,7 +191,6 @@ axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
-
 
 
 

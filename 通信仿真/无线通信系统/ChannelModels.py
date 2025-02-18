@@ -14,7 +14,7 @@ def add_awgn_noise(x, snrdB, L = 1):
     P = np.sum(np.abs(x)**2)/x.size
     N0 = P/snr
     if x.dtype == 'complex':
-        n = np.sqrt(N0/2) * (np.random.randn(1, *x.shape) + 1j * np.random.randn(1, *x.shape))
+        n = np.sqrt(N0/2) * (np.random.randn(*x.shape) + 1j * np.random.randn(*x.shape))
     elif x.dtype == 'float' or x.dtype == 'int' :
         n = np.sqrt(N0/2) * np.random.randn(1, x.shape)
     r = x + n
