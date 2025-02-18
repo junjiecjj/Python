@@ -57,7 +57,6 @@ axs.annotate("Shannon limit\n-1.59dB", xy = (0.17, 0.2) , xytext = (0.06,0.01) ,
 plt.show()
 plt.close()
 
-
 #%% Program 3.7: ergodic capacity limits.m: Simulating the ergodic capacity of a fading channel
 snrdB = np.arange(-10, 30, 1/2)
 h = (np.random.randn(1, 10000) + 1j * np.random.randn(1, 10000))/np.sqrt(2)
@@ -82,7 +81,6 @@ axs.set_title("SISO fading channel - Ergodic capacity")
 
 plt.show()
 plt.close()
-
 
 #%% Program 3.3: CapacityBSC.m: Simulate transmission through a BSC(Binary Symmetric Channel) channel and calculate capacity.
 # 只对均匀0/1无偏信源有效，有偏信源不同.
@@ -123,14 +121,13 @@ axs.legend(fontsize = 20)
 plt.show()
 plt.close()
 
-
 #%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel
 from Modulations import NormFactor
 from ChannelModels import add_awgn_noise
 
 nSym = 10000
 snrdB = np.arange(-10, 36, 1)
-channelModel = 'awgn'
+channelModel = 'rayleigh'
 
 mod_type = 'qam'
 if mod_type == 'pam' or mod_type == 'psk':
