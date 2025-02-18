@@ -137,7 +137,7 @@ mod_type = 'qam'
 if mod_type == 'pam' or mod_type == 'psk':
     arrayOfM = [2, 4, 8, 16, 32, 64]
 elif mod_type == 'qam':
-    arrayOfM = [4, 16, 64]
+    arrayOfM = [4, 16, 64, 256]
 
 plotColor = ['b', 'g', 'c', 'm', 'orange', 'pink']
 j = 1
