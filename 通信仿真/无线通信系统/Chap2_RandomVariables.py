@@ -114,7 +114,7 @@ def Jakes_filter(fd, Ts, N):
     hw = hw / np.sqrt(np.sum(np.abs(hw)**2))
 
     f, Y, A, Pha, R, I = freqDomainView(hw, 1/Ts, 'double' )
-    Hw = (Ts / len(hw)) * np.abs(Y)**2 #* len(hw)**2
+    Hw = (Ts / hw.size) * np.abs(Y)**2 * (hw.size**2)
 
     ##### plot
     fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
@@ -129,7 +129,7 @@ def Jakes_filter(fd, Ts, N):
     axs[1].set_xlabel('frequency(Hz)',)
     axs[1].set_ylabel(r'$|H_w(f)|^2$',)
     axs[1].set_title('Jakes Spectrum')
-
+    axs[1].set_xlim(-20,20)
     plt.suptitle(f"Impulse response & spectrum of windowed Jakes filter ( fmax = {fd}Hz, Ts = {Ts}s, N = {N})", fontsize = 22)
     plt.show()
     plt.close()
@@ -145,7 +145,7 @@ h = Jakes_filter(fd, Ts, N)
 x = np.random.randn( 1, 10000)
 y = scipy.signal.convolve(x, h, mode = 'valid')
 f, Y, A, Pha, R, I = freqDomainView(y, 1/Ts, 'double' )
-Syy = (Ts / len(y)) * np.abs(Y)**2 #* len(y)**2
+Syy = (Ts / y.size) * np.abs(Y)**2 * (y.size)**2
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
 
@@ -159,25 +159,14 @@ axs[1].plot(f, Syy.flatten(), color = 'r', lw = 1, label = ' ')
 axs[1].set_xlabel('frequency(Hz)',)
 axs[1].set_ylabel(r'$|S_{yy}(f)|^2$',)
 axs[1].set_title('Power Spectral Density')
-
+axs[1].set_xlim(-20,20)
 plt.suptitle(f"Simulated colored noise samples and its power spectral density (fmax = {fd} Hz)", fontsize = 22)
 
 plt.show()
 plt.close()
 
 
-
-
-
-
-
-
-
-
-
-
-
-#%%
+#%% 2.6.2 Auto-Regressive (AR) model
 
 
 
