@@ -23,7 +23,7 @@ sigma2 = 10**(sigma2/10.0)/1000 # w/Hz
 N0 = sigma2 * B # w
 
 pmax = 30 # dBm
-pmax =10**(pmax/10.0)/1000 # Watts
+pmax = 10**(pmax/10.0)/1000 # Watts
 pmax = 0.1      # Watts
 
 

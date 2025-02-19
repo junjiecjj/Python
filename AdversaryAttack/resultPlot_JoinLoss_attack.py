@@ -362,7 +362,6 @@ class ResultPlot():
         plt.close()
         return
 
-
     def FixSNRtrain_PSNRorAcc_vs_SNRtest1(self, Rlist = [0.2, 0.8], trainsnr = [3, 10, 20], testsnr = [ 3, 10, 20, 40 ] , epslist = [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5], PSNR = True,  col_idx = 3,  ):
         width = 8
         high  = 6
