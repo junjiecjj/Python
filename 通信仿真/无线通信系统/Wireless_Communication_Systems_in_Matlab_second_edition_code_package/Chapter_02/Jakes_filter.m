@@ -20,11 +20,11 @@ hw = J.*hamm;%multiply Jakes filter with the Hamming window
 hw = hw./sqrt(sum(abs(hw).^2));%Normalized impulse response
 
 %Plot impulse response and spectrum
-figure; subplot(1,2,1); plot(hw); axis tight;
+figure(1); subplot(1,2,1); plot(hw); axis tight;
 title('Windowed impulse response');
 xlabel('n'); ylabel('h_w[n]');
 %use the function given in section 1.3.4 to plot the spectrum
-[fftVals,freqVals]=freqDomainView(hw,1/Ts,'double');%section 1.3.4
+[fftVals, freqVals] = freqDomainView(hw, 1/Ts, 'double');%section 1.3.4
 H_w = (Ts/length(hw))*abs(fftVals).^2;%PSD H(f)
 subplot(1,2,2); plot(freqVals,H_w); grid on; xlim([-20 20]);
 title('Jakes Spectrum');xlabel('f');ylabel('|H_{w}(f)|^2');

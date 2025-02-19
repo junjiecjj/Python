@@ -89,20 +89,77 @@ plt.close()
 
 
 #%% 2.6 Generating correlated Gaussian sequences
-#%% Program 2.26: Jakes ﬁlter.m: Jakes ﬁlter using spectral factorization method
+#%% 2.6.1 Spectral factorization method
+from Tools import freqDomainView
 
 
+def Jakes_filter(fd, Ts, N):
+    #  FIR channel shaping filter with Jakes doppler spectrum %S(f) = 1/ [sqrt(1-(f/f_max)ˆ2)*pi*f_max]
+    # Use impulse response obtained from spectral factorization
+    # Input parameters are  fd = maximum doppler frequency in Hz
+    # Ts = sampling interval in seconds
+    # N = desired filter order
+    # Returns the windowed impulse response of the FIR filter %Example: fd=10; Ts=0.01; N=512; Jakes_filter(fd,Ts,N)
+    L = N/2
+    n = np.arange(1, L+1)
+    J_pos = (scipy.special.jv(0.25, 2 * np.pi * fd * n * Ts)/(n**0.25))[None,:]
+    Jneg = np.fliplr(J_pos)
+    J0 = np.array([[1.468813 * (fd*Ts)**(0.25)]])
+    J = np.hstack((Jneg, J0, J_pos))
 
+    hamm = scipy.signal.windows.hamming(N+1)
+    # hamm = 0.54 - 0.46 * np.cos(2 * np.pi * np.arange(0, N+1)/N)
+    hw = J * hamm
+    hw = hw / np.sqrt(np.sum(np.abs(hw)**2))
 
+    f, Y, A, Pha, R, I = freqDomainView(hw, 1/Ts, 'double' )
+    Hw = (Ts / len(hw)) * np.abs(Y)**2
 
+    ##### plot
+    fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
 
+    axs[0].plot(np.arange(hw.size), hw.flatten(), lw = 1, color = 'b',  label = ' ')
+    axs[0].set_xlabel('samples(n)',)
+    axs[0].set_ylabel(r'$h_w[n]$',)
+    axs[0].set_title('Windowed impulse response' )
+    # axs[0].legend()
 
+    axs[1].plot(f, Hw.flatten(), color = 'r', lw = 1, label = ' ')
+    axs[1].set_xlabel('frequency(Hz)',)
+    axs[1].set_ylabel(r'$|H_w(f)|^2$',)
+    axs[1].set_title('Jakes Spectrum')
+    # axs[1].legend()
+    plt.show()
+    plt.close()
 
+    return hw
 
+fd = 10
+Fs = 100
+N = 512
+Ts = 1/Fs
 
+h = Jakes_filter(fd, Ts, N)
+x = np.random.randn( 1, 10000)
+y = scipy.signal.convolve(x, h, mode = 'valid')
+f, Y, A, Pha, R, I = freqDomainView(y, 1/Ts, 'double' )
+Syy = (Ts/y.size) * np.abs(Y)**2
+##### plot
+fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
 
+axs[0].plot(np.arange(y.size), 10 * np.log10(y.flatten()), lw = 1, color = 'b',  label = ' ')
+axs[0].set_xlabel('samples(n)',)
+axs[0].set_ylabel(r'$h_w[n]$',)
+axs[0].set_title('Windowed impulse response' )
+# axs[0].legend()
 
-
+axs[1].plot(f, Syy.flatten(), color = 'r', lw = 1, label = ' ')
+axs[1].set_xlabel('frequency(Hz)',)
+axs[1].set_ylabel(r'$|H_w(f)|^2$',)
+axs[1].set_title('Jakes Spectrum')
+# axs[1].legend()
+plt.show()
+plt.close()
 
 
 
