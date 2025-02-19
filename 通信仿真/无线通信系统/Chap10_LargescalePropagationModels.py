@@ -133,7 +133,7 @@ plt.show()
 plt.close()
 
 #%% Program 10.5: twoRayModel.m: Two ray ground reﬂection model simulation
-f=900e6    # frequency of transmission (Hz)
+f = 900e6    # frequency of transmission (Hz)
 R = -1     # reflection coefficient
 Pt = 1     # Transmitted power in mW
 Glos = 1   # product of tx,rx antenna patterns in LOS direction
