@@ -247,8 +247,8 @@ def Hata_model(fc,d,hb,hm,envType):
     return PL
 
 
-hb=70
-hm=1.5    # effective BS and MS heights in meters
+hb = 70
+hm = 1.5    # effective BS and MS heights in meters
 fc = 1500 # Frequency given in MHz
 d = np.arange(1, 100, 1) # 1:1:100  # distances in Kms
 
