@@ -140,7 +140,7 @@ Glos = 1   # product of tx,rx antenna patterns in LOS direction
 Gref = 1   # product of tx,rx antenna patterns in reflection direction
 ht = 50    # height of tx antenna (m)
 hr = 2     # height of rx antenna (m)
-d = np.arange(1, 10, 0.1)**5  #  separation distance between the tx-rx antennas(m)
+d = np.arange(1, 10**5, 0.1)  #  separation distance between the tx-rx antennas(m)
 L = 1                         # no system losses
 
 #  Two ray ground reflection model
