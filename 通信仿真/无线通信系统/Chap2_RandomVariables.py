@@ -37,9 +37,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 #%% 2.5 Generating correlated random variables
-
 # 2.5.2 Generating multiple sequences of correlated random variables using Cholesky decomposition
-
 C = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
 
 L = np.linalg.cholesky(C)
@@ -163,7 +161,57 @@ plt.close()
 
 
 #%% 2.6.2 Auto-Regressive (AR) model
+def plotWelchPSD(x, fs, color = None):
+    ns = max(x.shape)
+    na = 16
+    window = scipy.signal.windows.hann(int(np.floor(ns/na)))
+    f, Pxx = scipy.signal.welch(x, fs, window = window, nperseg = window.size, noverlap = 0)
+    if color != None:
+        ##### plot
+        fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
 
+        axs.plot(f, 10 * np.log10(Pxx), lw = 1, color = 'b',  label = ' ')
+        axs.set_xlabel('Frequency(Hz)',)
+        axs.set_ylabel(r'PSD(dB/Hz)',)
+        axs.set_title('PSD' )
+        # axs[0].legend()
+
+        plt.show()
+        plt.close()
+    return f, Pxx
+
+alpha = 1
+N = 63
+nSamp = 10000
+a = np.hstack((np.array([[1]]), np.zeros((1, N)))).flatten()
+for k in range(1, N+1):
+    a[k] = (k - 1 -alpha/2) * a[k-1]/k
+
+w = np.random.randn(1, nSamp).flatten()
+y = scipy.signal.lfilter(1, a, w)
+fy, Pyy = plotWelchPSD(y, 1)
+psdTheory = 1/(fy[1:]**alpha)
+
+##### plot
+fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
+
+axs[0].plot(np.arange(y.size), y, lw = 1, color = 'b',  label = ' ')
+axs[0].set_xlabel('sample index (n)',)
+axs[0].set_ylabel( 'y(n)',)
+axs[0].set_title('Colored noise' )
+# axs[0].legend()
+
+axs[1].plot(np.log2(fy[1:]), 10 * np.log10(Pyy[1:]), color = 'k', lw = 1, label = 'PSD estimate')
+axs[1].plot(np.log2(fy[1:]), 10 * np.log10(psdTheory), color = 'r', lw = 1, label = 'PSD Theoretical')
+axs[1].set_xlabel(r'log$_2(f)$(Hz)',)
+axs[1].set_ylabel(r'$P_{yy}(f)$(dB)',)
+axs[1].set_title('PSD of colored noise')
+axs[1].legend()
+lb = "Simulated color noise samples and their PSD estimates: pink noise (" + r'$\alpha = {:.2f}$)'.format(alpha)
+plt.suptitle(lb, fontsize = 22)
+
+plt.show()
+plt.close()
 
 
 
