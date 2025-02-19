@@ -19,6 +19,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 # plt.rcParams["font.family"] = "SimSun"
 plt.rcParams['font.size'] = 14  # 设置全局字体大小
 plt.rcParams['axes.titlesize'] = 22  # 设置坐标轴标题字体大小
+
 plt.rcParams['axes.labelsize'] = 22  # 设置坐标轴标签字体大小
 plt.rcParams['xtick.labelsize'] = 22  # 设置 x 轴刻度字体大小
 plt.rcParams['ytick.labelsize'] = 22  # 设置 y 轴刻度字体大小
@@ -113,7 +114,7 @@ def Jakes_filter(fd, Ts, N):
     hw = hw / np.sqrt(np.sum(np.abs(hw)**2))
 
     f, Y, A, Pha, R, I = freqDomainView(hw, 1/Ts, 'double' )
-    Hw = (Ts / len(hw)) * np.abs(Y)**2
+    Hw = (Ts / len(hw)) * np.abs(Y)**2 #* len(hw)**2
 
     ##### plot
     fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
@@ -128,7 +129,8 @@ def Jakes_filter(fd, Ts, N):
     axs[1].set_xlabel('frequency(Hz)',)
     axs[1].set_ylabel(r'$|H_w(f)|^2$',)
     axs[1].set_title('Jakes Spectrum')
-    # axs[1].legend()
+
+    plt.suptitle(f"Impulse response & spectrum of windowed Jakes filter ( fmax = {fd}Hz, Ts = {Ts}s, N = {N})", fontsize = 22)
     plt.show()
     plt.close()
 
@@ -143,21 +145,23 @@ h = Jakes_filter(fd, Ts, N)
 x = np.random.randn( 1, 10000)
 y = scipy.signal.convolve(x, h, mode = 'valid')
 f, Y, A, Pha, R, I = freqDomainView(y, 1/Ts, 'double' )
-Syy = (Ts/y.size) * np.abs(Y)**2
+Syy = (Ts / len(y)) * np.abs(Y)**2 #* len(y)**2
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
 
-axs[0].plot(np.arange(y.size), 10 * np.log10(y.flatten()), lw = 1, color = 'b',  label = ' ')
+axs[0].plot(np.arange(y.size), np.log10(np.abs(y.flatten())), lw = 1, color = 'b',  label = ' ')
 axs[0].set_xlabel('samples(n)',)
-axs[0].set_ylabel(r'$h_w[n]$',)
-axs[0].set_title('Windowed impulse response' )
+axs[0].set_ylabel(r'$log|y(n)|$',)
+axs[0].set_title('Envelop function' )
 # axs[0].legend()
 
 axs[1].plot(f, Syy.flatten(), color = 'r', lw = 1, label = ' ')
 axs[1].set_xlabel('frequency(Hz)',)
-axs[1].set_ylabel(r'$|H_w(f)|^2$',)
-axs[1].set_title('Jakes Spectrum')
-# axs[1].legend()
+axs[1].set_ylabel(r'$|S_{yy}(f)|^2$',)
+axs[1].set_title('Power Spectral Density')
+
+plt.suptitle(f"Simulated colored noise samples and its power spectral density (fmax = {fd} Hz)", fontsize = 22)
+
 plt.show()
 plt.close()
 
