@@ -74,11 +74,6 @@ plt.show()
 
 
 
-
-
-
-
-
 #%% 2. 移动平均 (MA, Moving Average Model)
 
 import numpy as np

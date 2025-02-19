@@ -46,25 +46,25 @@ error = mean_squared_error(test, predictions)
 print(f'Mean Squared Error: {error}')
 
 # 图形绘制
-plt.figure(figsize=(14, 7))
+plt.figure(figsize = (14, 7))
 
 # 原始数据
-plt.plot(range(len(data)), data, label='Original Data', color='cyan', linewidth=2)
+plt.plot(range(len(data)), data, label = 'Original Data', color = 'cyan', linewidth = 2)
 
 # 训练数据拟合值
 fitted_values = model_fit.fittedvalues
-plt.plot(range(lags, len(train)), fitted_values, label='Fitted Values (Train)', color='magenta', linestyle='--', linewidth=2)
+plt.plot(range(lags, len(train)), fitted_values, label = 'Fitted Values (Train)', color = 'magenta', linestyle = '--', linewidth = 2)
 
 # 测试数据预测值
-plt.plot(range(len(train), len(train)+len(test)), predictions, label='Predictions (Test)', color='red', linewidth=2)
+plt.plot(range(len(train), len(train)+len(test)), predictions, label = 'Predictions (Test)', color = 'red', linewidth = 2)
 
 # 显示垂直分割线
-plt.axvline(x=len(train)-1, color='blue', linestyle=':', label='Train/Test Split')
+plt.axvline(x = len(train)-1, color = 'blue', linestyle = ':', label = 'Train/Test Split')
 
 # 设置图形样式
 plt.title('AutoRegressive (AR) Model - Time Series Analysis', fontsize=16)
 plt.xlabel('Time Steps', fontsize=14)
-plt.ylabel('Value', fontsize=14)
+plt.ylabel('Value', fontsize = 14)
 plt.legend(loc='best', fontsize=12)
 
 # 显示图形
@@ -91,7 +91,7 @@ noisy_data = original_data + noise
 
 # 计算移动平均 (MA)
 window_size = 10
-moving_average = np.convolve(noisy_data, np.ones(window_size) / window_size, mode='valid')
+moving_average = np.convolve(noisy_data, np.ones(window_size) / window_size, mode = 'valid')
 
 # 计算误差
 error = original_data[(window_size-1):] - moving_average

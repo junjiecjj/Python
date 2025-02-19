@@ -83,16 +83,12 @@ lb = 'X and Z, ' + r'$\rho = {:.2f}$'.format(C_hat[0,2])
 axs[2].set_title(lb )
 # axs[2].legend()
 
-
 plt.show()
 plt.close()
-
-
 
 #%% 2.6 Generating correlated Gaussian sequences
 #%% 2.6.1 Spectral factorization method
 from Tools import freqDomainView
-
 
 def Jakes_filter(fd, Ts, N):
     #  FIR channel shaping filter with Jakes doppler spectrum %S(f) = 1/ [sqrt(1-(f/f_max)ˆ2)*pi*f_max]
