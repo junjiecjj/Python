@@ -34,9 +34,6 @@ plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
 
-
-
-
 #%% Program 11.1: scattering function.m: Plot scattering function power delay profile and Doppler spectrum
 from sympy import symbols, lambdify, expand, simplify
 
@@ -46,14 +43,14 @@ trms = 30e-6  #  RMS Delay spread (s)
 Plocal = 0.2   # local-mean power (W)
 
 f_delta = fm/30                                      # step size for frequency shifts
-f = np.arange((fc - fm) + f_delta, f_delta+(fc+fm), f_delta) # normalized freq shifts
+f = np.arange((fc - fm) + f_delta, (fc+fm) - f_delta, f_delta) # normalized freq shifts
 tau = np.arange(0, trms*3+trms/5, trms/5)            # generate range for propagation delays
 TAU, F = np.meshgrid(tau, f)                         # all possible combinations of Taus and Fs
 
 #Example Scattering function equation
 Z = Plocal/(4 * np.pi * fm * np.sqrt(1 - ((F - fc) / fm)**2))*1/trms * np.exp(-TAU/trms)
 
-x1, x2 = symbols('x1 x2')
+
 
 ### 1
 # num = 301; # number of mesh grids
@@ -61,11 +58,11 @@ x1, x2 = symbols('x1 x2')
 # y_array = np.linspace(-3,3,num)
 # xx,yy = np.meshgrid(x_array,y_array)
 from sympy.abc import x, y
-# 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
+x, y = symbols('x  y')
+f_xy =  Plocal/ trms / (4 * np.pi * fm * np.sqrt(1 - ((y - fc) / fm)**2))* np.exp(-x/trms)
 f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
-ff = f_xy_fcn(xx, yy)
+ff = f_xy_fcn(TAU, F)
 
 ### 2
 xx1,xx2 = np.meshgrid(np.linspace(-3,3),np.linspace(-3,3))
