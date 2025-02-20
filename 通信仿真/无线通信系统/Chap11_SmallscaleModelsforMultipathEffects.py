@@ -37,56 +37,56 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
-#%%
+#%% Program 11.1: scattering function.m: Plot scattering function power delay proﬁle and Doppler spectrum
 
 
 
 
 
 
-#%%
+#%% Program 11.2: plot fcf.m: Frequency correlation function (FCF) from power delay proﬁle
 
 
 
 
 
-#%%
+#%% Program 11.3, 11.4, 11.5, 11.6
 
 
 
 
 
-#%%
+#%% Program 11.7: rician pdf.m: Generating Ricean ﬂat-fading samples and plotting its PDF
 
 
 
 
 
-#%%
+#%% Program 11.8: doppler psd acf.m: Generating Ricean ﬂat-fading samples and plotting its PDF
 
 
 
 
 
-#%%
+#%% Program 11.9: param MEDS.m: Generate parameters for deterministic model using MEDS method
 
 
 
 
 
-#%%
+#%% Program 11.10: Rice method.m: Function to simulate deterministic Rice model
+
+
+
+
+#%% Program 11.11: pdp model.m: TDL implementation of specified power delay profile
 
 
 
 
 
 
-
-
-
-
-
-
+#%% Program 11.12: freq selective TDL model.m: Simulate frequency selective Rayleigh block fading channel
 
 
 
