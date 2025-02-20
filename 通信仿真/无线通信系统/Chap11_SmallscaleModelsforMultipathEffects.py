@@ -35,7 +35,9 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 #%% Program 11.1: scattering function.m: Plot scattering function power delay profile and Doppler spectrum
+import sympy
 from sympy import symbols, lambdify, expand, simplify
+# from sympy.abc import x, y
 
 fc = 1800e6   #  Carrier frequency (Hz)
 fm = 200      #  Maximum Doppler shift (Hz)
@@ -47,27 +49,16 @@ f = np.arange((fc - fm) + f_delta, (fc+fm) - f_delta, f_delta) # normalized freq
 tau = np.arange(0, trms*3+trms/5, trms/5)            # generate range for propagation delays
 TAU, F = np.meshgrid(tau, f)                         # all possible combinations of Taus and Fs
 
+## 1
 #Example Scattering function equation
 Z = Plocal/(4 * np.pi * fm * np.sqrt(1 - ((F - fc) / fm)**2))*1/trms * np.exp(-TAU/trms)
 
-
-
-### 1
-# num = 301; # number of mesh grids
-# x_array = np.linspace(-3,3,num)
-# y_array = np.linspace(-3,3,num)
-# xx,yy = np.meshgrid(x_array,y_array)
-from sympy.abc import x, y
+### 2
 x, y = symbols('x  y')
-f_xy =  Plocal/ trms / (4 * np.pi * fm * np.sqrt(1 - ((y - fc) / fm)**2))* np.exp(-x/trms)
+f_xy =  Plocal/ trms / (4 * np.pi * fm * sympy.sqrt(1 - ((y - fc) / fm)**2))* sympy.exp(-x/trms)
 f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
 ff = f_xy_fcn(TAU, F)
-
-### 2
-xx1,xx2 = np.meshgrid(np.linspace(-3,3),np.linspace(-3,3))
-ff = np.exp(- xx1**2 - xx2**2)
-
 
 
 
