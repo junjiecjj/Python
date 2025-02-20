@@ -37,7 +37,6 @@ font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Light Nerd Font Complete 
 font1 = FontProperties(fname=fontpath2+"Caskaydia Cove SemiLight Nerd Font Complete.otf", size=20)
 font1 = FontProperties(fname=fontpath2+"Caskaydia Cove Regular Nerd Font Complete Mono.otf", size=20)
 
-
 def add_borders(ax, edgecolor=(0, 0, 0, 1), linewidth=0.57, scale=1.021):
     xlims = ax.get_xlim3d()
     xoffset = (xlims[1] - xlims[0]) * scale
@@ -72,9 +71,7 @@ ax = plt.axes(projection='3d')
 #调用plot_surface()函数
 ax.plot_surface(x, y, z,cmap='viridis', edgecolor='none')
 
-
 font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-
 font2  = {'family':'Times New Roman','style':'normal','size':12, 'color':'#00FF00'}
 ax.set_xlabel(r'X',  fontdict = font2, labelpad = 0.5)
 ax.set_ylabel(r'Y', fontproperties=font3, labelpad = 0.5)
@@ -90,7 +87,6 @@ ax.zaxis.line.set_lw(.6)
 # ax.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
 # ax.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
 # ax.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
-
 
 # 刻度间隔
 x0 = MultipleLocator(1)  # x轴每10一个刻度
@@ -109,7 +105,6 @@ ax.tick_params(axis='y', direction='in', labelsize=10, pad=-5, )
 labels = ax.get_xticklabels() + ax.get_yticklabels() + ax.get_zticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(14) for label in labels]  # 刻度值字号
-
 
 ax.xaxis._axinfo['tick']['outward_factor'] = 0
 ax.xaxis._axinfo['tick']['inward_factor'] = 0.4

@@ -57,7 +57,6 @@ ax.set_yticklabels([])
 ax.set_zticklabels([])
 plt.show()
 
-
 ## 2: 投影，沿z
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
@@ -128,7 +127,6 @@ ax.set_yticklabels([])
 ax.set_zticklabels([])
 # fig.savefig('Figures/投影，沿x.svg', format='svg')
 plt.show()
-
 
 ## 5:利用散点大小展示第四个特征
 fig = plt.figure()

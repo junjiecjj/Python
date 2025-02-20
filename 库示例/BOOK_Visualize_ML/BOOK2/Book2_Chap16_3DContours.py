@@ -379,8 +379,6 @@ ax.grid(False)
 plt.show()
 
 
-
-
 # 4. 空间等高线，x = 0
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
@@ -482,8 +480,6 @@ for idx, level_idx in enumerate(level_array,1):
     ax.grid(False)
 plt.show()
 # fig.savefig('2.svg')
-
-
 
 # 7. 空间等高线，y = 3
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})

@@ -1163,7 +1163,6 @@ plt.rcParams["font.size"] = "10"
 # fig.savefig('Figures/只保留网格线.svg', format='svg')
 plt.show()
 
-
 ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
@@ -1197,7 +1196,6 @@ ax.view_init(azim=-135, elev=30)
 ax.grid(False)
 plt.show()
 
-
 # 5. 绘制网格化散点
 num = 70 # number of mesh grids
 x_array = np.linspace(-3,3,num)
@@ -1205,9 +1203,7 @@ y_array = np.linspace(-3,3,num)
 xx,yy = np.meshgrid(x_array,y_array)
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
-    - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)\
-    - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x,y],f_xy)
 # 将符号函数表达式转换为Python函数

@@ -2,259 +2,6 @@
 
 
 
-#==========================================================================================================
-##########################################  3D Scatter Plot, 三维散点 ######################################
-#==========================================================================================================
-
-#%%
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-from sklearn.datasets import load_iris
-
-# import os
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
-
-# 处理数据
-# Load the iris data
-iris_sns = sns.load_dataset("iris")
-
-x1 = iris_sns['sepal_length']
-x2 = iris_sns['sepal_width']
-x3 = iris_sns['petal_length']
-x4 = iris_sns['petal_width']
-
-labels = iris_sns['species'].copy()
-
-labels[labels == 'setosa']     = 1
-labels[labels == 'versicolor'] = 2
-labels[labels == 'virginica']  = 3
-
-rainbow = plt.get_cmap("rainbow")
-
-## 1
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x1, x2, x3)
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-plt.show()
-
-
-## 2: 投影，沿z
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x1, x2, zdir = 'z', zs = 1)
-# 投影在 z = 1平面上
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-plt.show()
-
-## 3: 投影，沿y
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x1, x3, zdir = 'y', zs = 5)
-# 投影在 y = 5 平面上
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('Figures/投影，沿y.svg', format='svg')
-plt.show()
-
-
-## 4: 投影，沿x
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x2, x3, zdir = 'x', zs = 8)
-# 投影在 x = 8 平面上
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('Figures/投影，沿x.svg', format='svg')
-plt.show()
-
-
-## 5:利用散点大小展示第四个特征
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x1, x2, x3, s = x4*20)
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('Figures/利用散点大小展示第四个特征.svg', format='svg')
-plt.show()
-
-## 6: 利用颜色展示分类标签
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-scatter_h = ax.scatter(x1, x2, x3, c = labels, cmap=rainbow)
-
-classes = ['Setosa', 'Versicolor', 'Virginica']
-
-plt.legend(handles=scatter_h.legend_elements()[0], labels=classes)
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('Figures/利用颜色展示分类标签.svg', format='svg')
-plt.show()
-
-
-## 7: 颜色分类 + 散点大小
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x1, x2, x3, s = x4*20, c = labels, cmap=rainbow)
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('Figures/颜色分类 + 大小.svg', format='svg')
-plt.show()
-
-## 8: 利用色谱展示第四维特征
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-scatter_plot = ax.scatter(x1, x2, x3, c = x4, cmap=rainbow)
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-fig.colorbar(scatter_plot, ax = ax, shrink = 0.5, aspect = 10)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('Figures/利用色谱展示第四维特征.svg', format='svg')
-plt.show()
-
-## 9: 用标记类型展示特征
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-ax.scatter(x1[x4>1],  x2[x4>1],  x3[x4>1],
-           marker='o')
-ax.scatter(x1[x4<=1], x2[x4<=1], x3[x4<=1],
-           marker='x')
-
-ax.set_xlabel('Sepal length, $x_1$ (cm)')
-ax.set_ylabel('Sepal width, $x_2$ (cm)')
-ax.set_zlabel('Petal length, $x_3$ (cm)')
-ax.set_proj_type('ortho')
-ax.view_init(azim=-135, elev=30)
-ax.set_box_aspect([1,1,1])
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim(4, 8)
-ax.set_ylim(2, 5)
-ax.set_zlim(1, 7)
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
-# fig.savefig('利用marker shape展示特征.svg', format='svg')
-plt.show()
-
-
 #%% 可视化三元概率分布
 # 导入包
 from scipy.stats import multinomial
@@ -1342,7 +1089,7 @@ fig.colorbar(surf, shrink=0.5, aspect=20)
 plt.show()
 
 ## 3 只保留网格线, 同样使用 plot_surface()，不同的是只保留彩色网格
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (12,12))
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (12, 12))
 ax.set_proj_type('ortho')
 norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
@@ -3605,6 +3352,255 @@ ax.grid(False)
 plt.show()
 
 
+#==========================================================================================================
+##########################################  3D Scatter Plot, 三维散点 ######################################
+#==========================================================================================================
+
+#%%
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from sklearn.datasets import load_iris
+
+# import os
+# # 如果文件夹不存在，创建文件夹
+# if not os.path.isdir("Figures"):
+#     os.makedirs("Figures")
+
+# 处理数据
+# Load the iris data
+# iris_sns = sns.load_dataset("iris")
+iris_sns = load_iris()
+# print(iris.data.shape) # 150,4
+X = iris_sns.data
+x1 = X[:,0]   # iris_sns['sepal_length']
+x2 = X[:,1]   # iris_sns['sepal_width']
+x3 = X[:,2]   # iris_sns['petal_length']
+x4 = X[:,3]   # iris_sns['petal_width']
+
+labels = iris_sns.target # iris_sns['species'].copy()
+
+rainbow = plt.get_cmap("rainbow")
+
+## 1
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x1, x2, x3)
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+plt.show()
+
+
+## 2: 投影，沿z
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x1, x2, zdir = 'z', zs = 1)
+# 投影在 z = 1平面上
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+plt.show()
+
+## 3: 投影，沿y
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x1, x3, zdir = 'y', zs = 5)
+# 投影在 y = 5 平面上
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('Figures/投影，沿y.svg', format='svg')
+plt.show()
+
+
+## 4: 投影，沿x
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x2, x3, zdir = 'x', zs = 8)
+# 投影在 x = 8 平面上
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('Figures/投影，沿x.svg', format='svg')
+plt.show()
+
+
+## 5:利用散点大小展示第四个特征
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x1, x2, x3, s = x4*20)
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('Figures/利用散点大小展示第四个特征.svg', format='svg')
+plt.show()
+
+## 6: 利用颜色展示分类标签
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+scatter_h = ax.scatter(x1, x2, x3, c = labels, cmap=rainbow)
+
+classes = ['Setosa', 'Versicolor', 'Virginica']
+
+plt.legend(handles=scatter_h.legend_elements()[0], labels=classes)
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('Figures/利用颜色展示分类标签.svg', format='svg')
+plt.show()
+
+
+## 7: 颜色分类 + 散点大小
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x1, x2, x3, s = x4*20, c = labels, cmap=rainbow)
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('Figures/颜色分类 + 大小.svg', format='svg')
+plt.show()
+
+## 8: 利用色谱展示第四维特征
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+scatter_plot = ax.scatter(x1, x2, x3, c = x4, cmap=rainbow)
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+fig.colorbar(scatter_plot, ax = ax, shrink = 0.5, aspect = 10)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('Figures/利用色谱展示第四维特征.svg', format='svg')
+plt.show()
+
+## 9: 用标记类型展示特征
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(x1[x4>1],  x2[x4>1],  x3[x4>1],
+           marker='o')
+ax.scatter(x1[x4<=1], x2[x4<=1], x3[x4<=1],
+           marker='x')
+
+ax.set_xlabel('Sepal length, $x_1$ (cm)')
+ax.set_ylabel('Sepal width, $x_2$ (cm)')
+ax.set_zlabel('Petal length, $x_3$ (cm)')
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135, elev=30)
+ax.set_box_aspect([1,1,1])
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xlim(4, 8)
+ax.set_ylim(2, 5)
+ax.set_zlim(1, 7)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# fig.savefig('利用marker shape展示特征.svg', format='svg')
+plt.show()
 
 
 
