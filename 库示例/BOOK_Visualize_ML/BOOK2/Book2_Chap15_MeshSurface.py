@@ -25,7 +25,7 @@ from matplotlib import cm
 # 用 sympy 库定义 MATLAB二元函数 peaks()
 f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)  - 1/3*exp(-(x+1)**2 - y**2)
 
-f_xy_fcn = lambdify([x,y],f_xy)
+f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
 
 
@@ -714,7 +714,6 @@ f_xy_fcn = lambdify([x,y],f_xy)
 # 将符号函数表达式转换为Python函数
 
 def mesh(num = 101):
-
     # number of mesh grids
     x_array = np.linspace(-3,3,num)
     y_array = np.linspace(-3,3,num)
@@ -921,10 +920,7 @@ plt.show()
 # 3. 指定 x2 具体值
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
-ax.plot_wireframe(xx1, xx2, PDF_ff,
-                  color = [0.5,0.5,0.5],
-                  rstride=2, cstride=0,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1, xx2, PDF_ff, color = [0.5,0.5,0.5], rstride=2, cstride=0, linewidth = 0.25)
 
 x2_loc_array = np.arange(0,len(x1),10)
 facecolors = cm.rainbow(np.linspace(0, 1, len(x2_loc_array)))
@@ -935,13 +931,9 @@ for idx in range(len(x2_loc_array)):
     x_i_array = x1*0 + x_idx
     z_array = PDF_ff[x_loc,:]
 
-    ax.plot(x1, x_i_array, z_array, color=facecolors[idx,:],
-            linewidth = 1.5)
+    ax.plot(x1, x_i_array, z_array, color=facecolors[idx,:], linewidth = 1.5)
 
-    ax.add_collection3d(plt.fill_between(x1, 0*z_array, z_array,
-                                         color=facecolors[idx,:],
-                                         alpha=0.2),
-                        zs=x_idx, zdir='y')
+    ax.add_collection3d(plt.fill_between(x1, 0*z_array, z_array, color=facecolors[idx,:], alpha=0.2), zs=x_idx, zdir='y')
 
 ax.set_proj_type('ortho')
 
@@ -1000,15 +992,8 @@ def visualize(n,m,title):
     fig = plt.figure( figsize = (8,8))
     ax = fig.add_subplot(121, projection='3d',  )
 
-    surf = ax.plot_wireframe(xx,yy,zz,
-                             cstride = 50,
-                             rstride = 50,
-                             colors = '0.8',
-                             linewidth=0.25)
-    ax.contour(xx,yy,zz,
-               cmap='RdYlBu_r',
-               levels = 15,
-               linewidths=1)
+    surf = ax.plot_wireframe(xx,yy,zz, cstride = 50, rstride = 50, colors = '0.8', linewidth=0.25)
+    ax.contour(xx, yy, zz, cmap='RdYlBu_r', levels = 15, linewidths=1)
 
     ax.set_proj_type('ortho')
 

@@ -68,19 +68,11 @@ f2_array = fcn(A, xx1, xx2)
 visualize(xx1, xx2, f2_array)
 
 
-
-
-
-
-
-
 #%% Bk2_Ch21_01
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 from sympy import symbols, diff, lambdify, expand, simplify
-
-
 
 # 二元函数
 def fcn_n_grdnt(A, xx1, xx2):
@@ -117,8 +109,6 @@ def fcn_n_grdnt(A, xx1, xx2):
         V[0] = np.zeros_like(xx1_)
 
     return ff_x, V
-
-
 
 
 # 可视化函数

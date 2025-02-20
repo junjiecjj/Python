@@ -1159,8 +1159,7 @@ def plot_d_x_tangent(x_t, y_t, df_dx_fcn, f_xy_fcn, color, ax):
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10,10))
 
-ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5],  rstride=15,
-                  cstride=0, ## 沿x方向
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5],  rstride=15, cstride=0, ## 沿x方向
                   linewidth = 2)
 
 colors = plt.cm.rainbow(np.linspace(0,1,len(xx_s.ravel())))
@@ -1277,9 +1276,9 @@ import os
 from matplotlib import cm
 # 导入色谱模块
 # 1. 定义函数¶
-num = 301; # number of mesh grids
-x_array = np.linspace(-3,3,num)
-y_array = np.linspace(-3,3,num)
+num = 301    # number of mesh grids
+x_array = np.linspace(-3, 3, num)
+y_array = np.linspace(-3, 3, num)
 xx,yy = np.meshgrid(x_array,y_array)
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()

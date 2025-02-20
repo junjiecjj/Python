@@ -31,9 +31,7 @@ f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
 
 f_xy_fcn = lambdify([x,y],f_xy)
 
-
 def mesh(num = 101):
-
     # number of mesh grids
     x_array = np.linspace(-3,3,num)
     y_array = np.linspace(-3,3,num)
@@ -43,7 +41,6 @@ def mesh(num = 101):
 xx, yy = mesh(num = 101)
 
 ff = f_xy_fcn(xx,yy)
-
 
 
 # 2. 空间等高线，z方向
@@ -947,8 +944,7 @@ plt.show()
 fig, ax = plt.subplots()
 
 colorbar = ax.contourf(xx1, xx2, ff, 20, cmap='RdYlBu_r')
-ax.contour(xx1, xx2, df_dx1_zz, levels = [0],
-           colors = 'k')
+ax.contour(xx1, xx2, df_dx1_zz, levels = [0], colors = 'k')
 
 fig.colorbar(colorbar, ax=ax)
 ax.set_xlim(xx1.min(), xx1.max())
@@ -971,8 +967,7 @@ df_dx2_zz = df_dx2_fcn(xx1,xx2)
 fig, ax = plt.subplots()
 
 colorbar = ax.contourf(xx1, xx2, df_dx2_zz, 20, cmap='turbo')
-ax.contour(xx1, xx2, df_dx2_zz, levels = [0],
-           colors = 'k')
+ax.contour(xx1, xx2, df_dx2_zz, levels = [0], colors = 'k')
 # 黑色线代表偏导为 0
 
 fig.colorbar(colorbar, ax=ax)
@@ -991,8 +986,7 @@ plt.show()
 fig, ax = plt.subplots()
 
 colorbar = ax.contourf(xx1, xx2, ff, 20, cmap='RdYlBu_r')
-ax.contour(xx1, xx2, df_dx2_zz, levels = [0],
-           colors = 'k')
+ax.contour(xx1, xx2, df_dx2_zz, levels = [0], colors = 'k')
 
 fig.colorbar(colorbar, ax=ax)
 ax.set_xlim(xx1.min(), xx1.max())
@@ -1013,13 +1007,9 @@ CS_x = ax.contour(xx1, xx2, df_dx2_zz, levels = [0])
 
 ax.cla()
 
-ax.plot_wireframe(xx1, xx2, ff,
-                  color = [0.5,0.5,0.5],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx1, xx2, ff, color = [0.5,0.5,0.5], rstride=5, cstride=5, linewidth = 0.25)
 
-colorbar = ax.contour(xx1, xx2, ff,20,
-             cmap = 'RdYlBu_r')
+colorbar = ax.contour(xx1, xx2, ff, 20, cmap = 'RdYlBu_r')
 
 # 在 for 循环中，分别提取等高线数值
 for i in range(0,len(CS_x.allsegs[0])):

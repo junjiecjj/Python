@@ -37,16 +37,56 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
-#%% Program 11.1: scattering function.m: Plot scattering function power delay proﬁle and Doppler spectrum
+#%% Program 11.1: scattering function.m: Plot scattering function power delay profile and Doppler spectrum
+from sympy import symbols, lambdify, expand, simplify
+
+fc = 1800e6   #  Carrier frequency (Hz)
+fm = 200      #  Maximum Doppler shift (Hz)
+trms = 30e-6  #  RMS Delay spread (s)
+Plocal = 0.2   # local-mean power (W)
+
+f_delta = fm/30                                      # step size for frequency shifts
+f = np.arange((fc - fm) + f_delta, f_delta+(fc+fm), f_delta) # normalized freq shifts
+tau = np.arange(0, trms*3+trms/5, trms/5)            # generate range for propagation delays
+TAU, F = np.meshgrid(tau, f)                         # all possible combinations of Taus and Fs
+
+#Example Scattering function equation
+Z = Plocal/(4 * np.pi * fm * np.sqrt(1 - ((F - fc) / fm)**2))*1/trms * np.exp(-TAU/trms)
+
+x1, x2 = symbols('x1 x2')
+
+### 1
+# num = 301; # number of mesh grids
+# x_array = np.linspace(-3,3,num)
+# y_array = np.linspace(-3,3,num)
+# xx,yy = np.meshgrid(x_array,y_array)
+from sympy.abc import x, y
+# 用 sympy 库定义 MATLAB二元函数 peaks()
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
+f_xy_fcn = lambdify([x, y], f_xy)
+# 将符号函数表达式转换为Python函数
+ff = f_xy_fcn(xx, yy)
+
+### 2
+xx1,xx2 = np.meshgrid(np.linspace(-3,3),np.linspace(-3,3))
+ff = np.exp(- xx1**2 - xx2**2)
 
 
 
 
+subplot(2,1,1); mesh(TAU,(F-fc)/fm,Z);%Plot the 3D mesh plot
+title('Scattering function S(f,\tau)');xlabel('Delay \tau');
+ylabel('(f-fc)/fm');zlabel('Received power');
 
+%Project the 3D plot and plot PDP & Doppler Spectrum
+subplot(2,2,3); plot(tau,Z(1,:,:));
+title('Power Delay Profile');
+xlabel('Delay (\tau)'); ylabel('Received power');
+subplot(2,2,4); plot((f-fc)/fm,Z(:,1,:));
+title('Doppler Power Spectrum');
+xlabel('Doppler shift (f-fc)/fm');ylabel('Received power');
 
-#%% Program 11.2: plot fcf.m: Frequency correlation function (FCF) from power delay proﬁle
-
-
+#%% Program 11.2: plot fcf.m: Frequency correlation function (FCF) from power delay profile
 
 
 
@@ -54,11 +94,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
-
-
 #%% Program 11.7: rician pdf.m: Generating Ricean ﬂat-fading samples and plotting its PDF
-
-
 
 
 
@@ -67,9 +103,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
-
 #%% Program 11.9: param MEDS.m: Generate parameters for deterministic model using MEDS method
-
 
 
 
@@ -80,8 +114,6 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 #%% Program 11.11: pdp model.m: TDL implementation of specified power delay profile
-
-
 
 
 

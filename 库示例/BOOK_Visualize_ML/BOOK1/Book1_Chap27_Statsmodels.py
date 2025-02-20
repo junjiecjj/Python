@@ -187,7 +187,6 @@ for col_idx, ax_idx in zip(list(X_df_.columns),axes):
     ax_idx.set_xlim(-0.3, 0.3); ax_idx.set_ylim(-0.3, 0.3)
 
 
-
 #%% 一元概率密度估计
 import numpy as np
 import statsmodels.api as sm
