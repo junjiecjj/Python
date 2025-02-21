@@ -14,6 +14,7 @@ Created on Tue Feb 18 16:48:21 2025
 
 
 import numpy as np
+import scipy
 import matplotlib.pyplot as plt
 
 from Channel import channelConfig
@@ -27,11 +28,11 @@ sigma2 = -120                    # 噪声功率谱密度, dBm/Hz
 sigma2 = 10**(sigma2/10.0)/1000 # 噪声功率谱密度, Watts/Hz
 N0     = sigma2 * B             # 噪声功率, Watts
 
-pmax = 30                     # 用户发送功率, dBm
-pmax = 10**(pmax/10.0)/1000   # Watts
-pmax = 0.1                    # Watts
-
-K = 6
+P_max = 30                     # 用户发送功率, dBm
+P_max = 10**(P_max/10.0)/1000   # Watts
+P_max = 2                      # Watts
+P_total = 3
+K = 3
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(K, r = 100)
 
 # sigma2 = 1
@@ -43,6 +44,75 @@ H2bar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten(
 # print(f"H1bar = \n{H1bar}, ")
 print(f"H2bar = \n{H2bar}, ")
 
+# 约束条件
+constraints = [
+    {'type': 'ineq', 'fun': lambda p: P_total - np.sum(p)},   # 总功率约束
+    {'type': 'ineq', 'fun': lambda p: P_max - p}              # 单用户功率约束
+]
+
+# 变量边界 (0 <= p_i <= P_max)
+bounds = [(0.1, P_max) for _ in range(K)]
+
+# 初始猜测 (随机生成满足总功率约束)
+np.random.seed(42)
+initial_guess = np.random.rand(K) * P_max
+initial_guess = initial_guess / np.sum(initial_guess) * P_total
+
+# ======================== 优化目标函数 ========================
+def objective_function(powers, num_users, channel_realizations):
+    total_capacity = 0.0
+    for h in channel_realizations:
+        # 动态SIC顺序：按信道增益降序
+        sorted_idx = np.argsort(h)[::-1]
+        sorted_p = powers[sorted_idx]
+        sorted_h = h[sorted_idx]
+
+        # 计算每个用户的容量
+        for k in range(num_users):
+            # 仅考虑未被消除用户的干扰
+            interference = np.sum(sorted_p[k+1:] * sorted_h[k+1:]**2)
+            snr = (sorted_p[k] * sorted_h[k]**2) / (interference + noise_power)
+            total_capacity += np.log2(1 + snr)
+
+    # 返回负平均容量用于最小化
+    return -total_capacity / num_realizations
+
+
+
+# ======================== 执行优化 ========================
+result = scipy.optimize.minimize(
+    objective_function,
+    initial_guess,
+    args=(K, H2bar[None,:]),
+    method='SLSQP',
+    bounds=bounds,
+    constraints=constraints,
+    options={
+        'maxiter': 1000,       # 增加最大迭代次数
+        'ftol': 1e-6,          # 提高收敛精度
+        'disp': True           # 显示优化过程信息
+    }
+)
+
+# ======================== 结果分析 ========================
+if result.success:
+    optimized_powers = np.round(result.x, 3)
+    total_capacity = -result.fun
+
+    print("\n优化结果:")
+    print("--------------------------")
+    print(f"用户1功率: {optimized_powers[0]:.3f} W")
+    print(f"用户2功率: {optimized_powers[1]:.3f} W")
+    print(f"用户3功率: {optimized_powers[2]:.3f} W")
+    print("--------------------------")
+    print(f"总功率消耗: {np.sum(optimized_powers):.3f} W (约束: {P_total} W)")
+    print(f"单用户最大功率: {np.max(optimized_powers):.3f} W (约束: {P_max} W)")
+    print("--------------------------")
+    print(f"系统总容量: {total_capacity:.2f} bps/Hz")
+else:
+    print("优化失败:", result.message)
+
+# ======================== 可视化验证 ========================
 
 
 #%%
@@ -105,80 +175,6 @@ else:
 
 
 
-
-#%%
-import numpy as np
-from scipy.optimize import minimize
-
-# ------------------------- 参数设置 --------------------------
-num_users = 3                # 用户数量
-P_total = 10                 # 总功率约束 (W)
-P_max = 5                    # 单用户最大功率 (W)
-noise_power = 1e-9           # 噪声功率 (W)
-cell_radius = 500            # 缩小小区半径以增大用户差异
-fc = 2e9                     # 载波频率 2GHz
-rice_K = 3                   # 降低莱斯K因子，增强散射分量
-num_realizations = 50        # 减少蒙特卡洛次数以加速优化
-
-# ------------------------- 信道模型 --------------------------
-def generate_channel(num_users, cell_radius, rice_K):
-    user_distances = np.random.uniform(100, cell_radius, num_users)  # 增大距离差异
-    path_loss = 128.1 + 37.6 * np.log10(user_distances)
-    shadowing = np.random.normal(0, 10, num_users)        # 增大阴影衰落标准差
-    large_scale = 10**(-(path_loss + shadowing)/10)
-    los = np.sqrt(rice_K / (rice_K + 1)) * np.ones(num_users)
-    nlos = np.sqrt(1 / (2*(rice_K + 1))) * (np.random.randn(num_users) + 1j*np.random.randn(num_users))
-    small_scale = los + nlos
-    h = np.sqrt(large_scale) * small_scale
-    return np.abs(h)
-
-# ------------------------- 目标函数 --------------------------
-def objective_function(powers, num_users, channel_realizations):
-    total_capacity = 0
-    weights = np.array([1.2, 1.0, 0.8])  # 引入用户权重
-    for h in channel_realizations:
-        sorted_indices = np.argsort(h)[::-1]
-        sorted_powers = powers[sorted_indices]
-        sorted_h = h[sorted_indices]
-        for k in range(num_users):
-            interference = np.sum(sorted_powers[k+1:] * sorted_h[k+1:]**2)
-            snr = (sorted_powers[k] * sorted_h[k]**2) / (interference + noise_power)
-            total_capacity += weights[k] * np.log2(1 + snr)  # 加权容量
-    return -total_capacity / num_realizations
-
-# ------------------------- 优化配置 --------------------------
-np.random.seed(42)
-channel_realizations = np.array([generate_channel(num_users, cell_radius, rice_K) for _ in range(num_realizations)])
-
-# 随机初始猜测（满足总功率约束）
-initial_guess = np.random.rand(num_users) * P_max
-initial_guess = initial_guess / np.sum(initial_guess) * P_total
-
-constraints = [
-    {'type': 'ineq', 'fun': lambda p: P_total - np.sum(p)},
-    {'type': 'ineq', 'fun': lambda p: P_max - p}
-]
-bounds = [(0, P_max) for _ in range(num_users)]
-
-result = minimize(
-    objective_function,
-    initial_guess,
-    args=(num_users, channel_realizations),
-    method='SLSQP',
-    bounds=bounds,
-    constraints=constraints,
-    options={'maxiter': 1000, 'ftol': 1e-6}
-)
-
-# ------------------------- 结果验证 --------------------------
-if result.success:
-    optimized_powers = np.round(result.x, 2)
-    print("优化后的功率分配:", optimized_powers)
-    print("总功率:", np.sum(optimized_powers))
-    print("单用户功率约束:", np.all(optimized_powers <= P_max))
-    print("总容量 (bps/Hz):", -result.fun)
-else:
-    print("优化失败:", result.message)
 
 #%%
 import numpy as np
