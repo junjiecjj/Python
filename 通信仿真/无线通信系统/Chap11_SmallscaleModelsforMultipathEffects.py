@@ -88,12 +88,12 @@ ax2.set_ylabel("Received power", fontsize=15)
 
 # 构建2×3的区域，在起点(1, 0)处开始，跨域1行1列的位置区域绘图
 ax3 = plt.subplot2grid((2, 2), (1, 1), rowspan=1, colspan=1)
-ax3.plot((f-fc)/fm, Z[:,0], color="k",  label=r"$y=\mathrm{sin}{x}$")
+ax3.plot((f-fc)/fm, Z[:,0], color="k",  label= " ")
 # ax3.plot(t, x4, color="r", linestyle="-.", linewidth=1.0, label=r"$y=\mathrm{cos}{3x + \frac{\pi}{3}}$")
 ax3.set_title("Doppler Power Spectrum", fontsize=20)
 ax3.set_xlabel("Doppler shift (f-fc)/fm", fontsize=15)
 ax3.set_ylabel("Received power", fontsize=15)
-ax3.legend(fontsize=15)
+# ax3.legend(fontsize=15)
 
 # 设置整个图的标题
 plt.suptitle(r"Scattering function S$(f,\tau)$", fontsize=25)
@@ -191,7 +191,7 @@ for i, K in enumerate(K_factors):    #  simulate for each K factors
     pdf = (2 * x * (K+1) / Omega) * np.exp(-K - (K+1) * x**2 / Omega) * I0_z
 
     axs.hist(np.abs(r), 100, density = 1, histtype = 'step', color = colors[i], lw = 1, label = f"K = {K}, Simulation")
-    axs.plot(x, pdf,  color = colors[i], lw = 1, ls = 'none', marker = 'o', markevery = 20, label = f"K = {K}, Theory")
+    axs.plot(x, pdf,  color = colors[i], lw = 1, ls = 'none', marker = 'o', markevery = 10, label = f"K = {K}, Theory")
 
 axs.legend(labelspacing = 0.01)
 axs.set_xlabel( 'x',)
