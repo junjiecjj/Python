@@ -50,13 +50,13 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True     # True, False
+args.IID = True         # True, False
 args.dataset = "MNIST"  #  MNIST,  CIFAR10
 cur_lr = args.lr = 0.01
 args.num_of_clients = 10
 args.active_client = 4
 args.case = 'grad'        # "grad", "diff"
-args.diff_case = 'epoch'       # diff:'batchs', 'epoch'
+args.diff_case = 'epoch'  # diff:'batchs', 'epoch'
 args.optimizer = 'sgd'    # 'sgd', 'adam'
 args.quantize = False     # True, False
 args.quantway = 'ldpc'    # 'nr',  'mimo', 'ldpc'
@@ -65,7 +65,6 @@ args.local_up = 1
 args.local_epoch = 5
 args.snr_dB = None
 args.norm_fact = 2**8
-
 
 ## seed
 args.seed = 1

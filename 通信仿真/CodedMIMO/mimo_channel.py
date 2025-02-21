@@ -40,7 +40,6 @@ def SVD_Precoding(hmat, power, d, Nt):
     return U, D, V
 
 
-
 class MIMO_Channel():
     def __init__(self, Nr = 2, Nt = 4, d = 2, P = 1, Tw = None, Th = None, Rw = None, Rh = None, mod_type='qam', ):
         # Base configs

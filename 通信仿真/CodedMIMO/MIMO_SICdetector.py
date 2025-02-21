@@ -68,7 +68,6 @@ def parameters():
 args = parameters()
 utility.set_random_seed()
 
-
 source = SourceSink()
 logf = "SIC_BerFer.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = {} )
@@ -86,7 +85,6 @@ elif modutype == 'psk':
 Es = Modulator.NormFactor(mod_type = modutype, M = M,)
 
 # map_table, demap_table = modem.plot_constellation(modutype)
-
 
 # https://blog.csdn.net/weixin_44863193/article/details/124493090
 # https://zhuanlan.zhihu.com/p/634499207
