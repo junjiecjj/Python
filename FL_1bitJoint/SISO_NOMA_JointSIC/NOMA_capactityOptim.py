@@ -18,7 +18,7 @@ from Channel import  Large_rayleigh_fast, Large_rician_fast
 
 
 np.random.seed(42)
-frame_len = 100000
+frame_len = 1024
 B      = 4e6                    # bandwidth, Hz
 n0     = -150                   # 噪声功率谱密度, dBm/Hz
 n0     = 10**(n0/10.0)/1000     # 噪声功率谱密度, Watts/Hz
