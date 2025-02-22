@@ -416,8 +416,6 @@ x0,x1=symbols('x0 x1')
 eqs=[Eq(x0*(1j)+x0*x1,-5),Eq(x0+x1,1j)]
 print(nsolve(eqs,[x0,x1],[1,1]))#初始猜测解设为[1，1]
 
-
-
 # 5. 利用sympy的solve和nsolve求解
 # 5.1 利用solve求解所有精确解
 from sympy import symbols, Eq, solve, nsolve
