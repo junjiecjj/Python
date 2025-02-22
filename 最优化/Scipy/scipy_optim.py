@@ -39,17 +39,6 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import pyplot as plt
 
-#目标函数：
-def func(args):
-    fun = lambda x: 10 - x[0]**2 - x[1]**2
-    return fun
-
-#约束条件，包括等式约束和不等式约束
-def con(args):
-    cons = ({'type': 'ineq', 'fun': lambda x: x[1]-x[0]**2},
-            {'type': 'eq', 'fun': lambda x: x[0]+x[1]})
-    return cons
-
 #画三维模式图
 def draw3D():
     fig = plt.figure()
@@ -88,6 +77,17 @@ def drawContour():
     plt.clabel(C3, inline=1, fontsize=10)
     plt.show()
 
+#目标函数：
+def func(args):
+    fun = lambda x: 10 - x[0]**2 - x[1]**2
+    return fun
+
+#约束条件，包括等式约束和不等式约束
+def con(args):
+    cons = ({'type': 'ineq', 'fun': lambda x: x[1]-x[0]**2},
+            {'type': 'eq', 'fun': lambda x: x[0]+x[1]})
+    return cons
+
 if __name__ == "__main__":
     args = ()
     args1 = ()
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     print(res.success)
     print(res.x)
 
-    # draw3D()
+    draw3D()
     drawContour()
 
 ##====================================================================================
