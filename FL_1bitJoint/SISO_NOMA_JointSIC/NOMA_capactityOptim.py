@@ -30,7 +30,7 @@ N0     = sigma2 * B             # 噪声功率, Watts
 
 P_max = 30                     # 用户发送功率, dBm
 P_max = 10**(P_max/10.0)/1000   # Watts
-P_max = 2                      # Watts
+P_max = 3                      # Watts
 P_total = 3
 K = 3
 BS_locate, users_locate, beta_Au, PL_Au = channelConfig(K, r = 100)
@@ -114,7 +114,6 @@ else:
 
 # ======================== 可视化验证 ========================
 
-
 #%%
 import numpy as np
 from scipy.optimize import minimize
@@ -172,9 +171,6 @@ if result.success:
     print("Total capacity:", -result.fun)  # 目标函数是最小化负容量，因此取负值
 else:
     print("Optimization failed:", result.message)
-
-
-
 
 #%%
 import numpy as np
@@ -243,8 +239,6 @@ def objective_function(powers, num_users, channel_realizations):
 
     # 返回负平均容量用于最小化
     return -total_capacity / num_realizations
-
-
 
 # 生成信道实现
 channel_realizations = np.array([generate_channel(num_users, cell_radius, rice_K) for _ in range(num_realizations)])
