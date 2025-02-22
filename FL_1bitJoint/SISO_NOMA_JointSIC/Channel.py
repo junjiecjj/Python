@@ -55,20 +55,20 @@ def channelConfig(K, r = 100):
     d0 = 1
 
     ## path loss exponents
-    alpha_Au = 3 # 3.76
+    alpha_Au = 3.76 # 3.76
 
     ## Rician factor
     beta_Au = 3.0   # dB
-    beta_Au = 10**(beta_Au/10)
+    beta_Au =  10**(beta_Au/10)
 
     # Location, Case II
     BS_locate = np.array([[0, 0, 10]])
-    # radius = np.random.rand(K, 1) * r
+    radius = np.random.rand(K, 1) * r
     # radius = (np.linspace(0.2, 1, K) * r).reshape(-1, 1)
-
-    theta = (np.log10(r) - np.log10(r*0.1))/(K-1)
-    radius = np.log10(r*0.1) + np.linspace(0, (K-1)*theta,K)[:,None]
-    radius = 10**radius
+    radius = np.random.uniform(0.5*r, r, size = (K, 1))
+    # theta = (np.log10(r) - np.log10(r*0.1))/(K-1)
+    # radius = np.log10(r*0.1) + np.linspace(0, (K-1)*theta,K)[:,None]
+    # radius = 10**radius
 
 
     angle = np.random.rand(K, 1) * 2 * np.pi
@@ -83,9 +83,9 @@ def channelConfig(K, r = 100):
     ## generate path-loss
     PL_Au = C0 * (d_Au/d0)**(-alpha_Au)
 
-    return BS_locate, users_locate, beta_Au, PL_Au
+    return BS_locate, users_locate, beta_Au, PL_Au, d_Au
 
-def Large_rician_block(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
+def Large_rician_block(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
     hdLos = np.sqrt(1/2) * (np.ones((K,)) + 1j * np.ones((K,)))
     hdNLos = np.sqrt(1/2) * (np.random.randn(K, ) + 1j * np.random.randn(K, ))
     h_ds = np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos
@@ -93,25 +93,21 @@ def Large_rician_block(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, si
     H = np.expand_dims(h_d, -1).repeat(frame_len, axis = -1)
     return H
 
-def Large_rician_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
+def Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
     hdLos = np.sqrt(1/2) * (np.ones((frame_len, K)) + 1j * np.ones((frame_len, K)))
     hdNLos = np.sqrt(1/2) * (np.random.randn(frame_len, K) + 1j * np.random.randn(frame_len, K))
     h_ds = np.sqrt(beta_Au/(1 + beta_Au)) * hdLos + np.sqrt(1/(1 + beta_Au)) * hdNLos
     H = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
     return H.T
 
-def Large_rayleigh_block(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
-    # hdLos = np.sqrt(1/2) * (np.ones((K,)) + 1j * np.ones((K,)))
+def Large_rayleigh_block(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
     hdNLos = np.sqrt(1/2) * (np.random.randn(K, ) + 1j * np.random.randn(K, ))
-    # h_ds = np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos
     h_d = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
     H = np.expand_dims(h_d, -1).repeat(frame_len, axis = -1)
     return H
 
-def Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = 1):
-    # hdLos = np.sqrt(1/2) * (np.ones((frame_len, K)) + 1j * np.ones((frame_len, K)))
+def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
     hdNLos = np.sqrt(1/2) * (np.random.randn(frame_len, K) + 1j * np.random.randn(frame_len, K))
-    # h_ds = np.sqrt(beta_Au/(1 + beta_Au)) * hdLos + np.sqrt(1/(1 + beta_Au)) * hdNLos
     H = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
     return H.T
 
@@ -127,23 +123,20 @@ def Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, s
 # pmax = 0.1                    # Watts
 
 # K = 6
-# BS_locate, users_locate, beta_Au, PL_Au = channelConfig(K, r = 100)
+# BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(K, r = 100)
 
 # # sigma2 = 1
-# # H1 = Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = N0)
+# H1 = Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = N0)
 # H2 = Large_rician_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = N0)
 
-# # H1bar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
+# H1bar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
 # H2bar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
 # # print(f"H1bar = \n{H1bar}, ")
 # print(f"H2bar = \n{H2bar}, ")
 
 
 
-
-
-
-# ##### plot rayleigh
+# #%% plot rayleigh
 # fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 # x = np.arange(0, 3.01, 0.01)  # Ricean rv
 # k = 0
@@ -154,8 +147,8 @@ def Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, s
 # pdf = x/(sigma2/2) * np.exp(-x**2/(2 * sigma2/2))
 # # pdf = scipy.stats.rayleigh.pdf(x, loc = 0, scale = np.sqrt(sigma2/2))
 # hk = H1[k,:] * np.sqrt(N0) / np.abs(np.sqrt(PL_Au[k, 0]))
-# mean1 = np.mean(np.abs(hk))
-# mean2 = np.mean(np.abs(r))
+# mean1 = np.mean(np.abs(hk)**2)
+# mean2 = np.mean(np.abs(r)**2)
 # print(f"{mean1}, {mean2}")
 # axs.hist(np.abs(hk), 100, density = 1, histtype = 'step', color = 'b', lw = 1, label = "Simulation 1")
 # axs.hist(r, 100, density = 1, histtype = 'step', color = 'r', lw = 1, label = "Simulation 2")
@@ -169,7 +162,7 @@ def Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, s
 # plt.close()
 
 
-# #### plot rician
+#%% plot rician
 # K_factors = np.array([0, 3, 7, 12, 20])   # Ricean K factors
 # colors = ['b','r','k','g','m']
 # Omega = 1                           # Total average power set to unity

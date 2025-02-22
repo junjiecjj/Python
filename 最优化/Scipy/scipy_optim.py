@@ -575,8 +575,6 @@ res = minimize(rosen, x0, method='trust-ncg', jac=rosen_der, hessp=rosen_hess_p,
 print(res.x)
 
 
-
-
 #%% >>>>>>>>>>>>>>>>>>>>>  Trust-Region Truncated Generalized Lanczos / Conjugate Gradient Algorithm (method='trust-krylov')
 
 res = minimize(rosen, x0, method='trust-krylov', jac=rosen_der, hess=rosen_hess, options={'gtol': 1e-8, 'disp': True})
@@ -685,7 +683,7 @@ eq_cons = {'type': 'eq',
 
 
 x0 = np.array([0.5, 0])
-res = minimize(rosen, x0, method='SLSQP', jac=rosen_der, constraints=[eq_cons, ineq_cons], options={'ftol': 1e-9, 'disp': True}, bounds=bounds)
+res = scipy.optimize.minimize(rosen, x0, method='SLSQP', jac=rosen_der, constraints=[eq_cons, ineq_cons], options={'ftol': 1e-9, 'disp': True}, bounds=bounds)
 print(res.x)
 
 
@@ -716,42 +714,46 @@ plt.show()
 
 
 results = {}
-results['shgo'] = optimize.shgo(eggholder, bounds)
+rranges = (slice(-512, 512, 0.25), slice(-512, 512, 0.25))
+results['brute'] = scipy.optimize.brute(eggholder, rranges, full_output = True, finish = optimize.fmin)
+print(results['brute'])
+
+results['shgo'] = scipy.optimize.shgo(eggholder, bounds)
 print(results['shgo'])
 
 # results = {}
-results['DA'] = optimize.dual_annealing(eggholder, bounds)
+results['DA'] = scipy.optimize.dual_annealing(eggholder, bounds)
 print(results['DA'])
 
 # results = {}
-results['DE'] = optimize.differential_evolution(eggholder, bounds)
+results['DE'] = scipy.optimize.differential_evolution(eggholder, bounds)
 print(results['DE'])
 
 # results = {}
-results['shgo_sobol'] = optimize.shgo(eggholder, bounds, n=200, iters=5, sampling_method='sobol')
+results['shgo_sobol'] = scipy.optimize.shgo(eggholder, bounds, n=200, iters=5, sampling_method='sobol')
 print(results['shgo_sobol'])
 
 
-fig = plt.figure()
+fig = plt.figure(figsize = (8, 6), constrained_layout = True)
 ax = fig.add_subplot(111)
 im = ax.imshow(eggholder(xy), interpolation='bilinear', origin='lower', cmap='gray')
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 
-def plot_point(res, marker='o', color=None):
-    ax.plot(512 + res.x[0], 512 + res.x[1], marker = marker, color = color, ms = 10)
+def plot_point(res, marker='o', color = None, ms = 10):
+    ax.plot(512 + res.x[0], 512 + res.x[1], marker = marker, color = color, ms = ms)
 
-plot_point(results['DE'], color='c')  # differential_evolution - cyan
-plot_point(results['DA'], color='w')  # dual_annealing.        - white
-plot_point(results['shgo'], color='r', marker='+')
-plot_point(results['shgo_sobol'], color='r', marker='x')
-
-# plot them all (with a smaller marker size)
+plot_point(results['DE'], color='c')       # differential_evolution - cyan
+plot_point(results['DA'], color='pink')    # dual_annealing.        - white
+plot_point(results['shgo'], color='b', marker='*', ms = 10)
+ax.plot(512 + results['brute'][0][0], 512 + results['brute'][0][1], marker = "D", color = 'orange', ms = 20)
+# # # plot them all (with a smaller marker size)
+plot_point(results['shgo_sobol'], color = 'r', marker='v')
 for i in range(results['shgo_sobol'].xl.shape[0]):
-    ax.plot(512 + results['shgo_sobol'].xl[i, 0], 512 + results['shgo_sobol'].xl[i, 1], 'ro', ms=4)
+    ax.plot(512 + results['shgo_sobol'].xl[i, 0], 512 + results['shgo_sobol'].xl[i, 1], 'rv', ms=4)
 
-ax.set_xlim([-4, 514*2])
-ax.set_ylim([-4, 514*2])
+ax.set_xlim([-4, 530*2])
+ax.set_ylim([-4, 530*2])
 plt.show()
 
 ##====================================================================================
@@ -797,15 +799,15 @@ plt.show()
 #  Univariate function minimizers (minimize_scalar)
 ##====================================================================================
 
-from scipy.optimize import minimize_scalar
+# from scipy.optimize import minimize_scalar
 f = lambda x: (x - 2) * (x + 1)**2
-res = minimize_scalar(f, method='brent')
+res = scipy.optimize.minimize_scalar(f, method='brent')
 print(res.x)
 print(f(res.x))
 
 
 from scipy.special import j1
-res = minimize_scalar(j1, bounds=(4, 7), method='bounded')
+res = scipy.optimize.minimize_scalar(j1, bounds=(4, 7), method='bounded')
 print(res.x)
 print(f(res.x))
 
@@ -814,10 +816,10 @@ print(f(res.x))
 ##====================================================================================
 
 import numpy as np
-from scipy.optimize import root
+# from scipy.optimize import root
 def func(x):
     return x + 2 * np.cos(x)
-sol = root(func, 0.3)
+sol = scipy.optimize.root(func, 0.3)
 print(sol.x)
 # array([-1.02986653])
 print(sol.fun)
@@ -828,7 +830,7 @@ def func2(x):
          x[1]*x[0] - x[1] - 5]
     df = np.array([[np.cos(x[1]), -x[0] * np.sin(x[1])], [x[1], x[0] - 1]])
     return f, df
-sol = root(func2, [1, 1], jac = True, method = 'lm')
+sol = scipy.optimize.root(func2, [1, 1], jac = True, method = 'lm')
 print(sol.x)
 # array([ 6.50409711,  0.90841421])
 
@@ -883,18 +885,20 @@ A_ub = np.array([[1.0, -1.0, -3.0, 0.0], [-2.0, 3.0, 7.0, -3.0]])
 b_ub = np.array([5.0, -10.0])
 A_eq = np.array([[2.0, 8.0, 1.0, 0.0], [4.0, 4.0, 0.0, 1.0]])
 b_eq = np.array([60.0, 60.0])
+
 x0_bounds = (0, None)
 x1_bounds = (0, 5.0)
 x2_bounds = (-np.inf, 0.5)  # +/- np.inf can be used instead of None
 x3_bounds = (-3.0, None)
 bounds = [x0_bounds, x1_bounds, x2_bounds, x3_bounds]
-result = linprog(c, A_ub = A_ub, b_ub = b_ub, A_eq = A_eq, b_eq = b_eq, bounds = bounds)
-print(result.message)
+
+result = scipy.optimize.linprog(c, A_ub = A_ub, b_ub = b_ub, A_eq = A_eq, b_eq = b_eq, bounds = bounds)
+print(result.message, result.x)
 
 x1_bounds = (0, 6)
 bounds = [x0_bounds, x1_bounds, x2_bounds, x3_bounds]
-result = linprog(c, A_ub = A_ub, b_ub = b_ub, A_eq = A_eq, b_eq = b_eq, bounds = bounds)
-print(result.message)
+result = scipy.optimize.linprog(c, A_ub = A_ub, b_ub = b_ub, A_eq = A_eq, b_eq = b_eq, bounds = bounds)
+print(result.message, result.x)
 
 x = np.array(result.x)
 obj = result.fun
