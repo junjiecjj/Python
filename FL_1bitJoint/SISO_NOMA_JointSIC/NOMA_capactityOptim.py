@@ -19,34 +19,33 @@ from Channel import  Large_rayleigh_fast, Large_rician_fast
 
 np.random.seed(42)
 frame_len = 100000
-B      = 5e6                    # bandwidth, Hz
-sigma2 = -130                   # 噪声功率谱密度, dBm/Hz
-sigma2 = 10**(sigma2/10.0)/1000 # 噪声功率谱密度, Watts/Hz
-N0     = sigma2 * B             # 噪声功率, Watts
-K      = 12                    # 用户num
+B      = 4e6                    # bandwidth, Hz
+n0     = -150                   # 噪声功率谱密度, dBm/Hz
+n0     = 10**(n0/10.0)/1000     # 噪声功率谱密度, Watts/Hz
+N0     = n0 * B                 # 噪声功率, Watts
+K      = 6                      # 用户num
 
-P_total = K
+P_total = 10
 # P_max   = 30                     # 用户发送功率, dBm
 # P_max   = 10**(P_max/10.0)/1000  # Watts
-P_max   = P_total / 3                        # Watts
+P_max   = P_total / 3              # Watts
 
+## 产生信道系数
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(K, r = 100)
-
-# sigma2 = 1
 H1 = Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
-H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1)
+H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
 
-# Hbar = np.mean(np.abs(H1), axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
-Hbar = np.mean(np.abs(H2), axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
+# Hbar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
+Hbar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
 # print(f"H1bar = \n{H1bar}, ")
 print(f"Hbar = {Hbar}, \n sqrt(PL_Au / N0) = {np.sqrt(PL_Au.flatten())/np.sqrt(N0)}")
 
 # 约束条件
-idx = Hbar.argsort()[::-1]
+sorted_idx = Hbar.argsort()[::-1]
 constraints = [
     {'type': 'ineq', 'fun': lambda p: P_total - np.sum(p)},   # 总功率约束
     {'type': 'ineq', 'fun': lambda p: P_max - p},              # 单用户功率约束
-    {'type': 'ineq', 'fun': lambda p: p[idx[:-1]] * Hbar[idx[:-1]]**2 - p[idx[1:]] * Hbar[idx[1:]]**2}
+    {'type': 'ineq', 'fun': lambda p: p[sorted_idx[:-1]] * Hbar[sorted_idx[:-1]]/1 - p[sorted_idx[1:]] * Hbar[sorted_idx[1:]]/1}
 ]
 
 # 变量边界 (0 <= p_i <= P_max)
@@ -57,19 +56,19 @@ init = np.random.rand(K) * P_max
 init = init / np.sum(init) * P_total
 
 # ======================== 优化目标函数 ========================
-def objective_function(powers, num_users, h, N0 = 1):
+def objective_function(powers, num_users, h2, sigma2 = 1):
     total_capacity = 0.0
     # for h in channel_realizations:
     # 动态SIC顺序：按信道增益降序
-    sorted_idx = np.argsort(h)[::-1]
+    sorted_idx = np.argsort(h2)[::-1]
+    sorted_h2 = h2[sorted_idx]
     sorted_p = powers[sorted_idx]
-    sorted_h = h[sorted_idx]
 
     # 计算每个用户的容量
     for k in range(num_users):
         # 仅考虑未被消除用户的干扰
-        interference = np.sum(sorted_p[k+1:] * sorted_h[k+1:]**2)
-        sinr = (sorted_p[k] * sorted_h[k]**2) / (interference + N0)
+        interference = np.sum(sorted_p[k+1:] * sorted_h2[k+1:])
+        sinr = (sorted_p[k] * sorted_h2[k]) / (interference + sigma2)
         total_capacity += np.log2(1 + sinr)
 
     # 返回负平均容量用于最小化
@@ -79,7 +78,7 @@ def objective_function(powers, num_users, h, N0 = 1):
 result = scipy.optimize.minimize(
     objective_function,
     init,
-    args = (K, Hbar.copy(), N0),
+    args = (K, Hbar.copy(), 1),
     method = 'SLSQP',
     bounds = bounds,
     constraints = constraints,
@@ -90,22 +89,25 @@ result = scipy.optimize.minimize(
     }
 )
 
-def getSINR(h, powers, sigma2 = 1):
-    K = powers.size
+def getSINR(h2, optim_powers, sigma2 = 1):
+    K = optim_powers.size
     SINR = np.zeros(K)
+    Capacity = np.zeros(K)
     # 动态SIC顺序：按信道增益降序
-    sorted_idx = np.argsort(h)[::-1]
-    sorted_p = powers[sorted_idx]
-    sorted_h = h[sorted_idx]
+    sorted_idx = np.argsort(h2)[::-1]
+    sorted_p = optim_powers[sorted_idx]
+    sorted_h2 = h2[sorted_idx]
 
     # 计算每个用户的容量
-    for i, k in enumerate(sorted_idx):
+    for k, i in enumerate(sorted_idx):
         # 仅考虑未被消除用户的干扰
-        interference = np.sum(sorted_p[k+1:] * sorted_h[k+1:]**2)
-        sinr = (sorted_p[k] * sorted_h[k]**2) / (interference + N0)
-        SINR[]
-    return
+        interference = np.sum(sorted_p[k+1:] * sorted_h2[k+1:])
+        sinr = (sorted_p[k] * sorted_h2[k]) / (interference + sigma2)
+        SINR[i] = sinr
+        Capacity[i] = np.log2(1 + sinr)
+    return SINR, Capacity
 
+SINR, Capacity = getSINR(Hbar.copy(), result.x, sigma2 = 1)
 # ======================== 结果分析 ========================
 if result.success:
     optimized_powers = np.round(result.x, 3)
@@ -113,8 +115,8 @@ if result.success:
 
     print("\n优化结果:")
     print("--------------------------")
-    for k in range(K):
-        print(f"用户{k}功率: {optimized_powers[k]:.3f} W, d = {d_Au.flatten()[k]:.3f} m, Pk*|hk|^2 = {optimized_powers[k] * Hbar[k]**2:.4f}")
+    for k in sorted_idx:
+        print(f"用户{k:2d}功率: {optimized_powers[k]:.3f} W, d = {d_Au.flatten()[k]:.3f} m, sinr = {10 * np.log10(SINR[k]):.4f}(dB), C={Capacity[k]:.3f} bps/Hz, Pk*|hk|^2/N0 = {optimized_powers[k] * Hbar[k]/1:.8f}")
     print("--------------------------")
     print(f"总功率消耗: {np.sum(optimized_powers):.3f} W (约束: {P_total:.3f} W)")
     print(f"单用户最大功率: {np.max(optimized_powers):.3f} W (约束: {P_max:.3f} W)")
@@ -123,6 +125,7 @@ if result.success:
     print(f"系统总容量: {total_capacity:.3f} bps/Hz")
 else:
     print("优化失败:", result.message)
+
 
 
 #%%
@@ -147,8 +150,8 @@ else:
 # T = 300                       # 温度 (K)
 
 # # 热噪声功率计算
-# noise_power_linear = k * T * BW * 10**(NF/10)  # 线性值 (W)
-# noise_power = noise_power_linear
+# noise_power = k * T * BW * 10**(NF/10)  # 线性值 (W)
+# # noise_power = 0.00001
 
 # # ======================== 信道模型 ========================
 # def generate_channel(num_users, cell_radius, rice_K):
@@ -247,29 +250,6 @@ else:
 #     print(f"系统总容量: {total_capacity:.2f} bps/Hz")
 # else:
 #     print("优化失败:", result.message)
-
-# # ======================== 可视化验证 ========================
-
-
-# ##### plot rayleigh
-# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-
-# axs.hist(channel_realizations.flatten(), 100, density = 1, histtype = 'step', color = 'b', lw = 1, label = "Simulation 1")
-
-# axs.legend(labelspacing = 0.01)
-# axs.set_xlabel( '信道增益 (线性值)',)
-# axs.set_ylabel( '概率密度',)
-# axs.set_title("信道增益分布直方图")
-# plt.show()
-# plt.close()
-
-
-
-
-
-
-
-
 
 
 

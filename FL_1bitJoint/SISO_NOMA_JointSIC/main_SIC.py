@@ -67,7 +67,7 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'block-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
+    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
     }
     args = argparse.Namespace(**ldpc_args)
     return args

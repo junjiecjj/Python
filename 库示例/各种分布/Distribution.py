@@ -737,6 +737,7 @@ plt.tight_layout()
 plt.show()
 
 #%%>>>>>>>>>> 循环对称高斯分布( X~CN(0, sigma^2)  distribution) %%%%%%%%%%%%%%%%%%%%%%%%
+import scipy
 # 验证由两个均值为0，方差相同的独立同分布的正太分布分别为实部和虚部的复数向量分布符合瑞丽分布, 且这个复数的模的平方服从指数分布,
 
 # X = (x1+jx2) ~ CN(0, sigma^2)
@@ -750,7 +751,7 @@ sigma2_array = [1, 2]
 
 ### PDF of sqrt(x1**2 + x2**2) Distributions
 fig, axs = plt.subplots(nrows = 1, ncols = len(sigma2_array), figsize=(len(sigma2_array)*4, 3))
-
+loc = 0
 for sigma2, ax in zip(sigma2_array, axs.ravel()):
     x1 = np.random.normal(loc = mu, scale = np.sqrt(sigma2/2), size=10000)
     x2 = np.random.normal(loc = mu, scale = np.sqrt(sigma2/2), size=10000)

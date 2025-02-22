@@ -65,7 +65,7 @@ def channelConfig(K, r = 100):
     BS_locate = np.array([[0, 0, 10]])
     radius = np.random.rand(K, 1) * r
     # radius = (np.linspace(0.2, 1, K) * r).reshape(-1, 1)
-    radius = np.random.uniform(0.5*r, r, size = (K, 1))
+    radius = np.random.uniform(0.1 * r, r, size = (K, 1))
     # theta = (np.log10(r) - np.log10(r*0.1))/(K-1)
     # radius = np.log10(r*0.1) + np.linspace(0, (K-1)*theta,K)[:,None]
     # radius = 10**radius
@@ -112,7 +112,7 @@ def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
     return H.T
 
 # np.random.seed(42)
-# frame_len = 100000
+# frame_len = 1000000
 # B      = 5e6                  # bandwidth, Hz
 # sigma2 = -120                    # 噪声功率谱密度, dBm/Hz
 # sigma2 = 10**(sigma2/10.0)/1000 # 噪声功率谱密度, Watts/Hz
@@ -126,13 +126,13 @@ def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
 # BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(K, r = 100)
 
 # # sigma2 = 1
-# H1 = Large_rayleigh_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = N0)
-# H2 = Large_rician_fast(K, frame_len, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = N0)
+# H1 = Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
+# # H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
 
 # H1bar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
-# H2bar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
-# # print(f"H1bar = \n{H1bar}, ")
-# print(f"H2bar = \n{H2bar}, ")
+# # H2bar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
+# print(f"H1bar = \n{H1bar}, ")
+# # print(f"H2bar = \n{H2bar}, ")
 
 
 
@@ -149,7 +149,9 @@ def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
 # hk = H1[k,:] * np.sqrt(N0) / np.abs(np.sqrt(PL_Au[k, 0]))
 # mean1 = np.mean(np.abs(hk)**2)
 # mean2 = np.mean(np.abs(r)**2)
-# print(f"{mean1}, {mean2}")
+# m3 = np.sqrt(np.pi/2) * np.sqrt(1/2)
+# m4 = sigma2
+# print(f"{mean1}, {mean2}/{m3}/{m4}")
 # axs.hist(np.abs(hk), 100, density = 1, histtype = 'step', color = 'b', lw = 1, label = "Simulation 1")
 # axs.hist(r, 100, density = 1, histtype = 'step', color = 'r', lw = 1, label = "Simulation 2")
 # axs.plot(x, pdf,  color = 'k', lw = 1, ls = 'none', marker = 'o', markevery = 10, label = "Theory")

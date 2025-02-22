@@ -34,10 +34,6 @@ def NormFactor(mod_type = 'qam', M = 16,):
     """
     if mod_type == 'psk':
         Es = 1
-    # if mod_type == 'qpsk':
-    #     Es = 1
-    # if mod_type == '8psk':
-    #     Es = 1
     if mod_type == 'qam':
         if M == 8:
             Es = 6
@@ -142,7 +138,7 @@ def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 
 
 
 def plot_constellation(constellation = "None", map_table = "None", Modulation_type = "Constellation"):
-    import math
+
     if type(constellation) == str and type(map_table) == str:
         raise Exception("Both constellation and map_table are Empty!")
     if type(constellation) == str:
