@@ -739,7 +739,7 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 
 def plot_point(res, marker='o', color=None):
-    ax.plot(512+res.x[0], 512+res.x[1], marker=marker, color=color, ms=10)
+    ax.plot(512 + res.x[0], 512 + res.x[1], marker = marker, color = color, ms = 10)
 
 plot_point(results['DE'], color='c')  # differential_evolution - cyan
 plot_point(results['DA'], color='w')  # dual_annealing.        - white
