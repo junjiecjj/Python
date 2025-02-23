@@ -93,6 +93,13 @@ plt.close()
 #%% Program 6.5: ser rayleigh.m: Theoretical symbol error rates over Rayleigh fading channel
 
 def ser_rayleigh(EbN0dB, MOD_TYPE, M):
+    EbN0 = 10**(EbN0dB/10)
+    EsN0 = np.log2(M) * EbN0
+    SER = np.zeros(EbN0dB.size)
+    if MOD_TYPE.lower() == "bpsk":
+        SER = 1/2 * (1 - np.sqrt(EsN0/(1 + EsN0)))
+    elif MOD_TYPE.lower() == "psk":
+        SER = np.zeros(EbN0.size)
 
     return
 
