@@ -61,7 +61,18 @@ def NormFactor(mod_type = 'qam', M = 16,):
     return Es
 
 
+def modulator(modutype, M, ):
+    # M = args.M
+    bps = int(np.log2(M))
+    # framelen = int(ldpc.codelen/bps)
+    # modutype = args.type
+    if modutype == 'qam':
+        modem = commpy.QAMModem(M)
+    elif modutype == 'psk':
+        modem =  commpy.PSKModem(M)
+    Es = NormFactor(mod_type = modutype, M = M,)
 
+    return modem, Es, bps
 
 
 
