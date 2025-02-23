@@ -126,7 +126,7 @@ def SIC_LDPC_BlockFading(H, yy, P, inteleaverM, noise_var, Es, modem, ldpc, maxi
     return uu_hat, uu_sum, tot_iter
 
 ## 以一帧为单位消去，以P*|h|^2为排序；且考虑其他未消去用户的功率
-def SIC_LDPC_FastFading(H, yy, P, order, inteleaverM, Es, modem, ldpc, noisevar = 1, maxiter = 50):
+def SIC_LDPC_FastFading(H, yy, order, inteleaverM, Es, modem, ldpc, noisevar = 1, maxiter = 50):
     yy0 = copy.deepcopy(yy)
     K, frameLen = H.shape
     # order =  np.argsort(-np.abs(P))   #降序排列

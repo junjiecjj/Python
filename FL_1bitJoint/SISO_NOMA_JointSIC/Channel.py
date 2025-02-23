@@ -110,6 +110,8 @@ def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     H = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     return H.T
 
+
+
 # np.random.seed(42)
 # frame_len = 1000000
 # B      = 5e6                  # bandwidth, Hz

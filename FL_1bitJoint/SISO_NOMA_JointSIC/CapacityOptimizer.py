@@ -27,17 +27,18 @@ from Channel import  Large_rayleigh_fast, Large_rician_fast
 # P_total = K
 # # P_max   = 30                     # 用户发送功率, dBm
 # # P_max   = 10**(P_max/10.0)/1000  # Watts
-# P_max   = P_total / 3              # Watts
+# P_max   = P_total / 2              # Watts
 
 # ## 产生信道系数
 # BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(K, r = 100, rmin = 0.6)
-# H1 = Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
-# H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
+# H1 = Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, noisevar = N0)
+# # H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, noisevar = N0)
 
 # Hbar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
 # # Hbar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
 # # print(f"H1bar = \n{H1bar}, ")
 # print(f"Hbar = {Hbar}, \n sqrt(PL_Au / N0) = {np.sqrt(PL_Au.flatten())/np.sqrt(N0)}")
+
 
 # ======================== 优化目标函数 ========================
 def objective_function(powers, num_users, h2, sigma2 = 1):
@@ -86,14 +87,14 @@ def NOMAcapacityOptim(H2bar, d_Au, P_total, P_max, noisevar = 1 ):
         {'type': 'ineq', 'fun': lambda p: p[sorted_idx[:-1]] * H2bar[sorted_idx[:-1]]/noisevar - p[sorted_idx[1:]] * H2bar[sorted_idx[1:]]/noisevar}
     ]
 
-    # 变量边界 (0 <= p_i <= P_max)
+    ## 变量边界 (0 <= p_i <= P_max)
     bounds = [(P_total/(4*K), P_max) for _ in range(K)]
 
     # 初始猜测 (随机生成满足总功率约束)
     init = np.random.rand(K) * P_max
     init = init / np.sum(init) * P_total
 
-    # ======================== 执行优化 ========================
+    ## ======================== 执行优化 ========================
     result = scipy.optimize.minimize(
         objective_function,
         init,
@@ -134,13 +135,44 @@ def NOMAcapacityOptim(H2bar, d_Au, P_total, P_max, noisevar = 1 ):
     return optimized_powers, total_capacity, SINR, Capacity
 
 
+def JointCapacityOptim(PL_Au, P_total, noisevar = 1):
+    alpha = P_total/np.sum(1/PL_Au)
+
+    optimized_powers = alpha/PL_Au
+
+    # H_compensate = H1 * np.sqrt(optimized_powers)
+
+    # Hbar1 = np.mean(np.abs(H_compensate)**2, axis = 1)
+    # SINR, Capacity = getSINR(H2bar.copy(), optimized_powers.flatten(), noisevar = noisevar)
+    # total_capacity = Capacity.sum()
+
+    return optimized_powers.flatten()
+
+def EquaCapacityOptim(H2bar, d_Au, P_total, noisevar = 1):
+
+    optimized_powers = np.ones(H2bar.size) * P_total/H2bar.size
+
+    # H_compensate = H1 * np.sqrt(optimized_powers)
+
+    # Hbar1 = np.mean(np.abs(H_compensate)**2, axis = 1)
+    # SINR, Capacity = getSINR(H2bar.copy(), optimized_powers.flatten(), noisevar = noisevar)
+    # total_capacity = Capacity.sum()
+
+    return optimized_powers.flatten()  # , total_capacity, SINR, Capacity
+
+
 # optimized_powers, total_capacity, SINR, Capacity = NOMAcapacityOptim(Hbar, d_Au, P_total, P_max, noisevar = 1, )
 
+# optimized_powers1 = JointCapacityOptim(PL_Au, P_total, noisevar = 1, )
+
+# optimized_powers2, total_capacity2, SINR2, Capacity2 = EquaCapacityOptim(Hbar, d_Au, P_total, P_max, noisevar = 1, )
 
 
+# print(f"{optimized_powers}, {total_capacity}, {SINR}, {Capacity}\n\n")
 
+# print(f"{optimized_powers1}, \n\n")
 
-
+# print(f"{optimized_powers2}, {total_capacity2}, {SINR2}, {Capacity2}")
 
 
 

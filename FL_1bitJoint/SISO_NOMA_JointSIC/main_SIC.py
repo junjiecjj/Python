@@ -42,9 +42,7 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-# rpo = 4
-logf = f"./resultsTXT/fast/BER_SIC_{args.channel_type}_{args.K}U.txt"
-# logf = "./resultsTXT/Block/xxxxxx.txt"
+logf = f"./resultsTXT/fast/BER_SIC_{args.channel_type}_{args.K}U_equPowerAllot.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -55,7 +53,7 @@ inteleaverM = inteleaver(args.K, int(ldpc.codelen/bps))
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = 0.6)
 
 # 遍历SNR
-n0     = np.arange(-140, -105, 5)         # 噪声功率谱密度, dBm/Hz
+n0     = np.arange(-120, -145, -5)         # 噪声功率谱密度, dBm/Hz
 n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
 N0     = n00 * args.B                     # 噪声功率, Watts
 
@@ -65,7 +63,8 @@ for noisePsd, noisepower in zip(n0, N0):
 
     Htmp = Large_rayleigh_fast(args.K, 100000, beta_Au, PL_Au, noisevar = noisepower)
     Hbar = np.mean(np.abs(Htmp)**2, axis = 1)
-    P, total_capacity, SINR, Capacity = NOMAcapacityOptim(Hbar, d_Au, args.P_total, args.P_max, noisevar = 1, )
+    # P, total_capacity, SINR, Capacity = NOMAcapacityOptim(Hbar, d_Au, args.P_total, args.P_max, noisevar = 1, )
+    P = np.ones(args.K) * args.P_total/args.K
     order = np.argsort(P*Hbar)[::-1]
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
         if args.channel_type == 'large_fast':
@@ -95,7 +94,7 @@ for noisePsd, noisepower in zip(n0, N0):
         if args.channel_type == 'large_block':
             uu_hat, uu_hat_sum, iter_num = SIC_LDPC_BlockFading(H, yy, P, inteleaverM, 1, Es, modem, ldpc, maxiter = 50)
         elif args.channel_type == 'large_fast':
-            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading(H, yy, P, order, inteleaverM,  Es, modem, ldpc, noisevar = 1, maxiter = 50)
+            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading(H, yy, order, inteleaverM,  Es, modem, ldpc, noisevar = 1, maxiter = 50)
         source.tot_iter += iter_num
         source.CntSumErr(uu_sum, uu_hat_sum)
         # break
