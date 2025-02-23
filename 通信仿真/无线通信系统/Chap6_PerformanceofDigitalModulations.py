@@ -42,8 +42,12 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
 # Program 6.3: perf over awgn.m: Performance of various modulations over AWGN channel
 nSym = 100000
 EbN0dB = np.arange(-4, 26, 2 )
-MOD_TYPE = "qam"
-arrayOfM = [4, 16, 64, 256]
+# MOD_TYPE = "qam"
+# arrayOfM = [4, 16, 64, 256]
+
+MOD_TYPE = "psk"
+arrayOfM = [2, 4, 8, 16, 32]
+
 colors = ['b', 'g', 'r', 'c', 'm', 'k']
 channelModel = "awgn"
 
