@@ -79,7 +79,7 @@ for m, M in enumerate(arrayOfM):
 axs.set_ylim(1e-6, 1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"Probability of Symbol Error for M-{MOD_TYPE.upper()} over AWGN")
+axs.set_title(f"Symbol Error Rate for M-{MOD_TYPE.upper()} over AWGN")
 axs.legend(fontsize = 20)
 
 plt.show()
