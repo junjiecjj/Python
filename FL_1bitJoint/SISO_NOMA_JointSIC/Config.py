@@ -19,9 +19,9 @@ def parameters():
     "minimum_snr" : 0,
     "maximum_snr" : 13,
     "increment_snr" : 1,
-    "maximum_error_number" : 300,
+    "maximum_error_number" : 200,
     "maximum_block_number" : 1000000,
-    "K" : 6,    # User num
+    "K" : 4,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -42,7 +42,56 @@ def parameters():
     # "M":  8,  # 8PSK
 
     ## channel
-    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
+    'channel_type': 'large_fast', # 'AWGN', 'block-fading', 'fast-fading', 'large_fast', 'large_block'
     }
     args = argparse.Namespace(**ldpc_args)
+
+    ## system arg
+    args.B     = 4e6                           # bandwidth, Hz
+    # args.n0     = -140                       # 噪声功率谱密度, dBm/Hz
+    # args.n0     = 10**(args.n0/10.0)/1000    # 噪声功率谱密度, Watts/Hz
+    # args.N0     = args.n0 * args.B           # 噪声功率, Watts
+
+    args.P_total = args.K
+    # args.P_max   = 30                          # 用户发送功率, dBm
+    # args.P_max   = 10**(args.P_max/10.0)/1000  # Watts
+    args.P_max   = args.P_total / 3              # Watts
+
     return args
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

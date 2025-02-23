@@ -49,13 +49,13 @@ def FastFading_mac(K,  frame_len):
     H = (np.random.randn(K, frame_len) + 1j * np.random.randn(K, frame_len))/np.sqrt(2)
     return H
 
-def channelConfig(K, r = 100):
+def channelConfig(K, r = 100, rmin = 0.1):
     C0 = -30                             # dB
     C0 = 10**(C0/10.0)                   # 参考距离的路损
     d0 = 1
 
     ## path loss exponents
-    alpha_Au = 3.76 # 3.76
+    alpha_Au = 3 # 3.76
 
     ## Rician factor
     beta_Au = 3.0   # dB
@@ -65,11 +65,10 @@ def channelConfig(K, r = 100):
     BS_locate = np.array([[0, 0, 10]])
     radius = np.random.rand(K, 1) * r
     # radius = (np.linspace(0.2, 1, K) * r).reshape(-1, 1)
-    radius = np.random.uniform(0.1 * r, r, size = (K, 1))
+    radius = np.random.uniform(rmin * r, r, size = (K, 1))
     # theta = (np.log10(r) - np.log10(r*0.1))/(K-1)
     # radius = np.log10(r*0.1) + np.linspace(0, (K-1)*theta,K)[:,None]
     # radius = 10**radius
-
 
     angle = np.random.rand(K, 1) * 2 * np.pi
     users_locate_x = radius * np.cos(angle)
@@ -85,30 +84,30 @@ def channelConfig(K, r = 100):
 
     return BS_locate, users_locate, beta_Au, PL_Au, d_Au
 
-def Large_rician_block(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
+def Large_rician_block(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     hdLos = np.sqrt(1/2) * (np.ones((K,)) + 1j * np.ones((K,)))
     hdNLos = np.sqrt(1/2) * (np.random.randn(K, ) + 1j * np.random.randn(K, ))
     h_ds = np.sqrt(beta_Au/(1+beta_Au)) * hdLos + np.sqrt(1/(1+beta_Au)) * hdNLos
-    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    h_d = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     H = np.expand_dims(h_d, -1).repeat(frame_len, axis = -1)
     return H
 
-def Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
+def Large_rician_fast(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     hdLos = np.sqrt(1/2) * (np.ones((frame_len, K)) + 1j * np.ones((frame_len, K)))
     hdNLos = np.sqrt(1/2) * (np.random.randn(frame_len, K) + 1j * np.random.randn(frame_len, K))
     h_ds = np.sqrt(beta_Au/(1 + beta_Au)) * hdLos + np.sqrt(1/(1 + beta_Au)) * hdNLos
-    H = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    H = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     return H.T
 
-def Large_rayleigh_block(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
+def Large_rayleigh_block(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     hdNLos = np.sqrt(1/2) * (np.random.randn(K, ) + 1j * np.random.randn(K, ))
-    h_d = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    h_d = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     H = np.expand_dims(h_d, -1).repeat(frame_len, axis = -1)
     return H
 
-def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
+def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     hdNLos = np.sqrt(1/2) * (np.random.randn(frame_len, K) + 1j * np.random.randn(frame_len, K))
-    H = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/sigma2))
+    H = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     return H.T
 
 # np.random.seed(42)
@@ -129,12 +128,10 @@ def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = 1):
 # H1 = Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
 # # H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
 
-# H1bar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
-# # H2bar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
-# print(f"H1bar = \n{H1bar}, ")
-# # print(f"H2bar = \n{H2bar}, ")
-
-
+# # H1bar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
+# # # H2bar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
+# # print(f"H1bar = \n{H1bar}, ")
+# # # print(f"H2bar = \n{H2bar}, ")
 
 # #%% plot rayleigh
 # fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)

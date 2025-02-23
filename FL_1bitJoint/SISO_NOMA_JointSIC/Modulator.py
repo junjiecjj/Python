@@ -22,6 +22,20 @@ def demodu_BPSK(y):
             y[i] = 1
     return y
 
+def modulator(modutype, M, ):
+    # M = args.M
+    bps = int(np.log2(M))
+    # framelen = int(ldpc.codelen/bps)
+    # modutype = args.type
+    if modutype == 'qam':
+        modem = commpy.QAMModem(M)
+    elif modutype == 'psk':
+        modem =  commpy.PSKModem(M)
+    Es = NormFactor(mod_type = modutype, M = M,)
+
+    return modem, Es, bps
+
+
 def NormFactor(mod_type = 'qam', M = 16,):
     """
         Signal power normalization and de-normalization.

@@ -3,15 +3,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug 10 21:08:38 2023
+Created on  2024.11.12
 
 @author: jack
-
-numpy.nonzero()
-numpy.nonzero() 函数返回输入数组中非零元素的索引。
-
-numpy.where()
-numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
 
 """
 ## system lib
@@ -21,60 +15,24 @@ import datetime
 import commpy as cpy
 import copy
 import argparse
-import  os
+import os
 
 ##  自己编写的库
-from sourcesink import SourceSink
-
-from Channel import channelConfig
-from Channel import AWGN_mac, BlockFading_mac, FastFading_mac, Large_mac
 import utility
+from sourcesink import SourceSink
+from Channel import channelConfig
+from Channel import Large_rayleigh_fast, Large_rician_fast
 from LDPCcoder import LDPC_Coder, BPSK
-from SICdetector_LDPC import inteleaver, SIC_LDPC_BlockFading_BPSK,SIC_LDPC_BlockFading
-from SICdetector_LDPC import  SIC_LDPC_FastFading_BPSK, SIC_LDPC_FastFading_P, SIC_LDPC_FastFading
+from SICdetector_LDPC import  inteleaver, SIC_LDPC_BlockFading
+from SICdetector_LDPC import  SIC_LDPC_FastFading
 import Modulator
+from Config import parameters
+from CapacityOptimizer import NOMAcapacityOptim
+utility.set_random_seed(42)
 
-utility.set_random_seed()
-
-def parameters():
-    # 获取当前系统用户目录
-    home = os.path.expanduser('~')
-
-    ldpc_args = {
-    "minimum_snr" : 0,
-    "maximum_snr" : 13,
-    "increment_snr" : 1,
-    "maximum_error_number" : 200,
-    "maximum_block_number" : 1000000,
-    "K" : 4,    # User num
-
-    ## LDPC***0***PARAMETERS
-    "max_iteration" : 50,
-    "encoder_active" : 1,
-    "file_name_of_the_H" : "PEG1024regular0.5.txt",
-
-    ## others
-    "home" : home,
-    "smallprob": 1e-15,
-
-    ##>>>>>>>  modulation param
-    # "type" : 'qam',
-    # "M":  16,
-
-    "type" : 'psk',
-    "M":  2,    # BPSK
-    # "M":  4,  # QPSK
-    # "M":  8,  # 8PSK
-
-    ## channel
-    'channel_type': 'fast-fading', # 'AWGN', 'block-fading', 'fast-fading', 'large'
-    }
-    args = argparse.Namespace(**ldpc_args)
-    return args
-
-args = parameters()
 
 # def QaryLDPC(args, ):
+args = parameters()
 ldpc = LDPC_Coder(args)
 coderargs = {'codedim':ldpc.codedim,
              'codelen':ldpc.codelen,
@@ -84,46 +42,35 @@ coderargs = {'codedim':ldpc.codedim,
              'col':ldpc.num_col, }
 
 source = SourceSink()
-rpo = 4
-logf = f"./resultsTXT/Block/BER_SIC_block_{args.K}u_w_powerdiv_{rpo}.txt"
+# rpo = 4
+logf = f"./resultsTXT/fast/BER_SIC_{args.channel_type}_{args.K}U.txt"
 # logf = "./resultsTXT/Block/xxxxxx.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
-M = args.M
-bps = int(np.log2(M))
+modem, Es, bps = Modulator.modulator( args.type, args.M)
 framelen = int(ldpc.codelen/bps)
-modutype = args.type
-if modutype == 'qam':
-    modem = cpy.QAMModem(M)
-elif modutype == 'psk':
-    modem =  cpy.PSKModem(M)
-Es = Modulator.NormFactor(mod_type = modutype, M = M,)
+inteleaverM = inteleaver(args.K, int(ldpc.codelen/bps))
 
-## 遍历SNR
-sigma2dB = np.arange(32, 61, 4)  # dB
-sigma2W = 10**(-sigma2dB/10.0)  # 噪声功率 w
+BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = 0.6)
 
-P = np.sqrt(rpo**np.arange(args.K)/np.sum(rpo**np.arange(args.K)))
-# P = np.sqrt(np.ones(args.K) / args.K)
+# 遍历SNR
+n0     = np.arange(-140, -105, 5)         # 噪声功率谱密度, dBm/Hz
+n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
+N0     = n00 * args.B                     # 噪声功率, Watts
 
-for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
+for noisePsd, noisepower in zip(n0, N0):
     source.ClrCnt()
-    print( f"\n sigma2 = {sigma2db}(dB), {sigma2w}(w):")
+    print( f"\n noisePsd = {noisePsd}(dBm/Hz), {noisepower}(w):")
+
+    Htmp = Large_rayleigh_fast(args.K, 100000, beta_Au, PL_Au, noisevar = noisepower)
+    Hbar = np.mean(np.abs(Htmp)**2, axis = 1)
+    P, total_capacity, SINR, Capacity = NOMAcapacityOptim(Hbar, d_Au, args.P_total, args.P_max, noisevar = 1, )
+    order = np.argsort(P*Hbar)[::-1]
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
-        if args.channel_type == 'AWGN':
-            H = AWGN_mac(args.K, framelen)
-            H = H * P.reshape(-1, 1)
-        elif args.channel_type == 'block-fading':
-            H = BlockFading_mac(args.K, framelen)
-            H = H * P.reshape(-1, 1)
-        elif args.channel_type == 'fast-fading':
-            H = FastFading_mac(args.K, framelen)
-            H = H * P.reshape(-1, 1)
-        elif args.channel_type == 'large':
-            BS_locate, users_locate, beta_Au, PL_Au = channelConfig(args.K, r = 100)
-            H = Large_mac(args.K, ldpc.codelen, BS_locate, users_locate, beta_Au, PL_Au, sigma2 = sigma2w)
-        inteleaverM = inteleaver(args.K, int(ldpc.codelen/bps))
+        if args.channel_type == 'large_fast':
+            H = Large_rayleigh_fast(args.K, framelen, beta_Au, PL_Au, noisevar = noisepower)
+        H = H * np.sqrt(P[:,None])
         ## 编码
         uu = source.SourceBits(args.K, ldpc.codedim)
         uu_sum = ldpc.bits2sum(uu)
@@ -133,7 +80,7 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
             cc[k] =  ldpc.encoder(uu[k,:])
 
         ## Modulate
-        symbs = np.zeros((args.K, int(ldpc.codelen/bps)),) #  dtype = complex
+        symbs = np.zeros((args.K, int(ldpc.codelen/bps)), dtype = complex) # dtype = complex
         for k in range(args.K):
             symbs[k] = BPSK(cc[k])
             # symbs[k] = symbs[k][inteleaverM[k]]
@@ -142,28 +89,25 @@ for sigma2db, sigma2w in zip(sigma2dB, sigma2W):
         symbs  = symbs / np.sqrt(Es)
 
         ## Pass Channel
-        yy = ldpc.MACchannel(symbs, H, sigma2w)
+        yy = ldpc.MACchannel(symbs, H, 1)
 
         #>>>>>> SIC detecting Then decoding
-        if args.channel_type == 'block-fading':
-            # uu_hat, uu_hat_sum, iter_num = SIC_LDPC_BlockFading_BPSK(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
-            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_BlockFading(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
-        elif args.channel_type == 'fast-fading':
-            ### uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading_BPSK(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
-            ### uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading_P(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
-            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading(H, yy, P, inteleaverM, sigma2w, Es, modem, ldpc, maxiter = 50)
+        if args.channel_type == 'large_block':
+            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_BlockFading(H, yy, P, inteleaverM, 1, Es, modem, ldpc, maxiter = 50)
+        elif args.channel_type == 'large_fast':
+            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading(H, yy, P, order, inteleaverM,  Es, modem, ldpc, noisevar = 1, maxiter = 50)
         source.tot_iter += iter_num
         source.CntSumErr(uu_sum, uu_hat_sum)
         # break
         source.CntBerFer(uu, uu_hat)
-        if source.tot_blk % 10 == 0:
-            source.PrintScreen(snr = sigma2db)
+        if source.tot_blk % 1 == 0:
+            source.PrintScreen(snr = noisePsd)
             # source.PrintResult(log = f"{snr:.2f}  {source.m_ber:.8f}  {source.m_fer:.8f}")
     # break
     print("  *** *** *** *** ***")
-    source.PrintScreen(snr = sigma2db)
+    source.PrintScreen(snr = noisePsd)
     print("  *** *** *** *** ***\n")
-    source.SaveToFile(filename = logf, snr = sigma2db)
+    source.SaveToFile(filename = logf, snr = noisePsd)
     # return
 
 # QaryLDPC(args)
