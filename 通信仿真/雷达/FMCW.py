@@ -480,6 +480,139 @@ plt.show()
 
 
 
+#%%
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 参数设置
+c = 3e8  # 光速 (m/s)
+f0 = 24e9  # 起始频率 (Hz)
+B = 250e6  # 带宽 (Hz)
+T = 1e-3  # 调制周期 (s)
+N = 1024  # 采样点数
+fs = 2e6  # 采样频率 (Hz)
+
+# 生成发射信号
+t = np.linspace(0, T, N, endpoint=False)
+tx_signal = np.cos(2 * np.pi * (f0 * t + (B / (2 * T)) * t ** 2))
+
+# 假设接收信号是发射信号的延迟版本
+delay = 100  # 延迟点数
+rx_signal = np.roll(tx_signal, delay)
+
+# 计算差频信号
+mix_signal = tx_signal * rx_signal
+
+# 傅里叶变换得到频谱
+fft_result = np.fft.fft(mix_signal)
+freq = np.fft.fftfreq(N, 1/fs)
+
+# 找到峰值频率
+peak_freq = freq[np.argmax(np.abs(fft_result))]
+
+# 计算距离
+distance = (c * peak_freq * T) / (2 * B)
+print(f"Distance: {distance:.2f} meters")
+
+# 计算速度 (假设有多普勒频移)
+doppler_shift = 1000  # 假设多普勒频移为1kHz
+velocity = (doppler_shift * c) / (2 * f0)
+print(f"Velocity: {velocity:.2f} m/s")
+
+# 计算角度 (假设有两个接收天线)
+phase_diff = np.angle(fft_result[delay])  # 假设相位差
+wavelength = c / f0
+antenna_distance = wavelength / 2  # 天线间距
+angle = np.arcsin((phase_diff * wavelength) / (2 * np.pi * antenna_distance))
+print(f"Angle: {np.degrees(angle):.2f} degrees")
+
+# 绘制频谱
+plt.plot(freq, np.abs(fft_result))
+plt.title("Frequency Spectrum")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Amplitude")
+plt.show()
+
+
+#%%
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 参数设置
+c = 3e8  # 光速 (m/s)
+f0 = 24e9  # 起始频率 (Hz)
+B = 250e6  # 带宽 (Hz)
+T = 1e-3  # 调制周期 (s)
+N = 1024  # 采样点数
+fs = 2e6  # 采样频率 (Hz)
+SNR = 10  # 信噪比 (dB)
+num_paths = 3  # 多路径数量
+
+# 生成发射信号
+t = np.linspace(0, T, N, endpoint=False)
+tx_signal = np.cos(2 * np.pi * (f0 * t + (B / (2 * T)) * t ** 2))
+
+# 模拟多路径效应
+delays = [50, 100, 150]  # 多路径延迟（单位：采样点）
+attenuations = [0.8, 0.5, 0.3]  # 多路径衰减系数
+rx_signal = np.zeros_like(tx_signal)
+for delay, attenuation in zip(delays, attenuations):
+    rx_signal += attenuation * np.roll(tx_signal, delay)
+
+# 添加噪声
+noise_power = 10 ** (-SNR / 10)  # 噪声功率
+noise = np.random.normal(0, np.sqrt(noise_power), N)
+rx_signal += noise
+
+# 计算差频信号
+mix_signal = tx_signal * rx_signal
+
+# 傅里叶变换得到频谱
+fft_result = np.fft.fft(mix_signal)
+freq = np.fft.fftfreq(N, 1 / fs)
+
+# 找到峰值频率
+peak_freq = freq[np.argmax(np.abs(fft_result))]
+
+# 计算距离
+distance = (c * peak_freq * T) / (2 * B)
+print(f"Distance: {distance:.2f} meters")
+
+# 计算速度 (假设有多普勒频移)
+doppler_shift = 1000  # 假设多普勒频移为1kHz
+velocity = (doppler_shift * c) / (2 * f0)
+print(f"Velocity: {velocity:.2f} m/s")
+
+# 计算角度 (假设有两个接收天线)
+phase_diff = np.angle(fft_result[delays[0]])  # 使用第一个路径的相位差
+wavelength = c / f0
+antenna_distance = wavelength / 2  # 天线间距
+angle = np.arcsin((phase_diff * wavelength) / (2 * np.pi * antenna_distance))
+print(f"Angle: {np.degrees(angle):.2f} degrees")
+
+# 绘制频谱
+plt.plot(freq, np.abs(fft_result))
+plt.title("Frequency Spectrum with Noise and Multipath")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Amplitude")
+plt.grid(True)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
