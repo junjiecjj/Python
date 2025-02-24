@@ -62,14 +62,14 @@ BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, r
 
 
 # 遍历SNR
-n0     = np.arange(-120, -145, -5)         # 噪声功率谱密度, dBm/Hz
+n0     = np.arange(-126.2, -127.2, -0.2)         # 噪声功率谱密度, dBm/Hz
 n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
 N0     = n00 * args.B                     # 噪声功率, Watts
 
 for noisePsd, noisepower in zip(n0, N0):
     source.ClrCnt()
     print( f"\n noisePsd = {noisePsd}(dBm/Hz), {noisepower}(w):")
-    P = JointCapacityOptim(PL_Au, args.P_total, noisevar = 1)
+    P = JointCapacityOptim(PL_Au, args.P_total,)
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
         if args.channel_type == 'AWGN':
             H = AWGN_mac(args.K, framelen)

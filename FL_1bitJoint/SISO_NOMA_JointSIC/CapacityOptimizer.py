@@ -135,7 +135,7 @@ def NOMAcapacityOptim(H2bar, d_Au, P_total, P_max, noisevar = 1 ):
     return optimized_powers, total_capacity, SINR, Capacity
 
 
-def JointCapacityOptim(PL_Au, P_total, noisevar = 1):
+def JointCapacityOptim(PL_Au, P_total, ):
     alpha = P_total/np.sum(1/PL_Au)
 
     optimized_powers = alpha/PL_Au
@@ -148,7 +148,7 @@ def JointCapacityOptim(PL_Au, P_total, noisevar = 1):
 
     return optimized_powers.flatten()
 
-def EquaCapacityOptim(H2bar, d_Au, P_total, noisevar = 1):
+def EquaCapacityOptim(H2bar, d_Au, P_total, ):
 
     optimized_powers = np.ones(H2bar.size) * P_total/H2bar.size
 
