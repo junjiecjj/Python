@@ -26,14 +26,14 @@ class checkpoint(object):
         else:
             self.now = now
         tempp = '_' + args.diff_case + str(args.local_up if args.diff_case == 'batchs' else args.local_epoch)
-        if args.quantize:
-            if args.transmitWay == 'erf':
-                way = 'erf_'
-            elif args.transmitWay == 'flip':
-                way = args.transmitWay + str(args.flip_rate) + '_'
-            elif args.transmitWay == 'joint' or args.transmitWay == 'sic':
-                way = args.transmitWay + str(args.snr_dB) + '(dBm)_'
-            quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
+        # if args.quantize:
+        if args.transmitWay == 'erf':
+            way = 'erf_'
+        elif args.transmitWay == 'flip':
+            way = args.transmitWay + str(args.flip_rate) + '_'
+        elif args.transmitWay == 'joint' or args.transmitWay == 'sic':
+            way = args.transmitWay + str(args.snr_dB) + '(dBm)_'
+        quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
         tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{quantway if args.quantize else '_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
 
         self.savedir = os.path.join(args.save_path, tmp)
@@ -73,6 +73,32 @@ class checkpoint(object):
     def get_testSavepath(self, *subdir):
         return os.path.join(self.testResdir, *subdir)
 # <<< 测试相关函数
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
