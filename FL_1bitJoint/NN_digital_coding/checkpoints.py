@@ -24,8 +24,8 @@ class checkpoint(object):
         if now == 'None':
             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         else:
-            self.now =  now
-        tempp = '_' + args.diff_case + str( args.local_up if args.diff_case == 'batchs' else args.local_epoch )
+            self.now = now
+        tempp = '_' + args.diff_case + str(args.local_up if args.diff_case == 'batchs' else args.local_epoch)
         if args.quantize:
             if args.transmitWay == 'erf':
                 way = 'erf_'
@@ -36,10 +36,6 @@ class checkpoint(object):
             quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
         tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{quantway if args.quantize else '_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
 
-        # tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}_Air_{args.SNR}(dB)_{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
-
-        if args.case == 'signSGD':
-            tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}_{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
         self.savedir = os.path.join(args.save_path, tmp)
         os.makedirs(self.savedir, exist_ok = True)
 

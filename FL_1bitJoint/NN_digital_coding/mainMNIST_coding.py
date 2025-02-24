@@ -40,7 +40,8 @@ args.IID = True             # True, False
 args.dataset = "MNIST"      #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
-args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_CNN_{datapart}/'
+# args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_CNN_{datapart}/'
+args.save_path = args.home + '/FL_1bitJoint/test/'
 
 cur_lr = args.lr = 0.01
 args.num_of_clients = 100
@@ -78,9 +79,7 @@ args.seed = 42
 set_random_seed(args.seed) ## args.seed
 set_printoption(5)
 ##>>>>>>>>>>>>>>>>> channel >>>>>>>>>>>>>>>>>>>
-
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = 0.6)
-
 
 ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
@@ -135,7 +134,7 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = Transmit_SIC.OneBit_SIC(message_lst, args, rounding = args.rounding, key_grad = key_grad, G = args.G)
             elif args.bitswidth > 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-                mess_recv, err = B_Bit(message_lst, args, rounding = args.rounding, ber = args.flip_rate, B = args.bitswidth, key_grad = key_grad)
+                mess_recv, err = Transmit_SIC.B_Bit_SIC(message_lst, args, rounding = args.rounding, B = args.bitswidth, key_grad = key_grad)
             server.aggregate_diff_erf(mess_recv)
 
         # if comm_round == 1:

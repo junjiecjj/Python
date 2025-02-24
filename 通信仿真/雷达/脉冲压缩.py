@@ -100,7 +100,7 @@ echo_signal += noise
 # 脉冲压缩（匹配滤波）
 matched_filter = np.conj(chirp_signal[::-1])  # 匹配滤波器：发射信号的共轭反转
 compressed_signal = np.convolve(echo_signal, matched_filter, mode='valid')
-
+compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
 # 结果可视化
 plt.figure(figsize=(12, 8))
 
@@ -137,12 +137,12 @@ import matplotlib.pyplot as plt
 # 参数设置
 T = 10e-6   # 脉冲宽度 10μs
 B = 30e6    # 带宽 30MHz
-fs = 2 * B  # 采样率（满足 Nyquist 定理）
+fs = 4 * B  # 采样率（满足 Nyquist 定理）
 t = np.linspace(-T/2, T/2, int(fs * T))  # 时间序列
 
 # 生成线性调频信号（LFM）
 K = B / T  # 调频斜率
-s_t = np.exp(1j * np.pi * K * t**2)  # 发射信号（复数形式）
+s_t = np.exp(1j * np.pi * K * t**2 + 1j * 2 * np.pi * f0 * t)  # 发射信号（复数形式）
 
 # 添加噪声模拟接收信号
 noise = 0.1 * (np.random.randn(len(s_t)) + 1j * np.random.randn(len(s_t)))
@@ -156,7 +156,7 @@ compressed_signal = np.convolve(received_signal, matched_filter, mode='same')
 compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
 
 # 绘图
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(12, 10))
 
 # 发射信号时频图
 plt.subplot(3, 1, 1)
