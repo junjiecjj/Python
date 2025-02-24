@@ -130,8 +130,56 @@ plt.tight_layout()
 plt.show()
 
 
+#%% DeepSeek
+import numpy as np
+import matplotlib.pyplot as plt
 
+# 参数设置
+T = 10e-6   # 脉冲宽度 10μs
+B = 30e6    # 带宽 30MHz
+fs = 2 * B  # 采样率（满足 Nyquist 定理）
+t = np.linspace(-T/2, T/2, int(fs * T))  # 时间序列
 
+# 生成线性调频信号（LFM）
+K = B / T  # 调频斜率
+s_t = np.exp(1j * np.pi * K * t**2)  # 发射信号（复数形式）
+
+# 添加噪声模拟接收信号
+noise = 0.1 * (np.random.randn(len(s_t)) + 1j * np.random.randn(len(s_t)))
+received_signal = s_t + noise
+
+# 匹配滤波器（脉冲压缩）
+matched_filter = np.conj(s_t[::-1])  # 发射信号的共轭反转
+compressed_signal = np.convolve(received_signal, matched_filter, mode='same')
+
+# 结果归一化
+compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
+
+# 绘图
+plt.figure(figsize=(12, 8))
+
+# 发射信号时频图
+plt.subplot(3, 1, 1)
+plt.plot(t, np.real(s_t))
+plt.title("Transmitted LFM Signal (Real Part)")
+plt.xlabel("Time (s)")
+plt.ylabel("Amplitude")
+
+# 接收信号（含噪声）
+plt.subplot(3, 1, 2)
+plt.plot(t, np.real(received_signal))
+plt.title("Received Signal with Noise (Real Part)")
+plt.xlabel("Time (s)")
+plt.ylabel("Amplitude")
+
+# 脉冲压缩结果
+plt.subplot(3, 1, 3)
+plt.plot(t, np.abs(compressed_signal))
+plt.title("Pulse Compression Result")
+plt.xlabel("Time (s)")
+plt.ylabel("Amplitude (Normalized)")
+plt.tight_layout()
+plt.show()
 
 
 

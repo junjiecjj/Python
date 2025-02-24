@@ -383,11 +383,11 @@ def MNIST_BatchIID_14bit_erf_acc():
 
 
 MNIST_BatchIID_flip_acc()
-# MNIST_BatchIID_flip_loss()
+MNIST_BatchIID_flip_loss()
 
-# MNIST_BatchIID_K0_1bit_flip_acc()
+MNIST_BatchIID_K0_1bit_flip_acc()
 
-# MNIST_BatchIID_14bit_erf_acc()
+MNIST_BatchIID_14bit_erf_acc()
 
 
 plt.close('all')
