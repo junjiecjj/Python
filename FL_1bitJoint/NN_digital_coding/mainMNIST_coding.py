@@ -151,26 +151,23 @@ for comm_round in range(args.num_comm):
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
-            elif args.bitswidth > 1:
-                print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-                # mess_recv, err = B_Bit_SIC(message_lst, args, rounding = args.rounding, B = args.bitswidth, key_grad = key_grad)
+
             server.aggregate_diff_erf(mess_recv)
         elif args.transmitWay == 'proposed':
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_proposed(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
-            elif args.bitswidth > 1:
-                print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-                # mess_recv, err = B_Bit_proposed(message_lst, args, rounding = args.rounding, B = args.bitswidth, key_grad = key_grad)
+
             server.aggregate_diff_erf(mess_recv)
-        # if comm_round == 1:
-        #     break
+    if comm_round == 1:
+        break
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
     print(f"  [  round = {comm_round+1}, lr = {cur_lr:.6f}, train los = {test_los:.3f}, test acc = {acc:.3f}, ber = {err}]")
     recorder.assign([acc, test_los, cur_lr, ])
     # recorder.plot(ckp.savedir, args)
     recorder.save(ckp.savedir, args)
+
 print(args)
 
 
