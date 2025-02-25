@@ -27,7 +27,7 @@ import scipy
 # P_total = K
 # # P_max   = 30                     # 用户发送功率, dBm
 # # P_max   = 10**(P_max/10.0)/1000  # Watts
-# P_max   = P_total / 2              # Watts
+# P_max   = P_total / 3              # Watts
 
 # ## 产生信道系数
 # BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(K, r = 100, rmin = 0.6)
@@ -162,16 +162,12 @@ def EquaCapacityOptim(H2bar, d_Au, P_total, ):
 
 
 # optimized_powers, total_capacity, SINR, Capacity = NOMAcapacityOptim(Hbar, d_Au, P_total, P_max, noisevar = 1, )
-
-# optimized_powers1 = JointCapacityOptim(PL_Au, P_total, noisevar = 1, )
-
-# optimized_powers2, total_capacity2, SINR2, Capacity2 = EquaCapacityOptim(Hbar, d_Au, P_total, P_max, noisevar = 1, )
-
-
 # print(f"{optimized_powers}, {total_capacity}, {SINR}, {Capacity}\n\n")
 
+# optimized_powers1 = JointCapacityOptim(PL_Au, P_total, noisevar = 1, )
 # print(f"{optimized_powers1}, \n\n")
 
+# optimized_powers2, total_capacity2, SINR2, Capacity2 = EquaCapacityOptim(Hbar, d_Au, P_total, P_max, noisevar = 1, )
 # print(f"{optimized_powers2}, {total_capacity2}, {SINR2}, {Capacity2}")
 
 

@@ -15,8 +15,8 @@ from Quantizer import Quantization1bits_NP_int, deQuantization1bits_NP_int
 from Channel import Large_rayleigh_fast
 from Modulator import NormFactor, BPSK, demod_fastfading
 
-# 1-bit  transmission, same-G, only-Grad
-def OneBit_SIC(message_lst, args, P, pl_Au, ldpc, modem, order, H = None, noisevar = 1, key_grad = None, G = 2**8):
+
+def OneBit_proposed(message_lst, args, P, pl_Au, ldpc, modem, order, H = None, noisevar = 1, key_grad = None, G = 2**8):
     key_lst_wo_grad = []
     info_lst = []
     for key, val in message_lst[0].items():
@@ -37,7 +37,7 @@ def OneBit_SIC(message_lst, args, P, pl_Au, ldpc, modem, order, H = None, noisev
     ## send
     uu = Quantization1bits_NP_int(SS, G)
 
-    uu_hat = transmission_NOMA(args, copy.deepcopy(uu), P, pl_Au, ldpc, modem, order, H = H, noisevar = noisevar)
+    uu_hat = transmission_proposed(args, copy.deepcopy(uu), P, pl_Au, ldpc, modem, order, H = H, noisevar = noisevar)
     err_rate = (uu_hat != uu).sum(axis = 1)/uu.shape[-1]
 
     ## recv
@@ -58,21 +58,42 @@ def OneBit_SIC(message_lst, args, P, pl_Au, ldpc, modem, order, H = None, noisev
         mess_recov.append(param_k)
     return mess_recov, err_rate
 
-def transmission_NOMA(args, uu, P, pl_Au, ldpc, modem, order, H = None, noisevar = 1):
+
+## 以一帧为单位消去，以P*|h|^2为排序；且考虑其他未消去用户的功率
+def SIC_LDPC_FastFading(H, yy, order, Es, modem, ldpc, noisevar = 1, maxiter = 50):
+    yy0 = copy.deepcopy(yy)
+    K, frameLen = H.shape
+    # order =  np.argsort(-np.abs(P))   #降序排列
+    uu_hat = np.zeros((K, ldpc.codedim), dtype = np.int8)
+    idx_set = list(np.arange(K))
+
+    idx_set = list(np.arange(K))
+    for k in order:
+        idx_set.remove(k)
+        hk = H[k]
+        sigmaK = np.sum( np.abs(H[idx_set])**2 , axis = 0) + noisevar
+        llrK = demod_fastfading(copy.deepcopy(modem.constellation), yy0, 'soft', H = hk,  Es = Es,  noise_var = sigmaK)
+        uu_hat[k], iterk = ldpc.decoder_msa(llrK)
+        sym_k = BPSK(ldpc.encoder(uu_hat[k]))
+        yy0 = yy0 -  H[k] * sym_k/np.sqrt(Es)
+
+    return uu_hat
+
+def transmission_proposed(args, uu, P, pl_Au, ldpc, modem, order, H = None, noisevar = 1):
     K = uu.shape[0]
     D = uu.shape[-1]
     bps = int(np.log2(args.M))
     framelen = int(ldpc.codelen/bps)
     Es = NormFactor(mod_type = args.mod_type, M = args.M,)
     pad_len = int(np.ceil(D/ldpc.codedim) * ldpc.codedim - D)
-    uu_ = np.pad(uu, ((0,0),(0, pad_len)), 'constant', constant_values = 0)
+    uu = np.pad(uu, ((0,0),(0, pad_len)), 'constant', constant_values = 0)
 
     ## encoder
-    cc = np.empty((1, int(uu_.shape[1]/ldpc.coderate)), dtype = np.int8)
-    num_CB = int(uu_.shape[1]/ldpc.codedim)
+    cc = np.empty((1, int(uu.shape[1]/ldpc.coderate)), dtype = np.int8)
+    num_CB = int(uu.shape[1]/ldpc.codedim)
     for k in range(K):
         vec = np.array([], dtype = np.int8)
-        mess = uu_[k, :]
+        mess = uu[k, :]
         for i in range(num_CB):
             vec = np.hstack((vec, ldpc.encoder(mess[i*ldpc.codedim : (i+1)*ldpc.codedim])))
         cc = np.vstack((cc, vec))
@@ -85,7 +106,7 @@ def transmission_NOMA(args, uu, P, pl_Au, ldpc, modem, order, H = None, noisevar
     tx_sig = yy / np.sqrt(Es)
 
     num_CB = int(tx_sig.shape[-1]/ldpc.codelen)
-    uu_hat = np.zeros_like(uu_)
+    uu_hat = np.zeros_like(uu)
     for f in range(num_CB):
         print(f"{f}/{num_CB}")
         H = Large_rayleigh_fast(args.active_client, framelen, pl_Au, noisevar = noisevar)
@@ -93,27 +114,12 @@ def transmission_NOMA(args, uu, P, pl_Au, ldpc, modem, order, H = None, noisevar
         symbs = tx_sig[:, int(f*ldpc.codelen):int((f+1)*ldpc.codelen)]
         y = ldpc.MACchannel(symbs, H, 1)
         uu_hat[:, int(f*ldpc.codedim):int((f+1)*ldpc.codedim)] = SIC_LDPC_FastFading(H, y, order, Es, modem, ldpc, noisevar = 1,)
-    uu_hat = uu_hat[:,:D]
 
     return uu_hat
 
-## 以一帧为单位消去，以P*|h|^2为排序；且考虑其他未消去用户的功率
-def SIC_LDPC_FastFading(H, yy, order, Es, modem, ldpc, noisevar = 1, maxiter = 50):
-    yy0 = copy.deepcopy(yy)
-    K, frameLen = H.shape
-    uu_hat = np.zeros((K, ldpc.codedim), dtype = np.int8)
-    idx_set = list(np.arange(K))
 
-    for k in order:
-        idx_set.remove(k)
-        hk = H[k]
-        sigmaK = np.sum( np.abs(H[idx_set])**2 , axis = 0) + noisevar
-        llrK = demod_fastfading(copy.deepcopy(modem.constellation), yy0, 'soft', H = hk,  Es = Es,  noise_var = sigmaK)
-        uu_hat[k], iterk = ldpc.decoder_msa(llrK)
-        sym_k = BPSK(ldpc.encoder(uu_hat[k]))
-        yy0 = yy0 -  H[k] * sym_k/np.sqrt(Es)
 
-    return uu_hat
+
 
 
 

@@ -81,7 +81,7 @@ for noisePsd, noisepower in zip(n0, N0):
             H = FastFading_mac(args.K, framelen)
             # H = H * P.reshape(-1,1)
         elif args.channel_type == 'large_fast':
-            H = Large_rayleigh_fast(args.K, framelen, beta_Au, PL_Au, noisevar = noisepower)
+            H = Large_rayleigh_fast(args.K, framelen, PL_Au, noisevar = noisepower)
         H = H * np.sqrt(P[:,None])
 
         ## 编码

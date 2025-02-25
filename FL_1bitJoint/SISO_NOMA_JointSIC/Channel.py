@@ -99,13 +99,13 @@ def Large_rician_fast(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     H = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     return H.T
 
-def Large_rayleigh_block(K, frame_len, beta_Au, PL_Au, noisevar = 1):
+def Large_rayleigh_block(K, frame_len, PL_Au, noisevar = 1):
     hdNLos = np.sqrt(1/2) * (np.random.randn(K, ) + 1j * np.random.randn(K, ))
     h_d = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     H = np.expand_dims(h_d, -1).repeat(frame_len, axis = -1)
     return H
 
-def Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, noisevar = 1):
+def Large_rayleigh_fast(K, frame_len, PL_Au, noisevar = 1):
     hdNLos = np.sqrt(1/2) * (np.random.randn(frame_len, K) + 1j * np.random.randn(frame_len, K))
     H = hdNLos @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
     return H.T

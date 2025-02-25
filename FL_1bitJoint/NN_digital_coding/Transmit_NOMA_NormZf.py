@@ -120,7 +120,7 @@ def OneBit_LDPC_NormZF(message_lst, args, H, snr_dB = None, normfactor = 1):
         SS[k,:] = vec
 
     # 1bit Quantization
-    SS[np.where(SS == 0)] = np.random.randint(0, 2,size = np.where(SS == 0)[0].shape)
+    SS[np.where(SS == 0)] = np.random.randint(0, 2, size = np.where(SS == 0)[0].shape)
     uu0 = np.where(SS <= 0, 0, 1).astype(np.int8)
     pad_len = int(np.ceil(D/LDPC.codedim) * LDPC.codedim - D)
     uu = np.pad(uu0, ((0,0),(0, pad_len)), 'constant', constant_values = 0)
