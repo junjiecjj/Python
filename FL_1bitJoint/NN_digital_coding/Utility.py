@@ -41,7 +41,7 @@ def set_random_seed(seed = 42,):
     return
 
 def set_printoption(precision = 3):
-    np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+    np.set_printoptions(formatter={'float': '{: 0.5f}'.format})
     torch.set_printoptions(
         precision = precision,    # 精度，保留小数点后几位，默认4
         threshold = 1000,

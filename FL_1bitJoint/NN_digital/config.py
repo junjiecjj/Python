@@ -74,34 +74,6 @@ def args_parser():
     return args
 
 
-def ldpc_args():
-    home = os.path.expanduser('~')
-
-    Args = {
-    "home" : home,
-    ## Codes
-    "minimum_snr" : 2 ,
-    "maximum_snr" : 13,
-    "increment_snr" : 1,
-    "maximum_error_number" : 500,
-    "maximum_block_number" : 1000000,
-
-    ## LDPC***0***PARAMETERS
-    "max_iteration" : 50,
-    "encoder_active" : 1,
-    "file_name_of_the_H" : "PEG1024regular0.5.txt",
-
-    ## others
-    "smallprob": 1e-15,
-
-    }
-    args = argparse.Namespace(**Args)
-
-    return args
-
-
-
-
 args = args_parser()
 
 

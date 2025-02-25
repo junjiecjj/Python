@@ -53,10 +53,10 @@ def args_parser():
     "smallprob": 1e-15,
 
     ##>>>>>>>  modulation param
-    # "type" : 'qam',
+    # "mod_type" : 'qam',
     # "M":  16,
 
-    "type" : 'psk',
+    "mod_type" : 'psk',
     "M":  2,    # BPSK
     # "M":  4,  # QPSK
     # "M":  8,  # 8PSK

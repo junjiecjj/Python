@@ -11,11 +11,6 @@ import matplotlib.pyplot as plt
 import commpy
 
 def BPSK(c):
-    # for i in range(cc.shape[-1]):
-    #     if cc[i] == 0:
-    #         cc[i] = 1
-    #     else:
-    #         cc[i] = -1
     c = 1 - 2*c
     return c
 
@@ -26,6 +21,20 @@ def demodu_BPSK(y):
         else:
             y[i] = 1
     return y
+
+def modulator(modutype, M, ):
+    # M = args.M
+    bps = int(np.log2(M))
+    # framelen = int(ldpc.codelen/bps)
+    # modutype = args.type
+    if modutype == 'qam':
+        modem = commpy.QAMModem(M)
+    elif modutype == 'psk':
+        modem =  commpy.PSKModem(M)
+    Es = NormFactor(mod_type = modutype, M = M,)
+
+    return modem, Es, bps
+
 
 def NormFactor(mod_type = 'qam', M = 16,):
     """
@@ -39,10 +48,6 @@ def NormFactor(mod_type = 'qam', M = 16,):
     """
     if mod_type == 'psk':
         Es = 1
-    # if mod_type == 'qpsk':
-    #     Es = 1
-    # if mod_type == '8psk':
-    #     Es = 1
     if mod_type == 'qam':
         if M == 8:
             Es = 6
@@ -52,20 +57,16 @@ def NormFactor(mod_type = 'qam', M = 16,):
             Es = 2 * (M - 1) / 3
     return Es
 
-
-## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
-def demod_MIMO(constellation, input_symbols, demod_type, Es = None, h = None,  noise_var=0):
-
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + block Fading
+def demod_blockfading(constellation, input_symbols, demod_type, h = None, Es = None, noise_var = 0):
     M = len(constellation)
     bitsPerSym = int(np.log2(M))
     if Es != None:
         constellation = constellation / np.sqrt(Es)
-
     ##
     if demod_type == 'hard':
-        index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
+        index_list = np.abs(input_symbols - h * constellation[:, None]).argmin(0)
         demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
-
     elif demod_type == 'soft':
         demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
         for i in np.arange(len(input_symbols)):
@@ -78,13 +79,80 @@ def demod_MIMO(constellation, input_symbols, demod_type, Es = None, h = None,  n
                         llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
                     else:
                         llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                # try:#
+                demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
+        demod_bits[np.isinf(demod_bits)] = 2 * np.sign(demod_bits[np.isinf(demod_bits)]) / noise_var
+                # except:
+                    # print(f"{llr_num}/{llr_den}")
+                    # llr[np.isinf(llr)] = 2 * np.sign(llr[np.isinf(llr)]) / noise_var
+                    # quit()
+    else:
+        raise ValueError('demod_type must be "hard" or "soft"')
+    return demod_bits
+
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + fast Fading
+def demod_fastfading(constellation, input_symbols, demod_type, H = None,  Es = None, noise_var = 0):
+    M = len(constellation)
+    bitsPerSym = int(np.log2(M))
+    if Es != None:
+        constellation = constellation / np.sqrt(Es)
+    ##
+    if demod_type == 'hard':
+        idx = np.abs(input_symbols.reshape(-1,1) - H[:,None] @ constellation.reshape(1, -1)).argmin(1)
+        # index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
+        demod_bits = commpy.utilities.dec2bitarray(idx, bitsPerSym)
+    elif demod_type == 'soft':
+        demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
+        for i in np.arange(len(input_symbols)):
+            current_symbol = input_symbols[i]
+            h = H[i]
+            sigma2 = noise_var[i]
+            for bit_index in np.arange(bitsPerSym):
+                llr_num = 0
+                llr_den = 0
+                for bit_value, symbol in enumerate(h * constellation):
+                    if (bit_value >> bit_index) & 1:
+                        llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / sigma2)
+                    else:
+                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / sigma2)
+                demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
+        demod_bits[np.isinf(demod_bits)] = 2 * np.sign(demod_bits[np.isinf(demod_bits)]) / sigma2
+        # demod_bits[np.isnan(demod_bits)]  = 1/N0
+    else:
+        raise ValueError('demod_type must be "hard" or "soft"')
+    return demod_bits
+
+
+## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + AWGN
+def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):
+    M = len(constellation)
+    bitsPerSym = int(np.log2(M))
+    if Es != None:
+        constellation = constellation / np.sqrt(Es)
+    if demod_type == 'hard':
+        index_list = np.abs(input_symbols - constellation[:, None]).argmin(0)
+        demod_bits = commpy.utilities.dec2bitarray(index_list, bitsPerSym)
+    elif demod_type == 'soft':
+        demod_bits = np.zeros(len(input_symbols) * bitsPerSym)
+        for i in np.arange(len(input_symbols)):
+            current_symbol = input_symbols[i]
+            for bit_index in np.arange(bitsPerSym):
+                llr_num = 0
+                llr_den = 0
+                for bit_value, symbol in enumerate(constellation):
+                    if (bit_value >> bit_index) & 1:
+                        llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                    else:
+                        llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
                 demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
     else:
         raise ValueError('demod_type must be "hard" or "soft"')
 
     return demod_bits
 
+
 def plot_constellation(constellation = "None", map_table = "None", Modulation_type = "Constellation"):
+
     if type(constellation) == str and type(map_table) == str:
         raise Exception("Both constellation and map_table are Empty!")
     if type(constellation) == str:
@@ -98,7 +166,7 @@ def plot_constellation(constellation = "None", map_table = "None", Modulation_ty
         for i in range(M):
             map_table[i] = constellation[i]
 
-    nbits = int(np.log2(M))
+    nbits = int(math.log2(M))
 
     fig, axs = plt.subplots(1,1, figsize=(8, 8), constrained_layout=True)
     for idx, symb in map_table.items():
@@ -125,12 +193,6 @@ def plot_constellation(constellation = "None", map_table = "None", Modulation_ty
     plt.show()
 
     return
-
-
-
-
-
-
 
 
 

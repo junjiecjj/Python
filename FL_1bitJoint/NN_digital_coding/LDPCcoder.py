@@ -14,6 +14,18 @@ import copy
 import sys, os
 import functools
 
+
+def bpsk(bins):
+    bits = copy.deepcopy(bins)
+    bits[np.where(bits == 1)] = -1
+    bits[np.where(bits == 0)] = 1
+    return bits
+
+def BPSK(bins):
+    c = 1 - 2*bins
+    return c
+
+
 def Gauss_Elimination(encH, num_row, num_col):
     codechk = 0
     col_exchange = np.arange(num_col)
@@ -58,9 +70,7 @@ def Gauss_Elimination(encH, num_row, num_col):
     ##====================== Gauss 消元 end =================================
     return encH, col_exchange
 
-
-
-class LDPC_Coder_llr(object):
+class LDPC_Coder(object):
     def __init__(self, args):
         ## code parameters
         self.args = args
@@ -80,8 +90,8 @@ class LDPC_Coder_llr(object):
         self.smallprob = args.smallprob
         self.SetRows = {}                   # 每行不为0的列号
         self.SetCols = {}                   # 每列不为0的行号
-        self.MV2C = None                    # 变量节点 到 校验节点 的消息
-        self.MC2V = None                    # 校验节点 到 变量节点 的消息
+        # self.MV2C = None                    # 变量节点 到 校验节点 的消息
+        # self.MC2V = None                    # 校验节点 到 变量节点 的消息
 
         self.readH()
         # print("读取H完成...\n")
@@ -110,14 +120,12 @@ class LDPC_Coder_llr(object):
                 for i in range(row_dt[1]):
                     self.decH[row_dt[0], row_dt[i+2]] = 1
         # np.savetxt('orig_decH.txt', self.decH, fmt='%d', delimiter=' ')
-
         self.codelen = self.num_col
         self.codedim = self.codelen - self.codechk
         self.coderate = self.codedim / self.codelen
 
-        self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-        self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
-
+        # self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        # self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         return
 
     # 相对较快
@@ -125,13 +133,11 @@ class LDPC_Coder_llr(object):
         tmpH = copy.deepcopy(self.decH)
         self.encH = copy.deepcopy(self.decH)
         col_exchange = np.arange(self.num_col)
-
         ##=======================================================
         ##  开始 Gauss 消元，建立系统阵(生成矩阵G )，化简为: [I, P]的形式
         ##=======================================================
         self.encH, col_exchange = Gauss_Elimination(copy.deepcopy(self.encH), self.num_row, self.num_col)
         ##====================== Gauss 消元 end =================================
-
         ##======================================================
         ## 根据列交换结果交换原 decH 矩阵的列
         ##=======================================================
@@ -139,72 +145,71 @@ class LDPC_Coder_llr(object):
             self.decH[:, j] = tmpH[:, col_exchange[j]]
         return
 
-    def NoneZeros(self):
-        ## 字典  {行号: {不为 0 的列号}}
-        self.SetRows  = {f'{i}': set(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
-        ## 字典  {列号: {不为 0 的行号}}
-        self.SetCols = {f'{j}': set(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
-        return
-
     def encoder(self, uu):
         cc = np.zeros(self.codelen, dtype = np.int8)
         cc[self.codechk:] = uu
-
-        ## 1：可能出错
-        # cc[:self.codechk] = np.mod(np.matmul(uu, self.encH[:,self.codechk:].T), 2)
 
         ## 2：相对快
         for i in range(self.codechk):
             cc[i] = np.logical_xor.reduce(np.logical_and(uu[:], self.encH[i, self.codechk:]))
             # cc[i] = np.logical_xor.reduce(uu[:] & self.encH[j, self.codechk:])
             # cc[i] = np.bitwise_xor.reduce(uu[:] & self.encH[j, self.codechk:])
-
-        ## 3：慢
-        # for i in range(self.codechk):
-        #     for j in range(self.codedim):
-        #         cc[i] ^=  (uu[j]&self.encH[i, self.codechk:][j])
         return cc
 
+    def NoneZeros(self):
+        ## 字典  {行号: {不为 0 的列号}}
+        self.SetRows  = {i: list(np.nonzero(self.decH[i,:])[0].astype(int)) for i in range(self.decH.shape[0])}
+        ## 字典  {列号: {不为 0 的行号}}
+        self.SetCols = {j: list(np.nonzero(self.decH[:,j])[0].astype(int)) for j in range(self.decH.shape[1])}
+        return
 
-    ## 对数域的和积算法
+    def MACchannel(self, symbs, H, noise_var):
+        yy = symbs * H
+        noise = np.sqrt(noise_var/2) * (np.random.normal(0, 1, size = symbs.shape[-1] ) + 1j*np.random.normal(0, 1, size = symbs.shape[-1] ))
+        yy = yy.sum(axis  = 0) + noise
+        return yy
+
+    ## 对数域的和积算法, 二元域
     def decoder_spa(self, yy_llr):
+        self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         iter_num = 0
         uu_hat = np.zeros(self.codedim, dtype = np.int8)
         ##===========================================
         ## (初始化) 变量节点 到 校验节点 的初始化信息
         ##===========================================
-        for col in self.SetCols.keys():
-            for row in self.SetCols[f'{col}']:
-                self.MV2C[int(row), int(col)] = yy_llr[int(col)]
-
+        for col in self.SetCols:
+            for row in self.SetCols[col]:
+                self.MV2C[row, col] = yy_llr[col]
         ## 开始迭代，对数域的消息传播,
         for iter_num in range(self.max_iter):
             ##==========================================================
             ## (一) 更新 [校验节点] 到 [变量节点] 的消息,
             ##==========================================================
             for row in self.SetRows:
-                for col in self.SetRows[f'{row}']:
+                for col in self.SetRows[row]:
+                    col_in = copy.deepcopy(self.SetRows[row])
+                    col_in.remove(col)
                     Mes = 1.0
-                    for cin in self.SetRows[f'{row}']:
-                        if cin != col:
-                            Mes *= np.tanh(self.MV2C[int(row), int(cin)]/2)
+                    for cin in col_in:
+                        Mes *= np.tanh(self.MV2C[row, cin]/2)
                     # Mes = np.sign(Mes) * min(abs(Mes), 1-1e-15 )  ## 解决数值不稳定性问题
                     Mes = np.clip(Mes, self.smallprob - 1, 1 - self.smallprob)  ## 解决数值不稳定性问题
-                    self.MC2V[int(row), int(col)] = np.log((1 + Mes)/(1 - Mes)) # (白老师书上3.43)
+                    self.MC2V[row, col] = np.log((1 + Mes)/(1 - Mes))
             ##=============================================================================
             ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
             ##=============================================================================
             dec_llr = np.zeros(self.codelen, dtype = np.float64)
-            for col in self.SetCols.keys():
+            for col in self.SetCols:
                 Mes = 0
-                for row in self.SetCols[f'{col}']:
-                    Mes += self.MC2V[int(row), int(col)]
-                dec_llr[int(col)] = Mes + yy_llr[int(col)] # (白老师书上3.49)
+                for row in self.SetCols[col]:
+                    Mes += self.MC2V[row, col]
+                dec_llr[col] = Mes + yy_llr[col]
             # 对等号节点判决
             cc_hat = np.zeros(self.codelen, dtype = np.int8 )
             cc_hat[np.where(dec_llr < 0)] = 1
-
             uu_hat = cc_hat[self.codechk:]
+
             success = 1
             # parity checking，校验
             for i in range(self.num_row):
@@ -218,16 +223,19 @@ class LDPC_Coder_llr(object):
             ## (三) 更新 [变量节点] 到 [校验节点] 的消息，半边输入信息也要考虑进去
             #==========================================================
             for col in self.SetCols.keys():
-                for row in self.SetCols[f'{col}']:
+                for row in self.SetCols[col]:
                     Mes = 0
-                    for cout in self.SetCols[f'{col}']:
-                        if cout != row:
-                            Mes += self.MC2V[int(cout),int(col)] # (白老师书上3.48)
-                    self.MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
+                    row_in = copy.deepcopy(self.SetCols[col])
+                    row_in.remove(row)
+                    for r in row_in:
+                        Mes += self.MC2V[r, col]
+                    self.MV2C[row, col] = Mes +  yy_llr[col]
         return uu_hat, iter_num + 1
 
-    ## 对数域的最小和算法
+    ## 对数域的最小和算法, 二元域
     def decoder_msa(self, yy_llr, alpha = 0.75):
+        self.MV2C = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
+        self.MC2V = np.zeros((self.num_row, self.num_col), dtype = np.float64 )
         iter_num = 0
         uu_hat = np.zeros(self.codedim, dtype = np.int8)
         cc_hat = np.zeros(self.codelen, dtype = np.int8 )
@@ -235,8 +243,8 @@ class LDPC_Coder_llr(object):
         ## (初始化) 变量节点 到 校验节点 的初始化信息
         ##===========================================
         for col in self.SetCols.keys():
-            for row in self.SetCols[f'{col}']:
-                self.MV2C[int(row), int(col)] = yy_llr[int(col)]
+            for row in self.SetCols[col]:
+                self.MV2C[row, col] = yy_llr[col]
 
         ## 开始迭代，对数域的消息传播,
         for iter_num in range(self.max_iter):
@@ -244,12 +252,12 @@ class LDPC_Coder_llr(object):
             ## (一) 更新 [校验节点] 到 [变量节点] 的消息,
             ##==========================================================
             for row in self.SetRows:
-                for col in self.SetRows[f'{row}']:
+                for col in self.SetRows[row]:
                     Sign = 1.0
-                    Min = min([abs(self.MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col])
-                    sign_list = [np.sign(self.MV2C[int(row), int(i)]) for i in self.SetRows[f'{row}'] if i != col]
-                    Sign = functools.reduce(lambda a, b: a*b, sign_list)
-                    self.MC2V[int(row), int(col)] = Sign * Min * alpha
+                    Min = min([abs(self.MV2C[row, i]) for i in self.SetRows[row] if i != col])
+                    sign_list = [np.sign(self.MV2C[row, i]) for i in self.SetRows[row] if i != col]
+                    Sign = functools.reduce(lambda a,b: a*b, sign_list)
+                    self.MC2V[row, col] = Sign * Min * alpha
 
             ##=============================================================================
             ## (二) 合并, 判决,校验, 输出, 在计算半边的输出的时候, 半边输入信息也要考虑进去
@@ -257,9 +265,9 @@ class LDPC_Coder_llr(object):
             dec_llr = np.zeros(self.codelen, dtype = np.float64)
             for col in self.SetCols.keys():
                 Mes = 0
-                for row in self.SetCols[f'{col}']:
-                    Mes += self.MC2V[int(row), int(col)]
-                dec_llr[int(col)] = Mes + yy_llr[int(col)]
+                for row in self.SetCols[col]:
+                    Mes += self.MC2V[row, col]
+                dec_llr[col] = Mes + yy_llr[col]
 
             # 对等号节点判决
             cc_hat.fill(0)
@@ -269,6 +277,7 @@ class LDPC_Coder_llr(object):
             success = 1
             # parity checking，校验
             for i in range(self.num_row):
+                # parity_check = np.logical_xor.reduce(np.logical_and(cc_hat, self.decH[i,:]))
                 parity_check = np.bitwise_xor.reduce(cc_hat & self.decH[i,:])
                 if parity_check != 0:
                     success = 0
@@ -279,16 +288,20 @@ class LDPC_Coder_llr(object):
             ## (三) 更新 [变量节点] 到 [校验节点] 的消息，半边输入信息也要考虑进去
             #==========================================================
             for col in self.SetCols.keys():
-                for row in self.SetCols[f'{col}']:
+                for row in self.SetCols[col]:
                     Mes = 0
-                    for cout in self.SetCols[f'{col}']:
-                        if cout != row:
-                            Mes += self.MC2V[int(cout),int(col)]
-                    self.MV2C[int(row),int(col)] = Mes +  yy_llr[int(col)]
+                    row_in = copy.deepcopy(self.SetCols[col])
+                    row_in.remove(row)
+                    for r in row_in:
+                        Mes += self.MC2V[r, col]
+                    self.MV2C[row, col] = Mes +  yy_llr[col]
 
         return uu_hat, iter_num + 1
 
-
+    def bits2sum(self, bits):
+        real_ary = BPSK(bits)
+        real_sum = real_ary.sum(axis = 0)
+        return real_sum
 
 
 
