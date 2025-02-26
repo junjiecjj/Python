@@ -28,6 +28,7 @@ from Transmit_Bbit import B_Bit
 from Transmit_SIC import OneBit_SIC
 from Transmit_Joint import OneBit_proposed
 from LDPCcoder import LDPC_Coder
+from QLDPCcoder import QLDPC_Coding
 import Modulator
 from CapacityOptimizer import NOMAcapacityOptim
 
@@ -59,7 +60,7 @@ args.optimizer = 'sgd'      # 'sgd', 'adam'
 args.rounding   = 'sr'       # 'nr', 'sr',
 args.bitswidth  = 1         #  1,  8
 args.G          = 2**8
-args.transmitWay = 'sic'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
+args.transmitWay = 'proposed'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
 
 if args.transmitWay.lower() == 'flip':
     args.flip_rate = 0.1
@@ -87,7 +88,7 @@ args.seed = 42
 set_random_seed(args.seed) ## args.seed
 
 ##>>>>>>>>>>>>>>>>> channel >>>>>>>>>>>>>>>>>>>
-BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.num_of_clients, r = 100, rmin = 0.6)
+BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.num_of_clients, r = 100, rmin = 0.2)
 args.P_total = args.active_client
 args.P_max   = args.P_total / 3   # Watts
 ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -106,8 +107,10 @@ for name, param in global_model.named_parameters():
 Users = GenClientsGroup(args, local_dt_dict, copy.deepcopy(global_model) )
 server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight), testloader)
 
-ldpc = LDPC_Coder(args)
-
+if args.transmitWay == 'sic':
+    ldpc = LDPC_Coder(args)
+elif args.transmitWay == 'proposed':
+    ldpc = QLDPC_Coding(args)
 ## modulator
 modem, Es, bps = Modulator.modulator(args.mod_type, args.M)
 
@@ -120,13 +123,14 @@ for comm_round in range(args.num_comm):
     # cur_lr = args.lr/(1 + 0.001 * comm_round)
     candidates = np.random.choice(args.num_of_clients, args.active_client, replace = False)
     message_lst = []
-    pl_Au = PL_Au[candidates, :]
-    d_au = d_Au[candidates, :]
-    Htmp = Large_rayleigh_fast(args.active_client, 100000, pl_Au, noisevar = N0)
-    Hbar = np.mean(np.abs(Htmp)**2, axis = 1)
-    ## (1) Power allocation in NOMA for fast fading.
-    P, _, _, _ = NOMAcapacityOptim(Hbar, d_au, args.P_total, args.P_max, noisevar = 1 )
-    order = np.argsort(P*Hbar)[::-1]
+    if args.transmitWay == 'sic':
+        pl_Au = PL_Au[candidates, :]
+        d_au = d_Au[candidates, :]
+        Htmp = Large_rayleigh_fast(args.active_client, 100000, pl_Au, noisevar = N0)
+        Hbar = np.mean(np.abs(Htmp)**2, axis = 1)
+        ## (1) Power allocation in NOMA for fast fading.
+        P, _, _, _ = NOMAcapacityOptim(Hbar, d_au, args.P_total, args.P_max, noisevar = 1 )
+        order = np.argsort(P*Hbar)[::-1]
     ### diff
     if args.case == 'diff':
         for name in candidates:
@@ -151,16 +155,15 @@ for comm_round in range(args.num_comm):
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
-
             server.aggregate_diff_erf(mess_recv)
-        # elif args.transmitWay == 'proposed':
-        #     if args.bitswidth == 1:
-        #         print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-        #         mess_recv, err = OneBit_proposed(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+        elif args.transmitWay == 'proposed':
+            if args.bitswidth == 1:
+                print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
+                mess_recv, err = OneBit_proposed(message_lst, args, P, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+            server.aggregate_diff_erf(mess_recv)
 
-        #     server.aggregate_diff_erf(mess_recv)
-    if comm_round == 1:
-        break
+    # if comm_round == 1:
+        # break
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
     print(f"  [  round = {comm_round+1}, lr = {cur_lr:.6f}, train los = {test_los:.3f}, test acc = {acc:.3f}, ber = {err}]")

@@ -93,7 +93,7 @@ def transmission_NOMA(args, uu, P, order, pl_Au, ldpc, modem, H = None, noisevar
         symbs = tx_sig[:, int(f*framelen):int((f+1)*framelen)]
         y = ldpc.MACchannel(symbs, H, 1)
         uu_hat[:, int(f*ldpc.codedim):int((f+1)*ldpc.codedim)] = SIC_LDPC_FastFading(H, y, order, Es, modem, ldpc, noisevar = 1,)
-    uu_hat = uu_hat[:,:D]
+    uu_hat = uu_hat[:, :D]
 
     return uu_hat
 
@@ -107,14 +107,12 @@ def SIC_LDPC_FastFading(H, yy, order, Es, modem, ldpc, noisevar = 1, ):
     for k in order:
         idx_set.remove(k)
         hk = H[k]
-        sigmaK = np.sum( np.abs(H[idx_set])**2 , axis = 0) + noisevar
+        sigmaK = np.sum(np.abs(H[idx_set])**2, axis = 0) + noisevar
         llrK = demod_fastfading(copy.deepcopy(modem.constellation), yy0, 'soft', H = hk,  Es = Es,  noise_var = sigmaK)
         uu_hat[k], iterk = ldpc.decoder_msa(llrK)
-        sym_k = modem.modulate(ldpc.encoder(uu_hat[k]))
-        yy0 = yy0 -  H[k] * sym_k / np.sqrt(Es)
-
+        sym_k = BPSK(ldpc.encoder(uu_hat[k]))
+        yy0 = yy0 -  H[k] * sym_k/np.sqrt(Es)
     return uu_hat
-
 
 
 

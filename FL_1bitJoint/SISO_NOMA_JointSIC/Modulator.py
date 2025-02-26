@@ -117,7 +117,7 @@ def demod_fastfading(constellation, input_symbols, demod_type, H = None,  Es = N
                         llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / sigma2)
                 demod_bits[i * bitsPerSym + bitsPerSym - 1 - bit_index] = np.log(llr_num / llr_den)
         demod_bits[np.isinf(demod_bits)] = 2 * np.sign(demod_bits[np.isinf(demod_bits)]) / sigma2
-        # demod_bits[np.isnan(demod_bits)]  = 1/N0
+        demod_bits[np.isnan(demod_bits)] = 1/sigma2
     else:
         raise ValueError('demod_type must be "hard" or "soft"')
     return demod_bits
