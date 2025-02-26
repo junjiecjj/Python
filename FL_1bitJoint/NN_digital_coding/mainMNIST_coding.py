@@ -66,7 +66,7 @@ if args.transmitWay.lower() == 'flip':
 if args.transmitWay.lower() == 'erf':
     args.flip_rate = 0
 if  args.transmitWay.lower() =='proposed' or args.transmitWay.lower() == 'sic':
-    args.noisePSD = -170 # dBm/Hz
+    args.noisePSD = -160 # dBm/Hz
     # n0     = np.arange(-126, -142, -2)           # 噪声功率谱密度, dBm/Hz
     n00    = 10**(args.noisePSD/10.0)/1000         # 噪声功率谱密度, Watts/Hz
     N0     = n00 * args.B                          # 噪声功率, Watts
@@ -153,12 +153,12 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
 
             server.aggregate_diff_erf(mess_recv)
-        elif args.transmitWay == 'proposed':
-            if args.bitswidth == 1:
-                print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-                mess_recv, err = OneBit_proposed(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+        # elif args.transmitWay == 'proposed':
+        #     if args.bitswidth == 1:
+        #         print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
+        #         mess_recv, err = OneBit_proposed(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
 
-            server.aggregate_diff_erf(mess_recv)
+        #     server.aggregate_diff_erf(mess_recv)
     if comm_round == 1:
         break
     global_weight = copy.deepcopy(server.global_weight)
