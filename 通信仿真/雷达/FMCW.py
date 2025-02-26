@@ -118,8 +118,6 @@ plt.show()
 
 
 
-
-
 #%%
 
 import numpy as np
@@ -461,37 +459,18 @@ plt.show()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #%%
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 # 参数设置
-c = 3e8  # 光速 (m/s)
+c  = 3e8    # 光速 (m/s)
 f0 = 24e9  # 起始频率 (Hz)
-B = 250e6  # 带宽 (Hz)
-T = 1e-3  # 调制周期 (s)
-N = 1024  # 采样点数
-fs = 2e6  # 采样频率 (Hz)
+B  = 250e6  # 带宽 (Hz)
+T  = 1e-3   # 调制周期 (s)
+N  = 1024   # 采样点数
+fs = 2e6   # 采样频率 (Hz)
 
 # 生成发射信号
 t = np.linspace(0, T, N, endpoint=False)
@@ -598,6 +577,28 @@ plt.xlabel("Frequency (Hz)")
 plt.ylabel("Amplitude")
 plt.grid(True)
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

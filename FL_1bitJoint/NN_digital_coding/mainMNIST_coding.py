@@ -66,7 +66,7 @@ if args.transmitWay.lower() == 'flip':
 if args.transmitWay.lower() == 'erf':
     args.flip_rate = 0
 if  args.transmitWay.lower() =='proposed' or args.transmitWay.lower() == 'sic':
-    args.noisePSD = -170 # dBm/Hz
+    args.noisePSD = -160 # dBm/Hz
     # n0     = np.arange(-126, -142, -2)           # 噪声功率谱密度, dBm/Hz
     n00    = 10**(args.noisePSD/10.0)/1000         # 噪声功率谱密度, Watts/Hz
     N0     = n00 * args.B                          # 噪声功率, Watts
