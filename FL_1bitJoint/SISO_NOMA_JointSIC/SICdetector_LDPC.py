@@ -31,7 +31,7 @@ def SIC_LDPC_BlockFading(H, yy, P, inteleaverM, noise_var, Es, modem, ldpc, maxi
     yy0 = copy.deepcopy(yy)
     K, frameLen = H.shape
     H0 = H[:,0]
-    order =  np.argsort(-np.abs(H0))   #降序排列
+    order =  np.argsort(-np.abs(H0))   # 降序排列
     uu_hat = np.zeros((K, ldpc.codedim), dtype = np.int8)
 
     # llr = np.zeros((K, ldpc.codelen))
@@ -61,11 +61,10 @@ def SIC_LDPC_FastFading(H, yy, order, inteleaverM, Es, modem, ldpc, noisevar = 1
     idx_set = list(np.arange(K))
 
     tot_iter = 0
-
     for k in order:
         idx_set.remove(k)
         hk = H[k]
-        sigmaK = np.sum( np.abs(H[idx_set])**2 , axis = 0) + noisevar
+        sigmaK = np.sum(np.abs(H[idx_set])**2, axis = 0) + noisevar
         llrK = Modulator.demod_fastfading(copy.deepcopy(modem.constellation), yy0, 'soft', H = hk,  Es = Es,  noise_var = sigmaK)
         # llrK[inteleaverM[k]] = copy.deepcopy(llrK)
         uu_hat[k], iterk = ldpc.decoder_msa(llrK)
