@@ -194,7 +194,7 @@ for i, alpha in enumerate(alphas):
 
 axs[0].set_xlabel('Time(s)',)
 axs[0].set_ylabel('Amplitude',)
-axs[0].set_title("Sinc pulse" )
+axs[0].set_title("Raised Cosine pulse" )
 axs[0].set_xlim(-4 , 4)  #拉开坐标轴范围显示投影
 axs[0].legend()
 
@@ -260,8 +260,6 @@ axs[1].legend()
 plt.show()
 plt.close()
 
-
-
 # Program 7.9: plotEyeDiagram.m: Function for plotting eye diagram
 def plotEyeDiagram(x, L, nSamples, offset, nTraces):
     M = 4
@@ -276,36 +274,147 @@ def plotEyeDiagram(x, L, nSamples, offset, nTraces):
     fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
 
     # x
-    axs[0].plot(t, eyeVals, color = 'b',  label = '原始波形')
-    axs[0].set_xlabel('t/$T_{sym}$',)
-    axs[0].set_ylabel('Amplitude',)
-    axs[0].set_title("Eye Plot" )
-    axs[0].set_xlim(-1.5 , 1.5  )  #拉开坐标轴范围显示投影
-
+    axs.plot(t, eyeVals, color = 'b',  label = '原始波形')
+    axs.set_xlabel('t/$T_{sym}$',)
+    axs.set_ylabel('Amplitude',)
+    axs.set_title("Eye Plot" )
     plt.show()
     plt.close()
+    return t, eyeVals
 
-    return eyeVals
-
-#%% 7.5 Implementing a matched ﬁlter system with SRRC ﬁltering
+#%% Program 7.10: MPAM modulation
 from Modulations import modulator
+from ChannelModels import add_awgn_noise
+# MPAM modulation
+N = 100000
+MOD_TYPE = "pam"
+M = 4
+modem, Es, bps = modulator(MOD_TYPE, M)
+d = np.random.randint(0, M, N)
+u = modem.modulate(d, inputtype = 'int')
+
+##### plot
+fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
+axs.stem(np.real(u), linefmt = 'r-', markerfmt = 'D', )
+axs.set_title("PAM modulated symbols u(k)" )
+axs.set_xlim(0, 20)  #拉开坐标轴范围显示投影
+plt.show()
+plt.close()
+
+# Program 7.11: Upsampling
+L = 4
+v = np.vstack((u, np.zeros((L-1, u.size))))
+v = v.T.flatten()
+
+##### plot
+fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
+axs.stem(np.real(v), linefmt = 'r-', markerfmt = 'D', )
+axs.set_title("Oversampled symbols v(n)" )
+axs.set_xlim(0, 20*L)  #拉开坐标轴范围显示投影
+plt.show()
+plt.close()
+
+# Program 7.12: SRRC pulse shaping
+beta = 0.3
+span = 8
+L = 4
+p, t, filtDelay = srrcFunction(beta, L, span)
+s = scipy.signal.convolve(v, p, 'full')
+##### plot
+fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
+axs.plot(np.real(s), 'r-', )
+axs.set_title("Pulse shaped symbols s(n)" )
+axs.set_xlim(0, 150)  #拉开坐标轴范围显示投影
+plt.show()
+plt.close()
+
+# Program 7.13: Adding AWGN noise for given SNR value
+EbN0dB = 100
+snr = 10*np.log10(np.log2(M)) + EbN0dB
+r, _ = add_awgn_noise(s, snr, L)
+##### plot
+fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
+axs.plot(np.real(r), 'r-', )
+axs.set_title("Received signal r(n)" )
+axs.set_xlim(0, 150)  #拉开坐标轴范围显示投影
+plt.show()
+plt.close()
+
+# Program 7.14: Matched ﬁltering with SRRC pulse shape
+vCap = scipy.signal.convolve(r, p, 'full')
+##### plot
+fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
+axs.plot(np.real(vCap), 'r-', )
+axs.set_title("After matched filtering $\hat{v}(n)$" )
+axs.set_xlim(0, 150)  #拉开坐标轴范围显示投影
+plt.show()
+plt.close()
+
+t, eyeVals = plotEyeDiagram(vCap, L, 3*L, int(2*filtDelay), 100)
+
+# Program 7.15: Symbol rate sampler and demodulation
+uCap = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] /L
+##### plot
+fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
+axs.stem(np.real(uCap), linefmt = 'r-', markerfmt = 'D', )
+axs.set_title("After symbol rate sampler $\hat{u}$(n)" )
+axs.set_xlim(0, 20)  #拉开坐标轴范围显示投影
+plt.show()
+plt.close()
 
 
-
-
+dCap = modem.demodulate(uCap, outputtype = 'int',)
 
 
 #%% Program 7.17: mpam srrc matched filtering.m: Performance simulation of an MPAM modulation based communication system with SRRC transmit and matched ﬁlters
+from Chap6_PerformanceofDigitalModulations import ser_awgn
 
+N = 100000
+MOD_TYPE = 'pam'
+M = 4
+modem, Es, bps = modulator(MOD_TYPE, M)
 
+EbN0dB = np.arange(-4, 26, 2 )
+beta = 0.3
+span = 8
+L = 4
+p, t, filtDelay = srrcFunction(beta, L, span)
 
+SER_sim = np.zeros(EbN0dB.size)
+snr = 10*np.log10(np.log2(M)) + EbN0dB
 
+for i, snrdB in enumerate(snr):
+    # transmiter
+    d = np.random.randint(0, M, N)
+    u = modem.modulate(d, inputtype = 'int')
 
+    v = np.vstack((u, np.zeros((L-1, u.size))))
+    v = v.T.flatten()
+    s = scipy.signal.convolve(v, p, 'full')
 
+    # channel
+    r, _ = add_awgn_noise(s, snrdB, L)
 
+    # receiver
+    vCap = scipy.signal.convolve(r, p, 'full')
+    uCap = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] /L
 
+    dCap = modem.demodulate(uCap, outputtype = 'int',)
 
+    SER_sim[i] = np.sum(dCap != d)/N
+SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+axs.semilogy(EbN0dB, SER_sim, color = 'r', ls = 'none', marker = "o", ms = 12, )
+axs.semilogy(EbN0dB, SER_theory, color = 'b', ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
 
+axs.set_ylim(1e-6, 1)
+axs.set_xlabel( 'Eb/N0(dB)',)
+axs.set_ylabel('SER (Ps)',)
+axs.set_title(f"Symbol Error Rate for M-{MOD_TYPE.upper()} over AWGN")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
 
 
 

@@ -36,7 +36,8 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
                 SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
     elif MOD_TYPE.lower() == "qam":
         SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
-
+    elif MOD_TYPE.lower() == "pam":
+        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
     return SER
 
 # Program 6.3: perf over awgn.m: Performance of various modulations over AWGN channel
@@ -45,7 +46,7 @@ EbN0dB = np.arange(-4, 26, 2 )
 # MOD_TYPE = "qam"
 # arrayOfM = [4, 16, 64, 256]
 
-MOD_TYPE = "psk"
+MOD_TYPE = "pam"    ## "pam"
 arrayOfM = [2, 4, 8, 16, 32]
 
 colors = ['b', 'g', 'r', 'c', 'm', 'k']
@@ -121,11 +122,11 @@ def ser_rayleigh(EbN0dB, MOD_TYPE, M):
 # Program 6.6: perf over rayleigh ﬂat fading.m: Performance of modulations over Rayleigh ﬂat fading
 nSym = 100000
 EbN0dB = np.arange(-10, 26, 2 )
-MOD_TYPE = "qam"
-arrayOfM = [4, 16, 64, 256]
+# MOD_TYPE = "qam"
+# arrayOfM = [4, 16, 64, 256]
 
-# MOD_TYPE = "psk"
-# arrayOfM = [2, 4, 8, 16, 32]
+MOD_TYPE = "pam"  # pam, psk
+arrayOfM = [2, 4, 8, 16, 32]
 
 colors = ['b', 'g', 'r', 'c', 'm', 'k']
 channelModel = "rayleigh"
@@ -179,7 +180,6 @@ def ser_rician(EbN0dB, K_dB, MOD_TYPE, M):
     K = 10**(K_dB/10)
     SER = np.zeros(EbN0dB.size)
 
-
     if MOD_TYPE.lower() == "psk":
         SER = np.zeros(EsN0.size)
         for i in range(len(EsN0)):
@@ -203,11 +203,10 @@ def ser_rician(EbN0dB, K_dB, MOD_TYPE, M):
 # Program 6.9: perf over rician flat fading.m: Performance of modulations over Ricean ﬂat fading channel
 nSym = 100000
 EbN0dB = np.arange(0, 24, 2 )
-MOD_TYPE = "qam"
-M = 16  #  [4, 16, 64, 256]
+# MOD_TYPE = "qam"
+M = 8  #  [4, 16, 64, 256]
 
-MOD_TYPE = "psk"
-arrayOfM = 4  # [2, 4, 8, 16, 32]
+MOD_TYPE = "pam"  # pam, psk
 
 K_dB = [3, 5, 10, 20]
 colors = ['b', 'g', 'r', 'c', 'm', 'k']

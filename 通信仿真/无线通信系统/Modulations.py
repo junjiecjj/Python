@@ -63,12 +63,8 @@ def NormFactor(mod_type = 'qam', M = 16,):
             Es = 2 * (M - 1) / 3
     return Es
 
-
 def modulator(modutype, M, ):
-    # M = args.M
     bps = int(np.log2(M))
-    # framelen = int(ldpc.codelen/bps)
-    # modutype = args.type
     if modutype == 'qam':
         modem = commpy.QAMModem(M)
         Es = NormFactor(mod_type = modutype, M = M,)
@@ -76,7 +72,8 @@ def modulator(modutype, M, ):
         modem =  commpy.PSKModem(M)
         Es = NormFactor(mod_type = modutype, M = M,)
     elif modutype == 'pam':
-        pass
+        modem = PAM_modulator(M)
+        Es = modem.Es
     return modem, Es, bps
 
 
@@ -101,32 +98,64 @@ class PAM_modulator(object):
         for idx, symb in enumerate(self.constellation):
             self.map_table[idx] = symb
             self.demap_table[symb] = idx
-        return
+        return self.map_table, self.demap_table
 
     def modulate(self, x, inputtype = 'bit'):
         """ Modulate (map) an array of bits to constellation symbols.
-
         Parameters
         ----------
         x : 1D ndarray of ints
             Inputs bits to be modulated (mapped).
-
         Returns
         -------
         baseband_symbols : 1D ndarray of complex floats
             Modulated complex symbols.
-
         """
         if inputtype == 'bit':
-            mapfunc = np.vectorize(lambda i: self.constellation[bitarray2dec(x[i:i + self.bps])])
+            mapfunc = np.vectorize(lambda i: self.constellation[commpy.utilities.bitarray2dec(x[i:i + self.bps])])
             baseband_symbols = mapfunc(np.arange(0, len(x), self.bps))
         if inputtype == 'int':
             baseband_symbols = self.constellation[x]
         return baseband_symbols
 
-
-    def demodulate(self, x):
-        return
+    def demodulate(self, input_symbols, demod_type = 'hard', outputtype = 'bit', noise_var = 0):
+        """ Demodulate (map) a set of constellation symbols to corresponding bits.
+        Parameters
+        ----------
+        input_symbols : 1D ndarray of complex floats Input symbols to be demodulated.
+        demod_type : string
+            'hard': for hard decision output (bits).
+            'soft': for soft decision output (LLRs).
+        noise_var : float
+            AWGN variance. Needs to be specified only if demod_type is 'soft'
+        Returns
+        ----------
+        demod_bits : 1D ndarray of ints Corresponding demodulated bits.
+        """
+        if outputtype == 'bit':
+            if demod_type == 'hard':
+                index_list = np.abs(input_symbols - self.constellation[:, None]).argmin(0)
+                demod_bits = commpy.utilities.dec2bitarray(index_list, self.bps)
+            elif demod_type == 'soft':
+                demod_bits = np.zeros(len(input_symbols) * self.bps)
+                for i in np.arange(len(input_symbols)):
+                    current_symbol = input_symbols[i]
+                    for bit_index in np.arange(self.bps):
+                        llr_num = 0
+                        llr_den = 0
+                        for bit_value, symbol in enumerate(self.constellation):
+                            if (bit_value >> bit_index) & 1:
+                                llr_num += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                            else:
+                                llr_den += np.exp((-abs(current_symbol - symbol) ** 2) / noise_var)
+                        demod_bits[i * self.bps + self.bps - 1 - bit_index] = np.log(llr_num / llr_den)
+            else:
+                raise ValueError('demod_type must be "hard" or "soft"')
+        elif outputtype == 'int':
+            tmp = input_symbols.reshape(1,-1) - self.constellation[:,None]
+            tmp = np.abs(tmp)
+            demod_bits = tmp.argmin(axis = 0)
+        return demod_bits
 
     def plot_constellation(self, Modulation_type = 'PAM'):
         import math
@@ -152,9 +181,9 @@ class PAM_modulator(object):
         [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
         axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-        axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+        axs.spines['bottom'].set_linewidth(2)    #### 设置底部坐标轴的粗细
         axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
-        axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+        axs.spines['right'].set_linewidth(2)     #### 设置右边坐标轴的粗细
         axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
         axs.set_xlim([self.constellation.real.min() - 1, self.constellation.real.max() + 1])
@@ -163,15 +192,20 @@ class PAM_modulator(object):
 
         return
 
+# M = 4
+# pam = PAM_modulator(M)
 
-M = 4
-pam = PAM_modulator(M)
+# bits   = np.random.randint(0, 2, pam.bps*20)
 
-bits = np.random.randint(0, 2, pam.bps*20)
-ints = np.random.randint(0, M, 20)
-syms = pam.modulate(bits)
-syms1 = pam.modulate(ints, inputtype = 'int')
+# syms   = pam.modulate(bits)
+# bits_1 = pam.demodulate(syms,)
 
+# ints  = np.random.randint(0, M, 20)
+# syms1 = pam.modulate(ints, inputtype = 'int')
+# syms2 = syms1 + 1.1 * np.random.randn(*syms1.shape)
+# ints_1 = pam.demodulate(syms2, outputtype = "int")
+
+# pam.plot_constellation()
 
 
 
