@@ -417,19 +417,41 @@ plt.show()
 plt.close()
 
 
+#%% Program 7.18: PRSignaling.m: Function to generate PR signals at symbol sampling instants
+
+def PRSignaling(Q, L, span):
+    qn = scipy.signal.filter(Q, 1 [0,0,0,0,0,1,0,0,0,0,0,0])
+    q = np.vstack((qn, np.zeros((L-1, qn.size))))
+    q = q.T.flatten()
+    Tsym = 1
+    t = np.arange(-span/2, span/2, 1/L)
+    g = np.sin(np.pi*t/Tsym)/(np.pi*t/Tsym)
+    g[np.argwhere(np.isnan(g))] = 1
+    b = scipy.signal.convolve(g, q, 'same')
+    return b, t
 
 
+#%% Program 7.19: test PRSignaling.m: PR Signaling schemes and their frequency domain responses
+L = 50
+span = 8
+QD_arr = {}
+QD_arr[1] = [1, 1]
+QD_arr[2] = [1, -1]
+QD_arr[3] = [1, 2, 1]
+QD_arr[4] = [2, 1, -1]
+QD_arr[5] = [1, 0, -1]
+QD_arr[6] = [1, 1, -1, -1]
+QD_arr[7] = [1, 2, 0, -2, -1]
+QD_arr[8] = [1, 0, -2, 0, 1]
 
+A = 1
+titles=['PR1 Duobinary', 'PR1 Dicode','PR Class II','PR Class III','PR4 Modified Duobinary','EPR4','E2PR4','PR Class V']
 
+for i in range(8):
+    Q = QD_arr[i]
+    b, t = PRSignaling(Q, L, span)
 
-
-
-
-
-
-
-
-
+    w, h = scipy.signal.freqz(Q, A, worN = 1024, whole = True)
 
 
 
