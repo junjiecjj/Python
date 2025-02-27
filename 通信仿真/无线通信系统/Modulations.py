@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import commpy
 
+from numpy import  vectorize
+from commpy.utilities import bitarray2dec, dec2bitarray, signal_power
+
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
 # plt.rcParams["font.family"] = "SimSun"
@@ -68,25 +71,106 @@ def modulator(modutype, M, ):
     # modutype = args.type
     if modutype == 'qam':
         modem = commpy.QAMModem(M)
+        Es = NormFactor(mod_type = modutype, M = M,)
     elif modutype == 'psk':
         modem =  commpy.PSKModem(M)
-    Es = NormFactor(mod_type = modutype, M = M,)
-
+        Es = NormFactor(mod_type = modutype, M = M,)
+    elif modutype == 'pam':
+        pass
     return modem, Es, bps
 
 
+class PAM_modulator(object):
+    def __init__(self, M):
+        self.M = M
+        self.bps = int(np.log2(self.M))
+        self.constellation = None
+        self.Es = self.init(M)
+        self.map_table = {}
+        self.demap_table = {}
+        self.getMappTable()
+        return
+
+    def init(self, M):
+        m = np.arange(1, M + 1, 1)
+        self.constellation = np.complex128(2*m - 1 - M)
+        Es = np.mean(np.abs(self.constellation)**2)
+        return Es
+
+    def getMappTable(self):
+        for idx, symb in enumerate(self.constellation):
+            self.map_table[idx] = symb
+            self.demap_table[symb] = idx
+        return
+
+    def modulate(self, x, inputtype = 'bit'):
+        """ Modulate (map) an array of bits to constellation symbols.
+
+        Parameters
+        ----------
+        x : 1D ndarray of ints
+            Inputs bits to be modulated (mapped).
+
+        Returns
+        -------
+        baseband_symbols : 1D ndarray of complex floats
+            Modulated complex symbols.
+
+        """
+        if inputtype == 'bit':
+            mapfunc = np.vectorize(lambda i: self.constellation[bitarray2dec(x[i:i + self.bps])])
+            baseband_symbols = mapfunc(np.arange(0, len(x), self.bps))
+        if inputtype == 'int':
+            baseband_symbols = self.constellation[x]
+        return baseband_symbols
 
 
+    def demodulate(self, x):
+        return
+
+    def plot_constellation(self, Modulation_type = 'PAM'):
+        import math
+        M = len(self.constellation)
+        nbits = int(math.log2(M))
+        # map_table = {}
+        # demap_table = {}
+
+        fig, axs = plt.subplots(1,1, figsize=(8, 8), constrained_layout=True)
+        for idx, symb in enumerate(self.constellation):
+            # map_table[idx] = symb
+            # demap_table[symb] = idx
+            axs.scatter(symb.real, symb.imag, s = 40, c = 'b')
+            # axs.text(symb.real-0.4, symb.imag + 0.1, str(self.demodulate(symb, 'hard')) + ":" + str(idx), fontsize=18, color='black', )
+            axs.text(symb.real-0.4, symb.imag + 0.1, bin(idx)[2:].rjust(nbits, '0') + ":" + str(idx), fontsize = 18, color = 'black', )
+        ##
+        font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+        axs.set_title(f"{Modulation_type} Mapping Table", fontproperties=font2,)
+
+        axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+        labels = axs.get_xticklabels() + axs.get_yticklabels()
+        [label.set_fontname('Times New Roman') for label in labels]
+        [label.set_fontsize(24) for label in labels]  # 刻度值字号
+
+        axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+        axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+        axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+        axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+        axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+        axs.set_xlim([self.constellation.real.min() - 1, self.constellation.real.max() + 1])
+        axs.set_ylim([self.constellation.imag.min() - 1, self.constellation.imag.max() + 1])
+        plt.show()
+
+        return
 
 
+M = 4
+pam = PAM_modulator(M)
 
-
-
-
-
-
-
-
+bits = np.random.randint(0, 2, pam.bps*20)
+ints = np.random.randint(0, M, 20)
+syms = pam.modulate(bits)
+syms1 = pam.modulate(ints, inputtype = 'int')
 
 
 

@@ -27,15 +27,17 @@ font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Comp
 ## ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
-ts = 0.1     # x(t) = sinc(t/ts),
-B = 1/(2*ts)
-Fs = 40                          # 信号采样频率
+ts = 0.1                          # x(t) = sinc(t/ts), T = 0.1, f = 10 Hz
+B  = 1/(2*ts)                     # Hz
+# f_max = 2*np.pi*B               # 角频率rad/s,
+f_max = B                       # 画图用的时间频率 Hz
+Fs = 40                           # 信号采样频率
 Ts = 1/Fs                         # 采样时间间隔
-# N = 100                           # 采样信号的长度
+# N = 100                         # 采样信号的长度
 
 m = 20
-t = np.arange(-m*ts, m*ts, Ts)          # # 定义信号采样的时间点 t
-x =  np.sinc(t/ts)
+t = np.arange(-m*ts, m*ts, Ts)    # 定义信号采样的时间点 t
+x = np.sinc(t/ts)
 N = x.size
 #=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
@@ -101,11 +103,12 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[0,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
+
+axs[0,0].set_xlim(-ts*4, ts*4)  #拉开坐标轴范围显示投影
 
 #======================================= 0,1 =========================================
 axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
@@ -124,12 +127,12 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[0,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
+axs[0,1].set_xlim(- f_max - 0.2, f_max + 0.2)  #拉开坐标轴范围显示投影
 #======================================= 0,2 =========================================
 axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
 
@@ -146,7 +149,6 @@ legend1 = axs[0,2].legend(loc='best', borderaxespad=0,  edgecolor='black', prop=
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
 
 axs[0,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[0,2].get_xticklabels() + axs[0,2].get_yticklabels()
@@ -218,12 +220,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 1,1 =========================================
 # axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
@@ -242,12 +242,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 1,2 =========================================
 # axs[1,2].plot(f1, Pha1, color='g', linestyle='-', label='相位',)
@@ -267,12 +265,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,2].get_xticklabels() + axs[1,2].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 1,3 =========================================
 # axs[1,3].plot(f1, R1, color='cyan', linestyle='-', label='实部',)
@@ -286,8 +282,7 @@ axs[1,3].set_ylabel(r'实部', fontproperties=font3)
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
 font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,3].legend(loc='best', borderaxespad=0,
-                        edgecolor='black', prop=font2,)
+legend1 = axs[1,3].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
@@ -311,8 +306,7 @@ axs[1,4].set_ylabel(r'虚部', fontproperties=font3)
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
 font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,4].legend(loc='best', borderaxespad=0,
-                        edgecolor='black', prop=font2,)
+legend1 = axs[1,4].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
@@ -330,3 +324,8 @@ out_fig = plt.gcf()
 #out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
+
+
+
+
+

@@ -7,7 +7,7 @@ Created on Mon Feb 24 15:53:53 2025
 """
 
 
-# import scipy
+import sys
 import numpy as np
 import torch
 import copy
@@ -87,13 +87,16 @@ def transmission_NOMA(args, uu, P, order, pl_Au, ldpc, modem, H = None, noisevar
     num_CB = int(tx_sig.shape[-1]/framelen)
     uu_hat = np.zeros_like(uu_)
     for f in range(num_CB):
-        print(f"    {f}/{num_CB}")
+        print("\r", end="")
+        print("  进度: {}%: ".format(i*100/(num_CB-1)), "▓" * (i // 2), end="")
+        sys.stdout.flush()
+
         H = Large_rayleigh_fast(args.active_client, framelen, pl_Au, noisevar = noisevar)
         H = H * np.sqrt(P[:, None])
         symbs = tx_sig[:, int(f*framelen):int((f+1)*framelen)]
         y = ldpc.MACchannel(symbs, H, 1)
         uu_hat[:, int(f*ldpc.codedim):int((f+1)*ldpc.codedim)] = SIC_LDPC_FastFading(H, y, order, Es, modem, ldpc, noisevar = 1,)
-    uu_hat = uu_hat[:,:D]
+    uu_hat = uu_hat[:, :D]
 
     return uu_hat
 
@@ -107,14 +110,12 @@ def SIC_LDPC_FastFading(H, yy, order, Es, modem, ldpc, noisevar = 1, ):
     for k in order:
         idx_set.remove(k)
         hk = H[k]
-        sigmaK = np.sum( np.abs(H[idx_set])**2 , axis = 0) + noisevar
+        sigmaK = np.sum(np.abs(H[idx_set])**2, axis = 0) + noisevar
         llrK = demod_fastfading(copy.deepcopy(modem.constellation), yy0, 'soft', H = hk,  Es = Es,  noise_var = sigmaK)
         uu_hat[k], iterk = ldpc.decoder_msa(llrK)
-        sym_k = modem.modulate(ldpc.encoder(uu_hat[k]))
-        yy0 = yy0 -  H[k] * sym_k / np.sqrt(Es)
-
+        sym_k = BPSK(ldpc.encoder(uu_hat[k]))
+        yy0 = yy0 -  H[k] * sym_k/np.sqrt(Es)
     return uu_hat
-
 
 
 

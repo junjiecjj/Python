@@ -20,10 +20,10 @@ from Channel import  Large_rayleigh_fast, Large_rician_fast
 np.random.seed(42)
 frame_len = 1024
 B      = 4e6                    # bandwidth, Hz
-n0     = -140                   # 噪声功率谱密度, dBm/Hz
+n0     = -150                   # 噪声功率谱密度, dBm/Hz
 n0     = 10**(n0/10.0)/1000     # 噪声功率谱密度, Watts/Hz
 N0     = n0 * B                 # 噪声功率, Watts
-K      = 4                      # 用户num
+K      = 6                      # 用户num
 
 P_total = K
 # P_max   = 30                     # 用户发送功率, dBm
@@ -32,8 +32,8 @@ P_max   = P_total / 3              # Watts
 
 ## 产生信道系数
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(K, r = 100, rmin = 0.6)
-H1 = Large_rayleigh_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
-H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, sigma2 = N0)
+H1 = Large_rayleigh_fast(K, frame_len, PL_Au, noisevar = N0)
+H2 = Large_rician_fast(K, frame_len, beta_Au, PL_Au, noisevar = N0)
 
 Hbar = np.mean(np.abs(H1)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
 # Hbar = np.mean(np.abs(H2)**2, axis = 1) # * np.sqrt(N0)/ np.sqrt(PL_Au.flatten())
@@ -50,7 +50,8 @@ constraints = [
 
 # 变量边界 (0 <= p_i <= P_max)
 bounds = [(P_total/(4*K), P_max) for _ in range(K)]
-
+# bounds = [(0, P_max) for _ in range(K)]
+# bounds = [(P_total/(4*K), None) for _ in range(K)]
 # 初始猜测 (随机生成满足总功率约束)
 init = np.random.rand(K) * P_max
 init = init / np.sum(init) * P_total

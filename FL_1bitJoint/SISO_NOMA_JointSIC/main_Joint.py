@@ -50,7 +50,7 @@ coderargs = {'codedim':ldpc.codedim,
 source = SourceSink()
 # rho = 1
 # logf = f"./resultsTXT/{args.channel_type.split('-')[0]}/BER_Joint_Block_{args.K}u_w_powerdiv_{rho}.txt"
-logf = f"./resultsTXT/{args.channel_type.split('_')[1]}/BER_Joint_{args.channel_type}_{args.K}U.txt"
+logf = f"./resultsTXT/{args.channel_type.split('_')[1]}/BER_Joint_{args.channel_type}_{args.K}U_wo_pa.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -60,16 +60,16 @@ framelen = int(ldpc.codelen/bps)
 
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = 0.6)
 
-
 # 遍历SNR
-n0     = np.arange(-126.2, -127.2, -0.2)         # 噪声功率谱密度, dBm/Hz
+n0     = np.arange(-127.2, -130, -0.2)         # 噪声功率谱密度, dBm/Hz
 n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
 N0     = n00 * args.B                     # 噪声功率, Watts
 
 for noisePsd, noisepower in zip(n0, N0):
     source.ClrCnt()
     print( f"\n noisePsd = {noisePsd}(dBm/Hz), {noisepower}(w):")
-    P = JointCapacityOptim(PL_Au, args.P_total,)
+    # P = JointCapacityOptim(PL_Au, args.P_total,)
+    P = np.ones(args.K) * args.P_total/args.K
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
         if args.channel_type == 'AWGN':
             H = AWGN_mac(args.K, framelen)

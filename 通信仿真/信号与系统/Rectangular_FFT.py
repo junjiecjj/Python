@@ -58,14 +58,16 @@ def IFFT(XX):
 Fs = 200                         # 信号采样频率
 Ts = 1/Fs                        # 采样时间间隔
 Tall = 20                        #
-tau = 2                           # 矩形波时长
+tau = 2                          # 矩形波时长
 t = np.arange(-Tall/2, Tall/2, Ts)       # 定义信号采样的时间点 t
 N_sample = t.size
 
+# f_max = 2*np.pi/tau               # 角频率rad/s,
+f_max = 1/tau                        # 画图用的时间频率 Hz
 
 x = np.zeros(t.size)             # 采样的时间序列
-ts = int((Tall/2 - tau/2) / Ts)         # 矩形波的开始
-te = int((Tall/2 + tau/2) / Ts)            # 矩形波的结束
+ts = int((Tall/2 - tau/2) / Ts)  # 矩形波的开始
+te = int((Tall/2 + tau/2) / Ts)  # 矩形波的结束
 A = 2                            # 矩形波的幅度
 x[ts:te] = A
 
@@ -326,7 +328,7 @@ labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-
+axs[1,0].set_xlim(-tau/2-1, tau/2+1)  #拉开坐标轴范围显示投影
 #======================================= 1,1 =========================================
 axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
 
@@ -349,7 +351,7 @@ labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[1,1].set_xlim(-10/tau, 10/tau)  #拉开坐标轴范围显示投影
+axs[1,1].set_xlim(-2*f_max, 2*f_max)  #拉开坐标轴范围显示投影
 #======================================= 1,2 =========================================
 axs[1,2].plot(f1, Pha1, color='g', linestyle='-', label='相位',)
 

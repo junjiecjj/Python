@@ -88,7 +88,7 @@ def rcosdesign(beta: float, span: float, sps: float, shape='normal'):
     %%% b = rcosdesign(beta,span,sps,shape)
     %%% beta：滚降因子
     %%% span: 表示截断的符号范围，对滤波器取了几个Ts的长度
-    %%% sps: 每个符号的采样数
+    %%% sps: 每个符号的采样数, L
     %%% shape:可选择'normal'或者'sqrt'
     %%% b:1*（sps*span）的行向量，升余弦或余弦滤波器的系数
     在 MATLAB 的 `rcosdesign` 函数中，`span` 参数指的是滤波器脉冲响应（抽头系数）跨越的符号周期数。也就是说，`span` 决定了设计的根升余弦滤波器脉冲响应在时间上的长度。这个长度是以数据传输中的符号周期（即一个数据符号的持续时间）为单位的。
