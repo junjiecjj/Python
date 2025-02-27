@@ -9,8 +9,9 @@ Created on Wed Feb 19 16:58:24 2025
 import scipy
 import numpy as np
 
-def freqDomainView(x, Fs, type = 'double'): # N为偶数
-    FFTN = 2**int(np.ceil(np.log2(x.size)))
+def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
+    if FFTN == None:
+        FFTN = 2**int(np.ceil(np.log2(x.size)))
     X = scipy.fftpack.fft(x, n = FFTN)
     # 消除相位混乱
     threshold = np.max(np.abs(X)) / 10000

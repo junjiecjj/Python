@@ -68,21 +68,30 @@ def modulator(modutype, M, ):
     # modutype = args.type
     if modutype == 'qam':
         modem = commpy.QAMModem(M)
+        Es = NormFactor(mod_type = modutype, M = M,)
     elif modutype == 'psk':
         modem =  commpy.PSKModem(M)
-    Es = NormFactor(mod_type = modutype, M = M,)
-
+        Es = NormFactor(mod_type = modutype, M = M,)
+    elif modutype == 'pam':
+        pass
     return modem, Es, bps
 
 
 
+class PAM_modulator(object):
+    def __init__(self, M):
+        self.M = M
+        self.constellation = None
+        self.Es = self.init(M)
+
+    def init(self, M):
+        m = np.arange(1, M + 1, 1)
+        self.constellation = np.complex64(2*m - 1 - M)
+        Es = np.mean(np.abs(self.constellation)**2)
+        return Es
 
 
-
-
-
-
-
+pam = PAM_modulator(4)
 
 
 
