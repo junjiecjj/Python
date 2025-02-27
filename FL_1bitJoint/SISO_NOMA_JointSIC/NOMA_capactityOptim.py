@@ -50,7 +50,8 @@ constraints = [
 
 # 变量边界 (0 <= p_i <= P_max)
 bounds = [(P_total/(4*K), P_max) for _ in range(K)]
-
+# bounds = [(0, P_max) for _ in range(K)]
+# bounds = [(P_total/(4*K), None) for _ in range(K)]
 # 初始猜测 (随机生成满足总功率约束)
 init = np.random.rand(K) * P_max
 init = init / np.sum(init) * P_total

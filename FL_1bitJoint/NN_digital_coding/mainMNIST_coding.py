@@ -61,6 +61,7 @@ args.bitswidth  = 1         #  1,  8
 args.G          = 2**8
 args.transmitWay = 'proposed'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
 
+
 if args.transmitWay.lower() == 'flip':
     args.flip_rate = 0.1
 if args.transmitWay.lower() == 'erf':

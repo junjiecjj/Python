@@ -7,7 +7,7 @@ Created on Mon Feb 24 15:53:53 2025
 """
 
 
-# import scipy
+import sys
 import numpy as np
 import torch
 import copy
@@ -87,7 +87,10 @@ def transmission_NOMA(args, uu, P, order, pl_Au, ldpc, modem, H = None, noisevar
     num_CB = int(tx_sig.shape[-1]/framelen)
     uu_hat = np.zeros_like(uu_)
     for f in range(num_CB):
-        print(f"    {f}/{num_CB}")
+        print("\r", end="")
+        print("  进度: {}%: ".format(i*100/(num_CB-1)), "▓" * (i // 2), end="")
+        sys.stdout.flush()
+
         H = Large_rayleigh_fast(args.active_client, framelen, pl_Au, noisevar = noisevar)
         H = H * np.sqrt(P[:, None])
         symbs = tx_sig[:, int(f*framelen):int((f+1)*framelen)]
