@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import commpy
 
+from numpy import  vectorize
+from commpy.utilities import bitarray2dec, dec2bitarray, signal_power
+
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
 # plt.rcParams["font.family"] = "SimSun"
@@ -81,8 +84,12 @@ def modulator(modutype, M, ):
 class PAM_modulator(object):
     def __init__(self, M):
         self.M = M
+        self.bps = int(np.log2(self.M))
         self.constellation = None
         self.Es = self.init(M)
+        self.map_table = {}
+        self.demap_table = {}
+        return
 
     def init(self, M):
         m = np.arange(1, M + 1, 1)
@@ -90,12 +97,49 @@ class PAM_modulator(object):
         Es = np.mean(np.abs(self.constellation)**2)
         return Es
 
+    def getMappTable(self):
+        # M = len(self.constellation)
+        # nbits = int(math.log2(M))
+        # map_table = {}
+        # demap_table = {}
 
-pam = PAM_modulator(4)
+        # fig, axs = plt.subplots(1,1, figsize=(8, 8), constrained_layout=True)
+        for idx, symb in enumerate(self.constellation):
+            self.map_table[idx] = symb
+            self.demap_table[symb] = idx
+        return
 
+    def modulatebits(self, input_bits):
+        """ Modulate (map) an array of bits to constellation symbols.
 
+        Parameters
+        ----------
+        input_bits : 1D ndarray of ints
+            Inputs bits to be modulated (mapped).
 
+        Returns
+        -------
+        baseband_symbols : 1D ndarray of complex floats
+            Modulated complex symbols.
 
+        """
+        mapfunc = np.vectorize(lambda i: self.constellation[bitarray2dec(input_bits[i:i + self.bps])])
+        baseband_symbols = mapfunc(np.arange(0, len(input_bits), self.bps))
+        return baseband_symbols
+
+    def modulateindex(self, x):
+        return self.constellation[x]
+
+    def demodulate(self, x):
+        return
+
+M = 4
+pam = PAM_modulator(M)
+
+bits = np.random.randint(0, 2, pam.bps*20)
+ints = np.random.randint(0, M, 20)
+syms = pam.modulatebits(bits)
+syms1 = pam.modulateindex()(ints)
 
 
 
