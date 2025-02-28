@@ -90,7 +90,7 @@ def transmission_proposed(args, uu, P, pl_Au, ldpc, modem, H = None, noisevar = 
     uu_hat = np.zeros_like(uu)
     for f in range(num_CB):
         print("\r", end="")
-        print("  进度: {:.3f}%: ".format(f*100/(num_CB-1)), "▓" * (f // 2), end="")
+        print("  进度: {:.3f}%: ".format(f*100/(num_CB-1)), "▓" * (f // 4), end="")
         sys.stdout.flush()
 
         H = Large_rayleigh_fast(args.active_client, framelen, pl_Au, noisevar = noisevar)
@@ -104,7 +104,7 @@ def transmission_proposed(args, uu, P, pl_Au, ldpc, modem, H = None, noisevar = 
     uu_hat = uu_hat[:, :D]
     return uu_hat
 
-def B_Bit_proposed(message_lst, args,  P, order, pl_Au, ldpc, modem, rounding = 'sr', H = None, noisevar = 1, B = 8, key_grad = None):
+def B_Bit_proposed(message_lst, args, P, pl_Au, ldpc, modem, rounding = 'sr', H = None, noisevar = 1, B = 8, key_grad = None):
     ## D = np.sum([param.numel() for param in message_lst[0].values()])
     key_lst_wo_grad = []
     info_lst = []

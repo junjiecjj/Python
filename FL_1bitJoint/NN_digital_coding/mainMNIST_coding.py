@@ -57,7 +57,7 @@ args.case = 'diff'          # "diff", "grad", "signSGD"
 args.optimizer = 'sgd'      # 'sgd', 'adam'
 
 args.rounding   = 'sr'       # 'nr', 'sr',
-args.bitswidth  = 1         #  1,  8
+args.bitswidth  = 4         #  1,  8
 args.G          = 2**8
 args.transmitWay = 'proposed'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
 
@@ -167,7 +167,7 @@ for comm_round in range(args.num_comm):
                 mess_recv, err = OneBit_proposed(message_lst, args, P, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
             elif args.bitswidth > 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
-                mess_recv, err = B_Bit_proposed(message_lst, args,  P, order, pl_Au, ldpc, modem, rounding = args.rounding, H = None, noisevar = N0, B = args.bitswidth, key_grad = key_grad)
+                mess_recv, err = B_Bit_proposed(message_lst, args,  P,  pl_Au, ldpc, modem, rounding = args.rounding, H = None, noisevar = N0, B = args.bitswidth, key_grad = key_grad)
             server.aggregate_diff_erf(mess_recv)
 
     # if comm_round == 1:

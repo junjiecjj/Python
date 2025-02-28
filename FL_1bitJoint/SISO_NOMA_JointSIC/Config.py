@@ -19,7 +19,7 @@ def parameters():
     "minimum_snr" : 0,
     "maximum_snr" : 13,
     "increment_snr" : 1,
-    "maximum_error_number" : 200,
+    "maximum_error_number" : 150,
     "maximum_block_number" : 1000000,
     "K" : 4,    # User num
 

@@ -104,10 +104,10 @@ def SISO_4user():
     axs.semilogy(Joint_fastfading_4u_w_powdiv[:, 0], Joint_fastfading_4u_w_powdiv[:, cols], color = 'r', ls = '--',  marker = '*', mfc = 'none', ms = 16, mew = 2, label = lb, zorder = 12)
 
     # #=========================  ===============================
-    lb = r"SIC, w/"
+    lb = r"SIC, w/ power allo"
     axs.semilogy(sic_fastfading_4u_powerallo[:, 0], sic_fastfading_4u_powerallo[:, cols], color = 'b',ls = '--', lw = 2,  marker = 'v', mfc = 'none', ms = 12, mew = 2, label = lb)
 
-    lb = r"SIC, w/o"
+    lb = r"SIC, w/o power allo"
     axs.semilogy(sic_fastfading_4u_equallo[:, 0], sic_fastfading_4u_equallo[:, cols], color = 'b', ls = '--', lw = 2,  marker = 'o', mfc = 'none', ms = 12, mew = 2, label = lb,)
 
     ##===========================================================
@@ -125,13 +125,13 @@ def SISO_4user():
         axs.set_ylabel( "Aggregation error rate",      fontproperties = font )# , fontdict = font1
     #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
-    font1 = {'family':'Times New Roman','style':'normal','size':22, }
-    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1, labelspacing = 0.1)
+    font1 = {'family':'Times New Roman','style':'normal','size':26, }
+    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1, )
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-    bw = 2.5
+    bw = 2
     axs.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
     axs.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
     axs.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
@@ -146,15 +146,15 @@ def SISO_4user():
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
     out_fig = plt.gcf()
 
-    # if cols == 1:
-    #     out_fig.savefig("./Figures/2user_fast_fer.eps")
-    #     out_fig.savefig("./Figures/2userfast__fer.pdf")
-    # elif cols == 2:
-    #     out_fig.savefig( "./Figures/2user_fast_ber.eps")
-    #     out_fig.savefig( "./Figures/2user_fast_ber.pdf")
-    # elif cols == 3:
-    #     out_fig.savefig( "./Figures/2user_fast_aggerr.eps")
-    #     out_fig.savefig( "./Figures/2user_fast_aggerr.pdf")
+    if cols == 1:
+        # out_fig.savefig("./Figures/4user_fast_fer.eps")
+        out_fig.savefig("./Figures/4user_fast_fer.pdf")
+    elif cols == 2:
+        # out_fig.savefig( "./Figures/4user_fast_ber.eps")
+        out_fig.savefig( "./Figures/4user_fast_ber.pdf")
+    elif cols == 3:
+        out_fig.savefig( "./Figures/4user_fast_aggerr.eps")
+        out_fig.savefig( "./Figures/4user_fast_aggerr.pdf")
     plt.show()
     plt.close()
     return

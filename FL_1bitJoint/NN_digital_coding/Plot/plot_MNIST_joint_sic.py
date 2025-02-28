@@ -137,7 +137,7 @@ def MNIST_LocalBatchIID_1bit():
     [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.2, 1.06)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细

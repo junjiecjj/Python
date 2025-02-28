@@ -313,8 +313,6 @@ for idx, channeltype in enumerate(channelTypes):
     plt.show()
     plt.close()
 
-
-
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
 for idx, channeltype in enumerate(channelTypes):
