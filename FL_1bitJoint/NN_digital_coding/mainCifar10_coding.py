@@ -164,11 +164,15 @@ for comm_round in range(args.num_comm):
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+            elif args.bitswidth > 1:
+                mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
             server.aggregate_diff_erf(mess_recv)
         elif args.transmitWay == 'proposed':
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_proposed(message_lst, args, P, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+            elif args.bitswidth > 1:
+                mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
             server.aggregate_diff_erf(mess_recv)
 
         # if comm_round == 1:

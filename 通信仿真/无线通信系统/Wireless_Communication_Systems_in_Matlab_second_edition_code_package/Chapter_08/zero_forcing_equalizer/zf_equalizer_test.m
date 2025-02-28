@@ -7,7 +7,7 @@ Tsym=nSamp*Ts; %symbol time period
 
 %Define transfer function of the channel
 k=6; %define limits for computing channel response
-N0 = 0.001; %Standard deviation of AWGN channel noise
+N0 = 0; %Standard deviation of AWGN channel noise
 t = -k*Tsym:Ts:k*Tsym; %time base defined till +/-kTsym
 h_t = 1./(1+(t/Tsym).^2);%channel model, replace with your own model
 h_t = h_t + N0*randn(1,length(h_t));%add Noise to the channel response

@@ -25,8 +25,8 @@ from Utility import set_random_seed, set_printoption
 
 from Transmit_1bit import OneBit_Grad_G
 from Transmit_Bbit import B_Bit
-from Transmit_SIC import OneBit_SIC
-from Transmit_Joint import OneBit_proposed
+from Transmit_SIC import OneBit_SIC, B_Bit_SIC
+from Transmit_Joint import OneBit_proposed, B_Bit_proposed
 from LDPCcoder import LDPC_Coder
 from QLDPCcoder import QLDPC_Coding
 import Modulator
@@ -42,7 +42,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True             # True, False
+args.IID = False             # True, False
 args.dataset = "MNIST"      #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
@@ -60,7 +60,6 @@ args.rounding   = 'sr'       # 'nr', 'sr',
 args.bitswidth  = 1         #  1,  8
 args.G          = 2**8
 args.transmitWay = 'proposed'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
-
 
 if args.transmitWay.lower() == 'flip':
     args.flip_rate = 0.1
@@ -158,11 +157,17 @@ for comm_round in range(args.num_comm):
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+            elif args.bitswidth > 1:
+                print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
+                mess_recv, err = B_Bit_SIC(message_lst, args,  P, order, pl_Au, ldpc, modem, rounding = args.rounding, H = None, noisevar = N0, B = args.bitswidth, key_grad = key_grad)
             server.aggregate_diff_erf(mess_recv)
         elif args.transmitWay == 'proposed':
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_proposed(message_lst, args, P, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+            elif args.bitswidth > 1:
+                print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
+                mess_recv, err = B_Bit_proposed(message_lst, args,  P, order, pl_Au, ldpc, modem, rounding = args.rounding, H = None, noisevar = N0, B = args.bitswidth, key_grad = key_grad)
             server.aggregate_diff_erf(mess_recv)
 
     # if comm_round == 1:

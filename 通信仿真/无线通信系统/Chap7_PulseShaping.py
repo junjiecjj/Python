@@ -273,7 +273,6 @@ def plotEyeDiagram(x, L, nSamples, offset, nTraces):
     ##### plot
     fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
 
-    # x
     axs.plot(t, eyeVals, color = 'b',  label = '原始波形')
     axs.set_xlabel('t/$T_{sym}$',)
     axs.set_ylabel('Amplitude',)
@@ -420,7 +419,7 @@ plt.close()
 #%% Program 7.18: PRSignaling.m: Function to generate PR signals at symbol sampling instants
 
 def PRSignaling(Q, L, span):
-    qn = scipy.signal.filter(Q, 1 [0,0,0,0,0,1,0,0,0,0,0,0])
+    qn = scipy.signal.lfilter(Q, 1.0, [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     q = np.vstack((qn, np.zeros((L-1, qn.size))))
     q = q.T.flatten()
     Tsym = 1
@@ -435,30 +434,49 @@ def PRSignaling(Q, L, span):
 L = 50
 span = 8
 QD_arr = {}
-QD_arr[1] = [1, 1]
-QD_arr[2] = [1, -1]
-QD_arr[3] = [1, 2, 1]
-QD_arr[4] = [2, 1, -1]
-QD_arr[5] = [1, 0, -1]
-QD_arr[6] = [1, 1, -1, -1]
-QD_arr[7] = [1, 2, 0, -2, -1]
-QD_arr[8] = [1, 0, -2, 0, 1]
+QD_arr[0] = [1.0, 1.0]
+QD_arr[1] = [1.0, -1.0]
+QD_arr[2] = [1.0, 2.0, 1.0]
+QD_arr[3] = [2.0, 1.0, -1.0]
+QD_arr[4] = [1.0, 0.0, -1.0 ]
+QD_arr[5] = [1.0, 1.0, -1.0, -1.0]
+QD_arr[6] = [1.0, 2.0, 0.0, -2.0, -1.0]
+QD_arr[7] = [1.0, 0.0, -2.0, 0.0, 1.0]
 
 A = 1
-titles=['PR1 Duobinary', 'PR1 Dicode','PR Class II','PR Class III','PR4 Modified Duobinary','EPR4','E2PR4','PR Class V']
+titles = ['PR1 Duobinary', 'PR1 Dicode','PR Class II','PR Class III','PR4 Modified Duobinary','EPR4','E2PR4','PR Class V']
 
 for i in range(8):
     Q = QD_arr[i]
     b, t = PRSignaling(Q, L, span)
 
-    w, h = scipy.signal.freqz(Q, A, worN = 1024, whole = True)
+    W, H = scipy.signal.freqz(Q, A, worN = 1024, whole = True)
+    H = np.hstack((H[int(H.size/2):], H[:int(H.size/2)]))
+    response = np.abs(H)
+    norm_response = response/np.max(response)
+    norm_freq = W/np.max(W) - 1/2
+
+    fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
+    axs[0].stem(t[0:t.size:L], b[0:t.size:L], linefmt = 'r-', markerfmt = 'D', )
+    axs[0].plot(t, b, 'b-', )
+    axs[0].set_xlabel('t/$T_{sym}$',)
+    axs[0].set_ylabel('b(t)',)
+    axs[0].set_title(f"{titles[i]}-b(t)" )
+    # axs[0].set_xlim(-4 , 4)  #拉开坐标轴范围显示投影
+    # axs[0].legend()
+
+    axs[1].plot(norm_freq, norm_response, 'b-', )
+    axs[1].set_xlabel('f/$F_{sym}$',)
+    axs[1].set_ylabel('|Q(D)|',)
+    axs[1].set_title(f"{titles[i]}-Frequency response Q(D)" )
+    # axs[1].set_xlim(-1.5 , 1.5)  #拉开坐标轴范围显示投影
+    # axs[1].legend()
+
+    plt.show()
+    plt.close()
 
 
-
-
-
-
-
+#%% Program 7.20: PR1 precoded system.m: Discrete-time equivalent partial response class 1 signaling model
 
 
 
