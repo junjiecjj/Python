@@ -268,14 +268,14 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
     return SER
 
 
-h_c = np.array([0.04, -0.05, 0.07, -0.21, -0.5, 0.72, 0.36, 0.21, 0.03, 0.07]) #  Channel A
-h_c = np.array([0.407, 0.815, 0.407])               #  Channel B
-h_c = np.array([0.227, 0.460, 0.688, 0.460, 0.227]) #  Channel C
+h_cA = np.array([0.04, -0.05, 0.07, -0.21, -0.5, 0.72, 0.36, 0.21, 0.03, 0.07]) #  Channel A
+h_cB = np.array([0.407, 0.815, 0.407])               #  Channel B
+h_cC = np.array([0.227, 0.460, 0.688, 0.460, 0.227]) #  Channel C
 
-F, H = scipy.signal.freqz(h_c)
+F, H = scipy.signal.freqz(h_cA)
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
-axs[0].stem(h_c, linefmt = 'r-', markerfmt = 'D', )
+axs[0].stem(h_cA, linefmt = 'r-', markerfmt = 'D', )
 axs[0].set_xlabel('Time(s)',)
 axs[0].set_ylabel('h(t)',)
 axs[0].set_title("Channel impulse response" )
@@ -295,54 +295,63 @@ M = 2
 k = int(np.log2(M))
 modem, Es, bps = modulator(MOD_TYPE, M)
 map_table, demap_table = modem.getMappTable()
-SER_zf = np.zeros(EbN0dB.size)
-SER_mmse = np.zeros(EbN0dB.size)
+
 uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
 s = modem.modulate(uu)
 d = np.array([demap_table[sym] for sym in s])
-x = scipy.signal.convolve(s, h_c)
 
-for i, EbN0db in enumerate(EbN0dB):
-    # channel
-    r, _ = add_awgn_noise(x, EbN0db)
+channelTypes = ["Channel A", "Channel B", "Channel C" ]
+H_C = {}
+H_C[0] = h_cA
+H_C[1] = h_cB
+H_C[2] = h_cC
 
-    ## Receiver
-    ## MMSE equalizer
-    h_mmse, mse, optDelay = mmse_equalizer(h_c, EbN0db, ntaps)
-    y_mmse = scipy.signal.convolve(h_mmse.flatten(), r)
-    y_mmse = y_mmse[optDelay:optDelay+N]
-
-    sCap = modem.demodulate(y_mmse, 'hard')
-    dCap_mmse = []
-    for j in range(N):
-        dCap_mmse.append( int(''.join([str(num) for num in sCap[j*k:(j+1)*k]]), base = 2) )
-    dCap_mmse = np.array(dCap_mmse)
-
-    ## ZF equalizer
-    h_zf, error, optDelay, _ = zf_equalizer(h_c, ntaps)
-    y_zf = scipy.signal.convolve(h_zf.flatten(), r)
-    y_zf = y_zf[optDelay:optDelay+N]
-
-    sCap = modem.demodulate(y_zf, 'hard')
-    dCap_zf = []
-    for j in range(N):
-        dCap_zf.append( int(''.join([str(num) for num in sCap[j*k:(j+1)*k]]), base = 2) )
-    dCap_zf = np.array(dCap_zf)
-
-    SER_mmse[i] = np.sum(d != dCap_mmse)/d.size
-    SER_zf[i] = np.sum(d != dCap_zf)/d.size
-
-SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
+markers = ['none', "o", 'v', ]
 
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-axs.semilogy(EbN0dB, SER_zf, color = 'g', ls = '-', marker = "o", ms = 12, label = 'ZF')
-axs.semilogy(EbN0dB, SER_mmse, color = 'r', ls = '-', marker = "*", ms = 12, label = 'MMSE')
-axs.semilogy(EbN0dB, SER_theory, color = 'b', ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
+for idx, channeltype in enumerate(channelTypes):
+    SER_zf = np.zeros(EbN0dB.size)
+    SER_mmse = np.zeros(EbN0dB.size)
+    h_c = H_C[idx]
+    x = scipy.signal.convolve(s, h_c)
+    for i, EbN0db in enumerate(EbN0dB):
+        # channel
+        r, _ = add_awgn_noise(x, EbN0db)
 
-axs.set_ylim(1e-6, 1)
+        ## Receiver
+        ## MMSE equalizer
+        h_mmse, mse, optDelay = mmse_equalizer(h_c, EbN0db, ntaps)
+        y_mmse = scipy.signal.convolve(h_mmse.flatten(), r)
+        y_mmse = y_mmse[optDelay:optDelay+N]
+
+        sCap = modem.demodulate(y_mmse, 'hard')
+        dCap_mmse = []
+        for j in range(N):
+            dCap_mmse.append( int(''.join([str(num) for num in sCap[j*k:(j+1)*k]]), base = 2) )
+        dCap_mmse = np.array(dCap_mmse)
+
+        ## ZF equalizer
+        h_zf, error, optDelay, _ = zf_equalizer(h_c, ntaps)
+        y_zf = scipy.signal.convolve(h_zf.flatten(), r)
+        y_zf = y_zf[optDelay:optDelay+N]
+
+        sCap = modem.demodulate(y_zf, 'hard')
+        dCap_zf = []
+        for j in range(N):
+            dCap_zf.append( int(''.join([str(num) for num in sCap[j*k:(j+1)*k]]), base = 2) )
+        dCap_zf = np.array(dCap_zf)
+
+        SER_mmse[i] = np.sum(d != dCap_mmse)/d.size
+        SER_zf[i] = np.sum(d != dCap_zf)/d.size
+    axs.semilogy(EbN0dB, SER_zf, color = 'g', ls = '-', marker = markers[idx], ms = 12, label = f'{channeltype}, ZF eq.')
+    axs.semilogy(EbN0dB, SER_mmse, color = 'r', ls = '-', marker = markers[idx], ms = 12, label = f'{channeltype}, MMSE eq.')
+axs.semilogy(EbN0dB, SER_theory, color = 'k', ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+
+axs.set_ylim(1e-4, 1)
 axs.set_xlabel( 'Eb/N0(dB)',)
-axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"Symbol Error Rate for M-{MOD_TYPE.upper()} over AWGN")
+axs.set_ylabel('SER',)
+axs.set_title( "Probability of Symbol Error for BPSK signals")
 axs.legend(fontsize = 20)
 
 plt.show()
