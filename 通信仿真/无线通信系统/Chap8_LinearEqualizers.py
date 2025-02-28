@@ -272,19 +272,7 @@ h_cA = np.array([0.04, -0.05, 0.07, -0.21, -0.5, 0.72, 0.36, 0.21, 0.03, 0.07]) 
 h_cB = np.array([0.407, 0.815, 0.407])               #  Channel B
 h_cC = np.array([0.227, 0.460, 0.688, 0.460, 0.227]) #  Channel C
 
-F, H = scipy.signal.freqz(h_cA)
-##### plot
-fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
-axs[0].stem(h_cA, linefmt = 'r-', markerfmt = 'D', )
-axs[0].set_xlabel('Time(s)',)
-axs[0].set_ylabel('h(t)',)
-axs[0].set_title("Channel impulse response" )
-axs[1].plot(F , 20*np.log10(np.abs(H)/np.max(np.abs(H))), color = 'g',  label = 'channel')
-axs[1].set_xlabel('Samples',)
-axs[1].set_ylabel('Amplitude',)
-axs[1].set_title( "Frequency response" )
-plt.show()
-plt.close()
+
 
 N = 100000
 EbN0dB = np.arange(0, 32, 2)
@@ -305,8 +293,27 @@ H_C = {}
 H_C[0] = h_cA
 H_C[1] = h_cB
 H_C[2] = h_cC
-
 markers = ['none', "o", 'v', ]
+
+
+colors = ['k', 'r', 'b']
+for idx, channeltype in enumerate(channelTypes):
+    h_c = H_C[idx]
+    F, H = scipy.signal.freqz(h_c)
+    ##### plot
+    fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
+    axs[0].stem(h_c, linefmt = f'{colors[idx]}-', markerfmt = 'D', )
+    axs[0].set_xlabel('Time(s)',)
+    axs[0].set_ylabel('h(t)',)
+    axs[0].set_title(f"Channel impulse response, {channeltype}" )
+    axs[1].plot(F , 20*np.log10(np.abs(H)/np.max(np.abs(H))), color = colors[idx],  )
+    axs[1].set_xlabel('Samples',)
+    axs[1].set_ylabel('Amplitude',)
+    axs[1].set_title( "Frequency response" )
+    plt.show()
+    plt.close()
+
+
 
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
