@@ -366,7 +366,30 @@ dCap = modem.demodulate(uCap, outputtype = 'int',)
 
 
 #%% Program 7.17: mpam srrc matched filtering.m: Performance simulation of an MPAM modulation based communication system with SRRC transmit and matched ﬁlters
-from Chap6_PerformanceofDigitalModulations import ser_awgn
+# from Chap6_PerformanceofDigitalModulations import ser_awgn
+def Qfun(x):
+    return 0.5 * scipy.special.erfc(x / np.sqrt(2))
+
+def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
+    EbN0 = 10**(EbN0dB/10)
+    EsN0 = np.log2(M) * EbN0
+    SER = np.zeros(EbN0dB.size)
+    if MOD_TYPE.lower() == "bpsk":
+        SER = Qfun(np.sqrt(2 * EbN0))
+    elif MOD_TYPE == "psk":
+        if M == 2:
+            SER = Qfun(np.sqrt(2 * EbN0))
+        else:
+            if M == 4:
+                SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
+            else:
+                SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
+    elif MOD_TYPE.lower() == "qam":
+        SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
+    elif MOD_TYPE.lower() == "pam":
+        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
+    return SER
+
 
 N = 100000
 MOD_TYPE = 'pam'

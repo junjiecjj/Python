@@ -35,6 +35,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -49,6 +50,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -61,6 +63,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -73,6 +76,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -85,6 +89,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -97,6 +102,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -109,6 +115,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -121,6 +128,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -133,6 +141,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
+#%%
 
 
 
@@ -145,306 +154,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#%%
 
 
 

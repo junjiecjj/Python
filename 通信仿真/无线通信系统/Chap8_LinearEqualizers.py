@@ -267,12 +267,9 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
         SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
     return SER
 
-
 h_cA = np.array([0.04, -0.05, 0.07, -0.21, -0.5, 0.72, 0.36, 0.21, 0.03, 0.07]) #  Channel A
 h_cB = np.array([0.407, 0.815, 0.407])               #  Channel B
 h_cC = np.array([0.227, 0.460, 0.688, 0.460, 0.227]) #  Channel C
-
-
 
 N = 100000
 EbN0dB = np.arange(0, 32, 2)
