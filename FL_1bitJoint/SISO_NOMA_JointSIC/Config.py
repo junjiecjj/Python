@@ -21,7 +21,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 150,
     "maximum_block_number" : 1000000,
-    "K" : 4,    # User num
+    "K" : 2,    # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
@@ -55,8 +55,8 @@ def parameters():
     args.P_total = args.K
     # args.P_max   = 30                          # 用户发送功率, dBm
     # args.P_max   = 10**(args.P_max/10.0)/1000  # Watts
-    args.P_max   = args.P_total / 3              # Watts
-
+    args.P_max   = args.P_total              # Watts
+    args.rmin =  0.6
     return args
 
 
