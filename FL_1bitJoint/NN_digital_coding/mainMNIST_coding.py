@@ -42,7 +42,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = False             # True, False
+args.IID = True             # True, False
 args.dataset = "MNIST"      #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
@@ -59,7 +59,7 @@ args.optimizer = 'sgd'      # 'sgd', 'adam'
 args.rounding   = 'sr'       # 'nr', 'sr',
 args.bitswidth  = 4         #  1,  8
 args.G          = 2**8
-args.transmitWay = 'proposed'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
+args.transmitWay = 'sic'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
 
 if args.transmitWay.lower() == 'flip':
     args.flip_rate = 0.1

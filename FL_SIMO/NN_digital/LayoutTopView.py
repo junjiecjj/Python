@@ -54,7 +54,7 @@ axs.plot(xAP, yAP, color = 'gray', linestyle='--', lw = 4,   )
 axs.plot(BS_locate[0], BS_locate[1], linestyle='none', marker = "s",  markersize = 20, mew = 4, mec = 'green', mfc = 'cyan', )
 
 idx = list(range(K))
-activate_idx = random.sample(idx, 10)
+activate_idx = random.sample(idx, 6)
 axs.plot(users_locate_x[activate_idx], users_locate_y[activate_idx], color='red', linestyle='none',  marker = "o",  markersize = 17,  )
 deactivate_idx = [x for x in idx if x not in activate_idx]
 axs.plot(users_locate_x[deactivate_idx], users_locate_y[deactivate_idx], color='gray', linestyle='none',  marker = "o",  markersize = 12,  )
