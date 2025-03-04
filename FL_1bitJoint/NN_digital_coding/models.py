@@ -122,9 +122,9 @@ class CNNMnist(nn.Module):
         return x
 
 # # ## Data volume = 21921 (floating point number)
-model = CNNMnist(1, 10, batch_norm = True)
-data_valum = np.sum([param.numel() for param in model.state_dict().values()])
-print(f"Data volume = {data_valum} (floating point number) ")
+# model = CNNMnist(1, 10, batch_norm = True)
+# data_valum = np.sum([param.numel() for param in model.state_dict().values()])
+# print(f"Data volume = {data_valum} (floating point number) ")
 
 class CNNCifar(nn.Module):
     def __init__(self, input_channels = 3, output_channels = 10):

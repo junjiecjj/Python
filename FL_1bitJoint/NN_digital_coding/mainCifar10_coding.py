@@ -1,13 +1,16 @@
 
 
 
+
+
+
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on 2024/08/25
 
 @author: Junjie Chen
-
 
 """
 
@@ -26,8 +29,8 @@ from Utility import set_random_seed, set_printoption
 
 from Transmit_1bit import OneBit_Grad_G
 from Transmit_Bbit import B_Bit
-from Transmit_SIC import OneBit_SIC
-from Transmit_Joint import OneBit_proposed
+from Transmit_SIC import OneBit_SIC, B_Bit_SIC
+from Transmit_Joint import OneBit_proposed, B_Bit_proposed
 from LDPCcoder import LDPC_Coder
 from QLDPCcoder import QLDPC_Coding
 import Modulator
@@ -46,13 +49,15 @@ args = args_parser()
 args.IID = True              # True, False
 datapart = "IID" if args.IID else "nonIID"
 args.dataset = "CIFAR10"       #  CIFAR10
-
+args.save_path = args.home + f'/FL_1bitJoint/Code_{args.dataset}_CNN_{datapart}/'
 cur_lr = args.lr = 0.01
-# args.num_of_clients = 20
+args.num_of_clients = 100
 args.active_client = 6
 args.case = 'diff'            # "diff", "grad", "signSGD"
 # args.diff_case = 'batchs'   # diff:'batchs', 'epoch'
 args.optimizer   = 'sgd'        # 'sgd', 'adam'
+args.rounding   = 'sr'       # 'nr', 'sr',
+
 args.G           = 2**8
 args.transmitWay = 'proposed'    # 'perfect', 'erf', 'flip', 'proposed', 'sic'
 
@@ -93,13 +98,7 @@ args.P_max   = args.P_total / 3   # Watts
 recorder = MetricsLog.TraRecorder(3, name = "Train", )
 local_dt_dict, testloader = GetDataSet(args)
 
-if args.IID == True:
-    # global_model = models.CNNCifar1(3, 10,).to(args.device)
-    global_model = models.resnet20().to(args.device)
-    args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_resnet20_{datapart}/'
-elif args.IID == False:
-    global_model = models.resnet20().to(args.device)
-    args.save_path = args.home + f'/FL_1bitJoint/{args.dataset}_resnet20_{datapart}/'
+global_model = models.resnet20().to(args.device)
 global_weight = global_model.state_dict()
 
 key_grad = []
@@ -107,7 +106,7 @@ for name, param in global_model.named_parameters():
     # if "norm" not in name:
     key_grad.append(name)
 
-##============================= 完成以上准备工作 ================================#
+##============================= 完成以上准备工作 ================================
 Users = GenClientsGroup(args, local_dt_dict, copy.deepcopy(global_model) )
 server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight), testloader)
 
@@ -165,16 +164,14 @@ for comm_round in range(args.num_comm):
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
             elif args.bitswidth > 1:
-                mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
-            server.aggregate_diff_erf(mess_recv)
+                mess_recv, err = B_Bit_SIC(message_lst, args,  P, order, pl_Au, ldpc, modem, rounding = args.rounding, H = None, noisevar = N0, B = args.bitswidth, key_grad = key_grad)
         elif args.transmitWay == 'proposed':
             if args.bitswidth == 1:
                 print(f"  {args.case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay} ")
                 mess_recv, err = OneBit_proposed(message_lst, args, P, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
             elif args.bitswidth > 1:
-                mess_recv, err = OneBit_SIC(message_lst, args, P, order, pl_Au, ldpc, modem, H = None, noisevar = N0, key_grad = key_grad, G = args.G)
+                mess_recv, err = B_Bit_proposed(message_lst, args,  P,  pl_Au, ldpc, modem, rounding = args.rounding, H = None, noisevar = N0, B = args.bitswidth, key_grad = key_grad)
             server.aggregate_diff_erf(mess_recv)
-
         # if comm_round == 1:
         #     break
     global_weight = copy.deepcopy(server.global_weight)

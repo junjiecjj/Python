@@ -220,7 +220,6 @@ plt.tight_layout()
 plt.show()
 
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 验证 Gamma分布即为多个独立且相同分布（iid）的指数分布变量的和的分布 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 a = 4
@@ -251,14 +250,9 @@ axs.legend(fontsize = 20)
 plt.show()
 plt.close()
 
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 验证 chi2 分布是独立的k标准正态变量，则其平方和服从自由度为 k 的卡方分布， %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 df = 4
-
 N = 100000
 
 x = np.linspace(scipy.stats.chi2.ppf(0.0001, df), scipy.stats.chi2.ppf(0.9999, df), 1000)
@@ -280,8 +274,6 @@ axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 验证 chi 分布是独立的k标准正态变量，则其平方和开方服从自由度为 k 的卡分布， %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -307,7 +299,6 @@ axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 卡分布(chi distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -810,11 +801,6 @@ for sigma2, ax in zip(sigma2_array, axs.ravel()):
     ax.tick_params(axis="y", direction='in')
 
 
-
-
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dirichlet分布 (Dirichlet Distribution)
 import numpy as np
 import matplotlib.pyplot as plt
@@ -905,8 +891,65 @@ plt.ylabel('Data2')
 plt.tight_layout()
 plt.show()
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 拉普拉斯分布(laplace  distribution) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+loc = 0
+Lambda = [1, 2, 3, 4, 5, 6, ]
 
+### PDF of laplace Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(Lambda), figsize=(len(Lambda)*6, 6))
+
+for scale, ax in zip(Lambda, axs.ravel()):
+    mean, var, skew, kurt = scipy.stats.laplace.stats(loc = loc, scale = scale, moments='mvsk')
+
+    x = np.linspace(scipy.stats.laplace.ppf(0.01, loc = loc, scale = scale), scipy.stats.laplace.ppf(0.99, loc = loc, scale = scale), 100)
+    title_idx = f"scale = {scale}"
+    ax.plot(x, scipy.stats.laplace.pdf(x, loc = loc, scale = scale), 'b', lw=2, label = 'rayleigh pdf', zorder = 1)
+
+    ## frozen
+    rv = scipy.stats.laplace(loc = loc, scale = scale)
+    ax.plot(x, rv.pdf(x), 'k', lw=1, label = 'frozen pdf', zorder = 2)
+
+    ## scipy Random variates.
+    r = scipy.stats.laplace.rvs(loc = loc, scale = scale, size = 10000)
+    ax.hist(r, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label =  "rvs", zorder = 3)
+
+    ## np
+    s = np.random.laplace(scale = scale, size = 1000)
+    count, bins, ignored = ax.hist(s, density=True, bins='auto', histtype='stepfilled', alpha=0.1, facecolor = "#0099FF", label= "np hist", zorder = 4)
+    y = 1 / (2*scale) * np.exp(-np.abs(bins - loc)/scale)
+    ax.plot(bins, y, lw = 2, color = 'r', ls = '--', label = "np pdf")
+
+    print(f"mean = {mean:.2f}/{loc}/{np.mean(s)}, var = {var:.2f}/{2*scale**2}/{np.var(s)} ")
+    # ax.set_xlim(0,60)
+    # ax.set_ylim(0,4)
+
+    ax.legend(loc='best', frameon=False)
+    ax.set_title(title_idx)
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+
+### CDF of laplace Distributions
+fig, axs = plt.subplots(nrows = 1, ncols = len(scale_array), figsize=(len(scale_array)*4, 3))
+
+for scale, ax in zip(scale_array, axs.ravel()):
+    mean, var, skew, kurt = scipy.stats.laplace.stats(loc = loc, scale = scale, moments='mvsk')
+
+    x = np.linspace(scipy.stats.laplace.cdf(0.01, loc = loc, scale = scale), scipy.stats.laplace.ppf(0.99999, loc = loc, scale = scale), 100)
+    title_idx = f"scale = {scale}"
+    ax.plot(x, scipy.stats.laplace.cdf(x, loc = loc, scale = scale), 'b', lw=1)
+    ax.set_title(title_idx)
+
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

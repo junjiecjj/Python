@@ -81,3 +81,17 @@ if __name__ == '__main__':
     ax.plot(range(np.size(best_x_hat_q)), best_x_hat_q, 'y')
     plt.show()
     fig.savefig(args.save_location + '/' + 'results.png', dpi=fig.dpi)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
