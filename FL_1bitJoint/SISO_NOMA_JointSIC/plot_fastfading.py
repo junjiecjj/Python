@@ -140,7 +140,7 @@ def SISO_4user():
     axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 16, width = bw)
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(30) for label in labels] #刻度值字号
+    [label.set_fontsize(26) for label in labels] #刻度值字号
 
     # fontt = {'family':'Times New Roman','style':'normal','size':35 }
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
@@ -169,7 +169,8 @@ sic_fastfading_2u_equallo = np.array([[-120.00, 1.00000000, 0.20553385, 0.318828
                                     [-130.00, 0.02302026, 0.00176369, 0.00289971, 0.00000000, 7.698],
                                     [-132.00, 0.00420824, 0.00030291, 0.00050186, 0.00000000, 5.595],
                                     [-134.00, 0.00073454, 0.00005152, 0.00008681, 0.00000000, 4.775],
-                                    [-136.00, 0.0002005309, 0.0000140225, 0.00008681, 0.00000000, 4.775],
+                                    [-136.00, 0.00022588, 0.00001701, 0.00002772, 0.00000000, 4.426],
+                                    # [-138.00, 0.0000755131, 0.0000055442, 0.00002772, 0.00000000, 4.426],
                                     ])
 
 sic_fastfading_2u_powerallo = np.array([[-120.00, 0.50675676, 0.14758631, 0.29481630, 0.00000000, 30.632],
@@ -178,7 +179,8 @@ sic_fastfading_2u_powerallo = np.array([[-120.00, 0.50675676, 0.14758631, 0.2948
                                         [-126.00, 0.46583851, 0.04883419, 0.09766838, 0.00000000, 25.587],
                                         [-127.00, 0.14910537, 0.01066647, 0.02133294, 0.00000000, 14.989],
                                         [-128.00, 0.00173909, 0.00010507, 0.00021014, 0.00000000, 5.761],
-                                        [-128.20, 0.0004520945, 0.0000253808, 0.00021014, 0.00000000, 5.18],
+                                        [-128.20, 0.00050743, 0.00002822, 0.00005644, 0.00000000, 5.186],
+                                        # [-128.40, 0.0000767940, 0.0000046533, 0.00005644, 0.00000000, 5.186],
                                         ])
 
 Joint_fastfading_2u_w_powdiv = np.array([[-120.00, 1.00000000, 0.26014323, 0.39632812, 0.00000000, 25.000],
@@ -238,10 +240,10 @@ def SISO_2user():
     axs.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
     axs.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
 
-    axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 16, width = bw)
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 16, width = bw)
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(30) for label in labels] #刻度值字号
+    [label.set_fontsize(26) for label in labels] #刻度值字号
 
     # fontt = {'family':'Times New Roman','style':'normal','size':35 }
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
@@ -261,7 +263,6 @@ def SISO_2user():
     return
 
 SISO_2user()
-
 
 
 sic_fastfading_6u_equallo = np.array([[-120.00, 0.84444444, 0.26503906, 0.64114583, 0.00000000, 44.872],
@@ -388,7 +389,7 @@ def SISO_6user():
     axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 16, width = bw)
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(30) for label in labels] #刻度值字号
+    [label.set_fontsize(26) for label in labels] #刻度值字号
 
     # fontt = {'family':'Times New Roman','style':'normal','size':35 }
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )

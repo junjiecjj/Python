@@ -35,7 +35,6 @@ import Modulator
 from CapacityOptimizer import JointCapacityOptim
 utility.set_random_seed(42)
 
-
 args = parameters()
 
 # def QaryLDPC(args, ):

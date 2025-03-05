@@ -7,10 +7,11 @@ Created on Tue Mar  4 00:10:35 2025
 """
 import scipy
 import numpy as np
-import statsmodels.tsa.api as smt
+# import statsmodels.tsa.api as smt
+# import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-# import commpy
+# from matplotlib.font_manager import FontProperties
+import commpy
 
 
 
@@ -51,9 +52,16 @@ class LloydMaxQuantizer(object):
         funtype: the distribution of data wanted to be quantized. 'gauss' or 'laplace', or any given fun.
         Returns: None.
         """
+        self.B = B
         self.M = int(2**B)
-        self.funtype = funtype
-
+        if funtype == "gauss":
+            self.f = gauss
+            f = gauss
+            expected_f = expected_gauss
+        elif funtype == "laplace":
+            self.f = laplace
+            f = laplace
+            expected_f = expected_laplace
         self.thres = None
         self.represent = None
         if x == None:
@@ -61,15 +69,14 @@ class LloydMaxQuantizer(object):
         errors = []
         represent = self.initRepresent(self.M, x)
         thres = self.updateThreshold(represent)
-        error = self.MSE(thres, represent, gauss)
+        error = self.MSE(thres, represent, f)
         errors.append(error)
         Iter = 0
-
         while error > maxerror and Iter < maxIter:
             Iter += 1
-            represent = self.updateRepresent(thres, expected_gauss, gauss)
+            represent = self.updateRepresent(thres, expected_f, f)
             thres = self.updateThreshold(represent)
-            error = self.MSE(thres, represent, gauss)
+            error = self.MSE(thres, represent, f)
             errors.append(error)
         self.thres = thres
         self.represent = represent
@@ -126,44 +133,82 @@ class LloydMaxQuantizer(object):
             MSE += tmp
         return MSE
 
-    @staticmethod
-    def quantize_float(x, thre, repre):
+    def quantize_float(self, x ):
         """Quantization operation.
         """
-        thre = np.append(thre, np.inf)
+        thre = np.append(self.thres, np.inf)
         thre = np.insert(thre, 0, -np.inf)
         x_hat_q = np.zeros(np.shape(x))
-        for i in range(len(thre)-1):
-            if i == 0:
-                x_hat_q = np.where(np.logical_and(x > thre[i], x <= thre[i+1]), np.full(np.size(x_hat_q), repre[i]), x_hat_q)
-            elif i == range(len(thre))[-1]-1:
-                x_hat_q = np.where(np.logical_and(x > thre[i], x <= thre[i+1]), np.full(np.size(x_hat_q), repre[i]), x_hat_q)
-            else:
-                x_hat_q = np.where(np.logical_and(x > thre[i], x < thre[i+1]), np.full(np.size(x_hat_q), repre[i]), x_hat_q)
+        for i in range(thre.size - 1):
+            x_hat_q = np.where(np.logical_and(x > thre[i], x <= thre[i+1]), np.full(np.size(x_hat_q), self.represent[i]), x_hat_q)
+
         return x_hat_q
 
-    @staticmethod
-    def quantize_bits(x, thres, represent):
+    def quantize_bits(self, x, ):
+        thre = np.append(self.thres, np.inf)
+        thre = np.insert(thre, 0, -np.inf)
+        x_hat = np.zeros(np.shape(x), dtype= np.int32)
+        for i in range(thre.size - 1):
+            x_hat = np.where(np.logical_and(x > thre[i], x <= thre[i+1]), np.full(np.size(x_hat), int(i)), x_hat)
+
+        bits = np.zeros((x_hat.size * self.B, ), dtype = np.int8)
+
+        for idx, num in enumerate(x_hat):
+            bits[idx*self.B : (idx+1)*self.B] = [int(b) for b in  np.binary_repr(num, width = self.B)]
+        return bits
+
+    def dequantize_bits(self, bits, ):
+        mapfunc = np.vectorize(lambda i:  commpy.utilities.bitarray2dec(bits[i:i + self.B ]))
+        idx = mapfunc(np.arange(0, len(bits), self.B))
+        quantized = self.represent[idx]
+        return quantized
+
+    def plot(self, ):
+        import matplotlib.patches as mpatches
+
+        thre = np.append(self.thres, self.thres[-1] + 1)
+        thre = np.insert(thre, 0, self.thres[0] - 1)
+        ##### plot
+        fig, axs = plt.subplots(1, 1, figsize = (16, 6), constrained_layout = True)
+        x = np.arange(-6, 6, 0.01)
+        y = self.f(x)
+        axs.plot(x, y, ls = '-', c = 'b', )
+
+        axs.scatter(self.thres, np.zeros(self.thres.size), marker = '|', s = 200, c = 'k', )
+        axs.scatter(self.represent, np.zeros(self.represent.size), marker = 'o', s = 60, c = 'r', )
+
+        for x in self.thres:
+            axs.vlines(x, ymin = 0, ymax = y.max()/2 + 0.1, colors = 'gray', ls = '--')
+
+        for i, rep in enumerate(self.represent):
+            arr = mpatches.FancyArrowPatch((thre[i], y.max()/2), (thre[i+1], y.max()/2), arrowstyle='<|-|>, head_length=0.4, head_width=0.15', mutation_scale=20, color = 'r')
+            axs.add_patch(arr)
+            axs.annotate(f"R$_{i}$", xy = (.5, .5), xycoords=arr, horizontalalignment='center', verticalalignment='bottom', fontsize = 16, color = 'r')
+            axs.text(self.represent[i], 0.02, f"{self.represent[i]:.2f}",  horizontalalignment="center", verticalalignment="center", fontsize = 16)
+        axs.set_xticks(self.thres)
+
+        axs.spines['bottom'].set_linewidth(2) ###设置底部坐标轴的粗细
+        axs.set_xlim(self.thres[0] - 2, self.thres[-1] + 2)
+        axs.set_ylim(-0.1 , y.max() + 0.1 )  #拉开坐标轴范围显示投影
+
+        # axs.set_xticks([])
+        axs.set_yticks([])
+
+        axs.spines['bottom'].set_position(('data', 0))
+        for i in ['top', 'right', 'left']: # 不显示刻度轴
+            axs.spines[i].set_visible(False)
+        axs.tick_params(labelsize = 16, top = False, left = False, right = False) # 不显示刻度
+
+        axs.set_title(f"{self.B}-bit LloydMax quantizer", fontsize = 28 )
+
+        plt.show()
+        plt.close()
 
         return
 
-    @staticmethod
-    def dequantize_bits(x, thres, represent):
-
-        return
-
-
-q = LloydMaxQuantizer(B = 2)
-
-
-
-
-
-
-
-
-
-
+q = LloydMaxQuantizer(B = 3, funtype = 'gauss')
+print(f"represent = \n{q.represent}\nthres = \n{q.thres}")
+q.plot()
 
 
 
