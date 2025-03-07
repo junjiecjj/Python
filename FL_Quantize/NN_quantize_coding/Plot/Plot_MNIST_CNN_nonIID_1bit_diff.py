@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Dec 26 09:51:13 2024
+Created on Mon Oct 28 21:45:56 2024
 
 @author: jack
 """
-
 
 import scipy
 import numpy as np
@@ -40,10 +39,11 @@ lsty = [(0, (3, 10, 1, 10, 1, 10)), (0, (1, 1)), (0, (1, 2)), (0, (5, 1)), (0, (
 alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
 
+
 def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_ratio = 0.05, y_ratio = 0.05):
     """缩放内嵌图形，并且进行连线
     ax:         调用plt.subplots返回的画布。例如： fig,ax = plt.subplots(1,1)
-    axins:      内嵌图的画布。 例如 axins = ax.inset_axes((0.4, 0.1, 0.4, 0.3))
+    axins:      内嵌图的画布。 例如 axins = ax.inset_axes((0.4,0.1,0.4,0.3))
     zone_left:  要放大区域的横坐标左端点
     zone_right: 要放大区域的横坐标右端点
     x:          X轴标签
@@ -86,44 +86,61 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-def MNIST_IID_1bit_coding():
+def MNIST_BatchnonIID_flip_acc():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
-    col = 1
-    # ### k0 = 6
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-16-13:29:21/TraRecorder.npy")[:L]
-    Y1 = data[:,col]
-    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 50, label = 'Perfect',)
+    axins = axs.inset_axes((0.62, 0.52, 0.3, 0.32))
+    L = 1000
+    ## erf
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:27/TraRecorder.npy")[:L]
-    Y2 = data[:,col]
-    axs.plot(data[:,0], Y2, color = '#FE2701', lw = 2, linestyle='--',  label = '1-bit, Error-free',)
-    axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
+    ## 1-bit erf
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:38/TraRecorder.npy")[:L]
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit Error-free',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs128_2025-02-27-09:54:42/TraRecorder.npy")[:L]
-    Y3 = data[:,col]
-    axs.plot(data[:,0], Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '1-bit, proposed',)
-    axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
+    ## 1-bit, 0.1ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-17-09:55:22/TraRecorder.npy")[:L]
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
+    axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_sic-140(dBm)_sgd_0.01_U100+6_bs128_2025-02-27-09:49:27/TraRecorder.npy")[:L]
-    Y4 = data[:,col]
-    axs.plot(data[:,0],Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, SIC w/ power allo',)
-    axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
+    # ## 1-bit 0.2ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.2_sgd_0.01_U100+6_bs64_2025-01-17-09:55:32/TraRecorder.npy")[:L]
+    Y4 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y4, color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
+    axins.plot(data[:,0], Y4, color = 'g', linestyle = '--', linewidth = 2)
+
+    # ## 1-bit 0.3ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.3_sgd_0.01_U100+6_bs64_2025-01-17-09:55:37/TraRecorder.npy")[:L]
+    Y5 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y5, color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
+    axins.plot(data[:,0], Y5, color = '#CD853F', linestyle = '--', linewidth = 2)
+
+    ## 1-bit 0.4ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.4_sgd_0.01_U100+6_bs64_2025-01-17-09:56:20/TraRecorder.npy")[:L]
+    Y6 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y6, color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
+    axins.plot(data[:,0], Y6, color = '#00BFFF', linestyle = '--', linewidth = 2)
+
+    ## 1-bit 0.5ber
+    data1 = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.5_sgd_0.01_U100+6_bs64_2025-01-17-10:47:34/TraRecorder.npy")
+    Y7 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data1[:,0], Y7, color = '#778899', lw = 2, linestyle='--',  label = '1-bit, BER=0.5',)
+    # axins.plot(data1[:,0], data1[:,1], color = '#778899', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    if col == 1:
-        axs.set_ylabel('Test accuracy', fontproperties=font2, )
-    elif col == 2:
-        axs.set_ylabel('Cross Entropy', fontproperties=font2, )
+    axs.set_ylabel('Test accuracy', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 24}
+    legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.10, 0.13), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -133,10 +150,10 @@ def MNIST_IID_1bit_coding():
     axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(24) for label in labels]  # 刻度值字号
+    [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.2, 1.06)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -146,7 +163,8 @@ def MNIST_IID_1bit_coding():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 260, 270, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 850, 900, data[:, 0] , [Y1, Y2, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
     axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
@@ -159,55 +177,44 @@ def MNIST_IID_1bit_coding():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    if col == 1:
-        # out_fig.savefig('../Figures/MNIST_IID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_IID_1bit_coding_acc.pdf' )
-    elif col == 2:
-        # out_fig.savefig('../Figures/MNIST_IID_1bit_coding_loss.eps' )
-        out_fig.savefig('../Figures/MNIST_IID_1bit_coding_loss.pdf' )
+    ## out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_acc.eps' )
+    out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_acc.pdf' )
     plt.show()
 
-def MNIST_nonIID_1bit_coding():
+def MNIST_BatchnonIID_flip_loss():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
-    col = 1
-    # ### k0 = 6
+    L = 1000
+    ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
-    Y1 = data[:,col]
-    Y1 = savgol_filter(Y1, 10, 3)
-    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 50, label = 'Perfect',)
-    # axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
 
+    ## 1-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:38/TraRecorder.npy")[:L]
-    Y2 = data[:,col]
-    Y2 = savgol_filter(Y2, 10, 3)
-    axs.plot(data[:,0], Y2, color = '#FE2701', lw = 2, linestyle='--', label = '1-bit, Error-free',)
-    # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = '1-bit Error-free',)
 
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs64_2025-02-28-09:50:27/TraRecorder.npy")[:L]
-    Y3 = data[:,col]
-    Y3 = savgol_filter(Y3, 10, 3)
-    axs.plot(data[:,0], Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '1-bit, proposed',)
-    # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
+    ## 1-bit, 0.1ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-17-09:55:22/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'b' , lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
 
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_sic-140(dBm)_sgd_0.01_U100+6_bs64_2025-02-28-09:50:09/TraRecorder.npy")[:L]
-    Y4 = data[:,col]
-    Y4 = savgol_filter(Y4, 10, 3)
-    axs.plot(data[:,0], Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, SIC w/ power allo',)
-    # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
+    # ## 1-bit 0.2ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.2_sgd_0.01_U100+6_bs64_2025-01-17-09:55:32/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
 
-    ###########
+    # ## 1-bit 0.3ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.3_sgd_0.01_U100+6_bs64_2025-01-17-09:55:37/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
+
+    ## 1-bit 0.4ber
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.4_sgd_0.01_U100+6_bs64_2025-01-17-09:56:20/TraRecorder.npy")[:L]
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
+
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    if col == 1:
-        axs.set_ylabel('Test accuracy', fontproperties=font2, )
-    elif col == 2:
-        axs.set_ylabel('Cross Entropy', fontproperties=font2, )
+    axs.set_ylabel('Training loss', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -220,8 +227,133 @@ def MNIST_nonIID_1bit_coding():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
+    # axs.set_xlim(-10, )  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.1, 1.06)  #拉开坐标轴范围显示投影
+
+    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+    out_fig = plt.gcf()
+    # out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_loss.eps' )
+    out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_loss.pdf' )
+    plt.show()
+
+def MNIST_BatchnonIID_14bit_erf_acc():
+    # %% 画图
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.62, 0.46, 0.3, 0.32))
+    L = 1000
+
+    ## erf
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '--',lw = 1.3, marker = 'o', ms = 14, mfc = 'white',mew = 2, markevery = 100, label = 'Perfect',)
+    axins.plot(data[:,0], Y1, color = 'k', linestyle = '--', linewidth = 2)
+
+    ## 1-bit erf
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:38/TraRecorder.npy")[:L]
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit Error-free',)
+    axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
+
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:23/TraRecorder.npy")[:L]
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='-', label = '4-bit, Error-free',)
+    axins.plot(data[:,0], Y3, color = 'b', linestyle = '-', linewidth = 2)
+
+    ###########
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+    axs.set_ylabel('Test accuracy', fontproperties=font2, )
+    # axs.set_title("CNN, IID", fontproperties=font2)
+
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')                         # 设置图例legend背景透明
+
+    # x_major_locator = MultipleLocator(5)               # 把x轴的刻度间隔设置为1，并存在变量里
+    # axs.xaxis.set_major_locator(x_major_locator)       # 把x轴的主刻度设置为1的倍数
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels]  # 刻度值字号
+
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.6, 1.01)  #拉开坐标轴范围显示投影
+
+    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+    ##==================== mother and son ==================================
+    ### 局部显示并且进行连线,方法3
+    zone_and_linked(axs, axins, 850, 880,  data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    ## linewidth
+    bw = 1
+    axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+    axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+    axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+    axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+    axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
+    labels = axins.get_xticklabels() + axins.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    # [label.set_fontsize(16) for label in labels] #刻度值字号
+
+    out_fig = plt.gcf()
+    # out_fig.savefig('../Figures/MNIST_nonIID_14bit_erf_acc.eps' )
+    out_fig.savefig('../Figures/MNIST_nonIID_14bit_erf_acc.pdf' )
+    plt.show()
+
+def MNIST_BatchnonIID_K0_1bit_flip_acc():
+    # %% 画图
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    # axins = axs.inset_axes((0.62, 0.42, 0.3, 0.32))
+    L = 1000
+    ## erf
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.1_sgd_0.01_U100+2_bs64_2025-01-17-17:22:12/TraRecorder.npy")[:L]
+    Y1 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
+    # axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'k', linestyle = '-', linewidth = 2)
+
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-17-09:55:22/TraRecorder.npy")[:L]
+    Y2 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='-', label = r'1-bit, BER=0.1, K$_0$=6',)
+    # axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = '#E918B5', linestyle = '--', linewidth = 2)
+
+    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_flip0.1_sgd_0.01_U100+12_bs64_2025-01-17-17:22:24/TraRecorder.npy")[:L]
+    Y3 = savgol_filter(data[:,1], 10, 3)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='-', label = r'1-bit, BER=0.1, K$_0$=12',)
+    # axins.plot(data[:,0], savgol_filter(data[:,1], 10, 3), color = 'b', linestyle = '--', linewidth = 2)
+
+    ###########
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+    axs.set_ylabel('Test accuracy', fontproperties=font2, )
+    # axs.set_title("CNN, IID", fontproperties=font2)
+
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')                         # 设置图例legend背景透明
+
+    # x_major_locator = MultipleLocator(5)               # 把x轴的刻度间隔设置为1，并存在变量里
+    # axs.xaxis.set_major_locator(x_major_locator)       # 把x轴的主刻度设置为1的倍数
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels]  # 刻度值字号
+
+    # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.3, 1.06)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -231,200 +363,32 @@ def MNIST_nonIID_1bit_coding():
 
     # ##==================== mother and son ==================================
     # ### 局部显示并且进行连线,方法3
-    # zone_and_linked(axs, axins, 260, 280, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    # zone_and_linked(axs, axins, 800, 860, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    # ## linewidth
     # bw = 1
     # axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
     # axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
     # axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
     # axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
 
-    # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 22,  width = 1)
+    # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
     # labels = axins.get_xticklabels() + axins.get_yticklabels()
     # [label.set_fontname('Times New Roman') for label in labels]
     # # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    if col == 1:
-        # out_fig.savefig('../Figures/MNIST_nonIID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_nonIID_1bit_coding_acc.pdf' )
-    elif col == 2:
-        # out_fig.savefig('../Figures/MNIST_nonIID_1bit_coding_loss.eps' )
-        out_fig.savefig('../Figures/MNIST_nonIID_1bit_coding_loss.pdf' )
+    # out_fig.savefig('../Figures/MNIST_IID_1bit_flip_K0_acc.eps' )
+    out_fig.savefig('../Figures/MNIST_nonIID_1bit_flip_K0_acc.pdf' )
     plt.show()
 
 
-def MNIST_IID_4bit_coding():
-    # %% 画图
-    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
-    col = 1
-    # ### k0 = 6
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-16-13:29:21/TraRecorder.npy")[:L]
-    Y1 = data[:,col]
-    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 50, label = 'Perfect',)
-    # axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
+MNIST_BatchnonIID_flip_acc()
+MNIST_BatchnonIID_flip_loss()
 
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:33/TraRecorder.npy")[:L]
-    Y2 = data[:,col]
-    axs.plot(data[:,0], Y2, color = '#FE2701', lw = 2, linestyle='--',  label = '4-bit, Error-free',)
-    # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
-
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs128_2025-02-28-17:19:11/TraRecorder.npy")[:L]
-    Y3 = data[:,col]
-    axs.plot(data[:,0], Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '4-bit, proposed',)
-    # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
-
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_sic-140(dBm)_sgd_0.01_U100+6_bs128_2025-03-02-14:59:07/TraRecorder.npy")[:L]
-    Y4 = data[:,col]
-    axs.plot(data[:,0],Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '4-bit, SIC w/ power allo',)
-    # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
-
-    ###########
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    if col == 1:
-        axs.set_ylabel('Test accuracy', fontproperties=font2, )
-    elif col == 2:
-        axs.set_ylabel('Cross Entropy', fontproperties=font2, )
-    # axs.set_title("CNN, IID", fontproperties=font2)
-
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
-    frame1 = legend1.get_frame()
-    frame1.set_alpha(1)
-    frame1.set_facecolor('none')                         # 设置图例legend背景透明
-
-    # x_major_locator = MultipleLocator(5)               # 把x轴的刻度间隔设置为1，并存在变量里
-    # axs.xaxis.set_major_locator(x_major_locator)       # 把x轴的主刻度设置为1的倍数
-    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
-    labels = axs.get_xticklabels() + axs.get_yticklabels()
-    [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-    # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
-
-    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
-    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
-    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
-    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
-
-    ##==================== mother and son ==================================
-    # ### 局部显示并且进行连线,方法3
-    # zone_and_linked(axs, axins, 260, 270, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
-    # bw = 1
-    # axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
-    # axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
-    # axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
-    # axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
-
-    # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 22,  width = 1)
-    # labels = axins.get_xticklabels() + axins.get_yticklabels()
-    # [label.set_fontname('Times New Roman') for label in labels]
-    # # [label.set_fontsize(16) for label in labels] #刻度值字号
-
-    out_fig = plt.gcf()
-    if col == 1:
-        # out_fig.savefig('../Figures/MNIST_IID_4bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_IID_4bit_coding_acc.pdf' )
-    elif col == 2:
-        # out_fig.savefig('../Figures/MNIST_IID_4bit_coding_loss.eps' )
-        out_fig.savefig('../Figures/MNIST_IID_4bit_coding_loss.pdf' )
-    plt.show()
-
-def MNIST_nonIID_4bit_coding():
-    # %% 画图
-    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
-    col = 1
-    # ### k0 = 6
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
-    Y1 = data[:,col]
-    Y1 = savgol_filter(Y1, 10, 3)
-    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 1.3, marker = 'o', ms = 18, mfc = 'white',mew = 2, markevery = 50, label = 'Perfect',)
-    # axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
-
-    data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:23/TraRecorder.npy")[:L]
-    Y2 = data[:,col]
-    Y2 = savgol_filter(Y2, 10, 3)
-    axs.plot(data[:,0], Y2, color = '#FE2701', lw = 2, linestyle='--',  label = '4-bit, Error-free',)
-    # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
-
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs64_2025-02-28-17:21:05/TraRecorder.npy")[:L]
-    Y3 = data[:,col]
-    Y3 = savgol_filter(Y3, 10, 3)
-    axs.plot(data[:,0], Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '4-bit, proposed',)
-    # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
-
-    data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_sic-140(dBm)_sgd_0.01_U100+6_bs64_2025-03-02-14:58:54/TraRecorder.npy")[:L]
-    Y4 = data[:,col]
-    Y4 = savgol_filter(Y4, 10, 3)
-    axs.plot(data[:,0],Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '4-bit, SIC w/ power allo',)
-    # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
-
-    ###########
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    axs.set_xlabel( "Communication round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    if col == 1:
-        axs.set_ylabel('Test accuracy', fontproperties=font2, )
-    elif col == 2:
-        axs.set_ylabel('Cross Entropy', fontproperties=font2, )
-    # axs.set_title("CNN, IID", fontproperties=font2)
-
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
-    frame1 = legend1.get_frame()
-    frame1.set_alpha(1)
-    frame1.set_facecolor('none')                         # 设置图例legend背景透明
-
-    # x_major_locator = MultipleLocator(5)               # 把x轴的刻度间隔设置为1，并存在变量里
-    # axs.xaxis.set_major_locator(x_major_locator)       # 把x轴的主刻度设置为1的倍数
-    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
-    labels = axs.get_xticklabels() + axs.get_yticklabels()
-    [label.set_fontname('Times New Roman') for label in labels]
-    [label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-    # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
-
-    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
-    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
-    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
-    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
-
-    ##==================== mother and son ==================================
-    # ### 局部显示并且进行连线,方法3
-    # zone_and_linked(axs, axins, 260, 270, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
-    # bw = 1
-    # axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
-    # axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
-    # axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
-    # axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
-
-    # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 22,  width = 1)
-    # labels = axins.get_xticklabels() + axins.get_yticklabels()
-    # [label.set_fontname('Times New Roman') for label in labels]
-    # # [label.set_fontsize(16) for label in labels] #刻度值字号
-
-    out_fig = plt.gcf()
-    if col == 1:
-        # out_fig.savefig('../Figures/MNIST_nonIID_4bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_nonIID_4bit_coding_acc.pdf' )
-    elif col == 2:
-        # out_fig.savefig('../Figures/MNIST_nonIID_4bit_coding_loss.eps' )
-        out_fig.savefig('../Figures/MNIST_nonIID_4bit_coding_loss.pdf' )
-    plt.show()
+MNIST_BatchnonIID_K0_1bit_flip_acc()
+MNIST_BatchnonIID_14bit_erf_acc()
 
 
-# MNIST_IID_1bit_coding()
-# MNIST_nonIID_1bit_coding()
-
-MNIST_IID_4bit_coding()
-MNIST_nonIID_4bit_coding()
 plt.close('all')
 
 

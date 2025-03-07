@@ -42,7 +42,7 @@ class LloydMaxQuantizer(object):
     """
         A class for iterative Lloyd Max quantizer. This quantizer is created to minimize amount SNR between the orginal signal and quantized signal.
     """
-    def __init__(self, x = None, B = 4, maxerror = 1e-2, maxIter = 2000, funtype = 'gauss'):
+    def __init__(self, x = None, B = 4, maxerror = 1e-2, maxIter = 200, funtype = 'gauss'):
         """
         Parameters
         ----------
@@ -154,7 +154,7 @@ class LloydMaxQuantizer(object):
         bits = np.zeros((x_hat.size * self.B, ), dtype = np.int8)
 
         for idx, num in enumerate(x_hat):
-            bits[idx*self.B : (idx+1)*self.B] = [int(b) for b in  np.binary_repr(num, width = self.B)]
+            bits[idx*self.B : (idx+1)*self.B] = [int(b) for b in np.binary_repr(num, width = self.B)]
         return bits
 
     def dequantize_bits(self, bits, ):
@@ -183,7 +183,7 @@ class LloydMaxQuantizer(object):
         for i, rep in enumerate(self.represent):
             arr = mpatches.FancyArrowPatch((thre[i], y.max()/2), (thre[i+1], y.max()/2), arrowstyle='<|-|>, head_length=0.4, head_width=0.15', mutation_scale=20, color = 'r')
             axs.add_patch(arr)
-            axs.annotate(f"R$_{i}$", xy = (.5, .5), xycoords=arr, horizontalalignment='center', verticalalignment='bottom', fontsize = 16, color = 'r')
+            axs.annotate(f"R$_{i}$:{np.binary_repr(i, width = self.B)}", xy = (.5, .5), xycoords=arr, horizontalalignment='center', verticalalignment='bottom', fontsize = 16, color = 'r')
             axs.text(self.represent[i], 0.02, f"{self.represent[i]:.2f}",  horizontalalignment="center", verticalalignment="center", fontsize = 16)
         axs.set_xticks(self.thres)
 
@@ -204,9 +204,31 @@ class LloydMaxQuantizer(object):
         plt.show()
         plt.close()
 
+        fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+        axs.plot(self.errors, ls = '-', c = 'b', )
+
+        axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+        labels = axs.get_xticklabels() + axs.get_yticklabels()
+        [label.set_fontname('Times New Roman') for label in labels]
+        # [label.set_fontsize(24) for label in labels]  # 刻度值字号
+
+        # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
+        # axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
+
+        axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+        axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+        axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+        axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+        axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+        font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 28}
+        axs.set_xlabel( "Iter round", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+        axs.set_ylabel('MSE', fontproperties=font2, )
+        plt.show()
+        plt.close()
         return
 
-q = LloydMaxQuantizer(B = 3, funtype = 'gauss')
+q = LloydMaxQuantizer(B = 3, funtype = 'laplace')
 print(f"represent = \n{q.represent}\nthres = \n{q.thres}")
 q.plot()
 

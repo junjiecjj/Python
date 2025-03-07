@@ -48,7 +48,6 @@ K = 512                  # 快拍数
 d = np.arange(0, N).reshape(-1, 1)
 A = np.exp(-1j * pi * d @ np.sin(theta).reshape(1,-1) )   # 方向矢量
 
-
 #%%%%构建信号模型%%%%%
 S = np.random.randn(M, K)             # 信源信号，入射信号
 X = A@S                                # 构造接收信号
