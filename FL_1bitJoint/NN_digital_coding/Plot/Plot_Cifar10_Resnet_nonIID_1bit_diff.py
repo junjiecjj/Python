@@ -371,19 +371,19 @@ def Cifar10_nonIID_K0_1bit_flip_acc():
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
-    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+    axs.spines['left'].set_linewidth(2)      ### 设置左边坐标轴的粗细
     axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
-    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+    axs.spines['top'].set_linewidth(2)       ### 设置上部坐标轴的粗细
 
     ##==================== mother and son ==================================
     # ### 局部显示并且进行连线,方法3
     # zone_and_linked(axs, axins, 850, 900, data[:, 0] , [Y1, Y2, Y3, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     # ## linewidth
     # bw = 1
-    # axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
-    # axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
-    # axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
-    # axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+    # axins.spines['bottom'].set_linewidth(bw) ### 设置底部坐标轴的粗细
+    # axins.spines['left'].set_linewidth(bw)   ### 设置左边坐标轴的粗细
+    # axins.spines['right'].set_linewidth(bw)  ### 设置右边坐标轴的粗细
+    # axins.spines['top'].set_linewidth(bw)    ### 设置上部坐标轴的粗细
 
     # axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 26,  width = 1)
     # labels = axins.get_xticklabels() + axins.get_yticklabels()

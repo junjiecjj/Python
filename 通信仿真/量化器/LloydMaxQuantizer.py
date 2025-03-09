@@ -228,9 +228,9 @@ class LloydMaxQuantizer(object):
         plt.close()
         return
 
-q = LloydMaxQuantizer(B = 3, funtype = 'laplace')
-print(f"represent = \n{q.represent}\nthres = \n{q.thres}")
-q.plot()
+# q = LloydMaxQuantizer(B = 3, funtype = 'laplace')
+# print(f"represent = \n{q.represent}\nthres = \n{q.thres}")
+# q.plot()
 
 
 

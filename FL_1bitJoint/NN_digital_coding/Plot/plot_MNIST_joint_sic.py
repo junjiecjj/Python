@@ -420,8 +420,8 @@ def MNIST_nonIID_4bit_coding():
     plt.show()
 
 
-# MNIST_IID_1bit_coding()
-# MNIST_nonIID_1bit_coding()
+MNIST_IID_1bit_coding()
+MNIST_nonIID_1bit_coding()
 
 MNIST_IID_4bit_coding()
 MNIST_nonIID_4bit_coding()

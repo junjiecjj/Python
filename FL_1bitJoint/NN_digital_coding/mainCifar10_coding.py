@@ -46,7 +46,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 # def run(info = 'gradient', channel = 'rician', snr = "None", local_E = 1):
 args = args_parser()
 
-args.IID = True              # True, False
+args.IID = False              # True, False
 datapart = "IID" if args.IID else "nonIID"
 args.dataset = "CIFAR10"       #  CIFAR10
 args.save_path = args.home + f'/FL_1bitJoint/Code_{args.dataset}_CNN_{datapart}/'

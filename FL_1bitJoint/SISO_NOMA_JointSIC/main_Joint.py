@@ -60,7 +60,7 @@ framelen = int(ldpc.codelen/bps)
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = args.rmin)
 
 # 遍历SNR
-n0     = np.arange(-126.6, -130, -0.2)        # 噪声功率谱密度, dBm/Hz
+n0     = np.arange(-126.6, -130, -0.2)    # 噪声功率谱密度, dBm/Hz
 n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
 N0     = n00 * args.B                     # 噪声功率, Watts
 
