@@ -39,7 +39,7 @@ axs[1, 0].set_ylim(-1.5,1.5)
 
 for i,EbN0 in enumerate(EbN0dB):
     # Compute and add AWGN noise
-    r = awgn(s,EbN0,L) # refer Chapter section 4.1
+    r = awgn(s, EbN0, L) # refer Chapter section 4.1
     r_bb = r*np.cos(2*np.pi*Fc*t/Fs) # recovered baseband signal
     ak_hat = bpsk_demod(r_bb,L) # baseband correlation demodulator
     BER[i] = np.sum(ak !=ak_hat)/N # Bit Error Rate Computation
