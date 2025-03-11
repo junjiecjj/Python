@@ -5,7 +5,7 @@ Module: DigiCommPy.compensation.py
 Created on Sep 6, 2019
 """
 import numpy as np
-from numpy import mean,real,imag,sign,abs,sqrt,sum
+# from numpy import mean,real,imag,sign,abs,sqrt,sum
 
 def dc_compensation(z):
     """
@@ -13,10 +13,10 @@ def dc_compensation(z):
     Parameters:
         z: DC impaired signal sequence (numpy format)
     Returns:
-        v: DC removed signal sequence    
+        v: DC removed signal sequence
     """
-    iDCest=mean(real(z)) # estimated DC on I branch
-    qDCest=mean(imag(z)) # estimated DC on I branch
+    iDCest = np.mean(np.real(z)) # estimated DC on I branch
+    qDCest = np.mean(np.imag(z)) # estimated DC on I branch
     v=z-(iDCest+1j*qDCest) # remove estimated DCs
     return v
 
@@ -27,13 +27,15 @@ def blind_iq_compensation(z):
     Parameters:
         z: DC impaired signal sequence (numpy format)
     Returns:
-        y: IQ imbalance compensated signal sequence 
+        y: IQ imbalance compensated signal sequence
     """
-    I=real(z);Q=imag(z)
-    theta1=(-1)*mean(sign(I)*Q)
-    theta2=mean(abs(I)); theta3=mean(abs(Q))
-    c1=theta1/theta2
-    c2=sqrt((theta3**2-theta1**2)/theta2**2)
+    I = np.real(z)
+    Q = np.imag(z)
+    theta1 = (-1)*np.mean(np.sign(I)*Q)
+    theta2 = np.mean(abs(I))
+    theta3 = np.mean(abs(Q))
+    c1 = theta1/theta2
+    c2 = np.sqrt((theta3**2-theta1**2)/theta2**2)
     return I +1j*(c1*I+Q)/c2
 
 class PilotEstComp():
@@ -57,8 +59,8 @@ class PilotEstComp():
                                             -1,-1,1,-1,1,-1,1,1,\
                                             1,1,0,0,0,0,0])
         from scipy.fftpack import ifft
-        self.preamble=ifft(preamble_freqDom,n = 64)
-        
+        self.preamble = ifft(preamble_freqDom, n = 64)
+
     def pilot_est(self):
         """
         IQ imbalance estimation using Pilot transmission
@@ -68,14 +70,15 @@ class PilotEstComp():
         """
         # send known preamble through the impairments model
         r_preamb = self.impObj.receiver_impairments(self.preamble)
-        
+
         # remove DC imbalance before IQ imbalance estimation
-        z_preamb= r_preamb - (mean(real(r_preamb)) + 1j* mean(imag(r_preamb)))
+        z_preamb= r_preamb - (np.mean(np.real(r_preamb)) + 1j* np.mean(np.imag(r_preamb)))
         # IQ imbalance estimation
-        I=real(z_preamb); Q=imag(z_preamb)
-        self.Kest = sqrt(sum((Q*Q))/sum(I*I)) # estimated gain imbalance
-        self.Pest = sum(I*Q)/sum(I*I) # estimated phase mismatch
-    
+        I = np.real(z_preamb)
+        Q = np.imag(z_preamb)
+        self.Kest = np.sqrt(np.sum((Q*Q))/np.sum(I*I)) # estimated gain imbalance
+        self.Pest = np.sum(I*Q)/np.sum(I*I)         # estimated phase mismatch
+
     def pilot_iqImb_compensation(self,d):
         """
         Function to compensate IQ imbalance during the data transmission
@@ -90,8 +93,24 @@ class PilotEstComp():
         """
         # estimate the Kest, Pest for the given model using pilot transmission
         self.pilot_est()
-        d_dcRemoved = d - (mean(real(d)) + 1j* mean(imag(d)))
-        I=real(d_dcRemoved); Q=imag(d_dcRemoved)
-        wi= I;
-        wq = (Q - self.Pest*I)/sqrt(1-self.Pest**2)/self.Kest
+        d_dcRemoved = d - (np.mean(np.real(d)) + 1j* np.mean(np.imag(d)))
+        I = np.real(d_dcRemoved)
+        Q = np.imag(d_dcRemoved)
+        wi = I
+        wq = (Q - self.Pest*I)/np.sqrt(1-self.Pest**2)/self.Kest
         return wi + 1j*wq
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

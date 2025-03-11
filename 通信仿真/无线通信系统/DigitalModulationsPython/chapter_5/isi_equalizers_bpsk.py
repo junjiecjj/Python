@@ -53,22 +53,99 @@ for i,EbN0dB in enumerate(EbN0dBs):
     estimatedSyms_mmse = modem.demodulate(y_mmse)
     estimatedSyms_zf = modem.demodulate(y_zf)
     # SER when filtered thro MMSE eq.
-    SER_mmse[i]=sum((inputSymbols != estimatedSyms_mmse))/N
+    SER_mmse[i] = np.sum((inputSymbols != estimatedSyms_mmse))/N
     # SER when filtered thro ZF eq.
-    SER_zf[i]=sum((inputSymbols != estimatedSyms_zf))/N
+    SER_zf[i] = np.sum((inputSymbols != estimatedSyms_zf))/N
 
 SER_theory = ser_awgn(EbN0dBs,'PSK',M=2) #theoretical SER
 
 fig1, ax1 = plt.subplots(nrows=1,ncols = 1)
-ax1.semilogy(EbN0dBs,SER_zf,'g',label='ZF Equalizer');
-ax1.semilogy(EbN0dBs,SER_mmse,'r',label='MMSE equalizer')
-ax1.semilogy(EbN0dBs,SER_theory,'k',label='No interference')
+ax1.semilogy(EbN0dBs, SER_zf, 'g', label = 'ZF Equalizer');
+ax1.semilogy(EbN0dBs, SER_mmse, 'r', label = 'MMSE equalizer')
+ax1.semilogy(EbN0dBs, SER_theory, 'k', label = 'No interference')
 ax1.set_title('Probability of Symbol Error for BPSK signals');
-ax1.set_xlabel('$E_b/N_0$(dB)');ax1.set_ylabel('Probability of Symbol Error-$P_s$')
-ax1.legend(); ax1.set_ylim(bottom=10**-4, top=1);fig1.show()
+ax1.set_xlabel('$E_b/N_0$(dB)')
+ax1.set_ylabel('Probability of Symbol Error-$P_s$')
+ax1.legend()
+ax1.set_ylim(bottom = 10**-4, top = 1)
+fig1.show()
 
 # compute and plot channel characteristics
-Omega, H_c  = freqz(h_c) #frequency response of the channel
-fig2, (ax2,ax3) = plt.subplots(nrows=1,ncols = 2)
-ax2.stem(h_c,use_line_collection=True) # time domain
-ax3.plot(Omega,20*np.log10(abs(H_c)/max(abs(H_c))));fig2.show()
+Omega, H_c = freqz(h_c) #frequency response of the channel
+fig2, (ax2,ax3) = plt.subplots(nrows = 1, ncols = 2)
+ax2.stem(h_c, ) # time domain
+ax3.plot(Omega, 20*np.log10(abs(H_c)/max(abs(H_c))))
+fig2.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

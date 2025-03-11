@@ -22,12 +22,15 @@ h_t = h_t + N0*np.random.randn(len(h_t)) # add Noise to the channel response
 h_k = h_t[0::nSamp] # downsampling to represent symbol rate sampler
 t_inst=t[0::nSamp] # symbol sampling instants
 
-fig, ax = plt.subplots(nrows=1,ncols = 1)
+fig, ax = plt.subplots(nrows=1, ncols = 1)
 ax.plot(t,h_t,label='continuous-time model');#response at sampling instants
 # channel response at symbol sampling instants
-ax.stem(t_inst,h_k,'r',label='discrete-time model',use_line_collection=True)
-ax.legend();ax.set_title('Channel impulse response');
-ax.set_xlabel('Time (s)');ax.set_ylabel('Amplitude');fig.show()
+ax.stem(t_inst, h_k, 'r', label='discrete-time model', )
+ax.legend()
+ax.set_title('Channel impulse response');
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Amplitude')
+fig.show()
 
 # Equalizer Design Parameters
 N = 14 # Desired number of taps for equalizer filter
@@ -57,18 +60,19 @@ fig, ax = plt.subplots(nrows=1,ncols = 1)
 ax.plot(Omega_1/pi,20*log(abs(H_F)/max(abs(H_F))),'g',label='channel')
 ax.plot(Omega_2/pi,20*log(abs(W)/max(abs(W))),'r',label='ZF equalizer')
 ax.plot(Omega_3/pi,20*log(abs(H_sys)/max(abs(H_sys))),'k',label='overall system')
-ax.legend();ax.set_title('Frequency response');
+ax.legend()
+ax.set_title('Frequency response');
 ax.set_ylabel('Magnitude(dB)');
 ax.set_xlabel('Normalized frequency(x $\pi$ rad/sample)');
 fig.show()
 
 #Plot equalizer input and output(time-domain response)
-fig, (ax1,ax2) = plt.subplots(nrows=2,ncols = 1)
-ax1.stem( np.arange(0,len(r_k)), r_k, use_line_collection=True)
+fig, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1)
+ax1.stem( np.arange(0,len(r_k)), r_k,  )
 ax1.set_title('Equalizer input');
 ax1.set_xlabel('Samples');
 ax1.set_ylabel('Amplitude');
-ax2.stem( np.arange(0,len(d_k)), d_k, use_line_collection=True);
+ax2.stem( np.arange(0,len(d_k)), d_k, );
 ax2.set_title('Equalizer output- N=={} Delay={} error={}'.format(N,delay,mse));
 ax2.set_xlabel('Samples');
 ax2.set_ylabel('Amplitude');

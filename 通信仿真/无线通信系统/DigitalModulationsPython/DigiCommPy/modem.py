@@ -44,7 +44,10 @@ class Modem:
             axs.annotate("{0:0{1}b}".format(i,int(log2(self.M))), (np.real(self.constellation[i]),np.imag(self.constellation[i])))
 
         axs.set_title('Constellation');
-        axs.set_xlabel('I');axs.set_ylabel('Q');fig.show()
+        axs.set_xlabel('I')
+        axs.set_ylabel('Q')
+        fig.show()
+        return
 
     def modulate(self,inputSymbols):
         """
@@ -88,12 +91,13 @@ class Modem:
         """
         from scipy.spatial.distance import cdist
         # received vector and reference in cartesian form
-        XA = np.column_stack((np.real(receivedSyms),np.imag(receivedSyms)))
-        XB=np.column_stack((np.real(self.constellation),np.imag(self.constellation)))
+        XA = np.column_stack((np.real(receivedSyms), np.imag(receivedSyms)))
+        XB = np.column_stack((np.real(self.constellation), np.imag(self.constellation)))
 
-        d = cdist(XA,XB,metric='euclidean') #compute pair-wise Euclidean distances
-        detectedSyms = np.argmin(d,axis=1)#indices corresponding minimum Euclid. dist.
+        d = cdist(XA, XB, metric = 'euclidean') #compute pair-wise Euclidean distances
+        detectedSyms = np.argmin(d, axis = 1)#indices corresponding minimum Euclid. dist.
         return detectedSyms
+
 
 class PAMModem(Modem):
     # Derived class: PAMModem
@@ -115,41 +119,53 @@ class PSKModem(Modem):
 class QAMModem(Modem):
     # Derived class: QAMModem
     def __init__(self,M):
-        if (M==1) or (np.mod(np.log2(M),2)!=0): # M not a even power of 2
+        if (M==1) or (np.mod(np.log2(M),2) != 0): # M not a even power of 2
             raise ValueError('Only square MQAM supported. M must be even power of 2')
 
         n = np.arange(0,M) # Sequential address from 0 to M-1 (1xM dimension)
         a = np.asarray([x^(x>>1) for x in n]) #convert linear addresses to Gray code
         D = np.sqrt(M).astype(int) #Dimension of K-Map - N x N matrix
         a = np.reshape(a,(D,D)) # NxN gray coded matrix
-        oddRows=np.arange(start = 1, stop = D ,step=2) # identify alternate rows
+        oddRows = np.arange(start = 1, stop = D ,step = 2) # identify alternate rows
         a[oddRows,:] = np.fliplr(a[oddRows,:]) #Flip rows - KMap representation
-        nGray=np.reshape(a,(M)) # reshape to 1xM - Gray code walk on KMap
+        nGray = np.reshape(a,(M)) # reshape to 1xM - Gray code walk on KMap
 
         #Construction of ideal M-QAM constellation from sqrt(M)-PAM
         (x,y)=np.divmod(nGray,D) #element-wise quotient and remainder
-        Ax=2*x+1-D # PAM Amplitudes 2d+1-D - real axis
-        Ay=2*y+1-D # PAM Amplitudes 2d+1-D - imag axis
-        constellation = Ax+1j*Ay
-        Modem.__init__(self, M, constellation, name='QAM') #set the modem attributes
+        Ax = 2*x+1-D # PAM Amplitudes 2d+1-D - real axis
+        Ay = 2*y+1-D # PAM Amplitudes 2d+1-D - imag axis
+        constellation = Ax + 1j*Ay
+        Modem.__init__(self, M, constellation, name = 'QAM') #set the modem attributes
 
 class FSKModem(Modem):
     # Derivied class: FSKModem
     def __init__(self,M,coherence='coherent'):
-        if coherence.lower()=='coherent':
-            phi= np.zeros(M) # phase=0 for coherent detection
-        elif coherence.lower()=='noncoherent':
+        if coherence.lower() == 'coherent':
+            phi = np.zeros(M) # phase=0 for coherent detection
+        elif coherence.lower() == 'noncoherent':
             phi = 2*np.pi*np.random.rand(M) # M random phases in the (0,2pi)
         else:
             raise ValueError('Coherence must be \'coherent\' or \'noncoherent\'')
         constellation = np.diag(np.exp(1j*phi))
-        Modem.__init__(self, M, constellation, name='FSK',coherence=coherence.lower()) #set the base modem attributes
+        Modem.__init__(self, M, constellation, name = 'FSK', coherence = coherence.lower()) #set the base modem attributes
 
     def demodulate(self, receivedSyms,coherence='coherent'):
         #overridden method in Modem class
-        if coherence.lower()=='coherent':
+        if coherence.lower() == 'coherent':
             return self.iqDetector(receivedSyms)
-        elif coherence.lower()=='noncoherent':
-            return np.argmax(np.abs(receivedSyms),axis=1)
+        elif coherence.lower() == 'noncoherent':
+            return np.argmax(np.abs(receivedSyms), axis = 1)
         else:
             raise ValueError('Coherence must be \'coherent\' or \'noncoherent\'')
+
+
+
+
+
+
+
+
+
+
+
+

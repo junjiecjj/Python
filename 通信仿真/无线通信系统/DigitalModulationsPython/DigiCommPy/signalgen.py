@@ -15,15 +15,15 @@ def sine_wave(f,overSampRate,phase,nCyl):
         phase : desired phase shift in radians
         nCyl : number of cycles of sine wave to generate
     Returns:
-        (t,g) : time base (t) and the signal g(t) as tuple    
+        (t,g) : time base (t) and the signal g(t) as tuple
     Example:
         f=10; overSampRate=30;
         phase = 1/3*np.pi;nCyl = 5;
         (t,g) = sine_wave(f,overSampRate,phase,nCyl)
     """
     fs = overSampRate*f # sampling frequency
-    t = np.arange(0,nCyl*1/f-1/fs,1/fs) # time base    
-    g = np.sin(2*np.pi*f*t+phase) # replace with cos if a cosine wave is desired    
+    t = np.arange(0,nCyl*1/f-1/fs,1/fs) # time base
+    g = np.sin(2*np.pi*f*t+phase) # replace with cos if a cosine wave is desired
     return (t,g) # return time base and signal g(t) as tuple
 
 def square_wave(f,overSampRate,nCyl):
@@ -34,14 +34,14 @@ def square_wave(f,overSampRate,nCyl):
         overSampRate : oversampling rate (integer)
         nCyl : number of cycles of square wave to generate
     Returns:
-        (t,g) : time base (t) and the signal g(t) as tuple    
+        (t,g) : time base (t) and the signal g(t) as tuple
     Example:
         f=10; overSampRate=30;nCyl = 5;
         (t,g) = square_wave(f,overSampRate,nCyl)
     """
     fs = overSampRate*f # sampling frequency
-    t = np.arange(0,nCyl*1/f-1/fs,1/fs) # time base    
-    g = np.sign(np.sin(2*np.pi*f*t)) # replace with cos if a cosine wave is desired    
+    t = np.arange(0,nCyl*1/f-1/fs,1/fs) # time base
+    g = np.sign(np.sin(2*np.pi*f*t)) # replace with cos if a cosine wave is desired
     return (t,g) # return time base and signal g(t) as tuple
 
 def rect_pulse(A,fs,T):
@@ -52,7 +52,7 @@ def rect_pulse(A,fs,T):
         fs : sampling frequency in Hz
         T : duration of the pulse in seconds
     Returns:
-        (t,g) : time base (t) and the signal g(t) as tuple 
+        (t,g) : time base (t) and the signal g(t) as tuple
     Example:
         A = 1; fs=500;T = 0.2;
         (t,g) = rect_pulse(A,fs,T)
@@ -77,3 +77,15 @@ def gaussian_pulse(fs,sigma):
     t = np.arange(-0.5,0.5,1/fs) # time base
     g = 1/(np.sqrt(2*np.pi)*sigma)*(np.exp(-t**2/(2*sigma**2)))
     return(t,g) # return time base and signal g(t) as tuple
+
+
+
+
+
+
+
+
+
+
+
+
