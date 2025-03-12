@@ -11,7 +11,7 @@ def raisedCosineDesign(alpha, span, L):
     Raised cosine FIR filter design
     Parameters:
         alpha : roll-off factor
-        span : filter span in symbols 
+        span : filter span in symbols
         L : oversampling factor (i.e, each symbol contains L samples)
     Returns:
         p - filter coefficients b of the designed
@@ -37,33 +37,37 @@ def raisedCosineDemo():
     """
     import matplotlib.pyplot as plt
     from scipy.fftpack import fft, fftshift
-    
+
     Tsym = 1 # Symbol duration in seconds
     L = 32 # oversampling rate, each symbol contains L samples
     span = 10 # filter span in symbols
     alphas= [0, 0.3, 0.5, 1] # RC roll-off factors - valid range 0 to 1
     Fs = L/Tsym # sampling frequency
-    
+
     lineColors = ['b','r','g','k']
-    fig, (ax1,ax2) = plt.subplots(1, 2)
-    
-    for i, alpha in enumerate(alphas):    
+    fig, (ax1,ax2) = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
+
+    for i, alpha in enumerate(alphas):
         b = raisedCosineDesign(alpha,span,L) # RC Pulse design
-        
+
         # time base for symbol duration
         t = Tsym* np.arange(-span/2, span/2 + 1/L, 1/L)
-        
+
         # plot time domain view
         ax1.plot(t,b,lineColors[i],label=r'$\alpha$='+str(alpha))
-        
+
         #Compute FFT and plot double sided frequency domain view
         NFFT = 1<<(len(b)-1).bit_length() #Set FFT length = nextpower2(len(b))
         vals = fftshift(fft(b,NFFT))
         freqs = Fs* np.arange(-NFFT/2,NFFT/2)/NFFT
         ax2.plot(freqs,abs(vals)/abs(vals[len(vals)//2]),\
                  lineColors[i],label=r'$\alpha$='+str(alpha))
-    
+
     ax1.set_title('Raised cosine pulse');
     ax2.set_title('Frequency response')
     ax1.legend();ax2.legend()
     fig.show()
+
+raisedCosineDemo()
+
+

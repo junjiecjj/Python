@@ -16,17 +16,18 @@ def plotWelchPSD(x,fs,fc,ax = None,color='b', label=None):
         ax : Matplotlib axes object reference for plotting
         color : color character (format string) for the plot
     """
-    from scipy.signal import hanning, welch
+    from scipy.signal import  welch
+    from scipy.signal.windows import hann
     from numpy import log10
     nx = max(x.shape)
     na = 16 # averaging factor to plot averaged welch spectrum
-    w = hanning(nx//na) #// is for integer floor division
+    w = hann(nx//na) #// is for integer floor division
     # Welch PSD estimate with Hanning window and no overlap
     f, Pxx = welch(x,fs,window = w,noverlap=0)
     indices = (f>=fc) & (f<4*fc)   # To plot PSD from Fc to 4*Fc
     Pxx = Pxx[indices]/Pxx[indices][0] # normalized psd w.r.t Fc
     ax.plot(f[indices]-fc,10*log10(Pxx),color,label=label) #Plot in the given axes
-    
+
 def conv_brute_force(x,h):
     """
     Brute force method to compute convolution
@@ -54,7 +55,7 @@ def convMatrix(h,p):
     """
     col=np.hstack((h,np.zeros(p-1)))
     row=np.hstack((h[0],np.zeros(p-1)))
-    
+
     from scipy.linalg import toeplitz
     H=toeplitz(col,row)
     return H
@@ -81,7 +82,7 @@ def analytic_signal(x):
     """
     from scipy.fftpack import fft,ifft
     N = len(x)
-    X = fft(x,N)    
+    X = fft(x,N)
     Z = np.hstack((X[0], 2*X[1:N//2], X[N//2], np.zeros(N//2-1)))
     z = ifft(Z,N)
     return z
