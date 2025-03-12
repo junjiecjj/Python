@@ -90,7 +90,7 @@ def MNIST_IID_1bit_coding():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
+    L = 500
     col = 1
     # ### k0 = 6
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-16-13:29:21/TraRecorder.npy")[:L]
@@ -136,7 +136,7 @@ def MNIST_IID_1bit_coding():
     [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.0)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -146,7 +146,7 @@ def MNIST_IID_1bit_coding():
 
     ##==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, 260, 270, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, 420, 440, data[:, 0] , [Y1, Y2, Y3, Y4], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
     axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
@@ -171,7 +171,7 @@ def MNIST_nonIID_1bit_coding():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
+    L = 500
     col = 1
     # ### k0 = 6
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
@@ -257,7 +257,7 @@ def MNIST_IID_4bit_coding():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
+    L = 500
     col = 1
     # ### k0 = 6
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_sgd_0.01_U100+6_bs128_2025-01-16-13:29:21/TraRecorder.npy")[:L]
@@ -338,7 +338,7 @@ def MNIST_nonIID_4bit_coding():
     # %% 画图
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 300
+    L = 500
     col = 1
     # ### k0 = 6
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_sgd_0.01_U100+6_bs64_2025-01-16-21:24:20/TraRecorder.npy")[:L]
