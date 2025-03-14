@@ -276,10 +276,10 @@ from DigiCommPy.passband_modulations import piBy4_dqpsk_mod,piBy4_dqpsk_demod
 from DigiCommPy.channels import awgn
 from scipy.special import erfc
 
-N=1000000 # Number of symbols to transmit
+N = 1000000 # Number of symbols to transmit
 EbN0dB = np.arange(start=-4,stop = 11,step = 2) # Eb/N0 range in dB for simulation
-fc=100 # carrier frequency in Hertz
-OF =8 # oversampling factor, sampling frequency will be fs=OF*fc
+fc = 100 # carrier frequency in Hertz
+OF = 8 # oversampling factor, sampling frequency will be fs=OF*fc
 
 BER = np.zeros(len(EbN0dB)) # For BER values for each Eb/N0
 
