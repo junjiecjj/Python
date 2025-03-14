@@ -22,7 +22,7 @@ class Equalizer():
     def design(self): #Abstract method
         "Design the equalizer for the given impulse response and SNR"
 
-    def convMatrix(self,h,p):
+    def convMatrix(self, h, p):
         """
         Construct the convolution matrix of size (N+p-1)x p from the
         input matrix h of size N. (see chapter 1)
@@ -32,14 +32,14 @@ class Equalizer():
         Returns:
             H : convolution matrix of size (L+p-1)xp
         """
-        col=np.hstack((h, np.zeros(p-1)))
-        row=np.hstack((h[0], np.zeros(p-1)))
+        col = np.hstack((h, np.zeros(p-1)))
+        row = np.hstack((h[0], np.zeros(p-1)))
 
         from scipy.linalg import toeplitz
-        H=toeplitz(col, row)
+        H = toeplitz(col, row)
         return H
 
-    def equalize(self,inputSamples):
+    def equalize(self, inputSamples):
         """
         Equalize the given input samples and produces the output
         Parameters:
@@ -75,10 +75,10 @@ class zeroForcing(Equalizer): #Class zero-forcing equalizer
             raise ValueError('Given delay is too large delay (should be < L+N-1')
 
         k0 = delay
-        d=np.zeros(self.N+L-1)
+        d = np.zeros(self.N+L-1)
         d[k0] = 1 #optimized position of equalizer delay
-        self.w=Hp @ d # Least Squares solution, @ for matrix multiply
-        MSE=(1-d.T @ H @ Hp @ d) #MSE and err are equivalent,@ for matrix multiply
+        self.w = Hp @ d # Least Squares solution, @ for matrix multiply
+        MSE = (1-d.T @ H @ Hp @ d) #MSE and err are equivalent,@ for matrix multiply
         return MSE
 
 class MMSEEQ(Equalizer): #Class MMSE Equalizer
@@ -106,12 +106,12 @@ class MMSEEQ(Equalizer): #Class MMSE Equalizer
             raise ValueError('Given delay is too large delay (should be < L+N-1')
 
         k0 = delay
-        d=np.zeros(self.N+L-1)
-        d[k0]=1 # optimized position of equalizer delay
+        d = np.zeros(self.N+L-1)
+        d[k0] = 1 # optimized position of equalizer delay
         # Least Squares solution, @ for matrix multiply
-        self.w=np.linalg.inv(H.T @ H+ gamma * np.eye(self.N))@ H.T @ d
+        self.w = np.linalg.inv(H.T @ H+ gamma * np.eye(self.N))@ H.T @ d
         # assume var(a)=1, @ for matrix multiply
-        MSE=(1-d.T @ H @ np.linalg.inv(H.T @ H+gamma * np.eye(self.N)) @ H.T @ d)
+        MSE = (1-d.T @ H @ np.linalg.inv(H.T @ H+gamma * np.eye(self.N)) @ H.T @ d)
         return MSE
 
 class LMSEQ(Equalizer): #Class LMS adaptive equalizer
@@ -124,7 +124,7 @@ class LMSEQ(Equalizer): #Class LMS adaptive equalizer
             r : received/input sequence
             a: reference sequence
         """
-        N =self.N
+        N = self.N
         w = np.zeros(N)
         for k in range(N, len(r)):
             r_vector = r[k:k-N:-1]

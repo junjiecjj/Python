@@ -6,7 +6,6 @@ Created on Sun Mar  9 17:37:07 2025
 @author: jack
 """
 
-
 #%% Program 19: DigiCommPy\chapter 2\bpsk.py: Performance of BPSK using waveform simulation
 import numpy as np #for numerical computing
 import matplotlib.pyplot as plt #for plotting functions
@@ -15,49 +14,48 @@ from DigiCommPy.passband_modulations import bpsk_mod, bpsk_demod
 from DigiCommPy.channels import awgn
 
 N = 100000 # Number of symbols to transmit
-EbN0dB = np.arange(start=-4,stop = 11,step = 2) # Eb/N0 range in dB for simulation
+EbN0dB = np.arange(start = -4, stop = 11, step = 2) # Eb/N0 range in dB for simulation
 L = 16 # oversampling factor, L=Tb/Ts(Tb=bit period,Ts=sampling period)
 
 # if a carrier is used, use L = Fs/Fc, where Fs >> 2xFc
 Fc = 800 # carrier frequency
 Fs = L*Fc # sampling frequency
 BER = np.zeros(len(EbN0dB)) # for BER values for each Eb/N0
-ak = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-(s_bb, t)= bpsk_mod(ak,L) # BPSK modulation(waveform) - baseband
+ak = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
+(s_bb, t) = bpsk_mod(ak, L) # BPSK modulation(waveform) - baseband
 s = s_bb*np.cos(2*np.pi*Fc*t/Fs) # with carrier # Waveforms at the transmitter
 fig1, axs = plt.subplots(2, 2, figsize = (8, 6), constrained_layout = True)
-axs[0, 0].plot(t,s_bb) # baseband wfm zoomed to first 10 bits
+axs[0, 0].plot(t, s_bb) # baseband wfm zoomed to first 10 bits
 axs[0, 0].set_xlabel('t(s)')
 axs[0, 1].set_ylabel(r'$s_{bb}(t)$-baseband')
-axs[0, 1].plot(t,s) # transmitted wfm zoomed to first 10 bits
+axs[0, 1].plot(t, s) # transmitted wfm zoomed to first 10 bits
 axs[0, 1].set_xlabel('t(s)');
 axs[0, 1].set_ylabel('s(t)-with carrier')
-axs[0, 0].set_xlim(0,10*L);
-axs[0, 1].set_xlim(0,10*L) #signal constellation at transmitter
-axs[1, 0].plot(np.real(s_bb),np.imag(s_bb),'o')
-axs[1, 0].set_xlim(-1.5,1.5);
-axs[1, 0].set_ylim(-1.5,1.5)
-
+axs[0, 0].set_xlim(0, 10*L);
+axs[0, 1].set_xlim(0, 10*L) #signal constellation at transmitter
+axs[1, 0].plot(np.real(s_bb), np.imag(s_bb), 'o')
+axs[1, 0].set_xlim(-1.5, 1.5)
+axs[1, 0].set_ylim(-1.5, 1.5)
 
 for i,EbN0 in enumerate(EbN0dB):
     # Compute and add AWGN noise
-    r = awgn(s, EbN0, L) # refer Chapter section 4.1
+    r = awgn(s, EbN0, L)             # refer Chapter section 4.1
     r_bb = r*np.cos(2*np.pi*Fc*t/Fs) # recovered baseband signal
-    ak_hat = bpsk_demod(r_bb,L) # baseband correlation demodulator
-    BER[i] = np.sum(ak !=ak_hat)/N # Bit Error Rate Computation
+    ak_hat = bpsk_demod(r_bb, L)     # baseband correlation demodulator
+    BER[i] = np.sum(ak != ak_hat)/N  # Bit Error Rate Computation
     # Received signal waveform zoomed to first 10 bits
-    axs[1, 1].plot(t,r) # received signal (with noise)
+    axs[1, 1].plot(t, r) # received signal (with noise)
     axs[1, 1].set_xlabel('t(s)')
     axs[1, 1].set_ylabel('r(t)')
-    axs[1, 1].set_xlim(0,10*L)
+    axs[1, 1].set_xlim(0, 10*L)
     plt.show()
     plt.close()
     #------Theoretical Bit/Symbol Error Rates-------------
 theoreticalBER = 0.5*erfc(np.sqrt(10**(EbN0dB/10))) # Theoretical bit error rate
 #-------------Plots---------------------------
-fig2, ax1 = plt.subplots(nrows=1, ncols = 1, figsize = (8, 6), constrained_layout = True)
-ax1.semilogy(EbN0dB,BER,'k*',label='Simulated') # simulated BER
-ax1.semilogy(EbN0dB,theoreticalBER,'r-',label='Theoretical')
+fig2, ax1 = plt.subplots(nrows = 1, ncols = 1, figsize = (8, 6), constrained_layout = True)
+ax1.semilogy(EbN0dB, BER, 'k*', label = 'Simulated') # simulated BER
+ax1.semilogy(EbN0dB, theoreticalBER, 'r-', label = 'Theoretical')
 ax1.set_xlabel(r'$E_b/N_0$ (dB)')
 ax1.set_ylabel(r'Probability of Bit Error - $P_b$')
 ax1.set_title(['Probability of Bit Error for BPSK modulation'])
@@ -77,9 +75,9 @@ from DigiCommPy.passband_modulations import bpsk_mod, bpsk_demod
 from DigiCommPy.channels import awgn
 
 N=1000000 # Number of symbols to transmit
-EbN0dB = np.arange(start=-4,stop = 11,step = 2) # Eb/N0 range in dB for simulation
+EbN0dB = np.arange(start = -4, stop = 11,step = 2) # Eb/N0 range in dB for simulation
 L = 16 # oversampling factor,L=Tb/Ts(Tb=bit period,Ts=sampling period)
-# if a carrier is used, use L = Fs/Fc, where Fs >> 2xFc
+# if a carrier is used, use L = Fs/Fc, where Fs >> 2 * Fc
 Fc = 800 # carrier frequency
 Fs = L*Fc # sampling frequency
 
@@ -96,7 +94,7 @@ for i,EbN0 in enumerate(EbN0dB):
     r = awgn(s, EbN0, L) # refer Chapter section 4.1
 
     phaseAmbiguity = np.pi # 180* phase ambiguity of Costas loop
-    r_bb = r*np.cos(2*np.pi*Fc*t/Fs+phaseAmbiguity) # recovered signal
+    r_bb = r*np.cos(2*np.pi*Fc*t/Fs + phaseAmbiguity) # recovered signal
     b_hat = bpsk_demod(r_bb,L) # baseband correlation type demodulator
     a_hat = lfilter([1.0,1.0],[1.0],b_hat) # FIR for differential decoding
     a_hat = a_hat % 2 # binary messages, therefore modulo-2
@@ -119,7 +117,6 @@ plt.close()
 #%% Program 21: DigiCommPy\chapter 2\dbpsk noncoherent.py: DBPSK non-coherent detection
 """
 Non-coherent detection of D-BPSK with phase ambiguity in local oscillator
-
 """
 #Execute in Python3: exec(open("chapter_2/dbpsk_noncoherent.py").read())
 import numpy as np #for numerical computing
@@ -140,10 +137,10 @@ BER_suboptimum = np.zeros(len(EbN0dB)) # BER measures
 BER_optimum = np.zeros(len(EbN0dB))
 
 #-----------------Transmitter---------------------
-ak = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-bk = lfilter([1.0],[1.0,-1.0],ak) # IIR filter for differential encoding
+ak = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
+bk = lfilter([1.0], [1.0, -1.0], ak) # IIR filter for differential encoding
 bk = bk%2 #XOR operation is equivalent to modulo-2
-[s_bb,t]= bpsk_mod(bk,L) # BPSK modulation(waveform) - baseband
+[s_bb,t]= bpsk_mod(bk, L) # BPSK modulation(waveform) - baseband
 s = s_bb*np.cos(2*np.pi*Fc*t/Fs).astype(complex) # DBPSK with carrier
 
 for i,EbN0 in enumerate(EbN0dB):
@@ -152,13 +149,13 @@ for i,EbN0 in enumerate(EbN0dB):
 
     #----------suboptimum receiver---------------
     p=np.real(r)*np.cos(2*np.pi*Fc*t/Fs) # demodulate to baseband using BPF
-    w0= np.hstack((p,np.zeros(L))) # append L samples on one arm for equal lengths
-    w1= np.hstack((np.zeros(L),p)) # delay the other arm by Tb (L samples)
+    w0= np.hstack((p, np.zeros(L))) # append L samples on one arm for equal lengths
+    w1= np.hstack((np.zeros(L), p)) # delay the other arm by Tb (L samples)
     w = w0*w1 # multiplier
-    z = np.convolve(w,np.ones(L)) #integrator from kTb to (K+1)Tb (L samples)
+    z = np.convolve(w, np.ones(L)) #integrator from kTb to (K+1)Tb (L samples)
     u =  z[L-1:-1-L:L] # sampler t=kTb
     ak_hat = (u<0) #decision
-    BER_suboptimum[i] = np.sum(ak!=ak_hat)/N #BER for suboptimum receiver
+    BER_suboptimum[i] = np.sum(ak != ak_hat)/N #BER for suboptimum receiver
 
     #-----------optimum receiver--------------
     p=np.real(r)*np.cos(2*np.pi*Fc*t/Fs); # multiply I arm by cos
@@ -205,22 +202,22 @@ from DigiCommPy.passband_modulations import qpsk_mod,qpsk_demod
 from DigiCommPy.channels import awgn
 from scipy.special import erfc
 
-N=100000 # Number of symbols to transmit
-EbN0dB = np.arange(start=-4,stop = 11,step = 2) # Eb/N0 range in dB for simulation
-fc=100 # carrier frequency in Hertz
-OF =8 # oversampling factor, sampling frequency will be fs=OF*fc
+N = 100000 # Number of symbols to transmit
+EbN0dB = np.arange(start = -4, stop = 11, step = 2) # Eb/N0 range in dB for simulation
+fc = 100 # carrier frequency in Hertz
+OF = 8 # oversampling factor, sampling frequency will be fs=OF*fc
 
 BER = np.zeros(len(EbN0dB)) # For BER values for each Eb/N0
 
-a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-result = qpsk_mod(a,fc,OF,enable_plot=False) #QPSK modulation
+a = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
+result = qpsk_mod(a, fc, OF, enable_plot = 1) #QPSK modulation
 s = result['s(t)'] # get values from returned dictionary
 
-for i,EbN0 in enumerate(EbN0dB):
+for i, EbN0 in enumerate(EbN0dB):
     # Compute and add AWGN noise
-    r = awgn(s,EbN0,OF) # refer Chapter section 4.1
-    a_hat = qpsk_demod(r,fc,OF) # QPSK demodulation
-    BER[i] = np.sum(a!=a_hat)/N # Bit Error Rate Computation
+    r = awgn(s, EbN0, OF)         # refer Chapter section 4.1
+    a_hat = qpsk_demod(r, fc, OF) # QPSK demodulation
+    BER[i] = np.sum(a != a_hat)/N # Bit Error Rate Computation
 
 #------Theoretical Bit Error Rate-------------
 theoreticalBER = 0.5*scipy.special.erfc(np.sqrt(10**(EbN0dB/10)))
@@ -244,21 +241,20 @@ from DigiCommPy.passband_modulations import oqpsk_mod,oqpsk_demod
 from DigiCommPy.channels import awgn
 from scipy.special import erfc
 
-N=100000 # Number of symbols to transmit
-EbN0dB = np.arange(start=-4,stop = 11,step = 2) # Eb/N0 range in dB for simulation
-fc=100 # carrier frequency in Hertz
-OF =8 # oversampling factor, sampling frequency will be fs=OF*fc
-
+N = 100000 # Number of symbols to transmit
+EbN0dB = np.arange(start = -4,stop = 11,step = 2) # Eb/N0 range in dB for simulation
+fc = 100 # carrier frequency in Hertz
+OF = 8 # oversampling factor, sampling frequency will be fs=OF*fc
 BER = np.zeros(len(EbN0dB)) # For BER values for each Eb/N0
 
-a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-result = oqpsk_mod(a,fc,OF,enable_plot=False) #QPSK modulation
+a = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
+result = oqpsk_mod(a, fc, OF, enable_plot = False) #QPSK modulation
 s = result['s(t)'] # get values from returned dictionary
 for i,EbN0 in enumerate(EbN0dB):
     # Compute and add AWGN noise
-    r = awgn(s,EbN0,OF) # refer Chapter section 4.1
-    a_hat = oqpsk_demod(r,N,fc,OF,enable_plot=False) # QPSK demodulation
-    BER[i] = np.sum(a!=a_hat)/N # Bit Error Rate Computation
+    r = awgn(s, EbN0, OF) # refer Chapter section 4.1
+    a_hat = oqpsk_demod(r, N, fc, OF, enable_plot = False) # QPSK demodulation
+    BER[i] = np.sum(a != a_hat)/N # Bit Error Rate Computation
 #------Theoretical Bit Error Rate-------------
 theoreticalBER = 0.5*erfc(np.sqrt(10**(EbN0dB/10)))
 #-------------Plot performance curve------------------------
@@ -288,7 +284,7 @@ OF =8 # oversampling factor, sampling frequency will be fs=OF*fc
 BER = np.zeros(len(EbN0dB)) # For BER values for each Eb/N0
 
 a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-result = piBy4_dqpsk_mod(a,fc,OF,enable_plot=False)# dqpsk modulation
+result = piBy4_dqpsk_mod(a,fc,OF,enable_plot=1)# dqpsk modulation
 s = result['s(t)'] # get values from returned dictionary
 
 for i,EbN0 in enumerate(EbN0dB):
@@ -305,12 +301,13 @@ theoreticalBER = 0.5*erfc(x/np.sqrt(2))
 fig, axs = plt.subplots(nrows=1,ncols = 1)
 axs.semilogy(EbN0dB,BER,'k*',label='Simulated')
 axs.semilogy(EbN0dB,theoreticalBER,'r-',label='Theoretical')
-axs.set_title('Probability of Bit Error for $\pi/4$-DQPSK');
+axs.set_title(r'Probability of Bit Error for $\pi/4$-DQPSK');
 axs.set_xlabel(r'$E_b/N_0$ (dB)')
 axs.set_ylabel(r'Probability of Bit Error - $P_b$');
 axs.legend();
 plt.show()
 plt.close()
+
 
 #%% Program 33: DigiCommPy\chapter 2\cpfsk.py: Binary CPFSK modulation
 
@@ -335,9 +332,15 @@ t=np.arange(0, Tb*N, 1/fs) # time base
 s = np.cos(2*np.pi*fc*t + theta) # CPFSK signal
 
 fig, (ax1,ax2,ax3) = plt.subplots(3, 1)
-ax1.plot(t,b);ax1.set_xlabel('t');ax1.set_ylabel('b(t)')
-ax2.plot(t,theta);ax2.set_xlabel('t');ax2.set_ylabel('$\theta(t)$')
-ax3.plot(t,s);ax3.set_xlabel('t');ax3.set_ylabel('s(t)')
+ax1.plot(t,b);
+ax1.set_xlabel('t');
+ax1.set_ylabel('b(t)')
+ax2.plot(t,theta);
+ax2.set_xlabel('t');
+ax2.set_ylabel('$\theta(t)$')
+ax3.plot(t,s);
+ax3.set_xlabel('t');
+ax3.set_ylabel('s(t)')
 plt.show()
 plt.close()
 
@@ -356,8 +359,8 @@ OF = 32 # oversampling factor, sampling frequency will be fs=OF*fc
 
 BER = np.zeros(len(EbN0dB)) # For BER values for each Eb/N0
 
-a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-result = msk_mod(a,fc,OF,enable_plot=True) # MSK modulation
+a = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
+result = msk_mod(a, fc, OF, enable_plot=1) # MSK modulation
 s = result['s(t)']
 
 for i,EbN0 in enumerate(EbN0dB):
@@ -391,10 +394,10 @@ L=8 # carrier frequency and oversampling factor
 a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
 
 #modulate the source symbols using QPSK,QPSK,pi/4-DQPSK and MSK
-qpsk_result= qpsk_mod(a,fc,L)
-oqpsk_result = oqpsk_mod(a,fc,L)
-piby4qpsk_result = piBy4_dqpsk_mod(a,fc,L)
-msk_result = msk_mod(a,fc,L);
+qpsk_result= qpsk_mod(a, fc, L)
+oqpsk_result = oqpsk_mod(a, fc, L)
+piby4qpsk_result = piBy4_dqpsk_mod(a, fc, L)
+msk_result = msk_mod(a, fc, L);
 
 #Pulse shape the modulated waveforms by convolving with RC filter
 alpha = 0.3; span = 10 # RC filter alpha and filter span in symbols
@@ -410,19 +413,23 @@ q_msk = msk_result['sQ(t)'] # MSK sQ(t)
 
 fig, axs = plt.subplots(2, 2)
 
-axs[0,0].plot(iRC_qpsk,qRC_qpsk)# RC shaped QPSK
-axs[0,1].plot(iRC_oqpsk,qRC_oqpsk)# RC shaped OQPSK
-axs[1,0].plot(iRC_piby4qpsk,qRC_piby4qpsk)# RC shaped pi/4-QPSK
-axs[1,1].plot(i_msk[20:-20],q_msk[20:-20])# RC shaped OQPSK
+axs[0,0].plot(iRC_qpsk, qRC_qpsk)# RC shaped QPSK
+axs[0,1].plot(iRC_oqpsk, qRC_oqpsk)# RC shaped OQPSK
+axs[1,0].plot(iRC_piby4qpsk, qRC_piby4qpsk)# RC shaped pi/4-QPSK
+axs[1,1].plot(i_msk[20:-20], q_msk[20:-20])# RC shaped OQPSK
 
 axs[0,0].set_title(r'QPSK, RC $\alpha$='+str(alpha))
-axs[0,0].set_xlabel('I(t)');axs[0,0].set_ylabel('Q(t)');
+axs[0,0].set_xlabel('I(t)');
+axs[0,0].set_ylabel('Q(t)');
 axs[0,1].set_title(r'OQPSK, RC $\alpha$='+str(alpha))
-axs[0,1].set_xlabel('I(t)');axs[0,1].set_ylabel('Q(t)');
+axs[0,1].set_xlabel('I(t)');
+axs[0,1].set_ylabel('Q(t)');
 axs[1,0].set_title(r'$\pi$/4 - QPSK, RC $\alpha$='+str(alpha))
-axs[1,0].set_xlabel('I(t)');axs[1,0].set_ylabel('Q(t)');
+axs[1,0].set_xlabel('I(t)');
+axs[1,0].set_ylabel('Q(t)');
 axs[1,1].set_title('MSK')
-axs[1,1].set_xlabel('I(t)');axs[1,1].set_ylabel('Q(t)');
+axs[1,1].set_xlabel('I(t)');
+axs[1,1].set_ylabel('Q(t)');
 plt.show()
 plt.close()
 
@@ -437,10 +444,10 @@ fc=10; L=8 # carrier frequency and oversampling factor
 a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
 
 #modulate the source symbols using QPSK,QPSK,pi/4-DQPSK and MSK
-qpsk_result= qpsk_mod(a,fc,L)
-oqpsk_result = oqpsk_mod(a,fc,L)
-piby4qpsk_result = piBy4_dqpsk_mod(a,fc,L)
-msk_result = msk_mod(a,fc,L);
+qpsk_result= qpsk_mod(a, fc, L)
+oqpsk_result = oqpsk_mod(a, fc, L)
+piby4qpsk_result = piBy4_dqpsk_mod(a, fc, L)
+msk_result = msk_mod(a, fc, L);
 
 #Pulse shape the modulated waveforms by convolving with RC filter
 alpha = 0.3; span = 10 # RC filter alpha and filter span in symbols
@@ -456,17 +463,20 @@ q_msk = msk_result['sQ(t)'] # MSK sQ(t)
 
 fig, axs = plt.subplots(2, 2)
 
-axs[0,0].plot(iRC_qpsk,qRC_qpsk)# RC shaped QPSK
-axs[0,1].plot(iRC_oqpsk,qRC_oqpsk)# RC shaped OQPSK
-axs[1,0].plot(iRC_piby4qpsk,qRC_piby4qpsk)# RC shaped pi/4-QPSK
-axs[1,1].plot(i_msk[20:-20],q_msk[20:-20])# RC shaped OQPSK
+axs[0,0].plot(iRC_qpsk, qRC_qpsk)# RC shaped QPSK
+axs[0,1].plot(iRC_oqpsk, qRC_oqpsk)# RC shaped OQPSK
+axs[1,0].plot(iRC_piby4qpsk, qRC_piby4qpsk)# RC shaped pi/4-QPSK
+axs[1,1].plot(i_msk[20:-20], q_msk[20:-20])# RC shaped OQPSK
 
 axs[0,0].set_title(r'QPSK, RC $\alpha$='+str(alpha))
-axs[0,0].set_xlabel('I(t)');axs[0,0].set_ylabel('Q(t)');
+axs[0,0].set_xlabel('I(t)');
+axs[0,0].set_ylabel('Q(t)');
 axs[0,1].set_title(r'OQPSK, RC $\alpha$='+str(alpha))
-axs[0,1].set_xlabel('I(t)');axs[0,1].set_ylabel('Q(t)');
+axs[0,1].set_xlabel('I(t)');
+axs[0,1].set_ylabel('Q(t)');
 axs[1,0].set_title(r'$\pi$/4 - QPSK, RC $\alpha$='+str(alpha))
-axs[1,0].set_xlabel('I(t)');axs[1,0].set_ylabel('Q(t)');
+axs[1,0].set_xlabel('I(t)');
+axs[1,0].set_ylabel('Q(t)');
 axs[1,1].set_title('MSK')
 axs[1,1].set_xlabel('I(t)');axs[1,1].set_ylabel('Q(t)');
 plt.show()

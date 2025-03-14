@@ -7,23 +7,23 @@ Created on Jul 17, 2019
 import numpy as np
 import matplotlib.pyplot as plt
 
-def bpsk_mod(ak,L):
+def bpsk_mod(ak, L):
     """
     Function to modulate an incoming binary stream using BPSK (baseband)
     Parameters:
         ak : input binary data stream (0's and 1's) to modulate
         L : oversampling factor (Tb/Ts)
     Returns:
-        (s_bb,t) : tuple of following variables
+        (s_bb,t): tuple of following variables
                 s_bb: BPSK modulated signal(baseband) - s_bb(t)
-                 t :  generated time base for the modulated signal
+                t :  generated time base for the modulated signal
     """
     from scipy.signal import upfirdn
-    s_bb = upfirdn(h=[1]*L, x=2*ak-1, up = L) # NRZ encoder
-    t=np.arange(start = 0,stop = len(ak)*L) #discrete time base
-    return (s_bb,t)
+    s_bb = upfirdn(h = [1]*L, x = 2*ak-1, up = L) # NRZ encoder
+    t = np.arange(start = 0, stop = len(ak)*L)    # discrete time base
+    return (s_bb, t)
 
-def bpsk_demod(r_bb,L):
+def bpsk_demod(r_bb, L):
     """
     Function to demodulate a BPSK (baseband) signal
     Parameters:
@@ -33,7 +33,7 @@ def bpsk_demod(r_bb,L):
         ak_hat : detected/estimated binary stream
     """
     x = np.real(r_bb) # I arm
-    x = np.convolve(x,np.ones(L)) # integrate for Tb duration (L samples)
+    x = np.convolve(x, np.ones(L)) # integrate for Tb duration (L samples)
     x = x[L-1:-1:L] # I arm - sample at every L
     ak_hat = (x > 0).transpose() # threshold detector
     return ak_hat
@@ -53,25 +53,26 @@ def qpsk_mod(a, fc, OF, enable_plot = False):
           Q(t) : baseband Q channel waveform (no carrier)
           t : time base for the carrier modulated signal
     """
-    L = 2*OF # samples in each symbol (QPSK has 2 bits in each symbol)
-    I = a[0::2];Q = a[1::2] #even and odd bit streams
+    L = 2*OF    # samples in each symbol (QPSK has 2 bits in each symbol)
+    I = a[0::2]
+    Q = a[1::2] # even and odd bit streams
     # even/odd streams at 1/2Tb baud
 
     from scipy.signal import upfirdn #NRZ encoder
-    I = upfirdn(h=[1]*L, x=2*I-1, up = L)
-    Q = upfirdn(h=[1]*L, x=2*Q-1, up = L)
+    I = upfirdn(h = [1]*L, x = 2*I-1, up = L)
+    Q = upfirdn(h = [1]*L, x = 2*Q-1, up = L)
 
     fs = OF*fc # sampling frequency
-    t=np.arange(0,len(I)/fs,1/fs)  #time base
+    t = np.arange(0, len(I)/fs, 1/fs)  #time base
 
-    I_t = I*np.cos(2*np.pi*fc*t);Q_t = -Q*np.sin(2*np.pi*fc*t)
+    I_t = I*np.cos(2*np.pi*fc*t)
+    Q_t = -Q*np.sin(2*np.pi*fc*t)
     s_t = I_t + Q_t # QPSK modulated baseband signal
 
     if enable_plot:
-        fig = plt.figure(constrained_layout=True)
-
+        fig = plt.figure(constrained_layout = True)
         from matplotlib.gridspec import GridSpec
-        gs = GridSpec(3, 2, figure=fig)
+        gs = GridSpec(3, 2, figure = fig)
         ax1 = fig.add_subplot(gs[0, 0])
         ax2 = fig.add_subplot(gs[0, 1])
         ax3 = fig.add_subplot(gs[1, 0])
@@ -89,16 +90,23 @@ def qpsk_mod(a, fc, OF, enable_plot = False):
         ax3.set_title('$I(t) cos(2 \pi f_c t)$')
         ax4.set_title('$Q(t) sin(2 \pi f_c t)$')
 
-        ax1.set_xlim(0,20*L/fs);ax2.set_xlim(0,20*L/fs)
-        ax3.set_xlim(0,20*L/fs);ax4.set_xlim(0,20*L/fs)
-        ax5.plot(t,s_t);ax5.set_xlim(0,20*L/fs);fig.show()
+        ax1.set_xlim(0, 20*L/fs)
+        ax2.set_xlim(0, 20*L/fs)
+        ax3.set_xlim(0, 20*L/fs)
+        ax4.set_xlim(0, 20*L/fs)
+        ax5.plot(t, s_t)
+        ax5.set_xlim(0,20*L/fs)
         ax5.set_title('$s(t) = I(t) cos(2 \pi f_c t) - Q(t) sin(2 \pi f_c t)$')
-
+        plt.show()
+        plt.close()
     result = dict()
-    result['s(t)'] =s_t;result['I(t)'] = I;result['Q(t)'] = Q;result['t'] = t
+    result['s(t)'] = s_t
+    result['I(t)'] = I
+    result['Q(t)'] = Q
+    result['t'] = t
     return result
 
-def qpsk_demod(r,fc,OF,enable_plot=False):
+def qpsk_demod(r, fc, OF, enable_plot = False):
     """
     Demodulate a conventional QPSK signal
     Parameters:
@@ -111,9 +119,9 @@ def qpsk_demod(r,fc,OF,enable_plot=False):
     """
     fs = OF*fc # sampling frequency
     L = 2*OF # number of samples in 2Tb duration
-    t=np.arange(0,len(r)/fs,1/fs) # time base
-    x=r*np.cos(2*np.pi*fc*t) # I arm
-    y=-r*np.sin(2*np.pi*fc*t) # Q arm
+    t = np.arange(0,len(r)/fs,1/fs) # time base
+    x = r*np.cos(2*np.pi*fc*t) # I arm
+    y = -r*np.sin(2*np.pi*fc*t) # Q arm
     x = np.convolve(x,np.ones(L)) # integrate for L (Tsym=2*Tb) duration
     y = np.convolve(y,np.ones(L)) #integrate for L (Tsym=2*Tb) duration
 
@@ -128,7 +136,7 @@ def qpsk_demod(r,fc,OF,enable_plot=False):
         axs.plot(x[0:200],y[0:200],'o');fig.show()
     return a_hat
 
-def oqpsk_mod(a,fc,OF,enable_plot=False):
+def oqpsk_mod(a, fc, OF, enable_plot = False):
     """
     Modulate an incoming binary stream using OQPSK
     Parameters:
@@ -144,23 +152,24 @@ def oqpsk_mod(a,fc,OF,enable_plot=False):
           t : time base for the carrier modulated signal
     """
     L = 2*OF # samples in each symbol (QPSK has 2 bits in each symbol)
-    I = a[0::2];Q = a[1::2] #even and odd bit streams
+    I = a[0::2]
+    Q = a[1::2] #even and odd bit streams
     # even/odd streams at 1/2Tb baud
     from scipy.signal import upfirdn #NRZ encoder
-    I = upfirdn(h=[1]*L, x=2*I-1, up = L)
-    Q = upfirdn(h=[1]*L, x=2*Q-1, up = L)
+    I = upfirdn(h = [1]*L, x = 2*I-1, up = L)
+    Q = upfirdn(h = [1]*L, x = 2*Q-1, up = L)
 
-    I = np.hstack((I,np.zeros(L//2))) # padding at end
-    Q = np.hstack((np.zeros(L//2),Q)) # padding at start
+    I = np.hstack((I, np.zeros(L//2))) # padding at end
+    Q = np.hstack((np.zeros(L//2), Q)) # padding at start
 
     fs = OF*fc # sampling frequency
-    t=np.arange(0,len(I)/fs,1/fs)  #time base
-    I_t = I*np.cos(2*np.pi*fc*t);Q_t = -Q*np.sin(2*np.pi*fc*t)
+    t = np.arange(0, len(I)/fs, 1/fs)  #time base
+    I_t = I*np.cos(2*np.pi*fc*t)
+    Q_t = -Q*np.sin(2*np.pi*fc*t)
     s = I_t + Q_t # QPSK modulated baseband signal
 
     if enable_plot:
         fig = plt.figure(constrained_layout=True)
-
         from matplotlib.gridspec import GridSpec
         gs = GridSpec(3, 2, figure=fig)
         ax1 = fig.add_subplot(gs[0, 0]);ax2 = fig.add_subplot(gs[0, 1])
@@ -178,12 +187,17 @@ def oqpsk_mod(a,fc,OF,enable_plot=False):
         ax5.set_title('$s(t) = I(t) cos(2 \pi f_c t) - Q(t) sin(2 \pi f_c t)$')
 
         fig, axs = plt.subplots(1, 1)
-        axs.plot(I,Q);fig.show()#constellation plot
+        axs.plot(I,Q)
+        plt.show()
+        plt.close()
     result = dict()
-    result['s(t)'] =s;result['I(t)'] = I;result['Q(t)'] = Q;result['t'] = t
+    result['s(t)'] =s
+    result['I(t)'] = I
+    result['Q(t)'] = Q
+    result['t'] = t
     return result
 
-def oqpsk_demod(r,N,fc,OF,enable_plot=False):
+def oqpsk_demod(r, N, fc, OF, enable_plot = False):
     """
     Demodulate a OQPSK signal
     Parameters:
@@ -203,7 +217,7 @@ def oqpsk_demod(r,N,fc,OF,enable_plot=False):
     x = np.convolve(x, np.ones(L)) # integrate for L (Tsym=2*Tb) duration
     y = np.convolve(y, np.ones(L)) #integrate for L (Tsym=2*Tb) duration
 
-    x = x[L-1 : -1-L : L] # I arm - sample at every symbol instant Tsym
+    x = x[L-1 : -1-L : L]         # I arm - sample at every symbol instant Tsym
     y = y[L+L//2-1 : -1-L//2 : L] # Q arm - sample at every symbol starting at L+L/2-1th sample
     a_hat = np.zeros(N)
     a_hat[0::2] = (x > 0) # even bits
@@ -212,7 +226,8 @@ def oqpsk_demod(r,N,fc,OF,enable_plot=False):
     if enable_plot:
         fig, axs = plt.subplots(1, 1)
         axs.plot(x[0:200], y[0:200], 'o')
-        fig.show()
+        plt.show()
+        plt.close()
     return a_hat
 
 def piBy4_dqpsk_diff_encoding(a,enable_plot=False):
@@ -240,7 +255,9 @@ def piBy4_dqpsk_diff_encoding(a,enable_plot=False):
     if enable_plot:#constellation plot
         fig, axs = plt.subplots(1, 1)
         axs.plot(u,v,'o');
-        axs.set_title('Constellation');fig.show()
+        axs.set_title('Constellation');
+        plt.show()
+        plt.close()
     return (u,v)
 
 def piBy4_dqpsk_mod(a,fc,OF,enable_plot = False):
@@ -292,7 +309,8 @@ def piBy4_dqpsk_mod(a,fc,OF,enable_plot = False):
         ax2.set_xlim([0,10*L/fs])
         ax3.set_xlim([0,10*L/fs])
         ax4.set_xlim([0,10*L/fs])
-        fig.show()
+        plt.show()
+        plt.close()
 
     result = dict()
     result['s(t)'] =s_t;result['U(t)'] = U;result['V(t)'] = V;result['t'] = t
@@ -343,7 +361,9 @@ def piBy4_dqpsk_demod(r,fc,OF,enable_plot=False):
     if enable_plot:#constellation plot
         fig, axs = plt.subplots(1, 1)
         axs.plot(w,z,'o')
-        axs.set_title('Constellation');fig.show()
+        axs.set_title('Constellation')
+        plt.show()
+        plt.close()
     return a_cap
 
 def msk_mod(a, fc, OF, enable_plot = False):
@@ -394,7 +414,8 @@ def msk_mod(a, fc, OF, enable_plot = False):
         ax3.set_ylabel('s(t)')
         ax1.set_xlim([-Tb,20*Tb]);ax2.set_xlim([-Tb,20*Tb])
         ax3.set_xlim([-Tb,20*Tb])
-        fig.show()
+        plt.show()
+        plt.close()
 
     result = dict()
     result['s(t)']=s_t;result['sI(t)']=sI_t;result['sQ(t)']=sQ_t;result['t']=t
@@ -452,7 +473,7 @@ def gaussianLPF(BT, Tb, L, k):
     # truncated time limits for the filter
     t = np.arange(start = -k*Tb, stop = k*Tb + Tb/L, step = Tb/L)
     h = B*np.sqrt(2*np.pi/(np.log(2)))*np.exp(-2 * (t*np.pi*B)**2 /(np.log(2)))
-    h_norm=h/np.sum(h)
+    h_norm = h/np.sum(h)
     return h_norm
 
 def gmsk_mod(a,fc,L,BT,enable_plot=False):
@@ -508,7 +529,8 @@ def gmsk_mod(a,fc,L,BT,enable_plot=False):
         axs[1,2].plot(t,s_t);axs[1,2].set_title('s(t)');
         axs[1,2].set_xlim(0,20*Tb)
         axs[1,3].plot(I,Q);axs[1,3].set_title('constellation')
-        fig.show()
+        plt.show()
+        plt.close()
     return (s_t,s_complex)
 
 def gmsk_demod(r_complex,L):
@@ -609,7 +631,7 @@ def bfsk_noncoherent_demod(r_t,fc,fd,L,fs):
     # square and add
     x = r1c**2 + r1s**2
     y = r2c**2 + r2s**2
-    a_hat=((x-y)>0).astype(int) # compare and decide
+    a_hat = ((x-y)>0).astype(int) # compare and decide
     return a_hat
 
 

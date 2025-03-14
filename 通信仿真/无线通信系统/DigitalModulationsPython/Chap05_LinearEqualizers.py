@@ -8,39 +8,35 @@ Created on Sun Mar  9 17:39:10 2025
 
 
 
-#%%
-
-
-
-
 #%% Program 69: DigiCommPy\chapter 5\zf equalizer test.py: Simulation of zero-forcing equalizer
 import numpy as np #for numerical computing
 import matplotlib.pyplot as plt #for plotting functions
 from numpy import pi,log,convolve
 from DigiCommPy.equalizers import zeroForcing
-nSamp=5 #%Number of samples per symbol determines baud rate Tsym
-Fs=100 # Sampling Frequency of the system
-Ts=1/Fs # Sampling time
-Tsym=nSamp*Ts # symbol time period
+nSamp = 5 #%Number of samples per symbol determines baud rate Tsym
+Fs = 100 # Sampling Frequency of the system
+Ts = 1/Fs # Sampling time
+Tsym = nSamp*Ts # symbol time period
 
 #Define transfer function of the channel
-k=6 # define limits for computing channel response
+k = 6 # define limits for computing channel response
 N0 = 0.001 # Standard deviation of AWGN channel noise
-t = np.arange(start=-k*Tsym,stop=k*Tsym,step=Ts) # time base defined till +/-kTsym
+t = np.arange(start = -k*Tsym, stop = k*Tsym, step = Ts) # time base defined till +/-kTsym
 h_t = 1/(1+(t/Tsym)**2) # channel model, replace with your own model
 h_t = h_t + N0*np.random.randn(len(h_t)) # add Noise to the channel response
 h_k = h_t[0::nSamp] # downsampling to represent symbol rate sampler
 t_inst=t[0::nSamp] # symbol sampling instants
 
 fig, ax = plt.subplots(nrows=1, ncols = 1)
-ax.plot(t,h_t,label='continuous-time model');#response at sampling instants
+ax.plot(t, h_t, label = 'continuous-time model');#response at sampling instants
 # channel response at symbol sampling instants
 ax.stem(t_inst, h_k, 'r', label='discrete-time model', )
 ax.legend()
-ax.set_title('Channel impulse response');
+ax.set_title('Channel impulse response')
 ax.set_xlabel('Time (s)')
 ax.set_ylabel('Amplitude')
-fig.show()
+plt.show()
+plt.close()
 
 # Equalizer Design Parameters
 N = 14 # Desired number of taps for equalizer filter
@@ -74,7 +70,8 @@ ax.legend()
 ax.set_title('Frequency response');
 ax.set_ylabel('Magnitude(dB)');
 ax.set_xlabel('Normalized frequency(x $\pi$ rad/sample)');
-fig.show()
+plt.show()
+plt.close()
 
 #Plot equalizer input and output(time-domain response)
 fig, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, figsize=(6, 8), constrained_layout=True)
@@ -86,7 +83,8 @@ ax2.stem( np.arange(0,len(d_k)), d_k, );
 ax2.set_title('Equalizer output- N=={} Delay={} error={}'.format(N,delay,mse));
 ax2.set_xlabel('Samples');
 ax2.set_ylabel('Amplitude');
-fig.show()
+plt.show()
+plt.close()
 
 
 
@@ -120,8 +118,8 @@ ax.legend()
 ax.set_title('Channel impulse response');
 ax.set_xlabel('Time (s)')
 ax.set_ylabel('Amplitude')
-fig.show()
-
+plt.show()
+plt.close()
 # Equalizer Design Parameters
 N = 14 # Desired number of taps for equalizer filter
 
@@ -152,8 +150,8 @@ ax1.set_ylabel('Amplitude');
 ax2.stem( np.arange(0,len(d_k)), d_k, );
 ax2.set_title('Equalizer output- N=={} Delay={} error={}'.format(N,opt_delay,mse))
 ax2.set_xlabel('Samples');ax2.set_ylabel('Amplitude')
-fig.show()
-
+plt.show()
+plt.close()
 
 #%% Program 72: DigiCommPy\chapter 5\mmse eq delay opti.py: Delay optimization of MMSE eq.
 
@@ -182,7 +180,9 @@ for i,N in enumerate(Ns): #sweep number of equalizer taps
     ax.plot(np.arange(0,maxDelay),np.log10(mse), label = 'N='+str(N))
 ax.set_title('MSE Vs eq. delay for given channel and equalizer lengths')
 ax.set_xlabel('Equalizer delay');ax.set_ylabel('$log_{10}$[mse]');
-ax.legend();fig.show()
+ax.legend()
+plt.show()
+plt.close()
 #display optimal delays for each selected filter length N. this will correspond
 #with the bottom of the buckets displayed in the plot
 print('Optimal Delays for each N value ->{}'.format(optimalDelay))
@@ -253,15 +253,16 @@ ax1.set_xlabel('$E_b/N_0$(dB)')
 ax1.set_ylabel('Probability of Symbol Error-$P_s$')
 ax1.legend()
 ax1.set_ylim(bottom = 10**-4, top = 1)
-fig1.show()
+plt.show()
+plt.close()
 
 # compute and plot channel characteristics
 Omega, H_c = freqz(h_c) #frequency response of the channel
 fig2, (ax2,ax3) = plt.subplots(nrows = 1, ncols = 2)
 ax2.stem(h_c, ) # time domain
 ax3.plot(Omega, 20*np.log10(abs(H_c)/max(abs(H_c))))
-fig2.show()
-
+plt.show()
+plt.close()
 
 #%% Program 75: DigiCommPy\chapter 5\lms test.py: Verifying the LMS algorithm
 import numpy as np

@@ -67,7 +67,7 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 #%% 1 初始化参数
 K = 64            # OFDM子载波数量
 channelResponse = np.array([1, 0, 0.3+0.3j])  # 随意仿真信道冲击响应
-CP = channelResponse.size - 1       # 25%的循环前缀长度, 实际上只需要取 >= len(H) -1  = L-1 就够了，
+CP = channelResponse.size - 1       # 25%的循环前缀长度, 实际上只需要取 >= len(H) - 1  = L-1 就够了，
 P = 8             # 导频数
 pilotValue = 3 + 3j                 # 导频格式
 Modulation_type = 'QAM16'           # 调制方式，可选BPSK、QPSK、8PSK、QAM16、QAM64
