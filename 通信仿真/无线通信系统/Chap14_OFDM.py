@@ -247,7 +247,7 @@ plt.close()
 
 
 #%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
-
+from tqdm import tqdm
 from Modulations import modulator
 from ChannelModels import add_awgn_noise
 def ser_rayleigh(EbN0dB, MOD_TYPE, M):
@@ -267,7 +267,7 @@ def ser_rayleigh(EbN0dB, MOD_TYPE, M):
         for i in range(len(EsN0)):
             g = 1.5 / (M-1)
             fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
-            SER[i] = 4/np.pi * (1-1/np.sqrt(M)) * scipy.integrate.quad(fun, 0, np.pi/2)[0] - 4/np.pi * (1-1/np.sqrt(M))**2 * scipy.integrate.quad(fun, 0, np.pi/4)[0]
+            SER[i] = 4/np.pi * (1 - 1/np.sqrt(M)) * scipy.integrate.quad(fun, 0, np.pi/2)[0] - 4/np.pi * (1 - 1/np.sqrt(M))**2 * scipy.integrate.quad(fun, 0, np.pi/4)[0]
     elif MOD_TYPE.lower() == "pam":
         SER = np.zeros(EsN0.size)
         for i in range(len(EsN0)):
@@ -291,10 +291,10 @@ colors = ['yellow', 'g', 'pink', 'b', 'c', 'r', 'k']
 
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
-for m, M in  enumerate(arrayOfM):
+for m, M in enumerate(arrayOfM):
     print(f"{m}/{len(arrayOfM)}")
     k = int(np.log2(M))
-    EsN0dB = 10*np.log10(k*N/(N+Ncp)) + EbN0dB
+    EsN0dB = 10*np.log10(k*N/(N + Ncp)) + EbN0dB
     errors= np.zeros(EsN0dB.size)
 
     modem, Es, bps = modulator(MOD_TYPE, M)
@@ -302,7 +302,7 @@ for m, M in  enumerate(arrayOfM):
 
     for i, esnodB in tqdm(enumerate(EsN0dB)):
         for j, sym in enumerate(range(nSym)):
-            # print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
+            ## print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
             ## Transmitter
             uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
             X = modem.modulate(uu)
@@ -345,20 +345,25 @@ plt.show()
 plt.close()
 
 
+#%% My FFT with piolit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #%%
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
