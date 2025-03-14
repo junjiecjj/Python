@@ -83,11 +83,11 @@ P = P + 1                           # 导频的数量也需要加1
 #%%  2 可视化导频插入的方式
 # 可视化数据和导频的插入方式
 dataCarriers = np.delete(allCarriers, pilotCarriers)
-fig, axs = plt.subplots(1,1, figsize=(8, 2), constrained_layout=True)
+fig, axs = plt.subplots(1,1, figsize=(8, 2), constrained_layout = True)
 axs.plot(pilotCarriers, np.zeros_like(pilotCarriers), 'bo', label='pilot')
 axs.plot(dataCarriers, np.zeros_like(dataCarriers), 'ro', label='data')
 
-axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize = 20, width = 3,  )
+axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 20, width = 3,  )
 labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 # [label.set_fontsize(20) for label in labels] #刻度值字号
@@ -101,8 +101,8 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 axs.set_yticks([])
 axs.set_xlim((-1, K))
 axs.set_ylim((-0.1, 0.3))
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
-plt.xlabel('Carrier index', fontproperties=font)
+font = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 25)
+plt.xlabel('Carrier index', fontproperties = font)
 
 axs.grid(True)
 filepath2 = '/home/jack/snap/'

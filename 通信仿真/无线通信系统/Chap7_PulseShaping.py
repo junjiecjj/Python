@@ -106,7 +106,6 @@ Fs = L/Tsym
 
 p, t, filtDelay = sincFunction(L, span)
 t = t*Tsym
-
 f, Y, A, Pha, R, I = freqDomainView(p, Fs, type = 'double')
 
 ##### plot
@@ -339,7 +338,7 @@ axs.set_xlim(0, 150)  #拉开坐标轴范围显示投影
 plt.show()
 plt.close()
 
-# Program 7.14: Matched ﬁltering with SRRC pulse shape
+# Program 7.14: Matched filtering with SRRC pulse shape
 vCap = scipy.signal.convolve(r, p, 'full')
 ##### plot
 fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
@@ -361,11 +360,9 @@ axs.set_xlim(0, 20)  #拉开坐标轴范围显示投影
 plt.show()
 plt.close()
 
-
 dCap = modem.demodulate(uCap, outputtype = 'int',)
 
-
-#%% Program 7.17: mpam srrc matched filtering.m: Performance simulation of an MPAM modulation based communication system with SRRC transmit and matched ﬁlters
+#%% Program 7.17: mpam srrc matched filtering.m: Performance simulation of an MPAM modulation based communication system with SRRC transmit and matched filters
 # from Chap6_PerformanceofDigitalModulations import ser_awgn
 def Qfun(x):
     return 0.5 * scipy.special.erfc(x / np.sqrt(2))
@@ -390,12 +387,10 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
         SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
     return SER
 
-
 N = 100000
 MOD_TYPE = 'pam'
 M = 4
 modem, Es, bps = modulator(MOD_TYPE, M)
-
 EbN0dB = np.arange(-4, 26, 2 )
 beta = 0.3
 span = 8
@@ -404,20 +399,18 @@ p, t, filtDelay = srrcFunction(beta, L, span)
 
 SER_sim = np.zeros(EbN0dB.size)
 snr = 10*np.log10(np.log2(M)) + EbN0dB
-
 for i, snrdB in enumerate(snr):
-    # transmiter
+    ## transmiter
     d = np.random.randint(0, M, N)
     u = modem.modulate(d, inputtype = 'int')
 
     v = np.vstack((u, np.zeros((L-1, u.size))))
     v = v.T.flatten()
     s = scipy.signal.convolve(v, p, 'full')
-
-    # channel
+    ## channel
     r, _ = add_awgn_noise(s, snrdB, L)
 
-    # receiver
+    ## receiver
     vCap = scipy.signal.convolve(r, p, 'full')
     uCap = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] /L
     dCap = modem.demodulate(uCap, outputtype = 'int',)
