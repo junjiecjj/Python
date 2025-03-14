@@ -46,14 +46,14 @@ delay = 11
 # filter the input through the equalizer find equalizer co-effs for given CIR
 
 zf = zeroForcing(N) #initialize ZF equalizer (object) of length N
-mse = zf.design(h=h_k, delay=delay) #design equalizer and get Mean Squared Error
+mse = zf.design(h = h_k, delay = delay) #design equalizer and get Mean Squared Error
 w = zf.w # get the tap coeffs of the designed equalizer filter
 # mse = zf.design(h=h_k) # Try this delay optimized equalizer
 
 r_k = h_k # Test the equalizer with the sampled channel response as input
 d_k = zf.equalize(r_k) # filter input through the eq
 h_sys = zf.equalize(h_k) # overall effect of channel and equalizer
-print('ZF equalizer design: N={} Delay={} error={}'.format(N,delay,mse))
+print('ZF equalizer design: N={} Delay={} error={}'.format(N, delay, mse))
 print('ZF equalizer weights:{}'.format(w))
 
 #Frequency response of channel,equalizer & overall system
@@ -62,10 +62,10 @@ Omega_1, H_F  = freqz(h_k) # frequency response of channel
 Omega_2, W = freqz(w) # frequency response of equalizer
 Omega_3, H_sys = freqz(h_sys) # frequency response of overall system
 
-fig, ax = plt.subplots(nrows=1,ncols = 1)
-ax.plot(Omega_1/pi,20*log(abs(H_F)/max(abs(H_F))),'g',label='channel')
-ax.plot(Omega_2/pi,20*log(abs(W)/max(abs(W))),'r',label='ZF equalizer')
-ax.plot(Omega_3/pi,20*log(abs(H_sys)/max(abs(H_sys))),'k',label='overall system')
+fig, ax = plt.subplots(nrows = 1, ncols = 1)
+ax.plot(Omega_1/pi, 20*log(abs(H_F)/max(abs(H_F))),'g', label = 'channel')
+ax.plot(Omega_2/pi, 20*log(abs(W)/max(abs(W))),'r', label = 'ZF equalizer')
+ax.plot(Omega_3/pi, 20*log(abs(H_sys)/max(abs(H_sys))), 'k', label = 'overall system')
 ax.legend()
 ax.set_title('Frequency response');
 ax.set_ylabel('Magnitude(dB)');
@@ -74,19 +74,17 @@ plt.show()
 plt.close()
 
 #Plot equalizer input and output(time-domain response)
-fig, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, figsize=(6, 8), constrained_layout=True)
+fig, (ax1,ax2) = plt.subplots(nrows = 2, ncols = 1, figsize = (6, 8), constrained_layout = True)
 ax1.stem( np.arange(0,len(r_k)), r_k,  )
-ax1.set_title('Equalizer input');
-ax1.set_xlabel('Samples');
-ax1.set_ylabel('Amplitude');
-ax2.stem( np.arange(0,len(d_k)), d_k, );
-ax2.set_title('Equalizer output- N=={} Delay={} error={}'.format(N,delay,mse));
-ax2.set_xlabel('Samples');
-ax2.set_ylabel('Amplitude');
+ax1.set_title('Equalizer input')
+ax1.set_xlabel('Samples')
+ax1.set_ylabel('Amplitude')
+ax2.stem( np.arange(0,len(d_k)), d_k, )
+ax2.set_title('Equalizer output- N=={} Delay={} error={}'.format(N, delay, mse))
+ax2.set_xlabel('Samples')
+ax2.set_ylabel('Amplitude')
 plt.show()
 plt.close()
-
-
 
 #%% Program 71: DigiCommPy\chapter 5\mmse equalizer test.py: Simulation of MMSE equalizer
 
@@ -113,7 +111,7 @@ t_inst=t[0::nSamp] # symbol sampling instants
 fig, ax = plt.subplots(nrows = 1, ncols = 1)
 ax.plot(t, h_t, label='continuous-time model');#response at all sampling instants
 # channel response at symbol sampling instants
-ax.stem(t_inst, h_k,'r',label = 'discrete-time model', )
+ax.stem(t_inst, h_k, 'r', label = 'discrete-time model', )
 ax.legend()
 ax.set_title('Channel impulse response');
 ax.set_xlabel('Time (s)')
@@ -177,7 +175,7 @@ for i,N in enumerate(Ns): #sweep number of equalizer taps
         mse[j]=mmse_eq.design(h,SNR,delay)
         optimalDelay[i] = mmse_eq.opt_delay
     #plot mse in log scale
-    ax.plot(np.arange(0,maxDelay),np.log10(mse), label = 'N='+str(N))
+    ax.plot(np.arange(0, maxDelay), np.log10(mse), label = 'N='+str(N))
 ax.set_title('MSE Vs eq. delay for given channel and equalizer lengths')
 ax.set_xlabel('Equalizer delay');ax.set_ylabel('$log_{10}$[mse]');
 ax.legend()
@@ -186,8 +184,6 @@ plt.close()
 #display optimal delays for each selected filter length N. this will correspond
 #with the bottom of the buckets displayed in the plot
 print('Optimal Delays for each N value ->{}'.format(optimalDelay))
-
-
 
 #%% Program 73: DigiCommPy\chapter 5\isi equalizers bpsk.py: Performance of linear equalizers
 
@@ -210,17 +206,17 @@ h_c=[0.227, 0.460, 0.688, 0.460, 0.227] # uncomment this for Channel C
 nTaps = 31 # Desired number of taps for equalizer filter
 SER_zf = np.zeros(len(EbN0dBs)); SER_mmse = np.zeros(len(EbN0dBs))
 #-----------------Transmitter---------------------
-inputSymbols=np.random.randint(low=0,high=2,size=N) #uniform random symbols 0s & 1s
+inputSymbols=np.random.randint(low = 0, high = 2, size = N) #uniform random symbols 0s & 1s
 modem = PSKModem(M)
 modulatedSyms = modem.modulate(inputSymbols)
-x = np.convolve(modulatedSyms,h_c) # apply channel effect on transmitted symbols
+x = np.convolve(modulatedSyms, h_c) # apply channel effect on transmitted symbols
 
 for i,EbN0dB in enumerate(EbN0dBs):
-    receivedSyms = awgn(x,EbN0dB) #add awgn noise
+    receivedSyms = awgn(x, EbN0dB) #add awgn noise
 
     # DELAY OPTIMIZED MMSE equalizer
     mmse_eq = MMSEEQ(nTaps) #initialize MMSE equalizer (object) of length nTaps
-    mmse_eq.design(h_c,EbN0dB) #Design MMSE equalizer
+    mmse_eq.design(h_c, EbN0dB) #Design MMSE equalizer
     optDelay = mmse_eq.opt_delay #get the optimum delay of the equalizer
     #filter received symbols through the designed equalizer
     equalizedSamples = mmse_eq.equalize(receivedSyms)

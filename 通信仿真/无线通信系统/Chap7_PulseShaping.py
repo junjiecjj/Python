@@ -420,9 +420,7 @@ for i, snrdB in enumerate(snr):
     # receiver
     vCap = scipy.signal.convolve(r, p, 'full')
     uCap = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] /L
-
     dCap = modem.demodulate(uCap, outputtype = 'int',)
-
     SER_sim[i] = np.sum(dCap != d)/N
 SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)

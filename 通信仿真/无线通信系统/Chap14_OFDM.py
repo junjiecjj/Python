@@ -16,24 +16,22 @@ import commpy
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
 # plt.rcParams["font.family"] = "SimSun"
-plt.rcParams['font.size'] = 14  # 设置全局字体大小
-plt.rcParams['axes.titlesize'] = 22  # 设置坐标轴标题字体大小
-plt.rcParams['axes.labelsize'] = 22  # 设置坐标轴标签字体大小
+plt.rcParams['font.size'] = 14        # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22   # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22   # 设置坐标轴标签字体大小
 plt.rcParams['xtick.labelsize'] = 22  # 设置 x 轴刻度字体大小
 plt.rcParams['ytick.labelsize'] = 22  # 设置 y 轴刻度字体大小
 plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
 plt.rcParams["figure.figsize"] = [8, 6] # 调整生成的图表最大尺寸
-# plt.rcParams['figure.dpi'] = 300 # 每英寸点数
+# plt.rcParams['figure.dpi'] = 300      # 每英寸点数
 plt.rcParams['lines.linestyle'] = '-'
 plt.rcParams['lines.linewidth'] = 2     # 线条宽度
 plt.rcParams['lines.color'] = 'blue'
 plt.rcParams['lines.markersize'] = 6 # 标记大小
 # plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
-plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
-plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
+plt.rcParams['figure.facecolor'] = 'white'        # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
-
-
 
 #%%
 # 生成 循环矩阵
@@ -64,12 +62,9 @@ def circularConvolve(h, s, N):
 
 # # generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
 # generateVec =  [1 , 2  , 3 , 4  ]
-
 # X = np.array(generateVec)
-
 # L = len(generateVec)
 # A = CirculantMatric(X, L)
-
 N = 8
 h = np.array([-0.4878, -1.5351, 0.2355])
 s = np.array([-0.0155, 2.5770, 1.9238, -0.0629, -0.8105, 0.6727, -1.5924, -0.8007])
@@ -93,13 +88,13 @@ r1 = scipy.fft.ifft(S*H)
 print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
 
 
-#%% Program 14.2: add cyclic preﬁx.m: Function to add cyclic preﬁx of length Ncp symbols
+#%% Program 14.2: add cyclic prefix.m: Function to add cyclic prefix of length Ncp symbols
 def add_cyclic_prefix(x, Ncp):
     s = np.hstack((x[-Ncp:], x))
     return s
 
-#%% Program 14.3: remove cyclic preﬁx.m: Function to remove the cyclic preﬁx from the OFDM symbol
-def remove_cyclic_prefix(r,Ncp,N):
+#%% Program 14.3: remove cyclic prefix.m: Function to remove the cyclic prefix from the OFDM symbol
+def remove_cyclic_prefix(r, Ncp, N):
     y = r[Ncp : Ncp+N]
     return y
 
@@ -351,17 +346,6 @@ plt.close()
 
 
 #%%
-
-
-
-
-
-
-#%%
-
-
-
-
 
 
 
