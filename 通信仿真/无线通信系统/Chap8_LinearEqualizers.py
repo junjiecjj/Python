@@ -318,7 +318,7 @@ for idx, channeltype in enumerate(channelTypes):
     h_c = H_C[idx]
     x = scipy.signal.convolve(s, h_c)
     for i, EbN0db in enumerate(EbN0dB):
-        # channel
+        ## channel
         r, _ = add_awgn_noise(x, EbN0db)
 
         ## Receiver
