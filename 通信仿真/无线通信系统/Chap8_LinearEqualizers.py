@@ -215,7 +215,6 @@ axs[1].set_ylabel('Amplitude',)
 axs[1].set_title(f"Equalizer output- N={N}, Delay = {optDelay}, Error = {error}" )
 # axs[1].set_xlim(-1.5 , 1.5)  #拉开坐标轴范围显示投影
 # axs[1].legend()
-
 plt.show()
 plt.close()
 
@@ -291,7 +290,6 @@ H_C[0] = h_cA
 H_C[1] = h_cB
 H_C[2] = h_cC
 markers = ['none', "o", 'v', ]
-
 
 colors = ['k', 'r', 'b']
 for idx, channeltype in enumerate(channelTypes):
