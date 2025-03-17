@@ -1,0 +1,17 @@
+setup.py
+DigiCommPy/__init__.py
+DigiCommPy/channels.py
+DigiCommPy/compensation.py
+DigiCommPy/equalizers.py
+DigiCommPy/errorRates.py
+DigiCommPy/essentials.py
+DigiCommPy/impairments.py
+DigiCommPy/modem.py
+DigiCommPy/passband_modulations.py
+DigiCommPy/pulseshapers.py
+DigiCommPy/signalgen.py
+DigiCommPy/utility.py
+DigiCommPy.egg-info/PKG-INFO
+DigiCommPy.egg-info/SOURCES.txt
+DigiCommPy.egg-info/dependency_links.txt
+DigiCommPy.egg-info/top_level.txt
