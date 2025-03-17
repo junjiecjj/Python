@@ -44,8 +44,8 @@ arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 
 mod_type = 'QAM'
-nSym = 10**8
-arrayOfM = [4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
+nSym =  10**7
+arrayOfM = [ 64,  ] # uncomment this line if MOD_TYPE='QAM'
 
 beta = 0.3
 span = 8
@@ -70,7 +70,7 @@ for i, M in enumerate(arrayOfM):
 
     for j, EsN0dB in enumerate(EsN0dBs):
 
-        d = np.random.randint(low=0, high = M, size=nSym) # uniform random symbols from 0 to M-1
+        d = np.random.randint(low = 0, high = M, size = nSym) # uniform random symbols from 0 to M-1
         u = modem.modulate(d) #modulate
 
         ##  脉冲成型 + 上变频-> 基带信号

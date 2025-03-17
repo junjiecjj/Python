@@ -34,8 +34,6 @@ https://github.com/darcamo/pyphysim
 https://zhuanlan.zhihu.com/p/637862608
 
 
-
-
 ## 信道估计---LS、MMSE、LMMSE准则
 信道估计主要分为非盲信道估计和盲信道估计。顾名思义，非盲信道估计需要使用基站和接收机均已知的导频序列进行信道估计，并使用不同的时频域插值技术来估计导频之间或者符号之间的子载波上的信道响应。目前主要使用的非盲信道估计包括最小二乘（LS）信道估计、最小均方误差（MMSE）信道估计、基于DFT的信道估计以及基于判决反馈信道估计等；而盲信道估计不需要已经已知的导频序列，主要包括基于最大期望的信道估计、基于子空间的信道估计技术等。
 https://blog.csdn.net/ddatalent/article/details/121132095
@@ -47,7 +45,6 @@ https://blog.csdn.net/ddatalent/article/details/121132095
 
 https://zhuanlan.zhihu.com/p/348078794/
 """
-
 
 #%%
 import numpy as np
@@ -77,8 +74,7 @@ allCarriers = np.arange(K)          # 子载波编号 ([0, 1, ... K-1])
 pilotCarrier = allCarriers[::K//P]  # 每间隔P个子载波一个导频
 # 为了方便信道估计，将最后一个子载波也作为导频
 pilotCarriers = np.hstack([pilotCarrier, np.array([allCarriers[-1]])])
-P = P + 1                           # 导频的数量也需要加1
-
+P = P + 1                           # 导频的数量也需要加 1
 
 #%%  2 可视化导频插入的方式
 # 可视化数据和导频的插入方式
