@@ -9,6 +9,7 @@ from numpy import log2,sqrt,sin,pi,exp
 from scipy.special import erfc
 from scipy.integrate import quad
 
+#%% AWGN
 def ser_awgn(EbN0dBs,mod_type=None,M=0,coherence=None):
     """
     Theoretical Symbol Error Rates for various modulations over AWGN
@@ -28,12 +29,12 @@ def ser_awgn(EbN0dBs,mod_type=None,M=0,coherence=None):
         raise ValueError('Invalid value for mod_type')
     if (M<2) or ((M & (M -1))!=0): #if M not a power of 2
         raise ValueError('M should be a power of 2')
-    
+
     func_dict = {'psk': psk_awgn,'qam':qam_awgn,'pam':pam_awgn,'fsk':fsk_awgn}
-    
+
     gamma_s = log2(M)*(10**(EbN0dBs/10))
     if mod_type.lower()=='fsk': #call appropriate function
-        return func_dict[mod_type.lower()](M,gamma_s,coherence) 
+        return func_dict[mod_type.lower()](M,gamma_s,coherence)
     else:
         return func_dict[mod_type.lower()](M,gamma_s) #call appropriate function
 
@@ -81,6 +82,7 @@ def fsk_awgn(M_val,gamma_s_vals,coherence):
         raise ValueError('For FSK coherence must be \'coherent\' or \'noncoherent\'')
     return SERs
 
+#%% Rayleigh
 def ser_rayleigh(EbN0dBs,mod_type=None,M=0):
     """
     Theoretical Symbol Error Rates for various modulations over noise added Rayleigh
@@ -97,21 +99,21 @@ def ser_rayleigh(EbN0dBs,mod_type=None,M=0):
     if mod_type==None:
         raise ValueError('Invalid value for mod_type')
     if (M<2) or ((M & (M -1))!=0): #if M not a power of 2
-        raise ValueError('M should be a power of 2')    
-    func_dict = {'psk': psk_rayleigh,'qam':qam_rayleigh,'pam':pam_rayleigh}    
+        raise ValueError('M should be a power of 2')
+    func_dict = {'psk': psk_rayleigh,'qam':qam_rayleigh,'pam':pam_rayleigh}
     gamma_s_vals = log2(M)*(10**(EbN0dBs/10))
-    return func_dict[mod_type.lower()](M,gamma_s_vals) #call appropriate function
+    return func_dict[mod_type.lower()](M, gamma_s_vals) #call appropriate function
 
 def mgf_rayleigh(g,gamma_s): #MGF function for Rayleigh channel
     fun = lambda x: 1/(1+(g*gamma_s/(sin(x)**2))) # MGF function
-    return fun        
+    return fun
 
 def psk_rayleigh(M,gamma_s_vals):
     gamma_b = gamma_s_vals/log2(M)
     if (M==2):
         SERs = 0.5*(1-sqrt(gamma_b/(1+gamma_b)))
     else:
-        SERs = np.zeros(len(gamma_s_vals))     
+        SERs = np.zeros(len(gamma_s_vals))
         g = (sin(pi/M))**2
         for i, gamma_s in enumerate(gamma_s_vals):
             (y,_) = quad(mgf_rayleigh(g,gamma_s),0,pi*(M-1)/M) #integration
@@ -120,7 +122,7 @@ def psk_rayleigh(M,gamma_s_vals):
 
 def qam_rayleigh(M,gamma_s_vals):
     if (M==1) or (np.mod(np.log2(M),2)!=0): # M not a even power of 2
-        raise ValueError('Only square MQAM supported. M must be even power of 2')    
+        raise ValueError('Only square MQAM supported. M must be even power of 2')
     SERs = np.zeros(len(gamma_s_vals))
     g = 1.5/(M-1)
     for i, gamma_s in enumerate(gamma_s_vals):
@@ -134,16 +136,17 @@ def pam_rayleigh(M,gamma_s_vals):
     SERs = np.zeros(len(gamma_s_vals))
     g = 3/(M**2-1)
     for i, gamma_s in enumerate(gamma_s_vals):
-        (y1,_) = quad(mgf_rayleigh(g,gamma_s),0,pi/2) #integration 
+        (y1,_) = quad(mgf_rayleigh(g,gamma_s),0,pi/2) #integration
         SERs[i] = 2*(M-1)/(M*pi)*y1
     return SERs
 
+#%% Rician
 def ser_rician(K_dB,EbN0dBs,mod_type=None,M=0):
     """
     Theoretical Symbol Error Rates for various modulations over noise added Rician
     flat-fading channel
     Parameters:
-        K_dB: Rician K-factor in dB    
+        K_dB: Rician K-factor in dB
         EbN0dBs : list of SNR per bit values in dB scale
         mod_type : 'PSK','QAM','PAM','FSK'
         M : Modulation level for the chosen modulation.
@@ -156,7 +159,7 @@ def ser_rician(K_dB,EbN0dBs,mod_type=None,M=0):
         raise ValueError('Invalid value for mod_type')
     if (M<2) or ((M & (M -1))!=0): #if M not a power of 2
         raise ValueError('M should be a power of 2')
-    
+
     func_dict = {'psk': psk_rician,'qam':qam_rician,'pam':pam_rician}
     gamma_s_vals = log2(M)*(10**(EbN0dBs/10))
     #call appropriate function
@@ -170,11 +173,11 @@ def mgf_rician(K_dB,g,gamma_s): #MGF function for Rician channel
 
 def psk_rician(K_dB,M,gamma_s_vals):
     gamma_b = gamma_s_vals/log2(M)
-    
+
     if (M==2):
         SERs = 0.5*(1-sqrt(gamma_b/(1+gamma_b)))
     else:
-        SERs = np.zeros(len(gamma_s_vals))     
+        SERs = np.zeros(len(gamma_s_vals))
         g = (sin(pi/M))**2
         for i, gamma_s in enumerate(gamma_s_vals):
             (y,_) = quad(mgf_rician(K_dB,g,gamma_s),0,pi*(M-1)/M) #integration
@@ -197,6 +200,6 @@ def pam_rician(K_dB,M,gamma_s_vals):
     SERs = np.zeros(len(gamma_s_vals))
     g = 3/(M**2-1)
     for i, gamma_s in enumerate(gamma_s_vals):
-        (y1,_) = quad(mgf_rician(K_dB,g,gamma_s),0,pi/2) #integration 
+        (y1,_) = quad(mgf_rician(K_dB,g,gamma_s),0,pi/2) #integration
         SERs[i] = 2*(M-1)/(M*pi)*y1
     return SERs

@@ -77,18 +77,14 @@ c = scipy.signal.upfirdn([1,1,1], np.arange(10), 2)
 c = np.convolve([1,1,1], [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9])
 # array([ 0,  0,  1,  1,  3,  2,  5,  3,  7,  4,  9,  5, 11,  6, 13,  7, 15,  8, 17,  9,  9])
 
-
 ## 从以上结果可以看出，
 # scipy.signal.upfirdn(h, x, up, down,  )
 # 就是先用 up - 1 个0填充x的每两个元素之间，然后与h做卷积，接着从头开始每down个位置取一个元素作为输出
-
-
 
 c = scipy.signal.upfirdn([.5, 1, .5], np.arange(10), 2, 3)  # linear interp, rate 2/3
 # array([ 0. ,  1. ,  2.5,  4. ,  5.5,  7. ,  8.5])
 c = np.convolve([.5, 1, .5], [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9])
 # array([0. , 0. , 0.5, 1. , 1.5, 2. , 2.5, 3. , 3.5, 4. , 4.5, 5. , 5.5,  6. , 6.5, 7. , 7.5, 8. , 8.5, 9. , 4.5])
-
 
 ###==========================================================================
 
@@ -160,10 +156,11 @@ def rcosdesign(beta: float, span: float, sps: float, shape='normal'):
 
 #%% ==================== 输入信号  ====================
 x = 2*np.random.randint(0,2,(10,)) - 1
-x = np.array([0,0,1,1,1,1,1,1,0,0])
+x = 2 * x
+# x = np.array([0,0,1,1,1,1,1,1,0,0])
 # ==================== 设置滤波器 ====================
 span = 6
-sps = 4
+sps = 4   # L
 h = rcosdesign(0.5, span, sps, 'sqrt')
 
 # ==================== 脉冲成型 + 上变频-> 基带信号 ====================
@@ -186,6 +183,12 @@ r_coherent = r * np.exp(-1j * 2 * np.pi * fc * t)
 
 #==================== 下采样 + 匹配滤波 -> 恢复的基带信号 ====================
 z = scipy.signal.upfirdn(h, r_coherent, 1, sps)  ## 此时默认上采样为1，即不进行上采样
+
+#%%选取最佳采样点,
+decision_site = int((z.size - x.size) / 2)
+
+## 每个符号选取一个点作为判决
+x_hat = z[decision_site:decision_site + x.size]
 
 width = 6
 high = 3
@@ -325,7 +328,6 @@ labels = axs[2,1].get_xticklabels() + axs[2,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(25) for label in labels] #刻度值字号
 axs[2,1].grid(linestyle = '--', linewidth = 0.5, )
-
 
 out_fig = plt.gcf()
 # out_fig.savefig(f'upfirdn.eps', )

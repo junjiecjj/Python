@@ -220,7 +220,7 @@ for i,EbN0dB in enumerate(EbN0dBs):
     optDelay = mmse_eq.opt_delay #get the optimum delay of the equalizer
     #filter received symbols through the designed equalizer
     equalizedSamples = mmse_eq.equalize(receivedSyms)
-    y_mmse=equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+    y_mmse = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
 
     # DELAY OPTIMIZED ZF equalizer
     zf_eq = zeroForcing(nTaps) #initialize ZF equalizer (object) of length nTaps

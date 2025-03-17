@@ -421,8 +421,7 @@ def msk_mod(a, fc, OF, enable_plot = False):
     result['s(t)']=s_t;result['sI(t)']=sI_t;result['sQ(t)']=sQ_t;result['t']=t
     return result
 
-
-def msk_demod(r,N,fc,OF):
+def msk_demod(r, N, fc, OF):
     """
     MSK demodulator
     Parameters:
@@ -476,7 +475,7 @@ def gaussianLPF(BT, Tb, L, k):
     h_norm = h/np.sum(h)
     return h_norm
 
-def gmsk_mod(a,fc,L,BT,enable_plot=False):
+def gmsk_mod(a, fc, L, BT,enable_plot = False):
     """
     Function to modulate a binary stream using GMSK modulation
     Parameters:
@@ -531,9 +530,9 @@ def gmsk_mod(a,fc,L,BT,enable_plot=False):
         axs[1,3].plot(I,Q);axs[1,3].set_title('constellation')
         plt.show()
         plt.close()
-    return (s_t,s_complex)
+    return (s_t, s_complex)
 
-def gmsk_demod(r_complex,L):
+def gmsk_demod(r_complex, L):
     """
     Function to demodulate a baseband GMSK signal
     Parameters:
@@ -550,7 +549,7 @@ def gmsk_demod(r_complex,L):
     #sampling indices depend on the truncation length (k) of Gaussian LPF defined in the modulator
     return a_hat
 
-def bfsk_mod(a,fc,fd,L,fs,fsk_type='coherent',enable_plot = False):
+def bfsk_mod(a, fc, fd, L, fs, fsk_type = 'coherent', enable_plot = False):
     """
     Function to modulate an incoming binary stream using BFSK
     Parameters:
@@ -586,7 +585,7 @@ def bfsk_mod(a,fc,fd,L,fs,fsk_type='coherent',enable_plot = False):
         fig, (ax1,ax2)=plt.subplots(2, 1);ax1.plot(t,a_t);ax2.plot(t,s_t);fig.show()
     return (s_t,phase)
 
-def bfsk_coherent_demod(r_t,phase,fc,fd,L,fs):
+def bfsk_coherent_demod(r_t, phase, fc, fd, L, fs):
     """
     Coherent demodulation of BFSK modulated signal
     Parameters:
@@ -605,7 +604,7 @@ def bfsk_coherent_demod(r_t,phase,fc,fd,L,fs):
     a_hat = (y[L-1::L]>0).astype(int) # sample at every sampling instant and detect
     return a_hat
 
-def bfsk_noncoherent_demod(r_t,fc,fd,L,fs):
+def bfsk_noncoherent_demod(r_t, fc, fd, L, fs):
     """
     Non-coherent demodulation of BFSK modulated signal
     Parameters:

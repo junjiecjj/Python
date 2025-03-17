@@ -17,15 +17,16 @@ from DigiCommPy.modem import PSKModem, QAMModem, PAMModem, FSKModem
 from DigiCommPy.channels import awgn
 from DigiCommPy.errorRates import ser_awgn
 
-
 #%%  Performance of modulations in AWGN
 #---------Input Fields------------------------
 nSym = 10**6 # Number of symbols to transmit
-EbN0dBs = np.arange(start = -4, stop = 12, step = 2) # Eb/N0 range in dB for simulation
-mod_type = 'FSK' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
+EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
+mod_type = 'PAM' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
 arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
-#arrayOfM=[4,16,64,256] # uncomment this line if MOD_TYPE='QAM'
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+
+mod_type = 'QAM'
+arrayOfM = [4,16,64,256] # uncomment this line if MOD_TYPE='QAM'
 
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
@@ -58,16 +59,15 @@ for i, M in enumerate(arrayOfM):
     SER_theory = ser_awgn(EbN0dBs, mod_type, M, coherence) #theory SER
     ax.semilogy(EbN0dBs, SER_sim, color = colors[i], marker='o', linestyle='', label='Sim '+str(M)+'-'+mod_type.upper())
     ax.semilogy(EbN0dBs, SER_theory, color = colors[i], linestyle='-', label='Theory '+str(M)+'-'+mod_type.upper())
-
+ax.set_ylim(1e-6, 1)
 ax.set_xlabel('Eb/N0(dB)')
 ax.set_ylabel('SER ($P_s$)')
 ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over AWGN')
 ax.legend()
-fig.show()
+plt.show()
+plt.close()
 
-
-#%%  Performance in Rayleigh ﬂat fading
-
+#%%  Performance in Rayleigh fading
 import sys
 sys.path.append("..")
 import numpy as np #for numerical computing
@@ -80,10 +80,12 @@ from DigiCommPy.errorRates import ser_rayleigh
 
 #---------Input Fields------------------------
 nSym = 10**6 # Number of symbols to transmit
-EbN0dBs = np.arange(start=-4,stop = 12, step = 2) # Eb/N0 range in dB for simulation
+EbN0dBs = np.arange(start=-4,stop = 22, step = 2) # Eb/N0 range in dB for simulation
 mod_type = 'PAM' # Set 'PSK' or 'QAM' or 'PAM
 arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
-#arrayOfM=[4,16,64,256] # uncomment this line if MOD_TYPE='QAM'
+
+mod_type = 'QAM'
+arrayOfM=[4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
 
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem}
 colors = plt.cm.jet(np.linspace(0,1,len(arrayOfM))) # colormap
@@ -111,16 +113,14 @@ for i, M in enumerate(arrayOfM):
     SER_theory = ser_rayleigh(EbN0dBs,mod_type,M) #theory SER
     ax.semilogy(EbN0dBs,SER_sim,color = colors[i],marker='o',linestyle='',label='Sim '+str(M)+'-'+mod_type.upper())
     ax.semilogy(EbN0dBs,SER_theory,color = colors[i],linestyle='-',label='Theory '+str(M)+'-'+mod_type.upper())
-
+ax.set_ylim(1e-3, 1)
 ax.set_xlabel('Eb/N0(dB)');ax.set_ylabel('SER ($P_s$)')
 ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over Rayleigh flat fading channel')
 ax.legend()
-fig.show()
+plt.show()
+plt.close()
 
-
-
-#%%  Performance over Rician ﬂat fading
-
+#%%  Performance over Rician  fading
 import sys
 sys.path.append("..")
 import numpy as np #for numerical computing
@@ -135,12 +135,12 @@ from DigiCommPy.errorRates import ser_rician
 nSym = 10**6 # Number of symbols to transmit
 EbN0dBs = np.arange(start = 0, stop = 22, step = 2) # Eb/N0 range in dB for simulation
 K_dBs = [3, 5, 10, 20] # array of K factors for Rician fading in dB
-mod_type = 'QAM' # Set 'PSK' or 'QAM' or 'PAM'
-M = 4 # M value for the modulation to simulate
+mod_type = 'PAM' # Set 'PSK' or 'QAM' or 'PAM'
+M = 8 # M value for the modulation to simulate
 
-modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem}
-colors = plt.cm.jet(np.linspace(0,1,len(K_dBs))) # colormap
-fig, ax = plt.subplots(nrows=1,ncols = 1)
+modem_dict = {'psk': PSKModem, 'qam':QAMModem, 'pam':PAMModem}
+colors = plt.cm.jet(np.linspace(0, 1, len(K_dBs))) # colormap
+fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
 for i, K_dB in enumerate(K_dBs):
     #-----Initialization of various parameters----
@@ -164,12 +164,25 @@ for i, K_dB in enumerate(K_dBs):
     SER_theory = ser_rician(K_dB, EbN0dBs, mod_type, M)
     ax.semilogy(EbN0dBs,SER_sim,color = colors[i],marker='o',linestyle='',label='Sim K='+str(K_dB)+' dB')
     ax.semilogy(EbN0dBs,SER_theory,color = colors[i],linestyle='-',label='Theory K='+str(K_dB)+' dB')
-
+ax.set_ylim(1e-6, 1)
 ax.set_xlabel('Eb/N0(dB)')
 ax.set_ylabel('SER ($P_s$)')
-ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over Rayleigh flat fading channel')
+ax.set_title(f'Probability of Symbol Error for {M}-{mod_type} over Rayleigh flat fading channel')
 ax.legend()
-fig.show()
+plt.show()
+plt.close()
+
+
+#%%
+
+#%%
+
+#%%
+
+#%%
+
+
+
 
 
 

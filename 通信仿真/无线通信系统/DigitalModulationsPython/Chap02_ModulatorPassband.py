@@ -3,7 +3,19 @@
 """
 Created on Sun Mar  9 17:37:07 2025
 
-@author: jack
+@author: Junjie Chen
+
+关于模拟通信，数字基带传输，数字通带传输，均衡，OFDM的一些思考与总结：
+(一) 模拟通信：主要是将信息承载信号(调制信号)加载到载波上，可以分为：调幅(AM)、调频(FM)，调相(PM)，后两者统称为角度调制。调幅就是用调制信号乘以载波；调频就是用调制信号的积分作为载波的相位；调相就是用调制信号作为载波的相位；三种模拟调制都可以用相干解调和非相干解调。相干解调主要是需要使用锁相环实现载波同步进而相干解调，而飞相干解调主要是通过Hilbert信号得到包络或者相位；
+(二)  数字传输系统的数字信息既可以是来自计算机等终端的数字信号，也可以是模拟信号数字化处理化处理后的脉冲编码信号，这些信号所占据的频率是从零开始或很低频率开始，成为数字基带信号。数字基带传输的含义非常丰富：
+     (1) 教科书上主要是从无码间串扰的角度阐述的，也就是奈奎斯特第一准则，使用脉冲成型和匹配滤波实现无码间串扰ISI。
+     (2) 而现在的很多通信书籍主要是将通信一步步模型抽象为 y = hx + n 的角度阐述的。
+(三) 数字带通传输: 实际中大多数信道(如无线)因具有带通特性而不能直接传送基带信号，这是因为数字基带信号含有丰富的低频分量。为了使数字信号在带通信道中传输，必须使用数字基带信号对载波进行调制，以使得信号与信道匹配。这种用数字基带信号控制载波把数字基带信号变为数字带通信号的过程成为数字调制。把包括调制和解调过程的数字传输系统叫做数字带通传输系统。包括 幅移键控ASK、频移键控FSK、相移键控PSK已经新型数字带通调制技术：最小频移键控MSK和高斯最小频移键控GMSK。
+
+(四) 均衡:首先理清楚什么时候需要均衡，均衡用在哪里。虽然从奈奎斯特第一准则中理论上找到了实现无ISI的方法，但是实际实现时难免存在滤波器的设计误差和信道特性的变化，无法实现理想的传输特性，故在抽样时刻总会存在一定的码间串扰，从而导致性能的下降。为了减少码间串扰的影响，通常在系统中插入一种可调滤波器来矫正或者补偿系统特性，这种起补偿作用的滤波器成为均衡器。通常在均衡系统中，已经把发送端滤波器，信道和接收方滤波器看成一个整体h(t)，y[n] = x[t]*h[t] + n[t]，注意，这时候其实是基带的模型，已经把模拟调制载波等细节都隐含在了h[t]中，信道其实已经是考虑了衰落等的。发送符号 -> 与综合信道卷积 -> +AWGN -> 与均衡系数卷积 -> 解调。
+
+(五) OFDM: 在多径衰落的无线信道上，也会产生码间串扰，这时候为了解决这个问题，除了均衡器之外，还可以采用OFDM。注意，OFDM也是基带模型，发送符号 -> IFFT -> Add CP -> 信道卷积 (计算频域信道) -> AWGN -> Remove CP -> FFT -> 除以频域信道 -> 解调。
+
 """
 
 #%% Program 19: DigiCommPy\chapter 2\bpsk.py: Performance of BPSK using waveform simulation
@@ -29,9 +41,9 @@ axs[0, 0].plot(t, s_bb) # baseband wfm zoomed to first 10 bits
 axs[0, 0].set_xlabel('t(s)')
 axs[0, 1].set_ylabel(r'$s_{bb}(t)$-baseband')
 axs[0, 1].plot(t, s) # transmitted wfm zoomed to first 10 bits
-axs[0, 1].set_xlabel('t(s)');
+axs[0, 1].set_xlabel('t(s)')
 axs[0, 1].set_ylabel('s(t)-with carrier')
-axs[0, 0].set_xlim(0, 10*L);
+axs[0, 0].set_xlim(0, 10*L)
 axs[0, 1].set_xlim(0, 10*L) #signal constellation at transmitter
 axs[1, 0].plot(np.real(s_bb), np.imag(s_bb), 'o')
 axs[1, 0].set_xlim(-1.5, 1.5)
@@ -75,7 +87,7 @@ from DigiCommPy.passband_modulations import bpsk_mod, bpsk_demod
 from DigiCommPy.channels import awgn
 
 N=1000000 # Number of symbols to transmit
-EbN0dB = np.arange(start = -4, stop = 11,step = 2) # Eb/N0 range in dB for simulation
+EbN0dB = np.arange(start = -4, stop = 11, step = 2) # Eb/N0 range in dB for simulation
 L = 16 # oversampling factor,L=Tb/Ts(Tb=bit period,Ts=sampling period)
 # if a carrier is used, use L = Fs/Fc, where Fs >> 2 * Fc
 Fc = 800 # carrier frequency
@@ -95,12 +107,12 @@ for i,EbN0 in enumerate(EbN0dB):
 
     phaseAmbiguity = np.pi # 180* phase ambiguity of Costas loop
     r_bb = r*np.cos(2*np.pi*Fc*t/Fs + phaseAmbiguity) # recovered signal
-    b_hat = bpsk_demod(r_bb,L) # baseband correlation type demodulator
-    a_hat = lfilter([1.0,1.0],[1.0],b_hat) # FIR for differential decoding
-    a_hat = a_hat % 2 # binary messages, therefore modulo-2
-    SER[i] = np.sum(ak !=a_hat)/N #Symbol Error Rate Computation
+    b_hat = bpsk_demod(r_bb,L)                        # baseband correlation type demodulator
+    a_hat = lfilter([1.0,1.0],[1.0],b_hat)            # FIR for differential decoding
+    a_hat = a_hat % 2                                 # binary messages, therefore modulo-2
+    SER[i] = np.sum(ak !=a_hat)/N                     # Symbol Error Rate Computation
 #------Theoretical Bit/Symbol Error Rates-------------
-EbN0lins = 10**(EbN0dB/10) # converting dB values to linear scale
+EbN0lins = 10**(EbN0dB/10)                            # converting dB values to linear scale
 theorySER_DPSK = erfc(np.sqrt(EbN0lins))*(1-0.5*erfc(np.sqrt(EbN0lins)))
 theorySER_BPSK = 0.5*erfc(np.sqrt(EbN0lins))
 #-------------Plots---------------------------
@@ -248,7 +260,7 @@ OF = 8 # oversampling factor, sampling frequency will be fs=OF*fc
 BER = np.zeros(len(EbN0dB)) # For BER values for each Eb/N0
 
 a = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
-result = oqpsk_mod(a, fc, OF, enable_plot = False) #QPSK modulation
+result = oqpsk_mod(a, fc, OF, enable_plot = False) # QPSK modulation
 s = result['s(t)'] # get values from returned dictionary
 for i,EbN0 in enumerate(EbN0dB):
     # Compute and add AWGN noise
@@ -322,24 +334,27 @@ fc = 2/Tb # carrier frequency
 N = 8 # number of bits to transmit
 h = 1 # modulation index
 
+np.random.seed(42)
 b = 2*np.random.randint(2, size=N)-1 # random information sequence in +1/-1 format
-b = np.tile(b, (L,1)).flatten('F')
-b_integrated = lfilter([1.0],[1.0,-1.0],b)/fs #Integrate b using filter
+b = np.tile(b, (L, 1)).flatten('F')
+# b_integrated = lfilter([1.0], [1.0, -1.0], b)/fs #Integrate b using filter
+b_integrated = np.cumsum(b)/fs
+
 
 theta= np.pi*h/Tb*b_integrated
 t=np.arange(0, Tb*N, 1/fs) # time base
 
 s = np.cos(2*np.pi*fc*t + theta) # CPFSK signal
 
-fig, (ax1,ax2,ax3) = plt.subplots(3, 1)
-ax1.plot(t,b);
-ax1.set_xlabel('t');
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+ax1.plot(t, b)
+ax1.set_xlabel('t')
 ax1.set_ylabel('b(t)')
-ax2.plot(t,theta);
-ax2.set_xlabel('t');
+ax2.plot(t, theta)
+ax2.set_xlabel('t')
 ax2.set_ylabel('$\theta(t)$')
-ax3.plot(t,s);
-ax3.set_xlabel('t');
+ax3.plot(t, s)
+ax3.set_xlabel('t')
 ax3.set_ylabel('s(t)')
 plt.show()
 plt.close()
@@ -381,77 +396,28 @@ ax.legend();
 plt.show()
 plt.close()
 
-#%% Program 39: DigiCommPy\chapter 2\constellations.py:Constellations of RC ﬁltered QPSK & MSK
-#Execute in Python3: exec(open("chapter_2/constellations.py").read())
+#%% Program 39: DigiCommPy\chapter 2\constellations.py:Constellations of RC filtered QPSK & MSK
+
 import numpy as np
 import matplotlib.pyplot as plt
-from DigiCommPy.passband_modulations import qpsk_mod,oqpsk_mod,piBy4_dqpsk_mod,msk_mod
+from DigiCommPy.passband_modulations import qpsk_mod, oqpsk_mod, piBy4_dqpsk_mod, msk_mod
 from DigiCommPy.pulseshapers import raisedCosineDesign
 
-N=1000 # Number of symbols to transmit, keep it small and adequate
-fc=10
-L=8 # carrier frequency and oversampling factor
+N = 1000 # Number of symbols to transmit, keep it small and adequate
+fc = 10
+L = 8 # carrier frequency and oversampling factor
 a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
 
 #modulate the source symbols using QPSK,QPSK,pi/4-DQPSK and MSK
-qpsk_result= qpsk_mod(a, fc, L)
+qpsk_result = qpsk_mod(a, fc, L)
 oqpsk_result = oqpsk_mod(a, fc, L)
 piby4qpsk_result = piBy4_dqpsk_mod(a, fc, L)
 msk_result = msk_mod(a, fc, L);
 
 #Pulse shape the modulated waveforms by convolving with RC filter
-alpha = 0.3; span = 10 # RC filter alpha and filter span in symbols
-b =raisedCosineDesign(alpha,span, L) # RC pulse shaper
-iRC_qpsk=np.convolve(qpsk_result['I(t)'],b,mode='valid')#RC - QPSK I(t)
-qRC_qpsk= np.convolve(qpsk_result['Q(t)'],b,mode='valid') #RC - QPSK Q(t)
-iRC_oqpsk= np.convolve(oqpsk_result['I(t)'],b,mode='valid')#RC - OQPSK I(t)
-qRC_oqpsk= np.convolve(oqpsk_result['Q(t)'],b,mode='valid')#RC - OQPSK Q(t)
-iRC_piby4qpsk=np.convolve(piby4qpsk_result['U(t)'],b,mode='valid')#pi/4-QPSK I
-qRC_piby4qpsk=np.convolve(piby4qpsk_result['V(t)'],b,mode='valid')#pi/4-QPSK Q
-i_msk = msk_result['sI(t)'] # MSK sI(t)
-q_msk = msk_result['sQ(t)'] # MSK sQ(t)
-
-fig, axs = plt.subplots(2, 2)
-
-axs[0,0].plot(iRC_qpsk, qRC_qpsk)# RC shaped QPSK
-axs[0,1].plot(iRC_oqpsk, qRC_oqpsk)# RC shaped OQPSK
-axs[1,0].plot(iRC_piby4qpsk, qRC_piby4qpsk)# RC shaped pi/4-QPSK
-axs[1,1].plot(i_msk[20:-20], q_msk[20:-20])# RC shaped OQPSK
-
-axs[0,0].set_title(r'QPSK, RC $\alpha$='+str(alpha))
-axs[0,0].set_xlabel('I(t)');
-axs[0,0].set_ylabel('Q(t)');
-axs[0,1].set_title(r'OQPSK, RC $\alpha$='+str(alpha))
-axs[0,1].set_xlabel('I(t)');
-axs[0,1].set_ylabel('Q(t)');
-axs[1,0].set_title(r'$\pi$/4 - QPSK, RC $\alpha$='+str(alpha))
-axs[1,0].set_xlabel('I(t)');
-axs[1,0].set_ylabel('Q(t)');
-axs[1,1].set_title('MSK')
-axs[1,1].set_xlabel('I(t)');
-axs[1,1].set_ylabel('Q(t)');
-plt.show()
-plt.close()
-
-
-import numpy as np
-import matplotlib.pyplot as plt
-from DigiCommPy.passband_modulations import qpsk_mod,oqpsk_mod,piBy4_dqpsk_mod,msk_mod
-from DigiCommPy.pulseshapers import raisedCosineDesign
-
-N=1000 # Number of symbols to transmit, keep it small and adequate
-fc=10; L=8 # carrier frequency and oversampling factor
-a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-
-#modulate the source symbols using QPSK,QPSK,pi/4-DQPSK and MSK
-qpsk_result= qpsk_mod(a, fc, L)
-oqpsk_result = oqpsk_mod(a, fc, L)
-piby4qpsk_result = piBy4_dqpsk_mod(a, fc, L)
-msk_result = msk_mod(a, fc, L);
-
-#Pulse shape the modulated waveforms by convolving with RC filter
-alpha = 0.3; span = 10 # RC filter alpha and filter span in symbols
-b =raisedCosineDesign(alpha,span, L) # RC pulse shaper
+alpha = 0.3
+span = 10 # RC filter alpha and filter span in symbols
+b = raisedCosineDesign(alpha,span, L) # RC pulse shaper
 iRC_qpsk = np.convolve(qpsk_result['I(t)'],b, mode= 'valid') # RC shaped QPSK I channel
 qRC_qpsk = np.convolve(qpsk_result['Q(t)'],b, mode= 'valid') # RC shaped QPSK Q channel
 iRC_oqpsk = np.convolve(oqpsk_result['I(t)'],b, mode= 'valid') #RC shaped OQPSK I channel
@@ -478,7 +444,8 @@ axs[1,0].set_title(r'$\pi$/4 - QPSK, RC $\alpha$='+str(alpha))
 axs[1,0].set_xlabel('I(t)');
 axs[1,0].set_ylabel('Q(t)');
 axs[1,1].set_title('MSK')
-axs[1,1].set_xlabel('I(t)');axs[1,1].set_ylabel('Q(t)');
+axs[1,1].set_xlabel('I(t)')
+axs[1,1].set_ylabel('Q(t)')
 plt.show()
 plt.close()
 
@@ -490,28 +457,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def bpsk_qpsk_msk_psd():
-    # Usage:
-    #    >> from chapter_2.psd_estimates import bpsk_qpsk_msk_psd
-    #    >> bpsk_qpsk_msk_psd()
-    from DigiCommPy.passband_modulations import bpsk_mod,qpsk_mod,msk_mod
+    # Usage: >> from chapter_2.psd_estimates import bpsk_qpsk_msk_psd
+    #        >> bpsk_qpsk_msk_psd()
+    from DigiCommPy.passband_modulations import bpsk_mod, qpsk_mod, msk_mod
     from DigiCommPy.essentials import plotWelchPSD
-    N=100000 # Number of symbols to transmit
-    fc=800;OF =8 # carrier frequency and oversamping factor
-    fs = fc*OF # sampling frequency
+    N = 100000   # Number of symbols to transmit
+    fc = 800
+    OF = 8       # carrier frequency and oversamping factor
+    fs = fc*OF   # sampling frequency
 
-    a = np.random.randint(2, size=N) # uniform random symbols from 0's and 1's
-    (s_bb,t) = bpsk_mod(a,OF) # BPSK modulation(waveform) - baseband
+    a = np.random.randint(2, size = N) # uniform random symbols from 0's and 1's
+    (s_bb,t) = bpsk_mod(a, OF) # BPSK modulation(waveform) - baseband
     s_bpsk = s_bb*np.cos(2*np.pi*fc*t/fs) # BPSK with carrier
-    s_qpsk = qpsk_mod(a,fc,OF)['s(t)'] # conventional QPSK
-    s_msk = msk_mod(a,fc,OF)['s(t)'] # MSK signal
+    s_qpsk = qpsk_mod(a, fc, OF)['s(t)'] # conventional QPSK
+    s_msk = msk_mod(a, fc, OF)['s(t)'] # MSK signal
 
     # Compute and plot PSDs for each of the modulated versions
     fig, ax = plt.subplots(1, 1)
-    plotWelchPSD(s_bpsk,fs,fc,ax = ax,color = 'b',label='BPSK')
-    plotWelchPSD(s_qpsk,fs,fc,ax = ax,color = 'r',label='QPSK')
-    plotWelchPSD(s_msk,fs,fc, ax = ax,color = 'k',label='MSK')
-    ax.set_xlabel('$f-f_c$');ax.set_ylabel('PSD (dB/Hz)');
-    ax.legend();
+    plotWelchPSD(s_bpsk, fs, fc, ax = ax, color = 'b', label = 'BPSK')
+    plotWelchPSD(s_qpsk, fs, fc, ax = ax, color = 'r', label = 'QPSK')
+    plotWelchPSD(s_msk, fs, fc, ax = ax, color = 'k', label = 'MSK')
+    ax.set_xlabel('$f-f_c$')
+    ax.set_ylabel('PSD (dB/Hz)')
+    ax.legend()
     plt.show()
     plt.close()
     return
