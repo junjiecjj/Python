@@ -12,7 +12,7 @@ import statsmodels.tsa.api as smt
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import commpy
-
+from tqdm import tqdm
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
 # plt.rcParams["font.family"] = "SimSun"
@@ -87,7 +87,6 @@ r1 = scipy.fft.ifft(S*H)
 
 print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
 
-
 #%% Program 14.2: add cyclic prefix.m: Function to add cyclic prefix of length Ncp symbols
 def add_cyclic_prefix(x, Ncp):
     s = np.hstack((x[-Ncp:], x))
@@ -98,158 +97,157 @@ def remove_cyclic_prefix(r, Ncp, N):
     y = r[Ncp : Ncp+N]
     return y
 
-#%% Program 14.4: ofdm on awgn.m: OFDM transmission and reception on AWGN channel
+# #%% Program 14.4: ofdm on awgn.m: OFDM transmission and reception on AWGN channel
+# from tqdm import tqdm
+# from Modulations import modulator
+# from ChannelModels import add_awgn_noise
+# def Qfun(x):
+#     return 0.5 * scipy.special.erfc(x / np.sqrt(2))
 
-from Modulations import modulator
-from ChannelModels import add_awgn_noise
-def Qfun(x):
-    return 0.5 * scipy.special.erfc(x / np.sqrt(2))
-
-def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
-    EbN0 = 10**(EbN0dB/10)
-    EsN0 = np.log2(M) * EbN0
-    SER = np.zeros(EbN0dB.size)
-    if MOD_TYPE.lower() == "bpsk":
-        SER = Qfun(np.sqrt(2 * EbN0))
-    elif MOD_TYPE == "psk":
-        if M == 2:
-            SER = Qfun(np.sqrt(2 * EbN0))
-        else:
-            if M == 4:
-                SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
-            else:
-                SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
-    elif MOD_TYPE.lower() == "qam":
-        SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
-    elif MOD_TYPE.lower() == "pam":
-        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
-    return SER
+# def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
+#     EbN0 = 10**(EbN0dB/10)
+#     EsN0 = np.log2(M) * EbN0
+#     SER = np.zeros(EbN0dB.size)
+#     if MOD_TYPE.lower() == "bpsk":
+#         SER = Qfun(np.sqrt(2 * EbN0))
+#     elif MOD_TYPE == "psk":
+#         if M == 2:
+#             SER = Qfun(np.sqrt(2 * EbN0))
+#         else:
+#             if M == 4:
+#                 SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
+#             else:
+#                 SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
+#     elif MOD_TYPE.lower() == "qam":
+#         SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
+#     elif MOD_TYPE.lower() == "pam":
+#         SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
+#     return SER
 
 
-nSym = 10000
-EbN0dB = np.arange(0, 22, 2)
-MOD_TYPE = "psk"
+# nSym = 10000
+# EbN0dB = np.arange(0, 22, 2)
+# MOD_TYPE = "psk"
 
-M = 4
-N = 64
-Ncp = 16
-colors = ['b', 'g', 'r', 'c', 'm', 'k']
-k = int(np.log2(M))
-EsN0dB = 10*np.log10(k) + EbN0dB
-errors= np.zeros(EsN0dB.size)
+# M = 4
+# N = 64
+# Ncp = 16
+# colors = ['b', 'g', 'r', 'c', 'm', 'k']
+# k = int(np.log2(M))
+# EsN0dB = 10*np.log10(k) + EbN0dB
+# errors= np.zeros(EsN0dB.size)
 
-modem, Es, bps = modulator(MOD_TYPE, M)
-map_table, demap_table = modem.getMappTable()
-fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+# modem, Es, bps = modulator(MOD_TYPE, M)
+# map_table, demap_table = modem.getMappTable()
+# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
-for i, esnodB in enumerate(EsN0dB):
-    for j, sym in enumerate(range(nSym)):
-        print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
-        ## Transmitter
-        uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
-        X = modem.modulate(uu)
-        d = np.array([demap_table[sym] for sym in X])
-        x = scipy.fft.ifft(X, N)
-        s = add_cyclic_prefix(x, Ncp)
+# for i, esnodB in tqdm(enumerate(EsN0dB)):
+#     for j, sym in enumerate(range(nSym)):
 
-        ## Channel
-        r, _ = add_awgn_noise(s, esnodB)
+#         ## Transmitter
+#         uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
+#         X = modem.modulate(uu)
+#         d = np.array([demap_table[sym] for sym in X])
+#         x = scipy.fft.ifft(X, N)
+#         s = add_cyclic_prefix(x, Ncp)
 
-        ## Receiver
-        y = remove_cyclic_prefix(r, Ncp, N)
-        Y = scipy.fft.fft(y, N)
-        uCap = modem.demodulate(Y, 'hard')
-        dCap = []
-        for l in range(N):
-            dCap.append( int(''.join([str(num) for num in uCap[l*bps:(l+1)*bps]]), base = 2) )
-        dCap = np.array(dCap)
+#         ## Channel
+#         r, _ = add_awgn_noise(s, esnodB)
 
-        ## Error Counter
-        numErrors = np.sum(d != dCap)
-        errors[i] += numErrors
-SER_sim = errors/(nSym * N)
-SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
+#         ## Receiver
+#         y = remove_cyclic_prefix(r, Ncp, N)
+#         Y = scipy.fft.fft(y, N)
+#         uCap = modem.demodulate(Y, 'hard')
+#         dCap = []
+#         for l in range(N):
+#             dCap.append( int(''.join([str(num) for num in uCap[l*bps:(l+1)*bps]]), base = 2) )
+#         dCap = np.array(dCap)
 
-axs.semilogy(EbN0dB, SER_sim, color = colors[0], ls = 'none', marker = "o", ms = 12, )
-axs.semilogy(EbN0dB, SER_theory, color = colors[0], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+#         ## Error Counter
+#         numErrors = np.sum(d != dCap)
+#         errors[i] += numErrors
+# SER_sim = errors/(nSym * N)
+# SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
 
-axs.set_ylim(1e-6, 1)
-axs.set_xlabel( 'Eb/N0(dB)',)
-axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
-axs.legend(fontsize = 20)
+# axs.semilogy(EbN0dB, SER_sim, color = colors[0], ls = 'none', marker = "o", ms = 12, )
+# axs.semilogy(EbN0dB, SER_theory, color = colors[0], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
 
-plt.show()
-plt.close()
+# axs.set_ylim(1e-6, 1)
+# axs.set_xlabel( 'Eb/N0(dB)',)
+# axs.set_ylabel('SER (Ps)',)
+# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
+# axs.legend(fontsize = 20)
 
-#%%
-from tqdm import tqdm
+# plt.show()
+# plt.close()
 
-nSym = 10000
-EbN0dB = np.arange(-2, 26, 2)
+# #%%
+# from tqdm import tqdm
+
+# nSym = 10000
+# EbN0dB = np.arange(-2, 26, 2)
 # MOD_TYPE = "psk"    ## "pam"
 # arrayOfM = [2, 4, 8, 16, 32]
 
-MOD_TYPE = "qam"
-arrayOfM = [4, 16, 64, 256]
+# # MOD_TYPE = "qam"
+# # arrayOfM = [4, 16, 64, 256]
 
-N = 64
-Ncp = 16
-colors = ['b', 'g', 'r', 'c', 'm', 'k']
+# N = 64
+# Ncp = 16
+# colors = ['b', 'g', 'r', 'c', 'm', 'k']
 
-fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+# for m, M in  enumerate(arrayOfM) :
+#     print(f"{m}/{len(arrayOfM)}")
+#     k = int(np.log2(M))
+#     EsN0dB = 10*np.log10(k) + EbN0dB
+#     errors = np.zeros(EsN0dB.size)
+#     modem, Es, bps = modulator(MOD_TYPE, M)
+#     map_table, demap_table = modem.getMappTable()
+#     for i, esnodB in tqdm(enumerate(EsN0dB)):
+#         for j, sym in enumerate(range(nSym)):
+#             ## Transmitter
+#             uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
+#             X = modem.modulate(uu)
+#             d = np.array([demap_table[sym] for sym in X])
+#             x = scipy.fft.ifft(X, N)
+#             s = add_cyclic_prefix(x, Ncp)
 
-for m, M in  enumerate(arrayOfM) :
-    print(f"{m}/{len(arrayOfM)}")
-    k = int(np.log2(M))
-    EsN0dB = 10*np.log10(k) + EbN0dB
-    errors = np.zeros(EsN0dB.size)
-    modem, Es, bps = modulator(MOD_TYPE, M)
-    map_table, demap_table = modem.getMappTable()
-    for i, esnodB in tqdm(enumerate(EsN0dB)):
-        for j, sym in enumerate(range(nSym)):
-            ## Transmitter
-            uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
-            X = modem.modulate(uu)
-            d = np.array([demap_table[sym] for sym in X])
-            x = scipy.fft.ifft(X, N)
-            s = add_cyclic_prefix(x, Ncp)
+#             ## Channel
+#             r, _ = add_awgn_noise(s, esnodB)
 
-            ## Channel
-            r, _ = add_awgn_noise(s, esnodB)
+#             ## Receiver
+#             y = remove_cyclic_prefix(r, Ncp, N)
+#             Y = scipy.fft.fft(y, N)
+#             uCap = modem.demodulate(Y, 'hard')
+#             dCap = []
+#             for l in range(N):
+#                 dCap.append( int(''.join([str(num) for num in uCap[l*bps:(l+1)*bps]]), base = 2) )
+#             dCap = np.array(dCap)
 
-            ## Receiver
-            y = remove_cyclic_prefix(r, Ncp, N)
-            Y = scipy.fft.fft(y, N)
-            uCap = modem.demodulate(Y, 'hard')
-            dCap = []
-            for l in range(N):
-                dCap.append( int(''.join([str(num) for num in uCap[l*bps:(l+1)*bps]]), base = 2) )
-            dCap = np.array(dCap)
+#             ## Error Counter
+#             numErrors = np.sum(d != dCap)
+#             errors[i] += numErrors
+#     SER_sim = errors/(nSym * N)
+#     SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
 
-            ## Error Counter
-            numErrors = np.sum(d != dCap)
-            errors[i] += numErrors
-    SER_sim = errors/(nSym * N)
-    SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
+#     axs.semilogy(EbN0dB, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
+#     axs.semilogy(EbN0dB, SER_theory, color = colors[m], ls = '-', label = f'{M}{MOD_TYPE.upper()} OFDM' )
 
-    axs.semilogy(EbN0dB, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
-    axs.semilogy(EbN0dB, SER_theory, color = colors[m], ls = '-', label = f'{M}{MOD_TYPE.upper()} OFDM' )
+# axs.set_ylim(1e-6, 1)
+# axs.set_xlabel( 'Eb/N0(dB)',)
+# axs.set_ylabel('SER (Ps)',)
+# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
+# axs.legend(fontsize = 20)
 
-axs.set_ylim(1e-6, 1)
-axs.set_xlabel( 'Eb/N0(dB)',)
-axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
-axs.legend(fontsize = 20)
-
-plt.show()
-plt.close()
+# plt.show()
+# plt.close()
 
 
-#%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
-from tqdm import tqdm
-from Modulations import modulator
-from ChannelModels import add_awgn_noise
+# #%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
+# from tqdm import tqdm
+# from Modulations import modulator
+# from ChannelModels import add_awgn_noise
 def ser_rayleigh(EbN0dB, MOD_TYPE, M):
     EbN0 = 10**(EbN0dB/10)
     EsN0 = np.log2(M) * EbN0
@@ -276,64 +274,191 @@ def ser_rayleigh(EbN0dB, MOD_TYPE, M):
             SER[i] = 2*(M-1)/(M*np.pi) * scipy.integrate.quad(fun, 0, np.pi/2)[0]
     return SER
 
-nSym = 10000
-EbN0dB = np.arange(-2, 24, 2)
+# nSym = 10000
+# EbN0dB = np.arange(-2, 24, 2)
 # MOD_TYPE = "psk"
 # arrayOfM = [2, 4, 8, 16, 32, 64]
 
-MOD_TYPE = "qam"
-arrayOfM = [4, 16, 64, 256]
+# # MOD_TYPE = "qam"
+# # arrayOfM = [4, 16, 64, 256]
 
-N = 64
-Ncp = 16
-L = 10 # Number of taps for the frequency selective channel model
+# N = 64
+# Ncp = 16
+# L = 10 # Number of taps for the frequency selective channel model
+# colors = ['yellow', 'g', 'pink', 'b', 'c', 'r', 'k']
+
+# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+
+# for m, M in enumerate(arrayOfM):
+#     print(f"{m}/{len(arrayOfM)}")
+#     k = int(np.log2(M))
+#     EsN0dB = 10*np.log10(k*N/(N + Ncp)) + EbN0dB
+#     errors= np.zeros(EsN0dB.size)
+
+#     modem, Es, bps = modulator(MOD_TYPE, M)
+#     map_table, demap_table = modem.getMappTable()
+
+#     for i, esnodB in tqdm(enumerate(EsN0dB)):
+#         for j, sym in enumerate(range(nSym)):
+#             ## print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
+#             ## Transmitter
+#             uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
+#             X = modem.modulate(uu)
+#             d = np.array([demap_table[sym] for sym in X])
+#             x = scipy.fft.ifft(X, N)
+#             s = add_cyclic_prefix(x, Ncp)
+
+#             ## Channel
+#             h = (np.random.randn(L) + 1j * np.random.randn(L))/np.sqrt(2)
+#             H = scipy.fft.fft(h, N)
+#             hs = scipy.signal.convolve(h, s)
+#             r, _ = add_awgn_noise(hs, esnodB)
+
+#             ## Receiver
+#             y = remove_cyclic_prefix(r, Ncp, N)
+#             Y = scipy.fft.fft(y, N)
+#             V = Y/H   # 信道均衡（直接除以理想信道，这里没有进行信道估计！）
+#             uCap = modem.demodulate(V, 'hard')
+#             dCap = []
+#             for l in range(N):
+#                 dCap.append( int(''.join([str(num) for num in uCap[l*bps:(l+1)*bps]]), base = 2) )
+#             dCap = np.array(dCap)
+
+#             ## Error Counter
+#             numErrors = np.sum(d != dCap)
+#             errors[i] += numErrors
+#     SER_sim = errors/(nSym * N)
+#     SER_theory = ser_rayleigh(EbN0dB, MOD_TYPE, M)
+
+#     axs.semilogy(EbN0dB, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
+#     axs.semilogy(EbN0dB, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+
+# axs.set_ylim(1e-3, 1)
+# axs.set_xlabel( 'Eb/N0(dB)',)
+# axs.set_ylabel('SER (Ps)',)
+# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
+# axs.legend(fontsize = 20)
+
+# plt.show()
+# plt.close()
+
+
+#%% My OFDM with piolit
+from tqdm import tqdm
+from Modulations import modulator
+from ChannelModels import add_awgn_noise
+
+def plotDataPilot(allCarriers, pilotCarriers):
+    dataCarriers = np.delete(allCarriers, pilotCarriers)
+    fig, axs = plt.subplots(1, 1, figsize = (8, 2), constrained_layout = True)
+    axs.plot(pilotCarriers, np.zeros_like(pilotCarriers), 'bo', ms = 8, label = 'pilot')
+    axs.plot(dataCarriers, np.zeros_like(dataCarriers), 'ro', ms = 6, label = 'data')
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 20, width = 3,  )
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', fontsize = 25, ncol = 2)
+    frame1 = legend1.get_frame()
+    frame1.set_alpha(1)
+    frame1.set_facecolor('none')  # 设置图例legend背景透明
+    axs.set_yticks([])
+    axs.set_xlim((-1, allCarriers[-1] + 1))
+    axs.set_ylim((-0.1, 0.3))
+    axs.set_xlabel('Carrier index', fontsize = 25)
+    plt.show()
+    plt.close()
+    return
+
+def addCP(x, Ncp):
+    s = np.hstack((x[-Ncp:], x))
+    return s
+def removeCP(r, Ncp, N):
+    y = r[Ncp : Ncp+N]
+    return y
+# 插入导频和数据，生成OFDM符号
+def OFDM_symbol(N, dataIdx, payload,  pilotIdx, pilotdata, ):
+    symbol = np.zeros(N, dtype = complex)  # 子载波位置
+    symbol[pilotIdx] = pilotdata  # 在导频位置插入导频
+    symbol[dataIdx] = payload  # 在数据位置插入数据
+    return symbol
+## 信道估计
+def channelEstimate(OFDM_demod, pilotIdx, pilotData, allIdx):
+    pilots = OFDM_demod[pilotIdx]  # 取导频处的数据
+    Hest_at_pilots = pilots / pilotData  # LS信道估计
+    # 在导频载波之间进行插值以获得估计，然后利用插值估计得到数据下标处的信道响应
+    Hest_abs = scipy.interpolate.interp1d(pilotIdx, np.abs(Hest_at_pilots), kind = 'linear')(allIdx)
+    Hest_phase = scipy.interpolate.interp1d(pilotIdx, np.angle( Hest_at_pilots), kind = 'linear')(allIdx)
+    Hest = Hest_abs * np.exp(1j*Hest_phase)
+    return Hest
+
+N = 64        # 子载波数量
+L = 4        # 信道冲击响应长度
+Ncp =  L - 1   # CP长度
+P = 8         # 导频数
+nSym = 10000  # 仿真帧数
+EbN0dBs = np.arange(-2, 24, 4)
+MOD_TYPE = "psk"
+# arrayOfM = [2, 4, 8, 16, 32, 64]
+arrayOfM = [4,]
+
+# MOD_TYPE = "qam"
+# arrayOfM = [4, 16, 64, 256]
+
+allIdx = np.arange(N)                                    # 子载波编号 ([0, 1,..., K-1])
+pilotIdx = allIdx[::N//P]                                # 每间隔P个子载波一个导频
+pilotIdx = np.hstack([pilotIdx, np.array([allIdx[-1]])]) # 为了方便信道估计,将最后一个子载波也作为导频
+P = P + 1
+dataIdx = np.delete(allIdx, pilotIdx)                    # 数据编号
+plotDataPilot(allIdx, pilotIdx)                          # 可视化数据和导频的插入方式
+
 colors = ['yellow', 'g', 'pink', 'b', 'c', 'r', 'k']
-
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-
 for m, M in enumerate(arrayOfM):
     print(f"{m}/{len(arrayOfM)}")
-    k = int(np.log2(M))
-    EsN0dB = 10*np.log10(k*N/(N + Ncp)) + EbN0dB
-    errors= np.zeros(EsN0dB.size)
+    k = int(np.log2(M)) # bits per symbol
+    payloadBitsPerOFDMsymb = k * (N - P)
 
     modem, Es, bps = modulator(MOD_TYPE, M)
     map_table, demap_table = modem.getMappTable()
-
-    for i, esnodB in tqdm(enumerate(EsN0dB)):
-        for j, sym in enumerate(range(nSym)):
-            ## print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
+    EsN0dBs = 10*np.log10(k*N/(N + Ncp)) + EbN0dBs
+    errors = np.zeros(EsN0dBs.size)
+    for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
+        for Iter in range(nSym):
             ## Transmitter
-            uu = np.random.randint(0, 2, size = N * bps).astype(np.int8)
-            X = modem.modulate(uu)
-            d = np.array([demap_table[sym] for sym in X])
-            x = scipy.fft.ifft(X, N)
-            s = add_cyclic_prefix(x, Ncp)
+            uu = np.random.randint(0, 2, size = payloadBitsPerOFDMsymb).astype(np.int8)
+            payload_sym = modem.modulate(uu)
+            d_payload = np.array([demap_table[sym] for sym in payload_sym])
+            d_pilot = np.random.randint(0, M, P)
+            pilot_sym = np.array([map_table[it] for it in d_pilot])
+            ofdm_sym = OFDM_symbol(N, dataIdx, payload_sym,  pilotIdx, pilot_sym,)
+            x = scipy.fft.ifft(ofdm_sym, N)
+            s_cp = addCP(x, Ncp)
 
             ## Channel
             h = (np.random.randn(L) + 1j * np.random.randn(L))/np.sqrt(2)
-            H = scipy.fft.fft(h, N)
-            hs = scipy.signal.convolve(h, s)
-            r, _ = add_awgn_noise(hs, esnodB)
+            hs = scipy.signal.convolve(s_cp, h)
+            r, _ = add_awgn_noise(hs, EsN0dB)
 
             ## Receiver
-            y = remove_cyclic_prefix(r, Ncp, N)
+            y = removeCP(r, Ncp, N)
             Y = scipy.fft.fft(y, N)
-            V = Y/H
+            #  信道估计
+            Hest = channelEstimate(Y, pilotIdx, pilot_sym, allIdx)
+            V = Y/Hest
+            V = V[dataIdx]
             uCap = modem.demodulate(V, 'hard')
             dCap = []
-            for l in range(N):
-                dCap.append( int(''.join([str(num) for num in uCap[l*bps:(l+1)*bps]]), base = 2) )
+            for l in range(N-P):
+                dCap.append( int(''.join([str(num) for num in uCap[l*k:(l+1)*k]]), base = 2) )
             dCap = np.array(dCap)
 
             ## Error Counter
-            numErrors = np.sum(d != dCap)
+            numErrors = np.sum(d_payload != dCap)
             errors[i] += numErrors
-    SER_sim = errors/(nSym * N)
-    SER_theory = ser_rayleigh(EbN0dB, MOD_TYPE, M)
+    SER_sim = errors/(nSym * (N-P))
+    SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M)
 
-    axs.semilogy(EbN0dB, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
-    axs.semilogy(EbN0dB, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
+    axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
 
 axs.set_ylim(1e-3, 1)
 axs.set_xlabel( 'Eb/N0(dB)',)
@@ -343,15 +468,6 @@ axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
-
-
-#%% My FFT with piolit
-
-
-
-
-
-
 
 
 

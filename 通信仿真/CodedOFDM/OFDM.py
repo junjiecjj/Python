@@ -33,7 +33,6 @@ https://github.com/darcamo/pyphysim
 
 https://zhuanlan.zhihu.com/p/637862608
 
-
 ## 信道估计---LS、MMSE、LMMSE准则
 信道估计主要分为非盲信道估计和盲信道估计。顾名思义，非盲信道估计需要使用基站和接收机均已知的导频序列进行信道估计，并使用不同的时频域插值技术来估计导频之间或者符号之间的子载波上的信道响应。目前主要使用的非盲信道估计包括最小二乘（LS）信道估计、最小均方误差（MMSE）信道估计、基于DFT的信道估计以及基于判决反馈信道估计等；而盲信道估计不需要已经已知的导频序列，主要包括基于最大期望的信道估计、基于子空间的信道估计技术等。
 https://blog.csdn.net/ddatalent/article/details/121132095
@@ -62,13 +61,13 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 # np.random.seed(1)
 
 #%% 1 初始化参数
-K = 64            # OFDM子载波数量
+K = 64                                        # OFDM子载波数量
 channelResponse = np.array([1, 0, 0.3+0.3j])  # 随意仿真信道冲击响应
 CP = channelResponse.size - 1       # 25%的循环前缀长度, 实际上只需要取 >= len(H) - 1  = L-1 就够了，
-P = 8             # 导频数
+P = 8                               # 导频数
 pilotValue = 3 + 3j                 # 导频格式
 Modulation_type = 'QAM16'           # 调制方式，可选BPSK、QPSK、8PSK、QAM16、QAM64
-channel_type = 'random'              # 信道类型，可选awgn
+channel_type = 'random'             # 信道类型，可选awgn
 SNRdb = 10                          # 接收端的信噪比（dB）
 allCarriers = np.arange(K)          # 子载波编号 ([0, 1, ... K-1])
 pilotCarrier = allCarriers[::K//P]  # 每间隔P个子载波一个导频
@@ -86,7 +85,7 @@ axs.plot(dataCarriers, np.zeros_like(dataCarriers), 'ro', label='data')
 axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 20, width = 3,  )
 labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
-# [label.set_fontsize(20) for label in labels] #刻度值字号
+# [label.set_fontsize(20) for label in labels] # 刻度值字号
 
 font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
 legend1 = plt.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font1, ncol = 2)
@@ -110,7 +109,7 @@ plt.show()
 ##%% 3 定义调制和解调方式
 m_map = {"BPSK": 1, "QPSK": 2, "8PSK": 3, "QAM16": 4, "QAM64": 6}
 mu = m_map[Modulation_type]
-dataCarriers = np.delete(allCarriers, pilotCarriers)
+dataCarriers = np.delete(allCarrier s, pilotCarriers)  # 数据编号
 payloadBits_per_OFDM = len(dataCarriers)*mu  # 每个 OFDM 符号的有效载荷位数
 # 定义制调制方式
 def Modulation(bits):
@@ -212,9 +211,8 @@ axs.set_ylabel('Imaginary part (Q)', fontproperties=font)
 plt.title('16 QAM Constellation with Gray-Mapping', fontproperties=font)
 filepath2 = '/home/jack/snap/'
 out_fig = plt.gcf()
-# out_fig.savefig(filepath2+'constellation.eps',   bbox_inches = 'tight')
+# out_fig.savefig(filepath2+'constellation.eps', bbox_inches = 'tight')
 plt.show()
-
 
 #%% 4 定义信道
 def add_awgn(x_s, snrDB):
@@ -262,7 +260,7 @@ def channelEstimate(OFDM_demod):
     pilots = OFDM_demod[pilotCarriers]  # 取导频处的数据
     Hest_at_pilots = pilots / pilotValue  # LS信道估计
     # 在导频载波之间进行插值以获得估计，然后利用插值估计得到数据下标处的信道响应
-    Hest_abs = scipy.interpolate.interp1d(pilotCarriers, abs( Hest_at_pilots), kind = 'linear')(allCarriers)
+    Hest_abs = scipy.interpolate.interp1d(pilotCarriers, np.abs(Hest_at_pilots), kind = 'linear')(allCarriers)
     Hest_phase = scipy.interpolate.interp1d(pilotCarriers, np.angle( Hest_at_pilots), kind = 'linear')(allCarriers)
     Hest = Hest_abs * np.exp(1j*Hest_phase)
     return Hest
@@ -275,7 +273,7 @@ def get_payload(equalized):
     return equalized[dataCarriers]
 
 # 5.1 产生比特流
-bits = np.random.binomial(n=1, p=0.5, size=(payloadBits_per_OFDM, ))
+bits = np.random.binomial(n = 1, p = 0.5, size = (payloadBits_per_OFDM, ))
 # 5.2 比特信号调制
 QAM_s = Modulation(bits)
 # print(QAM_s)
@@ -306,9 +304,7 @@ bits_est = DeModulation(QAM_est)
 ber = np.sum(abs(bits-bits_est))/len(bits)
 print(f"{SNRdb} 误比特率BER：{ber}", )
 
-
-
-# %% 可视化信道冲击响应，仿真信道
+#%% 可视化信道冲击响应，仿真信道
 # the impulse response of the wireless channel
 fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
 channelResponse = np.array([1, 0, 0.3 + 0.3j])
@@ -330,7 +326,6 @@ filepath2 = '/home/jack/snap/'
 out_fig = plt.gcf()
 # out_fig .savefig(filepath2 + 'channelresponse.eps',   bbox_inches = 'tight')
 plt.show()
-
 
 #%%  5 OFDM通信仿真
 def OFDM_simulation():
@@ -374,8 +369,6 @@ def OFDM_simulation():
 
 # if __name__ == '__main__':
     # OFDM_simulation()
-
-
 
 # SNRdb, BERs_QAM64 = OFDM_simulation()
 

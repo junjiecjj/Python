@@ -34,10 +34,10 @@ fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
 for i, M in enumerate(arrayOfM):
     #-----Initialization of various parameters----
-    k=np.log2(M)
+    k = np.log2(M)
     EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
-    inputSyms = np.random.randint(low=0, high = M, size=nSym)
+    inputSyms = np.random.randint(low = 0, high = M, size = nSym)
     # uniform random symbols from 0 to M-1
 
     if mod_type.lower()=='fsk':

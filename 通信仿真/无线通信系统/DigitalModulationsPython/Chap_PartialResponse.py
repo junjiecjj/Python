@@ -105,7 +105,7 @@ acap = bn % M
 error = np.sum(a != acap)
 
 
-#%%
+#%%  Performance of modulations in AWGN, 暂时没系统级的PR性能程序
 # import sys
 # sys.path.append("..")
 # import scipy
@@ -117,7 +117,7 @@ error = np.sum(a != acap)
 # from DigiCommPy.channels import awgn
 # from DigiCommPy.errorRates import ser_awgn
 
-# #%%  Performance of modulations in AWGN
+#
 # #---------Input Fields------------------------
 # nSym = 10**6 # Number of symbols to transmit
 # EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
