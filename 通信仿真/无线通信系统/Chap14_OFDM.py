@@ -375,11 +375,16 @@ def removeCP(r, Ncp, N):
     y = r[Ncp : Ncp+N]
     return y
 # 插入导频和数据，生成OFDM符号
-def OFDM_symbol(N, dataIdx, payload,  pilotIdx, pilotdata, ):
+def OFDM_symbol(N, dataIdx, payload, d_payload,  pilotIdx, pilotdata, d_pilot):
     symbol = np.zeros(N, dtype = complex)  # 子载波位置
     symbol[pilotIdx] = pilotdata  # 在导频位置插入导频
     symbol[dataIdx] = payload  # 在数据位置插入数据
-    return symbol
+
+    d = np.zeros(N)
+    d[pilotIdx] = d_pilot  # 在导频位置插入导频
+    d[dataIdx] = d_payload  # 在数据位置插入数据
+
+    return symbol, d
 ## 信道估计
 def channelEstimate(OFDM_demod, pilotIdx, pilotData, allIdx):
     pilots = OFDM_demod[pilotIdx]  # 取导频处的数据
@@ -391,8 +396,8 @@ def channelEstimate(OFDM_demod, pilotIdx, pilotData, allIdx):
     return Hest
 
 N = 64        # 子载波数量
-L = 4        # 信道冲击响应长度
-Ncp =  L - 1   # CP长度
+L = 10        # 信道冲击响应长度
+Ncp = L - 1  # CP长度
 P = 8         # 导频数
 nSym = 10000  # 仿真帧数
 EbN0dBs = np.arange(-2, 24, 4)
@@ -429,7 +434,7 @@ for m, M in enumerate(arrayOfM):
             d_payload = np.array([demap_table[sym] for sym in payload_sym])
             d_pilot = np.random.randint(0, M, P)
             pilot_sym = np.array([map_table[it] for it in d_pilot])
-            ofdm_sym = OFDM_symbol(N, dataIdx, payload_sym,  pilotIdx, pilot_sym,)
+            ofdm_sym, d = OFDM_symbol(N, dataIdx, payload_sym, d_payload, pilotIdx, pilot_sym, d_pilot)
             x = scipy.fft.ifft(ofdm_sym, N)
             s_cp = addCP(x, Ncp)
 
@@ -444,17 +449,17 @@ for m, M in enumerate(arrayOfM):
             #  信道估计
             Hest = channelEstimate(Y, pilotIdx, pilot_sym, allIdx)
             V = Y/Hest
-            V = V[dataIdx]
+            # V = V[dataIdx]
             uCap = modem.demodulate(V, 'hard')
             dCap = []
-            for l in range(N-P):
+            for l in range(N):
                 dCap.append( int(''.join([str(num) for num in uCap[l*k:(l+1)*k]]), base = 2) )
             dCap = np.array(dCap)
 
             ## Error Counter
-            numErrors = np.sum(d_payload != dCap)
+            numErrors = np.sum(d != dCap)
             errors[i] += numErrors
-    SER_sim = errors/(nSym * (N-P))
+    SER_sim = errors/(nSym * N)
     SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M)
 
     axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
