@@ -43,9 +43,9 @@ mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
 arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 
-mod_type = 'QAM'
-nSym =  10**7
-arrayOfM = [ 64,  ] # uncomment this line if MOD_TYPE='QAM'
+# mod_type = 'QAM'
+# nSym =  10**7
+# arrayOfM = [ 64,  ] # uncomment this line if MOD_TYPE='QAM'
 
 beta = 0.3
 span = 8

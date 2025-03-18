@@ -449,10 +449,7 @@ axs[1,1].set_ylabel('Q(t)')
 plt.show()
 plt.close()
 
-
-
 #%% Program 40: DigiCommPy\chapter 2\psd estimates.py: PSD estimates of BPSK QPSK and MSK
-
 import numpy as np
 import matplotlib.pyplot as plt
 

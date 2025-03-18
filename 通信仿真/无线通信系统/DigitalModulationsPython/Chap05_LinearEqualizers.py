@@ -169,10 +169,10 @@ fig, ax = plt.subplots(nrows=1,ncols = 1)
 for i,N in enumerate(Ns): #sweep number of equalizer taps
     maxDelay = N+len(h)-2
     mse=np.zeros(maxDelay)
-    for j,delay in enumerate(range(0,maxDelay)): # sweep delays
+    for j, delay in enumerate(range(0,maxDelay)): # sweep delays
         # compute MSE and optimal delay for each combination
         mmse_eq = MMSEEQ(N) #initialize MMSE equalizer (object) of length N
-        mse[j]=mmse_eq.design(h,SNR,delay)
+        mse[j] = mmse_eq.design(h, SNR, delay)
         optimalDelay[i] = mmse_eq.opt_delay
     #plot mse in log scale
     ax.plot(np.arange(0, maxDelay), np.log10(mse), label = 'N='+str(N))
@@ -190,6 +190,7 @@ print('Optimal Delays for each N value ->{}'.format(optimalDelay))
 import sys
 sys.path.append("..")
 import numpy as np
+import scipy
 import matplotlib.pyplot as plt #for plotting functions
 from DigiCommPy.modem import PSKModem #import PSKModem
 from DigiCommPy.channels import awgn
@@ -197,66 +198,90 @@ from DigiCommPy.equalizers import zeroForcing, MMSEEQ #import MMSE equalizer cla
 from DigiCommPy.errorRates import ser_awgn #for theoretical BERs
 from scipy.signal import freqz
 #---------Input Fields------------------------
-N=10**6 # Number of bits to transmit
-EbN0dBs = np.arange(start=0,stop=30,step=2) #  Eb/N0 range in dB for simulation
-M=2 # 2-PSK
-#h_c=[0.04, -0.05, 0.07, -0.21, -0.5, 0.72, 0.36, 0.21, 0.03, 0.07] # Channel A
-#h_c=[0.407, 0.815, 0.407] # uncomment this for Channel B
-h_c=[0.227, 0.460, 0.688, 0.460, 0.227] # uncomment this for Channel C
+h_cA = np.array([0.04, -0.05, 0.07, -0.21, -0.5, 0.72, 0.36, 0.21, 0.03, 0.07]) #  Channel A
+h_cB = np.array([0.407, 0.815, 0.407])               #  Channel B
+h_cC = np.array([0.227, 0.460, 0.688, 0.460, 0.227]) #  Channel C
+
+channelTypes = ["Channel A", "Channel B", "Channel C" ]
+H_C = {}
+H_C[0] = h_cA
+H_C[1] = h_cB
+H_C[2] = h_cC
+markers = ['none', "o", 'v', ]
+colors = ['k', 'r', 'b']
+
+## compute and plot channel characteristics
+for idx, channeltype in enumerate(channelTypes):
+    h_c = H_C[idx]
+    F, H = scipy.signal.freqz(h_c)
+    ##### plot
+    fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
+    axs[0].stem(h_c, linefmt = f'{colors[idx]}-', markerfmt = 'D', )
+    axs[0].set_xlabel('Time(s)',)
+    axs[0].set_ylabel('h(t)',)
+    axs[0].set_title(f"Channel impulse response, {channeltype}" )
+    axs[1].plot(F , 20*np.log10(np.abs(H)/np.max(np.abs(H))), color = colors[idx],  )
+    axs[1].set_xlabel('Samples',)
+    axs[1].set_ylabel('Amplitude',)
+    axs[1].set_title( "Frequency response" )
+    plt.show()
+    plt.close()
+
+N = 100000
+EbN0dBs = np.arange(0, 32, 2)
 nTaps = 31 # Desired number of taps for equalizer filter
-SER_zf = np.zeros(len(EbN0dBs)); SER_mmse = np.zeros(len(EbN0dBs))
-#-----------------Transmitter---------------------
-inputSymbols=np.random.randint(low = 0, high = 2, size = N) #uniform random symbols 0s & 1s
+# ntaps = 31
+MOD_TYPE = "psk"
+M = 2
+
+u = np.random.randint(low = 0, high = 2, size = N) #uniform random symbols 0s & 1s
 modem = PSKModem(M)
-modulatedSyms = modem.modulate(inputSymbols)
-x = np.convolve(modulatedSyms, h_c) # apply channel effect on transmitted symbols
+s = modem.modulate(u)
 
-for i,EbN0dB in enumerate(EbN0dBs):
-    receivedSyms = awgn(x, EbN0dB) #add awgn noise
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+SER_theory = ser_awgn(EbN0dBs, MOD_TYPE, M)
+for idx, channeltype in enumerate(channelTypes):
+    SER_zf = np.zeros(EbN0dBs.size)
+    SER_mmse = np.zeros(EbN0dBs.size)
+    h_c = H_C[idx]
+    x = scipy.signal.convolve(s, h_c)
+    for i, EbN0dB in enumerate(EbN0dBs):
+        ## channel
+        r = awgn(x, EbN0dB)
 
-    # DELAY OPTIMIZED MMSE equalizer
-    mmse_eq = MMSEEQ(nTaps) #initialize MMSE equalizer (object) of length nTaps
-    mmse_eq.design(h_c, EbN0dB) #Design MMSE equalizer
-    optDelay = mmse_eq.opt_delay #get the optimum delay of the equalizer
-    #filter received symbols through the designed equalizer
-    equalizedSamples = mmse_eq.equalize(receivedSyms)
-    y_mmse = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+        ## Receiver
+        ## MMSE equalizer
+        mmse_eq = MMSEEQ(nTaps)       #initialize MMSE equalizer (object) of length nTaps
+        mmse_eq.design(h_c, EbN0dB)   #Design MMSE equalizer
+        optDelay = mmse_eq.opt_delay  #get the optimum delay of the equalizer
+        #filter received symbols through the designed equalizer
+        equalizedSamples = mmse_eq.equalize(r)
+        y_mmse = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+        u_mmse = modem.demodulate(y_mmse)
+        #  ZF equalizer
+        zf_eq = zeroForcing(nTaps) #initialize ZF equalizer (object) of length nTaps
+        zf_eq.design(h_c)             # Design ZF equalizer
+        optDelay = zf_eq.opt_delay    # get the optimum delay of the equalizer
+        #filter received symbols through the designed equalizer
+        equalizedSamples = zf_eq.equalize(r)
+        y_zf = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+        u_zf = modem.demodulate(y_zf)
 
-    # DELAY OPTIMIZED ZF equalizer
-    zf_eq = zeroForcing(nTaps) #initialize ZF equalizer (object) of length nTaps
-    zf_eq.design(h_c) #Design ZF equalizer
-    optDelay = zf_eq.opt_delay #get the optimum delay of the equalizer
-    #filter received symbols through the designed equalizer
-    equalizedSamples = zf_eq.equalize(receivedSyms)
-    y_zf = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+        # SER when filtered thro MMSE eq.
+        SER_mmse[i] = np.sum((u != u_mmse))/N
+        # SER when filtered thro ZF eq.
+        SER_zf[i] = np.sum((u != u_zf))/N
 
-    # Optimum Detection in the receiver - Euclidean distance Method
-    estimatedSyms_mmse = modem.demodulate(y_mmse)
-    estimatedSyms_zf = modem.demodulate(y_zf)
-    # SER when filtered thro MMSE eq.
-    SER_mmse[i] = np.sum((inputSymbols != estimatedSyms_mmse))/N
-    # SER when filtered thro ZF eq.
-    SER_zf[i] = np.sum((inputSymbols != estimatedSyms_zf))/N
+    axs.semilogy(EbN0dBs, SER_zf, color = 'g', ls = '-', marker = markers[idx], ms = 12, label = f'{channeltype}, ZF eq.')
+    axs.semilogy(EbN0dBs, SER_mmse, color = 'r', ls = '-', marker = markers[idx], ms = 12, label = f'{channeltype}, MMSE eq.')
+axs.semilogy(EbN0dBs, SER_theory, color = 'k', ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
 
-SER_theory = ser_awgn(EbN0dBs,'PSK',M=2) #theoretical SER
+axs.set_ylim(1e-4, 1)
+axs.set_xlabel( 'Eb/N0(dB)',)
+axs.set_ylabel('SER',)
+axs.set_title( "Probability of Symbol Error for BPSK signals")
+axs.legend(fontsize = 20)
 
-fig1, ax1 = plt.subplots(nrows=1,ncols = 1)
-ax1.semilogy(EbN0dBs, SER_zf, 'g', label = 'ZF Equalizer');
-ax1.semilogy(EbN0dBs, SER_mmse, 'r', label = 'MMSE equalizer')
-ax1.semilogy(EbN0dBs, SER_theory, 'k', label = 'No interference')
-ax1.set_title('Probability of Symbol Error for BPSK signals');
-ax1.set_xlabel('$E_b/N_0$(dB)')
-ax1.set_ylabel('Probability of Symbol Error-$P_s$')
-ax1.legend()
-ax1.set_ylim(bottom = 10**-4, top = 1)
-plt.show()
-plt.close()
-
-# compute and plot channel characteristics
-Omega, H_c = freqz(h_c) #frequency response of the channel
-fig2, (ax2,ax3) = plt.subplots(nrows = 1, ncols = 2)
-ax2.stem(h_c, ) # time domain
-ax3.plot(Omega, 20*np.log10(abs(H_c)/max(abs(H_c))))
 plt.show()
 plt.close()
 
@@ -267,18 +292,64 @@ from numpy import convolve
 from DigiCommPy.equalizers import LMSEQ
 
 N = 5 # length of the desired filter
-mu=0.1 # step size for LMS algorithm
+mu = 0.1 # step size for LMS algorithm
 r = randn(10000) # random input sequence of length 10000
-h = randn(N)+1j*randn(N) # random complex system
-a = convolve(h,r) # reference signal
+h = randn(N) + 1j*randn(N) # random complex system
+a = convolve(h, r) # reference signal
 
 lms_eq = LMSEQ(N) #initialize the LMS filter object
-lms_eq.design(mu,r,a) # design using input and reference sequences
+lms_eq.design(mu, r, a) # design using input and reference sequences
 print('System impulse response (h): {}'.format(h))
 print('LMS adapted filter (w): {}'.format(lms_eq.w))
 
 
+# #%%
+# N = 100000
+# mu = 0.1
+# EbN0dBs = np.arange(0, 32, 2)
+# nTaps = 31 # Desired number of taps for equalizer filter
+# h_c = np.array([0.227, 0.460, 0.688, 0.460, 0.227])
 
+# MOD_TYPE = "psk"
+# M = 2
+
+# SER_zf = np.zeros(len(EbN0dBs))
+
+# #-----------------Transmitter---------------------
+# inputSymbols = np.random.randint(low = 0, high = 2, size = N) #uniform random symbols 0s & 1s
+# modem = PSKModem(M)
+# modulatedSyms = modem.modulate(inputSymbols)
+# x = np.convolve(modulatedSyms, h_c) # apply channel effect on transmitted symbols
+
+# for i,EbN0dB in enumerate(EbN0dBs):
+#     receivedSyms = awgn(x, EbN0dB) #add awgn noise
+
+#     # DELAY OPTIMIZED MMSE equalizer
+#     lmsq_eq = LMSEQ(nTaps) #initialize MMSE equalizer (object) of length nTaps
+#     lmsq_eq.design(mu, modulatedSyms, receivedSyms) #Design MMSE equalizer
+#     # optDelay = lmsq_eq.opt_delay #get the optimum delay of the equalizer
+#     #filter received symbols through the designed equalizer
+#     equalizedSamples = lmsq_eq.equalize(receivedSyms)
+#     y_mmse = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+
+#     # Optimum Detection in the receiver - Euclidean distance Method
+#     estimatedSyms_mmse = modem.demodulate(y_mmse)
+#     estimatedSyms_zf = modem.demodulate(y_zf)
+#     # SER when filtered thro MMSE eq.
+#     SER_mmse[i] = np.sum((inputSymbols != estimatedSyms_mmse))/N
+
+# SER_theory = ser_awgn(EbN0dBs,'PSK',M=2) #theoretical SER
+
+# fig1, ax1 = plt.subplots(nrows=1,ncols = 1)
+# ax1.semilogy(EbN0dBs, SER_mmse, 'r', label = 'MMSE equalizer')
+# ax1.semilogy(EbN0dBs, SER_theory, 'k', label = 'No interference')
+# ax1.set_title('Probability of Symbol Error for BPSK signals');
+# ax1.set_xlabel('$E_b/N_0$(dB)')
+# ax1.set_ylabel('Probability of Symbol Error-$P_s$')
+# ax1.legend()
+# ax1.set_ylim(bottom = 10**-4, top = 1)
+# plt.show()
+# plt.close()
 
 
 

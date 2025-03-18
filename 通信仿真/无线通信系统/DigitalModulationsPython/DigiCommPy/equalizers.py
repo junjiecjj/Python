@@ -82,7 +82,7 @@ class zeroForcing(Equalizer): #Class zero-forcing equalizer
         return MSE
 
 class MMSEEQ(Equalizer): #Class MMSE Equalizer
-    def design(self,h,snr,delay=None): #override method in Equalizer abstract class
+    def design(self, h, snr, delay = None): #override method in Equalizer abstract class
         """
         Design a MMSE equalizer for given channel impulse response (CIR) and
         signal to noise ratio (SNR). If the tap delay is not given, a delay
@@ -115,7 +115,7 @@ class MMSEEQ(Equalizer): #Class MMSE Equalizer
         return MSE
 
 class LMSEQ(Equalizer): #Class LMS adaptive equalizer
-    def design(self,mu,r,a):
+    def design(self, mu, r, a):
         """
         Design an adaptive FIR filter using LMS update equations (Training Mode)
         Parameters:
