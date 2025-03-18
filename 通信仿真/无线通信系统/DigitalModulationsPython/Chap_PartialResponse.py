@@ -60,22 +60,23 @@ for i in range(8):
     norm_response = response/np.max(response)
     norm_freq = W/np.max(W) - 1/2
 
-    fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
+    fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
     axs[0].stem(t[0:t.size:L], b[0:t.size:L], linefmt = 'r-', markerfmt = 'D', )
     axs[0].plot(t, b, 'b-', )
-    axs[0].set_xlabel('t/$T_{sym}$',)
-    axs[0].set_ylabel('b(t)',)
-    axs[0].set_title(f"{titles[i]}-b(t)" )
+    axs[0].set_xlabel('t/$T_{sym}$', fontsize = 12)
+    axs[0].set_ylabel('b(t)', fontsize = 12)
+    axs[0].set_title(f"{titles[i]}-b(t)" , fontsize = 16)
     # axs[0].set_xlim(-4 , 4)  #拉开坐标轴范围显示投影
     # axs[0].legend()
 
     axs[1].plot(norm_freq, norm_response, 'b-', )
-    axs[1].set_xlabel('f/$F_{sym}$',)
-    axs[1].set_ylabel('|Q(D)|',)
-    axs[1].set_title(f"{titles[i]}-Frequency response Q(D)" )
+    axs[1].set_xlabel('f/$F_{sym}$', fontsize = 12)
+    axs[1].set_ylabel('|Q(D)|', fontsize = 12)
+    axs[1].set_title(f"{titles[i]}-Frequency response Q(D)" , fontsize = 16)
     # axs[1].set_xlim(-1.5 , 1.5)  #拉开坐标轴范围显示投影
     # axs[1].legend()
 
+    plt.suptitle("Impulse response and frequency response of various Partial response (PR) signaling schemes", fontsize = 16)
     plt.show()
     plt.close()
 
@@ -84,14 +85,15 @@ for i in range(8):
 M = 4
 N = 100000
 a = np.random.randint(0, M, N)
+# Q = [1 , 2 , 0 , -2 , -1 ]
 Q = [1, 1]
-
+# Q = [1, 2, 1]
 x = np.zeros(a.size) # output of precoder
 D = np.zeros(len(Q), dtype = np.int32) # memory elements in the precoder
 
 # Precoder (Inverse filter of Q(z)) with Modulo-M operation
 for k in range(a.size):
-    x[k] = (a[k] - (D[1:] * Q[1:])[0] ) % M
+    x[k] = (a[k] - np.sum(D[1:] * Q[1:]) ) % M
     D[1] = x[k]
     if D.size > 2:
         D[2:] = D[1:-1]
