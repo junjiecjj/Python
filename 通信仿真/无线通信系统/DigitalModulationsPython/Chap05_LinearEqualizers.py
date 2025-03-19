@@ -165,7 +165,7 @@ Ns= np.arange(start=5, stop=35, step=5) # sweep number of equalizer taps from 5 
 maxDelay=Ns[-1]+len(h)-2 #max delay cannot exceed this value
 optimalDelay=np.zeros(len(Ns));
 
-fig, ax = plt.subplots(nrows=1,ncols = 1)
+fig, ax = plt.subplots(nrows=1, ncols = 1)
 for i,N in enumerate(Ns): #sweep number of equalizer taps
     maxDelay = N+len(h)-2
     mse=np.zeros(maxDelay)
@@ -234,7 +234,7 @@ nTaps = 31 # Desired number of taps for equalizer filter
 MOD_TYPE = "psk"
 M = 2
 
-u = np.random.randint(low = 0, high = 2, size = N) #uniform random symbols 0s & 1s
+u = np.random.randint(low = 0, high = 2, size = N) # uniform random symbols 0s & 1s
 modem = PSKModem(M)
 s = modem.modulate(u)
 

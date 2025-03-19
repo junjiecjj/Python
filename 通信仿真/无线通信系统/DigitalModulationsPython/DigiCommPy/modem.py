@@ -46,10 +46,11 @@ class Modem:
         axs.set_title('Constellation');
         axs.set_xlabel('I')
         axs.set_ylabel('Q')
-        fig.show()
+        plt.show()
+        plt.close()
         return
 
-    def modulate(self,inputSymbols):
+    def modulate(self, inputSymbols):
         """
             Modulate a vector of input symbols (numpy array format) using the chosen
              modem. The input symbols take integer values in the range 0 to M-1.

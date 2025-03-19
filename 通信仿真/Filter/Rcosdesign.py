@@ -57,8 +57,7 @@ def rcosdesign_srv(rolloff, span, sps):
     delaroll_AM = int(span*sps/2)
     t = np.arange(-delaroll_AM, delaroll_AM+1)/sps
 
-    # 设计跟升余弦滤波器
-    # 找到中点
+    # 设计跟升余弦滤波器, 找到中点
     idx1 = np.where(t == 0)[0][0]
     rrc_filter = np.zeros_like(t)
 
@@ -175,6 +174,74 @@ Raised cosine FIR filter design
     b = b / np.sqrt(np.sum(np.power(b, 2)))
     return b
 
+
+def srrcFunction(beta, L, span):
+    # Function for generating rectangular pulse for the given inputs
+    # L - oversampling factor (number of samples per symbol)
+    # span - filter span in symbol durations
+    # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
+
+    Tsym = 1
+    t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
+    A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
+    B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
+    p = 1/np.sqrt(Tsym) * A/B
+    p[np.argwhere(np.isnan(p))] = 1
+    p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
+    filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2)))
+    return p, t, filtDelay
+
+beta = 0.25
+span = 6
+L = 4 # L
+shape = 'sqrt'
+
+h1 = rcosdesign_srv(beta, span, L, )
+h2 = rcosdesign(beta, span, L, shape = shape)
+h3, t, _ = srrcFunction(beta, L, span)
+# t = np.arange(h2.size)
+
+
+width = 10
+high = 6
+horvizen = 1
+vertical = 1
+fig, axs = plt.subplots(1, 1, figsize = (horvizen*width, vertical*high), constrained_layout = True)
+labelsize = 20
+
+axs.plot(t, h1, ls = '-', color = 'r', marker = 'o', mfc = 'none', label = 'rcosdesign_srv')
+axs.plot(t, h2, ls = '-', color = 'g', marker = '*', mfc = 'none', label = 'rcosdesign')
+axs.plot(t, h3, ls = '-', color = 'b', marker = 'd', mfc = 'none', label = 'srrcFunction')
+
+
+font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs.set_xlabel('time',fontproperties=font)
+axs.set_ylabel('value',fontproperties=font)
+font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+# font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
+#  edgecolor='black',
+# facecolor = 'y', # none设置图例legend背景透明
+legend1 = axs.legend(loc='best',  prop=font1,  )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+# frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+axs.spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
+axs.spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
+
+axs.tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
+labels = axs.get_xticklabels() + axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(20) for label in labels] #刻度值字号
+
+plt.show()
+plt.close()
+
+
+#%%
 # https://github.com/Kevin-Vivas/Digital_Modulation_Py/blob/master/QPSK/raisedCosineDesign.py
 def raisedCosineDesign(alpha, span, L):
     """
@@ -200,18 +267,31 @@ def raisedCosineDesign(alpha, span, L):
     p = p / np.sqrt(np.sum(np.power(p, 2)))
     return p
 
+def raisedCosineFunction(alpha, L, span):
+    # Function for generating rectangular pulse for the given inputs
+    # L - oversampling factor (number of samples per symbol)
+    # span - filter span in symbol durations
+    # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
 
-beta = 0.25
+    Tsym = 1
+    t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
+    A = np.sin(np.pi*t/Tsym)/(np.pi*t/Tsym)
+    B = np.cos(np.pi*alpha*t/Tsym)
+    p = A*B/(1 - (2*alpha*t/Tsym)**2)
+    p[np.argwhere(np.isnan(p))] = 1
+    p[np.argwhere(np.isinf(p))] = (alpha/2)*np.sin(np.pi/(2*alpha))
+    filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2)))
+    return p, t, filtDelay
+
+alpha = 0.25
 span = 6
-sps = 4
+L = 4 # L
 shape = 'sqrt'
 
-
-# h = raisedCosineDesign(beta, span, sps)
-# h =  rcosdesign_srv(beta, span, sps, )
-h =  rcosdesign(beta, span, sps, shape = shape)
-t = np.arange(h.size)
-print(h)
+h1 = raisedCosineDesign(alpha, span, L, )
+h2, t, _ = raisedCosineFunction(beta, L, span)
+# t = np.arange(h2.size)
 
 width = 10
 high = 6
@@ -220,16 +300,17 @@ vertical = 1
 fig, axs = plt.subplots(1, 1, figsize = (horvizen*width, vertical*high), constrained_layout = True)
 labelsize = 20
 
-axs.plot(t, h, label = 'raw')
+axs.plot(t, h1, ls = '-', color = 'r', marker = 'o', mfc = 'none', label = 'raisedCosineDesign')
+axs.plot(t, h2, ls = '-', color = 'g', marker = '*', mfc = 'none', label = 'raisedCosineFunction')
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel('time',fontproperties=font)
 axs.set_ylabel('value',fontproperties=font)
-#font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
+font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+# font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
 #  edgecolor='black',
 # facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs.legend(loc='best',  prop=font1, bbox_to_anchor=(0.5, -0.2), ncol = 3,  borderaxespad=0,)
+legend1 = axs.legend(loc='best',  prop=font1,  )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 # frame1.set_facecolor('none')  # 设置图例legend背景透明
@@ -245,12 +326,7 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
 plt.show()
-
-
-
-
-
-
+plt.close()
 
 
 

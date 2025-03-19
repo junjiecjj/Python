@@ -4,6 +4,9 @@
 Created on Mon Mar 17 01:37:26 2025
 
 @author: jack
+
+比特-> 符号 -> 上采样 -> 脉冲成型 -> AWGN信道 -> 匹配滤波 -> 下采样 -> 解调 -> 比特
+
 """
 
 import sys
@@ -17,14 +20,12 @@ from DigiCommPy.modem import PSKModem, QAMModem, PAMModem, FSKModem
 from DigiCommPy.channels import awgn
 from DigiCommPy.errorRates import ser_awgn
 
-
 # Program 7.8: test SRRCPulse.m: Square-root raised-cosine pulse characteristics
 def srrcFunction(beta, L, span):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
     # span - filter span in symbol durations
     # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
-
     Tsym = 1
     t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
     A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
@@ -33,9 +34,11 @@ def srrcFunction(beta, L, span):
     p[np.argwhere(np.isnan(p))] = 1
     p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
     filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
     return p, t, filtDelay
 
 #%%  Performance of modulations in AWGN
+## 使用upfirdn函数
 #---------Input Fields------------------------
 nSym = 10**6 # Number of symbols to transmit
 EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
@@ -58,18 +61,17 @@ fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
 for i, M in enumerate(arrayOfM):
     print(f" {M} in {arrayOfM}")
-    #-----Initialization of various parameters----
+    #----- Initialization of various parameters ----
     k = np.log2(M)
-    EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
+    EsN0dBs = 10*np.log10(k) + EbN0dBs # EsN0dB calculation
     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
 
-    if mod_type.lower()=='fsk':
+    if mod_type.lower() == 'fsk':
         modem=modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
-    else: #for all other modulations
+    else: # for all other modulations
         modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
 
     for j, EsN0dB in enumerate(EsN0dBs):
-
         d = np.random.randint(low = 0, high = M, size = nSym) # uniform random symbols from 0 to M-1
         u = modem.modulate(d) #modulate
 
@@ -83,7 +85,6 @@ for i, M in enumerate(arrayOfM):
 
         ## 选取最佳采样点,
         decision_site = int((z.size - u.size) / 2)
-
         ## 每个符号选取一个点作为判决
         u_hat = z[decision_site:decision_site + u.size] / L
         # dCap = modem.demodulate(u_hat, outputtype = 'int',)
@@ -107,9 +108,8 @@ ax.legend(fontsize = 12)
 plt.show()
 plt.close()
 
-
-
 # #%%  Performance of modulations in AWGN
+## 不使用upfirdn函数，手动实现
 # #---------Input Fields------------------------
 # nSym = 10**6 # Number of symbols to transmit
 # EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
