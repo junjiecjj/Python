@@ -27,14 +27,10 @@ from matplotlib.font_manager import FontProperties
 # from pylab import tick_params
 from matplotlib.pyplot import MultipleLocator
 # import scipy.constants as CONSTANTS
-
-
 filepath2 = '/home/jack/snap/'
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-
-
 
 #%%%%%%%% MUSIC for Uniform Linear Array%%%%%%%%
 pi = np.pi
