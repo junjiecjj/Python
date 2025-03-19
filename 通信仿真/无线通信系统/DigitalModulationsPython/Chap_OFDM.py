@@ -397,21 +397,6 @@ def OFDM_symbol(N, dataIdx, payload, d_payload, pilotIdx, pilotdata, d_pilot):
     symbol[pilotIdx] = pilotdata  # 在导频位置插入导频
     d[pilotIdx] = d_pilot         # 在导频位置插入导频
     return symbol, d
-## LS信道估计
-def LS_CE(OFDM_demod, pilotIdx, pilotData, allIdx):
-    pilots = OFDM_demod[pilotIdx]        # 取导频处的数据
-    Hest_at_pilots = pilots / pilotData  # LS信道估计
-    # 在导频载波之间进行插值以获得估计，然后利用插值估计得到数据下标处的信道响应
-    Hest_abs = scipy.interpolate.interp1d(pilotIdx, np.abs(Hest_at_pilots), kind = 'linear')(allIdx)
-    Hest_phase = scipy.interpolate.interp1d(pilotIdx, np.angle( Hest_at_pilots), kind = 'linear')(allIdx)
-    Hest = Hest_abs * np.exp(1j*Hest_phase)
-    # Hest = scipy.interpolate.interp1d(pilotIdx, Hest_at_pilots, kind = 'cubic')(allIdx)
-    return Hest
-## MMSE 信道估计
-def MMSE_CE(OFDM_demod, pilotIdx, pilotData, allIdx):
-
-    return
-
 
 
 def plotChannel(h, N, Hest, allIdx):
@@ -459,12 +444,49 @@ def plotChannel(h, N, Hest, allIdx):
     plt.close()
 
     return
+## LS信道估计
+def LS_CE(OFDM_demod, pilotIdx, pilotData, allIdx):
+    pilots = OFDM_demod[pilotIdx]        # 取导频处的数据
+    Hest_at_pilots = pilots / pilotData  # LS信道估计
+    # 在导频载波之间进行插值以获得估计，然后利用插值估计得到数据下标处的信道响应
+    # H_Ls_abs = scipy.interpolate.interp1d(pilotIdx, np.abs(Hest_at_pilots), kind = 'linear')(allIdx)
+    # H_Ls_phase = scipy.interpolate.interp1d(pilotIdx, np.angle( Hest_at_pilots), kind = 'linear')(allIdx)
+    # H_LS = H_Ls_abs * np.exp(1j*H_Ls_phase)
+    H_LS = scipy.interpolate.interp1d(pilotIdx, Hest_at_pilots, kind = 'linear')(allIdx)
+    return H_LS
+## MMSE 信道估计
+def MMSE_CE(Nfft, Nps, OFDM_demod, pilotIdx, pilotData, h, SNR, ):
+    Np = pilotIdx.size
+    snr = 10**(SNR/10.0)
+    H_tilde = OFDM_demod[pilotIdx]/pilotData
+    k = np.arange(h.size)
+    hh = h @ h.conjugate()
+    tmp = h * h.conjugate() * k
+    r = np.sum(tmp) / hh
+    r2 = tmp @ k[:,None] / hh
+    tau_rms = np.sqrt(r2-r**2)
+    df = 1/Nfft
+    j2pi_tau_df = 2*np.pi*tau_rms*df*1j
+    K1 = np.tile(np.arange(Nfft)[:,None], (1, Np))
+    K2 = np.tile(np.arange(Np), (Nfft, 1))
+    rf = 1.0/(1 + j2pi_tau_df * (K1-K2*Nps) )
+
+    K3 = np.tile(np.arange(Np)[:,None], (1, Np))
+    K4 = np.tile(np.arange(Np), (Np, 1))
+
+    rf2 = 1.0/(1+j2pi_tau_df*Nps*(K3-K4))
+    Rhp = rf
+    Rpp = rf2 + np.eye(H_tilde.size)/snr
+    H_MMSE = Rhp @ scipy.linalg.inv(Rpp) @ H_tilde
+
+    return H_MMSE
 
 np.random.seed(42)
 N = 128    # 子载波数量
 L = 10    # 信道冲击响应长度
 Ncp = 16  # L - 1 # CP长度
-P = N//4     # 导频数
+Nps = 4
+P = N//Nps     # 导频数
 nSym = 20000  # 仿真帧数
 EbN0dBs = np.arange(-2, 34, 4)
 MOD_TYPE = "psk"
@@ -476,7 +498,7 @@ MOD_TYPE = "psk"
 arrayOfM = [4, 16]
 
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
-modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+modem_dict = {'psk':PSKModem, 'qam':QAMModem, 'pam':PAMModem, 'fsk':FSKModem}
 
 allIdx = np.arange(N)          # 子载波编号 ([0, 1, ... K-1])
 pilotIdx = allIdx[::N//P]      # 每间隔P个子载波一个导频
@@ -484,7 +506,7 @@ pilotIdx = np.hstack([pilotIdx, np.array([allIdx[-1]])]) # 为了方便信道估
 P = P + 1
 dataIdx = np.delete(allIdx, pilotIdx)                    # 数据编号
 plotDataPilot(allIdx, pilotIdx)
-
+esti_way = 'perfect'
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 for m, M in enumerate(arrayOfM):
@@ -518,8 +540,13 @@ for m, M in enumerate(arrayOfM):
             y = remove_cyclic_prefix(r, Ncp, N)
             Y = np.fft.fft(y, N)
             #  信道估计
-            Hest = LS_CE(Y, pilotIdx, pilot_sym, allIdx)  # 信道估计, 和信道完美已知的性能差很多;
-            # Hest = np.fft.fft(h, N)  # 假设信道完美已知;
+            if esti_way == 'perfect':
+                Hest = np.fft.fft(h, N)                     # 假设信道完美已知;
+            elif esti_way == 'ls':
+                Hest = LS_CE(Y, pilotIdx, pilot_sym, allIdx)  # LS信道估计, 和信道完美已知的性能差很多;
+            elif esti_way == 'mmse':
+                Hest = MMSE_CE(N, Nps, Y, pilotIdx, pilot_sym, h, EsN0dB, ) # 和信道完美已知的性能差一些，但是比LS的好很多;
+            # Hest = np.fft.fft(h, N)                     # 假设信道完美已知;
             # if i == 6 and j % 1000 == 0:
                 # plotChannel(h, N, Hest, allIdx) # 可视化信道冲击响应，仿真信道
             V = Y/Hest # 频域均衡
@@ -530,13 +557,13 @@ for m, M in enumerate(arrayOfM):
     SER_sim = errors/(nSym * N)
     SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M)
 
-    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
-    axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = '--', lw = 1, marker = "o", ms = 12, )
+    axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', lw = 2, label = f'{M}-{MOD_TYPE.upper()}' )
 
 # axs.set_ylim(1e-3, 1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER',)
-axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over Freq Selective Rayleigh")
+axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over FreqSelectiveRayleigh with {esti_way.upper()} Channel Estim")
 axs.legend(fontsize = 20)
 
 plt.show()
