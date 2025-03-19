@@ -506,7 +506,8 @@ pilotIdx = np.hstack([pilotIdx, np.array([allIdx[-1]])]) # 为了方便信道估
 P = P + 1
 dataIdx = np.delete(allIdx, pilotIdx)                    # 数据编号
 plotDataPilot(allIdx, pilotIdx)
-esti_way = 'perfect'
+esti_way = 'ls'
+DFT_CE = True
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 for m, M in enumerate(arrayOfM):
@@ -525,7 +526,7 @@ for m, M in enumerate(arrayOfM):
             ## Transmitter
             d_payload = np.random.randint(0, M, N - P)
             payload_sym = modem.modulate(d_payload)
-            d_pilot = np.random.randint(0, M, P) #  np.array([M-1]*P)  #
+            d_pilot = np.array([M-1]*P)  # np.random.randint(0, M, P) #
             pilot_sym = modem.modulate(d_pilot)
             ofdm_sym, d = OFDM_symbol(N, dataIdx, payload_sym, d_payload, pilotIdx, pilot_sym, d_pilot)
             x = np.fft.ifft(ofdm_sym, N)
@@ -546,9 +547,11 @@ for m, M in enumerate(arrayOfM):
                 Hest = LS_CE(Y, pilotIdx, pilot_sym, allIdx)  # LS信道估计, 和信道完美已知的性能差很多;
             elif esti_way == 'mmse':
                 Hest = MMSE_CE(N, Nps, Y, pilotIdx, pilot_sym, h, EsN0dB, ) # 和信道完美已知的性能差一些，但是比LS的好很多;
-            # Hest = np.fft.fft(h, N)                     # 假设信道完美已知;
-            # if i == 6 and j % 1000 == 0:
-                # plotChannel(h, N, Hest, allIdx) # 可视化信道冲击响应，仿真信道
+            if DFT_CE == True: ## 进一步使用时域的DFT估计技术, 对于MMSE，性能会进一步提升很多，基本上和完美信道一致；对于LS,也有一些提升;
+                h_est = np.fft.ifft(Hest)
+                h_dft = h_est[:L]
+                HDFT = np.fft.fft(h_dft, N)
+                Hest = HDFT
             V = Y/Hest # 频域均衡
             dCap = modem.demodulate(V)
 
@@ -563,7 +566,7 @@ for m, M in enumerate(arrayOfM):
 # axs.set_ylim(1e-3, 1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER',)
-axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over FreqSelectiveRayleigh with {esti_way.upper()} Channel Estim")
+axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over FreqSelectiveRayleigh with {esti_way.upper()} Channel Estim", fontsize = 18)
 axs.legend(fontsize = 20)
 
 plt.show()
