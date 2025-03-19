@@ -22,10 +22,6 @@ import os
 # if not os.path.isdir("Figures"):
 #     os.makedirs("Figures")
 
-
-
-
-
 # 1. 用for循环
 x_array = np.linspace(-6, 6, 200)
 sigma_array = np.linspace(0.5,5,10)
