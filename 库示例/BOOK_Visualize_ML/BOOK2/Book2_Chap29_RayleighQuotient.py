@@ -729,7 +729,7 @@ ax.set_zticks([])
 ax.view_init(azim=-145, elev=75)
 ax.grid(False)
 # fig.savefig('Figures/瑞利商，网格.svg', format='svg')
-fig.savefig('瑞利商，网格.svg', format='svg')
+# fig.savefig('瑞利商，网格.svg', format='svg')
 
 #%% 不同三元瑞利商
 
@@ -895,9 +895,6 @@ Q6 = np.array([[1, 0, 0],
               [0, -2, 0],
               [0, 0, 3]])
 visualize_Q(Q6,'Q6')
-
-
-
 
 #%% 单位球面上的瑞利商等高线
 import numpy as np
@@ -1066,7 +1063,7 @@ ax.grid(False)
 # fig.savefig('瑞利商，球面颜色映射 + 彩色等高线.svg', format='svg')
 plt.show()
 
-
+plt.close('all')
 
 
 
