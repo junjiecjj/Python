@@ -22,6 +22,12 @@ https://zhuanlan.zhihu.com/p/687473210
 https://blog.51cto.com/u_12413309/6242987
 
 https://www.cnblogs.com/kinologic/p/14105907.html
+
+https://blog.csdn.net/weixin_41691854/article/details/134740115
+
+https://blog.csdn.net/caigen0001/article/details/108815569
+
+https://blog.51cto.com/u_16213467/10082107
 """
 import numpy as np
 # import scipy

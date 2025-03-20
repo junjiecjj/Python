@@ -41,17 +41,34 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
+# p = plt.rcParams
+# # p["font.sans-serif"] = ["Roboto"]
+# p["font.weight"] = "light"
+# p["ytick.minor.visible"] = False
+# p["xtick.minor.visible"] = False
+# p["axes.grid"] = True
+# p["grid.color"] = "0.5"
+# p["grid.linewidth"] = 0.5
 
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = False
-p["xtick.minor.visible"] = False
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
-
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 8  # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 12  # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 12  # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 12  # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 12  # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
+plt.rcParams["figure.figsize"] = [12, 8] # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300 # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 1     # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6 # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 12
 
 
 def mesh(num = 100):
@@ -62,7 +79,6 @@ def mesh(num = 100):
     xx,yy = np.meshgrid(x_array,y_array)
 
     return xx, yy
-
 
 x1, x2 = symbols('x1 x2')
 # 自定义函数计算二元瑞利商
@@ -145,12 +161,10 @@ def visualize(Q, title):
 
     return f_x1x2
 
-# Q = np.array([[1, 0],
-#               [0, 2]])
-# print(np.linalg.eig(Q))
-# f_x1x2 = visualize(Q, '开口朝上正椭圆面')
-
-
+Q = np.array([[1, 0],
+              [0, 2]])
+print(np.linalg.eig(Q))
+f_x1x2 = visualize(Q, '开口朝上正椭圆面')
 
 # Q = np.array([[1.5,0.5],
 #               [0.5,1.5]])
@@ -177,10 +191,10 @@ def visualize(Q, title):
 # f_x1x2 = visualize(Q, '旋转山谷')
 
 
-# Q = np.array([[-1,1],
-#               [1,-1]])
-# print(np.linalg.eig(Q))
-# f_x1x2 = visualize(Q, '旋转山脊')
+Q = np.array([[-1,1],
+              [1,-1]])
+print(np.linalg.eig(Q))
+f_x1x2 = visualize(Q, '旋转山脊')
 
 
 Q = np.array([[1,0],
@@ -188,10 +202,10 @@ Q = np.array([[1,0],
 print(np.linalg.eig(Q))
 f_x1x2 = visualize(Q, '双曲面')
 
-# Q = np.array([[0,2],
-#               [2,0]])
-# print(np.linalg.eig(Q))
-# f_x1x2 = visualize(Q, '旋转双曲面')
+Q = np.array([[0,2],
+              [2,0]])
+print(np.linalg.eig(Q))
+f_x1x2 = visualize(Q, '旋转双曲面')
 
 
 #%% 极坐标视角看瑞利商
@@ -455,21 +469,15 @@ Rayleigh_Q = np.diag(Points @ Q @ Points.T)
 #
 Rayleigh_Q_ = np.reshape(Rayleigh_Q, X.shape)
 
-
 ## 1  小彩灯
-fig = plt.figure(figsize = (20, 20))
+fig = plt.figure(figsize = (12, 12), constrained_layout = True)
 ax = fig.add_subplot(111, projection='3d')
 
 surf = ax.plot_wireframe(X, Y, Z, rstride=2, cstride=2, color = '0.68',linewidth=0.25)
 
-surf.set_facecolor((0,0,0,0))
+surf.set_facecolor((0, 0, 0, 0))
 
-ax.scatter(X[::2,::2],
-           Y[::2,::2],
-           Z[::2,::2],
-           c = Rayleigh_Q_[::2,::2],
-           cmap = 'hsv',
-           s = 15)
+ax.scatter(X[::2,::2], Y[::2,::2], Z[::2,::2], c = Rayleigh_Q_[::2,::2], cmap = 'hsv', s = 15)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -485,9 +493,9 @@ ax.plot((-k, k), (0, 0), (0, 0), 'k')
 ax.plot((0, 0), (-k, k), (0, 0), 'k')
 ax.plot((0, 0), (0, 0), (-k, k), 'k')
 ax.axis('off')
-ax.set_xlim((-k, k))
-ax.set_ylim((-k, k))
-ax.set_zlim((-k, k))
+ax.set_xlim((-np.max(np.abs(X)), np.max(np.abs(X))))
+ax.set_ylim((-np.max(np.abs(Y)), np.max(np.abs(Y))))
+ax.set_zlim((-np.max(np.abs(Z)), np.max(np.abs(Z))))
 ax.set_box_aspect([1,1,1])
 ax.view_init(azim=-155, elev=35)
 ax.grid(False)

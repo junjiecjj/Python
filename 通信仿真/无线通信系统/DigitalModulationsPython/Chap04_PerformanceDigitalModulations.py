@@ -7,7 +7,7 @@ Created on Sun Mar  9 17:37:52 2025
 """
 
 import sys
-sys.path.append("..")
+# sys.path.append("..")
 
 import numpy as np # for numerical computing
 import matplotlib.pyplot as plt # for plotting functions
@@ -57,8 +57,8 @@ for i, M in enumerate(arrayOfM):
         SER_sim[j] = np.sum(detectedSyms != inputSyms)/nSym
 
     SER_theory = ser_awgn(EbN0dBs, mod_type, M, coherence) #theory SER
-    ax.semilogy(EbN0dBs, SER_sim, color = colors[i], marker='o', linestyle='', label='Sim '+str(M)+'-'+mod_type.upper())
-    ax.semilogy(EbN0dBs, SER_theory, color = colors[i], linestyle='-', label='Theory '+str(M)+'-'+mod_type.upper())
+    ax.semilogy(EbN0dBs, SER_sim, color = colors[i], marker = 'o', linestyle = '--', lw = 1, label = 'Sim '+str(M)+'-'+mod_type.upper())
+    ax.semilogy(EbN0dBs, SER_theory, color = colors[i], linestyle = '-',lw = 2, label = 'Theory '+str(M)+'-'+mod_type.upper())
 ax.set_ylim(1e-6, 1)
 ax.set_xlabel('Eb/N0(dB)')
 ax.set_ylabel('SER ($P_s$)')
@@ -111,8 +111,8 @@ for i, M in enumerate(arrayOfM):
         SER_sim[j] = np.sum(detectedSyms != inputSyms)/nSym
 
     SER_theory = ser_rayleigh(EbN0dBs,mod_type,M) #theory SER
-    ax.semilogy(EbN0dBs,SER_sim,color = colors[i],marker='o',linestyle='',label='Sim '+str(M)+'-'+mod_type.upper())
-    ax.semilogy(EbN0dBs,SER_theory,color = colors[i],linestyle='-',label='Theory '+str(M)+'-'+mod_type.upper())
+    ax.semilogy(EbN0dBs,SER_sim,color = colors[i],marker = 'o',linestyle = '--',lw = 1, label = 'Sim '+str(M)+'-'+mod_type.upper())
+    ax.semilogy(EbN0dBs,SER_theory,color = colors[i], linestyle = '-', lw = 2, label = 'Theory '+str(M)+'-'+mod_type.upper())
 ax.set_ylim(1e-3, 1)
 ax.set_xlabel('Eb/N0(dB)');ax.set_ylabel('SER ($P_s$)')
 ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over Rayleigh flat fading channel')
@@ -162,8 +162,8 @@ for i, K_dB in enumerate(K_dBs):
         SER_sim[j] = np.sum(detectedSyms != inputSyms)/nSym
 
     SER_theory = ser_rician(K_dB, EbN0dBs, mod_type, M)
-    ax.semilogy(EbN0dBs,SER_sim,color = colors[i],marker='o',linestyle='',label='Sim K='+str(K_dB)+' dB')
-    ax.semilogy(EbN0dBs,SER_theory,color = colors[i],linestyle='-',label='Theory K='+str(K_dB)+' dB')
+    ax.semilogy(EbN0dBs,SER_sim,color = colors[i], marker = 'o', linestyle = '--', lw = 1, label = 'Sim K='+str(K_dB)+' dB')
+    ax.semilogy(EbN0dBs,SER_theory,color = colors[i], linestyle = '-', lw = 2, label = 'Theory K='+str(K_dB)+' dB')
 ax.set_ylim(1e-6, 1)
 ax.set_xlabel('Eb/N0(dB)')
 ax.set_ylabel('SER ($P_s$)')
