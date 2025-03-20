@@ -122,8 +122,6 @@ plt.ylabel("Amplitude")
 plt.grid(True)
 plt.show()
 
-
-
 #%%
 
 import numpy as np
