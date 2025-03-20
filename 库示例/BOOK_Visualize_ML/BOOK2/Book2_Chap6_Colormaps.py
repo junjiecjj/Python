@@ -6,10 +6,6 @@ Created on Sun Jun 23 16:22:49 2024
 @author: jack
 """
 
-
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 颜色映射
 import matplotlib
 import matplotlib.pyplot as plt
@@ -80,9 +76,6 @@ for i, value in enumerate(data):
     ax.text(0, i + 0.5, f'RGB: {rgb_color}', color='black', ha='left', va='center')
 # plt.savefig('color mapping, 1.svg')
 plt.show()
-
-
-
 
 #>>>>>>>>>>>>>>>>>>>>>> 生成颜色映射
 colormap = matplotlib.colormaps.get_cmap('RdYlBu_r')

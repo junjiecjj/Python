@@ -3,8 +3,6 @@
 ##########################################  3D Mesh Surface, 网格曲面 ######################################
 #==========================================================================================================
 
-
-
 #%% 绘制网格曲面
 # 导入包
 import math
@@ -28,13 +26,12 @@ f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y*
 f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
 
-
 # 2. 网格函数
 def mesh(num = 101):
     # number of mesh grids
-    x_array = np.linspace(-3,3,num)
-    y_array = np.linspace(-3,3,num)
-    xx,yy = np.meshgrid(x_array,y_array)
+    x_array = np.linspace(-3, 3, num)
+    y_array = np.linspace(-3, 3, num)
+    xx,yy = np.meshgrid(x_array, y_array)
 
     return xx, yy
 
@@ -43,9 +40,7 @@ xx, yy = mesh(num = 11)
 zz = xx * 0
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx,yy, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
-
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -64,17 +59,12 @@ ax.grid(False)
 # fig.savefig('Figures/展示网格面，网格粗糙.svg', format='svg')
 plt.show()
 
-
 # 4. 绘制函数网格曲面，网格粗糙
 ff = f_xy_fcn(xx,yy)
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx,yy, ff, color = [0.5,0.5,0.5], linewidth = 0.25)
-
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
-
 ax.set_xlabel('$\it{x}$')
 ax.set_ylabel('$\it{y}$')
 ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
@@ -1255,6 +1245,7 @@ ax.view_init(azim=-135, elev=30)
 plt.tight_layout()
 ax.grid(False)
 plt.show()
+plt.close('all')
 
 
 

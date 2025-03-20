@@ -82,9 +82,6 @@ plt.show()
 
 
 
-
-
-
 #%% 利萨茹曲线
 import matplotlib.pyplot as plt
 import numpy as np
@@ -313,9 +310,6 @@ X = r*np.sin(tt_)*np.cos(pp_)
 Y = r*np.sin(tt_)*np.sin(pp_)
 
 visualize(X,Y,Z,'下半球')
-
-
-
 
 
 ################ 左半球面

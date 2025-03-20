@@ -7,7 +7,6 @@ Created on Sun Jun 23 17:07:45 2024
 
  Chapter 29 瑞利商 | Book 2《可视之美》
 
-
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,7 +24,6 @@ font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_R
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-
 
 #%% 把瑞利商看成是二元函数
 

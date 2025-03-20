@@ -108,7 +108,7 @@ axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
 out_fig = plt.gcf()
 # out_fig.savefig('music.eps' )
 plt.show()
-
+plt.close('all')
 
 
 
