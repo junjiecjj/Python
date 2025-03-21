@@ -188,16 +188,16 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from matplotlib.animation import FuncAnimation
 
-sample_rate = 1e6
+fs = 1e6
+Ts = 1/fs
 N = 10000 # number of samples to simulate
 
 # Create a tone to act as the transmitted signal
-t = np.arange(N)/sample_rate
+t = np.arange(N) * Ts
 f_tone = 0.02e6
-tx = np.exp(2j*np.pi*f_tone*t)
+tx = np.exp(2j * np.pi * f_tone * t)
 
 # Simulate three omnidirectional antennas in a line with 1/2 wavelength between adjancent ones, receiving a signal that arrives at an angle
-
 d = 0.5
 Nr = 3
 theta_degrees = 20 # direction of arrival
@@ -248,7 +248,6 @@ ax1.grid()
 ax1.legend(['0','1','2'], loc=1)
 plt.show()
 
-
 if True:
     Nr = 8 # 8 elements
     theta1 = 20 / 180 * np.pi # convert to radians
@@ -258,9 +257,7 @@ if True:
     a2 = np.asmatrix(np.exp(-2j * np.pi * d * np.arange(Nr) * np.sin(theta2)))
     a3 = np.asmatrix(np.exp(-2j * np.pi * d * np.arange(Nr) * np.sin(theta3)))
     # we'll use 3 different frequencies
-    r = a1.T @ np.asmatrix(np.exp(2j*np.pi*0.01e6*t)) + \
-        a2.T @ np.asmatrix(np.exp(2j*np.pi*0.02e6*t)) + \
-        0.1 * a3.T @ np.asmatrix(np.exp(2j*np.pi*0.03e6*t))
+    r = a1.T @ np.asmatrix(np.exp(2j*np.pi*0.01e6*t)) + a2.T @ np.asmatrix(np.exp(2j*np.pi*0.02e6*t)) + 0.1 * a3.T @ np.asmatrix(np.exp(2j*np.pi*0.03e6*t))
     n = np.random.randn(Nr, N) + 1j*np.random.randn(Nr, N)
     r = r + 0.04*n
 
@@ -269,14 +266,14 @@ if True:
     R = r @ r.H # Calc covariance matrix, it's Nr x Nr
     w, v = np.linalg.eig(R) # eigenvalue decomposition, v[:,i] is the eigenvector corresponding to the eigenvalue w[i]
 
-    if False:
+    if 1:
         fig, (ax1) = plt.subplots(1, 1, figsize=(7, 3))
         ax1.plot(10*np.log10(np.abs(w)),'.-')
         ax1.set_xlabel('Index')
         ax1.set_ylabel('Eigenvalue [dB]')
         plt.show()
         #fig.savefig('../_images/doa_eigenvalues.svg', bbox_inches='tight') # I EDITED THIS ONE IN INKSCAPE!!!
-        exit()
+        # exit()
 
     eig_val_order = np.argsort(np.abs(w)) # find order of magnitude of eigenvalues
     v = v[:, eig_val_order] # sort eigenvectors using this order
