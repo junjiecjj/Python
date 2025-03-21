@@ -27,8 +27,38 @@ https://www.zhihu.com/column/c_1598336162149687297
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from sklearn.datasets import make_spd_matrix
 
 
+# 生成一个5x5的随机对称正定矩阵
+n = 5
+A = np.random.rand(n, n)
+A = 0.5 * (A + A.T) # 将矩阵对称化
+if np.all(np.linalg.eigvals(A) > 0):
+    print("A是一个对称正定矩阵。")
+else:
+    print("A不是一个对称正定矩阵。")
+
+
+n = 5
+A = np.random.rand(n, n)
+B =  A @ A.transpose()
+# C = B+B.T # makesure symmetric
+# test whether C is definite
+# D = np.linalg.cholesky(C) # if there is no error, C is definite
+if np.all(np.linalg.eigvals(B) > 0):
+    print("B是一个对称正定矩阵。")
+else:
+    print("B不是一个对称正定矩阵。")
+
+
+# 生成一个5x5的随机对称正定矩阵
+n = 5
+A = make_spd_matrix(n, random_state=42)
+if np.all(np.linalg.eigvals(A) > 0):
+    print("A是一个对称正定矩阵。")
+else:
+    print("A不是一个对称正定矩阵。")
 
 
 
