@@ -66,7 +66,14 @@ else:
 
 
 
+m = 2
+n = 3
+A = np.random.rand(m, n) + 1j * np.random.rand(m, n)
+B = A.conjugate()@A.T
+print(f"{B}")
 
+B1 = A@A.T.conjugate()
+print(f"{B1}")
 
 
 
