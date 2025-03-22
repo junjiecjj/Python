@@ -210,8 +210,7 @@ a = np.asmatrix(a)
 tx = np.asmatrix(tx)
 
 # so how do we use this? simple:
-
-r = a.T @ tx  # matrix multiply. dont get too caught up by the transpose a, the important thing is we're multiplying the array factor by the tx signal
+r = a.T @ tx   # matrix multiply. dont get too caught up by the transpose a, the important thing is we're multiplying the array factor by the tx signal
 print(r.shape) # r is now going to be a 2D array, 1d is time and 1d is spatial
 
 # Plot the real part of the first 200 samples of all three elements
@@ -226,10 +225,9 @@ ax1.legend(['0','1','2'], loc=1)
 plt.show()
 
 # note the phase shifts, they are also there on the imaginary portions of the samples
-
 # So far this has been simulating the recieving of a signal from a certain angle of arrival
 # in your typical DOA problem you are given samples and have to estimate the angle of arrival(s)
-# there are also problems where you have multiple receives signals from different directions and one is the SOI while another might be a jammer or interferer you have to null out
+# there are also problems where you have multiple receives signals from different directions and one is the SOI while another might be a jammer or interferer you have to null out.
 
 # One thing we didnt both doing- lets add noise to this recieved signal.
 # AWGN with a phase shift applied is still AWGN so we can add it after or before the array factor is applied, doesnt really matter, we'll do it after
