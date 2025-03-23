@@ -10,24 +10,26 @@ https://blog.csdn.net/innovationy/article/details/121572508?spm=1001.2101.3001.6
 https://blog.csdn.net/jiangwenqixd/article/details/109521694?spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-109521694-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-109521694-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=10
 
 
+https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247489978&idx=1&sn=8ed933fc275af974846a6f3be00f05d8&chksm=c06f60d3542de596d383a4c3322e1e0f33bd6853ad0962f49be14baaff7c1126ed51d0912525&mpshare=1&scene=1&srcid=0323bPMO68rvEFUU8aa5QnQY&sharer_shareinfo=cf22eefea6d212ac1867dcdaee6a8788&sharer_shareinfo_first=cf22eefea6d212ac1867dcdaee6a8788&exportkey=n_ChQIAhIQrzTnyknZZ2pOw7YOXO15HBKfAgIE97dBBAEAAAAAAKc4N%2B%2BIx4AAAAAOpnltbLcz9gKNyK89dVj0bIgzCpeuPa34D1Ov6V3ZVNbFSz830ZSINdOhiMO4Uw3qKUZFF%2FImjJO464ckbuOZkdSe4h1DJcnocX0ZxNrUBDOpDrKjOASUS8g8h3qrKw38eqEqDov7zgh7O9awFsoWefnY9rAKjSSjR2lhrmRH6icJX1x97e90jc%2FWoOgVyyTbCDDG8uDHbot7VmRc572NQq5ztzDZrGerQDeD%2BJ7%2BZrNugOG0ZauOW%2FkfU36c8T7oc3xiHMNI4imMMqMFS7UEPlluvQR%2FQaLpP1%2B9T8dm58YFWYOji4dCBTENOtiiLeOpPF4l71R1NrLA3OBDCfCKsI7%2BGmtxu%2FBD&acctmode=0&pass_ticket=l3Xl3zfrRyJIluhuYJTPnj02ELo%2F%2Fw4SEt9eaw9t0FoT7Ao94AINqNgjZ5nk%2FjXv&wx_header=0#rd
+
+https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485426&idx=1&sn=ad1d302e2177b037778ee9e6d405ec33&chksm=c11f0a67f66883717c39bd6deab5a184182dec6192c517967d68b85b25cafe286607cfee1f7d&scene=21#wechat_redirect
+
 https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247491272&idx=1&sn=8c816033438a549fdaeb20e51b154896&chksm=c11f135df6689a4bb0528639e9f437c86e941ef816e78f2b9a935f568db8be529f85234cafd5&token=134337482&lang=zh_CN#rd
 
 
 https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247484183&idx=1&sn=fbf605f11d510343c5beda9bdc5c32a4&chksm=c11f0e82f66887941da61052bbfeee2fa37227e7a94d8ebb23fc1e9cc88a357f95ff4a10d012&scene=21#wechat_redirect
 
-https://zhuanlan.zhihu.com/p/570487666
+https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485771&idx=1&sn=8e269280b663226160227aec22806c3e&chksm=c11f04def6688dc8e20c2e92bed6bc4547bf107f87b77bfff29f2c66434fdb5702333184ee1d&scene=178&cur_album_id=2442863581802381317#rd
 
 https://zhuanlan.zhihu.com/p/687473210
 
-https://blog.51cto.com/u_12413309/6242987
-
 https://www.cnblogs.com/kinologic/p/14105907.html
-
-https://blog.csdn.net/weixin_41691854/article/details/134740115
 
 https://blog.csdn.net/caigen0001/article/details/108815569
 
+
 https://blog.51cto.com/u_16213467/10082107
+
 """
 import numpy as np
 # import scipy
@@ -40,9 +42,9 @@ import matplotlib.pyplot as plt
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.family"] = "SimSun"
-plt.rcParams['font.size'] = 14  # 设置全局字体大小
-plt.rcParams['axes.titlesize'] = 22  # 设置坐标轴标题字体大小
-plt.rcParams['axes.labelsize'] = 22  # 设置坐标轴标签字体大小
+plt.rcParams['font.size'] = 14        # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22   # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22   # 设置坐标轴标签字体大小
 plt.rcParams['xtick.labelsize'] = 22  # 设置 x 轴刻度字体大小
 plt.rcParams['ytick.labelsize'] = 22  # 设置 y 轴刻度字体大小
 plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
@@ -73,7 +75,7 @@ SNR = 10       # 信噪比 (dB)
 num_paths = 3  # 多路径数量
 
 # 生成发射信号
-t = np.linspace(0, T, N, endpoint=False)
+t = np.linspace(0, T, N, endpoint = False)
 tx_signal = np.cos(2 * np.pi * (f0 * t + (B / (2 * T)) * t ** 2))
 
 # 模拟多路径效应
@@ -115,12 +117,14 @@ angle = np.arcsin((phase_diff * wavelength) / (2 * np.pi * antenna_distance))
 print(f"Angle: {np.degrees(angle):.2f} degrees")
 
 # 绘制频谱
-plt.plot(freq, np.abs(fft_result))
-plt.title("Frequency Spectrum with Noise and Multipath")
-plt.xlabel("Frequency (Hz)")
-plt.ylabel("Amplitude")
+f, axs = plt.subplots(1, 1, figsize=(6, 4), )
+axs.plot(freq, np.abs(fft_result))
+axs.set_title("Frequency Spectrum with Noise and Multipath")
+axs.set_xlabel("Frequency (Hz)")
+axs.set_ylabel("Amplitude")
 plt.grid(True)
 plt.show()
+plt.close('all')
 
 #%%
 
