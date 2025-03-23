@@ -32,12 +32,9 @@ https://blog.51cto.com/u_16213467/10082107
 
 """
 import numpy as np
-# import scipy
-# from sklearn.metrics import pairwise_distances
-# import statsmodels.tsa.api as smt
+import scipy
 import matplotlib.pyplot as plt
-# from matplotlib.font_manager import FontProperties
-# import commpy
+
 
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
@@ -587,8 +584,7 @@ plt.grid(True)
 plt.show()
 
 
-
-
+#%%
 
 
 
