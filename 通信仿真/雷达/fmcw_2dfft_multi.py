@@ -9,11 +9,12 @@ https://mp.weixin.qq.com/s/X8uYol6cWoWAX6aUeR7S2A
 
 https://mp.weixin.qq.com/s?__biz=MzI2NzE1MTU3OQ==&mid=2649214285&idx=1&sn=241742b17b557c433ac7f5010758cd0f&chksm=f2905cf9c5e7d5efc16e84cab389ac24c5561a73d27fb57ca4d0bf72004f19af92b013fbd33b&scene=21#wechat_redirect
 
+# https://blog.csdn.net/caigen0001/article/details/108815569
+
 """
 
 
 #%% 利用Python实现FMCW雷达的距离多普勒估计
-# https://blog.csdn.net/caigen0001/article/details/108815569
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -75,9 +76,8 @@ sigDopplerFFT = np.zeros((L, N), dtype=complex)
 for n in range(0, N):
     sigDopplerFFT[:, n] = np.fft.fftshift(np.fft.fft(sigDopplerWin[:, n], NumDopplerFFT))
 
-
-fig = plt.figure(figsize = (20, 20))
-ax = fig.add_subplot(111, projection='3d')
+fig = plt.figure(figsize = (12, 12))
+ax = fig.add_subplot(111, projection = '3d')
 
 x = np.arange(0, NumRangeFFT*rangeRes, rangeRes)
 y = np.arange((-NumDopplerFFT/2)*velRes, (NumDopplerFFT/2)*velRes, velRes)
@@ -88,11 +88,19 @@ y = np.arange((-NumDopplerFFT/2)*velRes, (NumDopplerFFT/2)*velRes, velRes)
 X, Y = np.meshgrid(x, y)
 Z = np.abs(sigDopplerFFT)
 ax.plot_surface(X, Y, Z,
-                rstride=1,  # rstride（row）指定行的跨度
-                cstride=1,  # cstride(column)指定列的跨度
-                cmap=plt.get_cmap('rainbow'))  # 设置颜色映射
+                rstride = 1,  # rstride（row）指定行的跨度
+                cstride = 1,  # cstride(column)指定列的跨度
+                cmap = plt.get_cmap('jet'))  # 设置颜色映射
 
 ax.invert_xaxis()  #x轴反向
+
+ax.set_proj_type('ortho')
+
+ax.set_xlabel('Range', fontsize = 18)
+ax.set_ylabel('Velocity', fontsize = 18)
+ax.set_zlabel('DopplerFFT', fontsize = 18)
+
+ax.view_init(azim=-120, elev=30)
 
 plt.show()
 plt.close()

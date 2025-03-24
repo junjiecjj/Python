@@ -84,9 +84,7 @@ H = scipy.fft.fft(h, N)
 S = scipy.fft.fft(s, N)
 
 r1 = scipy.fft.ifft(S*H)
-
 print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
-
 
 #%% Program 14.2: add cyclic prefix.m: Function to add cyclic prefix of length Ncp symbols
 def add_cyclic_prefix(x, Ncp):
@@ -99,7 +97,6 @@ def remove_cyclic_prefix(r, Ncp, N):
     return y
 
 #%% Program 14.4: ofdm on awgn.m: OFDM transmission and reception on AWGN channel
-
 from DigiCommPy.modem import PSKModem, QAMModem, PAMModem, FSKModem
 from DigiCommPy.channels import awgn
 from DigiCommPy.errorRates import ser_awgn
@@ -398,27 +395,21 @@ def OFDM_symbol(N, dataIdx, payload, d_payload, pilotIdx, pilotdata, d_pilot):
     d[pilotIdx] = d_pilot         # 在导频位置插入导频
     return symbol, d
 
-
 def plotChannel(h, N, Hest, allIdx):
     H_exact = np.fft.fft(h, N)
-    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout=True)
     axs.plot(allIdx, np.abs(H_exact), linewidth = 3, label = 'exact')
     axs.plot(allIdx, np.abs(Hest), linewidth = 3, label = 'estimated')
 
     axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=24, width=3,  )
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    # [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
-    # font = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 25)
     axs.set_xlabel('Subcarrier index', fontsize = 25)
     axs.set_ylabel('|H(f)|', fontsize = 25)
     axs.legend(fontsize = 20)
     axs.grid(True)
-    # axs.set_xlim(0, K-1)
-    # filepath2 = '/home/jack/snap/'
-    # out_fig = plt.gcf()
-    # out_fig .savefig(filepath2 + 'channelresponse.eps',   bbox_inches = 'tight')
+
     plt.show()
     plt.close()
 
@@ -429,17 +420,12 @@ def plotChannel(h, N, Hest, allIdx):
     axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=24, width=3,  )
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
-    # [label.set_fontsize(24) for label in labels]  # 刻度值字号
 
-    # font = FontProperties(fname = fontpath1+"Times_New_Roman.ttf", size = 25)
     axs.set_xlabel('Subcarrier index', fontsize = 25)
     axs.set_ylabel('angle(H(f))', fontsize = 25)
     axs.legend(fontsize = 20)
     axs.grid(True)
-    # axs.set_xlim(0, K-1)
-    # filepath2 = '/home/jack/snap/'
-    # out_fig = plt.gcf()
-    # out_fig .savefig(filepath2 + 'channelresponse.eps',   bbox_inches = 'tight')
+
     plt.show()
     plt.close()
 
@@ -579,19 +565,14 @@ plotChannel(h, N, Hest, allIdx) # 可视化信道冲击响应，仿真信道
 
 
 
-
-
-
-
-
-
-
-
-
+#%%
 
 
 #%%
 
+
+
+#%%
 
 
 

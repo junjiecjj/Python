@@ -193,7 +193,7 @@ fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
 ## 子图1：伽马分布的概率密度函数 (PDF)
 x = np.linspace(0, 20, 1000)
-pdf = scipy.stats.gamma.pdf(x, a=shape, scale=scale)
+pdf = scipy.stats.gamma.pdf(x, a = shape, scale = scale)
 axs[0, 0].plot(x, pdf, 'r-', lw=2, label=f'Gamma PDF\nα={shape}, θ={scale}')
 axs[0, 0].fill_between(x, pdf, color='red', alpha=0.3)
 axs[0, 0].set_title('Probability Density Function (PDF)')

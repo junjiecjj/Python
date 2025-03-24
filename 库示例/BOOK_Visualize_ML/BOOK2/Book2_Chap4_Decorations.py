@@ -12,20 +12,37 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"          # 指定字体家族。
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams["font.sans-serif"] = "Times New Roman"      # 无衬线字体系列。
+plt.rcParams["font.serif"] = "Times New Roman"           # 衬线字体系列。
+plt.rcParams["font.cursive"] = "Times New Roman"         # 草书字体系列。
+plt.rcParams["font.fantasy"] = "Times New Roman"         # 奇幻字体系列。
+plt.rcParams["font.monospace"] = "Intel One"       # 等宽字体系列。
+plt.rcParams["font.style"] = "normal"                    # 字体样式(‘normal’, ‘italic’, ‘oblique’)。
+plt.rcParams["font.weight"] = "light"
+plt.rcParams['font.size'] = 14        # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18   # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18   # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18  # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18  # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6] # 调整生成的图表最大尺寸
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2     # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6 # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams["ytick.minor.visible"] = True
+plt.rcParams["xtick.minor.visible"] = True
+plt.rcParams["grid.color"] = "0.5"    # 网格线颜色
+plt.rcParams["grid.linewidth"] = 0.5
+plt.rcParams["grid.linestyle"] = ":"  # 网格线型
 
-
-plt.rcParams
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
 
 
 
@@ -34,7 +51,7 @@ x_array = np.linspace(-4, 4, 200)
 y_array = x_array*np.exp(-x_array**2)
 
 # 图脊设置
-fig = plt.figure(figsize = (6,6), tight_layout=True)
+fig = plt.figure(figsize = (12, 12), tight_layout = True)
 
 #
 ax = fig.add_subplot(3, 2, 1)
@@ -91,12 +108,12 @@ ax.spines['bottom'].set_position(('data',0))
 ax.spines['left'].set_position(('data',0))
 ax.spines['right'].set_color('none')
 ax.spines['top'].set_color('none')
-# fig.savefig('Figures/修改图脊，第1组.svg', format='svg')
+plt.show()
+plt.close()
 
 
 
-
-fig = plt.figure(figsize = (6,6), tight_layout=True)
+fig = plt.figure(figsize = (12, 12), tight_layout=True)
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
@@ -118,7 +135,6 @@ ax.spines['left'].set_position(('axes',0.5))
 ax.spines['right'].set_color('none')
 ax.spines['top'].set_color('none')
 
-
 ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
@@ -133,7 +149,6 @@ ax.plot(x_array, y_array)
 ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.set_xticks(np.arange(-4,5))
-
 
 ax = fig.add_subplot(3, 2, 5)
 ax.plot(x_array, y_array)
@@ -151,15 +166,16 @@ ax.set_xlim(-4,4);
 ax.set_ylim(-0.5, 0.5);
 ax.spines['right'].set(edgecolor = 'r')
 ax.spines['top'].set(edgecolor = 'r')
-# fig.savefig('Figures/修改图脊，第2组.svg', format='svg')
+plt.show()
+plt.close()
 
 
-
-fig = plt.figure(figsize = (6,6), tight_layout=True)
+fig = plt.figure(figsize = (12, 12), tight_layout = True)
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
-ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
+ax.set_xlim(-4,4)
+ax.set_ylim(-0.5, 0.5);
 ax.spines['bottom'].set(edgecolor = 'r', linestyle = '--', linewidth = 1)
 ax.spines['left'].set(edgecolor = 'r', linestyle = '--', linewidth = 1)
 ax.tick_params(axis='x', colors='green')
@@ -168,37 +184,42 @@ ax.tick_params(axis='y', colors='red')
 ax = fig.add_subplot(3, 2, 2)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
-ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
+ax.set_xlim(-4,4);
+ax.set_ylim(-0.5, 0.5);
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
 
 ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
-ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
+ax.set_xlim(-4,4);
+ax.set_ylim(-0.5, 0.5);
 ax.spines[:].set_color('none')
 
 
 ax = fig.add_subplot(3, 2, 4)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
-ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
+ax.set_xlim(-4,4);
+ax.set_ylim(-0.5, 0.5);
 ax.axis('off')
 
 ax = fig.add_subplot(3, 2, 5)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
-ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
+ax.set_xlim(-4,4);
+ax.set_ylim(-0.5, 0.5);
 ax.spines['left'].set_position(('outward', 10))
 
 ax = fig.add_subplot(3, 2, 6)
 ax.plot(x_array, y_array)
 # ax.set_title('original')
-ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
+ax.set_xlim(-4,4);
+ax.set_ylim(-0.5, 0.5);
 ax.spines['bottom'].set_position(('outward', 10))
 # 三个选择 'outward', 'axes', 'data'
-# fig.savefig('Figures/修改图脊，第3组.svg', format='svg')
-
+plt.show()
+plt.close()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 修改网格
@@ -220,11 +241,10 @@ p["grid.linewidth"] = 0.5
 x_array = np.linspace(-4, 4, 200)
 y_array = x_array*np.exp(-x_array**2)
 
-
-fig = plt.figure(figsize = (16,16), tight_layout=True)
+fig = plt.figure(figsize = (16, 16), tight_layout = True)
 ax = fig.add_subplot(3, 2, 1)
 ax.plot(x_array, y_array)
-ax.set_xlim(-4,4);
+ax.set_xlim(-4, 4);
 ax.set_ylim(-0.5, 0.5);
 ax.grid(True)
 
@@ -276,21 +296,16 @@ for tick in ax.yaxis.get_major_ticks():
     tick.label2.set_visible(False)
 ax.set_facecolor("#DBEEF8")
 plt.show()
-
-# fig.savefig('Figures/背景网格.svg', format='svg')
-
+plt.close()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 修改图轴
-
 
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator, MultipleLocator, FuncFormatter, FormatStrFormatter
-
 import os
-
 
 p = plt.rcParams
 p["font.sans-serif"] = ["Roboto"]
@@ -299,14 +314,12 @@ p["axes.grid"] = True
 p["grid.color"] = "0.5"
 p["grid.linewidth"] = 0.5
 
-
 # 产生数据
 x_array = np.linspace(-15, 15, 200)
 y_array = np.sin(x_array)
 
-
 # 轴设置
-fig = plt.figure(figsize = (16,16), tight_layout=True)
+fig = plt.figure(figsize = (16, 16), tight_layout = True)
 
 #
 ax = fig.add_subplot(3, 2, 1)
@@ -324,8 +337,6 @@ ax.set_xticks([-15, 0, 5, 10, 15]) # 可以用numpy.linspace()
 ax.set_yticks([-0.8, -0.4, 0, 0.8])
 # 也可以用 plt.xticks(), plt.yticks() 命令
 
-
-#
 ax = fig.add_subplot(3, 2, 3)
 ax.plot(x_array, y_array)
 # ax.set_title('Rotated tick labels')
@@ -353,8 +364,8 @@ ax.plot(x_array, y_array)
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 ax.set_xticks(np.linspace(-4*np.pi, 4*np.pi, 5))
 ax.set_xticklabels([r'$-4\pi$',r'$-2\pi$', r'$0\pi$',r'$2\pi$', r'$4\pi$'])
-# fig.savefig('Figures/修改图轴，第1组.svg', format='svg')
-
+plt.show()
+plt.close()
 
 
 fig = plt.figure(figsize = (16,16), tight_layout=True)
@@ -403,8 +414,8 @@ ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 minor_locator = AutoMinorLocator(5)
 ax.yaxis.set_minor_locator(minor_locator)
 plt.grid(which='minor')
-# fig.savefig('Figures/修改图轴，第2组.svg', format='svg')
-
+plt.show()
+plt.close()
 
 
 fig = plt.figure(figsize = (16,16), tight_layout=True)
@@ -430,7 +441,6 @@ ax.plot(x_array, y_array)
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-
 
 ax = fig.add_subplot(3, 2, 4)
 ax.plot(x_array, y_array)
@@ -463,11 +473,8 @@ ax.plot(x_array, y_array)
 ax.set_xlim(-15,15); ax.set_ylim(-1.5, 1.5);
 ax.xaxis.set_major_locator(plt.MaxNLocator(3))
 ax.xaxis.set_major_locator(plt.MaxNLocator(2))
-
-# fig.savefig('Figures/修改图轴，第3组.svg', format='svg')
-
-
-
+plt.show()
+plt.close()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 对数坐标
@@ -511,7 +518,6 @@ ax1.text(5.75, 5.00, "$f(x) = x$", color="C1", fontname = 'Roboto')
 ax1.text(5.50, 1.50, "$f(x) = log_{10}(x)$", color="C2", fontname = 'Roboto')
 ax1.set_title("X linear - Y linear")
 
-
 # X-log Y-linear
 # -----------------------------------------------------------------------------
 ax2 = plt.subplot(2, 2, 2, xlim=(0.001, 100), ylim=(0.0, 10), sharey=ax1)
@@ -553,18 +559,9 @@ ax4.grid(True, "minor", color="0.85", linewidth=0.50, zorder=-20)
 ax4.grid(True, "major", color="0.65", linewidth=0.75, zorder=-10)
 ax4.set_title("X logarithmic - Y logarithmic")
 
-
-# Show
-# -----------------------------------------------------------------------------
 plt.tight_layout()
-
-# fig.savefig('Figures/对数坐标.svg', format='svg')
-
-
-
-
-
-
+plt.show()
+plt.close()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%c 标注
@@ -650,8 +647,8 @@ ax.set_xlim(-4,4); ax.set_ylim(-0.5, 0.5);
 plt.legend()
 ax.grid(True)
 
-# fig.savefig('Figures/标注.svg', format='svg')
-
+plt.show()
+plt.close()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 三维网格面随视角变化
@@ -668,7 +665,7 @@ if not os.path.isdir("Figures"):
 # 生成测试数据
 X, Y, Z = axes3d.get_test_data(0.05)
 
-fig = plt.figure(figsize = (16, 16), constrained_layout = True)
+fig = plt.figure(figsize = (21, 21), constrained_layout = True)
 angle_array = np.linspace(0, 180, 13)
 num_grid = len(angle_array)
 gspec = fig.add_gridspec(num_grid, num_grid)
@@ -693,9 +690,8 @@ for i in range(nrows):
 
         axs[i, j].view_init(elev=elev, azim=azim)
 
-# fig.savefig('Figures/子图，三维曲面视角.svg', format='svg')
 plt.show()
-
+plt.close()
 
 
 

@@ -124,7 +124,8 @@ ax.semilogy(EbN0dB,SER,'k*',label='Coherent DEBPSK(sim)')
 ax.semilogy(EbN0dB,theorySER_DPSK,'r-',label='Coherent DEBPSK(theory)')
 ax.semilogy(EbN0dB,theorySER_BPSK,'b-',label='Conventional BPSK')
 ax.set_title('Probability of Bit Error for BPSK over AWGN');
-ax.set_xlabel(r'$E_b/N_0$ (dB)');ax.set_ylabel(r'Probability of Bit Error - $P_b$');
+ax.set_xlabel(r'$E_b/N_0$ (dB)')
+ax.set_ylabel(r'Probability of Bit Error - $P_b$');
 ax.legend()
 plt.show()
 plt.close()
@@ -208,7 +209,6 @@ ax.set_ylabel('$Probability of Bit Error - P_b$')
 ax.legend()
 plt.show()
 plt.close()
-
 
 #%% Program 24: DigiCommPy\chapter 2\qpsk.py: Waveform simulation of performance of QPSK
 import numpy as np #for numerical computing
@@ -355,7 +355,7 @@ ax1.set_xlabel('t')
 ax1.set_ylabel('b(t)')
 ax2.plot(t, theta)
 ax2.set_xlabel('t')
-ax2.set_ylabel('$\theta(t)$')
+ax2.set_ylabel(r'$\theta(t)$')
 ax3.plot(t, s)
 ax3.set_xlabel('t')
 ax3.set_ylabel('s(t)')
@@ -477,7 +477,7 @@ def bpsk_qpsk_msk_psd():
     plotWelchPSD(s_bpsk, fs, fc, ax = ax, color = 'b', label = 'BPSK')
     plotWelchPSD(s_qpsk, fs, fc, ax = ax, color = 'r', label = 'QPSK')
     plotWelchPSD(s_msk, fs, fc, ax = ax, color = 'k', label = 'MSK')
-    ax.set_xlabel('$f-f_c$')
+    ax.set_xlabel(r'$f-f_c$')
     ax.set_ylabel('PSD (dB/Hz)')
     ax.legend()
     plt.show()
@@ -507,7 +507,8 @@ def gmsk_psd():
     plotWelchPSD(s2,fs,fc, ax = ax , color = 'b', label = '$BT_b=0.5$')
     plotWelchPSD(s3,fs,fc, ax = ax , color = 'm', label = '$BT_b=0.7$')
     plotWelchPSD(s4,fs,fc, ax = ax , color = 'k', label = '$BT_b=\infty$')
-    ax.set_xlabel('$f-f_c$'); ax.set_ylabel('PSD (dB/Hz)')
+    ax.set_xlabel(r'$f-f_c$')
+    ax.set_ylabel('PSD (dB/Hz)')
     ax.legend()
     plt.show()
     plt.close()
@@ -546,7 +547,8 @@ for i,BT in enumerate(BTs):
     axs.semilogy(EbN0dB,BER,lineColors[i]+'*-',label='$BT_b=$'+str(BT))
 
 axs.set_title('Probability of Bit Error for GMSK modulation')
-axs.set_xlabel('E_b/N_0 (dB)');axs.set_ylabel('Probability of Bit Error - $P_b$')
+axs.set_xlabel(r'E_b/N_0 (dB)')
+axs.set_ylabel(r'Probability of Bit Error - $P_b$')
 axs.legend();
 plt.show()
 plt.close()
@@ -554,14 +556,13 @@ plt.close()
 
 #%% Program 49: DigiCommPy\chapter 2\bfsk.py: Performance of coherent and non-coherent BFSK
 
-#Execute in Python3: exec(open("chapter_2/bfsk.py").read())
 import numpy as np #for numerical computing
 import matplotlib.pyplot as plt #for plotting functions
 from DigiCommPy.passband_modulations import bfsk_mod, bfsk_coherent_demod, bfsk_noncoherent_demod
 from DigiCommPy.channels import awgn
 from scipy.special import erfc
 
-N=100000 # Number of bits to transmit
+N = 100000 # Number of bits to transmit
 EbN0dB = np.arange(start=-4,stop = 11, step = 2) # Eb/N0 range in dB for simulation
 fc = 400 # center carrier frequency f_c- integral multiple of 1/Tb
 fsk_type = 'coherent' # coherent/noncoherent FSK generation at Tx
@@ -611,7 +612,8 @@ if fsk_type.lower() == 'noncoherent':
     axs.semilogy(EbN0dB,theory_noncoherent,'b-',label='theory-noncoherent demod')
     axs.set_title('Performance of noncoherent BFSK modulation')
 
-axs.set_xlabel('$E_b/N_0$ (dB)');axs.set_ylabel('Probability of Bit Error - $P_b$')
+axs.set_xlabel(r'$E_b/N_0$ (dB)')
+axs.set_ylabel(r'Probability of Bit Error - $P_b$')
 axs.legend()
 plt.show()
 plt.close()

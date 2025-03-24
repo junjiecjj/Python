@@ -27,7 +27,7 @@ Green_array = np.linspace(0, 1, num_points)
 Blue_array = np.linspace(0, 1, num_points)
 
 # numpy.meshgrid() 常用来生成二维数据网格
-GG, BB = np.meshgrid(Green_array,Blue_array) # (21, 21)
+GG, BB = np.meshgrid(Green_array, Blue_array) # (21, 21)
 
 RR = np.zeros_like(GG)
 # RR = np.ones_like(GG)

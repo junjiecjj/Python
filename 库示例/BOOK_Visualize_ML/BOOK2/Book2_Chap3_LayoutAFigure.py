@@ -62,11 +62,10 @@ ax = fig.add_subplot(1, 1, 1)
 ax.plot(x_array, f_array)
 ax.set_xlim(-3, 3)
 ax.set_ylim(0, 1.2)
-# fig.savefig('Figures/默认大小.svg', format='svg')
 plt.show()
+plt.close()
 
-
-##### 图片大小
+###>>>>>>>>>>>>>>>>>    图片大小
 fig = plt.figure(figsize = (3, 2))
 # 图片宽度：3 inches；图片高度：2 inches
 ax = fig.add_subplot(1, 1, 1)
@@ -81,8 +80,7 @@ plt.yticks(fontsize = "8")
 plt.show()
 plt.close()
 
-
-##########
+###>>>>>>>>>>>>>>>>>
 cm = 1/2.54
 # 将厘米 cm 转化为 inch
 fig = plt.figure(figsize = (9 * cm, 6 * cm))
@@ -92,11 +90,10 @@ ax = fig.add_subplot(1, 1, 1)
 ax.plot(x_array, f_array)
 ax.set_xlim(-3, 3)
 ax.set_ylim(0, 1.2)
-# fig.savefig('Figures/9 cm x 6 cm.svg', format='svg')
+plt.show()
+plt.close()
 
-
-
-######## 调整边距
+###  调整边距
 fig, ax = plt.subplots()
 # 调整边距
 plt.subplots_adjust(left=0.2, right=0.8, bottom=0.2, top=0.8)
@@ -104,9 +101,7 @@ plt.subplots_adjust(left=0.2, right=0.8, bottom=0.2, top=0.8)
 plt.show()
 plt.close()
 
-
-
-# 轴对象位置、大小
+###>>>>>>>>>>>>>>>>>    轴对象位置、大小
 fig = plt.figure()
 ax1 = fig.add_axes([0.5,0.5,0.5,0.5])
 ax2 = fig.add_axes([0.25, 0.25, 0.5, 0.5])
@@ -122,6 +117,7 @@ ax_2 = fig.add_subplot(2, 1, 2)
 ax_2.plot(x_array, df_dx_array)
 ax_2.set_xlim(-3, 3)
 ax_2.set_ylim(-1, 1)
+plt.show()
 plt.close()
 
 # 2行1列
@@ -135,10 +131,10 @@ ax2 = fig.add_axes([0.125,0.11,.775,.35])
 ax2.plot(x_array, df_dx_array)
 ax2.set_xlim(-3, 3)
 ax2.set_ylim(-1, 1)
+plt.show()
 plt.close()
 
-
-# 1行2列
+###>>>>>>>>>>>>>>>>>    1行2列
 fig = plt.figure()
 ax_1 = fig.add_subplot(1,2,1)
 ax_1.plot(x_array, f_array)
@@ -150,9 +146,10 @@ ax_2.plot(x_array, df_dx_array)
 ax_2.set_xlim(-3, 3)
 ax_2.set_ylim(-1, 1)
 
+plt.show()
 plt.close()
 
-# 二元函数
+###>>>>>>>>>>>>>>>>>   二元函数
 # 用 sympy 库定义 MATLAB二元函数 peaks()
 f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 f_xy_fcn = lambdify([x, y], f_xy)
@@ -176,8 +173,8 @@ ff = f_xy_fcn(xx,yy)
 
 fig, ax = plt.subplots(figsize = (10, 10))
 ax.contourf(xx, yy, ff, levels = np.linspace(-8, 9,18), cmap = 'RdYlBu_r')
-ax.set_xlabel('$\it{x_1}$', fontsize=18)
-ax.set_ylabel('$\it{x_2}$', fontsize=18)
+ax.set_xlabel(r'$\it{x_1}$', fontsize=18)
+ax.set_ylabel(r'$\it{x_2}$', fontsize=18)
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
 ax.grid(False)
@@ -186,6 +183,7 @@ plt.xticks(fontsize = "18")
 plt.yticks(fontname = "Times New Roman")
 plt.yticks(fontsize = "18")
 ax.set_aspect('equal', adjustable='box')
+plt.show()
 plt.close()
 
 # 图中图
@@ -212,7 +210,7 @@ ax.set_ylim(yy.min(), yy.max())
 ax.grid(False)
 ax.set_aspect('equal', adjustable='box')
 
-ax_zoom = fig.add_axes([0.6, 0.6, 0.4, 0.4], projection='3d')
+ax_zoom = fig.add_axes([0.5, 0.5, 0.4, 0.4], projection='3d')
 ax_zoom.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=30, cstride=30, linewidth = 0.25)
 # 另外一种设定正交投影的方式
 ax_zoom.set_proj_type('ortho')
@@ -248,7 +246,6 @@ f_xy_fcn = lambdify([x, y], f_xy)
 
 # Reference:
 # https://www.mathworks.com/help/matlab/ref/peaks.html
-
 
 def mesh(num = 101):
     # number of mesh grids
@@ -435,8 +432,8 @@ y_hist.spines[['left', 'top']].set_visible(False)
 y_hist.invert_xaxis()
 y_hist.set_xticks([])
 y_hist.set_yticks([])
-# fig.savefig('Figures/GridSpec，4 by 4，主图位于右上.svg', format='svg')
-
+plt.show()
+plt.close()
 
 # Set up the axes with gridspec
 fig = plt.figure(figsize=(6, 6))
@@ -466,14 +463,9 @@ plt.close()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_06 使用GridSpec绘制的Dirichlet分布和边缘Beta分布
 
 import numpy as np
-import statsmodels.api as sm
+import scipy
 import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.datasets import load_iris
-import scipy.stats as st
 import scipy.stats as stats
-
-# visualize 2D PDF contour and marginal
 import matplotlib.gridspec as gridspec
 import os
 
@@ -494,24 +486,26 @@ def plot_joint_marginal(xx1, xx2, surface, x1, f_x1, x2, f_x2, title_txt, color 
     fig = plt.figure(figsize=(6, 6))
     ax1 = plt.subplot(projection = '3d')
     # Plot bivariate normal
-    ax1.contour(xx1, xx2, surface, 20, cmap='RdYlBu_r')
+    ax1.contour(xx1, xx2, surface, 20, cmap = 'RdYlBu_r')
     # ax1.yaxis.set_label_position('right')
     ax1.set_xticks(np.arange(0,1.2, 0.2))
     ax1.set_yticks(np.arange(0,1.2, 0.2))
     ax1.set_title(title_txt)
+    plt.show()
+    plt.close()
 
     fig = plt.figure(figsize=(6, 6))
-    gs = gridspec.GridSpec(2, 2, width_ratios=[3, 1], height_ratios=[3, 1])
+    gs = gridspec.GridSpec(2, 2, width_ratios = [3, 1], height_ratios = [3, 1])
 
     # # gs.update(wspace=0., hspace=0.)
     # plt.suptitle('Marginal distributions', y=0.93)
     # Plot surface on top left
     ax1 = plt.subplot(gs[0], )
     # Plot bivariate normal
-    ax1.contour(xx1, xx2, surface, 20, cmap='RdYlBu_r')
+    ax1.contour(xx1, xx2, surface, 20, cmap = 'RdYlBu_r')
     ax1.yaxis.set_label_position('right')
-    ax1.set_xticks(np.arange(0,1.2, 0.2))
-    ax1.set_yticks(np.arange(0,1.2, 0.2))
+    ax1.set_xticks(np.arange(0, 1.2, 0.2))
+    ax1.set_yticks(np.arange(0, 1.2, 0.2))
     ax1.set_title(title_txt)
 
     # Plot Y marginal
@@ -519,10 +513,10 @@ def plot_joint_marginal(xx1, xx2, surface, x1, f_x1, x2, f_x2, title_txt, color 
     ax2.plot(f_x2, x2, color = color)
     ax2.fill_between(f_x2, x2, edgecolor = 'none', facecolor = color, alpha = 0.2)
     ax2.set_xlabel('PDF')
-    ax2.set_ylim(0,1)
+    ax2.set_ylim(0, 1)
     ax2.set_xlim(0, 5)
     ax2.set_xticks(np.arange(6))
-    ax2.set_yticks(np.arange(0,1.2, 0.2))
+    ax2.set_yticks(np.arange(0, 1.2, 0.2))
     ax2.invert_xaxis()
     ax2.yaxis.tick_right()
 
@@ -532,22 +526,21 @@ def plot_joint_marginal(xx1, xx2, surface, x1, f_x1, x2, f_x2, title_txt, color 
     ax3.fill_between(x1, f_x1, edgecolor = 'none', facecolor = color, alpha = 0.2)
     ax3.set_ylabel('PDF')
     ax3.yaxis.set_label_position('left')
-    ax3.set_xlim(0,1)
-    ax3.set_xticks(np.arange(0,1.2, 0.2))
+    ax3.set_xlim(0, 1)
+    ax3.set_xticks(np.arange(0, 1.2, 0.2))
     ax3.set_ylim(0, 5)
     ax3.set_yticks(np.arange(6))
 
     ax4 = plt.subplot(gs[3])
     ax4.set_visible(False)
-    # fig.savefig('Figures/' + title_txt + '.svg', format='svg')
     plt.show()
     plt.close()
+    return
 
-
-x1 = np.linspace(0,1,201)
-x2 = np.linspace(0,1,201)
+x1 = np.linspace(0, 1, 201)                   # 每个分量均为非负
+x2 = np.linspace(0, 1, 201)                   # 每个分量均为非负
 xx1, xx2 = np.meshgrid(x1, x2) # (201, 201)
-xx3 = 1.0 - xx1 - xx2 # (201, 201)
+xx3 = 1.0 - xx1 - xx2          # (201, 201)   # 所有分量的和为 1
 xx3 = np.where(xx3 > 0.0, xx3, np.nan)
 
 # Dirichlet alphas
@@ -557,20 +550,21 @@ alpha_3 = 2
 
 alpha_0 = alpha_1 + alpha_2 + alpha_3
 alphas = np.array([alpha_1, alpha_2, alpha_3])
-rv = stats.dirichlet(alphas)
+# rv = stats.dirichlet(alphas)
 # 1-2
-PDF_ff = rv.pdf(np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])))
+# PDF_ff = rv.pdf(np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])))
+PDF_ff = scipy.stats.dirichlet.pdf(np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])), alpha = alphas)
 PDF_ff = np.reshape(PDF_ff, xx1.shape) # (201, 201)
 beta_dist = stats.beta
 
 beta_1 = alpha_0 - alpha_1
-f_x1 = beta_dist.pdf( x1, alpha_1, beta_1)
+f_x1 = stats.beta.pdf( x1, alpha_1, beta_1)  # 边缘分布是贝塔分布
 
 beta_2 = alpha_0 - alpha_2
-f_x2 = beta_dist.pdf( x2, alpha_2, beta_2)
+f_x2 = stats.beta.pdf( x2, alpha_2, beta_2)
 
-title_txt = 'Dirichlet(%0.0f, %0.0f, %0.0f)'%(alpha_1,alpha_2,alpha_3)
-plot_joint_marginal(xx1,xx2,PDF_ff, x1,f_x1, x2,f_x2, title_txt)
+title_txt = 'Dirichlet(%0.0f, %0.0f, %0.0f)'%(alpha_1, alpha_2, alpha_3)
+plot_joint_marginal(xx1, xx2, PDF_ff, x1, f_x1, x2, f_x2, title_txt)
 
 # Dirichlet alphas
 alpha_1 = 1
@@ -592,9 +586,8 @@ f_x1 = beta_dist.pdf( x1, alpha_1, beta_1)
 beta_2 = alpha_0 - alpha_2
 f_x2 = beta_dist.pdf( x2, alpha_2, beta_2)
 
-title_txt = 'Dirichlet(%0.0f, %0.0f, %0.0f)'%(alpha_1,alpha_2,alpha_3)
-plot_joint_marginal(xx1,xx2, PDF_ff, x1,f_x1, x2,f_x2, title_txt)
-
+title_txt = 'Dirichlet(%0.0f, %0.0f, %0.0f)'%(alpha_1, alpha_2, alpha_3)
+plot_joint_marginal(xx1, xx2, PDF_ff, x1, f_x1, x2, f_x2, title_txt)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch03_07 利用subgridspec函数创建嵌套子图
 
@@ -609,8 +602,8 @@ if not os.path.isdir("Figures"):
 def squiggle_xy(a, b, c, d, i=np.arange(0.0, 2*np.pi, 0.05)):
     return np.sin(i*a)*np.cos(i*b), np.sin(i*c)*np.cos(i*d)
 
-fig = plt.figure(figsize=(8, 8), constrained_layout=False)
-outer_grid = fig.add_gridspec(4, 4, wspace=0, hspace=0)
+fig = plt.figure(figsize=(16, 16), constrained_layout = False)
+outer_grid = fig.add_gridspec(4, 4, wspace = 0, hspace = 0)
 
 for a in range(4):
     for b in range(4):

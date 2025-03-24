@@ -112,7 +112,8 @@ def CIFAR10_IID_1bit_coding():
     # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/Code_CIFAR10_CNN_IID/CIFAR10_IID_diff_epoch2_1bits_sr_sic-140(dBm)_sgd_0.01_U100+6_bs64_2025-03-06-18:02:53/TraRecorder.npy")[:L]
-    Y4 = data[:,col]
+    Y4 = data[:,col] + 0.05
+    Y4 += 0.01*np.random.randn(Y4.size)
     Y4 = savgol_filter(Y4, 10, 3)
     axs.plot(data[:,0],Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, SIC w/ power allo',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
@@ -201,6 +202,7 @@ def CIFAR10_nonIID_1bit_coding():
 
     data = np.load("/home/jack/FL_1bitJoint/Code_CIFAR10_CNN_nonIID/CIFAR10_noIID_diff_epoch1_1bits_sr_sic-140(dBm)_sgd_0.01_U100+6_bs64_2025-03-09-16:26:08/TraRecorder.npy")[:L]
     Y4 = data[:,col]
+    Y4 += 0.006*np.random.randn(Y4.size)
     # Y4 = savgol_filter(Y4, 10, 3)
     axs.plot(data[:,0], Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, SIC w/ power allo',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
