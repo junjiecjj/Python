@@ -255,7 +255,6 @@ def mesh(num = 101):
 
     return xx, yy
 
-
 xx, yy = mesh(num = 6*100 + 1)
 ff = f_xy_fcn(xx,yy)
 

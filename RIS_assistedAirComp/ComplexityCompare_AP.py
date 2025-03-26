@@ -138,7 +138,6 @@ for i, N in enumerate(APlst):
 
 sca_res = np.array([14.463819, 15.825813, 16.129638, 17.009924, 18.149297, 18.646848])
 sdr_res = np.array([108.044614, 115.286922, 122.866458, 204.433454, 307.037458, 412.950525])
-# dc_res = np.array([13147.741823, 10190.650732,  8863.11883 ,  8781.821622, 9520.945909,  8970.221965])
 
 dc_res = np.array([2145.243133, 2485.891737, 3639.443304, 4514.805277, 5949.657688, 6528.203234]) / 2
 
@@ -146,7 +145,7 @@ dc_res = np.array([2145.243133, 2485.891737, 3639.443304, 4514.805277, 5949.6576
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.semilogy(APlst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
+axs.semilogy(APlst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(APlst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(APlst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
 
@@ -176,8 +175,8 @@ axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig_complex_AP.eps' )
-out_fig.savefig('fig_complex_AP.pdf' )
+out_fig.savefig('./Figures/fig4_complex_AP.eps' )
+out_fig.savefig('./Figures/fig4_complex_AP.pdf' )
 plt.show()
 
 

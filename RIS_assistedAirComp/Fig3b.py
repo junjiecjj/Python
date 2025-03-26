@@ -65,7 +65,7 @@ PL_UA = T0 * (d_UA/d0) **(-alpha_UA)
 PL_UR = T0 * (d_UR/d0) **(-alpha_UR)
 PL_RA = T0 * (d_RA/d0) **(-alpha_RA)
 
-N_lst =
+N_lst = 1
 MSE_log = np.zeros((trial_num, maxiter+1))
 for t in range(trial_num):
     print(f"{t}-th trial: ")

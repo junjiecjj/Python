@@ -149,7 +149,7 @@ sdr_res = np.array([ 7.336508,  11.622349,  22.327401,  37.343617,  54.909656, 8
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.semilogy(np.array(L_lst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
+axs.semilogy(np.array(L_lst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(np.array(L_lst), sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(np.array(L_lst), dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
 
@@ -180,8 +180,8 @@ axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig_complex_RIS.eps' )
-out_fig.savefig('fig_complex_RIS.pdf' )
+out_fig.savefig('./Figures/fig4_complex_RIS.eps' )
+out_fig.savefig('./Figures/fig4_complex_RIS.pdf' )
 plt.show()
 
 

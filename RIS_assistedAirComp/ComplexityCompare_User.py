@@ -159,14 +159,13 @@ dc_res = dc_res*2.5/Avg
 
 sca_res = np.array([ 7.242347,  8.024769,  9.898498, 11.107697, 13.411572, 13.94265, 17.010007])
 sdr_res = np.array([113.710196, 124.450519, 146.551457, 154.904889, 176.129778, 191.317384, 204.433454])
-# sdr_res = np.array([167.807517, 183.657519, 216.27292 , 228.600474, 259.923047, 282.336116, 301.692121])
 
 dc_res = np.array([2951.022294, 2909.446596, 3286.000636, 3263.616659, 3388.828476, 3903.961252, 3657.813388]) * (4514.805277/3657.813388) / 2
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.semilogy(Klst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
+axs.semilogy(Klst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(Klst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(Klst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
 
@@ -194,8 +193,8 @@ axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig_complex_user.eps' )
-out_fig.savefig('fig_complex_user.pdf' )
+out_fig.savefig('./Figures/fig4_complex_user.eps' )
+out_fig.savefig('./Figures/fig4_complex_user.pdf' )
 plt.show()
 
 

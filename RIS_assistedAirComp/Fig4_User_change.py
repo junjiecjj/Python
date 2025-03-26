@@ -132,10 +132,10 @@ for i, K in enumerate(Klst):
         # f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, 10, verbose, )
         # sdr_res[i] += np.min(MSE_sdr)
 
-        # DC
-        f_dc, theta_dc, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
-        # print(f"MSE_DC = {MSE_DC[-1]},  ")
-        dc_res[i] += np.min(MSE_DC)
+        # # DC
+        # f_dc, theta_dc, MSE_DC = DC_RIS(N, L, K, h_d, G, epsilon, epsilon_dc, P0, maxiter, iter_num, rho, verbose, )
+        # # print(f"MSE_DC = {MSE_DC[-1]},  ")
+        # dc_res[i] += np.min(MSE_DC)
 
         # ### DC without RIS
         # f_dc_wo, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0,  iter_num, rho, verbose, )
@@ -168,7 +168,7 @@ sdr_res = np.array([0.380631, 0.581347, 0.843985, 1.112362, 1.280188, 1.333466, 
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-axs.semilogy(np.array(Klst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA',  )
+axs.semilogy(np.array(Klst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',  )
 axs.semilogy(np.array(Klst), sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 12,  label = 'SCA w/o RIS',  )
 axs.semilogy(np.array(Klst), sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(np.array(Klst), dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
@@ -201,8 +201,8 @@ axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig4_User1.eps' )
-out_fig.savefig('fig4_User1.pdf' )
+out_fig.savefig('./Figures/fig3_User.eps' )
+out_fig.savefig('./Figures/fig3_User.pdf' )
 plt.show()
 
 

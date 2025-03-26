@@ -39,6 +39,7 @@ color = ['#1E90FF','#FF6347','#00FF00','#0000FF','#4ea142','#FF00FF','#FFA500','
 lsty = [(0, (3, 10, 1, 10, 1, 10)), (0, (1, 1)), (0, (1, 2)), (0, (5, 1)), (0, (1, 10)), (0, (1, 2)),  (0, (5, 10)), (0, (5, 5)), (0, (3, 10, 1, 10)), (0, (3, 5, 1, 5)), (0, (3, 5, 1, 5, 1, 5)),  '-', ':', '--', '-.', ]
 alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
+colors = plt.cm.jet(np.linspace(0, 1, 5)) # colormap
 
 def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_ratio = 0.05, y_ratio = 0.05):
     """缩放内嵌图形，并且进行连线
@@ -92,6 +93,7 @@ def CIFAR10_IID_1bit_coding():
     # axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
     L = 1000
     col = 1
+    i = 0
     # ### k0 = 6
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_sgd_0.01_U100+6_bs64_2025-01-14-14:15:05/TraRecorder.npy")[:L]
     Y1 = data[:,col]

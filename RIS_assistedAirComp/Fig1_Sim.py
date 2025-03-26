@@ -153,11 +153,11 @@ print(f"MSE = {MSE_sca_wo[-1]}, ||f||_2 = {np.linalg.norm(f_sca_wo)}, |theta| = 
 
 # Solver 4
 # DC without RIS
-f_dc_woRIS, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0,  iter_num, rho, verbose, )
-print(f"MSE = {MSE_dc_wo[-1]}, ||f||_2 = {np.linalg.norm(f_dc_woRIS)}, ")
+# f_dc_woRIS, MSE_dc_wo = DC_woRIS(N, L, K, h_d, G, epsilon_dc, P0,  iter_num, rho, verbose, )
+# print(f"MSE = {MSE_dc_wo[-1]}, ||f||_2 = {np.linalg.norm(f_dc_woRIS)}, ")
 
 # # Solver 5
-f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verbose, )
+# f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verbose, )
 
 
 # np.savez('./fig1.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
@@ -166,7 +166,7 @@ f_sdr, theta_sdr, MSE_sdr = SDR_RIS(N, L, K, h_d, G, epsilon, P0, maxiter,  verb
 
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-axs.semilogy(np.arange(len(MSE_sca )), MSE_sca , color = 'r', lw = 3, linestyle='-',  label = 'Poposed SCA',  )
+axs.semilogy(np.arange(len(MSE_sca )), MSE_sca , color = 'r', lw = 3, linestyle='-',  label = 'Poposed w/ RIS',  )
 # axs.semilogy(np.arange(len(MSE_DC)), MSE_DC, color = 'b', lw = 3,linestyle=(0,(1,1)),  label = 'DC',  )
 # axs.semilogy(np.arange(len(MSE_sdr )), MSE_sdr , color = 'cyan', lw = 3, linestyle='-', label = 'SDR w/ RIS',  )
 axs.semilogy(np.arange(len(MSE_sca_wo )), MSE_sca_wo , color = 'purple', lw = 3, linestyle='--',  label = 'SCA w/o RIS',  )
@@ -203,8 +203,8 @@ axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 # axs.set_xlim([0,200])
 
 out_fig = plt.gcf()
-# out_fig.savefig('fig1_2.eps' )
-# out_fig.savefig('fig1_2.pdf' )
+out_fig.savefig('./Figures/fig3a.eps' )
+out_fig.savefig('./Figures/fig3a.pdf' )
 plt.show()
 
 

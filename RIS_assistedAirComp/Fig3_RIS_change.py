@@ -174,7 +174,7 @@ sdr_res = np.array([10.835361,  7.142411,  5.150892,  3.92591 ,  3.479097,  2.57
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.semilogy(np.array(L_lst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
+axs.semilogy(np.array(L_lst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(np.array(L_lst), sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 14, label = 'SCA w/o RIS', )
 axs.semilogy(np.array(L_lst), sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(np.array(L_lst), dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
@@ -206,8 +206,8 @@ axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig3_RIS1.eps' )
-out_fig.savefig('fig3_RIS1.pdf' )
+out_fig.savefig('./Figures/fig3_RIS.eps' )
+out_fig.savefig('./Figures/fig3_RIS.pdf' )
 plt.show()
 
 

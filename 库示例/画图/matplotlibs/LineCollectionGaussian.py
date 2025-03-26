@@ -22,7 +22,7 @@ import os
 # if not os.path.isdir("Figures"):
 #     os.makedirs("Figures")
 
-# 1. 用for循环
+#%%. 用for循环
 x_array = np.linspace(-6, 6, 200)
 sigma_array = np.linspace(0.5,5,10)
 # 设定标准差一系列取值
@@ -49,12 +49,44 @@ plt.xlim(x_array.min(),x_array.max())
 plt.ylim(0,1)
 plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
-
-# fig.savefig('Figures/用for循环.svg', format='svg')
 plt.show()
+plt.close()
+
+#%%. 用for循环
+x_array = np.linspace(-6, 6, 200)
+sigma_array = np.linspace(0.5,5,10)
+# 设定标准差一系列取值
+
+# 概率密度曲线条数
+num_lines = len(sigma_array)
+
+# 选定色谱，并产生一系列色号
+colors = plt.cm.jet(np.linspace(0, 1, len(sigma_array))) # colormap
+
+fig, ax = plt.subplots(figsize = (5,4))
+
+for idx, sigma_idx in enumerate(sigma_array):
+
+    pdf_idx = norm.pdf(x_array, scale = sigma_idx)
+    legend_idx = '$\sigma$ = ' + str(sigma_idx)
+    plt.plot(x_array, pdf_idx, color=colors[idx], label = legend_idx)
+    # 依次绘制概率密度曲线
+
+plt.legend()
+# 增加图例
+
+plt.xlim(x_array.min(),x_array.max())
+plt.ylim(0,1)
+plt.xlabel('x')
+plt.ylabel('PDF, $f_X(x)$')
+plt.show()
+plt.close()
 
 
-# 2. 用LineCollection
+
+
+
+#%% 2. 用LineCollection
 PDF_curves = [np.column_stack([x_array, norm.pdf(x_array, scale = sigma_idx)]) for sigma_idx in sigma_array]
 
 fig, ax = plt.subplots(figsize = (5,4))

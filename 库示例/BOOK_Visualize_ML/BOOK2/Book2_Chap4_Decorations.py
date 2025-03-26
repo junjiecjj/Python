@@ -43,9 +43,6 @@ plt.rcParams["grid.color"] = "0.5"    # 网格线颜色
 plt.rcParams["grid.linewidth"] = 0.5
 plt.rcParams["grid.linestyle"] = ":"  # 网格线型
 
-
-
-
 # 产生数据
 x_array = np.linspace(-4, 4, 200)
 y_array = x_array*np.exp(-x_array**2)

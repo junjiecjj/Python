@@ -430,8 +430,6 @@ for idx, angles in enumerate(zip(azim_array, elev_array)):
     ax.view_init(azim=angles[0], elev=angles[1])
 # fig.savefig('Figures/RdYlBu色谱的色号在RGB空间的位置.svg', format='svg')
 
-
-
 # 3. 创建自定义函数
 # 根据之前分析，构造一个可视化函数
 # 函数输入为matplotlib中一个色谱的名称
@@ -469,7 +467,6 @@ def visualize_cm_in_RGB(cm_name_str):
         # ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
         # ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
         # ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-
 
         # ax.grid()
         plt.rcParams['grid.color'] = "k"
@@ -571,9 +568,7 @@ cm_list = ['RdYlBu', 'Blues', 'viridis', 'cool', 'rainbow', 'jet', 'turbo', 'hsv
 for idx, cm_idx in enumerate(cm_list):
     visualize_cm_in_HSV(cm_idx)
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 自定义色谱
-
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt

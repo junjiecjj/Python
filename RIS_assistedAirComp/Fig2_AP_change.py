@@ -177,7 +177,7 @@ sdr_res = np. array([2.519111, 2.279083, 2.07526 , 1.888984, 1.33993 , 1.179883]
 # %% 画图
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.semilogy(APlst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed SCA w/ RIS',)
+axs.semilogy(APlst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(APlst, sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 14, label = 'SCA w/o RIS', )
 axs.semilogy(APlst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(APlst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
@@ -208,8 +208,8 @@ axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('fig2_AP1.eps' )
-out_fig.savefig('fig2_AP1.pdf' )
+out_fig.savefig('./Figures/fig3_AP.eps' )
+out_fig.savefig('./Figures/fig3_AP.pdf' )
 plt.show()
 
 
