@@ -14,6 +14,25 @@ Created on Sun Mar 23 02:40:34 2025
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 14               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 22         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 22         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2     # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6 # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 22
 
 
 #%%
@@ -39,7 +58,6 @@ plt.close()
 
 
 #%%
-
 fs = 500
 t = np.arange(0, 1 + 1/fs, 1/fs)
 f0 = 1
@@ -61,7 +79,7 @@ t = np.arange(0, 1 + 1/fs, 1/fs)
 f0 = 1
 f1 = fs/20
 x_lin = scipy.signal.chirp(t, f0 = f0, f1 = f1, t1 = 1, method = 'linear')
-
+x_lin = chirp_signal(t, f0 = f0, t1 = 1, f1 = f1,  )
 
 Nfft = 1024
 df = fs/Nfft

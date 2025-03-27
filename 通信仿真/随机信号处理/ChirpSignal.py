@@ -24,7 +24,6 @@ plt.show()
 
 
 
-
 #%%
 def chirp_signal(t, f0, t1, f1, phase = 0):
     t0 = t[0]
@@ -34,7 +33,7 @@ def chirp_signal(t, f0, t1, f1, phase = 0):
     return g
 
 fs = 500
-t = np.arange(0,1, 1/fs)
+t = np.arange(0, 1, 1/fs)
 f0 = 1
 f1 = fs/20
 g = chirp_signal(t, f0, 1, f1)

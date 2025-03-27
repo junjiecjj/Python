@@ -48,10 +48,10 @@ https://blog.csdn.net/qq_35605018/article/details/108816709
 回波3DFFT处理（测距、测速、测角）
 https://blog.csdn.net/nuaahz/article/details/90719605
 """
+
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
-
 
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
@@ -79,11 +79,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 参数设置
-c = 3e8        # 光速 (m/s)
+c  = 3e8       # 光速 (m/s)
 f0 = 24e9      # 起始频率 (Hz)
-B = 250e6      # 带宽 (Hz)
-T = 1e-3       # 调制周期 (s)
-N = 1024       # 采样点数
+B  = 250e6     # 带宽 (Hz)
+T  = 1e-3      # 调制周期 (s)
+N  = 1024      # 采样点数
 fs = 2e6       # 采样频率 (Hz)
 SNR = 20       # 信噪比 (dB)
 num_paths = 3  # 多路径数量

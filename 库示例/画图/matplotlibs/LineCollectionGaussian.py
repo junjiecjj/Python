@@ -13,14 +13,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 # 导入色谱
 from scipy.stats import norm
-# 导入正态分布
-# 参考
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
 
-import os
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
 
 #%%. 用for循环
 x_array = np.linspace(-6, 6, 200)
@@ -81,9 +74,6 @@ plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
 plt.show()
 plt.close()
-
-
-
 
 
 #%% 2. 用LineCollection
