@@ -30,7 +30,7 @@ font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Comp
 ts = 0.1                          # x(t) = sinc(t/ts), T = 0.1, f = 10 Hz
 B  = 1/(2*ts)                     # Hz
 # f_max = 2*np.pi*B               # 角频率rad/s,
-f_max = B                       # 画图用的时间频率 Hz
+f_max = B                         # 画图用的时间频率 Hz
 Fs = 40                           # 信号采样频率
 Ts = 1/Fs                         # 采样时间间隔
 # N = 100                         # 采样信号的长度
@@ -125,14 +125,14 @@ font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
 legend1 = axs[0,1].legend(loc='best', borderaxespad=0,  edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
+frame1.set_facecolor('none')                  # 设置图例legend背景透明
 
 axs[0,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[0,1].set_xlim(- f_max - 0.2, f_max + 0.2)  #拉开坐标轴范围显示投影
+axs[0,1].set_xlim(-f_max - 0.2, f_max + 0.2)  # 拉开坐标轴范围显示投影
 #======================================= 0,2 =========================================
 axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
 
