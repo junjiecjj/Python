@@ -27,19 +27,16 @@ plt.rcParams['lines.linestyle'] = '-'
 plt.rcParams['lines.linewidth'] = 2     # 线条宽度
 plt.rcParams['lines.color'] = 'blue'
 plt.rcParams['lines.markersize'] = 6 # 标记大小
-# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
 plt.rcParams['figure.facecolor'] = 'white'        # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
 #%%  https://blog.csdn.net/qq_43485394/article/details/122655901
-# from DigiCommPy.signalgen import square_wave
 
 def rectpuls(t, remove, T):
     Ts = t[1] - t[0]
     fs = 1/Ts
 
-    # t = np.arange(-0.5,0.5, 1/fs) # time base
     rect = (t >= -T/2) * (t <= T/2)
     # res = np.zeros(rect.size)
     K = int(remove*fs)
@@ -47,15 +44,6 @@ def rectpuls(t, remove, T):
 
     # t = t + remove
     return rect
-
-# t = np.arange(-5, 5, 0.01)
-# remove = 2
-# res = rectpuls(t, remove, 2)
-# plt.figure(figsize = (10, 5))
-# plt.plot(t, res, label = 'Transmitted Pulse')
-
-# plt.show()
-
 
 ### parameters
 f0 = 10e9        # 载波
@@ -67,55 +55,49 @@ R0 = 3e3         # 目标距离
 k = B/Tp         # 调频斜率
 
 # signal generation
-N = 1024*4       #  采样点
+N = 1024*4       # 采样点
 n = np.arange(N)
-Ts = 1/fs        #  采样间隔
+Ts = 1/fs        # 采样间隔
 t = n*Ts
-f = -fs/2+ n*(fs/N)
-tau_0 = 2*R0/c   #  时延
-# tau_1 = 2*R1/c;
+f = -fs/2 + n*(fs/N)
+tau_0 = 2*R0/c   # 时延
+
 st = rectpuls(t, Tp/2, Tp) * np.exp(1j * np.pi * k * (t-Tp/2)**2)    #  参考信号
 #  回波信号
 secho = rectpuls(t, tau_0+Tp/2, Tp) * np.exp(1j * np.pi * k * (t - tau_0 - Tp/2)**2) * np.exp(-1j * 2 * np.pi * f0 * tau_0)
 
-#  =============== 脉冲压缩 ================
-Xs = scipy.fft.fft(st,N);        # 本地副本的FFT
-Xecho = scipy.fft.fft(secho,N);  # 输入信号的FFT
-Y = np.conjugate(Xs)*Xecho;      # 乘法器
+#=============== 频域实现脉冲压缩 ================
+Xs = scipy.fft.fft(st, N);        # 本地副本的FFT
+Xecho = scipy.fft.fft(secho, N);  # 输入信号的FFT
+Y = np.conjugate(Xs)*Xecho;       # 乘法器
 Y = scipy.fft.fftshift(Y);
-y = scipy.fft.ifft(Y,N);         # IFFT
-
+y = scipy.fft.ifft(Y,N);          # IFFT
 
 ##### plot
 fig, axs = plt.subplots(4, 2, figsize = (12, 16), constrained_layout = True)
 
-axs[0,0].plot(t * 1e6, np.real(st), color = 'b', label = ' ')
+axs[0,0].plot(t * 1e6, np.real(st), color = 'b', label = '')
 axs[0,0].set_xlabel('时间/us',)
 axs[0,0].set_ylabel('幅值',)
-axs[0,0].set_title("Real Part of Reference Signal" )
-# axs[0].legend()
+axs[0,0].set_title("Real Part of Reference Signal")
 
-axs[0,1].plot(t * 1e6, np.imag(st), color = 'b', label = ' ')
+axs[0,1].plot(t * 1e6, np.imag(st), color = 'b', label = '')
 axs[0,1].set_xlabel('时间/us',)
 axs[0,1].set_ylabel('幅值',)
 axs[0,1].set_title("Imagine Part of Reference Signal" )
-# axs[0].legend()
 
-axs[1,0].plot(t * 1e6, np.real(secho), color = 'b', label = ' ')
+axs[1,0].plot(t * 1e6, np.real(secho), color = 'b', label = '')
 axs[1,0].set_xlabel('时间/us',)
 axs[1,0].set_ylabel('幅值',)
 axs[1,0].set_title("Real Part of Echo Signal" )
-# axs[0].legend()
 
-axs[1,1].plot(t * 1e6, np.imag(secho), color = 'b', label = ' ')
+axs[1,1].plot(t * 1e6, np.imag(secho), color = 'b', label = '')
 axs[1,1].set_xlabel('时间/us',)
 axs[1,1].set_ylabel('幅值',)
 axs[1,1].set_title("Imagine Part of Echo Signal" )
-# axs[0].legend()
 
-##
 X1 = scipy.fft.fftshift(Xs)
-axs[2,0].plot(f/(1e6), np.abs(X1), color = 'b', label = ' ')
+axs[2,0].plot(f/(1e6), np.abs(X1), color = 'b', label = '')
 axs[2,0].set_xlabel('Frequency/MHz',)
 axs[2,0].set_ylabel('幅值',)
 axs[2,0].set_title("Spectral of Reference Signal" )
@@ -125,14 +107,14 @@ axs[2,1].set_xlabel('Frequency/MHz',)
 axs[2,1].set_ylabel('幅值',)
 axs[2,1].set_title("Spectral of Echo Signal" )
 
-axs[3,0].plot(f/(1e6), np.abs(Y), color = 'b', label = ' ')
+axs[3,0].plot(f/(1e6), np.abs(Y), color = 'b', label = '')
 axs[3,0].set_xlabel('Frequency/MHz',)
 axs[3,0].set_ylabel('幅值',)
 axs[3,0].set_title("Spectral of the Result of Pulse Compression" )
 
 r = t*c/2;
 y = np.abs(y)/max(np.abs(y)) + 1e-10;
-axs[3,1].plot(r, 20*np.log10(y), color = 'b', label = ' ')
+axs[3,1].plot(r, 20*np.log10(y), color = 'b', label = '')
 axs[3,1].set_xlabel('Range/m',)
 axs[3,1].set_ylabel('幅值',)
 axs[3,1].set_title("Result of Pulse Compression" )
@@ -142,14 +124,221 @@ print(f"R0 = {R0}, R0_est = {R0_est}")
 plt.show()
 plt.close()
 
+#=============== 频域实现脉冲压缩 ================
+matched_filter = np.conj(st[::-1])  # 发射信号的共轭反转
+compressed_signal = np.convolve(secho, matched_filter, mode = 'same')
+# 结果归一化
+compressed_signal = compressed_signal / np.max(np.abs(compressed_signal) + 1e-10 )
+# 结果可视化
+fig, axs = plt.subplots(4, 1, figsize = (6, 16), constrained_layout = True)
 
-#%% https://mp.weixin.qq.com/s?__biz=MzAwMDE1ODE5NA==&mid=2652542571&idx=1&sn=0e0eb494ac7ee19d18227a5e96c2b27e&chksm=80065fae159d3dd84e1d9c3a866f126b4b306ec97b1a427b7ff664c0c311286533a276ab7193&mpshare=1&scene=1&srcid=0329Q8dj1B90QMlepVAj2Um9&sharer_shareinfo=38d19dc84b14ff1c2d3b069947b97c9c&sharer_shareinfo_first=38d19dc84b14ff1c2d3b069947b97c9c&exportkey=n_ChQIAhIQFCYeQ%2B6%2BTwh8yNrYRb5RTBKfAgIE97dBBAEAAAAAAFd1FUcF70gAAAAOpnltbLcz9gKNyK89dVj0FDSmEnzfw8MsNY2waUVVqmm5UxZzyDzF5tbZS7E1FJ8ks%2FFLirUTE1wQ2Xr5RMr0LSsVrqypI%2F2aqly%2Fl4uofOZAPvQQjCb4t1wr1bgr1iGp0%2Fja6EufHwe6%2BOtX8Muca1J8F%2F1mtxqFxdDnfAIGnTm7M%2BC2BumNQg1gfrdTl6iuQghRu9X1fqpoRIHk%2BmYl7dtIDNp40mke%2FmuiC%2Fr9RUITAQQShNsr%2FvVz5QleWdVWLSST1uCtkvEuYdurrGkLJZKHLp9gZyOW95cPiUp8bNB0gtT7SOTvU9UrH8Eedr8sQLQBsqwtiKAVKJjgqUj6RjiH3yJWarkT&acctmode=0&pass_ticket=fh8TkWVQ2FSWTxDQvzOQRMqDWhGDthA7I9lYcXveqOdL%2Bq7ha%2FaWBw%2Fse4F%2BIMDs&wx_header=0#rd
+# 发射信号（实部）
+axs[0].plot(t*1e6, np.real(st))
+axs[0].set_title("Transmitted LFM Signal (Real Part)")
+axs[0].set_xlabel("Time (μs)")
+axs[0].set_ylabel("Amplitude")
+
+# 接收回波信号（实部）
+axs[1].plot(t*1e6, np.real(secho))
+axs[1].set_title("Received Echo Signal (Real Part)")
+axs[1].set_xlabel("Time (μs)")
+axs[1].set_ylabel("Amplitude")
+
+# matched_filter 信号（实部）
+t_match = np.arange(len(matched_filter)) / fs
+axs[2].plot(t_match * 1e6, np.real(matched_filter))
+axs[2].set_title("matched_filter (Real Part)")
+axs[2].set_xlabel("Time (μs)")
+axs[2].set_ylabel("Amplitude")
+
+# 脉冲压缩结果（幅度）
+# t_compressed = np.arange(len(compressed_signal)) / fs / 2
+t_compressed = np.linspace(0, t[-1], len(compressed_signal)) / 2
+r = t_compressed * c/2;
+R0_est1 = r[np.argmax(np.abs(compressed_signal))]
+print(f"R0 = {R0}, R0_est1 = {R0_est1}")
+
+axs[3].plot(r, 20 * np.log10(np.abs(compressed_signal) + 1e-10))
+axs[3].set_title("Range/m")
+axs[3].set_xlabel("Time (μs)")
+axs[3].set_ylabel("Amplitude (dB)")
+
+plt.show()
+plt.close()
+
+#%% 多目标回波信号的匹配滤波输出(含源码)
+# https://mp.weixin.qq.com/s?__biz=MzAwMDE1ODE5NA==&mid=2652542571&idx=1&sn=0e0eb494ac7ee19d18227a5e96c2b27e&chksm=80065fae159d3dd84e1d9c3a866f126b4b306ec97b1a427b7ff664c0c311286533a276ab7193&mpshare=1&scene=1&srcid=0329Q8dj1B90QMlepVAj2Um9&sharer_shareinfo=38d19dc84b14ff1c2d3b069947b97c9c&sharer_shareinfo_first=38d19dc84b14ff1c2d3b069947b97c9c&exportkey=n_ChQIAhIQFCYeQ%2B6%2BTwh8yNrYRb5RTBKfAgIE97dBBAEAAAAAAFd1FUcF70gAAAAOpnltbLcz9gKNyK89dVj0FDSmEnzfw8MsNY2waUVVqmm5UxZzyDzF5tbZS7E1FJ8ks%2FFLirUTE1wQ2Xr5RMr0LSsVrqypI%2F2aqly%2Fl4uofOZAPvQQjCb4t1wr1bgr1iGp0%2Fja6EufHwe6%2BOtX8Muca1J8F%2F1mtxqFxdDnfAIGnTm7M%2BC2BumNQg1gfrdTl6iuQghRu9X1fqpoRIHk%2BmYl7dtIDNp40mke%2FmuiC%2Fr9RUITAQQShNsr%2FvVz5QleWdVWLSST1uCtkvEuYdurrGkLJZKHLp9gZyOW95cPiUp8bNB0gtT7SOTvU9UrH8Eedr8sQLQBsqwtiKAVKJjgqUj6RjiH3yJWarkT&acctmode=0&pass_ticket=fh8TkWVQ2FSWTxDQvzOQRMqDWhGDthA7I9lYcXveqOdL%2Bq7ha%2FaWBw%2Fse4F%2BIMDs&wx_header=0#rd
 
 
 
 
 
-#%% https://mp.weixin.qq.com/s?__biz=Mzg3ODkwOTgyMw==&mid=2247485021&idx=3&sn=742ef5748dce8629ebc43d99ad06befe&chksm=ce5103d1e0308bf218466c6e248c75b18e5064424c93d98e916591d1398c5811881ff4131ad9&mpshare=1&scene=1&srcid=0329wtlZc1KNnFCZ6iw1tk7G&sharer_shareinfo=48caf2d5f9cf6976c915c311eee94f2b&sharer_shareinfo_first=48caf2d5f9cf6976c915c311eee94f2b&exportkey=n_ChQIAhIQYIFUhJ1ixZB7LHc8116UpxKfAgIE97dBBAEAAAAAAFs7BFMneDoAAAAOpnltbLcz9gKNyK89dVj08JjHPehNSxSotXXsU001an68bbK6IqjQ60hNFBjrROO1ZNChcAUoUGNBOq%2BD7vVzTk4zhjDQfHgsd36CwGvEP9cuCpcaF0b84K1woLB5BqZlBpBKeciOu%2FhYsfoYtoJR9v241Kspkw9ouDuSLwYzBApbL88wLKd6vgimG5ZaCZq28gVyWgQiuYepcUZBThnU%2BhV%2FjawaczWvNkPrJ0B0EOkq8aIACuOXLWHj3itH3W%2B%2F6W9ebuggdjgZDtiLb4wjDcgPBWYK8ugu3jGyrVnRKNP0r4QHnH%2F9%2F2EQfqdYWFg8z%2FfxBUOJAlVFN7PKRJwY0AgdHdiwFHCY&acctmode=0&pass_ticket=UOuTwL5JezorkCrj%2BTMjx7yzKbpTU8fEVTb6keEK8pXFIgyOFbr4GvLLR%2F4CSq25&wx_header=0#rd
+
+
+
+#%% 三种不同类型信号的脉冲压缩（一）--------线性调频脉冲信号的压缩处理
+# https://mp.weixin.qq.com/s?__biz=Mzg3ODkwOTgyMw==&mid=2247485021&idx=3&sn=742ef5748dce8629ebc43d99ad06befe&chksm=ce5103d1e0308bf218466c6e248c75b18e5064424c93d98e916591d1398c5811881ff4131ad9&mpshare=1&scene=1&srcid=0329wtlZc1KNnFCZ6iw1tk7G&sharer_shareinfo=48caf2d5f9cf6976c915c311eee94f2b&sharer_shareinfo_first=48caf2d5f9cf6976c915c311eee94f2b&exportkey=n_ChQIAhIQYIFUhJ1ixZB7LHc8116UpxKfAgIE97dBBAEAAAAAAFs7BFMneDoAAAAOpnltbLcz9gKNyK89dVj08JjHPehNSxSotXXsU001an68bbK6IqjQ60hNFBjrROO1ZNChcAUoUGNBOq%2BD7vVzTk4zhjDQfHgsd36CwGvEP9cuCpcaF0b84K1woLB5BqZlBpBKeciOu%2FhYsfoYtoJR9v241Kspkw9ouDuSLwYzBApbL88wLKd6vgimG5ZaCZq28gVyWgQiuYepcUZBThnU%2BhV%2FjawaczWvNkPrJ0B0EOkq8aIACuOXLWHj3itH3W%2B%2F6W9ebuggdjgZDtiLb4wjDcgPBWYK8ugu3jGyrVnRKNP0r4QHnH%2F9%2F2EQfqdYWFg8z%2FfxBUOJAlVFN7PKRJwY0AgdHdiwFHCY&acctmode=0&pass_ticket=UOuTwL5JezorkCrj%2BTMjx7yzKbpTU8fEVTb6keEK8pXFIgyOFbr4GvLLR%2F4CSq25&wx_header=0#rd
+
+import numpy as np
+import scipy
+import matplotlib.pyplot as plt
+import math
+###**************参数配置*********************
+Tp = 200e-6;                # 发射脉冲宽度s
+B = 1e6;                    # 调频带宽Hz
+Ts = 0.5e-6;                # 采样时钟s
+R0 = np.array([80e3, 85e3])         # 目标的距离m
+vr = np.array([0, 0])               # 目标速度
+SNR = np.array([20, 10])            # 信噪比
+Rmin = 20e3;                # 采样的最小距离
+Rrec = 150e3;               # 接收距离窗的大小
+bos = 2 * np.pi / 0.03;     # 波数2*pi/λ。
+
+# *********************************************
+mu = B/Tp;                    # 调频率
+c = 3e8;                      # 光速m/s
+M = int(np.round(Tp/Ts))
+t1 = np.arange(-M/2+0.5, M/2+0.5) * Ts;     # 时间矢量
+NR0 = np.ceil(np.log2(2 * Rrec / c / Ts));
+NR1 = int(2**NR0)                             # 计算FFT的点数
+lfm = np.exp(1j * np.pi * mu * t1**2);        # 信号复包络
+lfm_w = lfm * scipy.signal.windows.hann(M)
+gama = (1+2*vr/c)**2
+sp = 0.707 * (np.random.randn(NR1) + 1j * np.random.randn(NR1));                                  # 噪声
+for k in range(len(R0)):
+    NR = math.trunc(2*(R0[k] - Rmin) / c / Ts)
+    print(f"NR = {NR}")
+    spt = (10**(SNR[k]/20)) * np.exp(-1j * bos * R0[k]) * np.exp(1j * np.pi * mu * gama[k] * t1**2);    # 信号
+    sp[NR - 1: NR + M - 1] = sp[NR - 1: NR + M - 1] + spt
+
+spf = scipy.fft.fft(sp, NR1);
+lfmf = scipy.fft.fft(lfm, NR1);                                    # 未加窗
+lfmf_w = scipy.fft.fft(lfm_w, NR1);                                # 加窗
+y = np.abs(scipy.fft.ifft(spf * np.conjugate(lfmf), NR1)/NR0);
+y1 = np.abs(scipy.fft.ifft(spf * np.conjugate(lfmf_w), NR1)/NR0)   # 加窗
+
+fig, axs = plt.subplots(4, 1, figsize = (6, 16), constrained_layout = True)
+
+axs[0].plot(np.real(sp))
+# axs[0].set_title("Range/m")
+axs[0].set_xlabel("时域采样点")
+axs[0].set_ylabel("Amplitude ")
+
+axs[1].plot(t1*1e6, np.real(lfm))
+axs[1].set_title("匹配滤波系数实部")
+axs[1].set_xlabel("时间/us")
+axs[1].set_ylabel("匹配滤波系数实部")
+
+axs[2].plot(np.arange(NR1)/10, 20 * np.log10(y))
+axs[2].set_title("脉冲压缩结果（未加窗）")
+axs[2].set_xlabel("距离/km")
+axs[2].set_ylabel("脉压输出/dB")
+
+axs[3].plot(np.arange(NR1)/10, 20 * np.log10(y1))
+axs[3].set_title("脉冲压缩结果（加窗）")
+axs[3].set_xlabel("距离/km")
+axs[3].set_ylabel("脉压输出/dB")
+
+plt.show()
+plt.close()
+
+
+#%%
+
+def xcorr(x, y, normed = True, detrend = True, maxlags = 10):
+    # Cross correlation of two signals of equal length
+    # Returns the coefficients when normed = True
+    # Returns inner products when normed = False
+    # Usage: lags, c = xcorr(x, y, maxlags = len(x)-1)
+    # Optional detrending e.g. mlab.detrend_mean
+
+    Nx = len(x)
+    if Nx != len(y):
+        raise ValueError('x and y must be equal length')
+
+    if detrend:
+        import matplotlib.mlab as mlab
+        x = mlab.detrend_mean(np.asarray(x)) # can set your preferences here
+        y = mlab.detrend_mean(np.asarray(y))
+    c = np.correlate(x, y, mode='full')
+    if normed:
+        # n = np.sqrt(np.dot(x, x) * np.dot(y, y)) # this is the transformation function
+        n = np.sqrt(np.linalg.norm(x)**2 * np.linalg.norm(y)**2)
+        c = np.true_divide(c,n)
+
+    if maxlags is None:
+        maxlags = Nx - 1
+
+    if maxlags >= Nx or maxlags < 1:
+        raise ValueError('maglags must be None or strictly positive < %d' % Nx)
+
+    lags = np.arange(-maxlags, maxlags + 1)
+    c = c[Nx - 1 - maxlags : Nx + maxlags]
+    return c, lags
+
+nscat = 2;            # 接收窗内的点散射体数
+rrec = 50;            # 接收窗的大小m
+taup = 10e-6;         # 未压缩的脉冲宽度s
+b = 50.0e6;           # 信号带宽Hz
+scat_range = np.array([15, 25])        # 散射体的相对距离矢量（在接收窗内）
+scat_rcs = np.array([1, 2])            # 散射体的RCS
+winid = 0                     # 窗函数，0表示无窗函数
+eps = 1.0e-16                 # 定义一个很小的常量，用于处理数值中计算舍入误差
+time_B_product = b * taup    # 时宽带宽积
+c = 3.0e8;                    # 光速
+#  在匹配滤波器的应用中，时间带宽积和采样点数之间存在一定的关系。通常情况下，为了准确地捕捉信号
+#  特征并避免信息的丢失，采样点数应该足够多，以确保在时间域内有足够的采样点来表示信号的特征。
+#  一般而言，采样点数应该大于等于时间带宽积，以确保恢复出精确的信号特征。
+n = math.trunc(5 * time_B_product)   # 乘以5的目的是为了提供一定荣誉，来防止信号特征在时间域上的模糊化
+x = np.zeros((nscat, n))
+y = np.zeros(n)
+replica = np.zeros(n)
+
+t = np.linspace(-taup/2, taup/2, n);
+replica = np.exp(1j * np.pi * (b/taup) * t**2);
+
+sampling_interval = taup / n;       #  采样间隔
+freqlimit = 0.5/ sampling_interval; #  通过将0.5除以采样间隔，可以计算出信号的最高频率，在这个频率以下的信号可以被准确地表示和恢复。
+freq = np.linspace(-freqlimit, freqlimit, n);
+
+#  对于每个散射体，计算其距离range对应的散射信号，并将其与输出向量y相加。
+for j in range(nscat):
+    Range = scat_range[j]
+    x[j,:] = scat_rcs[j] * np.exp(1j * np.pi * (b/taup) * (t + (2*Range/c))**2)   #  回波信号
+    y = x[j,:]  + y     #  回波信号相加
+
+out, _ = xcorr(replica, y)                # 计算发射信号和回波信号的相关性
+out = out / n                             # 归一化
+s = taup * c / 2                          # 计算脉冲宽度taup对应的距离步长s
+Npoints = int(np.ceil(rrec * n /s))       # LFM 的距离步长为 s 对应 n 个点，则 rrec 对应的点数
+dist = np.linspace(0, rrec, Npoints)      # 基于接收窗口的范围rrec计算距离向量dist
+delr = c/2/b
+
+fig, axs = plt.subplots(4, 1, figsize = (6, 16), constrained_layout = True)
+
+axs[0].plot(t, np.real(replica))
+axs[0].set_title("匹配滤波系数实部")
+axs[0].set_xlabel("时间/s")
+axs[0].set_ylabel("匹配滤波系数实部")
+
+axs[1].plot(freq, scipy.fft.fftshift(np.abs(scipy.fft.fft(replica))))
+# axs[1].set_title("脉冲压缩结果（未加窗）")
+axs[1].set_xlabel("频率/Hz")
+axs[1].set_ylabel("频谱")
+
+axs[2].plot(t, np.real(y),)
+axs[2].set_title("脉冲压缩结果（加窗）")
+axs[2].set_xlabel("Relative delay / s")
+axs[2].set_ylabel("未进行脉压")
+
+axs[3].plot(dist, np.abs(out[n:n+Npoints-1]))
+axs[3].set_title("Range/m")
+axs[3].set_xlabel("目标位置/m")
+axs[3].set_ylabel("脉压输出")
+
+plt.show()
+plt.close()
+
 
 
 
@@ -161,11 +350,68 @@ plt.close()
 
 
 
-#%%
 
 
 
 #%%
+
+
+
+#%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -22,9 +22,6 @@ https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247491272&idx=1&sn=8c8160
 干货：FMCW雷达系统信号处理建模与仿真（含MATLAB代码）:
 https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247484183&idx=1&sn=fbf605f11d510343c5beda9bdc5c32a4&chksm=c11f0e82f66887941da61052bbfeee2fa37227e7a94d8ebb23fc1e9cc88a357f95ff4a10d012&scene=21#wechat_redirect
 
-雷达信号处理之FMCW 3D-FFT原理（附带MATLAB仿真程序）:
-https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485771&idx=1&sn=8e269280b663226160227aec22806c3e&chksm=c11f04def6688dc8e20c2e92bed6bc4547bf107f87b77bfff29f2c66434fdb5702333184ee1d&scene=178&cur_album_id=2442863581802381317#rd
-
 第4讲 -- 线性调频连续波LFMCW测量原理：测距、测速、测角:
 https://zhuanlan.zhihu.com/p/687473210
 
@@ -44,9 +41,11 @@ https://zhuanlan.zhihu.com/p/422798513
 
 [解疑][TI]TI毫米波雷达系列（三）：调频连续波雷达回波信号3DFFT处理原理（测距、测速、测角）
 https://blog.csdn.net/qq_35605018/article/details/108816709
-
 回波3DFFT处理（测距、测速、测角）
 https://blog.csdn.net/nuaahz/article/details/90719605
+雷达信号处理之FMCW 3D-FFT原理（附带MATLAB仿真程序）:
+https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485771&idx=1&sn=8e269280b663226160227aec22806c3e&chksm=c11f04def6688dc8e20c2e92bed6bc4547bf107f87b77bfff29f2c66434fdb5702333184ee1d&scene=178&cur_album_id=2442863581802381317#rd
+
 
 雷达入门课系列文章（1）| 基于MATLAB的雷达信号处理实验教程
 https://zhuanlan.zhihu.com/p/567656893
@@ -199,7 +198,6 @@ plt.show()
 plt.close('all')
 
 #%%
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -291,7 +289,6 @@ plt.show()
 
 
 #%%
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -371,7 +368,7 @@ velocity_est = velocity_bins[np.argmax(velocity_profile)]
 
 # --- 角度估计 (Angle FFT) ---
 # 提取峰值距离门和Chirp的信号
-angle_fft_input = range_fft[:, :, peak_bin]  # [N_rx, N_chirps]
+angle_fft_input = range_fft[:, :, peak_bin]         # [N_rx, N_chirps]
 
 # 平均所有Chirp，保留天线维度
 angle_fft_input = np.mean(angle_fft_input, axis=1)  # [N_rx]

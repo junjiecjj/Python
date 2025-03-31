@@ -2,41 +2,55 @@ clc;clear all;close all;
 
 
 
-nBits=10^5; %number of bits to transmit 
-errorProbs = 0.001:0.1:0.6; %cross-over probabilities of BSC to simulate 
-C = zeros(1,length(errorProbs)); %to store capacity for each point
- 
-j=1; 
-for e=errorProbs, %for each error probability 
-    x = rand(1,nBits)<0.5; %uniform source bits of 1's and 0's 
-    y = bsc_channel(x,e); %process the bits through BSC
- 
-    Y = repmat(y,2,1);%construct 2xL matrix from y 
-    X = repmat([0;1],1,nBits);%construct 2xL matrix from [0;1] %probabilities with respect to each input[0,1] 
+clc
+clear all
+close all
+%**************参数配置*********************
+Tp=200e-6;          %发射脉冲宽度s
+B=1e6;           %调频带宽Hz
+Ts=0.5e-6;       %采样时钟s
+R0=[80e3,85e3];      %目标的距离m
+vr=[0,0];            %目标速度
+SNR=[20 10];         %信噪比
+Rmin=20e3;           %采样的最小距离
+Rrec=150e3;          %接收距离窗的大小
+bos=2*pi/0.03;       %波数2*pi/λ。
 
-    prob = (Y==X)*(1-e)+(Y~=X)*e; %BSC p(y/x) equation 
-    prob = max(prob,realmin);%this used to avoid NAN in computation 
-    p = prob./(ones(2,1)*(sum(prob)));%normalize probabilities 
-    HYX = mean(-sum(p.*log2(p))); %senders uncertainity
-
-    py0 = sum(y==0)/nBits; %py(y=0) 
-    py1 =sum(y==1)/nBits; %py(y=1) 
-    HY = -py0*log2(py0) - py1*log2(py1);%avg info content of output 
-    C(j) = HY-HYX; %capacity 
-    j=j+1;
-
-end 
-C_theory = 1 - (-errorProbs .* log2(errorProbs) - (1-errorProbs) .* log2(1-errorProbs))
-
-plot(errorProbs,C,'r'); hold on;
-%plot(errorProbs,C_theory,'b'); 
-title('Capacity over Binary Symmetric Channel');
-xlabel('Cross-over probability - e'); 
-ylabel('Capacity (bits/channel use)');
-
-
-function y = bsc_channel(x,e) %Process an input vector x through a Binary Symmetric Channel with %error probability e. 
-y = x; %copy the input vector 
-errors = rand(1,length(x))<e; %Bernoulli trials with probability e 
-y(errors) = 1 - y(errors); %flip the bits
+%*********************************************
+mu=B/Tp;            %调频率
+c=3e8;              %光速m/s
+M=round(Tp/Ts);
+t1=(-M/2+0.5:M/2-0.5)*Ts;       %时间矢量
+NR0=ceil(log2(2*Rrec/c/Ts));NR1=2^NR0;    %计算FFT的点数
+lfm=exp(j*pi*mu*t1.^2);                   %信号复包络
+lfm_w=lfm.*hanning(400)';
+gama=(1+2*vr./c).^2;                      
+sp=0.707*(randn(1,NR1)+j*randn(1,NR1));        %噪声
+for k= 1:length(R0)
+    NR=fix(2*(R0(k)-Rmin)/c/Ts);
+    spt=(10^(SNR(k)/20))*exp(-j*bos*R0(k))*exp(j*pi*mu*gama(k)*t1.^2);     %信号
+    sp(NR:NR+M-1)=sp(NR:NR+M-1)+spt;
 end
+spf=fft(sp,NR1);
+lfmf=fft(lfm,NR1);      %未加窗
+lfmf_w=fft(lfm_w,NR1);      %加窗
+y=abs(ifft(spf.*conj(lfmf),NR1)/NR0);
+y1=abs(ifft(spf.*conj(lfmf_w),NR1)/NR0);   %加窗
+figure;
+plot(real(sp));grid on;
+xlabel('时域采样点');
+figure;
+plot(t1*1e6,real(lfm));grid on;
+xlabel('时间/us')
+ylabel('匹配滤波系数实部')
+figure
+plot((0:NR1-1)/10,20*log10(y));grid on;
+xlabel("距离/km")
+ylabel("脉压输出/dB");
+title("脉冲压缩结果（未加窗）")
+
+figure
+plot((0:NR1-1)/10,20*log10(y1));grid on;
+xlabel("距离/km")
+ylabel("脉压输出/dB");
+title("脉冲压缩结果（加窗）")

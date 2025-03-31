@@ -151,8 +151,6 @@ def autocorrelation(x):
 
 scorr = autocorrelation(x)
 
-
-
 #%%
 
 import numpy as np
@@ -307,7 +305,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import statsmodels.tsa.api as smt
 
-from Xcorrs import xcorr, correlate_maxlag, correlate_template
+from Xcorrs import xcorr
 
 f0 = 5
 T = 1

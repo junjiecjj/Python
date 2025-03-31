@@ -9,8 +9,7 @@ Created on Wed Mar  9 14:03:56 2022
 (1) 雷达几乎都是数字域进行脉压处理的，脉冲压缩本身就是实现信号的匹配滤波，只是在模拟域一般称为匹配滤波，而在数字域中称为脉冲压缩.
 (2) 距离分辨率要求B越大越好，雷达最大探测距离要求B越小越好（其他变量恒定的情况下）,即提高最大探测距离就要减小距离分辨率, 脉冲压缩的目的是在不减小最大探测距离的情况下提高雷达的距离分辨率.
 (3) 脉冲压缩可以同时提高工作距离和距离分辨率。
-
-
+(4) 雷达系统想要同时满足高距离分辨率和高速度分辨率，就必须采用大时宽带宽积信号。对于一个普通信号，其时宽带宽积为一个常数，即窄脉冲具有宽频带，宽脉冲具有窄频带。而脉冲压缩处理可以将发射的宽脉冲信号压缩成窄脉冲信号,使信号既可以发射宽脉冲以提高平均功率和雷达的速度分辨率,又能保持窄脉冲的距离分辨率。而脉冲压缩处理本身就是信号的匹配滤波，只是在模拟域一般称为匹配滤波，在数字域称为脉冲压缩。
 
 https://blog.csdn.net/jiangwenqixd/article/details/109521694?spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-109521694-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-109521694-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=10
 
@@ -26,9 +25,8 @@ https://blog.csdn.net/qq_43485394/article/details/122655901
 
 https://blog.51cto.com/u_16213651/8904378
 
-
-
 """
+
 import scipy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -82,7 +80,6 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
     return f, Y, A, Pha, R, I
 
 #%% https://blog.csdn.net/innovationy/article/details/121572508?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-121572508-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-121572508-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=6
-
 # 线性调频信号经过匹配滤波
 T = 10e-6                   # 脉冲持续时间10us
 B = 30e6                    # 线性调频信号的带宽30MHz
@@ -143,12 +140,10 @@ axs[3].set_ylabel('幅度/dB',)
 plt.show()
 plt.close()
 
-
 ##### plot
 fig, axs = plt.subplots(2, 1, figsize = (8, 8), constrained_layout = True)
 
-##
-axs[0].plot(t, St, color = 'b', label = ' ')
+axs[0].plot(t, np.real(St), color = 'b', label = ' ')
 axs[0].set_xlabel('时间/s',)
 axs[0].set_ylabel('值',)
 axs[0].set_title(" " )
@@ -165,43 +160,41 @@ axs[1].set_title(" ")
 plt.show()
 plt.close()
 
-
 #%%
 import numpy as np
 import matplotlib.pyplot as plt
 
 # 参数设置
-
 T = 10e-6        # 脉冲宽度 10 μs
 B = 10e6         # 带宽 30 MHz
 f0 = 1e6         # 起始频率 1 MHz
-fs = (f0+B)*3       # 采样频率 100 MHz
+fs = (f0 + B) * 3       # 采样频率 100 MHz
 SNR_dB = 20      # 信噪比 (dB)
 delay = 5e-6     # 目标时延 5 μs
 
-# 生成线性调频信号 (LFM)
+## 生成线性调频信号(LFM)
 t = np.arange(0, T, 1/fs)                  # 时间向量
 N = len(t)
 chirp_signal = np.exp(1j * np.pi * (B/T) * t**2 + 1j * 2 * np.pi * f0 * t)  # 复数LFM信号
 
-# 模拟回波信号（添加时延和多普勒频移）
+## 模拟回波信号（添加时延和多普勒频移）
 delay_samples = int(delay * fs)             # 时延对应的采样点数
-echo_signal = np.zeros(N + delay_samples, dtype=complex)
+echo_signal = np.zeros(N + delay_samples, dtype = complex)
 echo_signal[delay_samples:delay_samples + N] = chirp_signal  # 添加时延
 
-# 添加高斯白噪声
+## 添加高斯白噪声
 noise_power = 10**(-SNR_dB/10) * np.mean(np.abs(echo_signal)**2)
 noise = np.sqrt(noise_power/2) * (np.random.randn(len(echo_signal)) + 1j * np.random.randn(len(echo_signal)))
 echo_signal += noise
 
-# 脉冲压缩（匹配滤波）
+## 脉冲压缩（匹配滤波）
 matched_filter = np.conj(chirp_signal[::-1])  # 匹配滤波器：发射信号的共轭反转
-compressed_signal = np.convolve(echo_signal, matched_filter, mode='valid')
+compressed_signal = np.convolve(echo_signal, matched_filter, mode = 'valid')
 compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
 # 结果可视化
 plt.figure(figsize=(12, 8))
 
-# 发射信号（实部）
+## 发射信号（实部）
 plt.subplot(3, 1, 1)
 plt.plot(t*1e6, np.real(chirp_signal))
 plt.title("Transmitted LFM Signal (Real Part)")
@@ -237,11 +230,15 @@ B = 10e6           # 带宽 30MHz
 f0 = 1e6           # 起始频率 1 MHz
 fs = 4 * (f0 + B)  # 采样率(满足 Nyquist 定理)
 # t = np.linspace(-T/2, T/2, int(fs * T))  # 时间序列
-t = np.linspace(0, T, int(fs * T))         # 时间序列
+# t = np.linspace(0, T, int(fs * T))         # 时间序列
+
+t = np.arange(-T/2, T/2, 1/fs)
+# t = np.arange(0, T, 1/fs)
 
 # 生成线性调频信号(LFM)
 K = B / T  # 调频斜率
 s_t = np.exp(1j * np.pi * K * t**2 + 1j * 2 * np.pi * f0 * t)  # 发射信号(复数形式)
+s_t = np.exp(1j * np.pi * K * t**2 )  # 发射信号(复数形式)
 
 # 添加噪声模拟接收信号
 noise = 0.1 * (np.random.randn(len(s_t)) + 1j * np.random.randn(len(s_t)))
@@ -255,7 +252,7 @@ compressed_signal = np.convolve(received_signal, matched_filter, mode = 'same')
 compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
 
 # 绘图
-plt.figure(figsize=(12, 10))
+plt.figure(figsize = (12, 10))
 
 # 发射信号时频图
 plt.subplot(3, 1, 1)
@@ -280,6 +277,76 @@ plt.ylabel("Amplitude (Normalized)")
 plt.tight_layout()
 plt.show()
 plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

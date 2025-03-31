@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 ## my lib
-from Xcorrs import xcorr, correlate_maxlag, correlate_template, get_lags
+from Xcorrs import xcorr
 
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
