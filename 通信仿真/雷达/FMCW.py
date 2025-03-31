@@ -49,7 +49,7 @@ https://blog.csdn.net/qq_35605018/article/details/108816709
 https://blog.csdn.net/nuaahz/article/details/90719605
 
 雷达入门课系列文章（1）| 基于MATLAB的雷达信号处理实验教程
-https://zhuanlan.zhihu.com/p/56765689398409-91483-26002-13452-35976
+https://zhuanlan.zhihu.com/p/567656893
 
 """
 
@@ -131,6 +131,7 @@ plt.ylabel("Amplitude")
 plt.show()
 plt.close()
 
+
 #%%
 import numpy as np
 import matplotlib.pyplot as plt
@@ -198,16 +199,17 @@ plt.show()
 plt.close('all')
 
 #%%
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 # ====== 参数设置 ======
-c = 3e8                   # 光速(m/s)
-fc = 77e9                 # 载波频率 (Hz)
-B = 300e6                 # 带宽 (Hz)
-Tc = 50e-6                # Chirp 时长 (s)
-N_chirps = 64             # 每帧的 Chirp 数
-N_rx = 4                  # 接收天线数量
+c = 3e8             # 光速 (m/s)
+fc = 77e9           # 载波频率 (Hz)
+B = 300e6           # 带宽 (Hz)
+Tc = 50e-6          # Chirp 时长 (s)
+N_chirps = 64       # 每帧的 Chirp 数
+N_rx = 4            # 接收天线数量
 d_antenna = 0.5 * c / fc  # 天线间距 (半波长)
 
 # 目标参数 (模拟单目标)
@@ -223,18 +225,17 @@ t = np.linspace(0, Tc, int(fs * Tc))  # 单个 Chirp 的时间轴
 tx_chirp = np.exp(1j * np.pi * (B/Tc) * t**2)
 
 # 模拟接收信号 (含延迟和多普勒频移)
-tau = 2 * target_distance / c                 # 距离延迟
+tau = 2 * target_distance / c          # 距离延迟
 doppler_shift = 2 * target_velocity * fc / c  # 多普勒频移
-# https://zhuanlan.zhihu.com/p/514686834
-# https://blog.csdn.net/m0_47867419/article/details/123117892
+
 # 生成接收信号 (每个 Chirp 和天线)
-rx_signals = np.zeros((N_rx, N_chirps, len(t)), dtype = np.complex_)
+rx_signals = np.zeros((N_rx, N_chirps, len(t)), dtype=np.complex_)
 for rx in range(N_rx):
     for chirp in range(N_chirps):
         phase_shift = 2 * np.pi * rx * d_antenna * np.sin(np.radians(target_angle)) / (c / fc)
         time_shift = t - tau + (chirp * Tc) * (2 * target_velocity / c)
         rx_chirp = np.exp(1j * (np.pi * (B/Tc) * (time_shift)**2 + doppler_shift * t + phase_shift))
-        rx_signals[rx, chirp, :] = rx_chirp + 0.01 * (np.random.randn(len(t)) + 1j * np.random.randn(len(t)))  # 添加噪声
+        rx_signals[rx, chirp, :] = rx_chirp + 0.001 * (np.random.randn(len(t)) + 1j * np.random.randn(len(t)))  # 添加噪声
 
 # ====== 信号处理 ======
 # 混频生成中频信号 (IF)
@@ -288,7 +289,9 @@ plt.ylabel("幅度 (dB)")
 plt.tight_layout()
 plt.show()
 
+
 #%%
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -338,7 +341,7 @@ for rx in range(N_rx):
         ))
 
         # 添加噪声 (信噪比 SNR ≈ 20 dB)
-        noise = 0.1 * (np.random.randn(num_samples) + 1j * np.random.randn(num_samples))
+        noise = 0.001 * (np.random.randn(num_samples) + 1j * np.random.randn(num_samples))
         rx_signals[rx, chirp, :] = rx_signal + noise
 
 # ====== 信号处理 ======

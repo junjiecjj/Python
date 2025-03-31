@@ -5,7 +5,12 @@ Created on Wed Mar  9 14:03:56 2022
 
 @author: jack
 
-https://blog.csdn.net/innovationy/article/details/121572508?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-121572508-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-121572508-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=6
+关于脉冲压缩的几点说明:
+(1) 雷达几乎都是数字域进行脉压处理的，脉冲压缩本身就是实现信号的匹配滤波，只是在模拟域一般称为匹配滤波，而在数字域中称为脉冲压缩.
+(2) 距离分辨率要求B越大越好，雷达最大探测距离要求B越小越好（其他变量恒定的情况下）,即提高最大探测距离就要减小距离分辨率, 脉冲压缩的目的是在不减小最大探测距离的情况下提高雷达的距离分辨率.
+(3) 脉冲压缩可以同时提高工作距离和距离分辨率。
+
+
 
 https://blog.csdn.net/jiangwenqixd/article/details/109521694?spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-109521694-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-109521694-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=10
 
@@ -24,50 +29,141 @@ https://blog.51cto.com/u_16213651/8904378
 
 
 """
-
-
+import scipy
 import numpy as np
 import matplotlib.pyplot as plt
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 14        # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22   # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22   # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 22  # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 22  # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False        # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]           # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300                # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2               # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6              # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'        # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 22
 
-# 参数设置
-A = 1.0  # 信号幅度
-fs = 1000  # 采样频率
-T = 1  # 信号持续时间
-t = np.linspace(0, T, fs * T, endpoint=False)
+def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
+    if FFTN == None:
+        FFTN = 2**int(np.ceil(np.log2(x.size)))
+    X = scipy.fftpack.fft(x, n = FFTN)
+    # 消除相位混乱
+    threshold = np.max(np.abs(X)) / 10000
+    X[np.abs(X) < threshold] = 0
+    # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+    X = X/x.size               # 将频域序列 X 除以序列的长度 N
+    if type == 'single':
+        Y = X[0 : int(FFTN/2)+1].copy()       # 提取 X 里正频率的部分,N为偶数
+        Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
+        f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
+        # 计算频域序列 Y 的幅值和相角
+        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        R = np.real(Y)                    # 计算频域序列 Y 的实部
+        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+    elif type == 'double':
+        f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
+        Y = scipy.fftpack.fftshift(X, )
+        # 计算频域序列 Y 的幅值和相角
+        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        R = np.real(Y)                    # 计算频域序列 Y 的实部
+        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
-# 生成长脉冲信号
-pulse_duration = 0.2  # 脉冲持续时间
-pulse = np.zeros_like(t)
-pulse[int(0.5 * fs):int((0.5 + pulse_duration) * fs)] = A
+    return f, Y, A, Pha, R, I
 
-# 添加杂波
-noise = np.random.normal(0, 0.1, pulse.shape)
-received_signal = pulse + noise
+#%% https://blog.csdn.net/innovationy/article/details/121572508?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-121572508-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-121572508-blog-131543206.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=6
 
-# 匹配滤波器设计
-matched_filter = np.flip(pulse)
+# 线性调频信号经过匹配滤波
+T = 10e-6                   # 脉冲持续时间10us
+B = 30e6                    # 线性调频信号的带宽30MHz
+K = B/T                     # 调频斜率
+Fs = 10*B
+Ts = 1/Fs                   # 采样频率和采样间隔
+N = int(T/Ts)
+t = np.linspace(-T/2, T/2, int(N))
+St = np.exp(1j * np.pi * K * t**2);       # 线性调频信号
+Ht = np.exp(-1j * np.pi * K * t**2)       # 匹配滤波
+Sot = np.convolve(St, Ht);                # 线性调频信号经过匹配滤波
 
-# 进行匹配滤波
-compressed_signal = np.convolve(received_signal, matched_filter, mode='same')
+##### plot
+fig, axs = plt.subplots(4, 1, figsize = (12, 12), constrained_layout = True)
 
-# 绘图
-plt.figure(figsize=(10, 6))
-plt.subplot(2, 1, 1)
-plt.plot(t, received_signal)
-plt.title('Received Signal with Noise')
-plt.xlabel('Time (s)')
-plt.ylabel('Amplitude')
-plt.grid(True)
+L = 2 * N - 1
+t1 = np.linspace(-T, T, int(L))
+Z = np.abs(Sot)
+Z = Z/max(Z)                     # 归一化
+Z = 20 * np.log10(Z + 1e-6)
+Z1 = np.abs(np.sinc(B * t1))     # 辛格函数
+Z1 = 20 * np.log10(Z1 + 1e-6)
+t1 = t1*B
 
-plt.subplot(2, 1, 2)
-plt.plot(t, compressed_signal)
-plt.title('Compressed Signal After Matched Filtering')
-plt.xlabel('Time (s)')
-plt.ylabel('Amplitude')
-plt.grid(True)
+##
+axs[0].plot(t1, Z, color = 'b', label = '匹配滤波')
+axs[0].plot(t1, Z1, color = 'r', ls = 'none', marker = 'o', label = '辛格')
+axs[0].set_xlabel('时间/s',)
+axs[0].set_ylabel('幅值/dB',)
+axs[0].set_title("线性调频信号经过匹配滤波" )
+axs[0].set_xlim(-15, 15)  # 拉开坐标轴范围显示投影
+axs[0].set_ylim(-50, 1)   # 拉开坐标轴范围显示投影
+axs[0].legend()
 
-plt.tight_layout()
+##
+N0 = int(3*Fs/B)
+t2 = np.arange(-N0 * Ts, N0 * Ts + Ts, Ts)
+t2 = B * t2
+axs[1].plot(t2, Z[N-N0-1 : N+N0], color = 'b', label = '')
+axs[1].plot(t2, Z1[N-N0-1 : N+N0], color = 'r', ls = 'none', marker = 'o', label = '')
+axs[1].set_xlabel('时间/s',)
+axs[1].set_ylabel('幅度/dB',)
+axs[1].set_title("线性调频信号经过匹配滤波(补零展开之后)")
+axs[1].set_xticks([-3, -2, -1, -0.5, 0, 0.5, 1, 2, 3])
+axs[1].set_yticks([-13.4, -4, 0])
+
+##
+Z_value = Z[2950 - 1 : 3050]
+axs[2].plot(Z_value, color = 'b', label = '')
+axs[2].set_xlabel('时间/s',)
+axs[2].set_ylabel('幅度/dB',)
+
+##
+axs[3].plot(Z, color = 'b', label = '')
+axs[3].set_xlabel('时间/s',)
+axs[3].set_ylabel('幅度/dB',)
+
 plt.show()
+plt.close()
+
+
+##### plot
+fig, axs = plt.subplots(2, 1, figsize = (8, 8), constrained_layout = True)
+
+##
+axs[0].plot(t, St, color = 'b', label = ' ')
+axs[0].set_xlabel('时间/s',)
+axs[0].set_ylabel('值',)
+axs[0].set_title(" " )
+# axs[0].set_xlim(-15, 15)  # 拉开坐标轴范围显示投影
+# axs[0].set_ylim(-50, 1)   # 拉开坐标轴范围显示投影
+axs[0].legend()
+
+f, Y, A, Pha, R, I = freqDomainView(St, Fs, FFTN = None, type = 'double')
+axs[1].plot(f, A, color = 'b', label = '')
+axs[1].set_xlabel('f/Hz',)
+axs[1].set_ylabel('幅度 ',)
+axs[1].set_title(" ")
+
+plt.show()
+plt.close()
 
 
 #%%
@@ -75,11 +171,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 参数设置
-fs = 100e6       # 采样频率 100 MHz
+
 T = 10e-6        # 脉冲宽度 10 μs
-B = 30e6         # 带宽 30 MHz
+B = 10e6         # 带宽 30 MHz
 f0 = 1e6         # 起始频率 1 MHz
-SNR_dB = 10      # 信噪比 (dB)
+fs = (f0+B)*3       # 采样频率 100 MHz
+SNR_dB = 20      # 信噪比 (dB)
 delay = 5e-6     # 目标时延 5 μs
 
 # 生成线性调频信号 (LFM)
@@ -128,29 +225,31 @@ plt.xlabel("Time (μs)")
 plt.ylabel("Amplitude (dB)")
 plt.tight_layout()
 plt.show()
-
+plt.close()
 
 #%% DeepSeek
 import numpy as np
 import matplotlib.pyplot as plt
 
 # 参数设置
-T = 10e-6   # 脉冲宽度 10μs
-B = 30e6    # 带宽 30MHz
-fs = 4 * B  # 采样率（满足 Nyquist 定理）
-t = np.linspace(-T/2, T/2, int(fs * T))  # 时间序列
+T = 10e-6          # 脉冲宽度 10μs
+B = 10e6           # 带宽 30MHz
+f0 = 1e6           # 起始频率 1 MHz
+fs = 4 * (f0 + B)  # 采样率(满足 Nyquist 定理)
+# t = np.linspace(-T/2, T/2, int(fs * T))  # 时间序列
+t = np.linspace(0, T, int(fs * T))         # 时间序列
 
-# 生成线性调频信号（LFM）
+# 生成线性调频信号(LFM)
 K = B / T  # 调频斜率
-s_t = np.exp(1j * np.pi * K * t**2 + 1j * 2 * np.pi * f0 * t)  # 发射信号（复数形式）
+s_t = np.exp(1j * np.pi * K * t**2 + 1j * 2 * np.pi * f0 * t)  # 发射信号(复数形式)
 
 # 添加噪声模拟接收信号
 noise = 0.1 * (np.random.randn(len(s_t)) + 1j * np.random.randn(len(s_t)))
 received_signal = s_t + noise
 
-# 匹配滤波器（脉冲压缩）
+# 匹配滤波器(脉冲压缩)
 matched_filter = np.conj(s_t[::-1])  # 发射信号的共轭反转
-compressed_signal = np.convolve(received_signal, matched_filter, mode='same')
+compressed_signal = np.convolve(received_signal, matched_filter, mode = 'same')
 
 # 结果归一化
 compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
@@ -180,7 +279,7 @@ plt.xlabel("Time (s)")
 plt.ylabel("Amplitude (Normalized)")
 plt.tight_layout()
 plt.show()
-
+plt.close()
 
 
 
