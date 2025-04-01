@@ -122,7 +122,7 @@ signal = reshape(Mix,Nr,Nd);
 MixIQ=zeros(Nr,Nd);
 for i=1:Nd
 
-MixIQ(:,i) =hilbert(Mix(((i-1)*Nr+1):Nr*i)); % 希尔伯特变换 变为IQ正交信号
+MixIQ(:,i) = hilbert(Mix(((i-1)*Nr+1):Nr*i)); % 希尔伯特变换 变为IQ正交信号
 
 end
 
@@ -144,7 +144,6 @@ plot(sig_fft(:,1));
 xlabel('距离（频率）');
 ylabel('幅度')
 title('第一个chirp的FTF结果')
-
 
 %% 距离FFT结果谱矩阵
 figure;

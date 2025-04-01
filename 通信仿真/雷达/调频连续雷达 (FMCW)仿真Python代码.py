@@ -27,7 +27,7 @@ FMCW发射信号生成
 """
 # 初始化
 st = np.zeros(ns, dtype = complex)  # transmitted signal
-ft = np.zeros(ns)  # frequency of transmitted signal/sampling freq.
+ft = np.zeros(ns)                   # frequency of transmitted signal/sampling freq.
 
 # Sampling Frequency (Hz)
 for i in range(len(tg)):
@@ -61,6 +61,7 @@ plt.ylabel('Frequency (kHz)')
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+plt.close('all')
 
 # 目标参数
 Rt = 30  # 目标参数 (m)
@@ -69,7 +70,7 @@ Vt = 0  # 目标径向速度 (m/s)
 FMCW Signal Generation at Receiver/Reflected Signal
 """
 # initial condition
-srx = np.zeros(ns, dtype=complex)  # receiver signal that transmitted
+srx = np.zeros(ns, dtype = complex)  # receiver signal that transmitted
 frx = np.zeros(ns)  # frequency of received signal
 
 for i in range(len(tg)):
@@ -80,9 +81,9 @@ for i in range(len(tg)):
     t_delay += (2 * tg_i * Vt / c)
     tg_i -= t_delay
     # for the chirp period after the first period
-    while tg_i > tr:
-        tg_i -= tr
-    tg_i -= tr / 2  # so that the frequency ft becomes the middle frequency
+    # while tg_i > tr:
+        # tg_i -= tr
+    # tg_i -= tr / 2  # so that the frequency ft becomes the middle frequency
     srx[i] = np.cos(2 * np.pi * fc * tg_i + np.pi * bw * fr * (tg_i ** 2))
     frx[i] = fc + bw * fr * tg_i
 """

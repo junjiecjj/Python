@@ -56,10 +56,7 @@ xlabel('时间'); ylabel('幅值'); title('差频信号'); set(gca, 'fontsize', 
 subplot(3, 1, 3); plot(f, Mix_filtered_fft, 'linewidth', 1.2); axis('tight'); 
 xlabel('频率'); ylabel('幅度（dB）'); title('差频信号的频谱图'); set(gca, 'fontsize', 12);
 linkaxes([sp11, sp22], 'x');
-
-
-
-
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 雷达参数设计
 c = 3e8;  % 光速
 fc = 77e9;  % 载频（77GHz）

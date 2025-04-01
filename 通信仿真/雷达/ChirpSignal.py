@@ -122,19 +122,19 @@ axs[0,2].set_xlabel("频率(Hz)", )
 axs[0,2].set_ylabel( "Amplitude ")
 axs[0,2].set_xlim(-100, 100)
 
-axs[1,0].plot(f1, Pxx1)
+axs[1,0].plot(f1, np.real(Pxx1))
 axs[1,0].set_title( "双边带功率谱密度")
 axs[1,0].set_xlabel("频率(Hz)", )
 axs[1,0].set_ylabel( "PSD dB/Hz")
 axs[1,0].set_xlim(-50, 50)
 
-axs[1,1].plot(f, Pxx)
+axs[1,1].plot(f, np.real(Pxx))
 axs[1,1].set_title( "单边带功率谱密度")
 axs[1,1].set_xlabel("频率(Hz)", )
 axs[1,1].set_ylabel( "PSD dB/Hz")
 axs[1,1].set_xlim(0, 100)
 
-axs[1,2].plot(f1, Pxx1)
+axs[1,2].plot(f1, np.real(Pxx1))
 axs[1,2].set_title( "双边带功率谱密度")
 axs[1,2].set_xlabel("频率(Hz)", )
 axs[1,2].set_ylabel( "PSD dB/Hz")
@@ -144,23 +144,70 @@ plt.show()
 plt.close('all')
 
 
+#%%
+###  1
+c = 3e8  # 光速
+# FMCW 波形参数
+f0 = 77e9    # Carrier Frequency (Hz)
+B = 4e9     # Bandwidth (Hz)
+Tc = 40e-6
+K = B/Tc
+fs = 4 * (B + f0) # 采样率一定要足，很多博客为了画图时不是一坨，采样率都是错的,用了很低的采用率。
+Ts = 1/fs
+N = 128
+t = np.arange(0, Tc, Ts)  # 生成时间向量
+
+# 初始化
+st = np.cos(2 * np.pi * f0 * t + np.pi * K * (t ** 2))
+ft = f0 + K * t
 
 
+##### plot
+fig, axs = plt.subplots(2, 1, figsize = (6, 8), constrained_layout = True)
+
+##
+axs[0].plot(t, st, color = 'b', label = '')
+axs[0].set_xlabel('时间/s',)
+axs[0].set_ylabel('幅值',)
+# axs[0].legend()
+
+axs[1].plot(t, ft/10e9, color = 'b', label = '')
+axs[1].set_xlabel('时间/s',)
+axs[1].set_ylabel('Frequency/GHz',)
+axs[1].set_title("Frequency Variation of FMCW Signal at Transmitter")
+
+plt.show()
+plt.close()
 
 
+###  2
+f0 = 1
+fs = 500
+f1 = fs / 20
+t1 = 1
+t = np.arange(0, 1, 1/fs)
+T = (t1 - t[0])
+K = (f1 - f0) / T
 
+# 初始化
+st = np.cos(2 * np.pi * f0 * t + np.pi * K * (t ** 2))
+ft = f0 + K * t
 
+##### plot
+fig, axs = plt.subplots(2, 1, figsize = (6, 8), constrained_layout = True)
 
+axs[0].plot(t, st, color = 'b', label = '')
+axs[0].set_xlabel('时间/s',)
+axs[0].set_ylabel('幅值',)
+# axs[0].legend()
 
+axs[1].plot(t, ft, color = 'b', label = '')
+axs[1].set_xlabel('时间/s',)
+axs[1].set_ylabel('Frequency/Hz',)
+axs[1].set_title("Frequency Variation of FMCW Signal at Transmitter")
 
-
-
-
-
-
-
-
-
+plt.show()
+plt.close()
 
 
 

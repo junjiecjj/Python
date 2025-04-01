@@ -60,44 +60,44 @@ for i=1:length(t)
     Mix(i) = Tx(i).*Rx(i);%差频、差拍、拍频、中频信号
 end
 
-% %发射信号时域图
-% figure;
-% plot(Tx(1:1024));
-% xlabel('点数');
-% ylabel('幅度');
-% title('TX发射信号时域图');
-% 
-% % %发射信号时频图
-% figure;
-% plot(t(1:1024),freq);
-% xlabel('时间');
-% ylabel('频率');
-% title('TX发射信号时频图');
-% 
-% %接收信号时域图
-% figure;
-% plot(Rx(1:1024));
-% xlabel('点数');
-% ylabel('幅度');
-% title('RX接收信号时域图');
-% 
-% %接收信号与发射信号的时频图
-% figure;
-% plot(t(1:1024),freq);
-% hold on;
-% plot(td(1:1024)+t(1:1024),freq);
-% xlabel('时间');
-% ylabel('频率');
-% title('接收信号与发射信号时频图');
-% legend ('TX','RX');
+%发射信号时域图
+figure;
+plot(Tx(1:1024));
+xlabel('点数');
+ylabel('幅度');
+title('TX发射信号时域图');
 
-%中频信号频谱 和频信号观察
-%figure;
+% %发射信号时频图
+figure;
+plot(t(1:1024),freq);
+xlabel('时间');
+ylabel('频率');
+title('TX发射信号时频图');
+
+%接收信号时域图
+figure;
+plot(Rx(1:1024));
+xlabel('点数');
+ylabel('幅度');
+title('RX接收信号时域图');
+
+%接收信号与发射信号的时频图
+figure;
+plot(t(1:1024),freq);
+hold on;
+plot(td(1:1024)+t(1:1024),freq);
+xlabel('时间');
+ylabel('频率');
+title('接收信号与发射信号时频图');
+legend ('TX','RX');
+
+% 中频信号频谱 和频信号观察
+% figure;
 % plot(db(abs(fft(Mix(1:1024*256)))));%查看宽带的和频信号 将chirp的点数改为1024*256即可看到有一个门信号，但注意计算机内存。
 % xlabel('频率');
 % ylabel('幅度');
 % title('中频信号频谱');
-
+% 
 % figure;
 % plot(db(abs(fft(Mix(1:1024)))));%查看宽带的和频信号 将chirp的点数改为1024*256即可看到有一个门信号，但注意计算机内存。
 % xlabel('频率');
