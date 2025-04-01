@@ -19,7 +19,6 @@ c = 3e8;              % 光速
 r0 = 90; % 目标距离设置 (max = 200m)
 v0 = 20; % 目标速度设置 (min =-70m/s, max=70m/s)
 
-
 %% FMCW波形参数设置
 B = c / (2*rangeRes);       % 发射信号带宽 (y-axis)  B = 150MHz
 Tchirp = 5.5 * 2 * maxR/c;  % 扫频时间 (x-axis), 5.5= sweep time should be at least 5 o 6 times the round trip time
