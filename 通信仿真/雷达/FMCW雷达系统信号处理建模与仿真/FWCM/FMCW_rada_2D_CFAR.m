@@ -43,15 +43,11 @@ r_t = zeros(1,length(t));
 td = zeros(1,length(t));
 
 %% 动目标信号生成
-
 for i=1:length(t)
-    
     r_t(i) = r0 + v0*t(i); % 距离更新
     td(i) = 2*r_t(i)/c;    % 延迟时间
-    
     Tx(i) = cos(2*pi*(fc*t(i) + (slope*t(i)^2)/2)); % 发射信号 实数信号
     Rx(i) = cos(2*pi*(fc*(t(i)-td(i)) + (slope*(t(i)-td(i))^2)/2)); %接收信号 实数信号
-    
     if i<=1024
          freq(i)=fc+slope*i; %发射信号时频图 只取第一个chirp
          freq_echo(i)=fc+slope*i;%回波信号频谱延迟

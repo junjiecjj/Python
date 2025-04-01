@@ -45,13 +45,13 @@ r0 = r0 + v0 * t
 
 #Rx波函数参数
 td = 2*r0/c
-tx = t
+# tx = t
 freqRx = fc + slope*t
 Rx = np.cos(2*np.pi*(fc*(t-td) + (slope*(t-td)*(t-td))/2)) #接受波形函数
 
 #IF信号函数参数
-IF_angle_freq = fc*t+(slope*t*t)/2 - ((fc*(t-td) + (slope*(t-td)*(t-td))/2))
-freqIF = slope*td
+# IF_angle_freq = fc*t+(slope*t*t)/2 - ((fc*(t-td) + (slope*(t-td)*(t-td))/2))
+# freqIF = slope*td
 IFx = np.cos(-(2*np.pi*(fc*(t-td) + (slope*(t-td)*(t-td))/2))+(2*np.pi*angle_freq))
 
 #Range FFT
