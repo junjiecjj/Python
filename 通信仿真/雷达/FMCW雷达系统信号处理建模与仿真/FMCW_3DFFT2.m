@@ -1,4 +1,6 @@
 % https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485771&idx=1&sn=8e269280b663226160227aec22806c3e&chksm=c11f04def6688dc8e20c2e92bed6bc4547bf107f87b77bfff29f2c66434fdb5702333184ee1d&scene=178&cur_album_id=2442863581802381317#rd
+% 雷达信号处理之FMCW 3D-FFT原理（附带MATLAB仿真程序）
+
 clear all;close all;clc;
 %% 雷达参数（使用mmWave Studio默认参数）
 c=3.0e8;  

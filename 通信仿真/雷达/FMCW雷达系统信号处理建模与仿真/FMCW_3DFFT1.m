@@ -1,6 +1,6 @@
 clear all;close all;clc;
 % https://blog.csdn.net/qq_35605018/article/details/108816709
-
+% [解疑][TI]TI毫米波雷达系列（三）：调频连续波雷达回波信号3DFFT处理原理（测距、测速、测角
 %% 雷达参数（使用mmWave Studio默认参数）
 c=3.0e8;  
 B=768e6;       %调频带宽

@@ -81,7 +81,6 @@ tar2_loc(:,2) = r2(2) + v2_y*t;
 % end
 
 %% TX
-
 delays_tar1 = cell(numTX,numRX);
 delays_tar2 = cell(numTX,numRX);
 r1_at_t = cell(numTX,numRX);
@@ -117,7 +116,6 @@ fd1 = 2*v1_radial*fc/c; % doppler freq
 fd2 = 2*v2_radial*fc/c;
 f_if1 = fr1 + fd1; % beat or IF freq
 f_if2 = fr2 + fd2;
-
 
 % mixed1 = cell(numTX,numRX);
 % mixed2 = cell(numTX,numRX);

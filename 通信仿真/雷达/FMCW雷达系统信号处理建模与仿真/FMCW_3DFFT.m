@@ -1,4 +1,6 @@
 % https://blog.csdn.net/nuaahz/article/details/90719605
+% 回波3DFFT处理（测距、测速、测角）
+
 clear all;close all;clc;
 %% 雷达参数（使用mmWave Studio默认参数）
 c=3.0e8;  
