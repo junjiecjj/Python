@@ -12,7 +12,7 @@ clc;
 maxR = 200;           % 雷达最大探测目标的距离
 rangeRes = 1;         % 雷达的距离分率
 maxV = 70;            % 雷达最大检测目标的速度
-fc= 77e9;             % 雷达工作频率 载频
+fc = 77e9;             % 雷达工作频率 载频
 c = 3e8;              % 光速
 
 %% 用户自定义目标参数
@@ -22,25 +22,25 @@ v0 = 20; % 目标速度设置 (min =-70m/s, max=70m/s)
 %% FMCW波形参数设置
 B = c / (2*rangeRes);       % 发射信号带宽 (y-axis)  B = 150MHz
 Tchirp = 5.5 * 2 * maxR/c;  % 扫频时间 (x-axis), 5.5= sweep time should be at least 5 o 6 times the round trip time
-slope = B / Tchirp;         %调频斜率
-endle_time=6.3e-6;          %空闲时间
-f_IFmax= (slope*2*maxR)/c ; %最高中频频率
-f_IF=(slope*2*r0)/c ;       %当前中频频率
+slope = B / Tchirp;         % 调频斜率
+endle_time = 6.3e-6;        % 空闲时间
+f_IFmax = (slope*2*maxR)/c ;  % 最高中频频率
+f_IF = (slope*2*r0)/c ;       % 当前中频频率
 
-Nd=128;                          %chirp数量 
-Nr=1024;                        %ADC采样点数
-vres=(c/fc)/(2*Nd*(Tchirp+endle_time));%速度分辨率
-% Nr=1024*256;                %和频信号点数设置
-Fs=Nr/Tchirp;                 %模拟信号采样频率
+Nd = 128;                          % chirp数量 
+Nr = 1024;                         % ADC采样点数
+vres = (c/fc)/(2*Nd*(Tchirp+endle_time));% 速度分辨率
+% Nr=1024*256;                  % 和频信号点数设置
+Fs = Nr/Tchirp;                 % 模拟信号采样频率
 
-t=linspace(0,Nd*Tchirp,Nr*Nd); %发射信号和接收信号的采样时间，在MATLAB中的模拟信号是通过数字信号无限采样生成的。
+t = linspace(0, Nd*Tchirp, Nd*Nr); % 发射信号和接收信号的采样时间，在MATLAB中的模拟信号是通过数字信号无限采样生成的。
 
-Tx=zeros(1,length(t)); %发射信号
-Rx=zeros(1,length(t)); %接收信号
-Mix = zeros(1,length(t)); %差频、差拍、拍频、中频信号
+Tx = zeros(1,length(t));  % 发射信号
+Rx = zeros(1,length(t));  % 接收信号
+Mix = zeros(1,length(t)); % 差频、差拍、拍频、中频信号
 
-r_t=zeros(1,length(t));
-td=zeros(1,length(t));
+r_t = zeros(1,length(t));
+td = zeros(1,length(t));
 
 %% 动目标信号生成
 
