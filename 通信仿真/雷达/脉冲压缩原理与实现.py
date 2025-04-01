@@ -169,11 +169,113 @@ plt.close()
 #%% 多目标回波信号的匹配滤波输出(含源码)
 # https://mp.weixin.qq.com/s?__biz=MzAwMDE1ODE5NA==&mid=2652542571&idx=1&sn=0e0eb494ac7ee19d18227a5e96c2b27e&chksm=80065fae159d3dd84e1d9c3a866f126b4b306ec97b1a427b7ff664c0c311286533a276ab7193&mpshare=1&scene=1&srcid=0329Q8dj1B90QMlepVAj2Um9&sharer_shareinfo=38d19dc84b14ff1c2d3b069947b97c9c&sharer_shareinfo_first=38d19dc84b14ff1c2d3b069947b97c9c&exportkey=n_ChQIAhIQFCYeQ%2B6%2BTwh8yNrYRb5RTBKfAgIE97dBBAEAAAAAAFd1FUcF70gAAAAOpnltbLcz9gKNyK89dVj0FDSmEnzfw8MsNY2waUVVqmm5UxZzyDzF5tbZS7E1FJ8ks%2FFLirUTE1wQ2Xr5RMr0LSsVrqypI%2F2aqly%2Fl4uofOZAPvQQjCb4t1wr1bgr1iGp0%2Fja6EufHwe6%2BOtX8Muca1J8F%2F1mtxqFxdDnfAIGnTm7M%2BC2BumNQg1gfrdTl6iuQghRu9X1fqpoRIHk%2BmYl7dtIDNp40mke%2FmuiC%2Fr9RUITAQQShNsr%2FvVz5QleWdVWLSST1uCtkvEuYdurrGkLJZKHLp9gZyOW95cPiUp8bNB0gtT7SOTvU9UrH8Eedr8sQLQBsqwtiKAVKJjgqUj6RjiH3yJWarkT&acctmode=0&pass_ticket=fh8TkWVQ2FSWTxDQvzOQRMqDWhGDthA7I9lYcXveqOdL%2Bq7ha%2FaWBw%2Fse4F%2BIMDs&wx_header=0#rd
 
+##### 1. 参数设置
+T = 20e-6;                                   # 单个脉冲宽度 (s)
+B = 20e6;                                    #  调频带宽 (Hz)
+fs = 10 * B;                                 #  采样率，奈奎斯特采样，取为 2B
+N_pulse = 5;                                 #  脉冲数
+DutyCycle = 0.1;                             #  占空比 (10%)
+PRI = T / DutyCycle;                         #  脉冲重复间隔 (s)
+N_total = int(np.round(PRI * fs * N_pulse)); #  总采样点数
+t = np.arange(N_total) / fs; #  总时间序列
+
+##### 2. 生成单个 LFM 脉冲信号
+alpha = B / T;        #  调频斜率
+samples_pulse = int(np.round(T * fs)) # 单个脉冲的采样点数
+t_pulse = np.arange(samples_pulse) / fs; # 单个脉冲的时间序列
+s_pulse = np.exp(1j * np.pi * alpha * t_pulse**2); # 单个脉冲信号
+
+##### 3. 生成脉冲列
+s_tx = np.zeros( N_total);
+samples_gap = np.round(PRI * fs) - samples_pulse; #  脉冲间隔的采样点数
+
+if samples_gap < 0:
+    print('占空比过高，导致脉冲间隔为负。请调整占空比或脉冲宽度。');
+
+for n in range(N_pulse):
+    start_idx = n * (samples_pulse + samples_gap)
+    end_idx = start_idx + samples_pulse ;
+    if end_idx <= N_total:
+        s_tx[int(start_idx):int(end_idx)] = s_pulse;
+    else:
+        print(f'脉冲 {n+1} 超出总采样点数范围，未完全生成。')
 
 
+# 可视化发射脉冲列
+fig, axs = plt.subplots(1, 1, figsize = (6, 5), constrained_layout = True)
+
+axs.plot(t*1e6, np.real(s_tx))
+axs.set_title("发射 LFM 脉冲列（实部）")
+axs.set_xlabel("时间 (µs)")
+axs.set_ylabel("幅度 ")
+
+plt.show()
+plt.close()
 
 
+##### 4. 模拟多个目标的回波
+#定义多个目标，每个目标有时延 Tau 和衰减系数 A
+targets = [
+        {'Tau':5e-6, 'A':1.0},
+        {'Tau':15e-6, 'A':0.8},
+        {'Tau':25e-6, 'A':0.6},
+        ]
 
+rcv_sig = np.zeros(N_total);
+
+for k in range(len(targets)):
+    Tau = targets[k]['Tau']
+    A = targets[k]['A']
+    delay_samples = int(np.round(Tau * fs))
+
+    if delay_samples >= N_total:
+            print(f'目标 {k} 的时延超过总信号长度，忽略该目标。' )
+    # 将发射信号延时后叠加到接收信号中
+    rcv_sig[delay_samples:] = rcv_sig[delay_samples:] + A * s_tx[0:N_total - delay_samples]
+
+# 添加噪声（可选）
+SNR_dB = 20   #  信噪比
+signal_power = np.mean(np.abs(rcv_sig)**2)
+noise_power = signal_power / (10**(SNR_dB/10))
+noise = np.sqrt(noise_power/2) * (np.random.randn( N_total) + 1j*np.random.randn( N_total))
+rcv_sig_noisy = rcv_sig + noise
+
+# 可视化发射脉冲列
+fig, axs = plt.subplots(1, 1, figsize = (6, 5), constrained_layout = True)
+
+axs.plot(t*1e6, np.abs(rcv_sig_noisy), c = 'r')
+axs.plot(t*1e6, np.real(rcv_sig_noisy), c = 'b')
+axs.set_title("接收回波幅度（含噪声）")
+axs.set_xlabel("时间 (µs)")
+axs.set_ylabel("幅度 ")
+
+plt.show()
+plt.close()
+
+
+###### 5. 匹配滤波器
+h = np.conjugate(s_pulse[::-1])
+
+#### 6. 快速卷积实现匹配滤波
+len_fft = 2**int(np.ceil(np.log2(len(rcv_sig_noisy) + len(h) - 1)))
+S_fft = scipy.fft.fft(rcv_sig_noisy, len_fft);
+H_fft = scipy.fft.fft(h, len_fft);
+y_fft = S_fft * H_fft;
+mf_output = scipy.fft.ifft(y_fft);
+
+# 截取有效长度
+mf_output = mf_output[0:len(rcv_sig_noisy)]
+
+# 7. 可视化匹配滤波输出
+fig, axs = plt.subplots(1, 1, figsize = (6, 5), constrained_layout = True)
+
+axs.plot(t*1e6, 20 * np.log10(np.abs(mf_output)), c = 'b')
+axs.set_title("匹配滤波输出幅度")
+axs.set_xlabel("时间 (µs)")
+axs.set_ylabel("幅度 ")
+axs.set_xlim([0, 50])
+plt.show()
+plt.close()
 
 
 #%% 三种不同类型信号的脉冲压缩（一）--------线性调频脉冲信号的压缩处理
@@ -244,7 +346,6 @@ plt.close()
 
 
 #%%
-
 def xcorr(x, y, normed = True, detrend = True, maxlags = 10):
     # Cross correlation of two signals of equal length
     # Returns the coefficients when normed = True
@@ -276,10 +377,10 @@ def xcorr(x, y, normed = True, detrend = True, maxlags = 10):
     c = c[Nx - 1 - maxlags : Nx + maxlags]
     return c, lags
 
-nscat = 2;            # 接收窗内的点散射体数
-rrec = 50;            # 接收窗的大小m
-taup = 10e-6;         # 未压缩的脉冲宽度s
-b = 50.0e6;           # 信号带宽Hz
+nscat = 2             # 接收窗内的点散射体数
+rrec = 50             # 接收窗的大小m
+taup = 10e-6          # 未压缩的脉冲宽度s
+b = 50.0e6            # 信号带宽Hz
 scat_range = np.array([15, 25])        # 散射体的相对距离矢量（在接收窗内）
 scat_rcs = np.array([1, 2])            # 散射体的RCS
 winid = 0                     # 窗函数，0表示无窗函数
@@ -290,9 +391,9 @@ c = 3.0e8;                    # 光速
 #  特征并避免信息的丢失，采样点数应该足够多，以确保在时间域内有足够的采样点来表示信号的特征。
 #  一般而言，采样点数应该大于等于时间带宽积，以确保恢复出精确的信号特征。
 n = math.trunc(5 * time_B_product)   # 乘以5的目的是为了提供一定荣誉，来防止信号特征在时间域上的模糊化
-x = np.zeros((nscat, n))
-y = np.zeros(n)
-replica = np.zeros(n)
+x = np.zeros((nscat, n), dtype = complex)
+y = np.zeros(n, dtype = complex)
+replica = np.zeros(n, dtype = complex)
 
 t = np.linspace(-taup/2, taup/2, n);
 replica = np.exp(1j * np.pi * (b/taup) * t**2);
@@ -305,9 +406,9 @@ freq = np.linspace(-freqlimit, freqlimit, n);
 for j in range(nscat):
     Range = scat_range[j]
     x[j,:] = scat_rcs[j] * np.exp(1j * np.pi * (b/taup) * (t + (2*Range/c))**2)   #  回波信号
-    y = x[j,:]  + y     #  回波信号相加
+    y = x[j,:] + y     #  回波信号相加
 
-out, _ = xcorr(replica, y)                # 计算发射信号和回波信号的相关性
+out, _ = xcorr(replica, y, maxlags = replica.size-1)                # 计算发射信号和回波信号的相关性
 out = out / n                             # 归一化
 s = taup * c / 2                          # 计算脉冲宽度taup对应的距离步长s
 Npoints = int(np.ceil(rrec * n /s))       # LFM 的距离步长为 s 对应 n 个点，则 rrec 对应的点数
@@ -331,7 +432,7 @@ axs[2].set_title("脉冲压缩结果（加窗）")
 axs[2].set_xlabel("Relative delay / s")
 axs[2].set_ylabel("未进行脉压")
 
-axs[3].plot(dist, np.abs(out[n:n+Npoints-1]))
+axs[3].plot(dist, np.abs(out[n-1 : n+Npoints-1]))
 axs[3].set_title("Range/m")
 axs[3].set_xlabel("目标位置/m")
 axs[3].set_ylabel("脉压输出")
@@ -340,16 +441,7 @@ plt.show()
 plt.close()
 
 
-
-
-
-
 #%% https://mp.weixin.qq.com/s?__biz=MzUxNTY5NzYzMA==&mid=2247553394&idx=1&sn=85255267d109644bbd54a80a8d161d98&chksm=f82261285e85b08e2ed81badfe157aed88a7c5fa599ad64148d3fe4ddfe2e1cdb2b95c395778&mpshare=1&scene=1&srcid=0329S589unC9aTqoMGAP80Ip&sharer_shareinfo=1239f9b97eb0d5376843535656576bc0&sharer_shareinfo_first=1239f9b97eb0d5376843535656576bc0&exportkey=n_ChQIAhIQrXuc3vlmReLg2VrWk3pxgxKfAgIE97dBBAEAAAAAAH%2FJCqibM60AAAAOpnltbLcz9gKNyK89dVj0qU8QDSNbqKY3HMOHwcWHRbw3xUWZ1kd2zoydLPbQBKZRVcpqSq8JQrP14GYQd53PJjdAvDePUFL6Lj3FcUTrOk39woXEQX%2FX8iLqPvs7a54T2BoA79vTgvhnfkKX9FqmBIUm8hNdQPAcqNfAWcwaObXb4bX4gp9RyMEBbuO2cKCGEzoAL5WvBC0n3EVnE4isF7%2B2O3jEOCToSjCZaEO%2BAyGrQM3QPEwQDn%2BXhkLkqOIs1Y9A0QHvcMykYwhW2A7xFWrnc4IOvCqsZclNnKGsld%2BPEhTp8AKKQtM574RxLhfAdBVNVhUX%2BSel%2F5pezmlpgWSV%2FDm1zJ45&acctmode=0&pass_ticket=juUJ8JHuA70tTcAQyaFf2ZDKkTnOdyVFeAMOFBjosljVKpPPqm9P1olPjK8m7M%2Bg&wx_header=0#rd
-
-
-
-
-
 
 
 
