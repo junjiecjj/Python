@@ -42,8 +42,8 @@ X = X/N_smaple               # 将频域序列 X 除以序列的长度 N
 
 # 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
 if FFTN%2 == 0:
-     X_hat = X[0 : int(FFTN/2)+1]                 # 提取 X 里正频率的部分,N为偶数
-     X_hat[1 : int(FFTN/2)] = 2*X_hat[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
+     X_hat = X[0 : int(FFTN/2)+1]                        # 提取 X 里正频率的部分, N为偶数
+     X_hat[1 : int(FFTN/2)] = 2*X_hat[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率, N为偶数
 
 # 计算频域序列 Y 的幅值和相角
 AX = abs(X_hat)                        # 计算频域序列 Y 的幅值
