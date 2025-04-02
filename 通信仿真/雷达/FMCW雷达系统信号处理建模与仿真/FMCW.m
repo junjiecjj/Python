@@ -48,7 +48,7 @@ subplot(2, 2, [2, 4]); plot(t(1:Ns), ft(1:Ns), 'linewidth', 1.2); hold on;
 plot(t(1:Ns), fr(1:Ns)); hold off; axis('tight'); ylim([0, max(fr(1:Ns))]);
 xlabel('时间'); ylabel('频率'); legend('发射信号频率', '回波信号频率'); set(gca, 'fontsize', 12);
 linkaxes([sp1, sp3], 'x'); 
-figure(2); clf;
+figure(2); 
 sp11 = subplot(3, 1, 1); plot(t(1:Ns), Mix(1:Ns), 'linewidth', 1.2); axis('tight');
 xlabel('时间'); ylabel('幅值'); title('混频信号'); set(gca, 'fontsize', 12);
 sp22 = subplot(3, 1, 2); plot(t(1:Ns), Mix_filtered(1:Ns), 'linewidth', 1.2); axis('tight'); 
@@ -106,7 +106,7 @@ x = (0 : Nfft_d - 1) / Nfft_d * Ns * d_res;  % RDM横轴转换为距离
 y = linspace(-v_max, v_max, Nfft_v);  % RDM横轴转换为速度
 FFT_2D = abs(fftshift(fft2(Smix_frame, Nfft_v, Nfft_d), 1)); 
 
-figure(1); clf;
+figure(3); 
 subplot(1, 2, 1); mesh(x(1:Nfft_d/2), y, FFT_2D(:, 1:Nfft_d/2)); axis('tight'); set(gca, 'fontsize', 12);
 xlabel('距离（m）'); ylabel('速度（m/s）'); title('距离-多普勒2D-FFT（fft2）');
 subplot(1, 2, 2); mesh(x(1:Nfft_d/2), y, FFT_2D(:, 1:Nfft_d/2)); axis('tight'); set(gca, 'fontsize', 12); view(2);
