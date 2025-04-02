@@ -35,6 +35,7 @@ plt.rcParams['lines.markersize'] = 6 # 标记大小
 plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
+
 def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
     if FFTN == None:
         FFTN = 2**int(np.ceil(np.log2(x.size)))
