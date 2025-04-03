@@ -64,8 +64,9 @@ lambda =  c / fc;  % 波长
 B = 4e9;  % 扫频带宽（4GHz）
 Tchrip = 20e-6;  % 扫频时宽（20us）
 Nchrip = 256;  % 一个frame的chrip数量
+
 Ns = 1024;             % 单个chrip周期内的采样点数
-fs = Ns / Tchrip;  % 采样率
+fs = Nchrip / Tchrip;  % 采样率
 Tframe = Tchrip * Nchrip;  % 一个frame持续时长
 S = B / Tchrip;  % 扫频斜率
 Rx_num = 1;  % 接收天线数量

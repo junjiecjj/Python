@@ -36,16 +36,15 @@ velRes = c/2/f0/T/NumDopplerFFT  # Velocity Resolution
 maxRange = rangeRes * NumRangeFFT  # Max Range
 maxVel = velRes * NumDopplerFFT/2  # Max Velocity
 tarR = [50, 90]  # Target Range
-tarV = [3, 20]  # Target Velocity
+tarV = [3, -20]  # Target Velocity
 
 # generate receive signal
-
-S1 = np.zeros((L, N), dtype=complex)
+S1 = np.zeros((L, N), dtype = complex)
 for l in range(0, L):
     for n in range(0, N):
         S1[l][n] = np.exp(1j * 2 * np.pi * (((2 * B * (tarR[0] + tarV[0] * T * l))/(c * T) + (2 * f0 * tarV[0])/c) * (T/N) * n + (2 * f0 * (tarR[0] + tarV[0] * T * l))/c))
 
-S2 = np.zeros((L, N), dtype=complex)
+S2 = np.zeros((L, N), dtype  =complex)
 for l in range(0, L):
     for n in range(0, N):
         S2[l][n] = np.exp(1j * 2 * np.pi * (((2 * B * (tarR[1] + tarV[1] * T * l))/(c * T) + (2 * f0 * tarV[1])/c) * (T/N) * n + (2 * f0 * (tarR[1] + tarV[1] * T * l))/c))
@@ -53,26 +52,22 @@ for l in range(0, L):
 sigReceive = S1 + S2
 
 # range win processing
-
-sigRangeWin = np.zeros((L, N), dtype=complex)
+sigRangeWin = np.zeros((L, N), dtype = complex)
 for l in range(0, L):
     sigRangeWin[l] = np.multiply(sigReceive[l], np.hamming(N).T)
 
 # range fft processing
-
-sigRangeFFT = np.zeros((L, N), dtype=complex)
+sigRangeFFT = np.zeros((L, N), dtype = complex)
 for l in range(0, L):
     sigRangeFFT[l] = np.fft.fft(sigRangeWin[l], NumRangeFFT)
 
 # doppler win processing
-
-sigDopplerWin = np.zeros((L, N), dtype=complex)
+sigDopplerWin = np.zeros((L, N), dtype = complex)
 for n in range(0, N):
     sigDopplerWin[:, n] = np.multiply(sigRangeFFT[:, n], np.hamming(L).T)
 
 # doppler fft processing
-
-sigDopplerFFT = np.zeros((L, N), dtype=complex)
+sigDopplerFFT = np.zeros((L, N), dtype = complex)
 for n in range(0, N):
     sigDopplerFFT[:, n] = np.fft.fftshift(np.fft.fft(sigDopplerWin[:, n], NumDopplerFFT))
 
@@ -87,20 +82,14 @@ y = np.arange((-NumDopplerFFT/2)*velRes, (NumDopplerFFT/2)*velRes, velRes)
 # print(len(y))
 X, Y = np.meshgrid(x, y)
 Z = np.abs(sigDopplerFFT)
-ax.plot_surface(X, Y, Z,
-                rstride = 1,  # rstride（row）指定行的跨度
-                cstride = 1,  # cstride(column)指定列的跨度
-                cmap = plt.get_cmap('jet'))  # 设置颜色映射
-
+ax.plot_surface(X, Y, Z, rstride = 1, cstride = 1, cmap = plt.get_cmap('jet'))  # 设置颜色映射
 ax.invert_xaxis()  #x轴反向
 
 ax.set_proj_type('ortho')
-
 ax.set_xlabel('Range', fontsize = 18)
 ax.set_ylabel('Velocity', fontsize = 18)
 ax.set_zlabel('DopplerFFT', fontsize = 18)
-
-ax.view_init(azim=-120, elev=30)
+ax.view_init(azim = -120, elev = 30)
 
 plt.show()
 plt.close()

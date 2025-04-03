@@ -17,23 +17,23 @@ c = 3e8;              % 光速
 
 %% 用户自定义目标参数
 r0 = 90; % 目标距离设置 (max = 200m)
-v0 = 20; % 目标速度设置 (min = -70m/s, max = 70m/s)
+v0 = 20; % 目标速度设置 (min =-70m/s, max=70m/s)
 
 %% FMCW波形参数设置
-B = c / (2*rangeRes);         % 发射信号带宽 (y-axis)  B = 150MHz;
-Tchirp = 5.5 * 2 * maxR/c;    % 扫频时间 (x-axis), 5.5 = sweep time should be at least 5 o 6 times the round trip time;
-slope = B / Tchirp;           % 调频斜率;
-endle_time = 6.3e-6;          % 空闲时间;
-f_IFmax = (slope*2*maxR)/c ;  % 最高中频频率;
-f_IF = (slope*2*r0)/c ;       % 当前中频频率;
+B = c / (2*rangeRes);         % 发射信号带宽 (y-axis)  B = 150MHz
+Tchirp = 5.5 * 2 * maxR/c;    % 扫频时间 (x-axis), 5.5= sweep time should be at least 5 o 6 times the round trip time
+slope = B / Tchirp;           % 调频斜率
+endle_time = 6.3e-6;          % 空闲时间
+f_IFmax = (slope*2*maxR)/c ;  % 最高中频频率
+f_IF = (slope*2*r0)/c ;       % 当前中频频率
 
-Nchirp = 128;                          % chirp数量 
+Nd = 128;                          % chirp数量 
 Nr = 1024;                         % ADC采样点数
-vres = (c/fc)/(2*Nchirp*(Tchirp+endle_time));% 速度分辨率
+vres = (c/fc)/(2*Nd*(Tchirp+endle_time));% 速度分辨率
 % Nr=1024*256;                  % 和频信号点数设置
 Fs = Nr/Tchirp;                 % 模拟信号采样频率
 
-t = linspace(0, Nchirp*Tchirp, Nchirp*Nr); % 发射信号和接收信号的采样时间，在MATLAB中的模拟信号是通过数字信号无限采样生成的。
+t = linspace(0, Nd*Tchirp, Nd*Nr); % 发射信号和接收信号的采样时间，在MATLAB中的模拟信号是通过数字信号无限采样生成的。
 
 Tx = zeros(1,length(t));  % 发射信号
 Rx = zeros(1,length(t));  % 接收信号
@@ -107,8 +107,9 @@ title('中频信号频谱');
 % ylabel('幅度');
 % title('中频信号低通滤波器');
 
-%reshape the vector into Nr*Nchirp array. Nr and Nchirp here would also define the size of Range and Doppler FFT respectively.
-signal = reshape(Mix, Nr, Nchirp);
+%reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
+%Range and Doppler FFT respectively.
+signal = reshape(Mix, Nr, Nd);
 
 figure;
 mesh(signal);
@@ -136,20 +137,21 @@ zlabel('幅度')
 title('距离维FTF结果')
 
 %% 速度维FFT
-Mix=reshape(Mix,[Nr,Nchirp]);
-sig_fft2 = fft2(Mix,Nr,Nchirp);
+Mix=reshape(Mix,[Nr,Nd]);
+sig_fft2 = fft2(Mix,Nr,Nd);
 
-sig_fft2 = sig_fft2(1:Nr/2,1:Nchirp);
+sig_fft2 = sig_fft2(1:Nr/2,1:Nd);
 sig_fft2 = fftshift (sig_fft2);
 RDM = abs(sig_fft2);
 RDM = 10*log10(RDM) ;
-doppler_axis = linspace(-100,100,Nchirp);
+doppler_axis = linspace(-100,100,Nd);
 range_axis = linspace(-200,200,Nr/2)*((Nr/2)/400);
 
 figure;
 mesh(doppler_axis,range_axis,RDM);
 xlabel('多普勒通道'); ylabel('距离通道'); zlabel('幅度（dB）');
 title('速度维FFT 距离多普勒谱');
+
 
 %% CFAR检测算法
 %通过完整的距离多普勒图滑动窗口
@@ -168,7 +170,7 @@ r_margin = 2*(Tr+Gr);
 d_margin = 2*(Td+Gd);
 
 r_grid_length = Nr/2-d_margin;
-d_grid_length = Nchirp-r_margin;
+d_grid_length = Nd-r_margin;
 
 noise_level = zeros(r_grid_length,d_grid_length);
 
@@ -179,10 +181,13 @@ gridSize = (2*Tr+2*Gr+1)*(2*Td+2*Gd+1);
 numGcells = (2*Gr+1)*(2*Gd+1);
 numTcells = gridSize - numGcells; %参考单元
 
-% 上述过程将生成一个阈值块，该块小于距离多普勒图，因为 CUT 不能位于矩阵的边缘。因此，很少有单元不会被阈值化。 要保持MAP大小相同，请将这些值设置为 0。
+% 上述过程将生成一个阈值块，该块小于距离多普勒图，因为 CUT 不能位于矩阵的边缘。 
+%因此，很少有单元不会被阈值化。 要保持MAP大小相同，请将这些值设置为 0。
 sig_CFAR = zeros(size(RDM));
 
-% 此方法计算量大，高于常规的在速度维做一次CFAR 然后在距离维再做一次CFAR。另外，此方法对于距离-多普勒谱矩阵的边界处存在未检测，因此对于处于边界的目标效果不友好，可以采用补零法，以及旋绕法检测边界目标
+% 此方法计算量大，高于常规的在速度维做一次CFAR 然后在距离维再做一次CFAR。 
+%另外，此方法对于距离-多普勒谱矩阵的边界处存在未检测，因此对于处于边界的目标效果不友好，
+%可以采用补零法，以及旋绕法检测边界目标
 for i = 1:r_grid_length      % 距离边界
     for j = 1:d_grid_length  % 多普勒边界
         % 使用 db2pow 将值从对数转换为线性
