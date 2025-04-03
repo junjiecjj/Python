@@ -55,6 +55,9 @@ import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 
+from scipy.signal import find_peaks
+from mpl_toolkits.mplot3d import Axes3D
+
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.family"] = "SimSun"
@@ -75,6 +78,60 @@ plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
+#%% 干货：FMCW雷达系统信号处理建模与仿真（含MATLAB代码）:
+# https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247484183&idx=1&sn=fbf605f11d510343c5beda9bdc5c32a4&chksm=c11f0e82f66887941da61052bbfeee2fa37227e7a94d8ebb23fc1e9cc88a357f95ff4a10d012&scene=21#wechat_redirect
+
+def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
+    if FFTN == None:
+        FFTN = 2**int(np.ceil(np.log2(x.size)))
+    X = scipy.fftpack.fft(x, n = FFTN)
+    # 消除相位混乱
+    threshold = np.max(np.abs(X)) / 10000
+    X[np.abs(X) < threshold] = 0
+    # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+    X = X/x.size               # 将频域序列 X 除以序列的长度 N
+    if type == 'single':
+        Y = X[0 : int(FFTN/2)+1].copy()       # 提取 X 里正频率的部分,N为偶数
+        Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
+        f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
+        # 计算频域序列 Y 的幅值和相角
+        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        R = np.real(Y)                    # 计算频域序列 Y 的实部
+        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+    elif type == 'double':
+        f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
+        Y = scipy.fftpack.fftshift(X, )
+        # 计算频域序列 Y 的幅值和相角
+        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        R = np.real(Y)                    # 计算频域序列 Y 的实部
+        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+    return f, Y, A, Pha, R, I
+
+# Radar parameters setting
+maxR = 200   # 雷达最大探测目标的距离
+rangeRes = 1 # 雷达的距离分率
+maxV = 70    # 雷达最大检测目标的速度
+fc = 77e9    # 雷达工作频率 载频
+c = 3e8
+R0 = 100  # 目标距离
+v0 = 50   # 目标速度
+
+B = c/(2*rangeRes)          # 150MHz
+Tchirp = 5.5*2*maxR/c       # 扫频时间 (x-axis), 5.5 = sweep time should be at least 5 o 6 times the round trip time
+endle_time = 6.3e-6         # 空闲时间
+slope = B/Tchirp            # 调频斜率
+f_IFmax = (slope*2*maxR)/c  # 最高中频频率
+f_IF = (slope*2*R0)/c       # 当前中频频率
+
+Nchirp = 128                                  # chirp数量
+Ns = 1024                                     # ADC采样点数
+vres = (c/fc)/(2*Nchirp*(Tchirp+endle_time))  # 速度分辨率
+Fs = Ns/Tchirp   # = 1/(t[1] - t[0])          # 模拟信号采样频率
+
+
+
 #%%
 
 
@@ -82,32 +139,6 @@ plt.rcParams['legend.fontsize'] = 22
 
 
 #%%
-import numpy as np
-import matplotlib.pyplot as plt
-
-# ====== 参数设置 ======
-c = 3e8             # 光速 (m/s)
-fc = 77e9           # 载波频率 (Hz)
-B = 300e6           # 带宽 (Hz)
-Tc = 50e-6          # Chirp 时长 (s)
-N_chirps = 64       # 每帧的 Chirp 数
-
-
-
-#%%
-
-
-#%%
-
-
-#%%
-
-
-#%%
-
-
-
-
 
 
 

@@ -13,7 +13,7 @@ https://blog.csdn.net/Simon223/article/details/118758793
 
 # https://blog.csdn.net/u014033218/article/details/97004609
 #
-from   scipy  import   signal
+from scipy import signal
 
 # 1).低通滤波
 # 这里假设采样频率为1000hz,信号本身最大的频率为500hz，要滤除400hz以上频率成分，即截至频率为400hz,则wn=2*400/1000=0.8。Wn=0.8
@@ -114,7 +114,6 @@ plt.show()
 
 #%% https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html#scipy.signal.butter
 from scipy import signal
-
 
 t = np.linspace(0, 1, 1000, False)  # 1 second
 sig = np.sin(2*np.pi*10*t) + np.sin(2*np.pi*20*t)
@@ -303,7 +302,6 @@ axs.grid(True)
 plt.show()
 
 
-
 #%% lfilter
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html#scipy.signal.lfilter
 import numpy as np
@@ -351,9 +349,6 @@ print(y)
 x = array([0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.0])
 y, zf = lfilter(b, a, x, zi=zi*x[0])
 print(y)
-
-
-
 
 #%% scipy.signal.filtfilt
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.filtfilt.html#scipy.signal.filtfilt

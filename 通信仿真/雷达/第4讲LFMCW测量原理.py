@@ -41,7 +41,7 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
         FFTN = 2**int(np.ceil(np.log2(x.size)))
     X = scipy.fftpack.fft(x, n = FFTN)
     # 消除相位混乱
-    threshold = np.max(np.abs(X)) / 10000
+    threshold = np.max(np.abs(X)) / 1000
     X[np.abs(X) < threshold] = 0
     # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
     X = X/x.size               # 将频域序列 X 除以序列的长度 N
@@ -76,16 +76,17 @@ v0 = 10;        # 目标速度设置 (min =-70m/s, max=70m/s)
 
 # 产生信号
 B = c/(2 * rangeRes)       # 150MHz
-Tchirp = 5.5 * 2 * maxR / c #  扫频时间 (x-axis), 5.5 = sweep time should be at least 5 o 6 times the round trip time
+Tchirp =  5.5 * 2 * maxR / c #  扫频时间 (x-axis), 5.5 = sweep time should be at least 5 o 6 times the round trip time
 S = B/Tchirp               # 调频斜率
 phi = 0                    # 初相位
 Nchirp = 128              #  chirp数量
-Ns = 4096                  # ADC采样点数
+Ns = 1024                  # ADC采样点数
 t = np.linspace(0, Nchirp*Tchirp, Nchirp*Ns)   # 发射信号和接收信号的采样时间
 Fs = Ns/Tchirp
 ft = fc * t + S/2 * t**2
 Tx = np.cos(2 * np.pi * ft + phi)       # 发射信号
-tau = Tchirp/6                          # 时延
+D0 = 100                                #
+tau = 2*D0/c                           # 时延
 fr = fc * (t- tau) + S*(t - tau)**2     # 回波信号频率
 Rx = np.cos(2 * np.pi * fr + phi)       # 回波信号
 
@@ -101,20 +102,17 @@ axs.set_ylabel("Amplitude")
 plt.show()
 plt.close()
 
-
 ## 混频经过低通滤波器,方法1
 fpass = 30e5;      #  截止频率 fpass=30MHz
-Fs = 120e6;        #  采样频率 fs=120MHz
+# Fs = 120e6;        #  采样频率 fs=120MHz
 order = 4
 Wn = 2 * fpass / Fs
 [Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
 Mix_filtered = scipy.signal.lfilter(Bb, Ba, Mix[0:Ns]) # 进行滤波
-# Mix_filtered = scipy.signal.filtfilt(Bb, Ba, Mix[0:Ns] )
 
 # ## 混频经过低通滤波器,方法2
 # h = scipy.signal.firwin(int(12),  cutoff = fpass, fs = Fs, pass_zero = "lowpass")
 # Mix_filtered = scipy.signal.lfilter(h, 1, Mix[0:Ns]) # 进行滤波
-
 
 ## 计算差频
 N_fft = 1024
@@ -197,7 +195,7 @@ sigma = [0.1, 0.2]   # 高斯白噪声标准差
 # 产生混频信号
 t = np.linspace(0, Tchrip, Ns)
 ft = fc * t + S / 2 * t**2
-St = np.cos(2 * np.pi * ft)          # 发射信号
+St = np.cos( 2 * np.pi * ft)          # 发射信号
 Smix_frame = np.zeros((Nchrip, Ns), dtype = complex)  #
 for chrip in range(Nchrip):
     # d = d0[0] + v0[0] * (t + chrip * Tchrip)

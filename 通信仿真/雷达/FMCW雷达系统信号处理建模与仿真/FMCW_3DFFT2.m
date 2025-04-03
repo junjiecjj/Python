@@ -18,7 +18,7 @@ n_chirps=128;  % 每帧脉冲数
 M=128;         % 多普勒向FFT点数
 n_RX=4;        % RX天线通道数
 Q = 180;       % 角度FFT
-xx = 3;        % 第xx帧
+xx = 13;        % 第xx帧
 %% 读取回波数据
 fname='/home/jack/公共的/RadarData/adc_data.bin';
 fid = fopen(fname,'rb');    

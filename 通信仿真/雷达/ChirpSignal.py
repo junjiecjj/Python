@@ -144,6 +144,84 @@ plt.show()
 plt.close('all')
 
 
+#%% 复指数 线性调频信号的FFT和PSD仿真
+
+f0 = 10e6
+T = 10e-6
+B = 25e6
+K = B/T
+fs = 2*(B+f0)
+Ts = 1/fs
+N = int(T/Ts)
+# t = np.linspace(-T/2, T/2, N)
+t = np.arange(-T/2, T/2, Ts )
+x_lin = np.exp(1j * 2*np.pi * (f0*t + K/2 * t**2))
+
+Nfft = N
+df = fs/Nfft
+X = scipy.fftpack.fft(x_lin, n = Nfft)
+X[np.abs(X) < 1e-8] = 0
+# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+X = X/Nfft               # 将频域序列 X 除以序列的长度 N
+
+# 半谱图
+f = np.arange(0, int(Nfft/2)+1)*df
+Y = X[0 : int(Nfft/2)+1].copy()                 # 提取 X 里正频率的部分,N为偶数
+Y[1 : int(Nfft/2)] = 2*Y[1 : int(Nfft/2)].copy()
+A = np.abs(Y)
+# 单边带-功率谱密度
+X1 = X[0 : int(Nfft/2)+1]
+Pxx = X1*X1.conjugate()/(Nfft**2)
+
+# 全谱图
+f1 = np.arange(-int(Nfft/2), int(Nfft/2))*df
+Y1 = scipy.fftpack.fftshift(X, )
+A1 = np.abs(Y1)
+# 双边带-功率谱密度
+Pxx1 = Y1*Y1.conjugate()/(Nfft**2)
+
+fig, axs = plt.subplots(2, 3, figsize = (18, 8), constrained_layout = True)
+axs[0,0].plot(t, np.real(x_lin))
+axs[0,0].set_title( "线性调频信号")
+axs[0,0].set_xlabel("Time(s)", )
+axs[0,0].set_ylabel(r"Amplitude $")
+
+axs[0,1].plot(f, A)
+axs[0,1].set_title( "单边带FFT")
+axs[0,1].set_xlabel("频率(Hz)", )
+axs[0,1].set_ylabel( "Amplitude ")
+# axs[0,1].set_xlim(0, 100)
+
+axs[0,2].plot(f1, A1)
+axs[0,2].set_title( "双边带FFT")
+axs[0,2].set_xlabel("频率(Hz)", )
+axs[0,2].set_ylabel( "Amplitude ")
+# axs[0,2].set_xlim(-100, 100)
+
+axs[1,0].plot(f1, np.real(Pxx1))
+axs[1,0].set_title( "双边带功率谱密度")
+axs[1,0].set_xlabel("频率(Hz)", )
+axs[1,0].set_ylabel( "PSD dB/Hz")
+# axs[1,0].set_xlim(-50, 50)
+
+axs[1,1].plot(f, np.real(Pxx))
+axs[1,1].set_title( "单边带功率谱密度")
+axs[1,1].set_xlabel("频率(Hz)", )
+axs[1,1].set_ylabel( "PSD dB/Hz")
+# axs[1,1].set_xlim(0, 100)
+
+axs[1,2].plot(f1, np.real(Pxx1))
+axs[1,2].set_title( "双边带功率谱密度")
+axs[1,2].set_xlabel("频率(Hz)", )
+axs[1,2].set_ylabel( "PSD dB/Hz")
+# axs[1,2].set_xlim(-100, 100)
+
+plt.show()
+plt.close('all')
+
+
+
+
 #%%
 ###  1
 c = 3e8  # 光速

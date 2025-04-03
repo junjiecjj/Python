@@ -31,7 +31,7 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
         Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
         f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
         # 计算频域序列 Y 的幅值和相角
-        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
         Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
         R = np.real(Y)                    # 计算频域序列 Y 的实部
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
@@ -39,11 +39,10 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
         f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
         Y = scipy.fftpack.fftshift(X, )
         # 计算频域序列 Y 的幅值和相角
-        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
         Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
         R = np.real(Y)                    # 计算频域序列 Y 的实部
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
-
     return f, Y, A, Pha, R, I
 
 # Radar parameters setting
@@ -63,12 +62,12 @@ f_IFmax = (slope*2*maxR)/c  # 最高中频频率
 f_IF = (slope*2*R0)/c       # 当前中频频率
 
 Nchirp = 128                                  # chirp数量
-Nr = 1024                                     # ADC采样点数
+Ns = 1024                                     # ADC采样点数
 vres = (c/fc)/(2*Nchirp*(Tchirp+endle_time))  # 速度分辨率
-Fs = Nr/Tchirp   # = 1/(t[1] - t[0])          # 模拟信号采样频率
+Fs = Ns/Tchirp   # = 1/(t[1] - t[0])          # 模拟信号采样频率
 
 # Tx波函数参数
-t = np.linspace(0, Nchirp*Tchirp, Nchirp*Nr)   # 发射信号和接收信号的采样时间
+t = np.linspace(0, Nchirp*Tchirp, Nchirp*Ns)   # 发射信号和接收信号的采样时间
 # angle_freq = fc * t +  slope / 2 * t**2        # 角频率
 freqTx = fc + slope*t                          # 频率
 Tx = np.cos(2*np.pi*(fc * t +  slope / 2 * t**2))                # 发射波形函数
@@ -82,7 +81,7 @@ freqRx = fc + slope*t
 Rx = np.cos(2*np.pi*(fc*(t-td) + (slope*(t-td)*(t-td))/2)) # 接受波形函数
 
 Mix = Tx * Rx
-f, _, A, _, _, _  = freqDomainView(Mix[:Nr], Fs, type = 'double')
+f, _, A, _, _, _  = freqDomainView(Mix[:Ns], Fs, type = 'double')
 fig, axs = plt.subplots(1, 1, figsize = (4, 3), constrained_layout = True)
 axs.plot(f, A)
 axs.set_title("Mix Signal FFT")
@@ -102,7 +101,7 @@ IFx = np.cos(2*np.pi*(fc * t +  slope / 2 * t**2) - 2*np.pi*(fc*(t-td) + slope/2
 # [Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
 # IFx = scipy.signal.filtfilt(Bb, Ba, Mix )
 
-f, _, A, _, _, _  = freqDomainView(IFx[:Nr], Fs, type = 'double')
+f, _, A, _, _, _  = freqDomainView(IFx[:Ns], Fs, type = 'double')
 fig, axs = plt.subplots(1, 1, figsize = (4, 3), constrained_layout = True)
 axs.plot(f, A)
 axs.set_title("IF Signal FFT")
@@ -111,45 +110,44 @@ axs.set_ylabel("Amplitude")
 plt.show()
 plt.close()
 
-
 # Range FFT
-doppler = 10*np.log10(np.abs(np.fft.fft(IFx[0:Nr])))
-frequency = np.fft.fftfreq(Nr, 1/Fs)
+doppler = 10*np.log10(np.abs(np.fft.fft(IFx[0:Ns])))
+frequency = np.fft.fftfreq(Ns, 1/Fs)
 Range = frequency*c/(2*slope)  # f_{if} = 2*slope*d/c
-
+# Range = np.arange(Ns) / Ns * Ns * d_res;
 # 结果可视化
 fig, axs = plt.subplots(3, 2, figsize = (12, 12), constrained_layout = True)
 
 # 发射回波信号
-axs[0,0].plot(t[0:Nr], Tx[0:Nr])
+axs[0,0].plot(t[0:Ns], Tx[0:Ns])
 axs[0,0].set_title("Tx Signal")
 axs[0,0].set_xlabel("Time (s)")
 axs[0,0].set_ylabel("Amplitude")
 
 # 接收回波信号
-axs[0,1].plot(t[0:Nr], Rx[0:Nr])
+axs[0,1].plot(t[0:Ns], Rx[0:Ns])
 axs[0,1].set_title("Rx Signal")
 axs[0,1].set_xlabel("Time (s)")
 axs[0,1].set_ylabel("Amplitude")
 
-axs[1,0].plot(t[0:Nr], freqTx[0:Nr], label = "Frequency of Tx signal")
-axs[1,0].plot(t[0:Nr] + td[0:Nr], freqRx[0:Nr], label = "Frequency of Rx signal")
+axs[1,0].plot(t[0:Ns], freqTx[0:Ns], label = "Frequency of Tx signal")
+axs[1,0].plot(t[0:Ns] + td[0:Ns], freqRx[0:Ns], label = "Frequency of Rx signal")
 axs[1,0].set_title("Frequency of Tx/Rx signal")
 axs[1,0].set_xlabel("Time")
 axs[1,0].set_ylabel("Frequency")
 axs[1,0].legend()
 
-axs[1,1].plot(t[0:1024], IFx[0:1024])
+axs[1,1].plot(t[0:Ns], IFx[0:Ns])
 axs[1,1].set_title("IFx Signal")
 axs[1,1].set_xlabel("Time")
 axs[1,1].set_ylabel("Amplitude")
 
-axs[2,0].plot(Range[0:512], doppler[0:512])
+axs[2,0].plot(Range[0:int(Ns/2)], doppler[0:int(Ns/2)])
 axs[2,0].set_title("IF Signal FFT")
 axs[2,0].set_xlabel("Frequency->Distance")
 axs[2,0].set_ylabel("Amplitude")
 
-axs[2,1].specgram(IFx, NFFT = Nr, Fs = Fs)
+axs[2,1].specgram(IFx, NFFT = Ns, Fs = Fs)
 axs[2,1].set_title("Spectogram")
 axs[2,1].set_xlabel("Time")
 axs[2,1].set_ylabel("Frequency")
@@ -163,9 +161,9 @@ plt.close()
 chirpamp = []
 chirpnum = 1
 while(chirpnum <= Nchirp):
-    strat = (chirpnum-1)*Nr
-    end = chirpnum*Nr
-    chirpamp.append(IFx[(chirpnum-1)*Nr + 0])
+    strat = (chirpnum-1)*Ns
+    end = chirpnum*Ns
+    chirpamp.append(IFx[(chirpnum-1)*Ns + 0])
     chirpnum = chirpnum + 1
 # 步骤2：相位差和速度的速度维度 FFT
 doppler1 = 10*np.log10(np.abs(np.fft.fft(chirpamp)))
@@ -173,16 +171,15 @@ FFTfrequency = np.fft.fftfreq(Nchirp, 1/Fs)
 velocity = 5*np.arange(0, Nchirp)/3
 
 # 2D FFT 和速度-距离关系
-mat2D = np.zeros((Nchirp, Nr))
+mat2D = np.zeros((Nchirp, Ns))
 i = 0
 while(i < Nchirp):
-    mat2D[i, :] = IFx[i*Nr : (i+1)*Nr]
+    mat2D[i, :] = IFx[i*Ns : (i+1)*Ns]
     i = i + 1
-# plt.matshow(mat2D)
-# plt.title('Original data')
-#图形绘制，需要修改一下才好看，这里就留个大家自行修改了。
+
+#图形绘制
 Z_fft2 = np.abs(np.fft.fft2(mat2D))
-Data_fft2 = Z_fft2[0:int(Nr/2), 0:int(Nr/2)]
+Data_fft2 = Z_fft2[0:int(Ns/2), 0:int(Ns/2)]
 
 # 结果可视化
 fig, axs = plt.subplots(2, 1, figsize = (6, 8), constrained_layout = True)
@@ -201,8 +198,6 @@ axs[1].set_ylabel("Velocity")
 
 plt.show()
 plt.close()
-
-
 
 #%% Usage of specgram
 # import matplotlib.pyplot as plt
@@ -246,18 +241,14 @@ plt.close()
 #%%
 
 
-
-
-
-
-
-
+#%%
 
 
 
 #%%
 
 
+#%%
 
 
 
