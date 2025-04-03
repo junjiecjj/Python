@@ -115,10 +115,10 @@ rangeRes = 1 # 雷达的距离分率
 maxV = 70    # 雷达最大检测目标的速度
 fc = 77e9    # 雷达工作频率 载频
 c = 3e8
-R0 = 100  # 目标距离
-v0 = 50   # 目标速度
+R0 = 90  # 目标距离
+v0 = 20   # 目标速度
 
-B = c/(2*rangeRes)          # 150MHz
+B = c/(2*rangeRes)          # 发射信号带宽150MHz
 Tchirp = 5.5*2*maxR/c       # 扫频时间 (x-axis), 5.5 = sweep time should be at least 5 o 6 times the round trip time
 endle_time = 6.3e-6         # 空闲时间
 slope = B/Tchirp            # 调频斜率
@@ -129,6 +129,61 @@ Nchirp = 128                                  # chirp数量
 Ns = 1024                                     # ADC采样点数
 vres = (c/fc)/(2*Nchirp*(Tchirp+endle_time))  # 速度分辨率
 Fs = Ns/Tchirp   # = 1/(t[1] - t[0])          # 模拟信号采样频率
+
+# Tx波函数参数
+t = np.linspace(0, Nchirp*Tchirp, Nchirp*Ns)   # 发射信号和接收信号的采样时间
+# angle_freq = fc * t +  slope / 2 * t**2        # 角频率
+# freqTx = fc + slope*t                           # 频率
+
+rt = R0 + v0 * t  # 距离更新
+td = 2*rt/c       # 延迟时间
+Tx = np.cos(2*np.pi*(fc * t +  slope / 2 * t**2))                # 发射信号 实数信号
+Rx = np.cos(2*np.pi*(fc * (t - td) +  slope / 2 * (t - td)**2))                # 接收信号 实数信号
+freqTx = fc + slope*t                           # 频率
+freqRx = fc + slope*t                           # 频率
+
+Mix = Tx * Rx
+
+# 结果可视化
+fig, axs = plt.subplots(3, 2, figsize = (12, 12), constrained_layout = True)
+
+# 发射回波信号
+axs[0,0].plot(t[0:Ns], Tx[0:Ns])
+axs[0,0].set_title("Tx Signal")
+axs[0,0].set_xlabel("Time (s)")
+axs[0,0].set_ylabel("Amplitude")
+
+# 接收回波信号
+axs[0,1].plot(t[0:Ns], Rx[0:Ns])
+axs[0,1].set_title("Rx Signal")
+axs[0,1].set_xlabel("Time (s)")
+axs[0,1].set_ylabel("Amplitude")
+
+axs[1,0].plot(t[0:Ns], freqTx[0:Ns], label = "Frequency of Tx signal")
+axs[1,0].plot(t[0:Ns] + td[0:Ns], freqRx[0:Ns], label = "Frequency of Rx signal")
+axs[1,0].set_title("Frequency of Tx/Rx signal")
+axs[1,0].set_xlabel("Time")
+axs[1,0].set_ylabel("Frequency")
+axs[1,0].legend()
+
+axs[2,0].plot(t[0:Ns], Mix[:Ns])
+axs[2,0].set_title("IFx Signal")
+axs[2,0].set_xlabel("Time")
+axs[2,0].set_ylabel("Amplitude")
+
+f, _, A, _, _, _  = freqDomainView(Mix[:Ns], Fs, type = 'double')
+axs[2,1].plot(f, A)
+axs[2,1].set_title("IFx FFT")
+axs[2,1].set_xlabel("Freq/Hz")
+axs[2,1].set_ylabel("Amplitude")
+
+plt.show()
+plt.close()
+
+Mix_resp = Mix.reshape(Ns, Nchirp)
+
+
+
 
 
 
