@@ -4,6 +4,15 @@
 Created on Sun Apr  6 02:02:28 2025
 
 @author: jack
+
+https://zhuanlan.zhihu.com/p/422798513
+
+https://mp.weixin.qq.com/s?__biz=MzI2NzE1MTU3OQ==&mid=2649214285&idx=1&sn=241742b17b557c433ac7f5010758cd0f&chksm=f2905cf9c5e7d5efc16e84cab389ac24c5561a73d27fb57ca4d0bf72004f19af92b013fbd33b&scene=21#wechat_redirect
+
+https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485771&idx=1&sn=8e269280b663226160227aec22806c3e&chksm=c11f04def6688dc8e20c2e92bed6bc4547bf107f87b77bfff29f2c66434fdb5702333184ee1d&scene=178&cur_album_id=2442863581802381317#rd
+
+https://blog.csdn.net/qq_35605018/article/details/108816709
+
 """
 
 
@@ -23,12 +32,12 @@ plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
 plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
 # plt.rcParams['figure.dpi'] = 300           # 每英寸点数
 plt.rcParams['lines.linestyle'] = '-'
-plt.rcParams['lines.linewidth'] = 2     # 线条宽度
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
 plt.rcParams['lines.color'] = 'blue'
-plt.rcParams['lines.markersize'] = 6 # 标记大小
-# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
-plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
-plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 12
 
 def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
@@ -65,15 +74,15 @@ f0 = 77e9         # Start Frequency
 B = 150e6         # 发射信号带宽
 Tc = 20e-6        # 扫频时间
 S = B/Tc          # 调频斜率
-Ns = 1024          # ADC采样点数
+Ns = 1024         # ADC采样点数
 Nchirp = 256      # chirp数量
 lamba = c/f0      # 波长
 Fs = Ns/Tc        # = 1/(t[1] - t[0])     # 模拟信号采样频率
-nRx = 4          # RX天线通道数
-d = lamba/2      # 天线阵列间距
+nRx = 4           # RX天线通道数
+d = lamba/2       # 天线阵列间距
 
-NumRangeFFT = Ns                           # Range FFT Length
-NumDopplerFFT = Nchirp                     # Doppler FFT Length
+NumRangeFFT = Ns                          # Range FFT Length
+NumDopplerFFT = Nchirp                    # Doppler FFT Length
 rangeRes = c/(2*B)                        # 距离分辨率
 maxRange = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
 velRes = lamba / (2 * Nchirp * Tc)        # 速度分辨率
@@ -82,14 +91,14 @@ angRes = 2/Ns
 maxAng = np.arcsin(lamba/(2*d))
 print(f"rangeRes = {rangeRes:.4f}, maxRange = {maxRange:.4f}, velRes = {velRes:.4f}, maxVel = {maxVel:.4f} ")
 
-tarR = [200, ]  # 目标距离
-tarV = [ -20, ]   # 目标速度
-tarA = [30,]   # 目标角度
+tarR = [100, ]     # 目标距离
+tarV = [ 20, ]     # 目标速度
+tarA = [20,  ]     # 目标角度
 
 # tarR = [100, 200, 300]  # 目标距离
-# tarV = [10, -20, 30]   # 目标速度
-# tarA = [-30, 30, 60]   # 目标角度
-# # sigma = [0.1, 1.1 ]    # 高斯白噪声标准差
+# tarV = [10, -20, 30]    # 目标速度
+# tarA = [-30, 30, 60]    # 目标角度
+## sigma = [0.1, 1.1 ]    # 高斯白噪声标准差
 
 # generate receive signal
 sigReceiveTmp = np.zeros((Nchirp, Ns), dtype = complex)
@@ -100,7 +109,7 @@ for l in range(Nchirp):
 sigReceive = np.zeros((Nchirp, Ns, nRx), dtype = complex)
 for nrx in range(nRx):
     for ang in tarA:
-        sigReceive[:,:,nrx] += sigReceiveTmp * np.exp(1j * 2 * np.pi * f0 * d * nrx * np.sin(ang) / c)
+        sigReceive[:, :, nrx] += sigReceiveTmp * np.exp(1j * 2 * np.pi * f0 * d * nrx * np.sin(ang*180/np.pi) / c)
 
 range_win = np.hamming(Ns)           # 加海明窗
 doppler_win = np.hamming(Nchirp)
@@ -121,24 +130,24 @@ for nrx in range(nRx):
         tmp_fft = np.fft.fft(tmp, Nchirp) # 对rangeFFT结果进行M点FFT
         tmp_fft = np.fft.fftshift(tmp_fft)
         speed_profile[:,n,nrx] = tmp_fft
+sigDopplerFFT = speed_profile[:, :, 1]
 
 # 角度FFT
 Q = 128
 angle_profile = np.zeros((Nchirp, Ns, Q), dtype = complex)
 for n in range(Ns):
     for l in range(Nchirp):
-        tmp = speed_profile[l,n,:]
+        tmp = speed_profile[l, n, :]
         tmp_fft = np.fft.fft(tmp, Q)
         tmp_fft = np.fft.fftshift(tmp_fft)   # 对2D FFT结果进行nRx点FFT
         angle_profile[l,n,:] = tmp_fft
-
-sigDopplerFFT = speed_profile[:,:,1]
 
 x = np.arange(int(NumRangeFFT/2)) / NumRangeFFT * maxRange
 # x = np.arange(NumRangeFFT) / NumRangeFFT * maxRange  # 如果使用这行，则注释掉Z = Z[:, 0:int(NumRangeFFT/2)]
 # y = np.arange((-Nchirp/2)*velRes, (Nchirp/2)*velRes, velRes)
 y = np.linspace(-maxVel, maxVel, NumDopplerFFT)
 X, Y = np.meshgrid(x, y)
+
 
 Z = np.abs(sigDopplerFFT)
 Z = Z[:, 0:int(NumRangeFFT/2)]
@@ -161,7 +170,7 @@ ax1 = fig.add_subplot(121, projection='3d')
 ax1.plot_surface(X, Y, Z/1e5, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax1.scatter(Xscatter, Yscatter, Zscatter, s = Zscatter*20, c = 'r', )
 ax1.grid(False)
-ax1.invert_xaxis()  #x轴反向
+ax1.invert_xaxis()                                    #   x轴反向
 ax1.set_proj_type('ortho')
 ax1.set_xlabel('Range(m)', fontsize = 10)
 ax1.set_ylabel('Velocity(m/s)', fontsize = 10)
@@ -184,32 +193,28 @@ plt.close()
 
 # 计算峰值位置
 angle_profile = np.abs(angle_profile)/1e5
-
-fig = plt.figure(figsize = (8, 6) )
-ax1 = fig.add_subplot(111,  )
-ax1.plot(angle_profile[11,21,:], )
-# ax1.grid(False)
-ax1.set_xlabel('Angle', fontsize = 10)
-ax1.set_ylabel('Amp', fontsize = 10)
-ax1.set_title('Angle FFT', fontsize = 10)
-plt.show()
-plt.close()
-
-
 Idxs = np.where(angle_profile == angle_profile.max())
-Idxs = np.where(angle_profile > 2.5)
+Idxs = np.where(angle_profile > 2.565)
 row = Idxs[1]
 col = Idxs[0]
 pag = Idxs[2]
 
-# 计算目标距离、速度、角度
-fb = ((row-1) * Fs)/Ns                      # 差拍频率
-fd = ((col-Nchirp/2-1)*Fs)/(Ns*Nchirp)      # 多普勒频率
-fw = (pag - Q/2 -1)/Q                       # 空间频率
-R = c*(fb-fd)/2/S                           # 距离公式
-v = lamba*fd/2;                             # 速度公式
-theta = np.arcsin(fw*lamba/d)               # 角度公式
+# 计算目标距离、速度、角度, 方法一
+# fb = row * Fs/Ns                             # 差拍频率
+# fd = (col - Nchirp/2 ) * Fs/(Ns*Nchirp)      # 多普勒频率
+# R = c*(fb - fd)/2/S                             # 距离公式 R = c*(fb - fd)*Tc/2/B
+# v = lamba*fd/2;                                 # 速度公式
+# v = (col - Nchirp/2 ) * velRes
+fw = (pag - Q/2 )/Q                             # 空间频率
+theta = np.arcsin(fw*lamba/d)                   # 角度公式
 angle = theta*180/np.pi
+
+## 方法二
+R = x[row]
+v = y[col]
+# pag = scipy.signal.find_peaks(angle_profile[1, 1, :])[0]
+# angle = 2 * np.rad2deg(maxAng)/Q * (pag - Q/2)
+
 
 print(f'目标距离：{R} m\n', )
 print(f'目标速度：{v} m/s\n', )
@@ -217,7 +222,15 @@ print(f'目标角度：{angle}°\n',)
 
 
 
-
+fig = plt.figure(figsize = (8, 6) )
+ax1 = fig.add_subplot(111, )
+ax1.plot(angle_profile[1, 1, :], )
+# ax1.grid(False)
+ax1.set_xlabel('Angle', fontsize = 10)
+ax1.set_ylabel('Amp', fontsize = 10)
+ax1.set_title('Angle FFT', fontsize = 10)
+plt.show()
+plt.close()
 
 
 

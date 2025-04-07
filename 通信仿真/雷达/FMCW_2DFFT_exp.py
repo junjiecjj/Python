@@ -212,6 +212,7 @@ X, Y = np.meshgrid(xx, yy)
 fig = plt.figure(figsize=(10, 10) )
 ax1 = fig.add_subplot(111, projection = '3d')
 ax1.plot_surface(X, Y, sig_fft, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+# ax1.plot_wireframe(X, Y, sig_fft, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax1.grid(False)
 ax1.set_proj_type('ortho')
 ax1.set_xlabel('Range(m)', )
@@ -222,7 +223,16 @@ ax1.view_init(azim = -135, elev = 30)
 plt.show()
 plt.close()
 
+# 可视化结果
+plt.figure(figsize=(5, 5))
 
+# 距离-多普勒图 (第一个天线)
+plt.subplot(111)
+plt.imshow(20*np.log10(sig_fft), aspect='auto', cmap='jet', extent=[yy[0], yy[-1], xx[-1], xx[0]])
+plt.xlabel('速度 (m/s)')
+plt.ylabel('距离 (m)')
+plt.title('距离-多普勒图')
+plt.colorbar(label='强度 (dB)')
 
 
 
