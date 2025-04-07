@@ -46,6 +46,9 @@ https://blog.csdn.net/nuaahz/article/details/90719605
 雷达信号处理之FMCW 3D-FFT原理（附带MATLAB仿真程序）:
 https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247485771&idx=1&sn=8e269280b663226160227aec22806c3e&chksm=c11f04def6688dc8e20c2e92bed6bc4547bf107f87b77bfff29f2c66434fdb5702333184ee1d&scene=178&cur_album_id=2442863581802381317#rd
 
+温故而知新：FMCW雷达基本原理 (第三部分)
+https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247490817&idx=1&sn=bc49612982e986403ad4db94419820c2&chksm=c11f1094f66899825da763bb3cae5c207a2902f2c59c8c1601a28224126966d8a44444b0a9e5&scene=178&cur_album_id=2442867081445752837#rd
+
 雷达入门课系列文章（1）| 基于MATLAB的雷达信号处理实验教程
 https://zhuanlan.zhihu.com/p/567656893
 
@@ -115,8 +118,8 @@ rangeRes = 1 # 雷达的距离分率
 maxV = 70    # 雷达最大检测目标的速度
 fc = 77e9    # 雷达工作频率 载频
 c = 3e8
-R0 = 90  # 目标距离
-v0 = 20   # 目标速度
+R0 = 90   # 目标距离
+v0 = 10   # 目标速度
 
 B = c/(2*rangeRes)          # 发射信号带宽150MHz
 Tchirp = 5.5*2*maxR/c       # 扫频时间 (x-axis), 5.5 = sweep time should be at least 5 o 6 times the round trip time
@@ -139,8 +142,8 @@ rt = R0 + v0 * t  # 距离更新
 td = 2*rt/c       # 延迟时间
 Tx = np.cos(2*np.pi*(fc * t +  slope / 2 * t**2))                # 发射信号 实数信号
 Rx = np.cos(2*np.pi*(fc * (t - td) +  slope / 2 * (t - td)**2))                # 接收信号 实数信号
-freqTx = fc + slope*t                           # 频率
-freqRx = fc + slope*t                           # 频率
+freqTx = fc + slope*t[:Ns]                           # 频率
+freqRx = fc + slope*t[:Ns]                           # 频率
 
 Mix = Tx * Rx
 
@@ -180,10 +183,75 @@ axs[2,1].set_ylabel("Amplitude")
 plt.show()
 plt.close()
 
-Mix_resp = Mix.reshape(Ns, Nchirp)
+Mix_resp = Mix.reshape(Nchirp, Ns)
+xx = np.arange(Ns)
+yy = np.arange(Nchirp)
+X, Y = np.meshgrid(xx, yy)
+fig = plt.figure(figsize=(10, 10) )
+ax1 = fig.add_subplot(111, projection = '3d')
+ax1.plot_surface(X, Y, Mix_resp, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.grid(False)
+ax1.set_proj_type('ortho')
+ax1.set_xlabel('距离门数', )
+ax1.set_ylabel('脉冲数', )
+ax1.set_title('中频信号时域', )
+ax1.view_init(azim = -135, elev = 30)
+plt.show()
+plt.close()
 
+# 距离维 FFT
+sig_fft = scipy.fft.fft(Mix_resp, Ns, axis = 1)/Ns
+sig_fft = np.abs(sig_fft);
+sig_fft = sig_fft[:,0:int(Ns/2)]
 
+# 结果可视化
+fig, axs = plt.subplots(1, 1, figsize = (10, 10), constrained_layout = True)
+k = 0
+axs.plot( sig_fft[k,:])
+axs.set_title(f"第{k}个chirp的FTF结果")
+axs.set_xlabel("距离（频率）")
+axs.set_ylabel("幅度")
+plt.show()
+plt.close()
 
+# 距离FFT结果谱矩阵
+xx = np.arange(Ns/2)
+yy = np.arange(Nchirp)
+X, Y = np.meshgrid(xx, yy)
+fig = plt.figure(figsize=(10, 10) )
+ax1 = fig.add_subplot(111, projection = '3d')
+ax1.plot_surface(X, Y, sig_fft, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.grid(False)
+ax1.set_proj_type('ortho')
+ax1.set_xlabel('chirp脉冲数', )
+ax1.set_ylabel('距离（频率）', )
+ax1.set_zlabel('幅度', )
+ax1.set_title('距离维FFT', )
+ax1.view_init(azim = -135, elev = 30)
+plt.show()
+plt.close()
+
+# 速度维FFT
+Mix_resp = Mix.reshape(Nchirp, Ns)
+RDM = np.abs(scipy.fft.fftshift(np.fft.fft2(Mix_resp, (Nchirp, Ns)), axes = 0))
+RDM = RDM[:, 0:int(Ns/2)]
+RDM = 10*np.log10(RDM)
+
+doppler_axis = np.linspace(-100, 100, Nchirp);
+range_axis = np.linspace(0, 400, int(Ns/2))*((Ns/2)/400)
+X, Y = np.meshgrid(range_axis, doppler_axis)
+fig = plt.figure(figsize=(10, 10) )
+ax1 = fig.add_subplot(111, projection = '3d')
+ax1.plot_surface(X, Y, RDM, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.grid(False)
+ax1.set_proj_type('ortho')
+ax1.set_xlabel('距离通道', )
+ax1.set_ylabel('多普勒通道', )
+ax1.set_zlabel('幅度(dB)', )
+ax1.set_title('速度-距离多普勒谱', )
+ax1.view_init(azim = -135, elev = 30)
+plt.show()
+plt.close()
 
 
 

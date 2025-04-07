@@ -143,21 +143,32 @@ axs[1,2].set_xlim(-100, 100)
 plt.show()
 plt.close('all')
 
-
 #%% 复指数 线性调频信号的FFT和PSD仿真
 
-f0 = 10e6
-T = 10e-6
-B = 25e6
-K = B/T
-fs = 2*(B+f0)
-Ts = 1/fs
-N = int(T/Ts)
-# t = np.linspace(-T/2, T/2, N)
-t = np.arange(-T/2, T/2, Ts )
-x_lin = np.exp(1j * 2*np.pi * (f0*t + K/2 * t**2))
+# f0 = 10e6
+# T = 10e-6
+# B = 25e6
+# K = B/T
+# fs = 2*(B+f0)
+# Ts = 1/fs
+# N = int(T/Ts)
+# # t = np.linspace(-T/2, T/2, N)
+# t = np.arange(-T/2, T/2, Ts )
+# x_lin = np.exp(1j * 2 * np.pi * (f0 * t + K/2 * t**2))
 
-Nfft = N
+c = 3e8      # 光速
+## FMCW 波形参数
+f0 = 77e9    # Carrier Frequency (Hz)
+B = 4e9      # Bandwidth (Hz)
+Tc = 40e-6
+K = B/Tc
+fs = 3 * (B + f0) # 采样率一定要足,很多博客为了画图时不是一坨,采样率都是错的,用了很低的采用率。
+Ts = 1/fs
+# N = 128
+t = np.arange(0, Tc-Ts, Ts)  # 生成时间向量
+x_lin = np.exp(1j * 2 * np.pi * (f0*t + K/2 * t**2))
+
+Nfft = t.size if t.size % 2 == 0 else t.size + 1
 df = fs/Nfft
 X = scipy.fftpack.fft(x_lin, n = Nfft)
 X[np.abs(X) < 1e-8] = 0
@@ -175,7 +186,7 @@ Pxx = X1*X1.conjugate()/(Nfft**2)
 
 # 全谱图
 f1 = np.arange(-int(Nfft/2), int(Nfft/2))*df
-Y1 = scipy.fftpack.fftshift(X, )
+Y1 = scipy.fftpack.fftshift(X,)
 A1 = np.abs(Y1)
 # 双边带-功率谱密度
 Pxx1 = Y1*Y1.conjugate()/(Nfft**2)
@@ -218,7 +229,6 @@ axs[1,2].set_ylabel( "PSD dB/Hz")
 
 plt.show()
 plt.close('all')
-
 
 
 
