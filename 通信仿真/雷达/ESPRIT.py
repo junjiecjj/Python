@@ -5,6 +5,7 @@ Created on Fri Jun  7 11:07:05 2024
 
 @author: jack
 # https://blog.csdn.net/weixin_44705592/article/details/131503963
+
 # https://www.zhihu.com/question/270353751
 """
 
@@ -89,7 +90,7 @@ print(f"Theta = {Theta}")
 
 
 
-# #%% 画图
+#%% 画图
 # fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 # axs.plot(np.arange(-90, 90.1, 0.5), Pesprit , color = 'b', linestyle='-', lw = 3, label = "ESPRIT", )
 # Theta = np.arange(-90, 90.1, 0.5)
