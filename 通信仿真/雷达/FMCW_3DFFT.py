@@ -197,7 +197,8 @@ range_fft = np.fft.fft(sigReceive, axis = 2)
 # 2. 多普勒FFT (对每个距离门的chirp序列做FFT)
 range_fft = range_fft * doppler_win[:,None]
 doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, axis = 1), axes = 1)
-sigDopplerFFT = doppler_fft[3, :, :]
+# sigDopplerFFT = doppler_fft[3, :, :]
+sigDopplerFFT = np.sum(np.abs(doppler_fft), axis = 0)
 # 3. 角度FFT (对每个距离-多普勒单元的天线阵列做FFT)
 Q = 128
 angle_fft = np.fft.fftshift(np.fft.fft(doppler_fft, n = Q, axis = 0), axes = 0)
