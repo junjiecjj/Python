@@ -14,11 +14,11 @@ import scipy
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.family"] = "SimSun"
-plt.rcParams['font.size'] = 14               # 设置全局字体大小
-plt.rcParams['axes.titlesize'] = 12          # 设置坐标轴标题字体大小
-plt.rcParams['axes.labelsize'] = 12          # 设置坐标轴标签字体大小
-plt.rcParams['xtick.labelsize'] = 12         # 设置 x 轴刻度字体大小
-plt.rcParams['ytick.labelsize'] = 12         # 设置 y 轴刻度字体大小
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
 plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
 plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
 # plt.rcParams['figure.dpi'] = 300           # 每英寸点数
@@ -29,7 +29,7 @@ plt.rcParams['lines.markersize'] = 6         # 标记大小
 # plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
-plt.rcParams['legend.fontsize'] = 12
+plt.rcParams['legend.fontsize'] = 18
 
 def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
     if FFTN == None:
@@ -228,26 +228,26 @@ Zscatter = Z[idxs]
 print(f'目标距离：{Xscatter} m ', )
 print(f'目标速度：{Yscatter} m/s ', )
 
-fig = plt.figure(figsize=(20, 10), constrained_layout = True)
+fig = plt.figure(figsize=(16, 8), constrained_layout = True)
 ax1 = fig.add_subplot(121, projection='3d')
 ax1.plot_surface(X, Y, Z, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax1.scatter(Xscatter, Yscatter, Zscatter, s = 20, c = 'r', )
 ax1.grid(False)
 ax1.invert_xaxis()                                    #   x轴反向
 ax1.set_proj_type('ortho')
-ax1.set_xlabel('Range(m)', fontsize = 10)
-ax1.set_ylabel('Velocity(m/s)', fontsize = 10)
-ax1.set_zlabel('Amplitude', fontsize = 10)
-ax1.set_title('DopplerFFT', fontsize = 10)
+ax1.set_xlabel('Range(m)', fontsize = 18)
+ax1.set_ylabel('Velocity(m/s)', fontsize = 18)
+ax1.set_zlabel('Amplitude', fontsize = 18)
+ax1.set_title('DopplerFFT', fontsize = 18)
 ax1.view_init(azim = -135, elev = 30)
 
 ax2 = fig.add_subplot(122, projection = '3d' )
 ax2.plot_surface(X, Y, Z, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax2.grid(False)
-ax2.set_xlabel('Range(m)', fontsize = 10)
-ax2.set_ylabel('Velocity(m/s)', fontsize = 10)
+ax2.set_xlabel('Range(m)', fontsize = 18)
+ax2.set_ylabel('Velocity(m/s)', fontsize = 18)
 # ax2.set_zlabel('Amplitude', fontsize = 10)
-ax2.set_title('Top view', fontsize = 10)
+ax2.set_title('Top view', fontsize = 18)
 ax2.set_zticks([])
 ax2.view_init(azim = 270, elev = 90)
 
@@ -293,7 +293,7 @@ for i, target in enumerate(estimated_targets, 1):
 # plt.figure(figsize=(18, 6), constrained_layout = True)
 
 # 结果可视化
-fig, axs = plt.subplots(1, 3, figsize = (20, 6), constrained_layout = True)
+fig, axs = plt.subplots(1, 3, figsize = (18, 5), constrained_layout = True)
 
 # 距离-多普勒图 (第一个天线)
 # plt.subplot(131)
@@ -301,7 +301,7 @@ im = axs[0].imshow(20*np.log10(np.abs(doppler_fft[3, :, :Ns//2].T)), aspect='aut
 axs[0].set_xlabel('速度 (m/s)')
 axs[0].set_ylabel('距离 (m)')
 axs[0].set_title('距离-多普勒图')
-cbar = fig.colorbar(im, ax = axs[0], orientation='vertical',label='强度 (dB)')
+cbar = fig.colorbar(im, ax = axs[0], orientation = 'vertical',) # label='强度 (dB)'
 # axs[0].colorbar(label='强度 (dB)')
 for target in targets:
     axs[0].plot(target["velocity"], target["range"], 'wx', markersize = 10)
@@ -315,7 +315,7 @@ im = axs[1].imshow(20*np.log10(integrated_angle_range.T), aspect = 'auto', cmap 
 axs[1].set_xlabel('角度 (度)')
 axs[1].set_ylabel('距离 (m)')
 axs[1].set_title('角度-距离图')
-cbar = fig.colorbar(im, ax = axs[1], orientation='vertical',label='强度 (dB)')
+cbar = fig.colorbar(im, ax = axs[1], orientation = 'vertical',) # label='强度 (dB)'
 # axs[1].colorbar(label='强度 (dB)')
 for target in targets:
     axs[1].plot(target["angle"], target["range"], 'wx', markersize = 10)
@@ -324,12 +324,12 @@ for target in estimated_targets:
 
 # 角度-速度图 (距离峰值处)
 # plt.subplot(133)
-integrated_angle_vel = np.sum(power_spectrum, axis=2)
+integrated_angle_vel = np.sum(power_spectrum, axis = 2)
 im = axs[2].imshow(20*np.log10(integrated_angle_vel.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], y[-1], y[0]])
 axs[2].set_xlabel('角度 (度)')
 axs[2].set_ylabel('速度 (m/s)')
 axs[2].set_title('角度-速度图')
-cbar = fig.colorbar(im, ax = axs[2], orientation='vertical',label='强度 (dB)')
+cbar = fig.colorbar(im, ax = axs[2], orientation = 'vertical',) # label='强度 (dB)'
 # axs[2].colorbar(label='强度 (dB)')
 for target in targets:
     axs[2].plot(target["angle"], target["velocity"], 'wx', markersize = 10)
