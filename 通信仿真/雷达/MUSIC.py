@@ -162,9 +162,9 @@ if True:
     f1 = 0.02 * 1e6
     f2 = 0.03 * 1e6
     Nr = 8 # 8 elements
-    theta1 = 20 / 180 * np.pi
-    theta2 = 40 / 180 * np.pi
-    theta3 = -40 / 180 * np.pi
+    theta1 = 30 / 180 * np.pi
+    theta2 = 60 / 180 * np.pi
+    theta3 = -30 / 180 * np.pi
     a1 = np.asmatrix(np.exp(-2j * np.pi * d * np.arange(Nr) * np.sin(theta1)))
     a2 = np.asmatrix(np.exp(-2j * np.pi * d * np.arange(Nr) * np.sin(theta2)))
     a3 = np.asmatrix(np.exp(-2j * np.pi * d * np.arange(Nr) * np.sin(theta3)))
@@ -204,8 +204,9 @@ if True:
 
     results /= np.max(results)      # normalize
     fig, ax = plt.subplots(subplot_kw = {'projection': 'polar'})
-    # ax.plot(np.rad2deg(theta_scan) , results)
     ax.plot( theta_scan , results)
+    # fig, ax = plt.subplots( )
+    # ax.plot(np.rad2deg(theta_scan) , results)
     ax.set_theta_zero_location('N')
     ax.set_theta_direction(-1)
     ax.set_rlabel_position(30)
