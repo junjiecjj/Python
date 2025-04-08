@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 import scipy
 
 # 全局设置字体大小
-plt.rcParams["font.family"] = "Times New Roman"
-# plt.rcParams["font.family"] = "SimSun"
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
 plt.rcParams['font.size'] = 14               # 设置全局字体大小
 plt.rcParams['axes.titlesize'] = 12          # 设置坐标轴标题字体大小
 plt.rcParams['axes.labelsize'] = 12          # 设置坐标轴标签字体大小
@@ -115,7 +115,7 @@ plt.close()
 
 ##>>>>>>>>>> 接收差频信号 FFT
 Rx  = np.zeros((Nchirp, Ns), dtype = complex)
-N = np.arange(Ns)
+# N = np.arange(Ns)
 for l in range(Nchirp):
     for k in range(len(tarR)):
         d = tarR[k] + tarV[k] * (t + l * Tc)
@@ -154,7 +154,7 @@ def ind2sub2D(idx, weigh, heigh):
     row = idx // weigh
     col = idx % weigh
     return row, col
-Idxs = scipy.signal.find_peaks(Z.flatten()/1e4, height = 15)[0]
+Idxs = scipy.signal.find_peaks(Z.flatten() , np.max(Z)*0.5, distance=10)[0]
 idxs = ind2sub2D(Idxs, Z.shape[1], Z.shape[0])
 Xscatter = x[idxs[1]]  # = rangeRes * idxs[1]
 Yscatter = y[idxs[0]]  # = velRes * (idxs[0] - Nchirp/2)
@@ -162,7 +162,20 @@ Zscatter = Z[idxs]
 print(f'目标距离：{Xscatter} m\n', )
 print(f'目标速度：{Yscatter} m/s\n', )
 
+# 可视化结果
+plt.figure(figsize=(6, 5))
 
+# 距离-多普勒图2D (第一个天线)
+plt.subplot(111)
+plt.imshow(20*np.log10(Z), aspect='auto', cmap='jet', extent=[x[0], x[-1], y[-1], y[0]])
+# plt.imshow(20*np.log10(np.abs(doppler_fft[0, :, :Ns//2].T)), aspect='auto', cmap='jet', extent=[velocity_bins[0], velocity_bins[-1], range_bins[-1], range_bins[0]])
+plt.xlabel('距离 (m)')
+plt.ylabel('速度 (m/s)')
+plt.title('距离-多普勒图')
+plt.colorbar(label='强度 (dB)')
+
+
+### 距离-多普勒图 3D
 fig = plt.figure(figsize = (10, 20) )
 ax1 = fig.add_subplot(121, projection = '3d')
 ax1.plot_surface(X, Y, Z/1e4, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
@@ -222,17 +235,6 @@ ax1.set_title('距离维FFT', )
 ax1.view_init(azim = -135, elev = 30)
 plt.show()
 plt.close()
-
-# 可视化结果
-plt.figure(figsize=(5, 5))
-
-# 距离-多普勒图 (第一个天线)
-plt.subplot(111)
-plt.imshow(20*np.log10(sig_fft), aspect='auto', cmap='jet', extent=[yy[0], yy[-1], xx[-1], xx[0]])
-plt.xlabel('速度 (m/s)')
-plt.ylabel('距离 (m)')
-plt.title('距离-多普勒图')
-plt.colorbar(label='强度 (dB)')
 
 
 

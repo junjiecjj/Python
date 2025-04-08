@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Apr  6 02:02:28 2025
+Created on Tue Apr  8 02:06:49 2025
 
 @author: jack
 """
@@ -87,8 +87,8 @@ print(f"rangeRes = {rangeRes:.4f}, maxRange = {maxRange:.4f}, velRes = {velRes:.
 # tarA = [40,  ]     # 目标角度
 # sigma = [0.01 ]    # 高斯白噪声标准差
 tarR = [100, 200, 300]  # 目标距离
-tarV = [10, 15, 30]    # 目标速度
-tarA = [0, 30, 60]    # 目标角度
+tarV = [-40, 20, 30]    # 目标速度
+tarA = [-60, 30, 80]    # 目标角度
 sigma = [0.1, 0.01, 0.1]    # 高斯白噪声标准差
 
 # 目标参数 (两个目标)
@@ -97,29 +97,7 @@ for k in range(len(tarR)):
     Dic = {"range": tarR[k], "velocity": tarV[k], "angle": tarA[k]}
     targets.append(Dic)
 
-
-# ### 模拟接收信号, 直接获取差频信号；
-# t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
-# sigReceive = np.zeros((nRx, Nchirp, Ns), dtype = np.complex_)
-# for rx in range(nRx):
-#     for chirp in range(Nchirp):
-#         for k in range(len(tarR)):
-#             # 计算该天线的相位差
-#             phase_shift = 2 * np.pi * f0 * rx * d * np.sin(np.deg2rad(tarA[k])) / c
-
-#             # 计算当前目标的参数
-#             tau = 2 * tarR[k] / c     # 往返延迟
-#             fd = 2 * tarV[k] * f0 / c  # 多普勒频移
-
-#             # 接收信号模型
-#             sigReceive[rx, chirp, :] += np.exp(1j * (
-#                 2 * np.pi * S * tau * t +         # 差频项
-#                 2 * np.pi * f0 * tau +            # 固定相位
-#                 2 * np.pi * fd * chirp * Tc +     # 多普勒相位
-#                 phase_shift                       # 角度相位
-#             ))
-
-# ### 模拟接收信号, 直接获取差频信号；
+# ##### 模拟接收信号, 直接获取差频信号；
 # t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
 # sigReceive = np.zeros((nRx, Nchirp, Ns), dtype = np.complex_)
 # for rx in range(nRx):
@@ -156,48 +134,21 @@ for rx in range(nRx):
             noise = (np.random.randn(*Sx.shape) + 1j * np.random.randn(*Sx.shape)) * np.sqrt(sigma[k])
             Rx[rx, chirp, :] += (np.exp(1j * 2 * np.pi * fr + 1j * phase_shift) + noise )
 sigReceive = np.conjugate(Sx) * Rx # 混频
+
+
 range_win = np.hamming(Ns)           # 加海明窗
 doppler_win = np.hamming(Nchirp)
-
-# #### 3维FFT处理
-# # 距离FFT
-# range_fft = np.zeros((nRx, Nchirp, Ns), dtype = complex)
-# for nrx in range(nRx):
-#     for l in range(Nchirp):
-#         tmp = sigReceive[nrx, l,:] * range_win
-#         tmp_fft = np.fft.fft(tmp, Ns)   # 对每个chirp做N点FFT
-#         range_fft[nrx, l, :] = tmp_fft
-# # 多普勒FFT
-# doppler_fft = np.zeros((nRx, Nchirp, Ns), dtype = complex)
-# for nrx in range(nRx):
-#     for n in range(Ns):
-#         tmp = range_fft[nrx, :, n] * doppler_win
-#         tmp_fft = np.fft.fft(tmp, Nchirp) # 对rangeFFT结果进行M点FFT
-#         tmp_fft = np.fft.fftshift(tmp_fft)
-#         doppler_fft[nrx,:,n] = tmp_fft
-# sigDopplerFFT = doppler_fft[1, :, :]
-
-# # 角度FFT
-# Q = 128
-# angle_fft = np.zeros((Q, Nchirp, Ns), dtype = complex)
-# for n in range(Ns):
-#     for l in range(Nchirp):
-#         tmp = doppler_fft[:, l, n]
-#         tmp_fft = np.fft.fft(tmp, Q)
-#         tmp_fft = np.fft.fftshift(tmp_fft)   # 对2D FFT结果进行nRx点FFT
-#         angle_fft[:, l, n] = tmp_fft
 
 # 3D FFT处理
 # 1. 距离FFT (对每个chirp的采样点做FFT)
 sigReceive = sigReceive * range_win[None,:]
-range_fft = np.fft.fft(sigReceive, axis = 2)
-
+range_fft = np.fft.fft(sigReceive, n = NumRangeFFT, axis = 2)
 # 2. 多普勒FFT (对每个距离门的chirp序列做FFT)
 range_fft = range_fft * doppler_win[:,None]
-doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, axis = 1), axes = 1)
+doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, n = NumDopplerFFT, axis = 1), axes = 1)
 sigDopplerFFT = doppler_fft[3, :, :]
 # 3. 角度FFT (对每个距离-多普勒单元的天线阵列做FFT)
-Q = 128
+Q = 256
 angle_fft = np.fft.fftshift(np.fft.fft(doppler_fft, n = Q, axis = 0), axes = 0)
 
 x = np.arange(int(NumRangeFFT/2)) / NumRangeFFT * maxRange
@@ -209,7 +160,7 @@ X, Y = np.meshgrid(x, y)
 angle_bins = np.arcsin(np.linspace(-1, 1, Q)) * 180 / np.pi
 
 #>>>>>>>>>>>> ### 距离-多普勒图 3D
-Z = np.abs(sigDopplerFFT)/1e5
+Z = np.abs(sigDopplerFFT)
 Z = Z[:, 0:int(NumRangeFFT/2)]
 
 def ind2sub2D(idx, weigh, heigh):
@@ -252,7 +203,6 @@ ax2.view_init(azim = 270, elev = 90)
 plt.show()
 plt.close()
 
-
 #####>>>>>>>>>>>>>>>>>>>>>>>>
 # 检测目标
 power_spectrum = np.abs(angle_fft[..., :Ns//2])**2
@@ -280,8 +230,8 @@ for i in range(len(peaks)):
 # 打印结果
 
 print("\n=== 真实目标 ===")
-for i, target in enumerate(targets, 1):
-    print(f"目标{i}: 距离={target['range']}m, 速度={target['velocity']}m/s, 角度={target['angle']}°")
+# for i, target in enumerate(targets, 1):
+#     print(f"目标{i}: 距离={target['range']}m, 速度={target['velocity']}m/s, 角度={target['angle']}°")
 
 print("\n=== 检测结果 ===")
 for i, target in enumerate(estimated_targets, 1):
@@ -292,44 +242,46 @@ plt.figure(figsize=(18, 6))
 
 # 距离-多普勒图 (第一个天线)
 plt.subplot(131)
-plt.imshow(20*np.log10(np.abs(doppler_fft[3, :, :Ns//2].T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
+plt.imshow(20*np.log10(np.abs(doppler_fft[0, :, :Ns//2].T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
 plt.xlabel('速度 (m/s)')
 plt.ylabel('距离 (m)')
 plt.title('距离-多普勒图')
 plt.colorbar(label='强度 (dB)')
 for target in targets:
-    plt.plot(target["velocity"], target["range"], 'wx', markersize = 10)
+    plt.plot(target["velocity"], target["range"], 'wx', markersize=10)
 for target in estimated_targets:
-    plt.plot(target["velocity"], target["range"], 'ro', markerfacecolor = 'none', markersize = 10)
+    plt.plot(target["velocity"], target["range"], 'ro', markerfacecolor='none', markersize=10)
 
 # 角度-距离图 (多普勒峰值处)
 plt.subplot(132)
-integrated_angle_range = np.sum(power_spectrum, axis = 1)
-plt.imshow(20*np.log10(integrated_angle_range.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], x[-1], x[0]])
+integrated_angle_range = np.sum(power_spectrum, axis=1)
+plt.imshow(20*np.log10(integrated_angle_range.T), aspect='auto', cmap='jet', extent=[angle_bins[0], angle_bins[-1], x[-1], x[0]])
 plt.xlabel('角度 (度)')
 plt.ylabel('距离 (m)')
 plt.title('角度-距离图')
 plt.colorbar(label='强度 (dB)')
 for target in targets:
-    plt.plot(target["angle"], target["range"], 'wx', markersize = 10)
+    plt.plot(target["angle"], target["range"], 'wx', markersize=10)
 for target in estimated_targets:
-    plt.plot(target["angle"], target["range"], 'ro', markerfacecolor = 'none', markersize = 10)
+    plt.plot(target["angle"], target["range"], 'ro', markerfacecolor='none', markersize=10)
 
 # 角度-速度图 (距离峰值处)
 plt.subplot(133)
 integrated_angle_vel = np.sum(power_spectrum, axis=2)
-plt.imshow(20*np.log10(integrated_angle_vel.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], y[-1], y[0]])
+plt.imshow(20*np.log10(integrated_angle_vel.T), aspect='auto', cmap='jet', extent=[angle_bins[0], angle_bins[-1], y[-1], y[0]])
 plt.xlabel('角度 (度)')
 plt.ylabel('速度 (m/s)')
 plt.title('角度-速度图')
 plt.colorbar(label='强度 (dB)')
 for target in targets:
-    plt.plot(target["angle"], target["velocity"], 'wx', markersize = 10)
+    plt.plot(target["angle"], target["velocity"], 'wx', markersize=10)
 for target in estimated_targets:
-    plt.plot(target["angle"], target["velocity"], 'ro', markerfacecolor = 'none', markersize = 10)
+    plt.plot(target["angle"], target["velocity"], 'ro', markerfacecolor='none', markersize=10)
 
 plt.tight_layout()
 plt.show()
+
+
 
 
 
