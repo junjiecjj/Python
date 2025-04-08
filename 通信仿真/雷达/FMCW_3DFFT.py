@@ -228,7 +228,7 @@ Zscatter = Z[idxs]
 print(f'目标距离：{Xscatter} m ', )
 print(f'目标速度：{Yscatter} m/s ', )
 
-fig = plt.figure(figsize=(10, 20) )
+fig = plt.figure(figsize=(20, 10), constrained_layout = True)
 ax1 = fig.add_subplot(121, projection='3d')
 ax1.plot_surface(X, Y, Z, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax1.scatter(Xscatter, Yscatter, Zscatter, s = 20, c = 'r', )
@@ -290,49 +290,55 @@ for i, target in enumerate(estimated_targets, 1):
     print(f"目标{i}: 距离={target['range']:.1f}m, 速度={target['velocity']:.1f}m/s, 角度={target['angle']:.1f}°")
 
 # 可视化
-plt.figure(figsize=(18, 6))
+# plt.figure(figsize=(18, 6), constrained_layout = True)
+
+# 结果可视化
+fig, axs = plt.subplots(1, 3, figsize = (20, 6), constrained_layout = True)
 
 # 距离-多普勒图 (第一个天线)
-plt.subplot(131)
-plt.imshow(20*np.log10(np.abs(doppler_fft[3, :, :Ns//2].T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
-plt.xlabel('速度 (m/s)')
-plt.ylabel('距离 (m)')
-plt.title('距离-多普勒图')
-plt.colorbar(label='强度 (dB)')
+# plt.subplot(131)
+im = axs[0].imshow(20*np.log10(np.abs(doppler_fft[3, :, :Ns//2].T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
+axs[0].set_xlabel('速度 (m/s)')
+axs[0].set_ylabel('距离 (m)')
+axs[0].set_title('距离-多普勒图')
+cbar = fig.colorbar(im, ax = axs[0], orientation='vertical',label='强度 (dB)')
+# axs[0].colorbar(label='强度 (dB)')
 for target in targets:
-    plt.plot(target["velocity"], target["range"], 'wx', markersize = 10)
+    axs[0].plot(target["velocity"], target["range"], 'wx', markersize = 10)
 for target in estimated_targets:
-    plt.plot(target["velocity"], target["range"], 'ro', markerfacecolor = 'none', markersize = 10)
+    axs[0].plot(target["velocity"], target["range"], 'ro', markerfacecolor = 'none', markersize = 10)
 
 # 角度-距离图 (多普勒峰值处)
-plt.subplot(132)
+# plt.subplot(132)
 integrated_angle_range = np.sum(power_spectrum, axis = 1)
-plt.imshow(20*np.log10(integrated_angle_range.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], x[-1], x[0]])
-plt.xlabel('角度 (度)')
-plt.ylabel('距离 (m)')
-plt.title('角度-距离图')
-plt.colorbar(label='强度 (dB)')
+im = axs[1].imshow(20*np.log10(integrated_angle_range.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], x[-1], x[0]])
+axs[1].set_xlabel('角度 (度)')
+axs[1].set_ylabel('距离 (m)')
+axs[1].set_title('角度-距离图')
+cbar = fig.colorbar(im, ax = axs[1], orientation='vertical',label='强度 (dB)')
+# axs[1].colorbar(label='强度 (dB)')
 for target in targets:
-    plt.plot(target["angle"], target["range"], 'wx', markersize = 10)
+    axs[1].plot(target["angle"], target["range"], 'wx', markersize = 10)
 for target in estimated_targets:
-    plt.plot(target["angle"], target["range"], 'ro', markerfacecolor = 'none', markersize = 10)
+    axs[1].plot(target["angle"], target["range"], 'ro', markerfacecolor = 'none', markersize = 10)
 
 # 角度-速度图 (距离峰值处)
-plt.subplot(133)
+# plt.subplot(133)
 integrated_angle_vel = np.sum(power_spectrum, axis=2)
-plt.imshow(20*np.log10(integrated_angle_vel.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], y[-1], y[0]])
-plt.xlabel('角度 (度)')
-plt.ylabel('速度 (m/s)')
-plt.title('角度-速度图')
-plt.colorbar(label='强度 (dB)')
+im = axs[2].imshow(20*np.log10(integrated_angle_vel.T), aspect = 'auto', cmap = 'jet', extent = [angle_bins[0], angle_bins[-1], y[-1], y[0]])
+axs[2].set_xlabel('角度 (度)')
+axs[2].set_ylabel('速度 (m/s)')
+axs[2].set_title('角度-速度图')
+cbar = fig.colorbar(im, ax = axs[2], orientation='vertical',label='强度 (dB)')
+# axs[2].colorbar(label='强度 (dB)')
 for target in targets:
-    plt.plot(target["angle"], target["velocity"], 'wx', markersize = 10)
+    axs[2].plot(target["angle"], target["velocity"], 'wx', markersize = 10)
 for target in estimated_targets:
-    plt.plot(target["angle"], target["velocity"], 'ro', markerfacecolor = 'none', markersize = 10)
+    axs[2].plot(target["angle"], target["velocity"], 'ro', markerfacecolor = 'none', markersize = 10)
 
-plt.tight_layout()
+# plt.tight_layout()
 plt.show()
-
+plt.close()
 
 
 
