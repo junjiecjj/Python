@@ -89,7 +89,9 @@ print(f"rangeRes = {rangeRes:.4f}, maxRange = {maxRange:.4f}, velRes = {velRes:.
 tarR = [100, 200, 300]  # 目标距离
 tarV = [10, 15, 30]    # 目标速度
 tarA = [0, 30, 60]    # 目标角度
-sigma = [0.1, 0.01, 0.1]    # 高斯白噪声标准差
+# sigma = [0.1, 0.01, 0.1]    # 高斯白噪声标准差
+sigma = [0.0, 0.00, 0.0]    # 高斯白噪声标准差
+
 
 # 目标参数 (两个目标)
 targets = []
