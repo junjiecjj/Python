@@ -20,12 +20,30 @@ from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import MultipleLocator
 # import scipy.constants as CONSTANTS
 
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
 
 filepath2 = '/home/jack/snap/'
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-
 
 
 #%%%%%%%% MUSIC for Uniform Linear Array%%%%%%%%
@@ -69,34 +87,13 @@ axs.plot(Theta[peaks], Pcbf[peaks], linestyle='', marker = 'o', color='r', marke
 
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
-font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
+# font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-axs.set_xlabel( "DOA/(degree)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('Normalized Spectrum/(dB)', fontproperties=font2, )
+axs.set_xlabel( "DOA/(degree)", ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_ylabel('Normalized Spectrum/(dB)', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 20}
-# font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
-frame1 = legend1.get_frame()
-frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-# x_major_locator = MultipleLocator(5)               #把x轴的刻度间隔设置为1，并存在变量里
-# axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
-axs.tick_params(direction='in', axis='both', top=True, right=True,labelsize=16, width=3,)
-labels = axs.get_xticklabels() + axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-axs.spines['bottom'].set_linewidth(1.5)    ###设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(1.5)      ####设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(1.5)     ###设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
-
-out_fig = plt.gcf()
-# out_fig.savefig('cbf.eps' )
 plt.show()
+plt.close()
 
 
 

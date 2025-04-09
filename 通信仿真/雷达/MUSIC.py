@@ -22,8 +22,26 @@ import scipy
 # import cvxpy as cp
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
-# from matplotlib.pyplot import MultipleLocator
-# import scipy.constants as CONSTANTS
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
+
 filepath2 = '/home/jack/snap/'
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
@@ -76,35 +94,11 @@ fig, axs = plt.subplots(1, 1, figsize = (10, 8))
 axs.plot(np.arange(-90, 90.1, 0.5), Pmusic , color = 'b', linestyle='-', lw = 3, label = "MUSIC", )
 Theta = np.arange(-90, 90.1, 0.5)
 axs.plot(Theta[peaks], Pmusic[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
-
-# font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
-font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
-# font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-axs.set_xlabel( "DOA/(degree)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('Normalized Spectrum/(dB)', fontproperties=font2, )
-
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 20}
-# font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
-frame1 = legend1.get_frame()
-frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-# x_major_locator = MultipleLocator(5)               #把x轴的刻度间隔设置为1，并存在变量里
-# axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
-axs.tick_params(direction='in', axis='both', top=True, right=True,labelsize=16, width=3,)
-labels = axs.get_xticklabels() + axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(24) for label in labels]  # 刻度值字号
-
-axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-axs.spines['bottom'].set_linewidth(1.5)    ###设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(1.5)      ####设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(1.5)     ###设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(1.5)       ####设置上部坐标轴的粗细
+axs.set_xlabel( "DOA/(degree)",)
+axs.set_ylabel('Normalized Spectrum/(dB)',)
+axs.legend()
 
 out_fig = plt.gcf()
-# out_fig.savefig('music.eps' )
 plt.show()
 plt.close('all')
 
@@ -164,7 +158,7 @@ if True:
     f0 = 0.01 * 1e6
     f1 = 0.02 * 1e6
     f2 = 0.03 * 1e6
-    Nr = 8 # 8 elements
+    Nr = 8                       # 8 elements
     theta1 = 30 / 180 * np.pi
     theta2 = 60 / 180 * np.pi
     theta3 = -30 / 180 * np.pi
@@ -175,6 +169,7 @@ if True:
     r = a1.T @ np.asmatrix(np.exp(2j*np.pi*f0*t)) + a2.T @ np.asmatrix(np.exp(2j*np.pi*f1*t)) + 0.1 * a3.T @ np.asmatrix(np.exp(2j*np.pi*f2*t))
     n = np.random.randn(Nr, N) + 1j*np.random.randn(Nr, N)
     r = r + 0.04*n
+    ## 从上面可以看出，MUSIC算法的是为了测角用的，每个用户的入射角不同，且也可以使用不同的频率，该算法都能准确测角。
 
     # MUSIC Algorithm (part that doesn't change with theta_i)
     num_expected_signals = 3    # Try changing this!
@@ -216,7 +211,7 @@ if True:
     plt.show()
     plt.close('all')
 
-## 从上面的结果可以看出，MUSIC算法的是为了测角用的，每个用户的入射角不同，且也可以使用不同的频率，该算法都能准确测角。
+
 #%% https://zhuanlan.zhihu.com/p/613304918
 # 导入模块
 # import numpy as np
@@ -290,7 +285,71 @@ if True:
 # plt.show()
 
 
-#%%
+#%% https://github.com/taichiorange/leba_math/blob/main/MIMO/MIMO-beam-detection/beam-MUSIC-algorithm.py
+# https://www.zhihu.com/question/270353751
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import eigh
+import scipy
+
+# configure
+N = 8  # number of antennas
+M = 5   # number of beams
+thetaTrue = [-60, -30, 0, 45, 60]
+theta_true = np.deg2rad(thetaTrue) # beam angles
+# k_true = np.array([0.3, 0.4, 0.5, 0.6, 0.7])  # beam angles
+SNR = 10  # 信噪比(dB)
+
+# create a manifold vector
+def steering_vector(k, N):
+    n = np.arange(N)
+    return np.exp(1j * np.pi * np.sin(k) * n)
+
+NSamples = 1000
+
+# generate signals
+X = np.zeros((N, NSamples), dtype = complex)
+for i in range(M):
+    a_k = steering_vector(theta_true[i], N)
+    s = np.exp(1j * 2 * np.pi * np.random.rand(NSamples))  # random signals
+    X += np.outer(a_k, s)
+
+# add noise
+noise = (np.random.randn(N, NSamples) + 1j * np.random.randn(N, NSamples)) / np.sqrt(2)
+X += noise * (10 ** (-SNR / 20))
+
+# covariance matrix
+R_y = X @ X.conj().T / X.shape[1]
+
+# Eigenvalue Decomposition
+eigvals, eigvecs = eigh(R_y)
+U_n = eigvecs[:, :-M]  # noise sub-space
+
+# MUSIC pseudo-spectrum
+Thetalst = np.arange(-90, 90, 0.5)
+k_scan = np.deg2rad(Thetalst)
+P_music = np.zeros_like(k_scan, dtype = float)
+
+for i, k in enumerate(k_scan):
+    a_k = steering_vector(k, N)
+    P_music[i] = 1 / np.abs(a_k.conj().T @ U_n @ U_n.conj().T @ a_k)
+
+# normalize
+P_music = np.abs(P_music) / np.abs(P_music).max()
+P_music = 10 * np.log10(P_music)
+peaks, _ =  scipy.signal.find_peaks(P_music, threshold = 3)
+print(f"True = {thetaTrue}\n est = {Thetalst[peaks]}")
+### 绘制 MUSIC 频谱
+fig, axs = plt.subplots(1, 1, figsize = (10, 8))
+axs.plot(Thetalst, P_music , color = 'b', linestyle='-', lw = 3, label = "MUSIC", )
+# Theta = np.arange(-90, 90.1, 0.5)
+axs.plot(Thetalst[peaks], P_music[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.set_xlabel( "DOA/(degree)",)
+axs.set_ylabel('Normalized Spectrum/(dB)',)
+axs.legend()
+
+plt.show()
+plt.close('all')
 
 
 #%%

@@ -22,30 +22,26 @@ from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import MultipleLocator
 # import scipy.constants as CONSTANTS
 
-
 filepath2 = '/home/jack/snap/'
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
-
-
 #%%%%%%%% ESPRIT for Uniform Linear Array%%%%%%%%
 pi = np.pi
-derad = pi/180           # 角度->弧度
-N = 8                    # 阵元个数
-K = 3                    # 信源数目
+derad = pi/180                        # 角度->弧度
+N = 8                                 # 阵元个数
+K = 3                                 # 信源数目
 theta = np.deg2rad([-30, 0, 60])      # 待估计角度
-snr = 10                 # 信噪比
-T = 512                  # 快拍数
+snr = 10                              # 信噪比
+T = 512                               # 快拍数
 
 d = np.arange(0, N).reshape(-1, 1)
 A = np.exp(-1j * pi * d @ np.sin(theta).reshape(1,-1) )   # 方向矢量
 
-
-#%%%%构建信号模型%%%%%
-S = np.random.randn(K, T) +1j * np.random.randn(K, T)            # 信源信号，入射信号
-X = A@S                                # 构造接收信号
+#%%%% 构建信号模型 %%%%%
+S = np.random.randn(K, T) + 1j * np.random.randn(K, T)            # 信源信号，入射信号
+X = A@S                                                          # 构造接收信号
 SigPow = np.power(np.abs(X), 2).mean()
 noise_pwr = SigPow/(10**(snr/10))
 noise = np.sqrt(noise_pwr ) * ( np.random.randn(*(X.shape)) + 1j * np.random.randn(*(X.shape)))
@@ -53,8 +49,8 @@ X1 = X + noise                  # 将白色高斯噪声添加到信号中
 # 计算协方差矩阵
 Rxx = X1 @ X1.T.conjugate() / T
 # 特征值分解
-D, U = np.linalg.eigh(Rxx)          # 特征值分解
-idx = np.argsort(D)                         # 将特征值排序 从小到大
+D, U = np.linalg.eigh(Rxx)             # 特征值分解
+idx = np.argsort(D)                    # 将特征值排序 从小到大
 U = U[:, idx]
 U = U[:,::-1]                          # 对应特征矢量排序
 Us = U[:, 0:K]
@@ -63,11 +59,9 @@ Us = U[:, 0:K]
 Ux = Us[0:K, :]
 Uy = Us[1:K+1, :]
 
-
-# ## 方法一：最小二乘法
+# ## 方法一:最小二乘法
 # Psi = np.linalg.inv(Ux)@Uy
 # Psi = np.linalg.solve(Ux,Uy)    # or Ux\Uy
-
 
 ## 方法二：完全最小二乘法
 Uxy = np.hstack([Ux,Uy])
@@ -79,7 +73,6 @@ eigvector = eigvector[:,::-1]                          # 对应特征矢量排�
 F0 = eigvector[0:K, K:2*K]
 F1 = eigvector[K:2*K, K:2*K]
 Psi = -F0 @ np.linalg.inv(F1)
-
 
 # 特征值分解
 D, U = np.linalg.eig(Psi)          # 特征值分解
