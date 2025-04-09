@@ -43,14 +43,15 @@ pi = np.pi
 derad = pi/180                        # 角度->弧度
 N = 8                                 # 阵元个数
 M = 3                                 # 信源数目
-theta = np.deg2rad([-30, 0, 60])      # 待估计角度
+thetaTrue = [-30, 0, 60]
+theta = np.deg2rad(thetaTrue)         # 待估计角度
 snr = 10                              # 信噪比
 K = 512                               # 快拍数
 
 d = np.arange(0, N).reshape(-1, 1)
 A = np.exp(-1j * pi * d @ np.sin(theta).reshape(1, -1) )   # 方向矢量
 
-#%%%% 构建信号模型 %%%%%
+# 构建信号模型
 S = np.random.randn(M, K)             # 信源信号，入射信号
 X = A@S                                # 构造接收信号
 SigPow = np.power(np.abs(X), 2).mean()
@@ -68,12 +69,63 @@ for i, ang in enumerate(angle):
 
 Pcbf = np.abs(Pcbf) / np.abs(Pcbf).max()
 Pcbf = 10 * np.log10(Pcbf)
-peaks, _ =  scipy.signal.find_peaks(Pcbf, )
-
-#%% 画图
+peaks, _ =  scipy.signal.find_peaks(Pcbf, height=-2,  distance = 10)
+print(f"True = {thetaTrue}\n est = {Thetalst[peaks]}")
+### 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(Thetalst, Pcbf , color = 'b', linestyle='-', lw = 3, label = "CBF", )
 axs.plot(Thetalst[peaks], Pcbf[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.legend()
+
+axs.set_xlabel( "DOA/(degree)", )
+axs.set_ylabel('Normalized Spectrum/(dB)', )
+
+plt.show()
+plt.close()
+
+
+#%%%%%%%% Capon for Uniform Linear Array %%%%%%%%
+pi = np.pi
+derad = pi/180                        # 角度->弧度
+N = 8                                 # 阵元个数
+M = 3                                 # 信源数目
+thetaTrue = [-30, 0, 60]
+theta = np.deg2rad(thetaTrue)         # 待估计角度
+snr = 10                              # 信噪比
+K = 512                               # 快拍数
+
+d = np.arange(0, N).reshape(-1, 1)
+A = np.exp(-1j * pi * d @ np.sin(theta).reshape(1, -1) )   # 方向矢量
+
+# 构建信号模型
+S = np.random.randn(M, K)             # 信源信号，入射信号
+X = A@S                                # 构造接收信号
+SigPow = np.power(np.abs(X), 2).mean()
+noise_pwr = SigPow/(10**(snr/10))
+noise = np.sqrt(noise_pwr ) *  np.random.randn(*(X.shape))
+X1 = X + noise                  # 将白色高斯噪声添加到信号中
+# 计算协方差矩阵
+Rxx = X1 @ X1.T.conjugate()
+Thetalst = np.arange(-90, 90.1, 0.5)
+angle = np.deg2rad(Thetalst)
+Pcapon = np.zeros(angle.size)
+# for i, ang in enumerate(angle):
+#     a = np.exp(-1j * pi * d * np.sin(ang))
+#     Pcbf[i] = np.real(a.T.conjugate() @ Rxx @ a)[0,0]
+
+for i, ang in enumerate(angle):
+    a = np.exp(-1j * pi * d * np.sin(ang))
+    Pcapon[i] = 1/np.real(a.T.conjugate() @ scipy.linalg.inv(Rxx) @ a)[0,0]
+
+Pcapon = np.abs(Pcapon) / np.abs(Pcapon).max()
+Pcapon = 10 * np.log10(Pcapon)
+peaks, _ =  scipy.signal.find_peaks(Pcapon, height=-2,  distance = 10)
+print(f"True = {thetaTrue}\n est = {Thetalst[peaks]}")
+### 画图
+fig, axs = plt.subplots(1, 1, figsize=(10, 8))
+axs.plot(Thetalst, Pcapon , color = 'b', linestyle='-', lw = 3, label = "Capon", )
+axs.plot(Thetalst[peaks], Pcapon[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.legend()
 
 axs.set_xlabel( "DOA/(degree)", )
 axs.set_ylabel('Normalized Spectrum/(dB)', )

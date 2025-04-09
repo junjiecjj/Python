@@ -32,7 +32,8 @@ pi = np.pi
 derad = pi/180                        # 角度->弧度
 N = 8                                 # 阵元个数
 K = 3                                 # 信源数目
-theta = np.deg2rad([-30, 0, 60])      # 待估计角度
+thetaTrue = [-30, 0, 60]
+theta = np.deg2rad(thetaTrue)         # 待估计角度
 snr = 10                              # 信噪比
 T = 512                               # 快拍数
 
