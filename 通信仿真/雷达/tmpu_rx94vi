@@ -82,7 +82,6 @@ peaks, _ =  scipy.signal.find_peaks(Pcbf, )
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(Thetalst, Pcbf , color = 'b', linestyle='-', lw = 3, label = "CBF", )
-
 axs.plot(Thetalst[peaks], Pcbf[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
 axs.set_xlabel( "DOA/(degree)", ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
