@@ -8,17 +8,9 @@ Created on Fri Jun  7 11:07:05 2024
 """
 
 
-import sys
 import numpy as np
 import scipy
-import cvxpy as cp
 import matplotlib.pyplot as plt
-# import math
-# import matplotlib
-from matplotlib.font_manager import FontProperties
-# from pylab import tick_params
-from matplotlib.pyplot import MultipleLocator
-# import scipy.constants as CONSTANTS
 
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
@@ -46,20 +38,19 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 
-#%%%%%%%% MUSIC for Uniform Linear Array%%%%%%%%
+#%%%%%%%% CBF for Uniform Linear Array %%%%%%%%
 pi = np.pi
-derad = pi/180           # 角度->弧度
-N = 8                    # 阵元个数
-M = 3                    # 信源数目
+derad = pi/180                        # 角度->弧度
+N = 8                                 # 阵元个数
+M = 3                                 # 信源数目
 theta = np.deg2rad([-30, 0, 60])      # 待估计角度
-snr = 10                 # 信噪比
-K = 512                  # 快拍数
+snr = 10                              # 信噪比
+K = 512                               # 快拍数
 
 d = np.arange(0, N).reshape(-1, 1)
-A = np.exp(-1j * pi * d @ np.sin(theta).reshape(1,-1) )   # 方向矢量
+A = np.exp(-1j * pi * d @ np.sin(theta).reshape(1, -1) )   # 方向矢量
 
-
-#%%%%构建信号模型%%%%%
+#%%%% 构建信号模型 %%%%%
 S = np.random.randn(M, K)             # 信源信号，入射信号
 X = A@S                                # 构造接收信号
 SigPow = np.power(np.abs(X), 2).mean()
@@ -82,10 +73,9 @@ peaks, _ =  scipy.signal.find_peaks(Pcbf, )
 #%% 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(Thetalst, Pcbf , color = 'b', linestyle='-', lw = 3, label = "CBF", )
-
 axs.plot(Thetalst[peaks], Pcbf[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
 
-axs.set_xlabel( "DOA/(degree)", ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_xlabel( "DOA/(degree)", )
 axs.set_ylabel('Normalized Spectrum/(dB)', )
 
 plt.show()
