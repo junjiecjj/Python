@@ -181,23 +181,16 @@ def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
         doa_estimates_deg: 估计的 DOA（单位：度，按从小到大排序）
     """
     N = Rxx.shape[0]
-
     eigvals, eigvecs = np.linalg.eigh(Rxx)  # # 对协方差矩阵进行特征值分解
+    En = eigvecs[:, :N - K]      # 选取噪声子空间：使用最小的 (num_sensors - num_sources) 个特征向量
+    Pn = En @ En.conj().T        # 构造噪声子空间投影矩阵
 
-    En = eigvecs[:, :N - K]  # # 选取噪声子空间：使用最小的 (num_sensors - num_sources) 个特征向量
-
-    Pn = En @ En.conj().T  ## 构造噪声子空间投影矩阵
-
-    # 利用 Toeplitz 结构提取多项式系数：
-    # 对于 ULA，Pn 的每条对角线理论上应相等，
-    # 这里对每条对角线求和，得到系数 c[k] (k 从 -M+1 到 M-1)
+    # 利用 Toeplitz 结构提取多项式系数: 对于 ULA, Pn 的每条对角线理论上应相等, 这里对每条对角线求和, 得到系数 c[k] (k 从 -M+1 到 M-1)
     c = np.array([np.sum(np.diag(Pn, k)) for k in range(-N+1, N)])
     c = c / c[N - 1] # # 归一化：令 k=0（主对角线）的系数为 1，这不会改变根的位置
 
     poly_coeffs = c[::-1] # 构造多项式系数，注意 np.roots 要求系数按降幂排列
-
     roots_all = np.roots(poly_coeffs) # 求解多项式的所有根
-
     roots_inside = roots_all[np.abs(roots_all) < 1] # 只考虑位于单位圆内部的根（理论上信号相关根应落在单位圆附近）
 
     # 根据距离单位圆的距离排序，选择最接近单位圆的 num_sources 个根
@@ -242,7 +235,7 @@ axs.plot(Thetalst, Pcapon , color = colors[2], linestyle='-.', lw = 2, label = "
 axs.plot(angle_capon, Pcapon[peak_capon], linestyle='', marker = 's', color=colors[2], markersize = 12)
 
 axs.plot(Theta_esprit, np.zeros(K), linestyle='', marker = '*', color=colors[3], markersize = 12, label = "ESPRIT", )
-axs.plot(Theta_root, np.zeros(K)-5, linestyle='', marker = 'v', color=colors[4], markersize = 12, label = "ROOT MUSIC", )
+axs.plot(Theta_root, np.zeros(K)-5, linestyle='', marker = 'v', color='r', markersize = 12, label = "ROOT MUSIC", )
 
 axs.set_xlabel( "DOA/(degree)",)
 axs.set_ylabel('Normalized Spectrum/(dB)',)
