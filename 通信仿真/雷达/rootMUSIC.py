@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     # Estimate the DOAs using the Root-MUSIC algorithm
     num_sources = len(doa_true)
-    doa_est,roots_all = root_music(R, num_sources, d, wavelength)
+    doa_est, roots_all = root_music(R, num_sources, d, wavelength)
 
     print("True DOAs (degrees):", doa_true)
     print("Estimated DOAs (degrees):", doa_est)

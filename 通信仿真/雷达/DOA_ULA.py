@@ -10,7 +10,6 @@ Created on Wed Apr  9 11:55:49 2025
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
-# from matplotlib.font_manager import FontProperties
 
 
 # 全局设置字体大小
@@ -132,7 +131,6 @@ def ESPRIT(Rxx, K, N):
     Theta = np.sort(Theta)
     return Theta
 
-
 def CBF(Rxx, K, N):
     Thetalst = np.arange(-90, 90.1, 0.5)
     angle = np.deg2rad(Thetalst)
@@ -169,13 +167,64 @@ def Capon(Rxx, K, N):
     return Thetalst, Pcapon, angle_est, peaks
 
 
+def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
+    """
+    Root-MUSIC 算法进行 DOA 估计（适用于 ULA）。
+
+    参数:
+        R: 接收信号的样本协方差矩阵 (num_sensors x num_sensors)
+        num_sources: 信号数（需要估计的 DOA 数量）
+        d: 传感器间距（以波长为单位，默认 0.5）
+        wavelength: 信号波长（默认 1.0）
+
+    返回:
+        doa_estimates_deg: 估计的 DOA（单位：度，按从小到大排序）
+    """
+    N = Rxx.shape[0]
+
+    eigvals, eigvecs = np.linalg.eigh(Rxx)  # # 对协方差矩阵进行特征值分解
+
+    En = eigvecs[:, :N - K]  # # 选取噪声子空间：使用最小的 (num_sensors - num_sources) 个特征向量
+
+    Pn = En @ En.conj().T  ## 构造噪声子空间投影矩阵
+
+    # 利用 Toeplitz 结构提取多项式系数：
+    # 对于 ULA，Pn 的每条对角线理论上应相等，
+    # 这里对每条对角线求和，得到系数 c[k] (k 从 -M+1 到 M-1)
+    c = np.array([np.sum(np.diag(Pn, k)) for k in range(-N+1, N)])
+    c = c / c[N - 1] # # 归一化：令 k=0（主对角线）的系数为 1，这不会改变根的位置
+
+    poly_coeffs = c[::-1] # 构造多项式系数，注意 np.roots 要求系数按降幂排列
+
+    roots_all = np.roots(poly_coeffs) # 求解多项式的所有根
+
+    roots_inside = roots_all[np.abs(roots_all) < 1] # 只考虑位于单位圆内部的根（理论上信号相关根应落在单位圆附近）
+
+    # 根据距离单位圆的距离排序，选择最接近单位圆的 num_sources 个根
+    distances = np.abs(np.abs(roots_inside) - 1)
+    sorted_indices = np.argsort(distances)
+    selected_roots = roots_inside[sorted_indices][:K]
+
+    # 由理论，根的相位与 DOA 满足: angle(z) = -2π*d*sin(θ)/wavelength
+    # beta = 2π*d/wavelength
+    beta = 2 * np.pi * d / wavelength
+    phi = np.angle(selected_roots)
+
+    doa_estimates_rad = np.arcsin(-phi / beta)
+    doa_estimates_deg = np.rad2deg(doa_estimates_rad)
+
+    return np.sort(doa_estimates_deg), roots_all
+
+
 Thetalst, Pmusic, angle_music, peak_music = MUSIC(Rxx, K, N)
 Thetalst, Pcbf, angle_cbf, perak_cbf = CBF(Rxx, K, N)
 Thetalst, Pcapon, angle_capon, peak_capon = Capon(Rxx, K, N)
 Theta_esprit = ESPRIT(Rxx, K, N)
+Theta_root, roots_all = ROOT_MUSIC(Rxx, K )
 
 print(f"True = {doa_deg}")
 print(f"MUSIC = {angle_music}")
+print(f"Root MUSIC = {Theta_root}")
 print(f"CBF = {angle_cbf}")
 print(f"Capon = {angle_capon}")
 print(f"ESPRIT = {Theta_esprit}")
@@ -193,6 +242,8 @@ axs.plot(Thetalst, Pcapon , color = colors[2], linestyle='-.', lw = 2, label = "
 axs.plot(angle_capon, Pcapon[peak_capon], linestyle='', marker = 's', color=colors[2], markersize = 12)
 
 axs.plot(Theta_esprit, np.zeros(K), linestyle='', marker = '*', color=colors[3], markersize = 12, label = "ESPRIT", )
+axs.plot(Theta_root, np.zeros(K)-5, linestyle='', marker = 'v', color=colors[4], markersize = 12, label = "ROOT MUSIC", )
+
 axs.set_xlabel( "DOA/(degree)",)
 axs.set_ylabel('Normalized Spectrum/(dB)',)
 axs.legend()
