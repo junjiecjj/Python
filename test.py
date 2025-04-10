@@ -1,97 +1,63 @@
 
-import cvxpy as cp
 import numpy as np
+import matplotlib.pyplot as plt
 
+NSTEPS = 8
 
-d0 = 51
-dv = 2                 # user到AP-RIS垂直距离
-D0 = 1.0
-C0 = -30               # dB
-C0 = 10**(C0/10.0)     # 参考距离的路损
-sigmaK2 = -80          # dB
-sigmaK2 = 10**(sigmaK2/10.0)  # 噪声功率
-gamma = 10             # dB
-gamma = 10**(gamma/10.0)    #  信干噪比约束10dB
-M = 3     # AP天线数量
-N = 4    # RIS天线数量
+N = 16
+dVsLambda = 0.5
 
+n = np.arange(0,N,1)
+k=0
 
-# 路损参数
-alpha_AI = 2      #  AP 和 IRS 之间path loss exponent
-alpha_Iu = 2.8    # IRS 和 User 之间path loss exponent
-alpha_Au = 3.5    # AP 和 User 之间path loss exponent
+# beam 方向与天线的夹角，天线是从上到下的方向看， beam 是从天线射向 UE 方向看，
+#  这两个射线的夹角
+#          |
+#          |
+#          |
+#          |
+#          |
+#          |
+#          |\
+#          | \                      s e^{-j (N-1) phi}             s e^{j (N-1) theta}
+#          |  \
+#          |   \
+#          |    \
+#          |     \                        ...                       ...
+#          |      \
+#          |       \                      s e^{-j 2 phi}           s e^{j 2 theta}
+#          |        \
+#          |         \
+#          | beamangle\                   s e^{-j phi}             s e^{j theta}
+#          |           \
+#          |            \                  s                         s
+#
+#  负相位，是把波形向前推， phi = 2 pi d/lambda cos(beamAngle), cos 是递减函数
+#  beamAngle 越小，则 phi越大，则把波形向前移动的越大
+#  当 beamAngle 从 0 逐渐增大到 PI/2，cos(beamAngle) 从 1 递减到 0，所以，波形向前
+#  推的相位越来越小，则 beam 方向逆时针旋转
+#  当 beamAngle 从 PI/2 逐渐增大到 PI，cos(beamAngle) 从 0 递减到 -1，所以 -phi 是从0递增到 1，
+#  波形向后拉的相位越来越大，则 beam 方向继续逆时针旋转
+for k in range(0,NSTEPS):
+    beamAngle = k*np.pi/NSTEPS
+    phi = 2*np.pi*dVsLambda*np.cos(beamAngle)
 
-d = 40
-dAu = np.sqrt(d**2 + dv**2)
-dIu = np.sqrt((d0-d)**2 + dv**2)
-## h_r
-Iu_large_fading = C0 * ((dIu/D0)**(-alpha_Iu))
-## h_d
-Au_large_fading = C0 * ((dAu/D0)**(-alpha_Au))
+    phaseRotateVector = np.exp(-1j*phi*n)
 
-G = np.sqrt(C0 * ((d0/D0)**(-alpha_AI))) * np.ones((N, M))
-hr = np.sqrt(Iu_large_fading) * np.sqrt(1 / (2 * sigmaK2)) * ( np.random.randn(1,N) + 1j * np.random.randn(1,N) )
-hd = np.sqrt(Iu_large_fading) * np.sqrt(1 / (2 * sigmaK2)) * ( np.random.randn(1,M) + 1j * np.random.randn(1,M) )
-
-hr = np.array([[-5.52410927+5.11202098j,  2.21161698+3.83710666j,  -6.87020352+8.59078659j, -4.45867517-1.69307665j]])
-hd = np.array([[ 9.63447462-5.59241419j,  4.06630045-7.78999435j,  -0.60554468+3.04178728j]])
-
-
-Phai = np.diag(hr.flatten()) @ G
-A = Phai @ (Phai.T.conjugate())
-B = Phai @ hd.T.conjugate()
-C = hd @ (Phai.T.conjugate())
-C = np.append(C, 0).reshape(1, -1)
-R = np.concatenate((A, B), axis = 1)
-R = np.concatenate((R, C), axis = 0)
-
-
-
-
-## use cvx to solve
-V = cp.Variable((N+1, N+1), hermitian = True)
-obj = cp.Maximize(cp.real(cp.trace(R@V)) + cp.norm(hd, 2)**2)
-# The operator >> denotes matrix inequality.
-constraints = [
-    0 << V,
-    cp.diag(V) == 1,
-    ]
-prob = cp.Problem(obj, constraints)
-prob.solve()
-
-if prob.status == 'optimal':
-     # print("optimal")
-     low_bound = prob.value
-     # print(V.value)
-else:
-     print("Not optimal")
-
-L = 1000
-#%% method 1: 高斯随机化过程
-max_F = -1e13
-max_v = -1e13
-Sigma, U = np.linalg.eig(V.value)
-for i in range(L):
-    r = np.sqrt(1/2) * ( np.random.randn(N+1, 1) + 1j * np.random.randn(N+1, 1) )
-    v = U @ (np.diag(Sigma)**(1/2)) @ r
-    # print(f"v^H @ R @ v = {v.T.conjugate() @ R @ v}, max_F = {max_F}")
-    if v.T.conjugate() @ R @ v > max_F:
-        max_v = v
-        max_F = v.T.conjugate() @ R @ v
-try:
-    optim_v = np.exp(1j * np.angle(max_v/max_v[-1]))
-except Exception as e:
-    # print(f"V = {V.value}")
-    print(f"Sigma = {Sigma}")
-    # print(f"U = {U}")
-    # print(f"v = {v}")
-    print(f"v^H @ R @ v = {v.T.conjugate() @ R @ v}, max_F = {max_F}")
-
-v = v[:-1]
-
-opti = gamma/(np.linalg.norm(v.T.conjugate() @ (np.diag(hr.flatten()) @ G) + hd, ord = 2)**2 )
-
-
+    thetaAll = np.arange(0,2*np.pi,0.01)
+    beamAmp = []
+    for theta in thetaAll:
+        ePhi = np.exp(1j*2*np.pi*dVsLambda*np.cos(theta)*n)
+        BeamAmpForOneTheta = np.dot(phaseRotateVector,ePhi)
+        beamAmp.append(BeamAmpForOneTheta)
+    beamAmp = np.array(beamAmp)
+    fig = plt.figure()
+    ax = plt.subplot(111, polar=True)
+    ax.plot(thetaAll, abs(beamAmp))
+    ax.vlines(beamAngle,0,16,'r')
+    ax.grid(True)
+    ax.set_theta_offset(-np.pi/2)
+    fig.suptitle(str(k) + "*PI/" + str(NSTEPS))
 
 
 

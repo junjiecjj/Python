@@ -164,7 +164,6 @@ X = r*np.sin(tt_)*np.cos(pp_) #  (51, 101)
 # y轴坐标网格数据
 Y = r*np.sin(tt_)*np.sin(pp_) #  (51, 101)
 
-
 ################## 1. 计算瑞利商
 # 每一行代表一个三维直角坐标系坐标点
 # 所有坐标点都在单位球面上
@@ -235,8 +234,6 @@ ax.grid(False)
 # fig.savefig('Figures/单位球面上点 + 渲染.svg', format='svg')
 plt.show()
 
-
-
 ######## 2. 填充
 norm_plt = plt.Normalize(Rayleigh_Q_.min(), Rayleigh_Q_.max())
 colors = cm.RdYlBu_r(norm_plt(Rayleigh_Q_)) #  (51, 101, 4)
@@ -294,9 +291,6 @@ ax.grid(False)
 # fig.savefig('Figures/瑞利商，网格.svg', format='svg')
 plt.show()
 
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 3
 def visualize_1D(array, title):
     fig, ax = plt.subplots()
@@ -317,9 +311,6 @@ def visualize_1D(array, title):
 a_1D_array = np.arange(-7, 7 + 1)
 a_1D_array
 visualize_1D(a_1D_array, 'aa')
-
-
-
 
 #%%=======================
 # 1 表面图（Surface plots）

@@ -53,7 +53,8 @@ pi = np.pi
 derad = pi/180           # 角度->弧度
 N = 8                    # 阵元个数
 M = 3                    # 信源数目
-theta = np.deg2rad([-30, 0, 60])      # 待估计角度
+thetaTrue = [-30, 0, 60]
+theta = np.deg2rad(thetaTrue)      # 待估计角度
 snr = 20                 # 信噪比
 K = 512                  # 快拍数
 
@@ -79,7 +80,8 @@ Un = eigvector[:, M:N]
 # Un = eigvector
 UnUnH = Un @ Un.T.conjugate()
 
-angle = np.deg2rad(np.arange(-90, 90.1, 0.5))
+Thetalst = np.arange(-90, 90.1, 0.5)
+angle = np.deg2rad(Thetalst)
 Pmusic = np.zeros(angle.size)
 for i, ang in enumerate(angle):
     a = np.exp(-1j * pi * d * np.sin(ang))
@@ -88,7 +90,7 @@ for i, ang in enumerate(angle):
 Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
 Pmusic = 10 * np.log10(Pmusic)
 peaks, _ =  scipy.signal.find_peaks(Pmusic, threshold = 3)
-
+print(f"True = {thetaTrue}\n est = {Thetalst[peaks]}")
 ## 画图
 fig, axs = plt.subplots(1, 1, figsize = (10, 8))
 axs.plot(np.arange(-90, 90.1, 0.5), Pmusic , color = 'b', linestyle='-', lw = 3, label = "MUSIC", )
@@ -212,6 +214,72 @@ if True:
     plt.close('all')
 
 
+#%% https://github.com/taichiorange/leba_math/blob/main/MIMO/MIMO-beam-detection/beam-MUSIC-algorithm.py
+# https://www.zhihu.com/question/270353751
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import eigh
+import scipy
+
+# configure
+N = 8  # number of antennas
+M = 5   # number of beams
+thetaTrue = [-60, -30, 0, 45, 60]
+theta_true = np.deg2rad(thetaTrue) # beam angles
+# k_true = np.array([0.3, 0.4, 0.5, 0.6, 0.7])  # beam angles
+SNR = 10  # 信噪比(dB)
+
+# create a manifold vector
+def steering_vector(k, N):
+    n = np.arange(N)
+    return np.exp(-1j * np.pi * np.sin(k) * n)
+
+NSamples = 1000
+# generate signals
+X = np.zeros((N, NSamples), dtype = complex)
+for i in range(M):
+    a_k = steering_vector(theta_true[i], N)
+    s = np.exp(1j * 2 * np.pi * np.random.rand(NSamples))  # random signals
+    X += np.outer(a_k, s)
+
+# add noise
+noise = (np.random.randn(N, NSamples) + 1j * np.random.randn(N, NSamples)) / np.sqrt(2)
+X += noise * (10 ** (-SNR / 20))
+
+# covariance matrix
+R_y = X @ X.conj().T / X.shape[1]
+
+# Eigenvalue Decomposition
+eigvals, eigvecs = eigh(R_y)
+U_n = eigvecs[:, :-M]  # noise sub-space
+
+# MUSIC pseudo-spectrum
+Thetalst = np.arange(-90, 90, 0.5)
+k_scan = np.deg2rad(Thetalst)
+P_music = np.zeros_like(k_scan, dtype = float)
+
+for i, k in enumerate(k_scan):
+    a_k = steering_vector(k, N)
+    P_music[i] = 1 / np.abs(a_k.conj().T @ U_n @ U_n.conj().T @ a_k)
+
+# normalize
+P_music = np.abs(P_music) / np.abs(P_music).max()
+P_music = 10 * np.log10(P_music)
+peaks, _ =  scipy.signal.find_peaks(P_music, height=-10, distance = 10)
+print(f"True = {thetaTrue}\n est = {Thetalst[peaks]}")
+### 绘制 MUSIC 频谱
+fig, axs = plt.subplots(1, 1, figsize = (10, 8))
+axs.plot(Thetalst, P_music , color = 'b', linestyle='-', lw = 3, label = "MUSIC", )
+# Theta = np.arange(-90, 90.1, 0.5)
+axs.plot(Thetalst[peaks], P_music[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.set_xlabel( "DOA/(degree)",)
+axs.set_ylabel('Normalized Spectrum/(dB)',)
+axs.legend()
+
+plt.show()
+plt.close('all')
+
+
 #%% https://zhuanlan.zhihu.com/p/613304918
 # 导入模块
 # import numpy as np
@@ -285,71 +353,10 @@ if True:
 # plt.show()
 
 
-#%% https://github.com/taichiorange/leba_math/blob/main/MIMO/MIMO-beam-detection/beam-MUSIC-algorithm.py
-# https://www.zhihu.com/question/270353751
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.linalg import eigh
-import scipy
+#%%
 
-# configure
-N = 8  # number of antennas
-M = 5   # number of beams
-thetaTrue = [-60, -30, 0, 45, 60]
-theta_true = np.deg2rad(thetaTrue) # beam angles
-# k_true = np.array([0.3, 0.4, 0.5, 0.6, 0.7])  # beam angles
-SNR = 10  # 信噪比(dB)
 
-# create a manifold vector
-def steering_vector(k, N):
-    n = np.arange(N)
-    return np.exp(1j * np.pi * np.sin(k) * n)
-
-NSamples = 1000
-
-# generate signals
-X = np.zeros((N, NSamples), dtype = complex)
-for i in range(M):
-    a_k = steering_vector(theta_true[i], N)
-    s = np.exp(1j * 2 * np.pi * np.random.rand(NSamples))  # random signals
-    X += np.outer(a_k, s)
-
-# add noise
-noise = (np.random.randn(N, NSamples) + 1j * np.random.randn(N, NSamples)) / np.sqrt(2)
-X += noise * (10 ** (-SNR / 20))
-
-# covariance matrix
-R_y = X @ X.conj().T / X.shape[1]
-
-# Eigenvalue Decomposition
-eigvals, eigvecs = eigh(R_y)
-U_n = eigvecs[:, :-M]  # noise sub-space
-
-# MUSIC pseudo-spectrum
-Thetalst = np.arange(-90, 90, 0.5)
-k_scan = np.deg2rad(Thetalst)
-P_music = np.zeros_like(k_scan, dtype = float)
-
-for i, k in enumerate(k_scan):
-    a_k = steering_vector(k, N)
-    P_music[i] = 1 / np.abs(a_k.conj().T @ U_n @ U_n.conj().T @ a_k)
-
-# normalize
-P_music = np.abs(P_music) / np.abs(P_music).max()
-P_music = 10 * np.log10(P_music)
-peaks, _ =  scipy.signal.find_peaks(P_music, threshold = 3)
-print(f"True = {thetaTrue}\n est = {Thetalst[peaks]}")
-### 绘制 MUSIC 频谱
-fig, axs = plt.subplots(1, 1, figsize = (10, 8))
-axs.plot(Thetalst, P_music , color = 'b', linestyle='-', lw = 3, label = "MUSIC", )
-# Theta = np.arange(-90, 90.1, 0.5)
-axs.plot(Thetalst[peaks], P_music[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
-axs.set_xlabel( "DOA/(degree)",)
-axs.set_ylabel('Normalized Spectrum/(dB)',)
-axs.legend()
-
-plt.show()
-plt.close('all')
+#%%
 
 
 #%%
@@ -359,6 +366,9 @@ plt.close('all')
 
 
 #%%
+
+
+
 
 
 
