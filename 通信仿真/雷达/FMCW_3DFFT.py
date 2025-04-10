@@ -255,7 +255,7 @@ ax2 = fig.add_subplot(122, )
 im = ax2.imshow(20*np.log10(np.abs(Z.T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
 ax2.set_xlabel('速度 (m/s)')
 ax2.set_ylabel('距离 (m)')
-ax2.set_title('距离-多普勒图')
+ax2.set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical',) # label='强度 (dB)'
 
 plt.show()
@@ -307,7 +307,7 @@ fig, axs = plt.subplots(1, 3, figsize = (18, 5), constrained_layout = True)
 im = axs[0].imshow(20*np.log10(np.abs(doppler_fft[3, :, :Ns//2].T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
 axs[0].set_xlabel('速度 (m/s)')
 axs[0].set_ylabel('距离 (m)')
-axs[0].set_title('距离-多普勒图')
+axs[0].set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = axs[0], orientation = 'vertical',) # label='强度 (dB)'
 # axs[0].colorbar(label='强度 (dB)')
 for target in targets:

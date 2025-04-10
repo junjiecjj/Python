@@ -48,8 +48,8 @@ pi = np.pi
 derad = pi/180           # 角度->弧度
 N = 8                    # 阵元个数
 K = 3                    # 信源数目
-thetaTrue = [-30, 0, 60]  # 待估计角度
-theta = np.deg2rad(thetaTrue) # beam angles
+doa_deg = [-30, 0, 60]  # 待估计角度
+doa_rad = np.deg2rad(doa_deg) # beam angles
 f0 = 1e6
 f = np.array([0.1, 0.2, 0.3]) * f0
 snr = 20                 # 信噪比
@@ -62,7 +62,7 @@ SNR = 10  # 信噪比(dB)
 # generate signals
 X = np.zeros((N, Ns), dtype = complex)
 for i in range(K):
-    a_k = steering_vector(theta[i], N)
+    a_k = steering_vector(doa_rad[i], N)
     s = np.exp(1j * 2 * np.pi * f[i] * t)  # random signals
     X += np.outer(a_k, s)
 
@@ -70,7 +70,6 @@ for i in range(K):
 noisevar = 10 ** (-SNR / 20)
 noise = np.sqrt(noisevar/2) * (np.random.randn(*X.shape) + 1j * np.random.randn(*X.shape))
 X += noise
-
 Rxx = X @ X.T.conjugate() / Ns
 
 def MUSIC(Rxx, K, N):
@@ -175,13 +174,13 @@ Thetalst, Pcbf, angle_cbf, perak_cbf = CBF(Rxx, K, N)
 Thetalst, Pcapon, angle_capon, peak_capon = Capon(Rxx, K, N)
 Theta_esprit = ESPRIT(Rxx, K, N)
 
-print(f"True = {thetaTrue}")
+print(f"True = {doa_deg}")
 print(f"MUSIC = {angle_music}")
 print(f"CBF = {angle_cbf}")
 print(f"Capon = {angle_capon}")
 print(f"ESPRIT = {Theta_esprit}")
 
-colors = plt.cm.jet(np.linspace(0, 1, 5))                  # colormap
+colors = plt.cm.jet(np.linspace(0, 1, 5))
 fig, axs = plt.subplots(1, 1, figsize = (10, 8))
 
 axs.plot(Thetalst, Pmusic , color = colors[0], linestyle='-', lw = 2, label = "MUSIC", )

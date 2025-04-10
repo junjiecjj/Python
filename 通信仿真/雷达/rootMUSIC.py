@@ -10,7 +10,7 @@ import numpy as np
 from scipy.linalg import eigh
 import matplotlib.pyplot as plt
 
-def simulate_ula_signals(num_sensors, num_snapshots, doa_deg, d=0.5, wavelength=1.0, SNR_dB=20):
+def simulate_ula_signals(num_sensors, num_snapshots, doa_deg, d = 0.5, wavelength = 1.0, SNR_dB = 20):
     """
     Parameters:
         num_sensors: number of sensors (antennas)
