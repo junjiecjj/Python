@@ -166,7 +166,9 @@ def Capon(Rxx, K, N):
 
     return Thetalst, Pcapon, angle_est, peaks
 
-
+# https://blog.csdn.net/weixin_44705592/article/details/131500890
+# https://zhuanlan.zhihu.com/p/22897428966
+# https://blog.csdn.net/qq_42233059/article/details/126524639
 def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
     """
     Root-MUSIC 算法进行 DOA 估计（适用于 ULA）。
