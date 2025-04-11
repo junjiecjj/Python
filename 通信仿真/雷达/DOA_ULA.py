@@ -214,19 +214,19 @@ def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
 
     return np.sort(doa_estimates_deg), roots_all
 
-derad = np.pi/180           # 角度->弧度
-N = 8                    # 阵元个数
-K = 4                    # 信源数目
-doa_deg = [-30, 0, 30, 60]  # 待估计角度
+derad = np.pi/180             # 角度->弧度
+N = 8                         # 阵元个数
+K = 4                         # 信源数目
+doa_deg = [-30, 0, 30, 60]    # 待估计角度
 doa_rad = np.deg2rad(doa_deg) # beam angles
 f0 = 1e6
-f = np.array([0.1, 0.2, 0.3, 0.5 ]) * f0 # 为了保持各个用户的信号正交，需要满足各个用户的频率不等或者是各个用户的信号为随机噪声
-snr = 20                  # 信噪比
-Ns = 1000                 # 快拍数
-fs = 1e8                  # 满足采样定理，fs >> f0
+f = np.array([0.1, 0.2, 0.3, 0.5 ]) * f0  # 为了保持各个用户的信号正交，需要满足各个用户的频率不等或者是各个用户的信号为随机噪声
+snr = 20                                  # 信噪比
+Ns = 1000                                 # 快拍数
+fs = 1e8                                  # 满足采样定理，fs >> f0
 Ts = 1/fs
 t = np.arange(Ns) * Ts
-SNR = 10  # 信噪比(dB)
+SNR = 10                                  # 信噪比(dB)
 
 # generate signals
 X = np.zeros((N, Ns), dtype = complex)

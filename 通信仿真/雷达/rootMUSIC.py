@@ -48,7 +48,6 @@ def simulate_ula_signals(num_sensors, num_snapshots, doa_deg, d = 0.5, wavelengt
 def root_music(R, num_sources, d=0.5, wavelength=1.0):
     """
     Root-MUSIC DOA estimation (for ULA).
-
     Parameters:
         R: sample covariance matrix of the received signals (num_sensors x num_sensors)
         num_sources: number of signals (number of DOAs to be estimated)
@@ -99,7 +98,7 @@ def root_music(R, num_sources, d=0.5, wavelength=1.0):
     doa_estimates_rad = np.arcsin(phi / beta)
     doa_estimates_deg = np.rad2deg(doa_estimates_rad)
 
-    return np.sort(doa_estimates_deg),roots_all
+    return np.sort(doa_estimates_deg), roots_all
 
 if __name__ == "__main__":
     # Simulation parameters
