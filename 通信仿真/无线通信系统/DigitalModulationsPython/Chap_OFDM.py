@@ -170,7 +170,7 @@ for i, EsN0dB in enumerate(EsN0dBs):
         numErrors = np.sum(d != dCap)
         errors[i] += numErrors
 SER_sim = errors/(nSym * N)
-SER_theory = ser_awgn(EsN0dBs, MOD_TYPE, M)
+SER_theory = ser_awgn(EbN0dBs, MOD_TYPE, M)
 
 axs.semilogy(EbN0dBs, SER_sim, color = colors[0], ls = 'none', marker = "o", ms = 12, )
 axs.semilogy(EbN0dBs, SER_theory, color = colors[0], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
@@ -192,8 +192,8 @@ EbN0dBs = np.arange(-2, 26, 2)
 MOD_TYPE = "psk"    ## "pam"
 arrayOfM = [2, 4, 8, 16, 32]
 
-MOD_TYPE = "qam"
-arrayOfM = [4, 16, 64, 256]
+# MOD_TYPE = "qam"
+# arrayOfM = [4, 16, 64, 256]
 
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
@@ -286,8 +286,8 @@ EbN0dBs = np.arange(-2, 26, 2)
 MOD_TYPE = "psk"    ## "pam"
 arrayOfM = [2, 4, 8, 16, 32]
 
-MOD_TYPE = "qam"
-arrayOfM = [4, 16, 64, 256]
+# MOD_TYPE = "qam"
+# arrayOfM = [4, 16, 64, 256]
 
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
