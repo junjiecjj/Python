@@ -101,159 +101,158 @@ from DigiCommPy.modem import PSKModem, QAMModem, PAMModem, FSKModem
 from DigiCommPy.channels import awgn
 from DigiCommPy.errorRates import ser_awgn
 
-# def Qfun(x):
-#     return 0.5 * scipy.special.erfc(x / np.sqrt(2))
+def Qfun(x):
+    return 0.5 * scipy.special.erfc(x / np.sqrt(2))
 
-# def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
-#     EbN0 = 10**(EbN0dB/10)
-#     EsN0 = np.log2(M) * EbN0
-#     SER = np.zeros(EbN0dB.size)
-#     if MOD_TYPE.lower() == "bpsk":
-#         SER = Qfun(np.sqrt(2 * EbN0))
-#     elif MOD_TYPE == "psk":
-#         if M == 2:
-#             SER = Qfun(np.sqrt(2 * EbN0))
-#         else:
-#             if M == 4:
-#                 SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
-#             else:
-#                 SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
-#     elif MOD_TYPE.lower() == "qam":
-#         SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
-#     elif MOD_TYPE.lower() == "pam":
-#         SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
-#     return SER
+def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
+    EbN0 = 10**(EbN0dB/10)
+    EsN0 = np.log2(M) * EbN0
+    SER = np.zeros(EbN0dB.size)
+    if MOD_TYPE.lower() == "bpsk":
+        SER = Qfun(np.sqrt(2 * EbN0))
+    elif MOD_TYPE == "psk":
+        if M == 2:
+            SER = Qfun(np.sqrt(2 * EbN0))
+        else:
+            if M == 4:
+                SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
+            else:
+                SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
+    elif MOD_TYPE.lower() == "qam":
+        SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
+    elif MOD_TYPE.lower() == "pam":
+        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
+    return SER
 
-# nSym = 10000
-# EbN0dBs = np.arange(0, 22, 2)
-# MOD_TYPE = "psk"
-# coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
-# modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
-# M = 4
-# N = 64
-# Ncp = 16
-# # colors = ['b', 'g', 'r', 'c', 'm', 'k']
-# colors = plt.cm.jet(np.linspace(0, 1, 10)) # colormap
-# k = int(np.log2(M))
-# EsN0dBs = 10*np.log10(k) + EbN0dBs
-# errors= np.zeros(EsN0dBs.size)
-
-# if MOD_TYPE.lower() == 'fsk':
-#     modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
-# else: # for all other modulations
-#     modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
-
-# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-
-# for i, EsN0dB in enumerate(EsN0dBs):
-#     for j, sym in enumerate(range(nSym)):
-#         print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
-#         ## Transmitter
-#         d = np.random.randint(low = 0, high = M, size = N)
-#         X = modem.modulate(d)
-
-#         x = scipy.fft.ifft(X, N)
-#         s = add_cyclic_prefix(x, Ncp)
-
-#         ## Channel
-#         r = awgn(s, EsN0dB)
-
-#         ## Receiver
-#         y = remove_cyclic_prefix(r, Ncp, N)
-#         Y = scipy.fft.fft(y, N)
-#         if MOD_TYPE.lower()=='fsk': #demodulate (Refer Chapter 3)
-#             dCap = modem.demodulate(Y, coherence)
-#         else: #demodulate (Refer Chapter 3)
-#             dCap = modem.demodulate(Y)
-
-#         ## Error Counter
-#         numErrors = np.sum(d != dCap)
-#         errors[i] += numErrors
-# SER_sim = errors/(nSym * N)
-# SER_theory = ser_awgn(EsN0dBs, MOD_TYPE, M)
-
-# axs.semilogy(EbN0dBs, SER_sim, color = colors[0], ls = 'none', marker = "o", ms = 12, )
-# axs.semilogy(EbN0dBs, SER_theory, color = colors[0], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
-
-# axs.set_ylim(1e-6, 1)
-# axs.set_xlabel( 'Eb/N0(dB)',)
-# axs.set_ylabel('SER (Ps)',)
-# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
-# axs.legend(fontsize = 20)
-
-# plt.show()
-# plt.close()
-
-# #%%
-# from tqdm import tqdm
-
-# nSym = 10000
-# EbN0dBs = np.arange(-2, 26, 2)
-# MOD_TYPE = "psk"    ## "pam"
-# arrayOfM = [2, 4, 8, 16, 32]
-
-# MOD_TYPE = "qam"
-# arrayOfM = [4, 16, 64, 256]
-
-# coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
-# modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
-
-# N = 64
-# Ncp = 16
+nSym = 10000
+EbN0dBs = np.arange(0, 22, 2)
+MOD_TYPE = "psk"
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+M = 4
+N = 64
+Ncp = 16
 # colors = ['b', 'g', 'r', 'c', 'm', 'k']
-# colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
-# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-# for m, M in  enumerate(arrayOfM) :
-#     print(f"{m}/{len(arrayOfM)}")
-#     k = int(np.log2(M))
-#     EsN0dBs = 10*np.log10(k) + EbN0dBs
-#     errors = np.zeros(EsN0dBs.size)
-#     if MOD_TYPE.lower() == 'fsk':
-#         modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
-#     else: # for all other modulations
-#         modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
+colors = plt.cm.jet(np.linspace(0, 1, 10)) # colormap
+k = int(np.log2(M))
+EsN0dBs = 10*np.log10(k) + EbN0dBs
+errors= np.zeros(EsN0dBs.size)
 
-#     for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
-#         for j, sym in enumerate(range(nSym)):
-#             ## Transmitter
-#             d = np.random.randint(low = 0, high = M, size = N)
-#             X = modem.modulate(d)
+if MOD_TYPE.lower() == 'fsk':
+    modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
+else: # for all other modulations
+    modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
 
-#             x = scipy.fft.ifft(X, N)
-#             s = add_cyclic_prefix(x, Ncp)
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
-#             ## Channel
-#             r = awgn(s, EsN0dB)
+for i, EsN0dB in enumerate(EsN0dBs):
+    for j, sym in enumerate(range(nSym)):
+        print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
+        ## Transmitter
+        d = np.random.randint(low = 0, high = M, size = N)
+        X = modem.modulate(d)
 
-#             ## Receiver
-#             y = remove_cyclic_prefix(r, Ncp, N)
-#             Y = scipy.fft.fft(y, N)
-#             if MOD_TYPE.lower()=='fsk': #demodulate (Refer Chapter 3)
-#                 dCap = modem.demodulate(Y, coherence)
-#             else: #demodulate (Refer Chapter 3)
-#                 dCap = modem.demodulate(Y)
-#             ## Error Counter
-#             numErrors = np.sum(d != dCap)
-#             errors[i] += numErrors
-#     SER_sim = errors/(nSym * N)
-#     SER_theory = ser_awgn(EbN0dBs, MOD_TYPE, M)
+        x = scipy.fft.ifft(X, N)
+        s = add_cyclic_prefix(x, Ncp)
 
-#     axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
-#     axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}{MOD_TYPE.upper()} OFDM' )
+        ## Channel
+        r = awgn(s, EsN0dB)
 
-# axs.set_ylim(1e-6, 1)
-# axs.set_xlabel( 'Eb/N0(dB)',)
-# axs.set_ylabel('SER (Ps)',)
-# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
-# axs.legend(fontsize = 20)
+        ## Receiver
+        y = remove_cyclic_prefix(r, Ncp, N)
+        Y = scipy.fft.fft(y, N)
+        if MOD_TYPE.lower()=='fsk': #demodulate (Refer Chapter 3)
+            dCap = modem.demodulate(Y, coherence)
+        else: #demodulate (Refer Chapter 3)
+            dCap = modem.demodulate(Y)
 
-# plt.show()
-# plt.close()
+        ## Error Counter
+        numErrors = np.sum(d != dCap)
+        errors[i] += numErrors
+SER_sim = errors/(nSym * N)
+SER_theory = ser_awgn(EsN0dBs, MOD_TYPE, M)
+
+axs.semilogy(EbN0dBs, SER_sim, color = colors[0], ls = 'none', marker = "o", ms = 12, )
+axs.semilogy(EbN0dBs, SER_theory, color = colors[0], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+
+axs.set_ylim(1e-6, 1)
+axs.set_xlabel( 'Eb/N0(dB)',)
+axs.set_ylabel('SER (Ps)',)
+axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
+
+#%%
+from tqdm import tqdm
+
+nSym = 10000
+EbN0dBs = np.arange(-2, 26, 2)
+MOD_TYPE = "psk"    ## "pam"
+arrayOfM = [2, 4, 8, 16, 32]
+
+MOD_TYPE = "qam"
+arrayOfM = [4, 16, 64, 256]
+
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+
+N = 64
+Ncp = 16
+colors = ['b', 'g', 'r', 'c', 'm', 'k']
+colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+for m, M in  enumerate(arrayOfM) :
+    print(f"{m}/{len(arrayOfM)}")
+    k = int(np.log2(M))
+    EsN0dBs = 10*np.log10(k) + EbN0dBs
+    errors = np.zeros(EsN0dBs.size)
+    if MOD_TYPE.lower() == 'fsk':
+        modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
+    else: # for all other modulations
+        modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
+
+    for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
+        for j, sym in enumerate(range(nSym)):
+            ## Transmitter
+            d = np.random.randint(low = 0, high = M, size = N)
+            X = modem.modulate(d)
+
+            x = scipy.fft.ifft(X, N)
+            s = add_cyclic_prefix(x, Ncp)
+
+            ## Channel
+            r = awgn(s, EsN0dB)
+
+            ## Receiver
+            y = remove_cyclic_prefix(r, Ncp, N)
+            Y = scipy.fft.fft(y, N)
+            if MOD_TYPE.lower()=='fsk': #demodulate (Refer Chapter 3)
+                dCap = modem.demodulate(Y, coherence)
+            else: #demodulate (Refer Chapter 3)
+                dCap = modem.demodulate(Y)
+            ## Error Counter
+            numErrors = np.sum(d != dCap)
+            errors[i] += numErrors
+    SER_sim = errors/(nSym * N)
+    SER_theory = ser_awgn(EbN0dBs, MOD_TYPE, M)
+
+    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
+    axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}{MOD_TYPE.upper()} OFDM' )
+
+axs.set_ylim(1e-6, 1)
+axs.set_xlabel( 'Eb/N0(dB)',)
+axs.set_ylabel('SER (Ps)',)
+axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
+axs.legend(fontsize = 20)
+
+plt.show()
+plt.close()
 
 
-# #%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
-# from tqdm import tqdm
-
+#%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
+from tqdm import tqdm
 def ser_rayleigh(EbN0dB, MOD_TYPE, M):
     EbN0 = 10**(EbN0dB/10)
     EsN0 = np.log2(M) * EbN0
@@ -280,76 +279,76 @@ def ser_rayleigh(EbN0dB, MOD_TYPE, M):
             SER[i] = 2*(M-1)/(M*np.pi) * scipy.integrate.quad(fun, 0, np.pi/2)[0]
     return SER
 
-# L = 10 # Number of taps for the frequency selective channel model
+L = 10 # Number of taps for the frequency selective channel model
 
-# nSym = 10000
-# EbN0dBs = np.arange(-2, 26, 2)
-# MOD_TYPE = "psk"    ## "pam"
-# arrayOfM = [2, 4, 8, 16, 32]
+nSym = 10000
+EbN0dBs = np.arange(-2, 26, 2)
+MOD_TYPE = "psk"    ## "pam"
+arrayOfM = [2, 4, 8, 16, 32]
 
-# MOD_TYPE = "qam"
-# arrayOfM = [4, 16, 64, 256]
+MOD_TYPE = "qam"
+arrayOfM = [4, 16, 64, 256]
 
-# coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
-# modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 
-# N = 64
-# Ncp = 16
-# # colors = ['b', 'g', 'r', 'c', 'm', 'k']
-# colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
-# fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-# for m, M in enumerate(arrayOfM):
-#     print(f"{m}/{len(arrayOfM)}")
-#     k = int(np.log2(M))
-#     EsN0dBs = 10*np.log10(k*N/(N + Ncp)) + EbN0dBs
-#     errors= np.zeros(EsN0dBs.size)
+N = 64
+Ncp = 16
+# colors = ['b', 'g', 'r', 'c', 'm', 'k']
+colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+for m, M in enumerate(arrayOfM):
+    print(f"{m}/{len(arrayOfM)}")
+    k = int(np.log2(M))
+    EsN0dBs = 10*np.log10(k*N/(N + Ncp)) + EbN0dBs
+    errors= np.zeros(EsN0dBs.size)
 
-#     if MOD_TYPE.lower() == 'fsk':
-#         modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
-#     else: # for all other modulations
-#         modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
+    if MOD_TYPE.lower() == 'fsk':
+        modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
+    else: # for all other modulations
+        modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
 
-#     for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
-#         for j, sym in enumerate(range(nSym)):
-#             ## Transmitter
-#             d = np.random.randint(low = 0, high = M, size = N)
-#             X = modem.modulate(d)
+    for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
+        for j, sym in enumerate(range(nSym)):
+            ## Transmitter
+            d = np.random.randint(low = 0, high = M, size = N)
+            X = modem.modulate(d)
 
-#             x = scipy.fft.ifft(X, N)
-#             s = add_cyclic_prefix(x, Ncp)
+            x = scipy.fft.ifft(X, N)
+            s = add_cyclic_prefix(x, Ncp)
 
-#             ## Channel
-#             h = (np.random.randn(L) + 1j * np.random.randn(L))/np.sqrt(2)
-#             H = scipy.fft.fft(h, N)
-#             hs = scipy.signal.convolve(h, s)
-#             r = awgn(hs, EsN0dB)
+            ## Channel
+            h = (np.random.randn(L) + 1j * np.random.randn(L))/np.sqrt(2)
+            H = scipy.fft.fft(h, N)
+            hs = scipy.signal.convolve(h, s)
+            r = awgn(hs, EsN0dB)
 
-#             ## Receiver
-#             y = remove_cyclic_prefix(r, Ncp, N)
-#             Y = scipy.fft.fft(y, N)
-#             V = Y/H  # 信道均衡（直接除以理想信道，这里没有进行信道估计！）
-#             if MOD_TYPE.lower()=='fsk': #demodulate (Refer Chapter 3)
-#                 dCap = modem.demodulate(V, coherence)
-#             else: #demodulate (Refer Chapter 3)
-#                 dCap = modem.demodulate(V)
+            ## Receiver
+            y = remove_cyclic_prefix(r, Ncp, N)
+            Y = scipy.fft.fft(y, N)
+            V = Y/H  # 信道均衡（直接除以理想信道，这里没有进行信道估计！）
+            if MOD_TYPE.lower()=='fsk': #demodulate (Refer Chapter 3)
+                dCap = modem.demodulate(V, coherence)
+            else: #demodulate (Refer Chapter 3)
+                dCap = modem.demodulate(V)
 
-#             ## Error Counter
-#             numErrors = np.sum(d != dCap)
-#             errors[i] += numErrors
-#     SER_sim = errors/(nSym * N)
-#     SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M)
+            ## Error Counter
+            numErrors = np.sum(d != dCap)
+            errors[i] += numErrors
+    SER_sim = errors/(nSym * N)
+    SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M)
 
-#     axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
-#     axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
+    axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
 
-# axs.set_ylim(1e-3, 1)
-# axs.set_xlabel( 'Eb/N0(dB)',)
-# axs.set_ylabel('SER (Ps)',)
-# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
-# axs.legend(fontsize = 20)
+axs.set_ylim(1e-3, 1)
+axs.set_xlabel( 'Eb/N0(dB)',)
+axs.set_ylabel('SER (Ps)',)
+axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
+axs.legend(fontsize = 20)
 
-# plt.show()
-# plt.close()
+plt.show()
+plt.close()
 
 
 #%% My OFDM with pilot, 使用导频进行信道估计

@@ -244,7 +244,7 @@ plt.show()
 plt.close()
 
 
-# #%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
+#%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
 from tqdm import tqdm
 from Modulations import modulator
 from ChannelModels import add_awgn_noise
