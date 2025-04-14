@@ -279,7 +279,7 @@ def ser_rayleigh(EbN0dB, MOD_TYPE, M):
             SER[i] = 2*(M-1)/(M*np.pi) * scipy.integrate.quad(fun, 0, np.pi/2)[0]
     return SER
 
-L = 10 # Number of taps for the frequency selective channel model
+L = 10              ## Number of taps for the frequency selective channel model
 
 nSym = 10000
 EbN0dBs = np.arange(-2, 26, 2)
@@ -474,7 +474,7 @@ Nps = 4
 P = N//Nps     # 导频数
 nSym = 20000  # 仿真帧数
 EbN0dBs = np.arange(-2, 34, 4)
-MOD_TYPE = "psk"  ## "pam" "psk",   "fsk" is not suitable.
+MOD_TYPE = "psk"  ## "pam", "psk",   "fsk" is not suitable.
 # arrayOfM = [2, 4, 8, 16, 32, 64]
 
 # MOD_TYPE = "qam"
