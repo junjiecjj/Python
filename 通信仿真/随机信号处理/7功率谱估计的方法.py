@@ -72,7 +72,7 @@ f2, S_rect        = correlogram_method(r_rect, fs, x_rect.size)
 f3, S_blackman    = correlogram_method(r_blackman, fs, x_blackman.size)
 
 ##### plot
-fig, axs = plt.subplots(3, 4, figsize = (16, 10), constrained_layout = True)
+fig, axs = plt.subplots(3, 4, figsize = (16, 12), constrained_layout = True)
 
 # x
 axs[0,0].plot(t, x, color = 'b', lw = 0.2, label = '去均值后的信号')
@@ -135,6 +135,7 @@ axs[2,3].set_ylabel('功率谱密度',)
 axs[2,3].set_title("Blackman窗下的功率谱")
 axs[2,3].legend()
 
+plt.suptitle(f"不同窗函数下的《基于自相关函数的功率谱估计》", fontsize = 22)
 plt.show()
 plt.close()
 
@@ -200,9 +201,9 @@ for i in range(len(overlap_ratios)):
     plt.xlabel('频率 (Hz)')
     plt.ylabel('功率谱密度 (dB/Hz)')
     plt.title(f'重叠率 {overlap_ratios[i]}')
+plt.suptitle("《快速傅里叶变换（FFT）法》信号长度/零填充长度/重叠率的影响", fontsize = 22)
 plt.show()
 plt.close()
-
 
 #############  快速傅里叶变换（FFT）法: 窗口函数比较
 fs = 1000 # 采样频率
@@ -249,6 +250,7 @@ for i in range(len(windows)):
     plt.xlabel('频率 (Hz)')
     plt.ylabel('功率谱密度 (dB/Hz)')
     plt.title(f'{windows[i]}窗-功率谱密度')
+plt.suptitle("《快速傅里叶变换（FFT）法》窗口函数比较", fontsize = 22)
 plt.show()
 plt.close()
 
@@ -261,35 +263,35 @@ plt.close()
 #     功率谱密度平均：将所有段的功率谱密度进行平均，得到最终的功率谱估计 P_{wlech}(f) = \sum_{m=1}^M P_m(f) / M
 #     其中，M为段的数量。
 
-fs = 1000 # 采样频率
-T = 1       # 信号持续时间 (秒)
+fs = 1000                 # 采样频率
+T = 1                     # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
-f1 = 100  # 通信信号频率 (Hz)
+f1 = 100                  # 通信信号频率 (Hz)
 f2 = 200
 x = np.cos(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t) + np.random.randn(t.size)
 segment_lengths = [64, 128, 256]      # 不同的分段长度
 overlap_ratios = [0.25, 0.5, 0.75]    # 不同的重叠率
 
 #>>>>>>>>>>>>>>>> 1. 分析分段长度的影响
-plt.figure(figsize = (6, 10), constrained_layout = True)
+plt.figure(figsize = (16, 4), constrained_layout = True)
 for i in range(len(segment_lengths)):
     [f, S] = scipy.signal.welch(x, fs, nperseg = segment_lengths[i], noverlap = segment_lengths[i]//2, )
-    plt.subplot(3, 1, i+1)
+    plt.subplot(1, 3, i+1)
     plt.plot(f, 10 * np.log10(S))
     plt.xlabel('频率 (Hz)')
     plt.ylabel('功率/频率 (dB/Hz)')
     plt.title(f'分段长度 = {segment_lengths[i]}')
-
+    plt.suptitle("《滑动窗法（Welch 方法）》分析分段长度影响", fontsize = 22)
 #>>>>>>>>>>>>>>>> 2. 分析重叠率的影响
-plt.figure(figsize = (6, 10), constrained_layout = True)
+plt.figure(figsize = (16, 4), constrained_layout = True)
 for i in range(len(overlap_ratios)):
     [f, S] = scipy.signal.welch(x, fs, nperseg = 128, noverlap = 128 * overlap_ratios[i], )
-    plt.subplot(3, 1, i+1)
+    plt.subplot(1, 3, i+1)
     plt.plot(f, 10 * np.log10(S))
     plt.xlabel('频率 (Hz)')
     plt.ylabel('功率/频率 (dB/Hz)')
     plt.title(f'重叠率 = {overlap_ratios[i]}')
-
+    plt.suptitle("《滑动窗法（Welch 方法）》分析重叠率的影响", fontsize = 22)
 #>>>>>>>>>>>>>>>> 3. 分析窗口函数的影响
 window_types = ['boxcar', 'hamming', 'hann', 'blackman']  # 不同的窗口函数
 windowfs = [scipy.signal.windows.boxcar, scipy.signal.windows.hamming, scipy.signal.windows.hann, scipy.signal.windows.blackman]
@@ -303,7 +305,7 @@ for i in range(len(window_types)):
     plt.xlabel('频率 (Hz)')
     plt.ylabel('功率/频率 (dB/Hz)')
     plt.title(f'{window_types[i]}窗口')
-
+    plt.suptitle("《滑动窗法（Welch 方法）》分析窗口函数的影响", fontsize = 22)
 
 #%% 7.4 周期图法
 
@@ -346,7 +348,7 @@ axs[1].set_ylabel('功率谱 (dB)',)
 axs[1].set_title("不同窗口函数下的功率谱")
 axs[1].legend()
 
-# plt.suptitle("welch")
+plt.suptitle("《周期图法periodogram》信号长度/窗口函数的影响", fontsize = 22)
 plt.show()
 plt.close()
 
