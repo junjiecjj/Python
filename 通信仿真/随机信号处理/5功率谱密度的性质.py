@@ -355,9 +355,7 @@ axs[3].legend()
 plt.show()
 plt.close()
 
-
 #%% 2. 方波信号的功率谱密度分析
-
 fs = 1000 # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
@@ -365,7 +363,6 @@ x =  scipy.signal.square(2 * np.pi * 100 * t)  # 通信信号
 
 nfft = 1024
 ######% 1 计算周期图法的功率谱密度
-
 N2 = nfft
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
