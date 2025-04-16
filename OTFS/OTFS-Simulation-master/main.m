@@ -24,7 +24,6 @@ close all;
 % May 2020
 %
 % Copyright (c) 2020, Bradley Bates
-%
 %--------------------------------------------------------------------------
 
 %--------------------------------------------------------------------------
@@ -43,11 +42,9 @@ maxIterations = 25;             % Set maximum no. of iterations for LDPC decoder
 totalBits = 1e6;                % The approx. total no. of bits simulated
 repeats = 1;                    % Number of simulation repetitions 
 
-
 %--------------------------------------------------------------------------
 %                    Initialise Simulation Components
 %--------------------------------------------------------------------------
-
 % Initialise OFDM Mod/Demod variables
 numSC = pow2(ceil(log2(Bw/scs))); % Calc. nearest base-2 no. of OFDM subcarriers
 cpLen = floor(cpSize * numSC);    % Calc. cyclic prefix length
@@ -70,7 +67,6 @@ berOFDM = zeros(length(EbNo),3); berCOFDM = zeros(length(EbNo),3); berOTFS = zer
 errorStats_coded = zeros(1,3); errorStats_uncoded = zeros(1,3);
 
 for repetition=1:repeats                                % Repeat simulation multiple times with a unqique channel for each repeat
-    
     % Generate and Encode data
     [dataIn, dataBits_in, codedData_in, packetSize, numPackets, numCB] = dataGen(k,numDC,ofdmSym,totalBits,codeRate,ldpcEncoder);
     
@@ -86,15 +82,11 @@ for repetition=1:repeats                                % Repeat simulation mult
     guardbandTx = [zeros(1,ofdmSym*packetSize); parallelTx];
     % Add 11 nulls around DC
     guardbandTx = [guardbandTx(1:(numDC/2),:); zeros(11,ofdmSym*packetSize); guardbandTx((numDC/2)+1:end,:)];
-    
-    
 %--------------------------------------------------------------------------
 %                       OFDM BER Calculation
 %--------------------------------------------------------------------------
-    
     % Calculate SNR
     snr = EbNo + 10*log10(codeRate*k) + 10*log10(numDC/((numSC)));
-    
     % Multicarrier Modulation
     frameBuffer = guardbandTx;          % Create a 'buffer' so subframes can be individually modulated
     txframeBuffer = [];                 % Initilaise matrix
@@ -103,8 +95,6 @@ for repetition=1:repeats                                % Repeat simulation mult
         frameBuffer(:, 1:ofdmSym) = [];                                    % Delete modulated data from frameBuffer
         txframeBuffer = [txframeBuffer;ofdmTx];                            % Add modulated subframe to transmit buffer
     end
-    
-    
     % Loop through different values of EbNo
     for m = 1:length(EbNo)
         % Loop through the of packets to be transmitted
@@ -171,15 +161,11 @@ for repetition=1:repeats                                % Repeat simulation mult
         berOFDM(m,:) = errorStats_uncoded;                                  % Save uncoded BER data
         berCOFDM(m,:) = errorStats_coded;                                   % Save  coded BER data
         errorStats_uncoded = errorRate(codedData_in,codedData_out,1);       % Reset the error rate calculator
-        errorStats_coded = errorRate1(dataBits_in,dataBits_out,1);          % Reset the error rate calculator
-        
+        errorStats_coded = errorRate1(dataBits_in,dataBits_out,1);          % Reset the error rate calculator        
     end
-    
-    
 %--------------------------------------------------------------------------
 %                       OTFS BER Calculation
 %--------------------------------------------------------------------------
-    
     % Calculate SNR
     snr = EbNo + 10*log10(codeRate*k) + 10*log10(numDC/((numSC))) + 10*log10(sqrt(ofdmSym));
     
@@ -192,19 +178,15 @@ for repetition=1:repeats                                % Repeat simulation mult
         frameBuffer(:, 1:ofdmSym) = [];                  % Delete modulated data from frameBuffer
         txframeBuffer = [txframeBuffer;ofdmTx];          % Add modulated subframe to transmit buffer
     end
-    
     % Loop through different values of EbNo
     for m = 1:length(EbNo)
         % Loop through the of packets to be transmitted
         for j = 1:numPackets
             rxframeBuffer = [];                 % Initialise matrix
-            
             % Transmit each subframe individually
             for u = 1:packetSize
-                
                 % Remove next subframe from the transmit buffer
                 txSig = txframeBuffer( ((u-1)*numel(ofdmTx)+1) : u*numel(ofdmTx) );
-                
                 % Apply Channel to input signal
                 fadedSig = zeros(size(txSig));                    % Pre-allocate vector size
                 for i = 1:size(txSig,1)                           % Perform elementwise...
@@ -239,7 +221,6 @@ for repetition=1:repeats                                % Repeat simulation mult
             codedData_out(numel(codedData_in)+1:end) = [];                         % Remove pad bits
             errorStats_uncoded = errorRate(codedData_in,codedData_out,0);          % Collect error statistics
             
-
             % Coded demodulation of entire packet
             powerDB = 10*log10(var(qamRx));                                   % Calculate Rx signal power
             noiseVar = 10.^(0.1*(powerDB-(EbNo(m) + 10*log10(codeRate*k) - 10*log10(sqrt(numDC)))));            % Calculate the noise variance
@@ -256,21 +237,17 @@ for repetition=1:repeats                                % Repeat simulation mult
             end
             dataBits_out = double(dataBits_out);                              % Convert to a double compatible w/ errorStats
             errorStats_coded = errorRate1(dataBits_in,dataBits_out,0);     % Collect error statistics
-            
         end
         berOTFS(m,:) = errorStats_uncoded;                                  % Save uncoded BER data
         berCOTFS(m,:) = errorStats_coded;                                   % Save coded BER data
         errorStats_uncoded = errorRate(codedData_in,codedData_out,1);       % Reset the error rate calculator
         errorStats_coded = errorRate1(dataBits_in,dataBits_out,1);          % Reset the error rate calculator
-        
     end
-    
 end
 
 %--------------------------------------------------------------------------
 %                           Figures
 %-------------------------------------------------------------------------- 
-
 % Plot BER / EbNo curves
 plotGraphs(berOFDM, berCOFDM, berOTFS, berCOTFS, M, numSC, EbNo);
 

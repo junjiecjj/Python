@@ -99,8 +99,8 @@ axs[1].plot(f, Pxx_periodogram, color = 'b', label = 'S_X(f)')
 axs[1].plot(-f, Pxx_periodogram, color = 'r', label = 'S_X(-f)')
 axs[1].set_xlabel('频率 (Hz)',)
 axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
-# axs[1].set_title("功率谱密度的对称性")
-# # axs[1].legend()
+axs[1].set_title("功率谱密度的对称性")
+axs[1].legend()
 
 # % Parseval定理验证: 信号的总功率等于其功率谱密度在整个频域的积分。
 total_power_time_domain = np.mean(x**2)

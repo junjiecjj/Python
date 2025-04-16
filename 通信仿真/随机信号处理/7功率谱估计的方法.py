@@ -45,10 +45,10 @@ def correlogram_method(signal, fs, N):
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
 
-fs = 1000 # 采样频率
+fs = 1000   # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
-f1 = 50  # 通信信号频率 (Hz)
+f1 = 50     # 通信信号频率 (Hz)
 f2 = 150
 f3 = 300
 

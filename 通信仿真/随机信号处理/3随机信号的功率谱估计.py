@@ -23,11 +23,13 @@ Created on Thu Feb 13 15:12:52 2025
                      功率谱密度计算：计算每段信号的功率谱密度 P_m(f) = |X_w(f)|^2/L
                      功率谱密度平均：将所有段的功率谱密度进行平均，得到最终的功率谱估计 P_{wlech}(f) = \sum_{m=1}^M P_m(f) / M, 其中，M为段的数量。
 (4) 快速傅里叶变换（FFT）法:
-            信号采样和预处理：
-            窗口化处理：
-            FFT 计算：
-            计算功率谱密度（PSD）：
-            结果分析与解释：
+                信号采样和预处理：
+                窗口化处理：
+                FFT 计算：
+                计算功率谱密度（PSD）：
+                结果分析与解释：
+
+Wiener-Khinchin定理: 自相关函数的傅里叶变换正是信号的功率谱密度.
 
 """
 
@@ -65,10 +67,10 @@ fs = 1000 # 采样频率
 t = np.arange(0, 1, 1/fs) # 时间向量
 carrier_freq = 100 # 载波频率
 mod_freq = 10 # 调制频率
-noise_power = 0.1 # 噪声功率
+noise_power = 0.0 # 噪声功率
 
-x = (1 + 1/2 * np.sin(2 * np.pi * mod_freq * t)) * np.cos(2 * np.pi * carrier_freq * t)
-# x = np.sin(2 * np.pi * 50 * t)
+# x = (1 + 1/2 * np.sin(2 * np.pi * mod_freq * t)) * np.cos(2 * np.pi * carrier_freq * t)
+x = np.sin(2 * np.pi * 50 * t)
 # x = np.random.randn(t.size)
 # x = np.sin(2 * np.pi * 50 * t) + np.sin(2 * np.pi * 120 * t)
 xn = x + np.sqrt(noise_power) * np.random.randn(t.size)
@@ -76,13 +78,11 @@ xn = x + np.sqrt(noise_power) * np.random.randn(t.size)
 N = len(xn)           # 信号长度
 
 ######% 1 计算周期图法的功率谱密度
-## 自带的库
-# from scipy import signal
-
 N2 = N
 window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
-# f, Pxx_periodogram = scipy.signal.periodogram(xn, fs, window = window_hamm, nfft = N2) # window = window_hann, nfft = N2
+## 自带的库
+f, Pxx_periodogram = scipy.signal.periodogram(xn, fs, window = window_hamm, nfft = N2) # window = window_hann, nfft = N2
 
 ## 手写:计算周期图法的功率谱密度
 def periodogram_method(signal, fs, N):
@@ -92,7 +92,7 @@ def periodogram_method(signal, fs, N):
     Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-f, Pxx_periodogram = periodogram_method(xn, fs, N)
+# f, Pxx_periodogram = periodogram_method(xn, fs, N)
 
 ######% 2 自相关函数法:计算基于自相关函数法的功率谱密度
 def correlogram_method(signal, fs, N):

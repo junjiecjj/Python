@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 filepath2 = '/home/jack/snap/'
-font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
+font = FontProperties(fname = "/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size = 14)
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
@@ -36,7 +36,6 @@ plt.rcParams['lines.markersize'] = 6 # 标记大小
 plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 12
-
 
 #%% BOOK: <Wireless Communication Systems in Matlab> Program 1.20:
 ## Generating a sinusoid and plotting its power spectrum
@@ -66,50 +65,23 @@ labelsize = 20
 
 # x
 axs[0].plot(t, x, label = 'x')
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs[0].set_xlabel('time (s)',fontproperties=font)
 axs[0].set_ylabel('x',fontproperties=font)
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
 
-legend1 = axs[0].legend(loc='best',  prop=font1, borderaxespad=0,)
+legend1 = axs[0].legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs[0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
 
 # Px
-axs[1].stem(f, Px, label = 'PSD', linefmt = 'r--', markerfmt = 'o', )
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs[1].set_xlabel('Fre (Hz)',fontproperties=font)
-axs[1].set_ylabel('power',fontproperties=font)
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+axs[1].stem(f, np.abs(Px), label = 'PSD', linefmt = 'r--', markerfmt = 'o', )
+axs[1].set_xlabel('Fre (Hz)',)
+axs[1].set_ylabel('power',)
 
-legend1 = axs[1].legend(loc='best',  prop=font1, borderaxespad=0,)
+legend1 = axs[1].legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs[1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
 
 out_fig = plt.gcf()
-#out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
 
@@ -154,12 +126,13 @@ scorr = autocorrelation(x)
 #%%
 
 import numpy as np
-from scipy import signal
+import scipy
 rng = np.random.default_rng()
+
 x = rng.standard_normal(1000)
 y = np.concatenate([rng.standard_normal(100), x])
-correlation = signal.correlate(x, y, mode="full")
-lags = signal.correlation_lags(x.size, y.size, mode="full")
+correlation = scipy.signal.correlate(x, y, mode = "full")
+lags = scipy.signal.correlation_lags(x.size, y.size, mode = "full")
 lag = lags[np.argmax(correlation)]
 
 #%% 1 | 随机信号分析与应用：从自相关到功率谱密度的探讨

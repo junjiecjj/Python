@@ -62,9 +62,7 @@ def freqDomainView(x, Fs, FFTN, type = 'double'): # N为偶数
 
     return f, Y, A, Pha, R, I
 #%% Wiener-Khinchin定理: 自相关函数的傅里叶变换正是信号的功率谱密度
-
 #%% 例1：滤波器设计
-
 fs = 1000 # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
@@ -72,9 +70,8 @@ f1 = 50  # 通信信号频率 (Hz)
 f2 = 200
 
 signal = np.sin(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t)  # 通信信号
-noise = 0.3 * np.random.randn(t.size)              # 白噪声
-x = signal + noise;         # 最终信号
-
+noise = 0.3 * np.random.randn(t.size)                       # 白噪声
+x = signal + noise;                                         # 最终信号
 
 ## low_pass filter
 #================= IIR -巴特沃兹低通滤波器  =====================
@@ -200,8 +197,18 @@ f2 = (f_noise+2)/(fs/2)
 [Bb, Ba] = scipy.signal.butter(4, [f1, f2], 'bandstop')
 y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 
-fx, Pxx = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
-fy, Pyy = scipy.signal.periodogram(y, fs, ) # window = window_hann, nfft = N2
+def correlogram_method(signal, fs, N):
+    Rxx, lag = xcorr(signal, signal, normed = True, detrend = True, maxlags = signal.size - 1)
+    Rxx = Rxx[N-1:]
+    Rxx = np.fft.fft(Rxx, n = N)
+    Pxx = np.abs(Rxx[0: int(N/2) + 1])
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx
+fx, Pxx = correlogram_method(x, fs, x.size)
+fy, Pyy = correlogram_method(y, fs, y.size)
+
+# fx, Pxx = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
+# fy, Pyy = scipy.signal.periodogram(y, fs, ) # window = window_hann, nfft = N2
 
 ##### plot
 fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)

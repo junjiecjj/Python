@@ -36,7 +36,6 @@ R = 0:dR:Rmax-dR; % range axis
 V = linspace(-Vmax, Vmax, numChirps); % Velocity axis
 ang_ax = -90:90; % angle axis
 
-
 %% 目标参数
 r1_radial = 50; 
 v1_radial = 10; % velocity 1
@@ -149,10 +148,8 @@ xlabel('Velocity (m/s)')
 ylabel('Range (m)')
 title('CA-CFAR')
 
-
 %% 七、角度估计
 % （一）3D-FFT
-
 rangeFFT = fft(RDC(:,1:numChirps,:),N_range);
 angleFFT = fftshift(fft(rangeFFT,length(ang_ax),3),3);
 range_az = squeeze(sum(angleFFT,2)); % range-azimuth map

@@ -9,18 +9,20 @@ https://github.com/trichter/xcorr/tree/master
 """
 
 import numpy as np
-import scipy.signal
+import scipy
+# import scipy.signal
+import matplotlib.pyplot as plt
 
-def _pad_zeros(a, num, num2=None):
+def _pad_zeros(a, num, num2 = None):
     """Pad num zeros at both sides of array a"""
     if num2 is None:
         num2 = num
-    hstack = [np.zeros(num, dtype=a.dtype), a, np.zeros(num2, dtype=a.dtype)]
+    hstack = [np.zeros(num, dtype = a.dtype), a, np.zeros(num2, dtype = a.dtype)]
     return np.hstack(hstack)
 
 def _xcorr_padzeros(a, b, shift, method):
     """
-    Cross-correlation using SciPy with mode='valid' and precedent zero padding
+        Cross-correlation using SciPy with mode='valid' and precedent zero padding
     """
     if shift is None:
         shift = (len(a) + len(b) - 1) // 2
@@ -33,7 +35,7 @@ def _xcorr_padzeros(a, b, shift, method):
 
 def _xcorr_slice(a, b, shift, method):
     """
-    Cross-correlation using SciPy with mode='full' and subsequent slicing
+        Cross-correlation using SciPy with mode='full' and subsequent slicing
     """
     mid = (len(a) + len(b) - 1) // 2
     if shift is None:
@@ -47,9 +49,8 @@ def _xcorr_slice(a, b, shift, method):
 def get_lags(cc):
     """
     Return array with lags
-
-    :param cc: Cross-correlation returned by correlate_maxlag.
-    :return: lags
+        :param cc: Cross-correlation returned by correlate_maxlag.
+        :return: lags
     """
     mid = (len(cc) - 1) / 2
     if len(cc) % 2 == 1:
@@ -60,23 +61,16 @@ def correlate_maxlag(a, b, maxlag, demean = True, normalize = 'naive', method = 
     """
     Cross-correlation of two signals up to a specified maximal lag.
 
-    This function only allows 'naive' normalization with the overall
-    standard deviations. This is a reasonable approximation for signals of
-    similar length and a relatively small maxlag parameter.
+    This function only allows 'naive' normalization with the overall standard deviations. This is a reasonable approximation for signals of similar length and a relatively small maxlag parameter.
     :func:`correlate_template` provides correct normalization.
 
     :param a,b: signals to correlate
-    :param int maxlag: Number of samples to shift for cross correlation.
-        The cross-correlation will consist of ``2*maxlag+1`` or
-        ``2*maxlag`` samples. The sample with zero shift will be in the middle.
+    :param int maxlag: Number of samples to shift for cross correlation. The cross-correlation will consist of ``2*maxlag+1`` or ``2*maxlag`` samples. The sample with zero shift will be in the middle.
     :param bool demean: Demean data beforehand.
-    :param normalize: Method for normalization of cross-correlation.
-        One of ``'naive'`` or ``None``
+    :param normalize: Method for normalization of cross-correlation. One of ``'naive'`` or ``None``.
         ``'naive'`` normalizes by the overall standard deviation.
         ``None`` does not normalize.
-    :param method: correlation method to use.
-        See :func:`scipy.signal.correlate`.
-
+    :param method: correlation method to use. See :func:`scipy.signal.correlate`.
     :return: cross-correlation function.
     """
     a = np.asarray(a)
@@ -107,23 +101,19 @@ def _window_sum(data, window_len):
     # in-place equivalent of
     # window_sum = window_sum[window_len:] - window_sum[:-window_len]
     # return window_sum
-    np.subtract(window_sum[window_len:], window_sum[:-window_len], out=window_sum[:-window_len])
+    np.subtract(window_sum[window_len:], window_sum[:-window_len], out = window_sum[:-window_len])
     return window_sum[:-window_len]
 
 def correlate_template(data, template, mode='valid', demean=True, normalize='full', method='auto'):
     """
     Normalized cross-correlation of two signals with specified mode.
 
-    If you are interested only in a part of the cross-correlation function
-    around zero shift use :func:`correlate_maxlag` which allows to
-    explicetly specify the maximum lag.
+    If you are interested only in a part of the cross-correlation function around zero shift use :func:`correlate_maxlag` which allows to explicetly specify the maximum lag.
 
-    :param data,template: signals to correlate. Template array must be shorter
-        than data array.
+    :param data,template: signals to correlate. Template array must be shorter than data array.
     :param normalize:
         One of ``'naive'``, ``'full'`` or ``None``.
-        ``'full'`` normalizes every correlation properly,
-        whereas ``'naive'`` normalizes by the overall standard deviations.
+        ``'full'`` normalizes every correlation properly, whereas ``'naive'`` normalizes by the overall standard deviations.
         ``None`` does not normalize.
     :param mode: correlation mode to use.
         See :func:`scipy.signal.correlate`.
@@ -132,7 +122,6 @@ def correlate_template(data, template, mode='valid', demean=True, normalize='ful
         for each correlation value.
     :param method: correlation method to use.
         See :func:`scipy.signal.correlate`.
-
     :return: cross-correlation function.
 
     .. note::
@@ -170,8 +159,7 @@ def correlate_template(data, template, mode='valid', demean=True, normalize='ful
             data = _pad_zeros(data, pad1, pad2)
             # in-place equivalent of
             # if demean:
-            #     norm = ((_window_sum(data ** 2, lent) -
-            #              _window_sum(data, lent) ** 2 / lent) * tnorm) ** 0.5
+            #     norm = ((_window_sum(data ** 2, lent) - _window_sum(data, lent) ** 2 / lent) * tnorm) ** 0.5
             # else:
             #      norm = (_window_sum(data ** 2, lent) * tnorm) ** 0.5
             # cc = cc / norm
@@ -181,7 +169,7 @@ def correlate_template(data, template, mode='valid', demean=True, normalize='ful
                     norm /= lent
                 else:
                     norm = norm / lent
-                np.subtract(_window_sum(data ** 2, lent), norm, out=norm)
+                np.subtract(_window_sum(data ** 2, lent), norm, out = norm)
             else:
                 norm = _window_sum(data ** 2, lent)
             norm *= tnorm
@@ -202,7 +190,7 @@ def correlate_template(data, template, mode='valid', demean=True, normalize='ful
 
 ## https://github.com/colizoli/xcorr_python/tree/master
 def xcorr(x, y, normed = True, detrend = True, maxlags = 10):
-    # Cross correlation of two signals of equal length
+    # Cross correlation of two signals of <equal length>
     # Returns the coefficients when normed = True
     # Returns inner products when normed = False
     # Usage: lags, c = xcorr(x, y, maxlags = len(x)-1)
@@ -232,37 +220,6 @@ def xcorr(x, y, normed = True, detrend = True, maxlags = 10):
     c = c[Nx - 1 - maxlags : Nx + maxlags]
     return c, lags
 
-def _test():
-    import matplotlib.pyplot as plt
-
-    np.random.seed(42)
-    N = 200
-    maxlag = 30
-    a = np.random.random(N)
-    start = N // 4
-    b = a[start:-start]
-    cc1 = correlate_maxlag(a, b, maxlag)
-    cc2 = correlate_template(a, b)
-
-    grid = plt.GridSpec(2, 2, wspace=0.4, hspace=0.3)
-    ax1 = plt.subplot(grid[0, 0:])
-    ax2 = plt.subplot(grid[1, 0])
-    ax3 = plt.subplot(grid[1, 1], sharey=ax2)
-    ax1.plot(np.arange(len(a)), a, label='signal a')
-    ax1.plot(np.arange(len(b)) + start, b, label='signal b')
-    ax2.plot(get_lags(cc1), cc1)
-    ax3.plot(cc2)
-    ax1.legend(loc=3)
-    kw = dict(xy=(0.05, 0.95), xycoords='axes fraction', va='top')
-    ax2.annotate('correlate_maxlag(a, b, {})'.format(maxlag), **kw)
-    ax3.annotate('correlate_template(a, b)', **kw)
-    plt.savefig('xcorr_example.png')
-    plt.show()
-
-# if __name__ == '__main__':
-#     _test()
-
-# import matplotlib.pyplot as plt
 
 # np.random.seed(42)
 # N = 200
@@ -272,21 +229,23 @@ def _test():
 # b = a[start:-start]
 # cc1 = correlate_maxlag(a, b, maxlag)
 # cc2 = correlate_template(a, b)
-
-# grid = plt.GridSpec(2, 2, wspace=0.4, hspace=0.3)
+# plt.figure(figsize = (12, 10), constrained_layout = True)
+# grid = plt.GridSpec(2, 2, wspace = 0.4, hspace = 0.3, )
 # ax1 = plt.subplot(grid[0, 0:])
 # ax2 = plt.subplot(grid[1, 0])
-# ax3 = plt.subplot(grid[1, 1], sharey=ax2)
-# ax1.plot(np.arange(len(a)), a, label='signal a')
-# ax1.plot(np.arange(len(b)) + start, b, label='signal b')
+# ax3 = plt.subplot(grid[1, 1], sharey = ax2)
+# ax1.plot(np.arange(len(a)), a, label = 'signal a')
+# ax1.plot(np.arange(len(b)) + start, b, label = 'signal b')
 # ax2.plot(get_lags(cc1), cc1)
 # ax3.plot(cc2)
-# ax1.legend(loc=3)
-# kw = dict(xy=(0.05, 0.95), xycoords='axes fraction', va='top')
+# ax1.legend(loc = 3)
+# kw = dict(xy = (0.05, 0.95), xycoords = 'axes fraction', va = 'top')
 # ax2.annotate('correlate_maxlag(a, b, {})'.format(maxlag), **kw)
 # ax3.annotate('correlate_template(a, b)', **kw)
-# plt.savefig('xcorr_example.png')
+# # plt.savefig('xcorr_example.png')
 # plt.show()
+# plt.close('all')
+
 
 
 

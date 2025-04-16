@@ -44,7 +44,6 @@ t = np.arange(0, T, 1/fs) # 时间向量
 f_signal = 2000  # 通信信号频率 (Hz)
 A_signal = 1    #  信号幅度
 
-
 signal = A_signal * np.cos(2*np.pi*f_signal*t);  # 通信信号
 interference = 0.3 * np.cos(2*np.pi*3000*t);     # 干扰信号 (3000 Hz)
 noise = 0.1 * np.random.randn(t.size)              # 白噪声
