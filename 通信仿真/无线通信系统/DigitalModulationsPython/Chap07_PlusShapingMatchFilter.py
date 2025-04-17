@@ -108,77 +108,77 @@ ax.legend(fontsize = 12)
 plt.show()
 plt.close()
 
-# #%%  Performance of modulations in AWGN
-## 不使用upfirdn函数，手动实现
-# #---------Input Fields------------------------
-# nSym = 10**6 # Number of symbols to transmit
-# EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
-# mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
-# arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
-# coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+#%%  Performance of modulations in AWGN
+# 不使用upfirdn函数，手动实现
+#---------Input Fields------------------------
+nSym = 10**6 # Number of symbols to transmit
+EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
+mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
+arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 
-# # mod_type = 'QAM'
-# # nSym = 10**8
-# # arrayOfM = [4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
+# mod_type = 'QAM'
+# nSym = 10**8
+# arrayOfM = [4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
 
-# beta = 0.3
-# span = 8
-# L = 4
-# p, t, filtDelay = srrcFunction(beta, L, span)
+beta = 0.3
+span = 8
+L = 4
+p, t, filtDelay = srrcFunction(beta, L, span)
 
-# modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
-# colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
-# fig, ax = plt.subplots(nrows = 1, ncols = 1)
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
+fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
-# for i, M in enumerate(arrayOfM):
-#     print(f" {M} in {arrayOfM}")
-#     #-----Initialization of various parameters----
-#     k = np.log2(M)
-#     EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
-#     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
+for i, M in enumerate(arrayOfM):
+    print(f" {M} in {arrayOfM}")
+    #-----Initialization of various parameters----
+    k = np.log2(M)
+    EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
+    SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
 
-#     if mod_type.lower()=='fsk':
-#         modem=modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
-#     else: #for all other modulations
-#         modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
+    if mod_type.lower()=='fsk':
+        modem=modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
+    else: #for all other modulations
+        modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
 
-#     for j, EsN0dB in enumerate(EsN0dBs):
+    for j, EsN0dB in enumerate(EsN0dBs):
 
-#         d = np.random.randint(low=0, high = M, size=nSym) # uniform random symbols from 0 to M-1
-#         u = modem.modulate(d) #modulate
-#         ## Upper sample
-#         v = np.vstack((u, np.zeros((L-1, u.size))))
-#         v = v.T.flatten()
-#         ## plus shaping
-#         s = scipy.signal.convolve(v, p, 'full')
+        d = np.random.randint(low=0, high = M, size=nSym) # uniform random symbols from 0 to M-1
+        u = modem.modulate(d) #modulate
+        ## Upper sample
+        v = np.vstack((u, np.zeros((L-1, u.size))))
+        v = v.T.flatten()
+        ## plus shaping
+        s = scipy.signal.convolve(v, p, 'full')
 
-#         ## channel
-#         r = awgn(s, EsN0dB, L)
+        ## channel
+        r = awgn(s, EsN0dB, L)
 
-#         ## receiver
-#         ## match filter
-#         vCap = scipy.signal.convolve(r, p, 'full')
-#         ## Down sampling
-#         u_hat = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] / L
+        ## receiver
+        ## match filter
+        vCap = scipy.signal.convolve(r, p, 'full')
+        ## Down sampling
+        u_hat = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] / L
 
-#         if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
-#             dCap = modem.demodulate(u_hat, coherence)
-#         else: #demodulate (Refer Chapter 3)
-#             dCap = modem.demodulate(u_hat)
+        if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
+            dCap = modem.demodulate(u_hat, coherence)
+        else: #demodulate (Refer Chapter 3)
+            dCap = modem.demodulate(u_hat)
 
-#         SER_sim[j] = np.sum(dCap != d)/nSym
+        SER_sim[j] = np.sum(dCap != d)/nSym
 
-#     SER_theory = ser_awgn(EbN0dBs, mod_type, M, coherence) #theory SER
-#     ax.semilogy(EbN0dBs, SER_sim, color = colors[i], marker='o', linestyle='', label='Sim '+str(M)+'-'+mod_type.upper())
-#     ax.semilogy(EbN0dBs, SER_theory, color = colors[i], linestyle='-', label='Theory '+str(M)+'-'+mod_type.upper())
+    SER_theory = ser_awgn(EbN0dBs, mod_type, M, coherence) #theory SER
+    ax.semilogy(EbN0dBs, SER_sim, color = colors[i], marker='o', linestyle='', label='Sim '+str(M)+'-'+mod_type.upper())
+    ax.semilogy(EbN0dBs, SER_theory, color = colors[i], linestyle='-', label='Theory '+str(M)+'-'+mod_type.upper())
 
-# ax.set_ylim(1e-6, 1)
-# ax.set_xlabel('Eb/N0(dB)')
-# ax.set_ylabel('SER ($P_s$)')
-# ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over AWGN')
-# ax.legend(fontsize = 12)
-# plt.show()
-# plt.close()
+ax.set_ylim(1e-6, 1)
+ax.set_xlabel('Eb/N0(dB)')
+ax.set_ylabel('SER ($P_s$)')
+ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over AWGN')
+ax.legend(fontsize = 12)
+plt.show()
+plt.close()
 
 
 

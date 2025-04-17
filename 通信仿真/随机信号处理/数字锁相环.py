@@ -62,9 +62,21 @@ for i in range(n):
     phi_hat = v0 * b0 + v1 * b1 + v2 * b2
     phi_hat = np.mod(phi_hat, 2*np.pi)
 
-
 plt.plot(delta_phi)
 
+#%%
+
+
+
+#%%
+
+
+
+#%%
+
+
+
+#%%
 
 
 
