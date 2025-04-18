@@ -64,14 +64,13 @@ def freqDomainView(x, Fs, FFTN, type = 'double'): # N为偶数
 
     return f, Y, A, Pha, R, I
 
-
 #%% Check and investigate components of an analytic signal
 def analytic_signal(x):
     # Generate analytic signal using frequency domain approach
     x = x[:]
     N = x.size
     X = np.fft.fft(x, n = N)
-    spectrum = np.hstack((X[0], 2*X[1:int(N/2)],X[int(N/2)+1], np.zeros(int(N/2)-1)))
+    spectrum = np.hstack((X[0], 2*X[1:int(N/2)], X[int(N/2)+1], np.zeros(int(N/2)-1)))
     z = np.fft.ifft(spectrum, n = N)
     return z
 
@@ -85,11 +84,10 @@ x = 2 * np.sin(2 * np.pi * f0 * t)
 z = scipy.signal.hilbert(x)
 x_hilbert = np.imag(z) ## 解析信号的虚部才是x的hilbert变换结果
 
-## 验证解析信号的频谱只是对应实值信号的正半部分. 解析信号是复值信号，但其频谱是单侧的（只有正频率），保留了原始实值信号的频谱内容
+## 验证解析信号的频谱只是对应实值信号的正半部分. 解析信号是复值信号，但其频谱是单侧的（只有正频率），保留了原始实值信号的频谱内容.
 FFTN = x.size
 fx, Yx, Ax, Phax, Rx, Ix = freqDomainView(x, fs, FFTN, type = 'double')
 fz, Yz, Az, Phaz, Rz, Iz = freqDomainView(z, fs, FFTN, type = 'double')
-
 
 ##### plot
 fig, axs = plt.subplots(4, 1, figsize = (8, 10), constrained_layout = True)
