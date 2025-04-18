@@ -72,7 +72,6 @@ tar1_loc(:,2) = r1(2) + v1_y*t;
 tar2_loc = zeros(length(t),3);
 tar2_loc(:,1) = r2(1) + v2_x*t;
 tar2_loc(:,2) = r2(2) + v2_y*t;
- 
 
 %% TX siganl
 delays_tar1 = cell(numTX,numRX);
