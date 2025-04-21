@@ -102,6 +102,147 @@ plt.show()
 
 #%%>>>>>>>>>>>>>>>>>>>>>>> n-feature 期望最大化算法 (Expectation-Maximization, EM) >>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import multivariate_normal
+
+# 读取数据集
+data = pd.read_csv("Mall_Customers.csv")
+X = data[['Annual Income (k$)', 'Spending Score (1-100)']].values
+
+# 初始化参数
+def initialize_params_fixed(X, K):
+    n, d = X.shape
+    pi = np.ones(K) / K  # 初始化每个混合成分的权重
+    mu = X[np.random.choice(n, K, False), :]  # 随机选择K个初始均值
+    sigma = np.array([np.eye(d) for _ in range(K)])  # 初始化协方差矩阵为单位矩阵
+    return pi, mu, sigma
+
+# 计算多元正态分布
+def multivariate_gaussian(X, mu, sigma):
+    return multivariate_normal(mean = mu, cov = sigma).pdf(X)
+
+# E 步：计算每个点属于每个成分的责任值 (gamma)
+def expectation_step_stable(X, pi, mu, sigma):
+    N = X.shape[0]
+    K = len(pi)
+    gamma = np.zeros((N, K))
+    for k in range(K):
+        try:
+            gamma[:, k] = pi[k] * multivariate_gaussian(X, mu[k], sigma[k])  ## 书上公式(21)(22)
+        except np.linalg.LinAlgError:
+            # 如果协方差矩阵是奇异矩阵，加入微小正则化项以确保正定性
+            sigma[k] += np.eye(X.shape[1]) * 1e-6
+            gamma[:, k] = pi[k] * multivariate_gaussian(X, mu[k], sigma[k])  ##
+    # 防止零除错误，保证数值稳定性
+    gamma_sum = np.sum(gamma, axis = 1, keepdims = True)
+    gamma_sum[gamma_sum == 0] = 1e-10  # 防止除以零
+    gamma = gamma / gamma_sum  ## 书上公式(23)
+    return gamma
+
+# M 步：更新GMM的参数
+def maximization_step(X, gamma):
+    N, d = X.shape
+    K = gamma.shape[1]
+    Nk = np.sum(gamma, axis = 0)  # 计算每个聚类的总责任值
+    pi = Nk / N  # 更新混合系数, 书上公式(24)
+    mu = gamma.T @ X / Nk[:, np.newaxis]  # 更新均值, 书上公式(25)
+    sigma = np.zeros((K, d, d))  # 更新协方差矩阵, 书上公式(26)
+    for k in range(K):
+        X_centered = X - mu[k]
+        gamma_diag = np.diag(gamma[:, k])
+        sigma[k] =  X_centered.T @ gamma_diag @ X_centered / Nk[k]   ##  np.dot(X_centered.T, np.dot(gamma_diag, X_centered)) / Nk[k]
+    return pi, mu, sigma
+
+# 计算对数似然
+def compute_log_likelihood(X, pi, mu, sigma):
+    N = X.shape[0]
+    K = len(pi)
+    log_likelihood = 0
+    for n in range(N):
+        tmp = 0
+        for k in range(K):
+            tmp += pi[k] * multivariate_gaussian(X[n], mu[k], sigma[k])
+        log_likelihood += np.log(tmp)
+    return log_likelihood
+
+# GMM 实现，包含数值稳定性修复
+def gmm_fixed_stable(X, K, max_iter = 100, tol = 1e-6):
+    pi, mu, sigma = initialize_params_fixed(X, K)
+    log_likelihoods = []
+    for i in range(max_iter):
+        # E 步
+        gamma = expectation_step_stable(X, pi, mu, sigma)
+        # M 步
+        pi, mu, sigma = maximization_step(X, gamma)
+        # 添加小的正则化项，确保协方差矩阵为正定
+        sigma += np.eye(sigma.shape[1]) * 1e-6
+        # 计算对数似然
+        log_likelihood = compute_log_likelihood(X, pi, mu, sigma)
+        log_likelihoods.append(log_likelihood)
+        # 检查是否收敛
+        if i > 0 and abs(log_likelihoods[-1] - log_likelihoods[-2]) < tol:
+            break
+    return pi, mu, sigma, log_likelihoods, gamma
+
+# 数据可视化：原始数据分布
+def plot_original_data(X):
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X[:, 0], X[:, 1], c='blue', label='Data points', alpha=0.5)
+    plt.title('Original Data Distribution')
+    plt.xlabel('Annual Income (k$)')
+    plt.ylabel('Spending Score (1-100)')
+    plt.show()
+    return
+
+# 分类结果展示
+def plot_clusters(X, gamma, mu):
+    K = gamma.shape[1]
+    colors = ['r', 'g', 'b', 'y', 'm']
+    plt.figure(figsize = (8, 6))
+    for k in range(K):
+        plt.scatter(X[:, 0], X[:, 1], c = gamma[:, k], cmap = 'viridis', label = f'Cluster {k+1}', alpha = 0.6)
+    plt.scatter(mu[:, 0], mu[:, 1], c = 'black', marker = 'x', s = 100, label = 'Centroids')
+    plt.title('GMM Clustering')
+    plt.xlabel('Annual Income (k$)')
+    plt.ylabel('Spending Score (1-100)')
+    plt.legend()
+    plt.show()
+    return
+
+# 对数似然收敛图
+def plot_log_likelihood(log_likelihoods):
+    plt.figure(figsize = (8, 6))
+    plt.plot( log_likelihoods)
+    plt.title('Log Likelihood Convergence')
+    plt.xlabel('Iterations')
+    plt.ylabel('Log Likelihood')
+    plt.show()
+    return
+
+# 各类别概率分布图
+def plot_probability_distributions(gamma):
+    plt.figure(figsize=(8, 6))
+    K = gamma.shape[1]
+    for k in range(K):
+        plt.hist(gamma[:, k], bins = 20, alpha = 0.5, label = f'Cluster {k+1}')
+    plt.title('Probability Distributions for Each Cluster')
+    plt.xlabel('Probability')
+    plt.ylabel('Number of Points')
+    plt.legend()
+    plt.show()
+    return
+
+# 运行 GMM 算法
+K = 3  # 假设数据有 3 个聚类
+pi, mu, sigma, log_likelihoods, gamma = gmm_fixed_stable(X, K)
+
+# 绘制图形
+plot_original_data(X)  # 原始数据分布图
+plot_clusters(X, gamma, mu)  # 分类结果图
+plot_log_likelihood(log_likelihoods)  # 对数似然收敛图
+plot_probability_distributions(gamma)  # 各类别概率分布图
 
 
 

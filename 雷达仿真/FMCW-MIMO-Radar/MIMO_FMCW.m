@@ -259,7 +259,6 @@ for i = 1:K
     plot(ang_ax,10*log10(abs(s)))
 end
 
-
 % 微多普勒频谱图：
 rBin = 1:256;
 nfft = 2^12;window = 256;noverlap = 200;shift = window - noverlap;

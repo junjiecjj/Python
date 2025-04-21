@@ -113,11 +113,6 @@ for i, alpha in enumerate(alphas):
 
 plt.show()
 
-
-
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>> Tick locators
 import numpy as np
 import matplotlib.pyplot as plt
@@ -147,10 +142,6 @@ ax.grid(axis='l', which='minor', linestyle='--')
 ax.grid(axis='r', which='both', linestyle=':')
 
 plt.show()
-
-
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>> Colored axes
 import matplotlib.pyplot as plt
@@ -258,10 +249,6 @@ for i, rotation in enumerate(rotations):
 
 plt.show()
 
-
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>> Evolutionary game theory
 import matplotlib.pyplot as plt
 import numpy as np
@@ -290,10 +277,6 @@ ax.set_llabel("$x_1$")
 ax.set_rlabel("$x_2$")
 
 plt.show()
-
-
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>> Axis and Tick
 
