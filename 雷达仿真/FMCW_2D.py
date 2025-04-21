@@ -104,9 +104,6 @@ tmp = X_2d[:, :int(Nchirps/2)].copy()
 X_2d[:, :int(Nchirps/2)] = X_2d[:, int(Nchirps/2):]
 X_2d[:, int(Nchirps/2):] = tmp
 
-
-
-
 ## Frequency grids for plotting
 k_axis = np.arange(Ns/2)
 p_axis = np.arange(-Nchirps/2, Nchirps/2, 1)
@@ -137,6 +134,30 @@ ax1.set_title('Magnitude', )
 ax1.view_init(azim = -135, elev = 30)
 plt.show()
 plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
