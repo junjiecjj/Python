@@ -5,7 +5,7 @@ Created on Fri Apr 18 19:43:36 2025
 
 @author: jack
 
-单目标
+单目标，直接利用解析形式的差频信号，利用FFT矩阵进行结算.
 
 """
 
@@ -33,51 +33,110 @@ plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
 
-def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
-    if FFTN == None:
-        FFTN = 2**int(np.ceil(np.log2(x.size)))
-    X = scipy.fftpack.fft(x, n = FFTN)
-    # 消除相位混乱
-    threshold = np.max(np.abs(X)) / 10000
-    X[np.abs(X) < threshold] = 0
-    # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-    X = X/x.size               # 将频域序列 X 除以序列的长度 N
-    if type == 'single':
-        Y = X[0 : int(FFTN/2)+1].copy()       # 提取 X 里正频率的部分,N为偶数
-        Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
-        f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
-        # 计算频域序列 Y 的幅值和相角
-        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
-        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
-        R = np.real(Y)                    # 计算频域序列 Y 的实部
-        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
-    elif type == 'double':
-        f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
-        Y = scipy.fftpack.fftshift(X, )
-        # 计算频域序列 Y 的幅值和相角
-        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
-        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
-        R = np.real(Y)                    # 计算频域序列 Y 的实部
-        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
-    return f, Y, A, Pha, R, I
 
+def FFTmatrix(N):
+     M = np.zeros((N, N), dtype = complex)
+     tmp = np.arange(N)
+     for n in range(N):
+         M[n, :] =  np.exp(-1j*2*np.pi*n*tmp/N)
+     return M
 
-Rmax  = 25     #
-Vmax = 20      #
-Nchirps = 128  #
-Ns = 256       #
-B = 1.5e9      #
-f0 = 77e9      #
-Tc = 50e-6     #
-TRI = 60e-6    # Ramp Repetion Interval
+c = 3e8
+Rmax  = 25     # Maximum Unambiguous Range in meters
+Vmax = 20      # Maximum Velocity in m/s
+Nchirps = 128  # Number of Chirps
+Ns = 256       # Number of Samples per Chirp
+B = 1.5e9      # Sweep Bandwidth in Hz
+f0 = 78e9      # Carrier Frequency in Hz
+Tc = 50e-6     # Chirp Duration in seconds
+TRRI = 60e-6   # Ramp Repetion Interval
 fs = 5e6       # ADC Sampling Rate in Hz
 Ts = 1/fs      #
 S = B/Tc
 
+tarR = 5
+tarV = 10
+
+R_max = (fs * c)/(2*S)
+v_max = c/(4 * Tc * f0)
+print(f"tarR = {tarR}, R_max = {R_max}, tarV = {tarV}, v_max = {v_max}")
+
+Rx = np.zeros((Ns, Nchirps), dtype = complex)
+max_prop = 3 * Rmax/c
+
+## get IF signal
+for nc in range(Nchirps):
+    Sam_idx = np.arange(Ns)
+    t = max_prop + Sam_idx * Ts
+    phase_Tx = 2 * np.pi * f0 * t + np.pi * S * t**2
+    tau = 2*(tarR + tarV * t + tarV * TRRI * nc)/c
+    phase_Rx = 2 * np.pi * f0 *(t - tau) + np.pi * S * (t-tau)**2
+    phase_IF = phase_Tx - phase_Rx
+    Rx[:,nc] = np.cos(phase_IF) + 1j * np.sin(phase_IF)
+
+signal_power = np.sum(np.abs(Rx)**2)/Rx.size
+SNRdB = 20
+noise_pow = signal_power / (10.0**(SNRdB/10.0))
+
+X = Rx + np.sqrt(noise_pow/2) * (np.random.randn(*Rx.shape) + 1j * np.random.randn(*Rx.shape))
+
+## DFT Signal Processing
+F_n = (1/np.sqrt(Ns))*FFTmatrix(Ns)              # DFT matrix with N*N
+F_l = (1/np.sqrt(Nchirps))*FFTmatrix(Nchirps)    # DFT matrix with L*L
+X_2d =  F_n  @ X @ (F_l.T)                       # The expression for finding the 2D DFT
+
+## Range Resolution
+del_R = (Tc * c) / (2 * B * Ts * Ns)
+
+## Velocity Resolution
+del_v = c / (2 * f0 * TRRI * Nchirps)
+
+## Range and velocity limits
+R_axis = np.arange(0, Ns/2 * del_R, del_R)
+v_axis = np.arange(-del_v*Nchirps/2, del_v*Nchirps/2, del_v)
+v_grid, R_grid = np.meshgrid(v_axis, R_axis)
+
+## Accessing only N/2 DFT coeffients
+X_2d = X_2d[:int(Ns/2),:] #   (1:radar_parameters.N/2, :);
+
+## Swap columns with defined limits
+tmp = X_2d[:, :int(Nchirps/2)].copy()
+X_2d[:, :int(Nchirps/2)] = X_2d[:, int(Nchirps/2):]
+X_2d[:, int(Nchirps/2):] = tmp
 
 
 
 
+## Frequency grids for plotting
+k_axis = np.arange(Ns/2)
+p_axis = np.arange(-Nchirps/2, Nchirps/2, 1)
+p_grid, k_grid = np.meshgrid(p_axis, k_axis);
+
+## Plot magnitude of 2D DFT
+fig = plt.figure(figsize=(10, 10) )
+ax1 = fig.add_subplot(111, projection = '3d')
+ax1.plot_surface(p_grid, k_grid, np.abs(X_2d), rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.grid(False)
+ax1.set_proj_type('ortho')
+ax1.set_xlabel('距离门数', )
+ax1.set_ylabel('脉冲数', )
+ax1.set_title('Magnitude', )
+ax1.view_init(azim = -135, elev = 30)
+plt.show()
+plt.close()
+
+## Plot magnitude of 2D DFT
+fig = plt.figure(figsize=(10, 10) )
+ax1 = fig.add_subplot(111, projection = '3d')
+ax1.plot_surface(v_grid, R_grid, np.abs(X_2d), rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.grid(False)
+ax1.set_proj_type('ortho')
+ax1.set_xlabel('Velocity (m/s)', )
+ax1.set_ylabel('Range (m)', )
+ax1.set_title('Magnitude', )
+ax1.view_init(azim = -135, elev = 30)
+plt.show()
+plt.close()
 
 
 

@@ -29,7 +29,6 @@ plt.show()
 
 
 # 4、画个五角星
-
 import networkx as nx
 import matplotlib.pyplot as plt
 #画图！
@@ -53,9 +52,7 @@ nx.draw(G,
 plt.show()
 
 
-
 # 5、加入权重
-
 import random
 G = nx.gnp_random_graph(10,0.3)
 for u,v,d in G.edges(data=True):

@@ -22,7 +22,7 @@ c = 3e8; % Speed of light in m/s
 Rx = adcDataGenerate(radar_parameters,target_range,target_velocity);
 %% Noise Generation
 signal_power = 1; % Signal power
-SNR_dB = -20; % SNR in dB
+SNR_dB = 20; % SNR in dB
 
 % Convert SNR from dB to linear scale
 SNR_linear = db2pow(SNR_dB);
@@ -89,12 +89,9 @@ zlabel('Magnitude');
 title('3D Plot of 2D DFT Magnitude in Range and Velocity');
 
 R_max=(radar_parameters.f_s*c)/(2*radar_parameters.S);
-% disp(R_max);
+disp(R_max);
 v_max=c/(4*radar_parameters.T*radar_parameters.f_start);
-% disp(v_max);
-
-disp(del_R)
-disp(del_v)
+disp(v_max);
 
 % Function adcDataGenerate that simulates the data from the given structue radarparamets
 function Rx = adcDataGenerate(radar_parameters, target_range, target_velocity)
