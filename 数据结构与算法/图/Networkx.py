@@ -26,12 +26,10 @@ nx.draw(G, with_labels=True, edge_color='b', node_color='g', node_size=1000)
 plt.show()
 #plt.savefig('./generated_image.png') 如果你想保存图片，去除这句的注释
 
-
-
 # 4、画个五角星
 import networkx as nx
 import matplotlib.pyplot as plt
-#画图！
+#画图
 G = nx.Graph()
 G.add_node(1)
 G.add_nodes_from([2,3,4,5])
@@ -51,7 +49,6 @@ nx.draw(G,
        )
 plt.show()
 
-
 # 5、加入权重
 import random
 G = nx.gnp_random_graph(10,0.3)
@@ -67,7 +64,6 @@ plt.show()
 
 
 # 6、有向图
-
 import matplotlib.pyplot as plt
 import networkx as nx
 
