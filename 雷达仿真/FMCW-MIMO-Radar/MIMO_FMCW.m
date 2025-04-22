@@ -236,6 +236,12 @@ title('MUSIC Range-Angle Map')
 clim = get(gca,'clim');
 
 % （五）压缩感知
+numTheta = length(ang_ax); % divide FOV into fine grid
+B = a1; % steering vector matrix or dictionary, also called basis matrix
+% s = ones(numTheta,1);
+% psix = dftmtx(numTheta);
+% inv_psix = conj(psix)/numTheta;
+% cap_theta = B*psix; % random measurement of basis function
 figure;
 hold on; grid on;
 title('Angle Estimation with Compressed Sensing')
@@ -250,19 +256,24 @@ for i = 1:K
     %     minimize(norm(alphax,1))
     %     pow_p(norm(A-cap_theta*alphax,2),2) <= 1;
     %     norm(A-cap_theta*alphax,2) <= 1;
+
     %     minimize(norm(A-cap_theta*alphax,1))
         minimize(norm(s,1))
         norm(A-B*s,2) <= 1;
     cvx_end
     cvx_status
     cvx_optval
-    plot(ang_ax,10*log10(abs(s)))
+    plot(ang_ax, 10*log10(abs(s)))
 end
 
 % 微多普勒频谱图：
+frameDuration = 20e-3; % 40e-3
 rBin = 1:256;
-nfft = 2^12;window = 256;noverlap = 200;shift = window - noverlap;
-sx = myspecgramnew(sum(RDC(rBin,:,:)),window,nfft,shift); % mti filter and IQ correction
+nfft = 2^12;
+window = 256;
+noverlap = 200;
+shift = window - noverlap;
+sx = myspecgramnew(sum(RDC(rBin,:,:)), window, nfft, shift); % mti filter and IQ correction
 sx2 = abs(flipud(fftshift(sx,1)));
 timeAxis = [1:numCPI]*frameDuration; % Time
 freqAxis = linspace(-PRF/2,PRF/2,nfft); % Frequency Axis

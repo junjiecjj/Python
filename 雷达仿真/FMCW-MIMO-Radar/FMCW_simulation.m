@@ -350,8 +350,7 @@ for i = 1:K
     cvx_end
     cvx_status
     cvx_optval
-
-    plot(ang_ax,10*log10(abs(s)))
+    plot(ang_ax, 10*log10(abs(s)))
 end
 
 %% Compressed Sensing - Range AoA Map doesn't work

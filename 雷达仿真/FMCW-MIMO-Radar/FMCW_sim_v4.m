@@ -121,7 +121,6 @@ head = zeros(3,numChirps);
 neck = zeros(3,numChirps);
 disp('Processing head ...')
 for k = 1:numChirps
-    
     head(:,k) = tar_loc(4,:,k);
     neck(:,k) = tar_loc(3,:,k);
     headlen = sqrt(sum((head(:,k)-neck(:,k)).^2));
@@ -159,7 +158,6 @@ base = zeros(3,numChirps);
 torso = zeros(3,numChirps);
 disp('Processing torso ...')
 for k = 1:numChirps
-    
     base(:,k) = tar_loc(1,:,k);
     neck(:,k) = tar_loc(3,:,k);
     torsolen = sqrt(sum((neck(:,k)-base(:,k)).^2));
@@ -195,7 +193,6 @@ target_id = 5;
 lshoulder = zeros(3,numChirps);
 disp('Processing left shoulder ...')
 for k = 1:numChirps
-    
     lshoulder(:,k) = tar_loc(5,:,k);
     neck(:,k) = tar_loc(3,:,k);
     shoulderlen = sqrt(sum((neck(:,k)-lshoulder(:,k)).^2));
@@ -230,7 +227,6 @@ target_id = 9;
 rshoulder = zeros(3,numChirps);
 disp('Processing right shoulder ...')
 for k = 1:numChirps
-    
     rshoulder(:,k) = tar_loc(9,:,k);
     neck(:,k) = tar_loc(3,:,k);
     shoulderlen = sqrt(sum((neck(:,k)-rshoulder(:,k)).^2));
@@ -266,7 +262,6 @@ lelbow = zeros(3,numChirps);
 lupperarm = zeros(3,numChirps);
 disp('Processing left upper arm ...')
 for k = 1:numChirps
-    
     lshoulder(:,k) = tar_loc(5,:,k);
     lelbow(:,k) = tar_loc(6,:,k);
     upperarmlen = sqrt(sum((lelbow(:,k)-lshoulder(:,k)).^2));
@@ -303,7 +298,6 @@ relbow = zeros(3,numChirps);
 rupperarm = zeros(3,numChirps);
 disp('Processing right upper arm ...')
 for k = 1:numChirps
-    
     rshoulder(:,k) = tar_loc(9,:,k);
     relbow(:,k) = tar_loc(10,:,k);
     upperarmlen = sqrt(sum((relbow(:,k)-rshoulder(:,k)).^2));
@@ -339,7 +333,6 @@ target_id = 8;
 lhand = zeros(3,numChirps);
 disp('Processing left lower arm ...')
 for k = 1:numChirps
-    
     lhand(:,k) = tar_loc(8,:,k);
     lelbow(:,k) = tar_loc(6,:,k);
     lowerarmlen = sqrt(sum((lelbow(:,k)-lhand(:,k)).^2));
@@ -374,7 +367,6 @@ target_id = 12;
 rhand = zeros(3,numChirps);
 disp('Processing right lower arm ...')
 for k = 1:numChirps
-    
     rhand(:,k) = tar_loc(12,:,k);
     relbow(:,k) = tar_loc(10,:,k);
     lowerarmlen = sqrt(sum((relbow(:,k)-rhand(:,k)).^2));
@@ -409,7 +401,6 @@ target_id = 13;
 lhip = zeros(3,numChirps);
 disp('Processing left hip ...')
 for k = 1:numChirps
-    
     lhip(:,k) = tar_loc(13,:,k);
     base(:,k) = tar_loc(1,:,k);
     hiplen = sqrt(sum((lhip(:,k)-base(:,k)).^2));
@@ -444,7 +435,6 @@ target_id = 17;
 rhip = zeros(3,numChirps);
 disp('Processing right hip ...')
 for k = 1:numChirps
-    
     rhip(:,k) = tar_loc(17,:,k);
     base(:,k) = tar_loc(1,:,k);
     hiplen = sqrt(sum((rhip(:,k)-base(:,k)).^2));
@@ -480,7 +470,6 @@ lknee = zeros(3,numChirps);
 lupperleg = zeros(3,numChirps);
 disp('Processing left upper leg ...')
 for k = 1:numChirps
-    
     lhip(:,k) = tar_loc(13,:,k);
     lknee(:,k) = tar_loc(14,:,k);
     upperleglen = sqrt(sum((lhip(:,k)-lknee(:,k)).^2));
@@ -517,7 +506,6 @@ rknee = zeros(3,numChirps);
 rupperleg = zeros(3,numChirps);
 disp('Processing right upper leg ...')
 for k = 1:numChirps
-    
     rhip(:,k) = tar_loc(17,:,k);
     rknee(:,k) = tar_loc(18,:,k);
     upperleglen = sqrt(sum((rhip(:,k)-rknee(:,k)).^2));
@@ -554,7 +542,6 @@ lankle = zeros(3,numChirps);
 llowerleg = zeros(3,numChirps);
 disp('Processing left lower leg ...')
 for k = 1:numChirps
-    
     lankle(:,k) = tar_loc(15,:,k);
     lknee(:,k) = tar_loc(14,:,k);
     lowerleglen = sqrt(sum((lankle(:,k)-lknee(:,k)).^2));
@@ -591,7 +578,6 @@ rankle = zeros(3,numChirps);
 rlowerleg = zeros(3,numChirps);
 disp('Processing right lower leg ...')
 for k = 1:numChirps
-    
     rankle(:,k) = tar_loc(19,:,k);
     rknee(:,k) = tar_loc(18,:,k);
     lowerleglen = sqrt(sum((rankle(:,k)-rknee(:,k)).^2));
@@ -863,7 +849,6 @@ end
 % close(writerObj);
         
 %% Micro-Doppler spectrogram
-
 rBin = 1:256;
 nfft = 2^12;window = 256;noverlap = 200;shift = window - noverlap;
 sx = myspecgramnew(sum(fft(RDC(rBin,:,:))),window,nfft,shift); % mti filter and IQ correction
