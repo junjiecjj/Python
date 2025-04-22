@@ -35,8 +35,7 @@ R = 0:dR:Rmax-dR; % range axis
 V = linspace(-Vmax, Vmax, numChirps); % Velocity axis
 ang_ax = -90:90; % angle axis
 
-%% Targets
-
+%% 目标参数
 r1_radial = 50;
 tar1_angle = -15;
 r1_y = cosd(tar1_angle)*r1_radial;
@@ -54,14 +53,14 @@ v2_radial = -15; % velocity 2
 v2_y = cosd(tar2_angle)*v2_radial;
 v2_x = sind(tar2_angle)*v2_radial;
 r2 = [r2_x r2_y 0];
-
+%发射天线位置
 tx_loc = cell(1,numTX);
 for i = 1:numTX
    tx_loc{i} = [(i-1)*d_tx 0 0];
    scatter3(tx_loc{i}(1),tx_loc{i}(2),tx_loc{i}(3),'b','filled')
    hold on
 end
-
+% 接收天线位置
 rx_loc = cell(1,numRX);
 for i = 1:numRX
    rx_loc{i} = [tx_loc{numTX}(1)+d_tx+(i-1)*d_rx 0 0];
@@ -80,7 +79,7 @@ tar2_loc(:,2) = r2(2) + v2_y*t;
 %     scatter3(tar2_loc(i,1),tar2_loc(i,2),tar2_loc(i,3),'k')
 % end
 
-%% TX
+%% TX siganl
 delays_tar1 = cell(numTX,numRX);
 delays_tar2 = cell(numTX,numRX);
 r1_at_t = cell(numTX,numRX);
@@ -102,7 +101,7 @@ for i = 1:numTX
     end
 end
 
-%% Complex signal
+%% 四、接收信号模型 Complex signal
 phase = @(tx,fx) 2*pi*(fx.*tx+slope/2*tx.^2); % transmitted
 phase2 = @(tx,fx,r,v) 2*pi*(2*fx*r/c+tx.*(2*fx*v/c + 2*slope*r/c)); % downconverted
 
@@ -156,8 +155,7 @@ xlim([0 0.1e-4])
 xlabel('Time (sec)');
 ylabel('Amplitude');
 
-%% Post processing - 2-D FFT
-
+%% 五、2D-FFT
 RDC = reshape(cat(3,mixed{:}),numADC,numChirps*numCPI,numRX*numTX); % radar data cube
 RDMs = zeros(numADC,numChirps,numTX*numRX,numCPI);
 for i = 1:numCPI
@@ -174,8 +172,7 @@ caxis([clim(1)/2 0])
 xlabel('Velocity (m/s)');
 ylabel('Range (m)');
 
-%% CA-CFAR
-
+%%  六、CA-CFAR
 numGuard = 2; % # of guard cells
 numTrain = numGuard*2; % # of training cells
 P_fa = 1e-5; % desired false alarm rate 
@@ -190,8 +187,8 @@ xlabel('Velocity (m/s)')
 ylabel('Range (m)')
 title('CA-CFAR')
 
-%% Angle Estimation - FFT
-
+%% 七、角度估计
+% （一）3D-FFT
 rangeFFT = fft(RDC(:,1:numChirps,:),N_range);
 
 angleFFT = fftshift(fft(rangeFFT,length(ang_ax),3),3);
@@ -216,7 +213,6 @@ xlabel('Azimuth Angle')
 ylabel('dB')
 
 %% Angle Estimation - MUSIC phased.Toolbox
-
 % virt_Array = phased.ULA('NumElements',numRX*numTX,'ElementSpacing',d_rx);
 % estimator = phased.MUSICEstimator('SensorArray',virt_Array,'OperatingFrequency',fc,...
 %     'DOAOutputPort',true,'NumSignalsSource','Property','NumSignals',1,'ScanAngles',ang_ax);
@@ -245,8 +241,7 @@ ylabel('dB')
 % title('MUSIC Range-Angle Map')
 % clim = get(gca,'clim');
 
-%% Angle Estimation - MUSIC Pseudo Spectrum
-
+% （二）MUSIC算法
 d = 0.5;
 M = numCPI; % # of snapshots
 
@@ -281,8 +276,7 @@ for k = 1:K
     plot(ang_ax,log10(abs(music_spectrum(k,:))));
 end
 
-%% Point Cloud
-
+% （三）点云生成
 [~, I] = max(music_spectrum(2,:));
 angle1 = ang_ax(I);
 [~, I] = max(music_spectrum(1,:));
@@ -298,7 +292,7 @@ scatter3(coor2(1),coor2(2),coor2(3),100,'b','filled','linewidth',9)
 xlabel('Range (m) X')
 ylabel('Range (m) Y')
 zlabel('Range (m) Z')
-%% MUSIC Range-AoA map
+% （四）MUSIC 距离-AOA谱
 rangeFFT = fft(RDC);
 for i = 1:N_range
     Rxx = zeros(numTX*numRX,numTX*numRX);
@@ -328,7 +322,7 @@ ylabel('Range (m)')
 title('MUSIC Range-Angle Map')
 clim = get(gca,'clim');
 
-%% Angle Estimation - Compressed Sensing
+%% Angle Estimation - （五）压缩感知
 numTheta = length(ang_ax); % divide FOV into fine grid
 B = a1; % steering vector matrix or dictionary, also called basis matrix
 % s = ones(numTheta,1);
@@ -361,7 +355,6 @@ for i = 1:K
 end
 
 %% Compressed Sensing - Range AoA Map doesn't work
-
 % for i = 1:N_range
 %     A = squeeze(sum(rangeFFT(i,1:numChirps,:),2));
 %     cvx_begin quiet
