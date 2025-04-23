@@ -51,8 +51,7 @@ function create_body_model(body_index)
     rankle = body_index(:,19);
     ltoe = body_index(:,16);
     rtoe = body_index(:,20);
-    
-    
+
     headlen = sqrt(sum((head(:,1)-neck(:,1)).^2));
     shoulderlen = sqrt(sum((neck(:,1)-lshoulder(:,1)).^2)); 
     torsolen = sqrt(sum((neck(:,1)-base(:,1)).^2));
@@ -63,10 +62,9 @@ function create_body_model(body_index)
     upperarmlen = sqrt(sum((lelbow(:,1)-lshoulder(:,1)).^2));
     lowerarmlen = sqrt(sum((lelbow(:,1)-lhand(:,1)).^2));
 
-
-%     for i = 1:size(koordinatlar,2)
-%         if mod(i,160)==0
-i=1;
+    %     for i = 1:size(koordinatlar,2)
+    %         if mod(i,160)==0
+    i=1;
             clf
             hold on
             [x,y,z] = cylinder2P(neck(:,i)',head(:,i)',0.04,10);
