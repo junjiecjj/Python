@@ -108,9 +108,9 @@ for i = 1:numTX
     for j = 1:numRX
         disp(['Processing Channel: ' num2str(j) '/' num2str(numRX)]);
         for k = 1:numChirps*numCPI
-            phase_t = phase(t_onePulse,fc);
-            phase_1 = phase(t_onePulse-delays_tar1{i,j}(k*numADC),fc); % received
-            phase_2 = phase(t_onePulse-delays_tar2{i,j}(k*numADC),fc);
+            phase_t = phase(t_onePulse, fc);
+            phase_1 = phase(t_onePulse-delays_tar1{i,j}(k*numADC), fc); % received
+            phase_2 = phase(t_onePulse-delays_tar2{i,j}(k*numADC), fc);
             signal_t((k-1)*numADC+1:k*numADC) = exp(1j*phase_t);
             signal_1((k-1)*numADC+1:k*numADC) = exp(1j*(phase_t - phase_1));
             signal_2((k-1)*numADC+1:k*numADC) = exp(1j*(phase_t - phase_2));
