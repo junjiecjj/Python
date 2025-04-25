@@ -186,8 +186,6 @@ def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
 
     return RDM_mask, cfar_ranges, cfar_dopps, K
 
-
-
 #%% 六、CA-CFAR
 numGuard = 2            # of guard cells
 numTrain = numGuard*2   # of training cells
@@ -205,6 +203,10 @@ ax2.set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label = '强度 (dB)')
 plt.show()
 plt.close()
+
+#%% 七、角度估计
+## （一）3D-FFT
+
 
 
 
