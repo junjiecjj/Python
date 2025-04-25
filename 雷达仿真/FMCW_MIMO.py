@@ -175,17 +175,13 @@ def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
 
     cfar_ranges, cfar_dopps = np.where(RDM_mask != 0)     # cfar detected range bins
     ## remaining part is for target location estimation
-    rem_range = np.zeros(cfar_ranges.size)
-    rem_dopp = np.zeros(cfar_dopps.size)
+    remove_idx = []
     for i in range(1, cfar_ranges.size):
        if (np.abs(cfar_ranges[i] - cfar_ranges[i-1]) <= 5) and (np.abs(cfar_dopps[i] - cfar_dopps[i-1]) <= 5):
-           rem_range[i] = i                # redundant range indices to be removed
-           rem_dopp[i] = i                 # redundant doppler indices to be removed
+           remove_idx.append(i)
 
-    rem_range = np.nonzero(rem_range)[0]   #  filter zeros
-    rem_dopp = np.nonzero(rem_dopp)[0]     #  filter zeros
-    cfar_ranges(rem_range) = []
-    cfar_dopps(rem_dopp) = []
+    cfar_ranges = np.delete(cfar_ranges, remove_idx)
+    cfar_dopps = np.delete(cfar_dopps, remove_idx)
     K = cfar_dopps.size                    # of detected targets
 
     return RDM_mask, cfar_ranges, cfar_dopps, K
