@@ -164,7 +164,7 @@ title('CA-CFAR')
 
 %% 七、角度估计
 %% （一）3D-FFT
-rangeFFT = fft(RDC(:,1:numChirps,:),N_range);
+rangeFFT = fft(RDC(:,1:numChirps,:), N_range);
 angleFFT = fftshift(fft(rangeFFT,length(ang_ax),3),3);
 range_az = squeeze(sum(angleFFT,2)); % range-azimuth map
 figure(4);

@@ -206,8 +206,19 @@ plt.close()
 
 #%% 七、角度估计
 ## （一）3D-FFT
-
-
+rangeFFT = scipy.fft.fft(RDC[:,:numChirps,:], N_range)
+angleFFT = scipy.fft.fftshift(scipy.fft.fft(rangeFFT, ang_ax.size, 3), 3)
+range_az = squeeze(sum(angleFFT,2));           #  range-azimuth map
+# figure(4);
+# colormap(jet)
+# % imagesc(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:)))));
+# mesh(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:)))));
+# xlabel('Azimuth Angle')
+# ylabel('Range (m)')
+# title('FFT Range-Angle Map')
+# set(gca,'clim', [-35, 0])
+doas = zeros(K,181);       #  direction of arrivals
+#
 
 
 
