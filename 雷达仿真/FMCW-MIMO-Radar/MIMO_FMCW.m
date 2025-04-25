@@ -4,40 +4,40 @@ close all;
 
 % https://blog.csdn.net/qq_35844208/article/details/128547667
 %% Radar parameters
-c = physconst('LightSpeed'); %speed of light
-BW = 150e6; %bandwidth 有效
-fc = 77e9; % carrier frequency
-numADC = 256; % # of adc samples
-numChirps = 256; % # of chirps per frame
+c = 3e8           % physconst('LightSpeed'); %speed of light
+BW = 150e6;       % bandwidth 有效
+fc = 77e9;        % carrier frequency
+numADC = 256;     % # of adc samples
+numChirps = 256;  % # of chirps per frame
 numCPI = 10;
-T = 10e-6; % PRI，默认不存在空闲时间
+T = 10e-6;        % PRI，默认不存在空闲时间
 PRF = 1/T;
-Fs = numADC/T; % sampling frequency
-dt = 1/Fs; % sampling interval
+Fs = numADC/T;    % sampling frequency
+dt = 1/Fs;        % sampling interval
 slope = BW/T;
 lambda = c/fc;
 N = numChirps*numADC*numCPI; % total # of adc samples
-t = linspace(0,T*numChirps*numCPI,N); % time axis, one frame 等间隔时间/点数
+t = linspace(0, T*numChirps*numCPI, N); % time axis, one frame 等间隔时间/点数
 t_onePulse = 0:dt:dt*numADC-dt; %单chirp时间
 numTX = 1;
-numRX = 8; %等效后
+numRX = 8;           % 等效后
 Vmax = lambda/(T*4); % Max Unamb velocity m/s
-DFmax = 1/2*PRF; % = Vmax/(c/fc/2); % Max Unamb Dopp Freq
-dR = c/(2*BW); % range resol
+DFmax = 1/2*PRF;     % = Vmax/(c/fc/2); % Max Unamb Dopp Freq
+dR = c/(2*BW);       % range resol
 Rmax = Fs*c/(2*slope); % TI's MIMO Radar doc
-Rmax2 = c/2/PRF; % lecture 2.3
+Rmax2 = c/2/PRF;     % lecture 2.3
 dV = lambda/(2*numChirps*T); % velocity resol, lambda/(2*framePeriod)
-d_rx = lambda/2; % dist. between rxs
-d_tx = 4*d_rx; % dist. between txs
-N_Dopp = numChirps; % length of doppler FFT
-N_range = numADC; % length of range FFT
+d_rx = lambda/2;     % dist. between rxs
+d_tx = 4*d_rx;       % dist. between txs
+N_Dopp = numChirps;  % length of doppler FFT
+N_range = numADC;    % length of range FFT
 N_azimuth = numTX*numRX;
-R = 0:dR:Rmax-dR; % range axis
+R = 0:dR:Rmax-dR;   % range axis
 V = linspace(-Vmax, Vmax, numChirps); % Velocity axis
-ang_ax = -90:90; % angle axis
+ang_ax = -90:90;    % angle axis
 
 %% 目标参数
-r1_radial = 50; 
+r1_radial = 50;
 v1_radial = 10; % velocity 1
 tar1_angle = -10;
 r1_y = cosd(tar1_angle)*r1_radial;
@@ -85,17 +85,17 @@ tar1_velocities = cell(numTX,numRX);
 tar2_velocities = cell(numTX,numRX);
 for i = 1:numTX
     for j = 1:numRX
-        delays_tar1{i,j} = (vecnorm(tar1_loc-repmat(rx_loc{j},N,1),2,2) + vecnorm(tar1_loc-repmat(tx_loc{i},N,1),2,2))/c; 
+        delays_tar1{i,j} = (vecnorm(tar1_loc-repmat(rx_loc{j},N,1),2,2) + vecnorm(tar1_loc-repmat(tx_loc{i},N,1),2,2))/c;
         delays_tar2{i,j} = (vecnorm(tar2_loc-repmat(rx_loc{j},N,1),2,2) + vecnorm(tar2_loc-repmat(tx_loc{i},N,1),2,2))/c;
     end
 end
 %% 四、接收信号模型 Complex signal
-phase = @(tx,fx) 2*pi*(fx.*tx+slope/2*tx.^2); % transmitted
-phase2 = @(tx,fx,r,v) 2*pi*(2*fx*r/c+tx.*(2*fx*v/c + 2*slope*r/c)); % downconverted
+phase = @(tx, fx) 2*pi*(fx.*tx + slope/2*tx.^2); % transmitted
+phase2 = @(tx, fx, r, v) 2*pi*(2*fx*r/c + tx.*(2*fx*v/c + 2*slope*r/c)); % downconverted
 % f_oneChirp =  slope*t(1:sum(t<=T));
 % f_t = repmat(f_oneChirp,1,numChirps*numCPI)-(BW/2); % transmit freq
-% f_t = BW/2*sawtooth(t/T*2*pi); 
-fr1 = 2*r1(2)*slope/c; 
+% f_t = BW/2*sawtooth(t/T*2*pi);
+fr1 = 2*r1(2)*slope/c;
 fr2 = 2*r2(2)*slope/c;
 fd1 = 2*v1_radial*fc/c; % doppler freq
 fd2 = 2*v2_radial*fc/c;
@@ -103,10 +103,10 @@ f_if1 = fr1 + fd1;      % beat or IF freq
 f_if2 = fr2 + fd2;
 % mixed1 = cell(numTX,numRX);
 % mixed2 = cell(numTX,numRX);
-mixed = cell(numTX,numRX);
+mixed = cell(numTX, numRX);
 for i = 1:numTX
     for j = 1:numRX
-        disp(['Processing Channel: ' num2str(j) '/' num2str(numRX)]);
+        % disp(['Processing Channel: ' num2str(j) '/' num2str(numRX)]);
         for k = 1:numChirps*numCPI
             phase_t = phase(t_onePulse, fc);
             phase_1 = phase(t_onePulse-delays_tar1{i,j}(k*numADC), fc); % received
@@ -119,12 +119,26 @@ for i = 1:numTX
     end
 end
 
+nADC = 3
+nCC = 2
+nTx = 2
+nRx = 3
+N = nADC*nCC
+a = cell(nTx, nRx);
+for i = 1:nTx
+    for j = 1:nRx
+        a{i,j} = ((i-1)*nRx+j-1)*N+1:((i-1)*nRx+j-1)*N+N;
+    end
+end
+c = cat(3, a{:});
+d = reshape(cat(3, a{:}), nADC, nCC, nRx*nTx);
+
 %% 五、2D-FFT
-RDC = reshape(cat(3,mixed{:}),numADC,numChirps*numCPI,numRX*numTX); % radar data cube
-RDMs = zeros(numADC,numChirps,numTX*numRX,numCPI);
+RDC = reshape(cat(3,mixed{:}), numADC, numChirps*numCPI, numRX*numTX); % radar data cube
+RDMs = zeros(numADC,numChirps, numTX*numRX, numCPI);
 for i = 1:numCPI
-    RD_frame = RDC(:,(i-1)*numChirps+1:i*numChirps,:);
-    RDMs(:,:,:,i) = fftshift(fft2(RD_frame,N_range,N_Dopp),2);
+    RD_frame = RDC(:, (i-1)*numChirps+1:i*numChirps, :);
+    RDMs(:,:,:,i) = fftshift(fft2(RD_frame, N_range, N_Dopp), 2);
 end
 figure(2);
 imagesc(V,R,20*log10(abs(RDMs(:,:,1,1))/max(max(abs(RDMs(:,:,1,1))))));
@@ -134,11 +148,11 @@ clim = get(gca,'clim');
 caxis([clim(1)/2 0])
 xlabel('Velocity (m/s)');
 ylabel('Range (m)');
- 
+
 %%  六、CA-CFAR
 numGuard = 2; % # of guard cells
 numTrain = numGuard*2; % # of training cells
-P_fa = 1e-5; % desired false alarm rate 
+P_fa = 1e-5; % desired false alarm rate
 SNR_OFFSET = -5; % dB
 RDM_dB = 10*log10(abs(RDMs(:,:,1,1))/max(max(abs(RDMs(:,:,1,1)))));
 [RDM_mask, cfar_ranges, cfar_dopps, K] = ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET);
@@ -155,8 +169,8 @@ angleFFT = fftshift(fft(rangeFFT,length(ang_ax),3),3);
 range_az = squeeze(sum(angleFFT,2)); % range-azimuth map
 figure(4);
 colormap(jet)
-% imagesc(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:))))); 
-mesh(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:))))); 
+% imagesc(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:)))));
+mesh(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:)))));
 xlabel('Azimuth Angle')
 ylabel('Range (m)')
 title('FFT Range-Angle Map')
@@ -230,7 +244,7 @@ for i = 1:N_range
 end
 figure(7);
 colormap(jet)
-imagesc(ang_ax,R,20*log10(abs(range_az_music)./max(abs(range_az_music(:))))); 
+imagesc(ang_ax,R,20*log10(abs(range_az_music)./max(abs(range_az_music(:)))));
 xlabel('Azimuth')
 ylabel('Range (m)')
 title('MUSIC Range-Angle Map')

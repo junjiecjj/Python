@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 import scipy
 
 # 全局设置字体大小
-plt.rcParams["font.family"] = "Times New Roman"
-# plt.rcParams["font.family"] = "SimSun"
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
 plt.rcParams['font.size'] = 18               # 设置全局字体大小
 plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
 plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
@@ -32,17 +32,17 @@ plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
 
-# %% Radar parameters
-c = 3e8                    # speed of light
-BW = 150e6                  # bandwidth 有效
-fc = 77e9                  # carrier frequency
-numADC = 256               # of adc samples
-numChirps = 256            # of chirps per frame
+#%% Radar parameters
+c = 3e8                      # speed of light
+BW = 150e6                   # bandwidth 有效
+fc = 77e9                    # carrier frequency
+numADC = 256                 # of adc samples
+numChirps = 256              # of chirps per frame
 numCPI = 10
-T = 10e-6                    # PRI，默认不存在空闲时间
-PRF = 1/T
-Fs = numADC/T                # sampling frequency
-dt = 1/Fs                    # sampling interval
+T = 10e-6                     # PRI, 默认不存在空闲时间
+PRF = 1/T                     #
+Fs = numADC/T                 # sampling frequency
+dt = 1/Fs                     # sampling interval
 slope = BW/T
 lamba = c/fc
 N = numChirps*numADC*numCPI                       # total of adc samples
@@ -52,10 +52,10 @@ numTX = 1
 numRX = 8                             # 等效后
 dR = c/(2*BW)                         # range resol
 Rmax = Fs*c/(2*slope)                 # TI's MIMO Radar doc
-# Rmax2 = c/2/PRF                       # lecture 2.3
+# Rmax2 = c/2/PRF                     # lecture 2.3
 dV = lamba/(2*numChirps*T)            # velocity resol, lambda/(2*framePeriod)
 Vmax = lamba/(4*T)                    # Max Unamb velocity m/s
-# DFmax = 1/2*PRF                       # = Vmax/(c/f0/2); % Max Unamb Dopp Freq
+# DFmax = 1/2*PRF                     # = Vmax/(c/f0/2); % Max Unamb Dopp Freq
 d_rx = lamba/2                        # dist. between rxs
 d_tx = 4*d_rx                         # dist. between txs
 N_Dopp = numChirps                    # length of doppler FFT
@@ -65,7 +65,7 @@ R = np.arange(0, Rmax, dR)                   # range axis
 V = np.linspace(-Vmax, Vmax, numChirps)      # Velocity axis
 ang_ax = np.arange(-90, 91)                  # angle axis
 
-# %%目标参数
+#%% 目标参数
 r1_radial = 50
 v1_radial = 10     #  velocity 1
 tar1_angle = -10
@@ -112,7 +112,7 @@ tar1_velocities = np.zeros((numTX, numRX, N))
 tar2_velocities = np.zeros((numTX, numRX, N))
 for i in range(numTX):
     for j in range(numRX):
-        delays_tar1[i,j,:] = (np.linalg.norm(tar1_loc - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) +  np.linalg.norm(tar1_loc - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
+        delays_tar1[i,j,:] = (np.linalg.norm(tar1_loc - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) + np.linalg.norm(tar1_loc - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
         delays_tar2[i,j,:] = (np.linalg.norm(tar2_loc - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) + np.linalg.norm(tar2_loc - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
 
 #%% 接收信号模型 Complex signal
@@ -129,39 +129,86 @@ f_if2 = fr2 + fd2
 mixed = np.zeros((numTX, numRX, N), dtype = complex)
 for i in range(numTX):
     for j in range(numRX):
+        signal_1 = np.zeros(N, dtype = complex)
+        signal_2 = np.zeros(N, dtype = complex)
         for k in range(numChirps*numCPI):
-            signal_1 = np.zeros(N, dtype = complex)
-            signal_2 = np.zeros(N, dtype = complex)
             phase_t = phase(t_onePulse, fc)
-            phase_1 = phase(t_onePulse-delays_tar1[i,j][int(k*numADC)], fc)      # received
-            phase_2 = phase(t_onePulse-delays_tar2[i,j][int(k*numADC)], fc)
-            # signal_t[int(k*numADC):int((k+1)*numADC)] = np.exp(1j*phase_t)
+            phase_1 = phase(t_onePulse - delays_tar1[i,j][int((k+1)*numADC)-1], fc)      # received
+            phase_2 = phase(t_onePulse - delays_tar2[i,j][int((k+1)*numADC)-1], fc)
             signal_1[int(k*numADC):int((k+1)*numADC)] = np.exp(1j*(phase_t - phase_1))
             signal_2[int(k*numADC):int((k+1)*numADC)] = np.exp(1j*(phase_t - phase_2))
-        mixed[i,j] = signal_1 + signal_2
+        mixed[i, j] = signal_1 + signal_2
 
+mixed1 = mixed.transpose(1, 0, 2).reshape(numRX*numTX, N)
+RDC = mixed1.reshape(numRX*numTX, numChirps*numCPI, numADC).transpose(2, 1, 0)
 #%%  五、2D-FFT
-RDC = reshape(cat(3,mixed{:}),numADC,numChirps*numCPI,numRX*numTX); % radar data cube
-RDMs = zeros(numADC,numChirps,numTX*numRX,numCPI);
+# RDC = mixed.reshape(numADC, numChirps*numCPI, numRX*numTX)     # radar data cube
+RDMs = np.zeros((numADC, numChirps, numTX*numRX, numCPI))
 for i in range(numCPI):
-    RD_frame = RDC(:,(i-1)*numChirps+1:i*numChirps,:);
-    RDMs(:,:,:,i) = fftshift(fft2(RD_frame,N_range,N_Dopp),2);
+    RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
+    RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(1, 0)), axes = 1)
 
-figure(2);
-imagesc(V,R,20*log10(abs(RDMs(:,:,1,1))/max(max(abs(RDMs(:,:,1,1))))));
-colormap(jet(256))
+fig = plt.figure(figsize=(7, 6), constrained_layout = True)
+ax2 = fig.add_subplot(111, )
+tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
+im = ax2.imshow(20*np.log10(tmp/ tmp.max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+# im = ax2.imshow(20*np.log10(np.abs(RDMs[:,:,0,0])/ np.abs(RDMs[:,:,0,0]).max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+ax2.set_xlabel('速度 (m/s)')
+ax2.set_ylabel('距离 (m)')
+ax2.set_title('距离-速度图')
+cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label='强度 (dB)') # label='强度 (dB)'
+plt.show()
+plt.close()
 
-clim = get(gca,'clim');
-caxis([clim(1)/2 0])
-xlabel('Velocity (m/s)');
-ylabel('Range (m)');
+def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
+    # e.g. numGuard =2, numTrain =2*numGuard, P_fa =1e-5, SNR_OFFSET = -15
+    numTrain2D = numTrain*numTrain - numGuard*numGuard
+    RDM_mask = np.zeros_like(RDM_dB)
+
+    for r in range(numTrain + numGuard, RDM_mask.shape[0] - (numTrain + numGuard)):
+        for d in range(numTrain + numGuard, RDM_mask.shape[1] - (numTrain + numGuard)):
+            Pn = (np.sum(RDM_dB[r-(numTrain+numGuard):r+(numTrain+numGuard)+1, d-(numTrain+numGuard):d+(numTrain+numGuard)+1]) - np.sum(RDM_dB[r-numGuard:r+numGuard+1, d-numGuard:d+numGuard+1]))/ numTrain2D                     # noise level
+            a = numTrain2D*(P_fa**(-1/numTrain2D)-1)     # scaling factor of T = α*Pn
+            threshold = a*Pn
+            if (RDM_dB[r, d] > threshold) and (RDM_dB[r, d] > SNR_OFFSET):
+                RDM_mask[r, d] = 1
+
+    cfar_ranges, cfar_dopps = np.where(RDM_mask != 0)     # cfar detected range bins
+    ## remaining part is for target location estimation
+    rem_range = np.zeros(cfar_ranges.size)
+    rem_dopp = np.zeros(cfar_dopps.size)
+    for i in range(1, cfar_ranges.size):
+       if (np.abs(cfar_ranges[i] - cfar_ranges[i-1]) <= 5) and (np.abs(cfar_dopps[i] - cfar_dopps[i-1]) <= 5):
+           rem_range[i] = i                # redundant range indices to be removed
+           rem_dopp[i] = i                 # redundant doppler indices to be removed
+
+    rem_range = np.nonzero(rem_range)[0]   #  filter zeros
+    rem_dopp = np.nonzero(rem_dopp)[0]     #  filter zeros
+    cfar_ranges(rem_range) = []
+    cfar_dopps(rem_dopp) = []
+    K = cfar_dopps.size                    # of detected targets
+
+    return RDM_mask, cfar_ranges, cfar_dopps, K
 
 
 
+#%% 六、CA-CFAR
+numGuard = 2            # of guard cells
+numTrain = numGuard*2   # of training cells
+P_fa = 1e-5;            #  desired false alarm rate
+SNR_OFFSET = -5;        #  dB
+RDM_dB = 10*np.log10(np.abs(RDMs[:,:,1,1])/ np.abs(RDMs[:,:,1,1]).max())
+RDM_mask, cfar_ranges, cfar_dopps, K = ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET)
 
-
-#%% 接收天线位置
-
+fig = plt.figure(figsize=(7, 6), constrained_layout = True)
+ax2 = fig.add_subplot(111, )
+im = ax2.imshow(RDM_mask, aspect = 'auto', cmap = 'jet', extent = [V[0], V[-1], R[-1], R[0]])
+ax2.set_xlabel('速度 (m/s)')
+ax2.set_ylabel('距离 (m)')
+ax2.set_title('距离-速度图')
+cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label = '强度 (dB)')
+plt.show()
+plt.close()
 
 
 

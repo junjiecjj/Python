@@ -97,7 +97,7 @@ t = np.linspace(0, Tc, Ns)
 ft = f0 * t + S / 2 * t**2
 Sx = np.exp(1j * 2 * np.pi * ft)          # 发射信号
 
-##>>>>>>>>>>  发射信号FFT
+##>>>>>>>>>>  发射信号
 fs = 4*(f0+B)
 ts = 1/fs
 t1 = np.arange(0, Tc-ts, ts)
@@ -113,7 +113,7 @@ axs.set_ylabel("Amplitude")
 plt.show()
 plt.close()
 
-##>>>>>>>>>> 接收差频信号 FFT
+##>>>>>>>>>> 接收差频信号
 Rx  = np.zeros((Nchirp, Ns), dtype = complex)
 # N = np.arange(Ns)
 for l in range(Nchirp):
