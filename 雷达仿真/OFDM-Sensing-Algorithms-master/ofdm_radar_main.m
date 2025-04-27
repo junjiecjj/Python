@@ -45,9 +45,7 @@ RxSignal = sensingSignalGen(TxSignal_cp, r,v,SNR);
 k = length(r);
 
 %% OFDM Radar Receivers
-
 % 1. 2DFFT based   (classical method, reference is omitted here)
-
 Rx = RxSignal(1:size(TxSignal_cp,1),:); 
 
 Rx = reshape(Rx,[],N);
@@ -106,10 +104,7 @@ savefig('fig/figure2.fig');
 % 3. Super resolution sensing method
 % 3.1 MUSIC based (a time consuming but precise method)
 CIM = Rx_dem .*conj(TxData); 
-
 [P_music_range,P_music_velo] = MUSICforOFDMsensing(CIM,k);
-
-
 % plot the MUSIC power spectrum
 figure(3);
 title('MUSIC for OFDM sensing');
