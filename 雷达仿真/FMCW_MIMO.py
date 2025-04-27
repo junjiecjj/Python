@@ -143,7 +143,7 @@ RDC = mixed1.reshape(numRX*numTX, numChirps*numCPI, numADC).transpose(2, 1, 0)
 RDMs = np.zeros((numADC, numChirps, numTX*numRX, numCPI), dtype = complex)
 for i in range(numCPI):
     RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
-    RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(1, 0)), axes = 1)
+    RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(0, 1)), axes = 1)
 tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
 
 # fig = plt.figure(figsize=(7, 6), constrained_layout = True)

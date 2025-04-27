@@ -8,7 +8,7 @@ c = 3e8           % physconst('LightSpeed'); %speed of light
 BW = 150e6;       % bandwidth 有效
 fc = 77e9;        % carrier frequency
 numADC = 256;     % # of adc samples
-numChirps = 256;  % # of chirps per frame
+numChirps = 128;  % # of chirps per frame
 numCPI = 10;
 T = 10e-6;        % PRI，默认不存在空闲时间
 PRF = 1/T;
@@ -77,12 +77,6 @@ tar2_loc(:,2) = r2(2) + v2_y*t;
 %% TX siganl
 delays_tar1 = cell(numTX,numRX);
 delays_tar2 = cell(numTX,numRX);
-r1_at_t = cell(numTX,numRX);
-r2_at_t = cell(numTX,numRX);
-tar1_angles = cell(numTX,numRX);
-tar2_angles = cell(numTX,numRX);
-tar1_velocities = cell(numTX,numRX);
-tar2_velocities = cell(numTX,numRX);
 for i = 1:numTX
     for j = 1:numRX
         delays_tar1{i,j} = (vecnorm(tar1_loc-repmat(rx_loc{j},N,1),2,2) + vecnorm(tar1_loc-repmat(tx_loc{i},N,1),2,2))/c;
@@ -92,17 +86,6 @@ end
 %% 四、接收信号模型 Complex signal
 phase = @(tx, fx) 2*pi*(fx.*tx + slope/2*tx.^2); % transmitted
 phase2 = @(tx, fx, r, v) 2*pi*(2*fx*r/c + tx.*(2*fx*v/c + 2*slope*r/c)); % downconverted
-% f_oneChirp =  slope*t(1:sum(t<=T));
-% f_t = repmat(f_oneChirp,1,numChirps*numCPI)-(BW/2); % transmit freq
-% f_t = BW/2*sawtooth(t/T*2*pi);
-fr1 = 2*r1(2)*slope/c;
-fr2 = 2*r2(2)*slope/c;
-fd1 = 2*v1_radial*fc/c; % doppler freq
-fd2 = 2*v2_radial*fc/c;
-f_if1 = fr1 + fd1;      % beat or IF freq
-f_if2 = fr2 + fd2;
-% mixed1 = cell(numTX,numRX);
-% mixed2 = cell(numTX,numRX);
 mixed = cell(numTX, numRX);
 for i = 1:numTX
     for j = 1:numRX
@@ -111,7 +94,7 @@ for i = 1:numTX
             phase_t = phase(t_onePulse, fc);
             phase_1 = phase(t_onePulse-delays_tar1{i,j}(k*numADC), fc); % received
             phase_2 = phase(t_onePulse-delays_tar2{i,j}(k*numADC), fc);
-            signal_t((k-1)*numADC+1:k*numADC) = exp(1j*phase_t);
+            % signal_t((k-1)*numADC+1:k*numADC) = exp(1j*phase_t);
             signal_1((k-1)*numADC+1:k*numADC) = exp(1j*(phase_t - phase_1));
             signal_2((k-1)*numADC+1:k*numADC) = exp(1j*(phase_t - phase_2));
         end
@@ -166,7 +149,7 @@ title('CA-CFAR')
 %% （一）3D-FFT
 rangeFFT = fft(RDC(:,1:numChirps,:), N_range);
 angleFFT = fftshift(fft(rangeFFT,length(ang_ax),3),3);
-range_az = squeeze(sum(angleFFT,2)); % range-azimuth map
+range_az = squeeze(sum(angleFFT, 2)); % range-azimuth map
 figure(4);
 colormap(jet)
 % imagesc(ang_ax,R,20*log10(abs(range_az)./max(abs(range_az(:)))));
@@ -207,6 +190,15 @@ for i = 1:K
     end
 end
 
+figure(6)
+hold on 
+grid on
+title('MUSIC Spectrum')
+xlabel('Angle in degrees')
+for k = 1:K
+    plot(ang_ax,log10(abs(music_spectrum(k,:))));
+end
+
 %%（三）点云生成
 [~, I] = max(music_spectrum(2,:));
 angle1 = ang_ax(I);
@@ -214,7 +206,7 @@ angle1 = ang_ax(I);
 angle2 = ang_ax(I);
 coor1 = [cfar_ranges(2)*sind(angle1) cfar_ranges(2)*cosd(angle1) 0];
 coor2 = [cfar_ranges(1)*sind(angle2) cfar_ranges(1)*cosd(angle2) 0];
-figure(6);
+figure(7);
 hold on;
 title('3D Coordinates (Point Cloud) of the targets')
 scatter3(coor1(1),coor1(2),coor1(3),100,'m','filled','linewidth',9)
@@ -224,11 +216,11 @@ ylabel('Range (m) Y')
 zlabel('Range (m) Z')
 
 %%（四）MUSIC 距离-AOA谱
-rangeFFT = fft(RDC);
+rangeFFT1 = fft(RDC);
 for i = 1:N_range
     Rxx = zeros(numTX*numRX,numTX*numRX);
     for m = 1:M
-       A = squeeze(sum(rangeFFT(i,(m-1)*numChirps+1:m*numChirps,:),2));
+       A = squeeze(sum(rangeFFT1(i,(m-1)*numChirps+1:m*numChirps,:),2));
        Rxx = Rxx + 1/M * (A*A');
     end
     % Rxx = Rxx + sqrt(noise_pow/2)*(randn(size(Rxx))+1j*randn(size(Rxx)));
@@ -242,7 +234,7 @@ for i = 1:N_range
     end
     range_az_music(i,:) = music_spectrum2;
 end
-figure(7);
+figure(8);
 colormap(jet)
 imagesc(ang_ax,R,20*log10(abs(range_az_music)./max(abs(range_az_music(:)))));
 xlabel('Azimuth')
@@ -253,10 +245,6 @@ clim = get(gca,'clim');
 %%（五）压缩感知
 numTheta = length(ang_ax); % divide FOV into fine grid
 B = a1; % steering vector matrix or dictionary, also called basis matrix
-% s = ones(numTheta,1);
-% psix = dftmtx(numTheta);
-% inv_psix = conj(psix)/numTheta;
-% cap_theta = B*psix; % random measurement of basis function
 figure(8);
 hold on; grid on;
 title('Angle Estimation with Compressed Sensing')
@@ -266,12 +254,6 @@ for i = 1:K
     A = squeeze(RDMs(cfar_ranges(i),cfar_dopps(i),:,1));
     cvx_begin
         variable s(numTheta) complex; %alphax(numTheta,1) phix(numTX*numRX,numTheta)...
-        % cap_theta(numTX*numRX,numTheta) %B(numTX*numRX,numTheta)%psix(numTheta,numTheta) %A(numRX*numTX,1) % A is the initial measurement
-        % cap_theta == phix * psix;
-        % minimize(norm(alphax,1))
-        % pow_p(norm(A-cap_theta*alphax,2),2) <= 1;
-        % norm(A-cap_theta*alphax,2) <= 1;
-        % minimize(norm(A-cap_theta*alphax,1))
         minimize(norm(s,1))
         norm(A-B*s,2) <= 1;
     cvx_end
@@ -291,12 +273,11 @@ sx = myspecgramnew(sum(RDC(rBin,:,:)), window, nfft, shift); % mti filter and IQ
 sx2 = abs(flipud(fftshift(sx,1)));
 timeAxis = [1:numCPI]*frameDuration; % Time
 freqAxis = linspace(-PRF/2,PRF/2,nfft); % Frequency Axis
-fig = figure('visible','on');
+fig = figure(9);
 colormap(jet(256));
 % set(gca,'units','normalized','outerposition',[0,0,1,1]);
 doppSignMTI = imagesc(timeAxis,[-PRF/2 PRF/2],20*log10(abs(sx2/max(sx2(:)))));
-%     axis xy
-%     set(gca,'FontSize',10)
+
 title('micro-Doppler Spectrogram');
 %     title(fOut(end-22:end-4))
 xlabel('Time (sec)');

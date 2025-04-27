@@ -1,6 +1,8 @@
 %% OTFS Sensing Simulation
 % Author: Yunbo HU (Email: EdenHu1111@foxmail.com)
-clc;clear;
+clear;
+clc;
+close all;
 %% Basic Paramaters
 M = 1024;   %Number of data in delay domain
 N = 120;   %Number of data in Doppler domain

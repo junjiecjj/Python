@@ -156,9 +156,46 @@ for rx in range(nRx):
             Rx[rx, chirp, :] += (np.exp(1j * 2 * np.pi * fr + 1j * phase_shift) + noise )
 sigReceive = np.conjugate(Sx) * Rx # 混频
 
-
 range_win = np.hamming(Ns)           # 加海明窗
 doppler_win = np.hamming(Nchirp)
+
+
+##>>>>>>>>>>>>>> MUSIC算法
+X = np.zeros((nRx, int(Nchirp * Ns)),dtype = complex)
+for nr in range(nRx):
+    X[nr,:] = sigReceive[nr,:,:].flatten()
+Rxx = X @ X.T.conjugate() / int(Nchirp * Ns)
+# 特征值分解
+eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
+idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
+eigvector = eigvector[:, idx]
+eigvector = eigvector[:,::-1]                         # 对应特征矢量排序
+Un = eigvector[:, len(tarR):nRx]
+
+# Un = eigvector
+UnUnH = Un @ Un.T.conjugate()
+Thetalst = np.arange(-90, 90.1, 0.5)
+angle = np.deg2rad(Thetalst)
+Pmusic = np.zeros(angle.size)
+for i, ang in enumerate(angle):
+    a = np.exp(1j * np.pi * np.arange(nRx) * np.sin(ang)).reshape(-1, 1)
+    Pmusic[i] = 1/np.abs(a.T.conjugate() @ UnUnH @ a)[0,0]
+
+Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
+Pmusic = 10 * np.log10(Pmusic)
+peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -10, distance = 10)
+angle_est = Thetalst[peaks]
+
+colors = plt.cm.jet(np.linspace(0, 1, 3))
+fig = plt.figure(figsize=(8, 6) )
+ax1 = fig.add_subplot(111,  )
+ax1.plot(Thetalst, Pmusic, color = colors[k])
+ax1.scatter(angle_est, Pmusic[peaks], s = 50, c = 'blue')
+ax1.set_xlabel('Angle in degrees', )
+ax1.set_ylabel('dB', )
+ax1.set_title("MUSIC Spectrum")
+plt.show()
+plt.close()
 
 ######>>>>>>>>>>>>>>    3维FFT处理
 # # 距离FFT

@@ -38,7 +38,7 @@ c = 3e8                      # speed of light
 BW = 150e6                   # bandwidth 有效
 fc = 77e9                    # carrier frequency
 numADC = 256                 # of adc samples
-numChirps = 256              # of chirps per frame
+numChirps = 128              # of chirps per frame
 numCPI = 10                  # 10帧
 Tc = 10e-6                   # PRI, 默认不存在空闲时间
 PRF = 1/Tc                   #
@@ -71,16 +71,16 @@ tx_loc = []
 for i in range(numTX):
     tx_loc.append([i*d_tx, 0, 0])
 tx_loc = np.array(tx_loc)
-# 接收天线位置
+## 接收天线位置
 rx_loc = []
 for i in range(numRX):
    rx_loc.append([tx_loc[-1][0] + d_tx + i*d_rx, 0, 0])
 rx_loc = np.array(rx_loc)
 
 #%% 目标位置
-R_radial   = [50, 100]
-V_radial   = [10, -15]
-Ang_radial = [-10, 10]
+R_radial   = [100, 200]
+V_radial   = [10, -25]
+Ang_radial = [-30, 30]
 numTarget  = len(R_radial)
 tar_loc = np.zeros((numTarget, t.size, 3))
 for k in range(numTarget):
@@ -92,6 +92,7 @@ for k in range(numTarget):
     tar_loc[k, :, 1] = r_y + v_y * t
 
 #%% TX signal
+# 利用收发天线的位置以及目标参数中雷达的位置信息，先求目标到雷达的2-范数（也就是空间中两点的直线距离），然后转化为目标的延迟时间τ，如此以来得到的信号模型精度更高
 delays_tar = np.zeros((numTX, numRX, numTarget, N))
 for i in range(numTX):
     for j in range(numRX):
@@ -122,16 +123,20 @@ for i in range(numTX):
 #%% IF
 mixed1 = mixed.transpose(1, 0, 2).reshape(numRX*numTX, N)
 RDC = mixed1.reshape(numRX*numTX, numChirps*numCPI, numADC).transpose(2, 1, 0)  # radar data cube
-#%% 五、2D-FFT
+
+#%% 五、速度-距离  FFT-2D
 RDMs = np.zeros((numADC, numChirps, numTX*numRX, numCPI), dtype = complex)
 for i in range(numCPI):
     RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
-    RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(1, 0)), axes = 1)
+    RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(0, 1)), axes = 1)
+
+### range-Dopples 2D-plot
 tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
-tmp = np.abs(RDMs[:,:,0,0])
+# tmp = np.abs(RDMs[:,:,0,0])
 fig = plt.figure(figsize = (10, 16), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
-im = ax1.imshow(20*np.log10(tmp/ tmp.max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+im = ax1.imshow(10*np.log10(tmp/ tmp.max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+# im = ax1.imshow(tmp, aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
 ax1.set_xlabel('速度 (m/s)')
 ax1.set_ylabel('距离 (m)')
 ax1.set_title('距离-速度图')
@@ -139,7 +144,8 @@ cbar = fig.colorbar(im, ax = ax1, orientation = 'vertical', label='强度 (dB)')
 
 VV, RR = np.meshgrid(V, R)
 ax2 = fig.add_subplot(212, projection = '3d' )
-ax2.plot_surface(VV, RR, 20*np.log10(tmp/ tmp.max()), rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax2.plot_surface(VV, RR, 10*np.log10(tmp/ tmp.max()), rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+# ax2.plot_surface(VV, RR, tmp, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax2.grid(False)
 ax2.set_proj_type('ortho')
 ax2.set_xlabel('速度 (m/s)', fontsize = 20)
@@ -152,6 +158,7 @@ ax2.view_init(azim = -135, elev = 30)
 plt.show()
 plt.close()
 
+#%% 六、速度-距离 CA-CFAR
 def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
     # e.g. numGuard =2, numTrain =2*numGuard, P_fa =1e-5, SNR_OFFSET = -15
     numTrain2D = numTrain*numTrain - numGuard*numGuard
@@ -169,26 +176,24 @@ def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
     for i in range(1, cfar_ranges.size):
        if (np.abs(cfar_ranges[i] - cfar_ranges[i-1]) <= 5) and (np.abs(cfar_dopps[i] - cfar_dopps[i-1]) <= 5):
            remove_idx.append(i)
-    cfar_ranges = np.delete(cfar_ranges, remove_idx)
-    cfar_dopps = np.delete(cfar_dopps, remove_idx)
-    K = cfar_dopps.size                    # of detected targets
-    return RDM_mask, cfar_ranges, cfar_dopps, K
+    ranges = np.delete(cfar_ranges, remove_idx)
+    vels = np.delete(cfar_dopps, remove_idx)
+    K = ranges.size                    # of detected targets
+    return RDM_mask, ranges, vels, K
 
-#%% 六、CA-CFAR
 numGuard = 2            # of guard cells
 numTrain = numGuard*2   # of training cells
 P_fa = 1e-5;            #  desired false alarm rate
 SNR_OFFSET = -5;        #  dB
-RDM_dB = 10*np.log10(np.abs(RDMs[:,:,1,1])/ np.abs(RDMs[:,:,1,1]).max())
+# tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
+tmp = np.abs(RDMs[:,:,0,0])
+RDM_dB = 10*np.log10(tmp/ tmp.max())
 RDM_mask, cfar_ranges, cfar_dopps, K = ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET)
-
+print(f"K = {K}")
 fig = plt.figure(figsize = (10, 16), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
 im = ax1.imshow(RDM_mask, aspect = 'auto', cmap = 'jet', extent = [V[0], V[-1], R[-1], R[0]])
-cfar_ranges, cfar_dopps = np.where(RDM_mask != 0)
-cfar_ranges = R[cfar_ranges]
-cfar_dopps = V[cfar_dopps]
-ax1.scatter(cfar_dopps, cfar_ranges, s = 12, c = 'red')
+# ax1.scatter( V[cfar_dopps], R[cfar_ranges], s = 12, c = 'red')
 ax1.set_xlabel('速度 (m/s)')
 ax1.set_ylabel('距离 (m)')
 ax1.set_title('距离-速度图')
@@ -210,17 +215,18 @@ plt.show()
 plt.close()
 
 #%% 七、角度估计
-## (一) 3D-FFT
+## (一) 角度 3D-FFT
 rangeFFT = scipy.fft.fft(RDC[:,:numChirps,:], N_range, axis = 0)
-angleFFT = scipy.fft.fftshift(scipy.fft.fft(rangeFFT, ang_ax.size, axis = 2), axes = 2)
-range_az =  np.sum(angleFFT, axis = 1)            #  range-azimuth map
-tmp = 20*np.log10(np.abs(range_az)/np.abs(range_az).max())
+doppFFT = scipy.fft.fftshift(scipy.fft.fft(rangeFFT, N_Dopp, axis = 1), axes  = 1)
+angleFFT = scipy.fft.fftshift(scipy.fft.fft(doppFFT, ang_ax.size, axis = 2), axes = 2)
+range_az =  np.sum(np.abs(angleFFT), axis = 1)                          # range-azimuth map
+tmp = 10*np.log10(np.abs(range_az)/np.abs(range_az).max())
 Ang, RR = np.meshgrid(ang_ax, R)
 
 fig = plt.figure(figsize=(10, 16) )
 ax1 = fig.add_subplot(211, projection = '3d')
 ax1.plot_surface(Ang, RR, tmp, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
-# ax1.plot_wireframe(X, Y, sig_fft, color = [0.5,0.5,0.5], linewidth = 0.25)
+# ax1.plot_surface(Ang, RR, range_az, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax1.grid(False)
 ax1.set_proj_type('ortho')
 ax1.set_xlabel('Azimuth Angle', )
@@ -231,7 +237,7 @@ ax1.view_init(azim = -135, elev = 30)
 
 ax2 = fig.add_subplot(212, )
 im = ax2.imshow(tmp, aspect='auto', cmap='jet', extent=[ang_ax[0], ang_ax[-1], R[-1], R[0]])
-# im = ax2.imshow(20*np.log10(np.abs(RDMs[:,:,0,0])/ np.abs(RDMs[:,:,0,0]).max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+# im = ax2.imshow(range_az, aspect='auto', cmap='jet', extent=[ang_ax[0], ang_ax[-1], R[-1], R[0]])
 ax2.set_xlabel('Azimuth Angle')
 ax2.set_ylabel('Range (m)')
 ax2.set_title('距离-Angle图')
@@ -239,14 +245,15 @@ cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label='强度 (dB)')
 plt.show()
 plt.close()
 
+## (一) 2D-FFT
 fig = plt.figure(figsize=(8, 6) )
 ax1 = fig.add_subplot(111,  )
 doas = np.zeros((K, ang_ax.size), dtype = complex)       #  direction of arrivals
-for i in range(K):
-    doas[i, :] = scipy.fft.fftshift(scipy.fft.fft(rangeFFT[int(cfar_ranges[i]), int(cfar_dopps[i]), :], ang_ax.size))
-    Idxs = scipy.signal.find_peaks(np.abs(doas[i,:]) , np.max(np.abs(doas[i,:]))*0.5, distance = 10)[0]
-    ax1.scatter(ang_ax[Idxs], 10*np.log10(np.abs(doas[i,:][Idxs])), s = 50, c = 'blue')
-    ax1.plot(ang_ax, 10*np.log10(np.abs(doas[i,:])))
+for k in range(K):
+    doas[k, :] = scipy.fft.fftshift(scipy.fft.fft(doppFFT[int(cfar_ranges[k]), int(cfar_dopps[k]), :], ang_ax.size))
+    Idxs = scipy.signal.find_peaks(np.abs(doas[k,:]) , np.max(np.abs(doas[k,:]))*0.5, distance = 10)[0]
+    ax1.scatter(ang_ax[Idxs], 10*np.log10(np.abs(doas[k,:][Idxs])), s = 50, c = 'blue')
+    ax1.plot(ang_ax, 10*np.log10(np.abs(doas[k,:])))
 ax1.set_xlabel('Azimuth Angle', )
 ax1.set_ylabel('dB', )
 plt.show()
@@ -266,7 +273,6 @@ for k in range(K):
     for m in range(M):
        A =  RDMs[int(cfar_ranges[k]), int(cfar_dopps[k]),:, m]
        Rxx = Rxx + 1/M * (A[:,None]@A[:,None].conjugate().T)
-
     # 特征值分解
     eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
     idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
@@ -281,14 +287,52 @@ colors = plt.cm.jet(np.linspace(0, 1, 3))
 fig = plt.figure(figsize=(8, 6) )
 ax1 = fig.add_subplot(111,  )
 for k in range(K):
-    ax1.plot(ang_ax, np.log10(np.abs(music_spectrum[k,:])), color = colors[k])
+    ax1.plot(ang_ax, 10*np.log10(np.abs(music_spectrum[k,:])), color = colors[k])
     Idxs = scipy.signal.find_peaks(np.abs(music_spectrum[k,:]) , np.max(np.abs(music_spectrum[k,:]))*0.5, distance = 10)[0]
-    ax1.scatter(ang_ax[Idxs], np.log10(np.abs(music_spectrum[k,:][Idxs])), s = 50, c = 'blue')
+    ax1.scatter(ang_ax[Idxs], 10*np.log10(np.abs(music_spectrum[k,:][Idxs])), s = 50, c = 'blue')
 ax1.set_xlabel('Angle in degrees', )
 ax1.set_ylabel('dB', )
 ax1.set_title("MUSIC Spectrum")
 plt.show()
 plt.close()
+
+### MUSIC算法:directly use the data cube
+X = np.zeros((numTX*numRX, int(numChirps * numADC * numCPI)), dtype = complex)
+for nr in range(numTX*numRX):
+    X[nr,:] = RDC[:,:,nr].flatten()
+Rxx = X @ X.T.conjugate() / int(numChirps * numADC * numCPI)
+# 特征值分解
+eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
+idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
+eigvector = eigvector[:, idx]
+eigvector = eigvector[:,::-1]                         # 对应特征矢量排序
+Un = eigvector[:, len(R_radial):numTX*numRX]
+
+# Un = eigvector
+UnUnH = Un @ Un.T.conjugate()
+Thetalst = np.arange(-90, 90.1, 0.5)
+angle = np.deg2rad(Thetalst)
+Pmusic = np.zeros(angle.size)
+for i, ang in enumerate(angle):
+    a = np.exp(1j * np.pi * np.arange(numTX*numRX) * np.sin(ang)).reshape(-1, 1)
+    Pmusic[i] = 1/np.abs(a.T.conjugate() @ UnUnH @ a)[0,0]
+
+Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
+Pmusic = 10 * np.log10(Pmusic)
+peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -10, distance = 10)
+angle_est = Thetalst[peaks]
+
+colors = plt.cm.jet(np.linspace(0, 1, 3))
+fig = plt.figure(figsize=(8, 6) )
+ax1 = fig.add_subplot(111,  )
+ax1.plot(Thetalst, Pmusic, color = colors[k])
+ax1.scatter(angle_est, Pmusic[peaks], s = 50, c = 'blue')
+ax1.set_xlabel('Angle in degrees', )
+ax1.set_ylabel('dB', )
+ax1.set_title("MUSIC Spectrum")
+plt.show()
+plt.close()
+
 
 ## (三) 点云生成
 I = music_spectrum[1,:].argmax()
@@ -313,11 +357,11 @@ plt.close()
 
 ## (四) MUSIC 距离-AOA谱
 range_az_music = np.zeros((N_range, ang_ax.size), dtype = complex)
-rangeFFT = scipy.fft.fft(RDC, axis = 0)
+rangeFFT1 = scipy.fft.fft(RDC, axis = 0)
 for i in range(N_range):
     Rxx = np.zeros((numTX*numRX, numTX*numRX), dtype = complex)
     for m in range(M):
-       A =  np.sum(rangeFFT[i,m*numChirps:(m+1)*numChirps,:], 0)
+       A =  np.sum(rangeFFT1[i,m*numChirps:(m+1)*numChirps,:], 0)
        Rxx = Rxx + 1/M * (A[:,None]@A[:,None].conjugate().T)
     # 特征值分解
     eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
