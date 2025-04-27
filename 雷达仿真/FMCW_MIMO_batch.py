@@ -40,22 +40,22 @@ fc = 77e9                    # carrier frequency
 numADC = 256                 # of adc samples
 numChirps = 256              # of chirps per frame
 numCPI = 10                  # 10帧
-T = 10e-6                     # PRI, 默认不存在空闲时间
-PRF = 1/T                     #
-Fs = numADC/T                 # sampling frequency
-dt = 1/Fs                     # sampling interval
-slope = BW/T
+Tc = 10e-6                   # PRI, 默认不存在空闲时间
+PRF = 1/Tc                   #
+Fs = numADC/Tc               # sampling frequency
+dt = 1/Fs                    # sampling interval
+slope = BW/Tc
 lamba = c/fc
-N = numChirps*numADC*numCPI                       # total of adc samples
-t = np.linspace(0, T*numChirps*numCPI, N)         # time axis, one frame 等间隔时间/点数
+N = numCPI*numChirps*numADC                       # total of adc samples
+t = np.linspace(0, Tc*numCPI*numChirps, N)        # time axis, one frame 等间隔时间/点数
 t_onePulse = np.arange(0, dt*numADC, dt)          # 单chirp时间
 numTX = 1
 numRX = 8                             # 等效后
 dR = c/(2*BW)                         # range resol
 Rmax = Fs*c/(2*slope)                 # TI's MIMO Radar doc
 # Rmax2 = c/2/PRF                     # lecture 2.3
-dV = lamba/(2*numChirps*T)            # velocity resol, lambda/(2*framePeriod)
-Vmax = lamba/(4*T)                    # Max Unamb velocity m/s
+dV = lamba/(2*numChirps*Tc)           # velocity resol, lambda/(2*framePeriod)
+Vmax = lamba/(4*Tc)                   # Max Unamb velocity m/s
 # DFmax = 1/2*PRF                     # = Vmax/(c/f0/2); % Max Unamb Dopp Freq
 d_rx = lamba/2                        # dist. between rxs
 d_tx = 4*d_rx                         # dist. between txs
@@ -65,33 +65,6 @@ N_azimuth = numTX*numRX
 R = np.arange(0, Rmax, dR)                   # range axis
 V = np.linspace(-Vmax, Vmax, numChirps)      # Velocity axis
 ang_ax = np.arange(-90, 91)                  # angle axis
-
-#%% 目标参数
-r1_radial = 50
-v1_radial = 10     #  velocity 1
-tar1_angle = -10
-r1_x = np.sin(tar1_angle * np.pi / 180) * r1_radial
-r1_y = np.cos(tar1_angle * np.pi / 180) * r1_radial
-v1_x = np.sin(tar1_angle * np.pi / 180) * v1_radial
-v1_y = np.cos(tar1_angle * np.pi / 180) * v1_radial
-r1 = [r1_x, r1_y, 0]
-
-r2_radial = 100
-v2_radial = -15    #  velocity 2
-tar2_angle = 10
-r2_x = np.sin(tar2_angle * np.pi / 180) * r2_radial
-r2_y = np.cos(tar2_angle * np.pi / 180) * r2_radial
-v2_x = np.sin(tar2_angle * np.pi / 180) * v2_radial
-v2_y = np.cos(tar2_angle * np.pi / 180) * v2_radial
-r2 = [r2_x, r2_y, 0]
-
-tar1_loc = np.zeros((t.size,3))
-tar1_loc[:,0] = r1[0] + v1_x*t
-tar1_loc[:,1] = r1[1] + v1_y*t
-tar2_loc = np.zeros((t.size, 3))
-tar2_loc[:,0] = r2[0] + v2_x*t
-tar2_loc[:,1] = r2[1] + v2_y*t
-
 
 #%% 发射天线位置
 tx_loc = []
@@ -104,53 +77,61 @@ for i in range(numRX):
    rx_loc.append([tx_loc[-1][0] + d_tx + i*d_rx, 0, 0])
 rx_loc = np.array(rx_loc)
 
+#%% 目标位置
+R_radial   = [50, 100]
+V_radial   = [10, -15]
+Ang_radial = [-10, 10]
+numTarget  = len(R_radial)
+tar_loc = np.zeros((numTarget, t.size, 3))
+for k in range(numTarget):
+    r_x = np.sin(Ang_radial[k] * np.pi / 180) * R_radial[k]
+    r_y = np.cos(Ang_radial[k] * np.pi / 180) * R_radial[k]
+    v_x =  np.sin(Ang_radial[k] * np.pi / 180) * V_radial[k]
+    v_y =  np.cos(Ang_radial[k] * np.pi / 180) * V_radial[k]
+    tar_loc[k, :, 0] = r_x + v_x * t
+    tar_loc[k, :, 1] = r_y + v_y * t
+
 #%% TX signal
-delays_tar1 = np.zeros((numTX, numRX, N))
-delays_tar2 = np.zeros((numTX, numRX, N))
+delays_tar = np.zeros((numTX, numRX, numTarget, N))
 for i in range(numTX):
     for j in range(numRX):
-        delays_tar1[i,j,:] = (np.linalg.norm(tar1_loc - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) + np.linalg.norm(tar1_loc - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
-        delays_tar2[i,j,:] = (np.linalg.norm(tar2_loc - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) + np.linalg.norm(tar2_loc - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
+        for k in range(numTarget):
+            delays_tar[i,j,k,:] = (np.linalg.norm(tar_loc[k] - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) + np.linalg.norm(tar_loc[k] - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
 
 #%% 接收信号模型 Complex signal
 phase = lambda tx, fx: 2*np.pi*(fx*tx+slope/2*tx**2)                               # transmitted
 phase2 = lambda tx, fx, r, v: 2*np.pi*(2*fx*r/c + tx*(2*fx*v/c + 2*slope*r/c))     # downconverted
-
+phase_t = phase(t_onePulse, fc)
 # 这里，接收信号没有采用发射与接收混频的形式，而是相位直接做差，分别计算两个目标的中频信号相加，此法等效为混频
 mixed = np.zeros((numTX, numRX, N), dtype = complex)
 for i in range(numTX):
     for j in range(numRX):
-        signal_1 = np.zeros(N, dtype = complex)
-        signal_2 = np.zeros(N, dtype = complex)
+        signal = np.zeros(N, dtype = complex)
         for k in range(numChirps*numCPI):
-            phase_t = phase(t_onePulse, fc)
-            phase_1 = phase(t_onePulse - delays_tar1[i,j][int((k+1)*numADC)-1], fc)      # received
-            phase_2 = phase(t_onePulse - delays_tar2[i,j][int((k+1)*numADC)-1], fc)
-            signal_1[int(k*numADC):int((k+1)*numADC)] = np.exp(1j*(phase_t - phase_1))
-            signal_2[int(k*numADC):int((k+1)*numADC)] = np.exp(1j*(phase_t - phase_2))
-        mixed[i, j] = signal_1 + signal_2
+            for u in range(numTarget):
+                Phase = phase(t_onePulse - delays_tar[i,j,u,:][int((k+1)*numADC)-1], fc)      # received
+                signal[int(k*numADC):int((k+1)*numADC)] += np.exp(1j*(phase_t - Phase))
+        mixed[i, j] = signal
 
-## add noise
+#%% add noise
 # signal_power = np.sum(np.abs(mixed)**2)/mixed.size
 # SNRdB = 100
 # noise_pow = signal_power / (10.0**(SNRdB/10.0))
 # mixed = mixed + np.sqrt(noise_pow/2) * (np.random.randn(*mixed.shape) + 1j * np.random.randn(*mixed.shape))
 
+#%% IF
 mixed1 = mixed.transpose(1, 0, 2).reshape(numRX*numTX, N)
-RDC = mixed1.reshape(numRX*numTX, numChirps*numCPI, numADC).transpose(2, 1, 0)
-#%%  五、2D-FFT
-# RDC = mixed.reshape(numADC, numChirps*numCPI, numRX*numTX)     # radar data cube
+RDC = mixed1.reshape(numRX*numTX, numChirps*numCPI, numADC).transpose(2, 1, 0)  # radar data cube
+#%% 五、2D-FFT
 RDMs = np.zeros((numADC, numChirps, numTX*numRX, numCPI), dtype = complex)
 for i in range(numCPI):
     RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
     RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(1, 0)), axes = 1)
 tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
-
-# fig = plt.figure(figsize=(7, 6), constrained_layout = True)
+tmp = np.abs(RDMs[:,:,0,0])
 fig = plt.figure(figsize = (10, 16), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
 im = ax1.imshow(20*np.log10(tmp/ tmp.max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
-# im = ax2.imshow(20*np.log10(np.abs(RDMs[:,:,0,0])/ np.abs(RDMs[:,:,0,0]).max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
 ax1.set_xlabel('速度 (m/s)')
 ax1.set_ylabel('距离 (m)')
 ax1.set_title('距离-速度图')
@@ -229,7 +210,7 @@ plt.show()
 plt.close()
 
 #%% 七、角度估计
-## （一）3D-FFT
+## (一) 3D-FFT
 rangeFFT = scipy.fft.fft(RDC[:,:numChirps,:], N_range, axis = 0)
 angleFFT = scipy.fft.fftshift(scipy.fft.fft(rangeFFT, ang_ax.size, axis = 2), axes = 2)
 range_az =  np.sum(angleFFT, axis = 1)            #  range-azimuth map
@@ -271,7 +252,7 @@ ax1.set_ylabel('dB', )
 plt.show()
 plt.close()
 
-#% (二) MUSIC算法
+## (二) MUSIC算法
 d = 0.5;
 M = numCPI        # # of snapshots
 a1 = np.zeros((numTX*numRX, ang_ax.size), dtype = complex)
@@ -279,7 +260,7 @@ tmp = np.arange(numTX*numRX)
 for k in range(ang_ax.size):
         a1[:,k] = np.exp(-1j*2*np.pi*d*tmp*np.sin(ang_ax[k]*np.pi/180))
 music_spectrum = np.zeros((K, ang_ax.size), dtype = complex)
-N = numTX*numRX
+Nannt = numTX*numRX
 for k in range(K):
     Rxx = np.zeros((numTX*numRX, numTX*numRX), dtype = complex)
     for m in range(M):
@@ -291,7 +272,7 @@ for k in range(K):
     idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
     eigvector = eigvector[:, idx]
     eigvector = eigvector[:,::-1]                         # 对应特征矢量排序
-    Un = eigvector[:, 1:N]
+    Un = eigvector[:, 1:Nannt]
     UnUnH = Un@Un.conjugate().T
     for a in range(ang_ax.size):
         at = a1[:,a].reshape(-1,1)
@@ -309,7 +290,7 @@ ax1.set_title("MUSIC Spectrum")
 plt.show()
 plt.close()
 
-#% (三) 点云生成
+## (三) 点云生成
 I = music_spectrum[1,:].argmax()
 angle1 = ang_ax[I]
 I = music_spectrum[0,:].argmax()
@@ -330,7 +311,7 @@ ax1.view_init(azim = -135, elev = 30)
 plt.show()
 plt.close()
 
-#% （四）MUSIC 距离-AOA谱
+## (四) MUSIC 距离-AOA谱
 range_az_music = np.zeros((N_range, ang_ax.size), dtype = complex)
 rangeFFT = scipy.fft.fft(RDC, axis = 0)
 for i in range(N_range):
@@ -359,7 +340,7 @@ cbar = fig.colorbar(im, ax = ax1, orientation = 'vertical', label = '强度 (dB)
 plt.show()
 plt.close()
 
-#%  Angle Estimation - (五)压缩感知
+## (五)压缩感知
 numTheta = ang_ax.size      # divide FOV into fine grid
 B = a1                      # steering vector matrix or dictionary, also called basis matrix
 
@@ -387,7 +368,6 @@ plt.close()
 
 
 #%%
-
 
 #%%
 

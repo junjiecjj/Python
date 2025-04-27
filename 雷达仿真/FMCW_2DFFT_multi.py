@@ -14,7 +14,6 @@ https://mp.weixin.qq.com/s/X8uYol6cWoWAX6aUeR7S2A
 
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -69,10 +68,16 @@ tarV = [3, -20]    # 目标速度
 # generate receive signal
 sigReceive  = np.zeros((Nchirp, Ns), dtype = complex)
 N = np.arange(Ns)
+t = np.linspace(0, Tc, Ns)
 for l in range(Nchirp):
     for k in range(len(tarR)):
-        # 公式来自于：https://zhuanlan.zhihu.com/p/422798513 的《3. 运动目标情况下测距》
-        sigReceive[l,:] += np.exp(1j * 2 * np.pi * ((2 * B * (tarR[k] + tarV[k] * Tc * l)/(c * Tc) + 2 * f0 * tarV[k]/c) * (Tc/Ns) * N + 2 * f0 * (tarR[k] + tarV[k] * Tc * l)/c))
+        ## 1
+        # sigReceive[l,:] += np.exp(1j * 2 * np.pi * ((2 * B * (tarR[k] + tarV[k] * Tc * l)/(c * Tc) + 2 * f0 * tarV[k]/c) * (Tc/Ns) * N + 2 * f0 * (tarR[k] + tarV[k] * Tc * l)/c))
+        ## 2
+        sigReceive[l,:] += np.exp(1j * 2 * np.pi * ((2 * B * (tarR[k] + tarV[k] * Tc * l)/(c * Tc) + 2 * f0 * tarV[k]/c) * t + 2 * f0 * (tarR[k] + tarV[k] * Tc * l)/c))
+        ## 3
+        # tau = 2*(tarR[k] + tarV[k] * Tc * l) / c
+        # sigReceive[l,:] += np.exp(1j * 2 * np.pi * (f0 * tau + S * tau * t - S/2*tau**2))
 
 # Range win processing
 sigRangeWin = np.zeros((Nchirp, Ns), dtype = complex)
@@ -152,9 +157,16 @@ tarV = [3, -20]     # 目标速度
 # 接收差频信号
 sigReceive  = np.zeros((Nchirp, Ns), dtype = complex)
 N = np.arange(Ns)
+t = np.linspace(0, Tc, Ns)
 for l in range(Nchirp):
     for k in range(len(tarR)):
-        sigReceive[l,:] += np.exp(1j * 2 * np.pi * ((2 * B * (tarR[k] + tarV[k] * Tc * l)/(c * Tc) + 2 * f0 * tarV[k]/c) * (Tc/Ns) * N + 2 * f0 * (tarR[k] + tarV[k] * Tc * l)/c))
+        ## 1
+        # sigReceive[l,:] += np.exp(1j * 2 * np.pi * ((2 * B * (tarR[k] + tarV[k] * Tc * l)/(c * Tc) + 2 * f0 * tarV[k]/c) * (Tc/Ns) * N + 2 * f0 * (tarR[k] + tarV[k] * Tc * l)/c))
+        ## 2
+        sigReceive[l,:] += np.exp(1j * 2 * np.pi * ((2 * B * (tarR[k] + tarV[k] * Tc * l)/(c * Tc) + 2 * f0 * tarV[k]/c) * t + 2 * f0 * (tarR[k] + tarV[k] * Tc * l)/c))
+        ## 3
+        # tau = 2*(tarR[k] + tarV[k] * Tc * l) / c
+        # sigReceive[l,:] += np.exp(1j * 2 * np.pi * (f0 * tau + S * tau * t - S/2*tau**2))
 
 x = np.arange(NumRangeFFT) / NumRangeFFT * maxRange
 # y = np.arange((-Nchirp/2)*velRes, (Nchirp/2)*velRes, velRes)
@@ -203,7 +215,7 @@ f0 = 77e9         # Start Frequency
 B = 150e6         # 发射信号带宽
 Tc = 20e-6        # 扫频时间
 S = B/Tc          # 调频斜率
-Ns = 1024          # ADC采样点数
+Ns = 1024         # ADC采样点数
 Nchirp = 256      # chirp数量
 lamba = c/f0      # 波长
 Fs = Ns/Tc        # = 1/(t[1] - t[0])     # 模拟信号采样频率
@@ -257,6 +269,7 @@ N = np.arange(Ns)
 for l in range(Nchirp):
     for k in range(len(tarR)):
         d = tarR[k] + tarV[k] * (t + l * Tc)
+        # d = tarR[k] + tarV[k] * (l * Tc)
         tau = 2 * d / c                                # 运动目标的时延是动态变化的
         fr = f0 * (t + tau) + S / 2 * (t + tau)**2
         noise = (np.random.randn(*Sx.shape) + 1j * np.random.randn(*Sx.shape)) * np.sqrt(sigma[k])
@@ -402,6 +415,7 @@ N = np.arange(Ns)
 for l in range(Nchirp):
     for k in range(len(tarR)):
         d = tarR[k] + tarV[k] * (t + l * Tc)
+        # d = tarR[k] + tarV[k] * (l * Tc)
         tau = 2 * d / c          # 运动目标的时延是动态变化的
         fr = f0 * (t + tau) + S / 2 * (t + tau)**2
         noise = np.random.randn(*Sx.shape) * np.sqrt(sigma[k])
