@@ -296,7 +296,7 @@ ax1.set_title("MUSIC Spectrum")
 plt.show()
 plt.close()
 
-### MUSIC算法:directly use the data cube
+### MUSIC算法: or directly use the radar data cube
 X = np.zeros((numTX*numRX, int(numChirps * numADC * numCPI)), dtype = complex)
 for nr in range(numTX*numRX):
     X[nr,:] = RDC[:,:,nr].flatten()
