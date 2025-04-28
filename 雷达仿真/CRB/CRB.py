@@ -6,6 +6,9 @@ Created on Tue Apr 22 10:41:19 2025
 @author: jack
 
 https://blog.csdn.net/weixin_43270276/article/details/124647286
+
+https://blog.csdn.net/qq_42432868/article/details/129804574?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ECtr-4-129804574-blog-124647286.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ECtr-4-129804574-blog-124647286.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=8
+
 """
 
 import numpy as np
@@ -32,7 +35,7 @@ plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
 
-# %% Radar parameters
+#%%  parameters
 
 
 
