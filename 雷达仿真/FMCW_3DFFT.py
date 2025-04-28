@@ -68,7 +68,7 @@ Ns = 1024         # ADC采样点数
 Nchirp = 256      # chirp数量
 lamba = c/f0      # 波长
 Fs = Ns/Tc        # = 1/(t[1] - t[0])     # 模拟信号采样频率
-nRx = 4           # RX天线通道数
+nRx = 8           # RX天线通道数
 d = lamba/2       # 天线阵列间距
 
 NumRangeFFT = Ns                          # Range FFT Length
@@ -158,7 +158,6 @@ sigReceive = np.conjugate(Sx) * Rx # 混频
 
 range_win = np.hamming(Ns)           # 加海明窗
 doppler_win = np.hamming(Nchirp)
-
 
 ##>>>>>>>>>>>>>> MUSIC算法
 X = np.zeros((nRx, int(Nchirp * Ns)),dtype = complex)
@@ -318,8 +317,7 @@ cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label='强度 (dB)')
 plt.show()
 plt.close()
 
-#####>>>>>>>>>>>>>>>>>>>>>>>>
-# 检测目标
+#####>>>>>>>>>>>>>>>>>>>>>>>> # 检测目标
 power_spectrum = np.abs(angle_fft[..., :Ns//2])**2
 spectrum_2d = np.sum(power_spectrum, axis = 0)  # 压缩角度维度
 
@@ -467,7 +465,38 @@ ax3.view_init(azim = -135, elev = 30)
 plt.show()
 plt.close()
 
+## (四) MUSIC 距离-AOA谱, 下面代码无效
+# ang_ax = np.arange(-90, 90, 0.5)             # angle axis
+# range_az_music = np.zeros((Ns, ang_ax.size), dtype = complex)
+# range_fft = np.fft.fft(sigReceive, axis = 2)
+# for i in range(Ns):
+#     # X = np.sum(range_fft[:,:,i], axis = 1)[:,None]
+#     X = range_fft[:,:,i]
+#     Rxx = X @ X.T.conjugate() / Ns
+#     # for m in range(M):
+#     #    A =  np.sum(rangeFFT1[i,m*numChirps:(m+1)*numChirps,:], 0)
+#     #    Rxx = Rxx + 1/M * (A[:,None]@A[:,None].conjugate().T)
+#     # 特征值分解
+#     eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
+#     idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
+#     eigvector = eigvector[:, idx]
+#     eigvector = eigvector[:,::-1]                         # 对应特征矢量排序
+#     Un = eigvector[:, 1:]
+#     UnUnH = Un@Un.conjugate().T
+#     for a, ang in enumerate(ang_ax):
+#         at = np.exp(1j * np.pi * np.arange(nRx) * np.sin(ang)).reshape(-1, 1)
+#         range_az_music[i,a] = (at.conjugate().T@at)[0,0]/(at.T.conjugate()@UnUnH@at)[0,0]
 
+# colors = plt.cm.jet(np.linspace(0, 1, 3))
+# fig = plt.figure(figsize=(8, 4) )
+# ax1 = fig.add_subplot(111, )
+# im = ax1.imshow(10*np.log10(np.abs(range_az_music)/np.abs(range_az_music).max()), aspect = 'auto', cmap = 'jet', extent = [ang_ax[0], ang_ax[-1], x[-1], x[0]])
+# ax1.set_xlabel('Azimuth')
+# ax1.set_ylabel('Range (m)')
+# ax1.set_title('MUSIC Range-Angle Map')
+# cbar = fig.colorbar(im, ax = ax1, orientation = 'vertical', label = '强度 (dB)')
+# plt.show()
+# plt.close()
 
 
 

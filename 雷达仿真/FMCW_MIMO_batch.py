@@ -130,7 +130,10 @@ for i in range(numCPI):
     RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
     RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(0, 1)), axes = 1)
 
-### range-Dopples 2D-plot
+#%%
+
+
+#%%  range-Dopples 2D-plot
 tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
 # tmp = np.abs(RDMs[:,:,0,0])
 fig = plt.figure(figsize = (10, 16), constrained_layout = True)
@@ -332,7 +335,6 @@ ax1.set_ylabel('dB', )
 ax1.set_title("MUSIC Spectrum")
 plt.show()
 plt.close()
-
 
 ## (三) 点云生成
 I = music_spectrum[1,:].argmax()
