@@ -53,7 +53,7 @@ Tc = 20e-6        # 扫频时间
 S = B/Tc          # 调频斜率
 Ns = 512          # ADC采样点数
 Nchirp = 256      # chirp数量
-Fs = Ns/Tc        # = 1/(t[1] - t[0])          # 模拟信号采样频率
+Fs = Ns/Tc        # = 1/(t[1] - t[0])     # 模拟信号采样频率
 lamba = c/f0      # 波长
 NumRangeFFT = Ns*2                        # Range FFT Length
 NumDopplerFFT = Nchirp*2                  # Doppler FFT Length
@@ -146,12 +146,12 @@ Fs = Ns/Tc        # = 1/(t[1] - t[0])          # 模拟信号采样频率
 lamba = c/f0      # 波长
 NumRangeFFT = Ns*2                         # Range FFT Length
 NumDopplerFFT = Nchirp*2                   # Doppler FFT Length
-rangeRes = c/(2*B)                        # 距离分辨率
-maxRange = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
-velRes = lamba / (2 * Nchirp * Tc)        # 速度分辨率
-maxVel = velRes * Nchirp/2                # 雷达最大检测目标的速度, Vmax = lamba/(4*Tchirp) = lamba/(2*Nchirp*Tchirp) * Nchirp/2 = velRes * Nchirp/2
+rangeRes = c/(2*B)                         # 距离分辨率
+maxRange = rangeRes * Ns                   # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
+velRes = lamba / (2 * Nchirp * Tc)         # 速度分辨率
+maxVel = velRes * Nchirp/2                 # 雷达最大检测目标的速度, Vmax = lamba/(4*Tchirp) = lamba/(2*Nchirp*Tchirp) * Nchirp/2 = velRes * Nchirp/2
 
-tarR = [100, 200]  # 目标距离
+tarR = [100, 200]   # 目标距离
 tarV = [3, -20]     # 目标速度
 
 # 接收差频信号
