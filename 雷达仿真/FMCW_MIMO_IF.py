@@ -183,8 +183,8 @@ def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
 
 numGuard = 2            # of guard cells
 numTrain = numGuard*2   # of training cells
-P_fa = 1e-5;            #  desired false alarm rate
-SNR_OFFSET = -5;        #  dB
+P_fa = 1e-5             #  desired false alarm rate
+SNR_OFFSET = -5         #  dB
 # tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
 tmp = np.abs(RDMs[:,:,0,0])
 RDM_dB = 10*np.log10(tmp/ tmp.max())

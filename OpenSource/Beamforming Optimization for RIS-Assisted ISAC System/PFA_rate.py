@@ -34,14 +34,12 @@ def monte_carlo_simulation(Pt, gamma_c, gamma, L, gamma_R_dBs, num_iterations=10
                 glrt_stat = (lambda_max_A - np.linalg.norm(x_d)**2) / sigma
                 if glrt_stat > gamma:
                     false_alarms += 1
-
             pfa = false_alarms / num_iterations
             pfa_results[gamma_R_dB].append(pfa)
 
     return rates, pfa_results
 
 def calculate_pfa(gamma, alpha_R, L):
-
     term1 = np.exp(-gamma)
     term2 = (2 * gamma * np.exp(-(gamma + alpha_R / 2))) / (2 ** L * gamma_func(L))
 
@@ -51,8 +49,6 @@ def calculate_pfa(gamma, alpha_R, L):
             sum_term1 += (math.comb(k, p) * 2 ** (L - 1) * gamma ** (k - p) *
                           gamma_func(L + p - k - 1) *
                           hyp1f1(L + p - k - 1, L, alpha_R / 2))
-
-
     sum_term2 = 0
     for k in range(L - 1):
         for l in range(k + 1):
@@ -61,8 +57,6 @@ def calculate_pfa(gamma, alpha_R, L):
                               gamma_func(l + 1) *
                               gamma_func(L + l + p - k - 1) *
                               hyp1f1(L + l + p - k - 1, L, alpha_R / 4))
-
-
     pfa = term1 + term2 * (sum_term1 - sum_term2)
 
     return pfa
@@ -110,4 +104,67 @@ plt.legend()
 plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 plt.savefig('PFA vs Rate test with max .png')
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

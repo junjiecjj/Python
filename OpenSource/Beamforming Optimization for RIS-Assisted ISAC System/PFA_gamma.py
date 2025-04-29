@@ -11,7 +11,7 @@ gamma_dB = 5  # 固定的检测阈值
 gamma_C_dB = 10  # 通信接收器的SNR (dB)
 gamma_C = 10 ** (gamma_C_dB / 10)  # 将dB转换为线性刻度
 # PT = 20
-# rate_values = np.linspace(0.1, 7.5, 30)  # 速率范围 (bpcu)
+rate_values = np.linspace(0.1, 7.5, 30)  # 速率范围 (bpcu)
 # DSNR values in dB and their linear scale
 DSNR_dB = np.array([-10, 10, 20])
 DSNR = 10 ** (DSNR_dB / 10)
@@ -31,18 +31,13 @@ def calculate_pfa(gamma, alpha_R, L):
     sum_term1 = 0
     for k in range(L - 1):
         for p in range(k + 1):
-            sum_term1 += (math.comb(k, p) * 2 ** (L - 1) * gamma ** (k - p) *
-                          gamma_func(L + p - k - 1) *
-                          hyp1f1(L + p - k - 1, L, alpha_R / 2))
+            sum_term1 += (math.comb(k, p) * 2 ** (L - 1) * gamma ** (k - p) * gamma_func(L + p - k - 1) * hyp1f1(L + p - k - 1, L, alpha_R / 2))
 
     sum_term2 = 0
     for k in range(L - 1):
         for l in range(k + 1):
             for p in range(k + 1):
-                sum_term2 += (math.comb(k, p) * 2 ** (k - p - l) * gamma ** (k - p) /
-                              gamma_func(l + 1) *
-                              gamma_func(L + l + p - k - 1) *
-                              hyp1f1(L + l + p - k - 1, L, alpha_R / 4))
+                sum_term2 += (math.comb(k, p) * 2 ** (k - p - l) * gamma ** (k - p) / gamma_func(l + 1) * gamma_func(L + l + p - k - 1) * hyp1f1(L + l + p - k - 1, L, alpha_R / 4))
 
     pfa = term1 + term2 * (sum_term1 - sum_term2)
     return pfa
@@ -91,11 +86,6 @@ for gamma_R in gamma_R_values:
     alpha_R = 2*(10 ** (gamma_R / 10))  # 将dB转换为线性刻度
     pfa_gamma_values[gamma_R] = [calculate_pfa(gamma, alpha_R, L) for gamma in gamma_values]
 
-# results_2 = {}
-# for gamma_R in gamma_R_values :
-#     results_2[gamma_R]={}
-#     for rate in rate_values :
-#         results_2[gamma_R] = monte_carlo_simulation(gamma_R, 5, num_simulations, L, sigma2,rate)
 
 # Plotting the results
 plt.figure(figsize=(10, 6))
@@ -116,10 +106,17 @@ plt.grid(True)
 plt.savefig('PFA vs Gamma (L=10).png')
 plt.show()
 
+##  2
+# results_2 = {}
+# for gamma_R in gamma_R_values :
+#     results_2[gamma_R]={}
+#     for rate in rate_values :
+#         results_2[gamma_R] = monte_carlo_simulation(gamma_R, 5, num_simulations, L, sigma2, rate)
+
 # plt.figure(figsize=(10, 6))
 # for gamma_R in gamma_R_values:
 #     plt.plot(rate_values, results_2[gamma_R], marker='o', label=f'γ_R={gamma_R} dB')
-#
+
 # plt.yscale('log')  # 使用对数刻度
 # plt.ylim(1e-3, 1e1)  # 设置y轴范围
 # plt.yticks([1e-3, 1e-2, 1e-1, 1, 1e1], ['0.001', '0.01', '0.1', '1', '10'])  # 设置y轴刻度

@@ -23,16 +23,13 @@ beta_BR = 10 ** (3 / 10)  # 基站到RIS的Rician因子
 beta_Ru = 10 ** (3 / 10)  # RIS到用户的Rician因子
 beta_Bu = 0  # 基站到用户的Rician因子（纯Rayleigh衰落）
 
-
 def path_loss(d, alpha, C0_db, D0):
     return 10 ** (C0_db / 10) * (d / D0) ** (-alpha)
-
 
 def rician_channel(N, M, beta, PL):
     LoS_component = np.sqrt(PL) * (np.ones((N, M)) + 1j * np.ones((N, M)))
     NLoS_component = np.sqrt(PL) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
     return np.sqrt(beta / (1 + beta)) * LoS_component + np.sqrt(1 / (1 + beta)) * NLoS_component
-
 
 # 信道生成
 PL_BS_RIS = path_loss(d_BS_RIS, alpha_BR, C0_db, D0)
@@ -46,11 +43,8 @@ hd_k = rician_channel(K, M, beta_Bu, PL_BS_User)
 theta = 2 * np.pi * np.random.rand(N, 1)
 phi = np.exp(1j * theta)
 Phi_random = np.diag(phi.flatten())
-
 hk = hr_k @ Phi_random @ G + hd_k
-
 iters = 100
-
 
 # 对功率范围进行循环
 def calculate_sum_rate(hk, power_range):
@@ -219,8 +213,6 @@ hk = hd_k.T
 # Calculate sum rate for the second scenario
 sum_rate_scenario_4 = calculate_sum_rate_c(hk, power_range)
 
-
-
 # Plot both scenarios on the same graph
 plt.plot(power_range, sum_rate_scenario_1, label=' With Random RIS ')
 plt.plot(power_range, sum_rate_scenario_2, label=' Without RIS ', linestyle='--')
@@ -236,3 +228,56 @@ plt.xticks(range(10, 21, 2))
 plt.yticks(range(2, 33, 6))
 plt.legend()
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
