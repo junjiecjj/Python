@@ -232,8 +232,8 @@ SNR = 10                                  # 信噪比(dB)
 X = np.zeros((N, Ns), dtype = complex)
 for i in range(K):
     a_k = steering_vector(doa_rad[i], N)
-    # s = np.exp(1j * 2 * np.pi * np.random.rand(Ns))
-    s = np.exp(1j * 2 * np.pi * f[i] * t)  # random signals
+    # s = np.exp(1j * 2 * np.pi * np.random.rand(Ns))  # 信源信号，入射信号，不相干即可，也可以用正弦替代
+    s = np.exp(1j * 2 * np.pi * f[i] * t)  # 正弦 signals
     X += np.outer(a_k, s)
 
 # add noise
