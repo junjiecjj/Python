@@ -17,7 +17,7 @@ from scipy import linalg as spl
 def alg1(F: np.ndarray, Ns: int, gamma_sq: float, sigma_sq: float, epsilon: float = 1e-3) -> np.ndarray:
     """
     The alg1 function is an implementation of 'Algorithm 1' from the paper.
-    The algorithm is further implementation of optimization problem used for 
+    The algorithm is further implementation of optimization problem used for
     approximating analog precoder matrix Vrf, and the number of rf chains (Nrf) is equal
     to the number of data streams (Ns).
 
@@ -53,7 +53,7 @@ def alg1(F: np.ndarray, Ns: int, gamma_sq: float, sigma_sq: float, epsilon: floa
             Vrf_j[:, j] = 0.0
             # Compute Cj and Gj as per (13)
             Cj = np.identity(Nrf) + (gamma_sq/sigma_sq) * (Vrf_j.conj().T @ (F @ Vrf_j))
-            Gj = (gamma_sq/sigma_sq) * F - (gamma_sq/sigma_sq)**2 * (F @ (Vrf_j @ (np.linalg.inv(Cj) @ (Vrf_j.conj().T @ F))))
+            Gj = (gamma_sq/sigma_sq) * F - (gamma_sq/sigma_sq)**2 * (F @ (Vrf_j @ (np.linalg.inv(Cj.astype(np.complex128)) @ (Vrf_j.conj().T @ F))))
             # Vrf update loop
             for i in range(F.shape[0]):
                 eta_ij = 0.0
@@ -68,7 +68,7 @@ def alg1(F: np.ndarray, Ns: int, gamma_sq: float, sigma_sq: float, epsilon: floa
         # Save the last result
         last_iter_obj = iter_obj
         # Calculate objective function of (12)
-        iter_obj =  np.log2(np.linalg.det(np.identity(Nrf) + (gamma_sq/sigma_sq) * (Vrf.conj().T @ (F @ Vrf))))
+        iter_obj =  np.log2(np.linalg.det((np.identity(Nrf) + (gamma_sq/sigma_sq) * (Vrf.conj().T @ (F @ Vrf))).astype(np.complex128)))
         # Calculate difference of last and current objective function
         diff = abs((iter_obj - last_iter_obj) / iter_obj)
     return Vrf
@@ -77,7 +77,7 @@ def alg2(H: np.ndarray, Ns: int, P: float, sigma_sq: float, epsilon: float = 1e-
     """
     The alg2 function is an implementation of 'Algorithm 2' from the paper.
     The goal of this algorithm is to incorporate the environment and compute receiving signal matrices.
-    Using the knowledge gained the algorithm computes the spectral efficiency metric, 
+    Using the knowledge gained the algorithm computes the spectral efficiency metric,
     when the number of rf chains (Nrf) is equal to the number of data streams (Ns).
 
     Parameters
@@ -109,7 +109,7 @@ def alg2(H: np.ndarray, Ns: int, P: float, sigma_sq: float, epsilon: float = 1e-
     Heff = H @ Vrf
     Q = Vrf.conj().T @ Vrf
     # Right singular vectors
-    u, s, Ue = np.linalg.svd(Heff @ (spl.sqrtm(np.linalg.inv(Q))))
+    u, s, Ue = np.linalg.svd((Heff @ (spl.sqrtm(np.linalg.inv(Q)))).astype(np.complex128))
     # Diagonal matrix of allocated powers to each stream
     GAMMAe = np.identity(Q.shape[0]) * (P/Nrf)**0.5
 
@@ -118,20 +118,20 @@ def alg2(H: np.ndarray, Ns: int, P: float, sigma_sq: float, epsilon: float = 1e-
 
     # Hybrid precoder matrix (8)
     Vt = Vrf @ Vd
-    
+
     # Compute analog combiner matrix of receiver (15)
     F_2 = H @ (Vt @ (Vt.conj().T @ H.conj().T))
     Wrf = alg1(F_2, Ns, 1/H.shape[0], sigma_sq, epsilon)
 
     # Compute the digital combiner matrix of receiver (17)
     J = Wrf.conj().T @ (H @ (Vrf @ (Vd @ (Vd.conj().T @ (Vrf.conj().T @ (H.conj().T @ Wrf)))))) + sigma_sq * (Wrf.conj().T @ Wrf)
-    Wd = np.linalg.inv(J) @ (Wrf.conj().T @ (H @ (Vrf @ Vd)))
+    Wd = np.linalg.inv(J.astype(np.complex128)) @ (Wrf.conj().T @ (H @ (Vrf @ Vd)))
 
     # Hybrid combiner matrix (8)
     Wt = Wrf @ Wd
 
     # Compute the spectral efficiency metric (4)
-    R = np.log2(np.linalg.det(np.identity(H.shape[0]) + (1/sigma_sq) * (Wt @ (np.linalg.inv(Wt.conj().T @ Wt) @ (Wt.conj().T @ (H @ (Vt @ (Vt.conj().T @ H.conj().T))))))))
+    R = np.log2(np.linalg.det((np.identity(H.shape[0]) + (1/sigma_sq) * (Wt @ (np.linalg.inv((Wt.conj().T @ Wt).astype(np.complex128)) @ (Wt.conj().T @ (H @ (Vt @ (Vt.conj().T @ H.conj().T))))))).astype(np.complex128)))
     return R
 
 def enviroGen(N: int, M: int, L: int, d: float = 0.5) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -175,30 +175,22 @@ def enviroGen(N: int, M: int, L: int, d: float = 0.5) -> Tuple[np.ndarray, np.nd
 
 #%% Simulation/testing
 # num of BS antennas
-N = 64 
-
+N = 64
 # num of receiver antennas
 M = 16
-
 # num of users
 K = 1
-
 # num of data streams per user
 d = 6
-
-# num of data streams 
+# num of data streams
 Ns = K * d
-
 # num of scatterers
 L = 15
-
 # stopping (convergence) condition
 epsilon = 1e-4
-
 # These variables must comply with these invariants:
 # Ns <= Nrft <= N
 # d <= Nrfr <= M
-
 sigma_sq = 40
 # num of iterations for each dB step
 num_iters = 20
@@ -206,7 +198,7 @@ num_iters = 20
 db_range = 10
 
 # Generate and average spectral efficiency data for a range of SNR ratios.
-arr = np.ndarray(shape=(db_range*2), dtype=np.float64)
+arr = np.ndarray(shape=(db_range*2), dtype = np.float64)
 for snr in range(-db_range, db_range):
     P = 10**(snr / 10) * sigma_sq
     for i in range(num_iters):
@@ -215,7 +207,7 @@ for snr in range(-db_range, db_range):
 
         # generated environment - advanced generation
         H, Gain, At = enviroGen(N, M, L)
-        
+
         a2 = alg2(H, Ns, P, sigma_sq, epsilon)
         arr[snr+db_range] += a2
     arr[snr+db_range] /= num_iters

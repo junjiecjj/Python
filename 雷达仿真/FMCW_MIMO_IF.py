@@ -98,37 +98,6 @@ for i in range(numTX):
             delays_tar[i,j,k,:] = (np.linalg.norm(tar_loc[k] - np.tile(rx_loc[j], (N, 1)), ord = 2, axis = 1) + np.linalg.norm(tar_loc[k] - np.tile(tx_loc[i], (N, 1)), ord = 2, axis = 1))/c
 
 #%% 接收信号模型 Complex signal
-# phase = lambda tx, fx: 2*np.pi*(fx*tx+slope/2*tx**2)                               # transmitted
-# phase2 = lambda tx, fx, r, v: 2*np.pi*(2*fx*r/c + tx*(2*fx*v/c + 2*slope*r/c))     # downconverted
-# phase_t = phase(t_onePulse, fc)
-# # 这里，接收信号没有采用发射与接收混频的形式，而是相位直接做差，分别计算两个目标的中频信号相加，此法等效为混频
-# mixed = np.zeros((numTX, numRX, N), dtype = complex)
-# for i in range(numTX):
-#     for j in range(numRX):
-#         signal = np.zeros(N, dtype = complex)
-#         for k in range(numChirps*numCPI):
-#             for u in range(numTarget):
-#                 Phase = phase(t_onePulse - delays_tar[i,j,u,:][int((k+1)*numADC)-1], fc)      # received
-#                 signal[int(k*numADC):int((k+1)*numADC)] += np.exp(1j*(phase_t - Phase))
-#         mixed[i, j] = signal
-
-#%% add noise
-# signal_power = np.sum(np.abs(mixed)**2)/mixed.size
-# SNRdB = 100
-# noise_pow = signal_power / (10.0**(SNRdB/10.0))
-# mixed = mixed + np.sqrt(noise_pow/2) * (np.random.randn(*mixed.shape) + 1j * np.random.randn(*mixed.shape))
-
-#%% IF
-# mixed1 = mixed.transpose(1, 0, 2).reshape(numRX*numTX, N)
-# RDC = mixed1.reshape(numRX*numTX, numChirps*numCPI, numADC).transpose(2, 1, 0)  # radar data cube
-
-#%% 五、速度-距离  FFT-2D
-# RDMs = np.zeros((numADC, numChirps, numTX*numRX, numCPI), dtype = complex)
-# for i in range(numCPI):
-#     RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
-#     RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(0, 1)), axes = 1)
-
-#%% Rx * Tx
 ft = fc * t_onePulse + slope / 2 * t_onePulse**2
 Sx = np.exp(1j * 2 * np.pi * ft)                  # 发射信号
 
@@ -391,8 +360,9 @@ rangeFFT1 = scipy.fft.fft(RDC, axis = 0)
 for i in range(N_range):
     Rxx = np.zeros((numTX*numRX, numTX*numRX), dtype = complex)
     for m in range(M):
-       A =  np.sum(rangeFFT1[i, :, m, :], 0)
-       Rxx = Rxx + 1/M * (A[:,None]@A[:,None].conjugate().T)
+        A =  np.sum(rangeFFT1[i, :, m, :], 0)
+        Rxx = Rxx + 1/M * (A[:,None]@A[:,None].conjugate().T)
+
     # 特征值分解
     eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
     idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
@@ -414,7 +384,7 @@ cbar = fig.colorbar(im, ax = ax1, orientation = 'vertical', label = '强度 (dB)
 plt.show()
 plt.close()
 
-## (五)压缩感知
+## (五) 压缩感知
 numTheta = ang_ax.size      # divide FOV into fine grid
 B = a1                      # steering vector matrix or dictionary, also called basis matrix
 
