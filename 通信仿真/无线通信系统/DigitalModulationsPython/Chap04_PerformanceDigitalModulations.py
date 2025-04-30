@@ -46,7 +46,7 @@ for i, M in enumerate(arrayOfM):
         modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
     modulatedSyms = modem.modulate(inputSyms) #modulate
 
-    for j,EsN0dB in enumerate(EsN0dBs):
+    for j, EsN0dB in enumerate(EsN0dBs):
         receivedSyms = awgn(modulatedSyms,EsN0dB) #add awgn noise
 
         if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
@@ -93,12 +93,12 @@ fig, ax = plt.subplots(nrows=1,ncols = 1)
 
 for i, M in enumerate(arrayOfM):
     k=np.log2(M)
-    EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
+    EsN0dBs = 10*np.log10(k) + EbN0dBs # EsN0dB calculation
     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
     # uniform random symbols from 0 to M-1
     inputSyms = np.random.randint(low=0, high = M, size=nSym)
 
-    modem = modem_dict[mod_type.lower()](M)#choose a modem from the dictionary
+    modem = modem_dict[mod_type.lower()](M) # choose a modem from the dictionary
     modulatedSyms = modem.modulate(inputSyms) #modulate
 
     for j,EsN0dB in enumerate(EsN0dBs):
@@ -144,7 +144,7 @@ fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
 for i, K_dB in enumerate(K_dBs):
     #-----Initialization of various parameters----
-    k=np.log2(M)
+    k = np.log2(M)
     EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
     # uniform random symbols from 0 to M-1

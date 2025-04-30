@@ -33,20 +33,38 @@ plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
-
-
 #%% Program 12.1: receive diversity.m: Receive diversity error rate performance simulation
-from Modulations import modulator
-# from ChannelModels import add_awgn_noise
+import numpy as np # for numerical computing
+import matplotlib.pyplot as plt # for plotting functions
+from matplotlib import cm # colormap for color palette
+from scipy.special import erfc
+from DigiCommPy.modem import PSKModem, QAMModem, PAMModem, FSKModem
+from DigiCommPy.channels import awgn
+from DigiCommPy.errorRates import ser_awgn
 
-nSym = 100000
+
+nSym = 200000
 N = [1, 2, 20]
 EbN0dBs = np.arange(-20, 38, 2 )
-MOD_TYPE = 'psk'
+
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+
+mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM
+# arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 M = 2
-modem, Es, k = modulator(MOD_TYPE, M)
-map_table, demap_table = modem.getMappTable()
+
+# mod_type = 'QAM'
+# arrayOfM=[4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
+# M = 16
+k = np.log2(M)
 EsN0dBs = 10 * np.log10(k) + EbN0dBs
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem}
+
+if mod_type.lower()=='fsk':
+    modem = modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
+else: #for all other modulations
+    modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
+
 colors = ['b', 'g', 'r', 'c', 'm', 'k']
 marker = ['o', '*', 'v']
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
@@ -56,9 +74,10 @@ for m, nrx in enumerate(N):
     ser_SC = np.zeros(EsN0dBs.size)
 
     ## Transmitter
-    uu = np.random.randint(0, 2, size = nSym * k).astype(np.int8)
-    s = modem.modulate(uu)
-    d = np.array([demap_table[sym] for sym in s])
+    # uu = np.random.randint(0, 2, size = nSym * k).astype(np.int8)
+    # s = modem.modulate(uu)
+    d = np.random.randint(low = 0, high = M, size = nSym)
+    s = modem.modulate(d) #modulate
     s_diversity = np.kron(np.ones((nrx, 1)), s)
     for i, EsN0dB in enumerate(EsN0dBs):
         h = (np.random.randn(nrx, nSym) + 1j * np.random.randn(nrx, nSym))/np.sqrt(2)
@@ -72,20 +91,18 @@ for m, nrx in enumerate(N):
 
         ## MRC processing assuming perfect channel estimates
         s_MRC = np.sum(h.conjugate() * r, axis = 0)/np.sum(np.abs(h)**2, axis = 0)
-        sMRC = modem.demodulate(s_MRC, 'hard')
-        d_MRC = []
-        for j in range(nSym):
-            d_MRC.append( int(''.join([str(num) for num in sMRC[j*k:(j+1)*k]]), base = 2) )
-        d_MRC = np.array(d_MRC)
+        if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
+            d_MRC = modem.demodulate(s_MRC, coherence)
+        else: #demodulate (Refer Chapter 3)
+            d_MRC = modem.demodulate(s_MRC)
 
         ## EGC processing assuming perfect channel estimates
         h_phases = np.exp(-1j*np.angle(h))
         s_EGC = np.sum(h_phases * r, axis = 0)/np.sum(np.abs(h), axis = 0)
-        sEGC = modem.demodulate(s_EGC, 'hard')
-        d_EGC = []
-        for j in range(nSym):
-            d_EGC.append( int(''.join([str(num) for num in sEGC[j*k:(j+1)*k]]), base = 2) )
-        d_EGC = np.array(d_EGC)
+        if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
+            d_EGC = modem.demodulate(s_EGC, coherence)
+        else: #demodulate (Refer Chapter 3)
+            d_EGC = modem.demodulate(s_EGC)
 
         ## SC processing assuming perfect channel estimates
         idx = np.abs(h).argmax(axis = 0)
@@ -93,11 +110,10 @@ for m, nrx in enumerate(N):
         y = r[idx, np.arange(r.shape[-1])]
 
         s_SC = y * h_best.conjugate() / np.abs(h_best)**2
-        sSC = modem.demodulate(s_SC, 'hard')
-        d_SC = []
-        for j in range(nSym):
-            d_SC.append( int(''.join([str(num) for num in sSC[j*k:(j+1)*k]]), base = 2) )
-        d_SC = np.array(d_SC)
+        if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
+            d_SC = modem.demodulate(s_SC, coherence)
+        else: #demodulate (Refer Chapter 3)
+            d_SC = modem.demodulate(s_SC)
 
         ser_MRC[i] = np.sum(d != d_MRC)/nSym
         ser_EGC[i] = np.sum(d != d_EGC)/nSym
@@ -110,11 +126,12 @@ for m, nrx in enumerate(N):
 axs.set_ylim(1e-5, 1.1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"Symbol Error Rate for M-{MOD_TYPE.upper()} over Rayleigh flat fading Channel")
-# axs.legend(fontsize = 20)
+axs.set_title(f"Symbol Error Rate for M-{mod_type.upper()} over Rayleigh flat fading Channel")
+axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
+
 
 
 #%% Program 12.2: Alamouti.m: Receive diversity error rate performance simulation
