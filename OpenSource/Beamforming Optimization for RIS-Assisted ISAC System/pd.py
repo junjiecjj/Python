@@ -1,9 +1,12 @@
+
+# https://github.com/PaddiZhou/ISAC_Research/tree/main
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import ncx2
 
 def Q1(a, b):
-
     return 1-ncx2.cdf(b**2, 2, a**2)
 
 # Define constants
@@ -67,14 +70,11 @@ def monte_carlo_simulation(Pt, gamma_c, gamma, L, gamma_R_dBs, num_iterations=10
                 glrt_stat = (lambda_max_A - np.linalg.norm(x_d)**2) / sigma
                 if glrt_stat > gamma:
                     false_alarms += 1
-
             pfa = false_alarms / num_iterations
             pfa_results[gamma_R_dB].append(pfa)
-
     return rates, pfa_results
 
 rates, pfa_results = monte_carlo_simulation(PT_10W, gamma_C_0dB, gamma, L, gamma_R_dBs)
-
 
 # Plotting the results
 plt.figure(figsize=(12, 6))

@@ -15,7 +15,6 @@ https://blog.csdn.net/weixin_42305982/article/details/133837974?spm=1001.2101.30
 
 https://blog.csdn.net/weixin_43270276/article/details/119831879?spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-119831879-blog-124647286.235%5Ev43%5Epc_blog_bottom_relevance_base5&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-119831879-blog-124647286.235%5Ev43%5Epc_blog_bottom_relevance_base5&utm_relevant_index=17
 
-
 """
 
 import numpy as np
@@ -46,12 +45,12 @@ np.random.seed(42)
 
 #%%  单目标测向系统中CRLB推导
 pi = np.pi
-derad = pi/180               # 角度->弧度
+derad = pi/180.0             # 角度->弧度
 M = 4                        # 阵元个数
 K = 1                        # 信源数目
-N = 10                        # 快拍数
-tarDOA = 30                  # 待估计的Angle,可以由测向信号产生
-SNR = np.arange(10, 32, 4)    # 遍历信噪比范围
+N = 10                       # 快拍数
+tarDOA = 30 # 5.739170477266787                  # 待估计的Angle,可以由测向信号产生
+SNR = np.arange(10, 32, 2)   # 遍历信噪比范围
 trail = 10000                # 尝试次数
 d = np.arange(M)             # 线阵间隔
 esti_music = np.zeros(trail)
@@ -60,15 +59,16 @@ VAREsti_snr = np.zeros(Len_SNR)
 VARCalc_snr = np.zeros(Len_SNR)
 Thetalst = np.arange(-90, 90.1, 0.5)
 angle = np.deg2rad(Thetalst)
-A = np.exp(-1j * d * pi * np.sin(tarDOA*pi/180.0))                 # 方向矢量，复数形式
+A = np.exp(-1j * d * pi * np.sin(tarDOA*derad))                 # 方向矢量，复数形式
 
 for i, snr in enumerate(SNR):
     print(f"  {i+1}/{SNR.size}")
     # snr_current = SNR[index_snr]
     for k in range(trail):
-        S = np.random.randn(K, N);                         # 信源信号，入射信号，不相干即可，也可以用正弦替代
+        S = np.random.randn(K, N)                          # 信源信号，入射信号，不相干即可，也可以用正弦替代
         X = np.outer(A, S)                                 # 构造接收信号
-        noisevar = 10 ** (-snr / 20)
+        sig_pow = (np.abs(X)**2).mean()
+        noisevar = sig_pow * 10 ** (-snr / 10)
         noise = np.sqrt(noisevar/2) * (np.random.randn(*X.shape) + 1j * np.random.randn(*X.shape))
         X += noise
         Rxx = X @ X.T.conjugate() / N
@@ -85,16 +85,12 @@ for i, snr in enumerate(SNR):
             a = np.exp(-1j * np.pi * d * np.sin(ang)).reshape(-1, 1)
             Pmusic[j] = 1/np.abs(a.T.conjugate() @ UnUnH @ a)[0,0]
 
-        Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
-        Pmusic = 10 * np.log10(Pmusic)
-        peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -10, distance = 10)
-
-        angle_est = Thetalst[peaks[0]]
-        esti_music[k] = angle_est * pi / 180.0                  # 寻找最大值对应延时
-    VAREsti_snr[i] = np.sum((pi * np.sin(esti_music) - pi * np.sin(tarDOA*pi/180.0))**2)/trail                  # 计算方差
+        peaks = Pmusic.argmax()
+        angle_est = Thetalst[peaks]
+        esti_music[k] = angle_est * derad                  # 寻找最大值对应延时
+    VAREsti_snr[i] = np.sum((pi * np.sin(esti_music) - pi * np.sin(tarDOA*derad))**2)/trail                  # 计算方差
 SNR_Linear = 10**(SNR/10)                                                 # 将对数SNR转换成线性格式
 VARCalc_snr = 6/(N*M*(M-1)*(M+1)*SNR_Linear)
-
 
 fig = plt.figure(figsize = (8, 12), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
@@ -103,7 +99,7 @@ ax1.plot(SNR, VARCalc_snr, color = 'k', label = 'Theo')
 
 ax1.set_xlabel('SNR(dB)')
 ax1.set_ylabel('CRB')
-# ax1.set_title('距离-速度图')
+ax1.set_title(f'M = {M}, K = {K}, N = {N},')
 ax1.legend()
 
 ax2 = fig.add_subplot(212, )
@@ -112,7 +108,7 @@ ax2.plot(SNR, 10*np.log10(VARCalc_snr), color = 'k', label = 'Theo')
 
 ax2.set_xlabel('SNR(dB)')
 ax2.set_ylabel('CRB')
-# ax2.set_title('距离-速度图')
+ax2.set_title(f'M = {M}, K = {K}, N = {N}, 10log10')
 ax2.legend()
 
 plt.show()
