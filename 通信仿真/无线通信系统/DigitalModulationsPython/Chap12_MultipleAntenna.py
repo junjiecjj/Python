@@ -37,7 +37,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 #%% Program 12.1: receive diversity.m: Receive diversity error rate performance simulation
 from Modulations import modulator
-from ChannelModels import add_awgn_noise
+# from ChannelModels import add_awgn_noise
 
 nSym = 100000
 N = [1, 2, 20]

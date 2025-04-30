@@ -48,7 +48,7 @@ pi = np.pi
 derad = pi/180.0             # 角度->弧度
 M = 4                        # 阵元个数
 K = 1                        # 信源数目
-N = 10                       # 快拍数
+N = 100                       # 快拍数
 tarDOA = 30 # 5.739170477266787                  # 待估计的Angle,可以由测向信号产生
 SNR = np.arange(10, 32, 2)   # 遍历信噪比范围
 trail = 10000                # 尝试次数
@@ -96,7 +96,6 @@ fig = plt.figure(figsize = (8, 12), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
 ax1.plot(SNR, VAREsti_snr, color = 'b', label = 'Simu')
 ax1.plot(SNR, VARCalc_snr, color = 'k', label = 'Theo')
-
 ax1.set_xlabel('SNR(dB)')
 ax1.set_ylabel('CRB')
 ax1.set_title(f'M = {M}, K = {K}, N = {N},')
@@ -105,7 +104,6 @@ ax1.legend()
 ax2 = fig.add_subplot(212, )
 ax2.plot(SNR, 10*np.log10(VAREsti_snr), color = 'b', label = 'Simu')
 ax2.plot(SNR, 10*np.log10(VARCalc_snr), color = 'k', label = 'Theo')
-
 ax2.set_xlabel('SNR(dB)')
 ax2.set_ylabel('CRB')
 ax2.set_title(f'M = {M}, K = {K}, N = {N}, 10log10')
