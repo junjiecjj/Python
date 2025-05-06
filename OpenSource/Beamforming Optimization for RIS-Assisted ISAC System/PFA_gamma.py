@@ -83,7 +83,6 @@ for gamma_R in gamma_R_values:
     alpha_R = 2*(10 ** (gamma_R / 10))  # 将dB转换为线性刻度
     pfa_gamma_values[gamma_R] = [calculate_pfa(gamma, alpha_R, L) for gamma in gamma_values]
 
-
 # Plotting the results
 plt.figure(figsize=(10, 6))
 for dsnr in DSNR:

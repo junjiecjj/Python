@@ -64,8 +64,6 @@ a = [a1; a2];                   % size Nr+Nc x M
 % NOTE: the way we have contructed our steering vectors and stacked them
 % into the matrices a, a1, a2 - these are equal to the A, A1, A2 from Eq.17
 
-
-
 % SECOND METHOD - SIDELOBE MINIMIZATION -----------------------------------
 % first we specify the sidelobe region \Omega
 isSidelobeRegion = zeros(length(angleSpace),1); index = 1;
@@ -200,8 +198,6 @@ for i = 1:length(angleSpace)
     BPrad(i) = abs( a1(:,i)' * R1 * a1(:,i) );
     BPcomm(i) = abs( a2(:,i)' * Wsum * a2(:,i) );
 end
-
-
 % Plot Beampattern
 figure; plot(angleSpaceDeg,Pdesired); hold on
 plot(angleSpaceDeg, Pd, 'LineWidth', 2); hold on;

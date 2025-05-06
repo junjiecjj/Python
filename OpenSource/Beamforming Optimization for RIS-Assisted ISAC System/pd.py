@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import ncx2
 
 def Q1(a, b):
-    return 1-ncx2.cdf(b**2, 2, a**2)
+    return 1 - ncx2.cdf(b**2, 2, a**2)
 
 # Define constants
 L = 10
