@@ -52,6 +52,9 @@ https://mp.weixin.qq.com/s?__biz=MzkxMTMwMTg4Mg==&mid=2247490817&idx=1&sn=bc4961
 雷达入门课系列文章（1）| 基于MATLAB的雷达信号处理实验教程
 https://zhuanlan.zhihu.com/p/567656893
 
+
+https://github.com/radarsimx/radarsimpy
+https://github.com/daydreamer2023/radar-simulation-notebooks/blob/master/pmcw_radar.py?tab=readme-ov-file
 """
 
 import numpy as np
