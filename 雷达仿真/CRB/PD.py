@@ -6,7 +6,6 @@ Created on Tue May  6 14:53:53 2025
 @author: jack
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -30,20 +29,16 @@ plt.rcParams['lines.markersize'] = 6         # 标记大小
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
-
 np.random.seed(42)
-
 
 #%% https://deepinout.com/numpy/numpy-questions/109_numpy_how_can_i_compute_the_null_spacekernel_x_mx_0_of_a_sparse_matrix_in_python.html#google_vignette
 import numpy as np
-# from scipy.sparse import random
-# from scipy.sparse.linalg import svds
-
+# 稀疏矩阵的空间/核
 # 创建一个随机稀疏矩阵
 M = scipy.sparse.random(6, 6, density=0.5, format='lil', random_state=0)
 
 # 计算随机稀疏矩阵的SVD
-U, s, Vt = scipy.sparse.linalg.svds(M, k=1)
+U, s, Vt = scipy.sparse.linalg.svds(M, k = 5)
 
 # 计算空间/核
 null_space = Vt.T[:, -1]
@@ -61,19 +56,22 @@ import numpy as np
 A = np.array([[1, 2, 3],
               [4, 5, 6],
               [7, 8, 9]])
-
 # 计算零空间
 null_space_A = scipy.linalg.null_space(A)
 
 print("矩阵 A 的零空间:")
 print(null_space_A)
+print(f"A@null_space_A = {A@null_space_A}")
 
 # 计算矩阵的秩
 rank_A = np.linalg.matrix_rank(A)
 print("矩阵 A 的秩:", rank_A)
 
 #%% https://www.zhihu.com/question/294214797
-
+# 定义一个矩阵 A
+A = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [7, 8, 9]])
 def null(A, eps = 1e-15):
     u, s, vh = scipy.linalg.svd(A)
     null_mask = (s < eps)
@@ -82,13 +80,9 @@ def null(A, eps = 1e-15):
 
 # 计算零空间
 null_space_A = null(A)
-
 print("矩阵 A 的零空间:")
 print(null_space_A)
-
-
-
-
+print(f"A@null_space_A = {A@null_space_A}")
 
 # %% Define Parameters
 pi = np.pi

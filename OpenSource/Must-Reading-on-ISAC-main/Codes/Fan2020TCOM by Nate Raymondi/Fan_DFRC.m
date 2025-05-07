@@ -3,7 +3,9 @@
 %    and the Road Ahead" - Fan Liu et. al. 2019
 
 % Nate Raymondi, 1/23/2020
-
+clear;
+clc;
+close all;
 % Assign frequencies and propagation speed
 Nt = 64;             % number of transmit antennas (BS)
 Nr = 10;             % number of receiver antennas (UE)
@@ -21,11 +23,20 @@ RxAntLoc = spacing*[0:Nr-1];
 
 % set up angles, assume L = 4, K = 8
 %   AoDs (from BS to L scatterers)
-AoD1 = [-30;0]; AoD2 = [-10;0]; AoD3 = [8;0]; AoD4 = [25;0];
+AoD1 = [-30;0]; 
+AoD2 = [-10;0]; 
+AoD3 = [8;0]; 
+AoD4 = [25;0];
 %   AoAs (from L scatterers to UE)
-AoA1 = [-30;0]; AoA2 = [-10;0]; AoA3 = [8;0]; AoA4 = [25;0];
+AoA1 = [-30;0]; 
+AoA2 = [-10;0]; 
+AoA3 = [8;0]; 
+AoA4 = [25;0];
 %   Radar Target reflections
-tgt1 = [-75;0]; tgt2 = [-45;0]; tgt3 = [52;0]; tgt4 = [80;0];
+tgt1 = [-75;0]; 
+tgt2 = [-45;0]; 
+tgt3 = [52;0]; 
+tgt4 = [80;0];
 
 Kangles = [tgt1, tgt2, AoD1, AoD2, AoD3, AoD4, tgt3, tgt4];
 targets = [tgt1, tgt2, tgt3, tgt4];
@@ -41,7 +52,7 @@ RxSteerVec = phased.SteeringVector('SensorArray',RxArray);
 % a(\theta) - all K targets
 A_K = zeros(Nt,K); 
 for k = 1:K
-    A_K(:,k) = TxSteerVec(fc,Kangles(:,k));
+    A_K(:,k) = TxSteerVec(fc, Kangles(:,k));
 end
 
 % a(\psi) - only AoDs
@@ -103,12 +114,11 @@ for i = 1:length(angleSpace)
     d(i) = transpose(a(:,i)) * R * conj(a(:,i));
 end
 
-
 % PLOTTING BEAMPATTERNS -----------------------------------------------------
 tgts_plot = targets(1,:);           % quick fix to deal with some annoying 
 L_angles_plot = Langles(1,:);       % matrix dimensions
 
-figure
+figure 
 p = plot(angleSpaceDeg, mag2db(abs(dZF)), 'LineWidth', 2);
 hold on
 for i = 1:length(tgts_plot)
@@ -127,7 +137,7 @@ title('BS ZF Transmit Beampattern'); grid on; axis tight
 set(gcf,'color','w'); set(gcf, 'Position',  [50, 100, 1000, 400])
 legend([p,p_tgt,p_c],'ZF Beampattern','Radar Directions','Comms Directions');
 
-figure
+figure 
 p = plot(angleSpaceDeg, mag2db(abs(d)), 'LineWidth', 2);
 hold on
 for i = 1:length(tgts_plot)
