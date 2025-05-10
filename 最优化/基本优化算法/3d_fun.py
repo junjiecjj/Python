@@ -52,16 +52,16 @@ elif mod == 'hard':
 fig, ax = plt.subplots(figsize = (8,8), subplot_kw={'projection': '3d'},  constrained_layout = True)
 ax.set_proj_type('ortho')
 
-# norm_plt = plt.Normalize(Z.min(), Z.max())
-# colors = cm.RdYlBu_r(norm_plt(Z))
-# surf = ax.plot_surface(X, Y, Z, facecolors = colors, rstride = 5, cstride = 5, linewidth = 1, shade = False) # 删除阴影
-# surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+norm_plt = plt.Normalize(Z.min(), Z.max())
+colors = cm.RdYlBu_r(norm_plt(Z))
+surf = ax.plot_surface(X, Y, Z, facecolors = colors, rstride = 1, cstride = 1, linewidth = 1, shade = False) # 删除阴影
+surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
-ax.plot_wireframe(X, Y, Z, color = [0.5,0.5,0.5], linewidth = 0.25)
+# ax.plot_wireframe(X, Y, Z, color = [0.5,0.5,0.5], linewidth = 0.25)
 
 ##三维等高线
-colorbar = ax.contour(X, Y, Z, 10,  cmap = 'hsv')
-fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
+# colorbar = ax.contour(X, Y, Z, 10,  cmap = 'hsv')
+# fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
 
 # 二维等高线
 # colorbar = ax.contour(X, Y, Z, zdir='z', offset= Z.min(), levels = 10, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面

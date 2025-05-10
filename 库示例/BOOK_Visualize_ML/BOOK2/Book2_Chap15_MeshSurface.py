@@ -238,7 +238,6 @@ ax.grid(False)
 # fig.savefig('Figures/特定曲线_x + y = 1.svg', format='svg')
 plt.show()
 
-
 # 11. 绘制网格化散点
 xx_scatter, yy_scatter = mesh(num = 21)
 
@@ -264,8 +263,6 @@ ax.view_init(azim=-135, elev=30)
 ax.grid(False)
 # fig.savefig('Figures/增加网格散点.svg', format='svg')
 plt.show()
-
-
 
 # 12. 绘制不规则散点
 xx_scatter, yy_scatter = mesh(num = 21)

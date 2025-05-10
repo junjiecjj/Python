@@ -73,8 +73,7 @@ title('2D-FFT based method');
 xlabel('range(m)');
 ylabel('velocity(m/s)');
 savefig('fig/figure1.fig');
-
-                                                                                                                            
+                                                                                                      
 % 2. CCC-based     (Method proposed by Kai Wu et al.)
 figure(2);
 % setting parameters for CCC-based sensing method
@@ -128,4 +127,25 @@ savefig('fig/figure3.fig');
 fprintf('The estimation result of TLS-ESPRIT is :\n');
 fprintf('Range = %f\n',range);
 fprintf('Velocity = %f\n',velocity);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
