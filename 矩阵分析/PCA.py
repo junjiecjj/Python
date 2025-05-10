@@ -17,7 +17,7 @@ import pandas as pd
 ##  特征值分解手动计算PCA
 
 iris = load_iris()
-print(iris.data.shape) # 150,4
+print(iris.data.shape) # 150, 4
 X = iris.data
 # 中心化
 Xc = X - X.mean(axis=0)
@@ -142,7 +142,6 @@ Z = Xc@V
 US = U @ SS
 Z_US = np.abs(Z) - np.abs(US)
 print(f" {Z_US.min()}, {Z_US.max()}")
-
 
 ## 把原始数据 X 或中心化数据 Xc投影到 V 中结果不一样。从统计角度来看，差异主要体现在质心位置，而投影得到的数据协方差矩阵相同。
 Z = X@V
@@ -287,8 +286,6 @@ idx = 3
 plt.title('$\u03BB_' + str(idx + 1) + 'v_' + str(idx + 1) + ' @ v_'  + str(idx + 1) + '^T$')
 plt.show()
 
-
-
 ######### Sigma - Sigma_hat
 fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 
@@ -306,9 +303,6 @@ plt.sca(axs[2])
 ax = sns.heatmap(Sigma - Sigma_hat, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('$E = X - \hat{X}$')
-
-
-
 
 #%%######################################################### Xc的SVD分解(奇异值) #####################################################
 

@@ -84,7 +84,7 @@ print("矩阵 A 的零空间:")
 print(null_space_A)
 print(f"A@null_space_A = {A@null_space_A}")
 
-# %% Define Parameters
+#%% Define Parameters
 pi = np.pi
 # Speed of light
 c = 3*10**8

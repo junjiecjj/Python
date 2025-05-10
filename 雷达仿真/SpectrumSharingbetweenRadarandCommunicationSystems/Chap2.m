@@ -20,7 +20,7 @@ omega_c = 2*pi*f_c;
 lambda = (2*pi*c)/omega_c; 
 theta = 0;
 %% Steering vector and Transmit Signal Correlation Matrix 
-% Transmit/Receive Steering vector (Mt x 1) 
+% Transmit/Receive Steering vector (Mt x 1)
 a = [1 exp(1i * pi *(1:Mt-1)* sin(theta))]'; 
 % Transmit Correlation Matrix (Mt x Mt) for Orthonormal Waveforms 
 Rs = eye(Mt);
@@ -49,12 +49,9 @@ for i=1:MC_iter %% Interference channel matrix H generation and null space compu
         for z = 1:length(SNR_mag)
             rho_orthog(b) = SNR_mag(z)*(abs(a'*Rs.'*a))^2; 
             rho_NSP(b) = SNR_mag(z)*(abs(a'*Rs_null{b}.'*a))^2;
-            % Creates threshold values for a desired Pfa for 
-            % an inverse central-chi-square w/ 2 
-            % degrees of freedom
+            % Creates threshold values for a desired Pfa for an inverse central-chi-square w/2 degrees of freedom
             delta = chi2inv(ones(1,length(P_FA)) - P_FA,repmat(2,1,length(P_FA)));
-            % rows = SNR, cols = P_FA % 
-            % ncx2cdf = Noncentral chi -square cumulative distribution function
+            % rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
             Pd_orthog(z,:) = ones(1,length(P_FA)) - ncx2cdf(delta,repmat(2,1,length(P_FA)), repmat(rho_orthog(b),1,length(P_FA )));
     
             Pd_NSP(z,:) = ones(1,length(P_FA)) -  ncx2cdf(delta,repmat(2,1,length(P_FA)), repmat(rho_NSP(b),1,length(P_FA)));
@@ -69,8 +66,7 @@ for i=1:MC_iter %% Interference channel matrix H generation and null space compu
 end
 Pd_orthog_cat_mean = mean(Pd_orthog_cat ,3); 
 Pd_NSP_cat_mean = mean(Pd_NSP_cat ,3);
-%% Plots Probability of detection curves for given 
-% Probability of false alarm 
+%% Plots Probability of detection curves for given  Probability of false alarm 
 figure 
 plot(SNR_db',Pd_NSP_cat_mean(:,1),'g','LineWidth',2.5); hold on;
 plot(SNR_db',Pd_NSP_cat_mean(:,2),'b','LineWidth',2.5);
@@ -82,6 +78,22 @@ xlabel('SNR','fontsize' ,14);
 ylabel('P_D','fontsize' ,14);
 title('P_D for P_{FA} = 10^{-5}','fontsize' ,14);
 legend('P_D for NSP Waveforms to BS 1', 'P_D for NSP Waveforms to BS 2', 'P_D for NSP Waveforms to BS 3', 'P_D for NSP Waveforms to BS 4', 'P_D for NSP Waveforms to BS 5', 'P_D for Orthogonal Waveforms')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

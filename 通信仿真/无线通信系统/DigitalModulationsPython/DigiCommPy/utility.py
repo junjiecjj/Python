@@ -7,4 +7,3 @@ Created on Aug 8, 2019
 import numpy as np
 
 
-    
