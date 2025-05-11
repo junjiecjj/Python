@@ -16,7 +16,6 @@ import os
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
 
-
 ######################################### 1. 蓝绿渐变
 num_points = 21
 # 定义每个维度上散点个数

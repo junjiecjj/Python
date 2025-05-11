@@ -48,7 +48,6 @@ print("稀疏矩阵M：\n", M.todense())
 print("空间/核：\n", null_space)
 
 #%% https://blog.51cto.com/u_16213370/11892718
-
 import numpy as np
 # from scipy.linalg import null_space
 
@@ -104,9 +103,27 @@ omega_c = 2*pi*f_c
 lamba = (2*pi*c)/omega_c
 theta = 0
 
+# Steering vector and Transmit Signal Correlation Matrix
+# Transmit/Receive Steering vector (Mt x 1)
+a = np.exp(-1j * pi * np.sin(theta) * np.arange(Mt))  #  [1 exp(1i * pi *(1:Mt-1)* sin(theta))]'
+# Transmit Correlation Matrix (Mt x Mt) for Orthonormal Waveforms
+Rs = np.eye(Mt)
+# Define SNR for ROC (Reciever Operating Characteristics)
+SNR_db = np.arange(-8, 11)
+SNR_mag = 10**(SNR_db/10)
+# Probability of false alarm values
+P_FA = 10**-5
+# Monte-Carlo iterations
+MC_iter = 10
+Pd_orthog_cell = np.zeros((MC_iter, 19))
+Pd_NSP_cell = np.zeros((MC_iter, 19))
 
-
-
+for i in range(MC_iter):
+    BS = 5
+    BS_channel = np.zeros((BS, Nr, Nt))
+    Proj_matrix = np.zeros((BS, Nr, Nt))
+    for b in range(BS):
+        BS_channels[b,:,:] = (np.random.randn(L)+1j*np.random.randn(L)) / np.sqrt(2)
 
 
 

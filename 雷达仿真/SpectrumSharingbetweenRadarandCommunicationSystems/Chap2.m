@@ -18,7 +18,7 @@ r_0 = 500*10^3;
 f_c = 3.5*10^9; % Angular carrier frequency 
 omega_c = 2*pi*f_c; 
 lambda = (2*pi*c)/omega_c; 
-theta = 0;
+theta = 10;
 %% Steering vector and Transmit Signal Correlation Matrix 
 % Transmit/Receive Steering vector (Mt x 1)
 a = [1 exp(1i * pi *(1:Mt-1)* sin(theta))]'; 
@@ -45,29 +45,28 @@ for i=1:MC_iter %% Interference channel matrix H generation and null space compu
         BS_channels{b} = (randn(Nr,Mt)+1i*randn(Nr,Mt)); 
         Proj_matrix{b} = null(BS_channels{b}) * ctranspose(null(BS_channels{b})); 
         Rs_null{b} = Proj_matrix{b} * Rs * Proj_matrix{b}';
-        % Non-centrality parameter of chi-square 
+        % Non-centrality parameter of chi-square
         for z = 1:length(SNR_mag)
-            rho_orthog(b) = SNR_mag(z)*(abs(a'*Rs.'*a))^2; 
+            rho_orthog(b) = SNR_mag(z)*(abs(a'*Rs.'*a))^2;
             rho_NSP(b) = SNR_mag(z)*(abs(a'*Rs_null{b}.'*a))^2;
             % Creates threshold values for a desired Pfa for an inverse central-chi-square w/2 degrees of freedom
             delta = chi2inv(ones(1,length(P_FA)) - P_FA,repmat(2,1,length(P_FA)));
             % rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
             Pd_orthog(z,:) = ones(1,length(P_FA)) - ncx2cdf(delta,repmat(2,1,length(P_FA)), repmat(rho_orthog(b),1,length(P_FA )));
-    
             Pd_NSP(z,:) = ones(1,length(P_FA)) -  ncx2cdf(delta,repmat(2,1,length(P_FA)), repmat(rho_NSP(b),1,length(P_FA)));
         end
         Pd_orthog_cell{b}= Pd_orthog;
         Pd_NSP_cell{b}= Pd_NSP;
     end
-    Pd_orthog_cell_multiBS{i}= Pd_orthog_cell; 
+    Pd_orthog_cell_multiBS{i}= Pd_orthog_cell;
     Pd_NSP_cell_multiBS{i}= Pd_NSP_cell; 
-    Pd_orthog_cat(:,:,i) = cell2mat(Pd_orthog_cell_multiBS{i}); 
+    Pd_orthog_cat(:,:,i) = cell2mat(Pd_orthog_cell_multiBS{i});
     Pd_NSP_cat(:,:,i) = cell2mat(Pd_NSP_cell_multiBS{i});
 end
-Pd_orthog_cat_mean = mean(Pd_orthog_cat ,3); 
+Pd_orthog_cat_mean = mean(Pd_orthog_cat ,3);
 Pd_NSP_cat_mean = mean(Pd_NSP_cat ,3);
 %% Plots Probability of detection curves for given  Probability of false alarm 
-figure 
+figure
 plot(SNR_db',Pd_NSP_cat_mean(:,1),'g','LineWidth',2.5); hold on;
 plot(SNR_db',Pd_NSP_cat_mean(:,2),'b','LineWidth',2.5);
 plot(SNR_db',Pd_NSP_cat_mean(:,3),'r','LineWidth',2.5);
