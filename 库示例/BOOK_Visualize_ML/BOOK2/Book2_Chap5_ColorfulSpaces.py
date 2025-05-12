@@ -40,7 +40,7 @@ RGB_colors = np.vstack([RR.ravel(), GG.ravel(), BB.ravel()]).T # (441, 3)
 # 类似函数还有 numpy.hstack(), numpy.column_stack(), numpy.row_stack()
 
 fig, ax = plt.subplots(figsize=(5,5))
-ax.scatter(GG, BB, c= RGB_colors, s=12)
+ax.scatter(GG, BB, c = RGB_colors, s=12)
 # 绘制平面散点图 c为RGB颜色 s为散点大小
 # 设置横纵轴标签
 ax.set_xlabel('Green')
@@ -267,9 +267,9 @@ ax.scatter(colors_bright[:,0], # x 坐标
            alpha = 1)          # 透明度，1 代表完全不透
 
 # 设定横纵轴标签
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{x_3}$')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{x_3}$')
 
 ## 设定观察视角
 # ax.view_init(azim=38, elev=34)

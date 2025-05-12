@@ -28,7 +28,8 @@ Rs = eye(Mt);
 SNR_db = -8:1:10; 
 SNR_mag = 10.^(SNR_db./10); 
 %Probability of false alarm values 
-P_FA = [10^-5]; 
+P_FA = [10^-5];
+% P_FA = [10^-1, 10^-2];
 %% Monte-Carlo iterations 
 MC_iter = 10; 
 Pd_orthog_cell = cell(1,MC_iter); 
@@ -36,7 +37,7 @@ Pd_NSP_cell = cell(1,MC_iter);
 for i=1:MC_iter %% Interference channel matrix H generation and null space computation
     % Generate Cellular Channels and Find NS of them and select 
     % Channel with Min NS 
-    BS =5; 
+    BS = 5; 
     % Make a cell to store matrices 
     BS_channels = cell(1,BS); 
     % Make a cell to store Projectors for every BS 
@@ -50,10 +51,10 @@ for i=1:MC_iter %% Interference channel matrix H generation and null space compu
             rho_orthog(b) = SNR_mag(z)*(abs(a'*Rs.'*a))^2;
             rho_NSP(b) = SNR_mag(z)*(abs(a'*Rs_null{b}.'*a))^2;
             % Creates threshold values for a desired Pfa for an inverse central-chi-square w/2 degrees of freedom
-            delta = chi2inv(ones(1,length(P_FA)) - P_FA,repmat(2,1,length(P_FA)));
+            delta = chi2inv(ones(1, length(P_FA)) - P_FA, repmat(2,1,length(P_FA)));
             % rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
-            Pd_orthog(z,:) = ones(1,length(P_FA)) - ncx2cdf(delta,repmat(2,1,length(P_FA)), repmat(rho_orthog(b),1,length(P_FA )));
-            Pd_NSP(z,:) = ones(1,length(P_FA)) -  ncx2cdf(delta,repmat(2,1,length(P_FA)), repmat(rho_NSP(b),1,length(P_FA)));
+            Pd_orthog(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta, repmat(2, 1, length(P_FA)), repmat(rho_orthog(b), 1, length(P_FA )));
+            Pd_NSP(z,:) = ones(1, length(P_FA)) -  ncx2cdf(delta,repmat(2, 1, length(P_FA)), repmat(rho_NSP(b), 1, length(P_FA)));
         end
         Pd_orthog_cell{b}= Pd_orthog;
         Pd_NSP_cell{b}= Pd_NSP;

@@ -55,6 +55,7 @@ import numpy as np
 A = np.array([[1, 2, 3],
               [4, 5, 6],
               [7, 8, 9]])
+# A = np.random.randn(2, 8) + 1j*np.random.randn(2, 8)
 # 计算零空间
 null_space_A = scipy.linalg.null_space(A)
 
@@ -84,6 +85,10 @@ print(null_space_A)
 print(f"A@null_space_A = {A@null_space_A}")
 
 #%% Define Parameters
+from scipy.linalg import null_space
+from scipy.stats import ncx2
+
+
 pi = np.pi
 # Speed of light
 c = 3*10**8
@@ -101,32 +106,47 @@ r_0 = 500*10**3
 f_c = 3.5*1e9  #  Angular carrier frequency
 omega_c = 2*pi*f_c
 lamba = (2*pi*c)/omega_c
-theta = 0
+theta = 30 * pi / 180.0
 
 # Steering vector and Transmit Signal Correlation Matrix
 # Transmit/Receive Steering vector (Mt x 1)
-a = np.exp(-1j * pi * np.sin(theta) * np.arange(Mt))  #  [1 exp(1i * pi *(1:Mt-1)* sin(theta))]'
+a = np.exp(-1j * pi * np.sin(theta) * np.arange(Mt))[:,None]
 # Transmit Correlation Matrix (Mt x Mt) for Orthonormal Waveforms
 Rs = np.eye(Mt)
 # Define SNR for ROC (Reciever Operating Characteristics)
 SNR_db = np.arange(-8, 11)
 SNR_mag = 10**(SNR_db/10)
 # Probability of false alarm values
-P_FA = 10**-5
+P_FA = np.array([1e-1, 1e-2])
 # Monte-Carlo iterations
 MC_iter = 10
-Pd_orthog_cell = np.zeros((MC_iter, 19))
-Pd_NSP_cell = np.zeros((MC_iter, 19))
+Pd_orthog_cell = np.zeros((MC_iter, SNR_mag.size))
+Pd_NSP_cell = np.zeros((MC_iter, SNR_mag.size))
 
 for i in range(MC_iter):
     BS = 5
-    BS_channel = np.zeros((BS, Nr, Nt))
-    Proj_matrix = np.zeros((BS, Nr, Nt))
+    rho_orthog = np.zeros(BS)
+    rho_NSP = np.zeros(BS)
+    BS_channels = np.zeros((BS, Nr, Mt), dtype = complex)
+    Proj_matrix = np.zeros((BS, Mt, Mt), dtype = complex)
+    Rs_null = np.zeros((BS, Mt, Mt), dtype = complex)
     for b in range(BS):
-        BS_channels[b,:,:] = (np.random.randn(L)+1j*np.random.randn(L)) / np.sqrt(2)
+        BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt)) / np.sqrt(2)
+        Proj_matrix[b,:,:] = null_space(BS_channels[b,:,:]) @ null_space(BS_channels[b,:,:]).conjugate().T
+        Rs_null[b] = Proj_matrix[b,:,:] @ Rs @ Proj_matrix[b,:,:].conjugate().T
 
-
-
+        Pd_orthog = np.zeros((SNR_mag.size, P_FA.size))
+        Pd_NSP = np.zeros((SNR_mag.size, P_FA.size))
+        for z, snr in enumerate(SNR_mag):
+            rho_orthog[b] = SNR_mag[z] * (np.abs(a.conjugate().T @ Rs @ a)[0,0])**2
+            rho_NSP[b] = SNR_mag[z] * (np.abs(a.conjugate().T @ Rs_null[b] @ a)[0,0])**2
+            # Creates threshold values for a desired Pfa for an inverse central-chi-square w/2 degrees of freedom
+            # delta = ncx2.ppf(1 - P_FA, df = 2, nc = 0)
+            ## or
+            delta = scipy.stats.chi2.ppf(1 - P_FA, df = 2)
+            # rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
+            Pd_orthog[z,:] = 1 - ncx2.cdf(delta, 2, rho_orthog[b])
+            Pd_NSP[z,:] = 1 -  ncx2.cdf(delta, 2, rho_NSP[b])
 
 
 

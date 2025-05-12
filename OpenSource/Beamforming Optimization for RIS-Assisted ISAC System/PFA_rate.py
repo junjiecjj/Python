@@ -50,17 +50,12 @@ def calculate_pfa(gamma, alpha_R, L):
     sum_term1 = 0
     for k in range(L - 1):
         for p in range(k + 1):
-            sum_term1 += (math.comb(k, p) * 2 ** (L - 1) * gamma ** (k - p) *
-                          gamma_func(L + p - k - 1) *
-                          hyp1f1(L + p - k - 1, L, alpha_R / 2))
+            sum_term1 += (math.comb(k, p) * 2 ** (L - 1) * gamma ** (k - p) * gamma_func(L + p - k - 1) * hyp1f1(L + p - k - 1, L, alpha_R / 2))
     sum_term2 = 0
     for k in range(L - 1):
         for l in range(k + 1):
             for p in range(k + 1):
-                sum_term2 += (math.comb(k, p) * 2 ** (k - p - l) * gamma ** (k - p) /
-                              gamma_func(l + 1) *
-                              gamma_func(L + l + p - k - 1) *
-                              hyp1f1(L + l + p - k - 1, L, alpha_R / 4))
+                sum_term2 += (math.comb(k, p) * 2 ** (k - p - l) * gamma ** (k - p) / gamma_func(l + 1) * gamma_func(L + l + p - k - 1) * hyp1f1(L + l + p - k - 1, L, alpha_R / 4))
     pfa = term1 + term2 * (sum_term1 - sum_term2)
 
     return pfa
