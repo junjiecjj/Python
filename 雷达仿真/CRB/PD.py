@@ -136,7 +136,7 @@ for i in range(MC_iter):
     Pd_NSP_cell = np.zeros((BS, SNR_mag.size, P_FA.size))
 
     for b in range(BS):
-        BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt))#  / np.sqrt(2)
+        BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt))   # / np.sqrt(2)
         Proj_matrix[b,:,:] = null_space(BS_channels[b,:,:]) @ (null_space(BS_channels[b,:,:]).conjugate().T)
         Rs_null[b,:,:]     = Proj_matrix[b,:,:] @ Rs @ (Proj_matrix[b,:,:].conjugate().T)
 
