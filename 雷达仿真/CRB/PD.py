@@ -120,20 +120,25 @@ SNR_mag = 10**(SNR_db/10)
 P_FA = np.array([1e-1, 1e-2])
 # Monte-Carlo iterations
 MC_iter = 10
-Pd_orthog_cell = np.zeros((MC_iter, SNR_mag.size))
-Pd_NSP_cell = np.zeros((MC_iter, SNR_mag.size))
+BS = 5
+
+Pd_orthog_cat = np.zeros((MC_iter, BS, SNR_mag.size, P_FA.size), dtype = complex)
+Pd_NSP_cat = np.zeros((MC_iter, BS, SNR_mag.size, P_FA.size), dtype = complex)
 
 for i in range(MC_iter):
-    BS = 5
     rho_orthog = np.zeros(BS)
     rho_NSP = np.zeros(BS)
     BS_channels = np.zeros((BS, Nr, Mt), dtype = complex)
     Proj_matrix = np.zeros((BS, Mt, Mt), dtype = complex)
     Rs_null = np.zeros((BS, Mt, Mt), dtype = complex)
+
+    Pd_orthog_cell = np.zeros((BS, SNR_mag.size, P_FA.size))
+    Pd_NSP_cell = np.zeros((BS, SNR_mag.size, P_FA.size))
+
     for b in range(BS):
         BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt)) / np.sqrt(2)
         Proj_matrix[b,:,:] = null_space(BS_channels[b,:,:]) @ null_space(BS_channels[b,:,:]).conjugate().T
-        Rs_null[b] = Proj_matrix[b,:,:] @ Rs @ Proj_matrix[b,:,:].conjugate().T
+        Rs_null[b,:,:]     = Proj_matrix[b,:,:] @ Rs @ (Proj_matrix[b,:,:].conjugate().T)
 
         Pd_orthog = np.zeros((SNR_mag.size, P_FA.size))
         Pd_NSP = np.zeros((SNR_mag.size, P_FA.size))
@@ -147,11 +152,27 @@ for i in range(MC_iter):
             # rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
             Pd_orthog[z,:] = 1 - ncx2.cdf(delta, 2, rho_orthog[b])
             Pd_NSP[z,:] = 1 -  ncx2.cdf(delta, 2, rho_NSP[b])
+        Pd_orthog_cell[b] = Pd_orthog
+        Pd_NSP_cell[b] = Pd_NSP
+    Pd_orthog_cat[i,...] = Pd_orthog_cell
+    Pd_NSP_cat[i,...] = Pd_NSP_cell
 
+Pd_orthog_cat_mean = np.mean(Pd_orthog_cat, axis = 0)
+Pd_NSP_cat_mean = np.mean(Pd_NSP_cell, axis = 0)
 
+colors = plt.cm.jet(np.linspace(0, 1, BS))
+for i, pfa in enumerate(P_FA):
+    # print(i, pfa)
+    fig, axs = plt.subplots(1, 1, figsize = (10, 8))
+    for k in range(BS):
+        axs.plot(SNR_db, Pd_orthog_cat_mean[k,:,i] , color = colors[k], linestyle='-', lw = 2, label = f"P_D for NSP Waveforms to BS {k}", )
 
+    axs.set_xlabel( "SNR/(dB)",)
+    axs.set_ylabel('P_D',)
+    axs.legend()
 
-
+    plt.show()
+    plt.close('all')
 
 
 

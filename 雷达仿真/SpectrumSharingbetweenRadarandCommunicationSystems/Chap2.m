@@ -1,6 +1,9 @@
 % Compares Pd for Multi BS side-to-side with orthogonal waveforms 
 % Select Mt number 
 % Select BS number
+clear;
+clc;
+close all;
 %% Define Parameters 
 % Speed of light 
 c = 3*10^8; 
@@ -58,11 +61,9 @@ for i=1:MC_iter %% Interference channel matrix H generation and null space compu
         end
         Pd_orthog_cell{b}= Pd_orthog;
         Pd_NSP_cell{b}= Pd_NSP;
-    end
-    Pd_orthog_cell_multiBS{i}= Pd_orthog_cell;
-    Pd_NSP_cell_multiBS{i}= Pd_NSP_cell; 
-    Pd_orthog_cat(:,:,i) = cell2mat(Pd_orthog_cell_multiBS{i});
-    Pd_NSP_cat(:,:,i) = cell2mat(Pd_NSP_cell_multiBS{i});
+    end 
+    Pd_orthog_cat(:,:,i) = cell2mat(Pd_orthog_cell);
+    Pd_NSP_cat(:,:,i) = cell2mat(Pd_NSP_cell);
 end
 Pd_orthog_cat_mean = mean(Pd_orthog_cat ,3);
 Pd_NSP_cat_mean = mean(Pd_NSP_cat ,3);
@@ -78,29 +79,6 @@ xlabel('SNR','fontsize' ,14);
 ylabel('P_D','fontsize' ,14);
 title('P_D for P_{FA} = 10^{-5}','fontsize' ,14);
 legend('P_D for NSP Waveforms to BS 1', 'P_D for NSP Waveforms to BS 2', 'P_D for NSP Waveforms to BS 3', 'P_D for NSP Waveforms to BS 4', 'P_D for NSP Waveforms to BS 5', 'P_D for Orthogonal Waveforms')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

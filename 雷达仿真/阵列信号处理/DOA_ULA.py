@@ -48,7 +48,6 @@ def steering_vector(k, N):
     n = np.arange(N)
     return np.exp(-1j * np.pi * np.sin(k) * n)
 
-
 def MUSIC(Rxx, K, N):
     # 特征值分解
     eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
