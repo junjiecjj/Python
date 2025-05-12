@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import scipy
 
 # 全局设置字体大小
-# plt.rcParams["font.family"] = "Times New Roman"
-plt.rcParams["font.family"] = "SimSun"
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
 plt.rcParams['font.size'] = 18               # 设置全局字体大小
 plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
 plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
@@ -117,7 +117,7 @@ Rs = np.eye(Mt)
 SNR_db = np.arange(-8, 11)
 SNR_mag = 10**(SNR_db/10)
 # Probability of false alarm values
-P_FA = np.array([1e-1, 1e-2])
+P_FA = np.array([1e-5, 1e-4, ])
 # Monte-Carlo iterations
 MC_iter = 10
 BS = 5
@@ -136,8 +136,8 @@ for i in range(MC_iter):
     Pd_NSP_cell = np.zeros((BS, SNR_mag.size, P_FA.size))
 
     for b in range(BS):
-        BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt)) / np.sqrt(2)
-        Proj_matrix[b,:,:] = null_space(BS_channels[b,:,:]) @ null_space(BS_channels[b,:,:]).conjugate().T
+        BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt))#  / np.sqrt(2)
+        Proj_matrix[b,:,:] = null_space(BS_channels[b,:,:]) @ (null_space(BS_channels[b,:,:]).conjugate().T)
         Rs_null[b,:,:]     = Proj_matrix[b,:,:] @ Rs @ (Proj_matrix[b,:,:].conjugate().T)
 
         Pd_orthog = np.zeros((SNR_mag.size, P_FA.size))
@@ -151,7 +151,7 @@ for i in range(MC_iter):
             delta = scipy.stats.chi2.ppf(1 - P_FA, df = 2)
             # rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
             Pd_orthog[z,:] = 1 - ncx2.cdf(delta, 2, rho_orthog[b])
-            Pd_NSP[z,:] = 1 -  ncx2.cdf(delta, 2, rho_NSP[b])
+            Pd_NSP[z,:] = 1 - ncx2.cdf(delta, 2, rho_NSP[b])
         Pd_orthog_cell[b] = Pd_orthog
         Pd_NSP_cell[b] = Pd_NSP
     Pd_orthog_cat[i,...] = Pd_orthog_cell
@@ -163,12 +163,13 @@ Pd_NSP_cat_mean = np.mean(Pd_NSP_cell, axis = 0)
 colors = plt.cm.jet(np.linspace(0, 1, BS))
 for i, pfa in enumerate(P_FA):
     # print(i, pfa)
-    fig, axs = plt.subplots(1, 1, figsize = (10, 8))
+    fig, axs = plt.subplots(1, 1, figsize = (8, 6))
     for k in range(BS):
-        axs.plot(SNR_db, Pd_orthog_cat_mean[k,:,i] , color = colors[k], linestyle='-', lw = 2, label = f"P_D for NSP Waveforms to BS {k}", )
-
+        axs.plot(SNR_db, Pd_orthog_cat_mean[k,:,i] , color = colors[k], linestyle='-', lw = 2, label = f"PD for NSP Waveforms to BS {k}", )
+    axs.plot(SNR_db, Pd_orthog_cat_mean[0,:,i] , color = 'k', linestyle='-', lw = 2, label = "PD for Orthogonal Waveforms", )
     axs.set_xlabel( "SNR/(dB)",)
-    axs.set_ylabel('P_D',)
+    axs.set_ylabel(r'$P_D$',)
+    axs.set_title(f'P_D for P_FA = {pfa}', )
     axs.legend()
 
     plt.show()
