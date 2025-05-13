@@ -32,62 +32,61 @@ plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
 #%% https://deepinout.com/numpy/numpy-questions/109_numpy_how_can_i_compute_the_null_spacekernel_x_mx_0_of_a_sparse_matrix_in_python.html#google_vignette
-import numpy as np
-# 稀疏矩阵的空间/核
-# 创建一个随机稀疏矩阵
-M = scipy.sparse.random(6, 6, density=0.5, format='lil', random_state=0)
+# import numpy as np
+# # 稀疏矩阵的空间/核
+# # 创建一个随机稀疏矩阵
+# M = scipy.sparse.random(6, 6, density=0.5, format='lil', random_state=0)
 
-# 计算随机稀疏矩阵的SVD
-U, s, Vt = scipy.sparse.linalg.svds(M, k = 5)
+# # 计算随机稀疏矩阵的SVD
+# U, s, Vt = scipy.sparse.linalg.svds(M, k = 5)
 
-# 计算空间/核
-null_space = Vt.T[:, -1]
+# # 计算空间/核
+# null_space = Vt.T[:, -1]
 
-# 输出结果
-print("稀疏矩阵M：\n", M.todense())
-print("空间/核：\n", null_space)
+# # 输出结果
+# print("稀疏矩阵M：\n", M.todense())
+# print("空间/核：\n", null_space)
 
-#%% https://blog.51cto.com/u_16213370/11892718
-import numpy as np
-# from scipy.linalg import null_space
+# #%% https://blog.51cto.com/u_16213370/11892718
+# import numpy as np
+# # from scipy.linalg import null_space
 
-# 定义一个矩阵 A
-A = np.array([[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 9]])
-# A = np.random.randn(2, 8) + 1j*np.random.randn(2, 8)
-# 计算零空间
-null_space_A = scipy.linalg.null_space(A)
+# # 定义一个矩阵 A
+# A = np.array([[1, 2, 3],
+#               [4, 5, 6],
+#               [7, 8, 9]])
+# # A = np.random.randn(2, 8) + 1j*np.random.randn(2, 8)
+# # 计算零空间
+# null_space_A = scipy.linalg.null_space(A)
 
-print("矩阵 A 的零空间:")
-print(null_space_A)
-print(f"A@null_space_A = {A@null_space_A}")
+# print("矩阵 A 的零空间:")
+# print(null_space_A)
+# print(f"A@null_space_A = {A@null_space_A}")
 
-# 计算矩阵的秩
-rank_A = np.linalg.matrix_rank(A)
-print("矩阵 A 的秩:", rank_A)
+# # 计算矩阵的秩
+# rank_A = np.linalg.matrix_rank(A)
+# print("矩阵 A 的秩:", rank_A)
 
-#%% https://www.zhihu.com/question/294214797
-# 定义一个矩阵 A
-A = np.array([[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 9]])
-def null(A, eps = 1e-15):
-    u, s, vh = scipy.linalg.svd(A)
-    null_mask = (s < eps)
-    null_space = np.compress(null_mask, vh, axis = 0)
-    return np.transpose(null_space)
+# #%% https://www.zhihu.com/question/294214797
+# # 定义一个矩阵 A
+# A = np.array([[1, 2, 3],
+#               [4, 5, 6],
+#               [7, 8, 9]])
+# def null(A, eps = 1e-15):
+#     u, s, vh = scipy.linalg.svd(A)
+#     null_mask = (s < eps)
+#     null_space = np.compress(null_mask, vh, axis = 0)
+#     return np.transpose(null_space)
 
-# 计算零空间
-null_space_A = null(A)
-print("矩阵 A 的零空间:")
-print(null_space_A)
-print(f"A@null_space_A = {A@null_space_A}")
+# # 计算零空间
+# null_space_A = null(A)
+# print("矩阵 A 的零空间:")
+# print(null_space_A)
+# print(f"A@null_space_A = {A@null_space_A}")
 
 #%% Define Parameters
 from scipy.linalg import null_space
 from scipy.stats import ncx2
-
 
 pi = np.pi
 # Speed of light
@@ -106,7 +105,7 @@ r_0 = 500*10**3
 f_c = 3.5*1e9  #  Angular carrier frequency
 omega_c = 2*pi*f_c
 lamba = (2*pi*c)/omega_c
-theta = 30 * pi / 180.0
+theta = 0 * pi / 180.0
 
 # Steering vector and Transmit Signal Correlation Matrix
 # Transmit/Receive Steering vector (Mt x 1)
@@ -117,14 +116,13 @@ Rs = np.eye(Mt)
 SNR_db = np.arange(-8, 11)
 SNR_mag = 10**(SNR_db/10)
 # Probability of false alarm values
-P_FA = np.array([1e-5, 1e-4, ])
+P_FA = np.array([1e-6, 1e-5, 1e-4, 1e-3])
 # Monte-Carlo iterations
 MC_iter = 10
 BS = 5
 
-Pd_orthog_cat = np.zeros((MC_iter, BS, SNR_mag.size, P_FA.size), dtype = complex)
-Pd_NSP_cat = np.zeros((MC_iter, BS, SNR_mag.size, P_FA.size), dtype = complex)
-
+Pd_orthog_cat = np.zeros((MC_iter, BS, SNR_mag.size, P_FA.size),  )
+Pd_NSP_cat = np.zeros((MC_iter, BS, SNR_mag.size, P_FA.size), )
 for i in range(MC_iter):
     rho_orthog = np.zeros(BS)
     rho_NSP = np.zeros(BS)
@@ -137,14 +135,16 @@ for i in range(MC_iter):
 
     for b in range(BS):
         BS_channels[b,:,:] = (np.random.randn(Nr, Mt) + 1j*np.random.randn(Nr, Mt))   # / np.sqrt(2)
+        # projection matrix (2.23)
         Proj_matrix[b,:,:] = null_space(BS_channels[b,:,:]) @ (null_space(BS_channels[b,:,:]).conjugate().T)
+        # correlation matrix of our NSP waveform (2.32)
         Rs_null[b,:,:]     = Proj_matrix[b,:,:] @ Rs @ (Proj_matrix[b,:,:].conjugate().T)
 
         Pd_orthog = np.zeros((SNR_mag.size, P_FA.size))
         Pd_NSP = np.zeros((SNR_mag.size, P_FA.size))
         for z, snr in enumerate(SNR_mag):
-            rho_orthog[b] = SNR_mag[z] * (np.abs(a.conjugate().T @ Rs @ a)[0,0])**2
-            rho_NSP[b] = SNR_mag[z] * (np.abs(a.conjugate().T @ Rs_null[b] @ a)[0,0])**2
+            rho_orthog[b] = snr * (np.abs(a.conjugate().T @ Rs @ a)[0,0])**2
+            rho_NSP[b] = snr * (np.abs(a.conjugate().T @ Rs_null[b] @ a)[0,0])**2
             # Creates threshold values for a desired Pfa for an inverse central-chi-square w/2 degrees of freedom
             # delta = ncx2.ppf(1 - P_FA, df = 2, nc = 0)
             ## or
@@ -158,20 +158,18 @@ for i in range(MC_iter):
     Pd_NSP_cat[i,...] = Pd_NSP_cell
 
 Pd_orthog_cat_mean = np.mean(Pd_orthog_cat, axis = 0)
-Pd_NSP_cat_mean = np.mean(Pd_NSP_cell, axis = 0)
-
+Pd_NSP_cat_mean = np.mean(Pd_NSP_cat, axis = 0)
 colors = plt.cm.jet(np.linspace(0, 1, BS))
 for i, pfa in enumerate(P_FA):
     # print(i, pfa)
     fig, axs = plt.subplots(1, 1, figsize = (8, 6))
     for k in range(BS):
-        axs.plot(SNR_db, Pd_orthog_cat_mean[k,:,i] , color = colors[k], linestyle='-', lw = 2, label = f"PD for NSP Waveforms to BS {k}", )
-    axs.plot(SNR_db, Pd_orthog_cat_mean[0,:,i] , color = 'k', linestyle='-', lw = 2, label = "PD for Orthogonal Waveforms", )
+        axs.plot(SNR_db, Pd_NSP_cat_mean[k,:,i] , color = colors[k], linestyle='--', lw = 2, label = f"PD for NSP Waveforms to BS {k}", )
+    axs.plot(SNR_db, Pd_orthog_cat_mean[0,:,i] , color = 'r', linestyle='-', lw = 2, label = "PD for Orthogonal Waveforms", )
     axs.set_xlabel( "SNR/(dB)",)
     axs.set_ylabel(r'$P_D$',)
     axs.set_title(f'P_D for P_FA = {pfa}', )
     axs.legend()
-
     plt.show()
     plt.close('all')
 
