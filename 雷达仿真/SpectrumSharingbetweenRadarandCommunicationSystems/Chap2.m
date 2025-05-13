@@ -57,7 +57,7 @@ for i=1:MC_iter %% Interference channel matrix H generation and null space compu
             delta = chi2inv(ones(1, length(P_FA)) - P_FA, repmat(2,1,length(P_FA)));
             % rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
             Pd_orthog(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta, repmat(2, 1, length(P_FA)), repmat(rho_orthog(b), 1, length(P_FA )));
-            Pd_NSP(z,:) = ones(1, length(P_FA)) -  ncx2cdf(delta,repmat(2, 1, length(P_FA)), repmat(rho_NSP(b), 1, length(P_FA)));
+            Pd_NSP(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta,repmat(2, 1, length(P_FA)), repmat(rho_NSP(b), 1, length(P_FA)));
         end
         Pd_orthog_cell{b}= Pd_orthog;
         Pd_NSP_cell{b}= Pd_NSP;

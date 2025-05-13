@@ -32,7 +32,7 @@ np.random.seed(42)
 
 
 
-
+#%%
 M = 2
 N = 3
 T = 4
