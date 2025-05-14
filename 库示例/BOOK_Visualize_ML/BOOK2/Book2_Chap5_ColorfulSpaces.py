@@ -217,7 +217,6 @@ plt.gca().invert_yaxis()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 三维空间散点展示RGB色彩空间
-
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
@@ -230,12 +229,12 @@ if not os.path.isdir("Figures"):
 # 定义函数
 # 自定义函数，生成三维网格数据
 def color_cubic(num):
-    x1 = np.linspace(0,1,num)
+    x1 = np.linspace(0, 1, num)
     x2 = x1
     x3 = x1
 
     # 生成三维数据网格
-    xx1, xx2, xx3 = np.meshgrid(x1,x2,x3)
+    xx1, xx2, xx3 = np.meshgrid(x1, x2, x3)
 
     # 将三维数组展成一维
     x1_ = xx1.ravel()
@@ -350,8 +349,8 @@ ax.set_ylabel('$\it{x_2}$')
 ax.set_zlabel('$\it{x_3}$')
 # 绘制三根线
 ax.plot(line1_x, line1_y, line1_z, alpha = 1, linewidth = 1, color='k')
-# ax.plot(line2_x, line2_y, line2_z, alpha = 1, linewidth = 1, color='k')
-# ax.plot(line3_x, line3_y, line3_z, alpha = 1, linewidth = 1, color='k')
+ax.plot(line2_x, line2_y, line2_z, alpha = 1, linewidth = 1, color='k')
+ax.plot(line3_x, line3_y, line3_z, alpha = 1, linewidth = 1, color='k')
 
 # ax.grid(False)
 ax.set_proj_type('ortho')
@@ -462,8 +461,6 @@ for idx, colors_one_facet in enumerate(facets_6):
     ax.set_box_aspect(aspect = (1,1,1))
     # ax.view_init(azim=38, elev=34)
     # fig.savefig('Figures/六个立面_' + str(idx + 1) + '.svg', format='svg')
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 切豆腐展示RGB色彩空间内部
 import numpy as np
