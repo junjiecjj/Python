@@ -474,12 +474,12 @@ if not os.path.isdir("Figures"):
 # 定义函数
 # 自定义函数，生成三维网格数据
 def color_cubic(num):
-    x1 = np.linspace(0,1,num)
+    x1 = np.linspace(0, 1, num)
     x2 = x1
     x3 = x1
 
     # 生成三维数据网格
-    xx1, xx2, xx3 = np.meshgrid(x1,x2,x3)
+    xx1, xx2, xx3 = np.meshgrid(x1, x2, x3)
 
     # 将三维数组展成一维
     x1_ = xx1.ravel()
@@ -506,7 +506,6 @@ line2_z = [1,1]
 line3_x = [1,0]
 line3_y = [1,1]
 line3_z = [1,1]
-
 
 # 整个色彩空间采样，散点稀疏
 colors_all, colors_bright, colors_dark = color_cubic(21)
@@ -553,9 +552,7 @@ for idx, Red_level in enumerate(red_levels):
     ax.set_proj_type('ortho')
     ax.set_box_aspect(aspect = (1,1,1))
     ax.view_init(azim=38, elev=34)
-
 # fig.savefig('Figures/红色渐变切片，稀疏.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>  绿色渐变切片 # 将绿色置 0
 colors_one_facet = colors_all[colors_all[:,1] == 0]
@@ -590,7 +587,6 @@ for idx, green_level in enumerate(green_levels):
     ax.view_init(azim=38, elev=34)
 
 # fig.savefig('Figures/绿色渐变切片，稀疏.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>  蓝色渐变切片
 colors_all, colors_bright, colors_dark = color_cubic(25)
@@ -645,7 +641,7 @@ def polar_circles(num_r, num_n):
     # HSV 色号三个值最后也会转化成 [0, 1] 之间的数值
     t_array = np.linspace(0, 2*np.pi, num_n, endpoint=False)
 
-    # 生成极坐标网格数据
+    # 生成极坐标网格数据, 每一层点数相等
     rr, tt = np.meshgrid(r_array, t_array)
 
     # rr.ravel() 将二维数组展开成一维数组
@@ -661,7 +657,7 @@ def plot_HSV_polar(value = 1, num_r = 10, num_n = 20):
     PHI = circles[:,1] # 极角 (2520,)
 
     # 色调取值转换为 [0, 1] 区间
-    h_ = (PHI-PHI.min()) / (PHI.max()-PHI.min())
+    h_ = (PHI-PHI.min()) / (PHI.max() - PHI.min())
 
     # 饱和度
     s_ = RHO
@@ -669,7 +665,7 @@ def plot_HSV_polar(value = 1, num_r = 10, num_n = 20):
     v_ = np.ones_like(RHO)*value
 
     # 绘制极坐标
-    fig = plt.figure(figsize = (3,3))
+    fig = plt.figure(figsize = (6, 6))
     ax = fig.add_subplot(projection='polar')
 
     # colorsys.hsv_to_rgb() 完成 HSV 色号向 RGB 色号转换
@@ -739,7 +735,7 @@ def circle_points(num_r, num_n):
 
     # 用 for 循环产生每一层散点对应的极坐标
     for r_i, n_i in zip(r, n):
-        t_i = np.linspace(0, 2*np.pi, n_i, endpoint=False)
+        t_i = np.linspace(0, 2*np.pi, n_i, endpoint = False)
         r_i = np.ones_like(t_i)*r_i
 
         circle_i = np.c_[r_i, t_i]
@@ -762,7 +758,7 @@ def plot_HSV_even(value = 1, num_r = 10, num_n = 20):
     # 明暗度为定值
     v_ = np.ones_like(RHO)*value
 
-    fig = plt.figure(figsize = (3,3))
+    fig = plt.figure(figsize = (6, 6))
     # 绘制极坐标
     ax = fig.add_subplot(projection='polar')
 

@@ -67,6 +67,15 @@ yhat = Hhat @ x
 
 #%%
 
+N = 10  # transmitting antennas,
+Ms = Mc = 5
+T = 100
+
+
+
+
+
+
 
 
 
