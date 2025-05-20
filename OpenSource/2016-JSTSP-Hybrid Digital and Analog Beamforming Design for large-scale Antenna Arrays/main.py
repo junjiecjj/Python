@@ -20,24 +20,22 @@ def alg1(F: np.ndarray, Ns: int, gamma_sq: float, sigma_sq: float, epsilon: floa
     The algorithm is further implementation of optimization problem used for
     approximating analog precoder matrix Vrf, and the number of rf chains (Nrf) is equal
     to the number of data streams (Ns).
-
     Parameters
-    ----------
-    F : numpy.ndarray
-        Either F1 or F2 type matrix as explained in the paper near equation (12) and (15).
-    Ns : int
-        Number of data streams.
-    gamma_sq : float
-        Signal amplitude squared.
-    sigma_sq : float
-        Noise standard deviation squared.
-    epsilon : float
-        Stopping condition. The default is 1e-3.
-
+        ----------
+        F : numpy.ndarray
+            Either F1 or F2 type matrix as explained in the paper near equation (12) and (15).
+        Ns : int
+            Number of data streams.
+        gamma_sq : float
+            Signal amplitude squared.
+        sigma_sq : float
+            Noise standard deviation squared.
+        epsilon : float
+            Stopping condition. The default is 1e-3.
     Returns
-    -------
-    Vrf : numpy.ndarray
-        Approximation of analog precoder matrix.
+        -------
+        Vrf : numpy.ndarray
+            Approximation of analog precoder matrix.
     """
     Nrf = Ns
     # Initialize Vrf
@@ -77,26 +75,22 @@ def alg2(H: np.ndarray, Ns: int, P: float, sigma_sq: float, epsilon: float = 1e-
     """
     The alg2 function is an implementation of 'Algorithm 2' from the paper.
     The goal of this algorithm is to incorporate the environment and compute receiving signal matrices.
-    Using the knowledge gained the algorithm computes the spectral efficiency metric,
-    when the number of rf chains (Nrf) is equal to the number of data streams (Ns).
+    Using the knowledge gained the algorithm computes the spectral efficiency metric, when the number of rf chains (Nrf) is equal to the number of data streams (Ns).
 
     Parameters
-    ----------
-    H : numpy.ndarray
-        Environment matrix.
-    Ns : int
-        Number of data streams.
-    P : float
-        Broadcast power.
-    sigma_sq : float
-        Noise standard deviation squared.
-    epsilon : float
-        Stopping condition. The default is 1e-3.
-
+        H : numpy.ndarray
+            Environment matrix.
+        Ns : int
+            Number of data streams.
+        P : float
+            Broadcast power.
+        sigma_sq : float
+            Noise standard deviation squared.
+        epsilon : float
+            Stopping condition. The default is 1e-3.
     Returns
-    -------
-    R : float
-        Spectral efficiency (bits/s/Hz)
+        R : float
+            Spectral efficiency (bits/s/Hz)
     """
     Nrf = Ns
     gamma = (P / (H.shape[1] * Nrf))**0.5
@@ -193,7 +187,7 @@ epsilon = 1e-4
 # d <= Nrfr <= M
 sigma_sq = 40
 # num of iterations for each dB step
-num_iters = 20
+num_iters = 100
 # range of dB to graph e.g. -10 to 9 (20 steps)
 db_range = 10
 
@@ -218,9 +212,37 @@ fig, ax = plt.subplots()
 plt.xlabel("SNR(dB)")
 plt.ylabel("Spectral Efficiency(bits/s/Hz)")
 plt.xlim([-db_range, db_range])
-plt.ylim([0, int(arr[-1])+ (5 - int(arr[-1]) % 5)])
+plt.ylim([0, int(arr[-1]) + (5 - int(arr[-1]) % 5)])
 plt.grid()
 ax.plot(range(-db_range, db_range), arr, marker='.')
 plt.show()
 
 # %%
+
+
+# %%
+
+
+
+
+# %%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

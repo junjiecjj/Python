@@ -20,7 +20,7 @@ iris = load_iris()
 print(iris.data.shape) # 150, 4
 X = iris.data
 # 中心化
-Xc = X - X.mean(axis=0)
+Xc = X - X.mean(axis = 0)
 # 计算协方差矩阵
 XXT = np.matrix(Xc.T) * np.matrix(Xc) / (len(Xc)-1)
 
@@ -42,7 +42,7 @@ print(f"np.cov(Zc.T) = \n{np.cov(Zc.T)}")
 # [[ 4.22824171e+00 -8.01395836e-16]
 #  [-8.01395836e-16  2.42670748e-01]]
 Zc_n = Zc @ np.linalg.inv(np.diag(np.sqrt(eigVals[:2])))  # 这个才是和pca.transform(X)完全一样的结果(可能某列差正负号)
-print(np.cov(Zc_n.T))
+print(f"np.cov(Zc_n.T) = \n{np.cov(Zc_n.T)}")
 
 # 原始数据在特征向量的投影
 Z = X @ eigVects[:,:2]
@@ -62,7 +62,7 @@ from sklearn.decomposition import PCA
 
 iris = load_iris()
 X = iris.data
-pca = PCA(n_components=2, whiten='True', svd_solver='full')
+pca = PCA(n_components=2, whiten=True, svd_solver='full')
 pca.fit(X) # 先求出X的均值(mean_)、协方差矩阵的特征值特征值(explained_variance_,)、协方差矩阵的特征向量(pca.components_.T)，作为标准
 print(pca.explained_variance_)
 # [4.22824171 0.24267075]

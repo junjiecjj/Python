@@ -39,7 +39,6 @@ def SVD_Precoding(hmat, power, d, Nt):
     V = V * math.sqrt(power) * np.sqrt(Nt) / V_norm  # power normalization
     return U, D, V
 
-
 class MIMO_Channel():
     def __init__(self, Nr = 2, Nt = 4, d = 2, P = 1, Tw = None, Th = None, Rw = None, Rh = None, mod_type='qam', ):
         # Base configs
@@ -53,11 +52,11 @@ class MIMO_Channel():
 
         # mmWave configs, 发射和接收为ULA
         # 假设有 N_cl 个散射簇，每个散射簇中包含 N_ray 条传播路径
-        self.Ncl = 4  # clusters, 族群数目
-        self.Nray = 6  # ray, 每个族中的路径数
+        self.Ncl = 4        # clusters, 族群数目
+        self.Nray = 6       # ray, 每个族中的路径数
         self.sigma_h = 0.3  # gain
-        self.Tao = 0.001  # delay
-        self.fd = 3  # maximum Doppler shift
+        self.Tao = 0.001    # delay
+        self.fd = 3         # maximum Doppler shift
 
         # mmWave configs, 发射和接收为UPA
         ##  Nt == Tw x Th
@@ -82,7 +81,7 @@ class MIMO_Channel():
             ----------
             symbol_y: array(num_symbol, ). Decoded symbol at the receiver side.
         """
-        def theta(N, Seed=100):
+        def theta(N, Seed = 100):
             # phi = np.zeros(self.Ncl * self.Nray)   # 一共有L = Ncl*Nray条路径, (24,)
             a = np.zeros((self.Ncl * self.Nray, N, 1), dtype = complex)  # (24, 8, 1)
 
@@ -264,8 +263,6 @@ class MIMO_Channel():
 # channel = MIMO_Channel(Nr = 24, Nt = 24, d = 2, P = 1, Tw = 4, Th = 6, Rw = 6, Rh = 4)
 # # ula = channel.mmwave_MIMO_ULA2ULA()
 # upa = channel.mmwave_MIMO_UPA2UPA()
-
-
 def SignalNorm(signal, M, mod_type='qam', denorm = False):
     """
         Signal power normalization and de-normalization.
@@ -290,7 +287,6 @@ def SignalNorm(signal, M, mod_type='qam', denorm = False):
     else:
         signal = signal * math.sqrt(Es)
     return signal, Es
-
 
 def PassChannel(Tx_sig, H, power = None, SNR_dB = None, ):
     """

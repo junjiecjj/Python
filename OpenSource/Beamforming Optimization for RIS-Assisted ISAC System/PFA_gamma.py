@@ -60,9 +60,9 @@ L = 10                                 # number of samples
 sigma2 = 1                             # noise variance
 gamma_values = np.linspace(0, 10, 25)  # gamma值范围
 gamma_R_values = [-10, 10, 20]         # 不同的直达路径SNR (dB)
-gamma_dB = 5                           # 固定的检测阈值
-gamma_C_dB = 10                        # 通信接收器的SNR (dB)
-gamma_C = 10 ** (gamma_C_dB / 10)      # 将dB转换为线性刻度
+# gamma_dB = 5                           # 固定的检测阈值
+# gamma_C_dB = 10                        # 通信接收器的SNR (dB)
+# gamma_C = 10 ** (gamma_C_dB / 10)      # 将dB转换为线性刻度
 # PT = 20
 rate_values = np.linspace(0.1, 7.5, 30)  # 速率范围 (bpcu)
 # DSNR values in dB and their linear scale
@@ -79,7 +79,6 @@ gamma_range = np.linspace(0, 10, 50)
 results = {}
 for dsnr in DSNR:
     results[dsnr] = monte_carlo_simulation(dsnr, gamma_range, num_simulations, L, sigma2)
-
 pfa_gamma_values = {}
 for gamma_R in gamma_R_values:
     alpha_R = 2*(10 ** (gamma_R / 10))  # 将dB转换为线性刻度
@@ -89,7 +88,6 @@ for gamma_R in gamma_R_values:
 plt.figure(figsize=(10, 6))
 for dsnr in DSNR:
     plt.plot(gamma_range, results[dsnr],marker='o', label=f'DSNR = {10 * np.log10(dsnr)} dB')
-
 for gamma_R in gamma_R_values:
     plt.plot(gamma_values, pfa_gamma_values[gamma_R], linestyle='-', label=f'Theo., D-SNR={gamma_R} dB')
 
