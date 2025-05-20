@@ -64,10 +64,8 @@ def channelGen(N, M,  K, L, d = 0.5):
 def updateVRF():
     return
 
-def updateP():
+def updateP(beta, P, K, Qt):
     return
-
-
 
 def alg3(H, beta, P, sigma2, epsilon):
 

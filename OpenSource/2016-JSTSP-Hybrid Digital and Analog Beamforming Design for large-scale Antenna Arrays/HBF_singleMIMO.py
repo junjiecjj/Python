@@ -117,15 +117,15 @@ def alg2(H: np.ndarray, Ns: int, P: float, sigma2: float, epsilon: float = 1e-3)
     Heff = H @ Vrf
     Q = Vrf.conj().T @ Vrf
     # Right singular vectors, TypeError: array type complex256 is unsupported in linalg
-    # u, s, Ue = np.linalg.svd((Heff @ (scipy.linalg.sqrtm(np.linalg.inv(Q)))).astype(np.complex128))
-    u, s, Ue = np.linalg.svd((Heff @ (np.linalg.inv(Q)**(1/2))).astype(np.complex128))
+    u, s, Ue = np.linalg.svd((Heff @ (scipy.linalg.sqrtm(np.linalg.inv(Q)))).astype(np.complex128))
+    # u, s, Ue = np.linalg.svd((Heff @ (np.linalg.inv(Q)**(1/2))).astype(np.complex128))
 
     # Diagonal matrix of allocated powers to each stream
     GAMMAe = np.identity(Q.shape[0]) * (P/Nrf)**0.5
 
     # Computing digital precoder matrix (11)
-    # Vd = (scipy.linalg.sqrtm(np.linalg.inv(Q)) @ Ue @ GAMMAe).astype(np.complex128)
-    Vd = (np.linalg.inv(Q)**(1/2) @ Ue @ GAMMAe).astype(np.complex128)
+    Vd = (scipy.linalg.sqrtm(np.linalg.inv(Q)) @ Ue @ GAMMAe).astype(np.complex128)
+    # Vd = (np.linalg.inv(Q)**(1/2) @ Ue @ GAMMAe).astype(np.complex128)
 
     # Hybrid precoder matrix (8)
     Vt = Vrf @ Vd
@@ -197,7 +197,7 @@ epsilon = 1e-4
 # These variables must comply with these invariants: Ns <= Ntft <= N, d <= Nrfr <= M
 sigma2 = 40
 # num of iterations for each dB step
-num_iters = 100
+num_iters = 1000
 # range of dB to graph e.g. -10 to 9 (20 steps)
 db_range = 10
 
