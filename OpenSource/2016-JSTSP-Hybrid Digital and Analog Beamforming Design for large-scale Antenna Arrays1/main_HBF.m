@@ -33,13 +33,13 @@ V_RF = reshape(ttt,N,N_RF);
 H_t = P^(-0.5) * H; 
 
 % 预分配空间
-for loop = 1:200
+for loop = 1:20
     V_RF_last = V_RF;
     V_RF = change_V_RF();
 end
 
 % 生成功率分配矩阵
-V_D_t = (V_RF') * (H')/ ( H * V_RF * (V_RF') * (H'));
+V_D_t = (V_RF') * (H')/ (H * V_RF * (V_RF') * (H'));
 Q_t = (V_D_t') * (V_RF') * V_RF * V_D_t;
 
 % 迭代求出lamda

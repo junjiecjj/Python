@@ -174,7 +174,7 @@ def channelGen(N, M, L, d = 0.5):
     for l in range(L):
         at = np.sqrt(1/N) * np.exp(1j * pi * np.arange(N)* np.sin(ang_t[l]))
         ar = np.sqrt(1/M) * np.exp(1j * pi * np.arange(M)* np.sin(ang_r[l]))[:,None]
-        tmp = alpha[l] * np.outer(ar, at)
+        tmp = alpha[l] * np.outer(ar, at.conj())
         H += tmp
     return (np.sqrt(M*N/L) * H)
 

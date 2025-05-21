@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import scipy
 # from scipy import linalg as spl
 
-
+#%%
 def channelGen(N, M,  K, L, d = 0.5):
     """
     Advanced environment generator with configurable physical variables.
@@ -52,57 +52,66 @@ def channelGen(N, M,  K, L, d = 0.5):
         H[k,:,:] = Hk
     return (np.sqrt(M*N/L) * H)
 
-def updateVRF(N, Nrf, Ht, VRF, epsilon = 1e-1):
+#%%
+def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
     pi = np.pi
-    fVrf_old = N*np.trace(scipy.linalg.inv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
+    fVrf_old = N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
     diff = 1
-    # while diff > epsilon:
-    for _ in range(10):
+
+    it = 0
+    fVrf_new = 0
+    while diff > epsilon and it < 200:
+        it += 1
         for j in range(Nrf):
             VRFj = np.delete(VRF, j, axis = 1)
-            Aj = Ht @  VRFj @ VRFj.conj().T @ Ht.conj().T
-            AjInv = scipy.linalg.inv(Aj)
-            Bj = Ht.conj().T @ AjInv @ AjInv @ Ht
-            Dj = Ht.conj().T @ AjInv @ Ht
+            Aj = (Ht @  VRFj @ VRFj.conj().T @ Ht.conj().T).astype(np.complex128)
+            AjInv = scipy.linalg.pinv(Aj.astype(np.complex128))
+            Bj = (Ht.conj().T @ AjInv @ AjInv @ Ht).astype(np.complex128)
+            Dj = (Ht.conj().T @ AjInv @ Ht).astype(np.complex128)
             for i in range(N):
-                zetaBij = Bj[i,i] + np.real(np.sum([np.conj(VRF[m, j])*Bj[m,n]*VRF[n, j] for m in range(N) for n in range(N) if m != i and n != i]))
-                zetaDij = Dj[i,i] + np.real(np.sum([np.conj(VRF[m, j])*Dj[m,n]*VRF[n, j] for m in range(N) for n in range(N) if m != i and n != i]))
+                zetaBij = Bj[i,i] + 2 * np.real(np.sum([np.conj(VRF[m, j])*Bj[m,n]*VRF[n, j] for m in range(N) for n in range(N) if m != i and n != i]))
+                zetaDij = Dj[i,i] + 2 * np.real(np.sum([np.conj(VRF[m, j])*Dj[m,n]*VRF[n, j] for m in range(N) for n in range(N) if m != i and n != i]))
                 etaBij = Bj[i,:]@VRF[:,j] - Bj[i,i] * VRF[i,j]
-                etaDij = Dj[i,:]@VRF[:,j] - Bj[i,i] * VRF[i,j]
+                etaDij = Dj[i,:]@VRF[:,j] - Dj[i,i] * VRF[i,j]
                 cij = (1 + zetaDij) * etaBij - zetaBij * etaDij
                 zij = np.imag(2 * np.conj(etaBij) * etaDij)
+                # zij = np.imag(2 * etaBij * etaDij)
                 tt = np.arcsin(np.imag(cij)/np.abs(cij))
                 if np.real(cij) >= 0:
                     phij = tt
                 else:
                     phij = pi - tt
-                theta1 = -phij + np.arcsin(zij/np.abs(cij))
+                theta1 =    - phij + np.arcsin(zij/np.abs(cij))
                 theta2 = pi - phij - np.arcsin(zij/np.abs(cij))
                 vfij1 = np.exp(-1j * theta1)
                 vfij2 = np.exp(-1j * theta2)
-                f1 = N*np.trace(scipy.linalg.inv(Aj)) - N * (zetaBij + 2*np.real(np.conj(vfij1)*etaBij))/(1 + zetaDij + 2*np.real(np.conj(vfij1)*etaDij))
-                f2 = N*np.trace(scipy.linalg.inv(Aj)) - N * (zetaBij + 2*np.real(np.conj(vfij2)*etaBij))/(1 + zetaDij + 2*np.real(np.conj(vfij2)*etaDij))
-                if f1 >= f2:
+                f1 = N*np.trace(scipy.linalg.pinv(Aj)) - N * (zetaBij + 2*np.real(np.conj(vfij1)*etaBij))/(1 + zetaDij + 2*np.real(np.conj(vfij1)*etaDij))
+                f2 = N*np.trace(scipy.linalg.pinv(Aj)) - N * (zetaBij + 2*np.real(np.conj(vfij2)*etaBij))/(1 + zetaDij + 2*np.real(np.conj(vfij2)*etaDij))
+                if f1 <= f2:
                     theta = theta1
                 else:
                     theta = theta2
                 VRF[i,j] = np.exp(-1j * theta)
-        fVrf_new = N*np.trace(scipy.linalg.inv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
-        diff = np.abs(fVrf_new - fVrf_old)
+        fVrf_new = N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
+        diff = np.abs((fVrf_new - fVrf_old)/fVrf_new)
+        # print(f"it = {it}, fVrf_old = {fVrf_old}, fVrf_new = {fVrf_new}, diff = {diff}")
+        print(f"      updateVRF it = {it}, fVRFdiff = {diff}")
         fVrf_old = fVrf_new
     return VRF
 
+#%%
 def updateP(Qt, beta, Ps, K, sigma2):
     lamba = 1
+    qkk = np.real(np.diag(Qt))
     while 1:
         initpow = 0
         posi = 0
         for k in range(K):
-            tmp = beta[k]/lamba - Qt[k,k]*sigma2
+            tmp = beta[k]/lamba - qkk[k]*sigma2
             if tmp > 0:
                 initpow += tmp
                 posi +=1
-        if np.abs(initpow - Ps)/Ps < 0.01:
+        if np.abs(initpow - Ps)/Ps < 0.001:
             break
         if posi > 0:
             lamba += 0.5 * (initpow - Ps)/posi
@@ -110,30 +119,33 @@ def updateP(Qt, beta, Ps, K, sigma2):
             lamba *= 0.1
     P = np.identity(K)
     for k in range(K):
-        P[k,k] = np.max(beta[k]/lamba - Qt[k,k]*sigma2, 0)/Qt[k,k]
-    return P
-
-def alg3(H, beta, Nrf, Ps, sigma2, epsilon):
+        P[k,k] = np.max(beta[k]/lamba - qkk[k]*sigma2, 0)/qkk[k]
+    return P, initpow, lamba
+#%%
+def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
     pi = np.pi
     K, M, N = H.shape
     H = H.squeeze()
     diffCap = 1
-    lastCap = 1
+    lastCap = -1
     tmp = np.random.rand(N, Nrf) * 2 * pi
-    VRF = np.exp(1j * tmp)
+    VRF = np.exp(1j * tmp).astype(np.complex128)
     P = np.identity(K) * Ps/K
-    Ht = scipy.linalg.sqrtm(np.linalg.inv(P)) @ H
-    while diffCap > epsilon:
+    Ht = scipy.linalg.sqrtm(np.linalg.pinv(P.astype(np.complex128))) @ H
+    it = 0
+    while diffCap > epsilon and it < 20:
+        it += 1
+        print(f"    Cap it = {it}, CapDiff = {diffCap}")
         VRF = updateVRF(N, Nrf, Ht, VRF)
         # 生成功率分配矩阵
         VDt = VRF.conj().T @ H.conj().T @ scipy.linalg.inv(H @ VRF @ VRF.conj().T @ H.conj().T)
-        Qt =  VDt.conj().T @ VRF.conj().T @ VRF @ VDt
-        P = updateP(Qt, beta, Ps, K, sigma2)
-        Ht = (P**(-0.5)) @ H
+        Qt = VDt.conj().T @ VRF.conj().T @ VRF @ VDt
+        P, sumP, lamba = updateP(Qt, beta, Ps, K, sigma2)
+        Ht = scipy.linalg.sqrtm(np.linalg.pinv(P)) @ H
 
         Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
-        diffCap = np.abs(Cap-lastCap)
-
+        diffCap = np.abs((Cap-lastCap)/Cap)
+        lastCap = Cap
     return Cap
 
 #%% Simulation/testing
@@ -154,23 +166,25 @@ L = 15
 beta = [1] * K
 
 # stopping (convergence) condition
-epsilon = 1e-4
+# epsilon = 1e-4
 # These variables must comply with these invariants: Ns <= Ntft <= N, d <= Nrfr <= M
-sigma2 = 1
+sigma2 = K
 # num of iterations for each dB step
 num_iters = 10
 # range of dB to graph e.g. -10 to 9 (20 steps)
 db_range = 10
 
-SNR_dBs = np.arange(-9, 11)
+SNR_dBs = np.arange(0, 11)
 # Generate and average spectral efficiency data for a range of SNR ratios.
 arr = np.zeros(SNR_dBs.size, dtype = np.float64 )
 for i, snr in enumerate(SNR_dBs):
     Ps = 10**(snr / 10) * sigma2
+    print(f"SNR it = {i}/{SNR_dBs.size}")
     for _ in range(num_iters):
+        print(f" repead it = {_}/{num_iters}")
         # generated environment - advanced generation
         H = channelGen(N, M, K, L)
-        a2 = alg3(H, beta, Nrf, Ps, sigma2, epsilon)
+        a2 = alg3(H, beta, Nrf, Ps, sigma2,)
         arr[i] += a2
     arr[i] /= num_iters
     print(f"SNR = {snr}(dB)--> {arr[i]}")
