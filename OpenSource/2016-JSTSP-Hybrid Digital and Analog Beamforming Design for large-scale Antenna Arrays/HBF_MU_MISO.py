@@ -135,16 +135,15 @@ def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
     it = 0
     while diffCap > epsilon and it < 20:
         it += 1
-        print(f"    Cap it = {it}, CapDiff = {diffCap}")
         VRF = updateVRF(N, Nrf, Ht, VRF)
         # 生成功率分配矩阵
         VDt = VRF.conj().T @ H.conj().T @ scipy.linalg.inv(H @ VRF @ VRF.conj().T @ H.conj().T)
         Qt = VDt.conj().T @ VRF.conj().T @ VRF @ VDt
         P, sumP, lamba = updateP(Qt, beta, Ps, K, sigma2)
         Ht = scipy.linalg.sqrtm(np.linalg.pinv(P)) @ H
-
         Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
         diffCap = np.abs((Cap-lastCap)/Cap)
+        print(f"    Cap it = {it}, CapDiff = {diffCap}")
         lastCap = Cap
     return Cap
 
@@ -170,9 +169,7 @@ beta = [1] * K
 # These variables must comply with these invariants: Ns <= Ntft <= N, d <= Nrfr <= M
 sigma2 = K
 # num of iterations for each dB step
-num_iters = 10
-# range of dB to graph e.g. -10 to 9 (20 steps)
-db_range = 10
+num_iters = 5
 
 SNR_dBs = np.arange(0, 11)
 # Generate and average spectral efficiency data for a range of SNR ratios.
