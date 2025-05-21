@@ -94,13 +94,12 @@ def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
                 VRF[i,j] = np.exp(-1j * theta)
         fVrf_new = N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
         diff = np.abs((fVrf_new - fVrf_old)/fVrf_new)
-        # print(f"it = {it}, fVrf_old = {fVrf_old}, fVrf_new = {fVrf_new}, diff = {diff}")
         print(f"      updateVRF it = {it}, fVRFdiff = {diff}")
         fVrf_old = fVrf_new
     return VRF
 
 #%%
-def updateP(Qt, beta, Ps, K, sigma2):
+def updateP1(Qt, beta, Ps, K, sigma2):
     lamba = 1
     qkk = np.real(np.diag(Qt))
     while 1:
@@ -116,11 +115,34 @@ def updateP(Qt, beta, Ps, K, sigma2):
         if posi > 0:
             lamba += 0.5 * (initpow - Ps)/posi
         else:
-            lamba *= 0.1
+            lamba *= 0.25
+        print(f" lamba = {lamba}")
     P = np.identity(K)
     for k in range(K):
         P[k,k] = np.max(beta[k]/lamba - qkk[k]*sigma2, 0)/qkk[k]
     return P, initpow, lamba
+
+import cvxpy as cp
+def updateP(Qt, beta, Ps, K, sigma2):
+    lamba = 1
+    qkk = np.real(np.diag(Qt))
+    x = cp.Variable(shape = K)
+    alpha = cp.Parameter(K, nonneg = True)
+    alpha.value = beta
+    obj = cp.Maximize(cp.sum(cp.multiply(alpha, cp.log(1 + x/sigma2))))
+    constraints = [x >= 0, cp.sum(cp.multiply(x, qkk)) - Ps == 0]
+    # Solve
+    prob = cp.Problem(obj, constraints)
+    prob.solve()
+    if(prob.status=='optimal'):
+        print(f"      updateP, {prob.status}, {prob.value}, {x.value}")
+
+    P = np.identity(K)
+    for k in range(K):
+        P[k,k] = x.value[k]
+
+    return P, 1, 1
+
 #%%
 def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
     pi = np.pi
@@ -171,7 +193,7 @@ sigma2 = K
 # num of iterations for each dB step
 num_iters = 5
 
-SNR_dBs = np.arange(0, 11)
+SNR_dBs = np.arange(-10, 11)
 # Generate and average spectral efficiency data for a range of SNR ratios.
 arr = np.zeros(SNR_dBs.size, dtype = np.float64 )
 for i, snr in enumerate(SNR_dBs):
