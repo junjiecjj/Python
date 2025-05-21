@@ -9,9 +9,6 @@ Implementation of Mulyi-user point-to-point MISO simulation based on paper:
 "Sohrabi, F., & Yu, W. (2016). Hybrid Digital and Analog Beamforming Design for Large-Scale Antenna Arrays"
 Implemented algorithms are 'Algorithm 3' from the paper.
 
-
-Comments often refer to specific figures and equations from the paper, as "(x)".
-
 """
 
 from typing import Tuple
@@ -20,7 +17,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import scipy
 # from scipy import linalg as spl
-
 
 
 def channelGen(N, M,  K, L, d = 0.5):
@@ -40,10 +36,6 @@ def channelGen(N, M,  K, L, d = 0.5):
     Returns:
         H : numpy.ndarray
             Generated environment (channel).
-        Gain : numpy.ndarray
-            Complex gain of each path.
-        At : numpy.ndarray
-            Array response vectors.
     """
     pi = np.pi
     H = np.zeros((K, M, N), dtype = np.complex128)
@@ -60,19 +52,89 @@ def channelGen(N, M,  K, L, d = 0.5):
         H[k,:,:] = Hk
     return (np.sqrt(M*N/L) * H)
 
+def updateVRF(N, Nrf, Ht, VRF, epsilon = 1e-1):
+    pi = np.pi
+    fVrf_old = N*np.trace(scipy.linalg.inv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
+    diff = 1
+    # while diff > epsilon:
+    for _ in range(10):
+        for j in range(Nrf):
+            VRFj = np.delete(VRF, j, axis = 1)
+            Aj = Ht @  VRFj @ VRFj.conj().T @ Ht.conj().T
+            AjInv = scipy.linalg.inv(Aj)
+            Bj = Ht.conj().T @ AjInv @ AjInv @ Ht
+            Dj = Ht.conj().T @ AjInv @ Ht
+            for i in range(N):
+                zetaBij = Bj[i,i] + np.real(np.sum([np.conj(VRF[m, j])*Bj[m,n]*VRF[n, j] for m in range(N) for n in range(N) if m != i and n != i]))
+                zetaDij = Dj[i,i] + np.real(np.sum([np.conj(VRF[m, j])*Dj[m,n]*VRF[n, j] for m in range(N) for n in range(N) if m != i and n != i]))
+                etaBij = Bj[i,:]@VRF[:,j] - Bj[i,i] * VRF[i,j]
+                etaDij = Dj[i,:]@VRF[:,j] - Bj[i,i] * VRF[i,j]
+                cij = (1 + zetaDij) * etaBij - zetaBij * etaDij
+                zij = np.imag(2 * np.conj(etaBij) * etaDij)
+                tt = np.arcsin(np.imag(cij)/np.abs(cij))
+                if np.real(cij) >= 0:
+                    phij = tt
+                else:
+                    phij = pi - tt
+                theta1 = -phij + np.arcsin(zij/np.abs(cij))
+                theta2 = pi - phij - np.arcsin(zij/np.abs(cij))
+                vfij1 = np.exp(-1j * theta1)
+                vfij2 = np.exp(-1j * theta2)
+                f1 = N*np.trace(scipy.linalg.inv(Aj)) - N * (zetaBij + 2*np.real(np.conj(vfij1)*etaBij))/(1 + zetaDij + 2*np.real(np.conj(vfij1)*etaDij))
+                f2 = N*np.trace(scipy.linalg.inv(Aj)) - N * (zetaBij + 2*np.real(np.conj(vfij2)*etaBij))/(1 + zetaDij + 2*np.real(np.conj(vfij2)*etaDij))
+                if f1 >= f2:
+                    theta = theta1
+                else:
+                    theta = theta2
+                VRF[i,j] = np.exp(-1j * theta)
+        fVrf_new = N*np.trace(scipy.linalg.inv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
+        diff = np.abs(fVrf_new - fVrf_old)
+        fVrf_old = fVrf_new
+    return VRF
 
-def updateVRF():
-    return
+def updateP(Qt, beta, Ps, K, sigma2):
+    lamba = 1
+    while 1:
+        initpow = 0
+        posi = 0
+        for k in range(K):
+            tmp = beta[k]/lamba - Qt[k,k]*sigma2
+            if tmp > 0:
+                initpow += tmp
+                posi +=1
+        if np.abs(initpow - Ps)/Ps < 0.01:
+            break
+        if posi > 0:
+            lamba += 0.5 * (initpow - Ps)/posi
+        else:
+            lamba *= 0.1
+    P = np.identity(K)
+    for k in range(K):
+        P[k,k] = np.max(beta[k]/lamba - Qt[k,k]*sigma2, 0)/Qt[k,k]
+    return P
 
-def updateP(beta, P, K, Qt):
-    return
+def alg3(H, beta, Nrf, Ps, sigma2, epsilon):
+    pi = np.pi
+    K, M, N = H.shape
+    H = H.squeeze()
+    diffCap = 1
+    lastCap = 1
+    tmp = np.random.rand(N, Nrf) * 2 * pi
+    VRF = np.exp(1j * tmp)
+    P = np.identity(K) * Ps/K
+    Ht = scipy.linalg.sqrtm(np.linalg.inv(P)) @ H
+    while diffCap > epsilon:
+        VRF = updateVRF(N, Nrf, Ht, VRF)
+        # 生成功率分配矩阵
+        VDt = VRF.conj().T @ H.conj().T @ scipy.linalg.inv(H @ VRF @ VRF.conj().T @ H.conj().T)
+        Qt =  VDt.conj().T @ VRF.conj().T @ VRF @ VDt
+        P = updateP(Qt, beta, Ps, K, sigma2)
+        Ht = (P**(-0.5)) @ H
 
-def alg3(H, beta, P, sigma2, epsilon):
+        Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
+        diffCap = np.abs(Cap-lastCap)
 
-    return
-
-
-
+    return Cap
 
 #%% Simulation/testing
 np.random.seed(42)
@@ -87,18 +149,16 @@ d = 1
 # num of data streams
 Ns = K * d
 Nrf = 9
-
 # num of scatterers
 L = 15
-
 beta = [1] * K
 
 # stopping (convergence) condition
 epsilon = 1e-4
 # These variables must comply with these invariants: Ns <= Ntft <= N, d <= Nrfr <= M
-sigma2 = 40
+sigma2 = 1
 # num of iterations for each dB step
-num_iters = 100
+num_iters = 10
 # range of dB to graph e.g. -10 to 9 (20 steps)
 db_range = 10
 
@@ -106,20 +166,19 @@ SNR_dBs = np.arange(-9, 11)
 # Generate and average spectral efficiency data for a range of SNR ratios.
 arr = np.zeros(SNR_dBs.size, dtype = np.float64 )
 for i, snr in enumerate(SNR_dBs):
-    P = 10**(snr / 10) * sigma2
+    Ps = 10**(snr / 10) * sigma2
     for _ in range(num_iters):
         # generated environment - advanced generation
         H = channelGen(N, M, K, L)
-
-        a2 = alg3(H, beta, P, sigma2, epsilon)
+        a2 = alg3(H, beta, Nrf, Ps, sigma2, epsilon)
         arr[i] += a2
     arr[i] /= num_iters
     print(f"SNR = {snr}(dB)--> {arr[i]}")
 
-# %%
+#%%
 colors = plt.cm.jet(np.linspace(0, 1, 5))
 fig, axs = plt.subplots(1, 1, figsize = (8, 6))
-axs.plot(SNR_dBs, arr, color = colors[0], marker = 'o',linestyle='--', lw = 2, label = 'Multi-User Large-Scale MISO' , )
+axs.plot(SNR_dBs, arr, color = colors[0], marker = 'o',linestyle='--', lw = 2, label = 'Multi-User Massive MISO',)
 axs.set_xlabel("SNR(dB)", fontsize = 16)
 axs.set_ylabel("Spectral Efficiency(bits/s/Hz)", fontsize = 16)
 plt.grid()
@@ -135,7 +194,14 @@ plt.close('all')
 
 # %%
 
+# M = 3
+# N = 4
+# A = np.arange(M*N).reshape(N, M)
+# B = np.arange(N*N).reshape(N, N)
+# i = 1
+# j = 2
 
+# [A[m, j]*B[m,n]*A[n,j] for m in range(N) for n in range(N) if m != i and n != i]
 
 
 
