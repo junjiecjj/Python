@@ -60,7 +60,7 @@ def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
 
     it = 0
     fVrf_new = 0
-    while diff > epsilon and it < 200:
+    while diff > epsilon and it < 100:
         it += 1
         for j in range(Nrf):
             VRFj = np.delete(VRF, j, axis = 1)
@@ -123,6 +123,7 @@ def updateP1(Qt, beta, Ps, K, sigma2):
     return P, initpow, lamba
 
 import cvxpy as cp
+# cp.log 以e为底
 def updateP(Qt, beta, Ps, K, sigma2):
     lamba = 1
     qkk = np.real(np.diag(Qt))
@@ -135,15 +136,44 @@ def updateP(Qt, beta, Ps, K, sigma2):
     prob = cp.Problem(obj, constraints)
     prob.solve()
     if(prob.status=='optimal'):
-        print(f"      updateP, {prob.status}, {prob.value}, {x.value}")
+        P = np.identity(K)
+        np.fill_diagonal(P, x.value)
+        Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
+        curpow = (x.value * qkk).sum()
+        print(f"      updateP, {prob.status}, {curpow}/{Ps}, {x.value}, {prob.value*np.log2(np.e)}")
 
+    return P, curpow, 1
+
+## 二分法
+def updateP2(Qt, beta, Ps, K, sigma2, epsilon = 1e-8):
+    lamba = 1
+    qkk = np.real(np.diag(Qt))
+    rank = beta/(qkk * sigma2)
+    cur_lamba = np.sum(beta)/(Ps + sigma2 * qkk.sum())
+    if cur_lamba <= rank.min():
+        p = beta/(cur_lamba*qkk) - sigma2
+        curpow = np.sum(np.maximum(beta/cur_lamba - qkk*sigma2, 0))
+    else:
+        gap = 1
+        max_lamba = rank.max()
+        min_lamba = rank.min()
+        while gap > epsilon:
+            cur_lamba = (max_lamba + min_lamba)/2.0
+            curpow = np.sum(np.maximum(beta/cur_lamba - qkk*sigma2, 0))
+            if np.abs((curpow - Ps)/Ps) <= epsilon:
+                break
+            elif curpow > Ps:
+                min_lamba = cur_lamba
+            elif curpow < Ps:
+                max_lamba = cur_lamba
+        p = np.maximum(beta/(qkk*cur_lamba) - sigma2, 0)
     P = np.identity(K)
-    for k in range(K):
-        P[k,k] = x.value[k]
+    np.fill_diagonal(P, p)
+    Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
+    print(f"      updateP, {curpow}/{Ps}, {cur_lamba}, {p}, {Cap}")
+    return P, curpow, cur_lamba
 
-    return P, 1, 1
-
-#%%
+#%% Design of Hybrid Precoders for MU-MISO systems
 def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
     pi = np.pi
     K, M, N = H.shape
@@ -155,17 +185,17 @@ def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
     P = np.identity(K) * Ps/K
     Ht = scipy.linalg.sqrtm(np.linalg.pinv(P.astype(np.complex128))) @ H
     it = 0
-    while diffCap > epsilon and it < 20:
+    while diffCap > epsilon and it < 2:
         it += 1
         VRF = updateVRF(N, Nrf, Ht, VRF)
         # 生成功率分配矩阵
         VDt = VRF.conj().T @ H.conj().T @ scipy.linalg.inv(H @ VRF @ VRF.conj().T @ H.conj().T)
         Qt = VDt.conj().T @ VRF.conj().T @ VRF @ VDt
-        P, sumP, lamba = updateP(Qt, beta, Ps, K, sigma2)
+        P, sumP, lamba = updateP2(Qt, beta, Ps, K, sigma2)
         Ht = scipy.linalg.sqrtm(np.linalg.pinv(P)) @ H
         Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
         diffCap = np.abs((Cap-lastCap)/Cap)
-        print(f"    Cap it = {it}, CapDiff = {diffCap}")
+        print(f"    Cap it = {it}, CapDiff = {diffCap}/{Cap}")
         lastCap = Cap
     return Cap
 
@@ -191,7 +221,7 @@ beta = [1] * K
 # These variables must comply with these invariants: Ns <= Ntft <= N, d <= Nrfr <= M
 sigma2 = K
 # num of iterations for each dB step
-num_iters = 5
+num_iters = 1
 
 SNR_dBs = np.arange(-10, 11)
 # Generate and average spectral efficiency data for a range of SNR ratios.
