@@ -54,20 +54,40 @@ print(f"U@S@VH = \n{U@S@VH}")
 print(f"A = \n{A}")
 
 
-##%%  验证 AA^H = US^2U^H,  U是AA^H的特征值，也是A的左奇异向量
+#%%  验证 AA^H = US^2U^H,  U是AA^H的特征值，也是A的左奇异向量
 AAH = A @ A.conj().T
 US2UH = U @ S @ S.conj().T @ U.conj().T
 Lambda1, Uhat = np.linalg.eig(AAH)
-print(f"AAH = {AAH}")
+print(f"AAH = \n{AAH}")
+# AAH =
+# [[14 32]
+#  [32 77]]
+print(f"US2UH = \n{US2UH}")
+# US2UH =
+# [[14. 32.]
+#  [32. 77.]]
+print(f"Lambda1 = \n{Lambda1}")
+# Lambda1 =
+# [ 0.59732747 90.40267253]
+print(f"S @ S.conj().T = \n{S @ S.conj().T}")
+# S @ S.conj().T =
+# [[90.40267253  0.        ]
+#  [ 0.          0.59732747]]
 
 
-##%%  验证 A^HA = VS^2V^H,  V是A^HA的特征值，也是A的右奇异向量
+#%%  验证 A^HA = VS^2V^H,  V是A^HA的特征值，也是A的右奇异向量
 V = VH.conj().T
 AHA =  A.conj().T @ A
 VS2VH = V @ S @ S.conj().T @ V.conj().T
 Lambda2, Vhat = np.linalg.eig(AHA)
 
+print(f"AHA = \n{AHA}")
 
+print(f"VS2VH = \n{VS2VH}")
+
+print(f"Lambda2 = \n{Lambda2}")
+
+print(f"S @ S.conj().T = \n{S @ S.conj().T}")
 
 
 
