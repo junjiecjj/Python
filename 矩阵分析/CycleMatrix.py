@@ -38,9 +38,7 @@ def CirculantMatric(gen, row):
 generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
 # generateVec =  [1 , 2  , 3 , 4  ]
 
-
 X = np.array(generateVec)
-
 
 L = len(generateVec)
 A = CirculantMatric(generateVec, L)
@@ -76,8 +74,6 @@ B = A.T
 F_B_FH = F@B@FH
 F_B_FH = np.around(F_B_FH, decimals = 2)
 print(f"F_B_FH:\n{F_B_FH}")
-
-
 
 
 

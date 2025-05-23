@@ -123,7 +123,7 @@ def updateP1(Qt, beta, Ps, K, sigma2):
     return P, initpow, lamba
 
 import cvxpy as cp
-# cp.log 以e为底
+# cp.log 以e为底, updateVRF中it设置为100，
 def updateP(Qt, beta, Ps, K, sigma2):
     lamba = 1
     qkk = np.real(np.diag(Qt))
@@ -140,11 +140,11 @@ def updateP(Qt, beta, Ps, K, sigma2):
         np.fill_diagonal(P, x.value)
         Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
         curpow = (x.value * qkk).sum()
-        print(f"      updateP, {prob.status}, {curpow}/{Ps}, {x.value}, {prob.value*np.log2(np.e)}")
+        print(f"      updateP, {prob.status}, {curpow}/{Ps}, {x.value}, {prob.value*np.log2(np.e)}/{Cap}")
 
     return P, curpow, 1
 
-## 二分法
+## 二分法, updateVRF中it设置为2
 def updateP2(Qt, beta, Ps, K, sigma2, epsilon = 1e-8):
     lamba = 1
     qkk = np.real(np.diag(Qt))
@@ -185,13 +185,13 @@ def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
     P = np.identity(K) * Ps/K
     Ht = scipy.linalg.sqrtm(np.linalg.pinv(P.astype(np.complex128))) @ H
     it = 0
-    while diffCap > epsilon and it < 2:
+    while diffCap > epsilon and it < 20:
         it += 1
         VRF = updateVRF(N, Nrf, Ht, VRF)
         # 生成功率分配矩阵
         VDt = VRF.conj().T @ H.conj().T @ scipy.linalg.inv(H @ VRF @ VRF.conj().T @ H.conj().T)
         Qt = VDt.conj().T @ VRF.conj().T @ VRF @ VDt
-        P, sumP, lamba = updateP2(Qt, beta, Ps, K, sigma2)
+        P, sumP, lamba = updateP(Qt, beta, Ps, K, sigma2)
         Ht = scipy.linalg.sqrtm(np.linalg.pinv(P)) @ H
         Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
         diffCap = np.abs((Cap-lastCap)/Cap)

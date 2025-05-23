@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-
+from sklearn.decomposition import PCA
 
 #########################################################################
 ##  特征值分解手动计算PCA
@@ -24,6 +24,8 @@ Xc = X - X.mean(axis = 0)
 # 计算协方差矩阵
 XXT = np.matrix(Xc.T) * np.matrix(Xc) / (len(Xc)-1)
 
+print(f"np.cov(X.T) = \n{np.cov(X.T)}")  # == XXT
+
 # 求协方差矩阵的特征值和特征向量
 eigVals, eigVects = np.linalg.eig(np.mat(XXT))
 print("特征值: ", eigVals)
@@ -35,14 +37,54 @@ print(f"特征向量: \n{eigVects}", ) # 和 pca.components_.T 完全一样 (可
 #  [ 0.85667061  0.17337266  0.07623608 -0.47983899]
 #  [ 0.3582892   0.07548102  0.54583143  0.75365743]]
 
-# 中心化数据在特征向量的投影
+#>>>>>>>>>>>>>>>> 中心化数据在特征向量的投影
 Zc = Xc @ eigVects[:,:2]
 print(f"np.cov(Zc.T) = \n{np.cov(Zc.T)}")
 # np.cov(Zc.T) = # 投影后数据的协方差矩阵是对角阵，就是特征值
 # [[ 4.22824171e+00 -8.01395836e-16]
 #  [-8.01395836e-16  2.42670748e-01]]
-Zc_n = Zc @ np.linalg.inv(np.diag(np.sqrt(eigVals[:2])))  # 这个才是和pca.transform(X)完全一样的结果(可能某列差正负号)
+
+### 工具包自动计算
+pcamodel = PCA(n_components=2,  svd_solver='full') # whiten = False, 投影后不利用特征值的均方根归一化
+pcamodel.fit(X)
+print(pcamodel.explained_variance_)
+# [4.22824171 0.24267075]
+print(pcamodel.components_.T)
+# [[ 0.36138659  0.65658877]
+#  [-0.08452251  0.73016143]
+#  [ 0.85667061 -0.17337266]
+#  [ 0.3582892  -0.07548102]]
+X_pca1 = pcamodel.transform(X)
+# X_pca1 = pcamodel.fit_transform(X)
+# X_pca1 == Zc
+
+#>>>>>>>>>>>>>>>> 中心化数据在特征向量的投影
+Zc_n = Zc @ np.linalg.inv(np.diag(np.sqrt(eigVals[:2])))  # 这个才是和下面的pca.transform(X)完全一样的结果(可能某列差正负号)
 print(f"np.cov(Zc_n.T) = \n{np.cov(Zc_n.T)}")
+# [[ 1.00000000e+00 -6.00904408e-16]
+ # [-6.00904408e-16  1.00000000e+00]]
+### 工具包自动计算
+# iris = load_iris()
+# X = iris.data
+pca = PCA(n_components = 2, whiten = True, svd_solver = 'full') # whiten = True, 投影后利用特征值的均方根归一化
+pca.fit(X) # 先求出X的均值(mean_)、协方差矩阵的特征值特征值(explained_variance_,)、协方差矩阵的特征向量(pca.components_.T)，作为标准
+print(pca.explained_variance_)
+# [4.22824171 0.24267075]
+print(pca.components_.T)
+# [[ 0.36138659  0.65658877]
+#  [-0.08452251  0.73016143]
+#  [ 0.85667061 -0.17337266]
+#  [ 0.3582892  -0.07548102]]
+# 数据变换
+X_pca = pca.transform(X)
+print(X_pca.shape) # 150, 2
+print(np.cov(X_pca.T))
+# (150, 2)
+# [[1.00000000e+00 9.14950022e-16]
+#  [9.14950022e-16 1.00000000e+00]]
+
+X_reco = pca.inverse_transform(X_pca)
+print(f"(X_reco - X).max() = {(X_reco - X).max()}, (X_reco - X).min() = {(X_reco - X).min()}")
 
 # 原始数据在特征向量的投影
 Z = X @ eigVects[:,:2]
@@ -57,37 +99,23 @@ print(np.cov(Z_n.T))
 #  [-5.6728177e-16  1.0000000e+00]]
 
 #########################################################################
-### 工具包自动计算
-from sklearn.decomposition import PCA
-
-iris = load_iris()
-X = iris.data
-pca = PCA(n_components=2, whiten=True, svd_solver='full')
-pca.fit(X) # 先求出X的均值(mean_)、协方差矩阵的特征值特征值(explained_variance_,)、协方差矩阵的特征向量(pca.components_.T)，作为标准
-print(pca.explained_variance_)
-# [4.22824171 0.24267075]
-print(pca.components_.T)
-# [[ 0.36138659  0.65658877]
-#  [-0.08452251  0.73016143]
-#  [ 0.85667061 -0.17337266]
-#  [ 0.3582892  -0.07548102]]
-# 数据变换
-X_pca = pca.transform(X)
-print(X_pca.shape) # 150, 2
-print(np.cov(X_pca.T))
-
-X_reco = pca.inverse_transform(X_pca)
-print(f"(X_reco - X).max() = {(X_reco - X).max()}, (X_reco - X).min() = {(X_reco - X).min()}")
+### 数据 X_pca 在 [v1, v2] 中散点图
+fig, ax = plt.subplots(1, 1, figsize = (6, 6), constrained_layout = True)
+ax.scatter(X[:, 0], X[:, 1], alpha = 0.5, marker = '.')
+ax.set_xlabel('$z_1$')
+ax.set_ylabel('$z_2$')
+plt.show()
 
 
-pcamodel = PCA(n_components=2,  svd_solver='full')
-pcamodel.fit(X)
-X_pca1 = pcamodel.transform(X)
-# X_pca1 = pcamodel.fit_transform(X)
-# X_pca1 == Zc
+Z_df = pd.DataFrame(X[:,:2], columns = ['z_1', 'z_2'])
+sns.jointplot(data = Z_df, x = 'z_1', y = 'z_2', kind = 'kde', fill = True, ax = ax)
+ax.set_aspect('equal')
+ax.set_xlabel('$z_1$')
+ax.set_ylabel('$z_2$')
+plt.show()
 
 ### 数据 X_pca 在 [v1, v2] 中散点图
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(1, 1, figsize = (6, 6), constrained_layout = True)
 plt.scatter(X_pca[:, 0], X_pca[:, 1], alpha = 0.5, marker = '.')
 plt.axvline(x=0, color='r', linestyle='--')
 plt.axhline(y=0, color='r', linestyle='--')
@@ -100,12 +128,12 @@ plt.show()
 
 ####  数据 X_pca 在 [v1, v2] 中散点图
 # fig, ax = plt.subplots()
-Z_df = pd.DataFrame(X_pca, columns=['z_1', 'z_2'])
-sns.jointplot(data=Z_df, x = 'z_1', y = 'z_2', kind = 'kde', fill = True, xlim = (-5,5), ylim = (-5,5), ax = ax)
+Z_df = pd.DataFrame(X_pca, columns = ['z_1', 'z_2'])
+sns.jointplot(data = Z_df, x = 'z_1', y = 'z_2', kind = 'kde', fill = True, xlim = (-5,5), ylim = (-5,5), ax = ax)
 ax.set_aspect('equal')
 plt.xlabel('$z_1$')
 plt.ylabel('$z_2$')
-# plt.show()
+plt.show()
 
 #########################################################################
 ##  Xc的SVD分解(奇异值)和协方差矩阵的特征值分解(特征值)的关系
@@ -135,7 +163,7 @@ Lambda_reproduced = S**2/(len(X) - 1)
 print(Lambda_reproduced - Lambda)
 
 # Xc的特征向量和Sigma的特征向量的关系，某列可能差正负号.
-print(V - Vt.T)
+print(np.abs(V) - np.abs(Vt.T))
 
 # 矩阵 U 每一列数据相当于 Z 对应列向量的标准化：
 Z = Xc@V
@@ -144,10 +172,12 @@ Z_US = np.abs(Z) - np.abs(US)
 print(f" {Z_US.min()}, {Z_US.max()}")
 
 ## 把原始数据 X 或中心化数据 Xc投影到 V 中结果不一样。从统计角度来看，差异主要体现在质心位置，而投影得到的数据协方差矩阵相同。
+ones = np.array([1]*X.shape[0])[:,None]
 Z = X@V
-Zc = Xc@V
-print(Zc.mean(axis = 0))
+Zc = Xc@V  # = X@V - 1^T X@V/n
+print(Zc.mean(axis = 0))  # == [0,0,0,0]
 # print(np.cov(Z.T) - np.cov(Zc.T)) # 两者相等，因为求协方差本身就需要中心化，只不过Zc已经中心化，求Z的协方差之前先进行中心化
+Zc1 = X@V - ones.T @X@V/X.shape[0]  ## == Zc
 
 # 对Z直接求Z^T@Z与Zc.T@Zc的关系
 Zsigma = Z.T @ Z / (Z.shape[0] - 1)
@@ -156,14 +186,10 @@ Zcsigma = Zc.T @ Zc / (Zc.shape[0] - 1)
 Ex = X.mean(axis =  0).reshape(1,-1)
 Zsigma_hat = Zcsigma +  V.T @ (Ex.T) @ Ex @ V * Zc.shape[0]/(Zc.shape[0] - 1)
 
-
 # Zsigma_hat == Zsigma
 # print(Zsigma_hat - Zsigma)
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 可视化:协方差矩阵的特征值分解 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 all_max = 2
 all_min = -2
 #%% 协方差矩阵特征值
@@ -497,7 +523,6 @@ for j in [0, 1, 2, 3]:
     ax = sns.heatmap(u_j,cmap='RdBu_r', vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
     ax.set_aspect("equal")
     plt.title('u_'+ str(j+1))
-
 
 ######## X = Z_1 @ v_1^T + Z_2 @ v_2^T + Z_3 @ v_4^T + Z_4 v_4^T
 # Tensor products, 计算张量积,以及绘制还原原始数据过程热图
