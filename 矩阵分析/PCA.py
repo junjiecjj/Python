@@ -183,7 +183,11 @@ Zc1 = X@V - ones.T @X@V/X.shape[0]  ## == Zc
 Zsigma = Z.T @ Z / (Z.shape[0] - 1)
 Zcsigma = Zc.T @ Zc / (Zc.shape[0] - 1)
 
-Ex = X.mean(axis =  0).reshape(1,-1)
+# Zcsigma1 == Zcsigma
+Zcsigma1 = Z.T @ Z / (Z.shape[0] - 1) - 2*V.T@X.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0] + V.T@X.T@ones@ones.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0]**2
+
+
+Ex = ones @ X
 Zsigma_hat = Zcsigma +  V.T @ (Ex.T) @ Ex @ V * Zc.shape[0]/(Zc.shape[0] - 1)
 
 # Zsigma_hat == Zsigma

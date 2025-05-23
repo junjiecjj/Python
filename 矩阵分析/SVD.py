@@ -46,7 +46,6 @@ np.linalg.norm(U[:,0])  # = 1
 np.linalg.norm(U[:,1])  # = 1
 # np.linalg.norm(U[:,2])  # = 1
 
-
 S = np.zeros(A.shape)
 np.fill_diagonal(S, s)
 # S = np.diag(s)
@@ -55,10 +54,18 @@ print(f"U@S@VH = \n{U@S@VH}")
 print(f"A = \n{A}")
 
 
+##%%  验证 AA^H = US^2U^H,  U是AA^H的特征值，也是A的左奇异向量
+AAH = A @ A.conj().T
+US2UH = U @ S @ S.conj().T @ U.conj().T
+Lambda1, Uhat = np.linalg.eig(AAH)
+print(f"AAH = {AAH}")
 
 
-
-
+##%%  验证 A^HA = VS^2V^H,  V是A^HA的特征值，也是A的右奇异向量
+V = VH.conj().T
+AHA =  A.conj().T @ A
+VS2VH = V @ S @ S.conj().T @ V.conj().T
+Lambda2, Vhat = np.linalg.eig(AHA)
 
 
 
