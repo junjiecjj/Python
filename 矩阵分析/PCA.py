@@ -158,6 +158,9 @@ SS = np.zeros(X.shape)
 np.fill_diagonal(SS, s)
 S = np.diag(s)
 
+# Vt.T 和 V完全一样，可能差个符号或者顺序
+print(f"V = \n{V}\nVt.T = \n{Vt.T}")
+
 # Xc的(奇异值)和Sigma的特征值的关系
 Lambda_reproduced = S**2/(len(X) - 1)
 print(Lambda_reproduced - Lambda)
@@ -184,11 +187,11 @@ Zsigma = Z.T @ Z / (Z.shape[0] - 1)
 Zcsigma = Zc.T @ Zc / (Zc.shape[0] - 1)
 
 # Zcsigma1 == Zcsigma
-Zcsigma1 = Z.T @ Z / (Z.shape[0] - 1) - 2*V.T@X.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0] + V.T@X.T@ones@ones.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0]**2
+Zcsigma1 = Z.T @ Z / (Z.shape[0] - 1) -  V.T@X.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0] # + V.T@X.T@ones@ones.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0]**2
 
 
-Ex = ones @ X
-Zsigma_hat = Zcsigma +  V.T @ (Ex.T) @ Ex @ V * Zc.shape[0]/(Zc.shape[0] - 1)
+Ex = ones.T @ X
+Zsigma_hat = Zcsigma +  V.T @ (Ex.T) @ Ex @ V / Zc.shape[0]/(Zc.shape[0] - 1)
 
 # Zsigma_hat == Zsigma
 # print(Zsigma_hat - Zsigma)
@@ -213,7 +216,7 @@ fig, axs = plt.subplots(1, 7, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(SIGMA,cmap='RdBu_r',vmax = all_max,vmin = all_min,  cbar=False)
 ax.set_aspect("equal")
-plt.title('$\Sigma$')
+plt.title(r'$\Sigma$')
 
 plt.sca(axs[1])
 plt.title('=')
@@ -222,7 +225,7 @@ plt.axis('off')
 plt.sca(axs[2])
 ax = sns.heatmap(V,cmap='RdBu_r',vmax = all_max,vmin = all_min,  cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V$')
+plt.title(r'$V$')
 
 plt.sca(axs[3])
 plt.title('@')
@@ -231,7 +234,7 @@ plt.axis('off')
 plt.sca(axs[4])
 ax = sns.heatmap(LAMBDA,cmap='RdBu_r',vmax = all_max,vmin = all_min,  cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\Lambda$')
+plt.title(r'$\Lambda$')
 
 plt.sca(axs[5])
 plt.title('@')
@@ -240,7 +243,7 @@ plt.axis('off')
 plt.sca(axs[6])
 ax = sns.heatmap(V.T,cmap='RdBu_r', vmax = all_max,vmin = all_min,  cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V^T$')
+plt.title(r'$V^T$')
 plt.show()
 
 ### Sigma = lambda1 * v_1@v_1^T + lambda2 * v_2@v_2^T + lambda3 * v_3@v_3^T + lambda4 * v_4@v_4^T
@@ -258,21 +261,20 @@ l4_v4v4T = Lambda_[j] * v_j @ v_j.T
 
 Sigma_hat = l1_v1v1T + l2_v2v2T + l3_v3v3T + l4_v4v4T
 
-
 fig, axs = plt.subplots(1, 11, figsize=(18, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(Sigma_hat,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{\Sigma}$')
+plt.title(r'$\hat{\Sigma}$')
 
 plt.sca(axs[1])
-plt.title('$=$')
+plt.title(r'$=$')
 plt.axis('off')
 
 plt.sca(axs[2])
 ax = sns.heatmap(Sigma, cmap='RdBu_r',vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\Sigma$')
+plt.title(r'$\Sigma$')
 
 plt.sca(axs[3])
 plt.title('=')
@@ -283,7 +285,6 @@ ax = sns.heatmap(l1_v1v1T,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws=
 ax.set_aspect("equal")
 idx = 0
 plt.title('$\u03BB_' + str(idx + 1) + 'v_' + str(idx + 1) + ' @ v_'  + str(idx + 1) + '^T$')
-
 
 plt.sca(axs[5])
 plt.title('+')
@@ -322,20 +323,19 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(Sigma, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\Sigma$')
+plt.title(r'$\Sigma$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(Sigma_hat, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{\Sigma}$')
+plt.title(r'$\hat{\Sigma}$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(Sigma - Sigma_hat, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$E = X - \hat{X}$')
+plt.title(r'$E = X - \hat{X}$')
 
 #%%######################################################### Xc的SVD分解(奇异值) #####################################################
-
 # Repeatability
 np.random.seed(1)
 # Generate random matrix
@@ -343,7 +343,6 @@ X = np.random.randn(6, 4)
 
 # manipulate X and reduce rank to 3
 # X[:,3] = X[:,0] + X[:,1]
-
 
 U, s, VT = np.linalg.svd(X, full_matrices = True)
 SS = np.zeros(X.shape)
@@ -360,7 +359,7 @@ fig, axs = plt.subplots(1, 7, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 plt.title('=')
@@ -369,7 +368,7 @@ plt.axis('off')
 plt.sca(axs[2])
 ax = sns.heatmap(U,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$U$')
+plt.title(r'$U$')
 
 plt.sca(axs[3])
 plt.title('@')
@@ -378,7 +377,7 @@ plt.axis('off')
 plt.sca(axs[4])
 ax = sns.heatmap(SS,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$S$')
+plt.title(r'$S$')
 
 plt.sca(axs[5])
 plt.title('@')
@@ -387,11 +386,10 @@ plt.axis('off')
 plt.sca(axs[6])
 ax = sns.heatmap(VT,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V^T$')
+plt.title(r'$V^T$')
 
 #################### 四幅热图叠加还原原始图像
 #### X = s_1 * u1 @ v_1^T + s_2 * u2 @ v_2^T + s_3 * u3 @ v_3^T + s_3 * u3 @ v_3^T
-
 
 j=0
 s1u1v1 = S[j,j]*U[:,j][:, None]@V[:,j][None, :];
@@ -406,18 +404,18 @@ X_hat = s1u1v1 + s2u2v2 + s3u3v3 + s4u4v4
 fig, axs = plt.subplots(1, 11, figsize=(18, 3))
 
 plt.sca(axs[0])
-ax = sns.heatmap(X_hat,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(X_hat,cmap='RdBu_r',vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}$')
+plt.title(r'$\hat{X}$')
 
 plt.sca(axs[1])
-plt.title('$=$')
+plt.title(r'$=$')
 plt.axis('off')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X, cmap='RdBu_r',vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[3])
 plt.title('=')
@@ -426,7 +424,7 @@ plt.axis('off')
 plt.sca(axs[4])
 ax = sns.heatmap(s1u1v1,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$s_1*u_1@v_1^T$')
+plt.title(r'$s_1*u_1@v_1^T$')
 
 plt.sca(axs[5])
 plt.title('+')
@@ -435,7 +433,7 @@ plt.axis('off')
 plt.sca(axs[6])
 ax = sns.heatmap(s2u2v2,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$s_2*u_2@v_2^T$')
+plt.title(r'$s_2*u_2@v_2^T$')
 
 plt.sca(axs[7])
 plt.title('+')
@@ -444,7 +442,7 @@ plt.axis('off')
 plt.sca(axs[8])
 ax = sns.heatmap(s3u3v3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$s_3*u_3@v_3^T$')
+plt.title(r'$s_3*u_3@v_3^T$')
 
 plt.sca(axs[9])
 plt.title('+')
@@ -453,7 +451,7 @@ plt.axis('off')
 plt.sca(axs[10])
 ax = sns.heatmap(s4u4v4,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$s_4*u_4@v_4^T$')
+plt.title(r'$s_4*u_4@v_4^T$')
 plt.show()
 
 ######### X - X_hat
@@ -462,18 +460,17 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_hat, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}$')
+plt.title(r'$\hat{X}$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X - X_hat, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$E = X - \hat{X}$')
-
+plt.title(r'$E = X - \hat{X}$')
 
 ################## 数据还原和误差
 Z = X @ V
@@ -541,7 +538,7 @@ fig, axs = plt.subplots(1, 11, figsize=(18, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X_hat1,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_1$')
+plt.title(r'$\hat{X}_1$')
 
 plt.sca(axs[1])
 plt.title('$=$')
@@ -550,7 +547,7 @@ plt.axis('off')
 plt.sca(axs[2])
 ax = sns.heatmap(X, cmap='RdBu_r',vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[3])
 plt.title('=')
@@ -568,7 +565,7 @@ plt.axis('off')
 plt.sca(axs[6])
 ax = sns.heatmap(Z2_outer_v2,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$Z_2v_2^T$')
+plt.title(r'$Z_2v_2^T$')
 
 plt.sca(axs[7])
 plt.title('+')
@@ -577,7 +574,7 @@ plt.axis('off')
 plt.sca(axs[8])
 ax = sns.heatmap(Z3_outer_v3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$Z_3v_3^T$')
+plt.title(r'$Z_3v_3^T$')
 
 plt.sca(axs[9])
 plt.title('+')
@@ -586,7 +583,7 @@ plt.axis('off')
 plt.sca(axs[10])
 ax = sns.heatmap(Z4_outer_v4,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$Z_4v_4^T$')
+plt.title(r'$Z_4v_4^T$')
 plt.show()
 
 ######### X - X_hat1
@@ -595,18 +592,17 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_hat1, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_1$')
+plt.title(r'$\hat{X}_1$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X - X_hat1, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$E = X - \hat{X}_1$')
-
+plt.title(r'$E = X - \hat{X}_1$')
 
 ######## 张量积: X = X @ (v1@v1^T) + X @ (v2@v2^T) + X @ (v3@v3^T) + X @ (v4@v4^T)
 # Tensor products, 计算张量积,以及绘制还原原始数据过程热图
@@ -621,16 +617,16 @@ fig, axs = plt.subplots(1, 11, figsize=(18, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X_hat2,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_2$')
+plt.title(r'$\hat{X}_2$')
 
 plt.sca(axs[1])
-plt.title('$=$')
+plt.title(r'$=$')
 plt.axis('off')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X, cmap='RdBu_r',vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[3])
 plt.title('=')
@@ -639,7 +635,7 @@ plt.axis('off')
 plt.sca(axs[4])
 ax = sns.heatmap(Z1_outer_v11,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X@v_1@v_1^T$')
+plt.title(r'$X@v_1@v_1^T$')
 
 plt.sca(axs[5])
 plt.title('+')
@@ -648,7 +644,7 @@ plt.axis('off')
 plt.sca(axs[6])
 ax = sns.heatmap(Z2_outer_v2,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X@v_2@v_2^T$')
+plt.title(r'$X@v_2@v_2^T$')
 
 plt.sca(axs[7])
 plt.title('+')
@@ -657,7 +653,7 @@ plt.axis('off')
 plt.sca(axs[8])
 ax = sns.heatmap(Z3_outer_v3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X@v_3@v_3^T$')
+plt.title(r'$X@v_3@v_3^T$')
 
 plt.sca(axs[9])
 plt.title('+')
@@ -666,7 +662,7 @@ plt.axis('off')
 plt.sca(axs[10])
 ax = sns.heatmap(Z4_outer_v4,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X@v_4@v_4^T$')
+plt.title(r'$X@v_4@v_4^T$')
 plt.show()
 
 ######### X - X_hat2
@@ -675,17 +671,17 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_hat2, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_2$')
+plt.title(r'$\hat{X}_2$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X - X_hat2, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$E = X - \hat{X}_2$')
+plt.title(r'$E = X - \hat{X}_2$')
 
 
 
