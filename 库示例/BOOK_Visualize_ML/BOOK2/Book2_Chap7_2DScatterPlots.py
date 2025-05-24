@@ -14,10 +14,6 @@ import matplotlib.cm as cm
 
 import os
 
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 # 规则网格，低颗粒度
 num_points = 21
 XX,YY = np.meshgrid(np.linspace(-2, 2, num_points),np.linspace(-2, 2, num_points))
@@ -30,11 +26,11 @@ fig, ax = plt.subplots(figsize=(5,5))
 # 或者
 plt.scatter(XX, YY, c = color_function, s = 12, cmap=cm.RdYlBu_r)
 
-ax.set_xlim(-2.05,2.05)
-ax.set_ylim(-2.05,2.05)
+ax.set_xlim(-2.05, 2.05)
+ax.set_ylim(-2.05, 2.05)
 
-ax.set_xticks(np.linspace(-2,2,6))
-ax.set_yticks(np.linspace(-2,2,6))
+ax.set_xticks(np.linspace(-2, 2, 6))
+ax.set_yticks(np.linspace(-2, 2, 6))
 
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
@@ -47,10 +43,8 @@ ax.xaxis.set_major_formatter(plt.NullFormatter())
 ax.set_xlabel(r'$x_1$')
 ax.set_ylabel(r'$x_2$', rotation = 0)
 
-plt.grid(color = (0.8,0.8,0.8))
+plt.grid(color = (0.8, 0.8, 0.8))
 ax.set_axisbelow(True)
-# fig.savefig('Figures/网格散点，低颗粒度.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>>  规则网格，高颗粒度
 num_points = 51
@@ -58,14 +52,14 @@ XX,YY = np.meshgrid(np.linspace(-2, 2, num_points),np.linspace(-2, 2, num_points
 color_function = XX * np.exp(-(XX**2 + YY**2))
 # 指定特定函数
 
-fig, ax = plt.subplots(figsize=(5,5))
+fig, ax = plt.subplots(figsize=(5, 5))
 plt.scatter(XX, YY, c = color_function, s = 20, cmap='RdYlBu_r') # 使用 红黄蓝_翻转 色谱
 
-ax.set_xlim(-2.05,2.05)
-ax.set_ylim(-2.05,2.05)
+ax.set_xlim(-2.05, 2.05)
+ax.set_ylim(-2.05, 2.05)
 
-ax.set_xticks(np.linspace(-2,2,6))
-ax.set_yticks(np.linspace(-2,2,6))
+ax.set_xticks(np.linspace(-2, 2, 6))
+ax.set_yticks(np.linspace(-2, 2, 6))
 
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
@@ -78,9 +72,8 @@ ax.xaxis.set_major_formatter(plt.NullFormatter())
 ax.set_xlabel(r'$x_1$')
 ax.set_ylabel(r'$x_2$', rotation = 0)
 
-plt.grid(color = (0.8,0.8,0.8))
+plt.grid(color = (0.8, 0.8, 0.8))
 ax.set_axisbelow(True)
-# fig.savefig('Figures/网格散点，高颗粒度.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>  同时调整颜色和大小
 num_points = 21
@@ -112,7 +105,6 @@ ax.set_ylabel(r'$x_2$', rotation = 0)
 
 plt.grid(color = (0.8,0.8,0.8))
 ax.set_axisbelow(True)
-# fig.savefig('Figures/网格散点，随机颜色和大小.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>  不规则的散点
 num = 200
@@ -144,9 +136,6 @@ ax.set_ylabel(r'$x_2$', rotation = 0)
 
 plt.grid(color = (0.8,0.8,0.8))
 ax.set_axisbelow(True)
-# fig.savefig('Figures/随机散点.svg', format='svg')
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用seaborn.heatmap()绘制平面散点图
 
@@ -157,12 +146,6 @@ import pandas as pd
 import seaborn as sns
 import os
 from sklearn.datasets import load_iris
-
-
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 # 从seaborn中导入鸢尾花样本数据
 # iris_sns = sns.load_dataset("/home/jack/seaborn-data/iris")
@@ -179,7 +162,6 @@ iris_sns.species.unique()
 # 鸢尾花数据统计特征
 iris_sns.describe()
 
-
 #>>>>>>>>>>>>>>>>>>>>>>>>  2. 绘制样本数据散点图，不加标签
 fig, ax = plt.subplots()
 # 利用 seaborn.scatterplot() 绘制散点图
@@ -192,54 +174,49 @@ ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 
 
-ax.set_xticks(np.arange(4, 8 + 1, step=1))
-ax.set_yticks(np.arange(1, 5 + 1, step=1))
+ax.set_xticks(np.arange(4, 8 + 1, step = 1))
+ax.set_yticks(np.arange(1, 5 + 1, step = 1))
 # 设置横纵轴刻度
 
 ax.axis('scaled')
 # 设定横纵轴尺度1:1
 
-ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
+ax.grid(linestyle = '--', linewidth = 0.25, color = [0.7,0.7,0.7])
 # 增加刻度网格，颜色为浅灰 (0.8,0.8,0.8)
 
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 # 设置横纵轴取值范围
-# fig.savefig('Figures/绘制样本数据散点图，不加标签.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>>>>>> 3. 调转横、纵轴特征
 fig, ax = plt.subplots()
-ax = sns.scatterplot(data=iris_sns, x="sepal_width", y="sepal_length")
+ax = sns.scatterplot(data = iris_sns, x = "sepal_width", y = "sepal_length")
 # 横轴，花萼宽度
 # 纵轴，花萼长度
 ax.set_xlabel('Sepal width (cm)')
 ax.set_ylabel('Sepal length (cm)')
 
-ax.set_xticks(np.arange(1, 5 + 1, step=1))
-ax.set_yticks(np.arange(4, 8 + 1, step=1))
+ax.set_xticks(np.arange(1, 5 + 1, step = 1))
+ax.set_yticks(np.arange(4, 8 + 1, step = 1))
 
 ax.axis('scaled')
-ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
+ax.grid(linestyle = '--', linewidth = 0.25, color = [0.7,0.7,0.7])
 ax.set_xbound(lower = 1, upper = 5)
 ax.set_ybound(lower = 4, upper = 8)
-
-# fig.savefig('Figures/调转横、纵轴特征.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>  4. 绘制样本数据散点图，增加鸢尾花分类标签
 fig, ax = plt.subplots()
 # hue 用不同色调表达鸢尾花的类别
-ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "species")
+ax = sns.scatterplot(data = iris_sns, x="sepal_length", y="sepal_width", hue = "species")
 
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
-ax.set_xticks(np.arange(4, 8 + 1, step=1))
-ax.set_yticks(np.arange(1, 5 + 1, step=1))
+ax.set_xticks(np.arange(4, 8 + 1, step = 1))
+ax.set_yticks(np.arange(1, 5 + 1, step = 1))
 ax.axis('scaled')
-ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
+ax.grid(linestyle = '--', linewidth = 0.25, color = [0.7, 0.7, 0.7])
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
-
-# fig.savefig('Figures/绘制样本数据散点图，增加鸢尾花分类标签.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>  5. 利用色调hue可视化第三特征 (花瓣长度)
 fig, ax = plt.subplots()
@@ -255,12 +232,10 @@ ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 
-# fig.savefig('Figures/利用色调hue可视化第三特征 (花瓣长度).svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>>>>>>  6. 利用散点大小可视化第四特征 (花瓣宽度)
 fig, ax = plt.subplots()
 # size 用散点大小表达花瓣宽度
-ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "petal_length", size = "petal_width", palette = 'RdYlBu_r')
+ax = sns.scatterplot(data = iris_sns, x = "sepal_length", y = "sepal_width", hue = "petal_length", size = "petal_width", palette = 'RdYlBu_r')
 
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
@@ -277,8 +252,6 @@ ax.legend(loc='lower left', bbox_to_anchor=(1.1, 0), ncol=1)
 # 'lower right', 'right', 'center left', 'center right',
 # 'lower center', 'upper center', 'center'
 
-# fig.savefig('Figures/利用散点大小可视化第四特征 (花瓣宽度).svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>>>>>>  7. 利用色调hue可视化第三特征 (花瓣长度)，分类标签
 fig, ax = plt.subplots()
 # size 用散点大小表达花瓣宽度
@@ -294,11 +267,10 @@ ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 ax.legend(loc='lower left', bbox_to_anchor=(1.1, 0), ncol=1)
 
-# fig.savefig('Figures/利用色调hue可视化第三特征 (花瓣长度)，分类标签.svg', format='svg')
 #>>>>>>>>>>>>>>>>>>>>>>>>  8. 用不同的标记符号marker
 markers = {"setosa": "s", "versicolor": "X", "virginica": "."}
-fig, ax = plt.subplots()
-ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "petal_length", style = 'species', markers=markers, size = "petal_width", palette = 'RdYlBu_r')
+fig, ax = plt.subplots(figsize = (10, 10))
+ax = sns.scatterplot(data = iris_sns, x = "sepal_length", y = "sepal_width", hue = "petal_length", style = 'species', markers = markers, size = "petal_width", palette = 'RdYlBu_r')
 
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
@@ -310,15 +282,12 @@ ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 ax.legend(loc='lower left', bbox_to_anchor=(1.1, 0), ncol=1)
 
-# fig.savefig('Figures/用不同的标记符号marker.svg', format='svg')
-
-### 9. 可视化紧密程度 (分布概率密度）
+#>>>>>>>>>>>>>>>>>>>>>>>> 9. 可视化紧密程度 (分布概率密度）
 from sklearn.neighbors import KernelDensity
 kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(iris_sns[['sepal_length', 'sepal_width']])
 
 # 输出概率密度的对数值
 log_PDF = kde.score_samples(iris_sns[['sepal_length', 'sepal_width']]) # (150,)
-
 
 fig, ax = plt.subplots()
 # 利用 seaborn.scatterplot() 绘制散点图
@@ -348,11 +317,6 @@ sm = plt.cm.ScalarMappable(cmap="RdYlBu_r", norm=norm)
 sm.set_array([])
 # ax.figure.colorbar(sm)
 
-# 设置横纵轴取值范围
-# fig.savefig('Figures/绘制样本数据散点图，PDF紧密程度.svg', format='svg')
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 散点包络线
 import matplotlib.pyplot as plt
 import numpy as np
@@ -366,7 +330,6 @@ def encircle(x,y, ax=None, **kw):
     poly = plt.Polygon(p[hull.vertices,:], **kw)
     ax.add_patch(poly)
     return
-
 
 # 从seaborn中导入鸢尾花样本数据
 iris_sns = sns.load_dataset("iris")
@@ -396,9 +359,6 @@ ax.axis('scaled')
 ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
-# fig.savefig('散点包络线.svg')
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  68-95-99.7法则
 
@@ -417,7 +377,6 @@ mu =    0    # 期望值
 sigma = 1    # 标准差
 X =  np.random.normal(mu, sigma, num)
 
-
 # 可视化随机数
 fig, ax = plt.subplots()
 plt.scatter(np.arange(num), X, marker = '.')
@@ -426,8 +385,6 @@ plt.axhline(y = -2, color = 'r')
 plt.axhline(y = 2,  color = 'r')
 plt.xlim(0, num)
 plt.ylim(-4, 4)
-
-# fig.savefig('Figures/正负两倍标准差，不区分内外.svg', format='svg')
 
 ############# 区分内外
 mask_outside = ((X > -2) & (X < 2))
@@ -455,7 +412,6 @@ plt.axhline(y = 2,  color = 'r')
 plt.xlim(0, num)
 plt.ylim(-4, 4)
 
-# fig.savefig('Figures/正负两倍标准差，区分内外.svg', format='svg')
 print('Number of points outside = ' + str(mask_outside.sum()))
 print('Percentage of points outside = ' + str(mask_outside.sum()/num*100) + '%')
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 估算圆周率
@@ -483,7 +439,6 @@ plt.xlim(-1, 1)
 plt.ylim(-1, 1)
 ax.set_xticks((-1,0,1))
 ax.set_yticks((-1,0,1))
-# fig.savefig('Figures/估算圆周率，不区分内外.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>  使用面具Mask，区分单位圆内外散点
 
@@ -508,7 +463,6 @@ plt.xlim(-1, 1)
 plt.ylim(-1, 1)
 ax.set_xticks((-1,0,1))
 ax.set_yticks((-1,0,1))
-fig.savefig('Figures/估算圆周率，区分内外.svg', format='svg')
 
 print('Number of points inside = ' + str(mask_inside.sum()))
 print('Percentage of points inside = ' + str(mask_inside.sum()/num*100) + '%')

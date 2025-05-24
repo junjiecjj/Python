@@ -230,9 +230,6 @@ g.map_diag(sns.distplot, kde=False, color = 'g')
 g = sns.pairplot(Zbar_df, hue="species", plot_kws={"s": 6}, palette = "husl")
 g.map_lower(sns.kdeplot)
 
-
-
-
 #%% Heatmap of X1~X4
 X_re = np.zeros_like(X);
 # Reproduce original data X

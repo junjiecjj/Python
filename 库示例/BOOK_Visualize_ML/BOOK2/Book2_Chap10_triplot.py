@@ -77,9 +77,7 @@ z = function_z(x, y)
 triang = tri.Triangulation(x, y)
 
 # Mask off unwanted triangles.
-triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                         y[triang.triangles].mean(axis=1))
-                < min_radius)
+triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1)) < min_radius)
 
 # ----------------------------------------------------------------------------
 # Refine data
@@ -99,12 +97,9 @@ ax.tricontourf(tri_refi, z_test_refi, levels=levels, cmap='terrain')
 ax.tricontour(tri_refi, z_test_refi, levels=levels,
               colors=['0.25', '0.5', '0.5', '0.5', '0.5'],
               linewidths=[1.0, 0.5, 0.5, 0.5, 0.5])
-
 ax.set_title("High-resolution tricontouring")
 
 plt.show()
-
-
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -168,8 +163,6 @@ import numpy as np
 
 import matplotlib.tri as tri
 
-
-
 # First create the x and y coordinates of the points.
 n_angles = 36
 n_radii = 8
@@ -189,14 +182,10 @@ triang = tri.Triangulation(x, y)
 # Mask off unwanted triangles.
 triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1)) < min_radius)
 
-
-
-
 fig1, ax1 = plt.subplots()
 ax1.set_aspect('equal')
 ax1.triplot(triang, 'bo-', lw=1)
 ax1.set_title('triplot of Delaunay triangulation')
-
 
 
 xy = np.asarray([
@@ -249,16 +238,12 @@ ax2.set_ylabel('Latitude (degrees)')
 
 plt.show()
 
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from matplotlib.tri import (CubicTriInterpolator, Triangulation,
-                            UniformTriRefiner)
-
+from matplotlib.tri import (CubicTriInterpolator, Triangulation, UniformTriRefiner)
 
 # ----------------------------------------------------------------------------
 # Electrical potential of a dipole
@@ -269,7 +254,6 @@ def dipole_potential(x, y):
     theta = np.arctan2(y, x)
     z = np.cos(theta)/r_sq
     return (np.max(z) - z) / (np.max(z) - np.min(z))
-
 
 # ----------------------------------------------------------------------------
 # Creating a Triangulation
@@ -293,9 +277,7 @@ V = dipole_potential(x, y)
 triang = Triangulation(x, y)
 
 # Mask off unwanted triangles.
-triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                         y[triang.triangles].mean(axis=1))
-                < min_radius)
+triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1)) < min_radius)
 
 # ----------------------------------------------------------------------------
 # Refine data - interpolates the electrical potential V
@@ -326,9 +308,7 @@ levels = np.arange(0., 1., 0.01)
 ax.tricontour(tri_refi, z_test_refi, levels=levels, cmap='hot',
               linewidths=[2.0, 1.0, 1.0, 1.0])
 # Plots direction of the electrical vector field
-ax.quiver(triang.x, triang.y, Ex/E_norm, Ey/E_norm,
-          units='xy', scale=10., zorder=3, color='blue',
-          width=0.007, headwidth=3., headlength=4.)
+ax.quiver(triang.x, triang.y, Ex/E_norm, Ey/E_norm, units='xy', scale=10., zorder=3, color='blue', width=0.007, headwidth=3., headlength=4.)
 
 ax.set_title('Gradient plot: an electrical dipole')
 plt.show()

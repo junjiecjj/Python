@@ -21,18 +21,36 @@ from sympy.abc import x, y
 import os
 from matplotlib import cm
 # 导入色谱模块
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.linewidth'] = 1
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 16         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 16         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.labelspacing'] = 0.2
 
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
-
-
-num = 301;
+num = 301
 # 数列元素数量
 # 1. 定义函数
-x_array = np.linspace(-3,3,num)
-y_array = np.linspace(-3,3,num)
-xx,yy = np.meshgrid(x_array,y_array)
+x_array = np.linspace(-3, 3, num)
+y_array = np.linspace(-3, 3, num)
+xx, yy = np.meshgrid(x_array,y_array)
 # 产生网格数据
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()
@@ -55,6 +73,7 @@ levels = np.linspace(-10, 10, 21)
 for cmap_idx in cmap_arrays:
     fig, ax = plt.subplots()
     colorbar = ax.contourf(xx,yy, ff, levels = levels, cmap=cmap_idx)
+    ax.contour(xx,yy, ff, levels = levels, colors = 'k')
     # 绘制平面填充等高线
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
@@ -73,8 +92,6 @@ for cmap_idx in cmap_arrays:
     plt.title(title)
     # 给图像加标题
     plt.show()
-
-
 
 # 3. 平面等高线，非填充
 for cmap_idx in cmap_arrays:
@@ -97,23 +114,14 @@ for cmap_idx in cmap_arrays:
     plt.title(title)
     plt.show()
 
-
 #===================================================================================
 ##  10 平面等高线
 #===================================================================================
-
-
 #%% 导入包
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.tri as mtri
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 # 一维
 x_array = np.linspace(-3,3,20)
@@ -124,7 +132,6 @@ ax.scatter(x_array, y_array, s = 15)
 ax.plot(x_array, y_array, color = [0.5,0.5,0.5], linewidth = 1.25)
 ax.axis('off')
 
-# fig.savefig('Figures/一维，沿横轴.svg', format='svg')
 plt.show()
 
 
@@ -134,23 +141,18 @@ ax.plot(y_array, x_array, color = [0.5,0.5,0.5], linewidth = 1.25)
 # ax.get_xaxis().set_visible(False)
 # ax.get_yaxis().set_visible(False)
 ax.axis('off')
-
-# fig.savefig('Figures/一维，沿纵轴.svg', format='svg')
 plt.show()
-
-
 
 #%%  二维
 ## 1
-xx1_square, xx2_square = np.meshgrid(np.linspace(-3,3,20), np.linspace(-3,3,20))
+xx1_square, xx2_square = np.meshgrid(np.linspace(-3, 3, 20), np.linspace(-3, 3, 20))
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-ax.plot_wireframe(xx1_square, xx2_square, xx1_square*0, color = [0.5,0.5,0.5], linewidth = 0.25)
+ax.plot_wireframe(xx1_square, xx2_square, xx1_square*0, color = [0.5, 0.5, 0.5], linewidth = 0.25)
 ax.scatter(xx1_square, xx2_square, xx1_square*0, s = 5)
 ax.set_proj_type('ortho') # 另外一种设定正交投影的方式
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
 ax.set_zlabel('')
 ax.set_xticks([])
 ax.set_yticks([])
@@ -161,9 +163,7 @@ ax.set_ylim(xx2_square.min(), xx2_square.max())
 ax.set_box_aspect([1,1,1])
 ax.view_init(azim=90, elev=90)
 ax.grid(False)
-# fig.savefig('Figures/二维，平面.svg', format='svg')
 plt.show()
-
 
 ## 2
 xx1_square, xx2_square = np.meshgrid(np.linspace(-3,3,20),np.linspace(-3,3,20))
@@ -183,7 +183,6 @@ ax.set_ylim(xx2_square.min(), xx2_square.max())
 ax.set_box_aspect([1,1,1])
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/二维，空间.svg', format='svg')
 plt.show()
 
 #%% 二维函数
@@ -216,10 +215,7 @@ ax.set_box_aspect([1,1,1])
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 
-# fig.savefig('Figures/网络状散点，函数.svg', format='svg')
 plt.show()
-
-
 
 #%% 极坐标网格
 theta = np.linspace(0, 2*np.pi, 20)
@@ -227,7 +223,6 @@ r     = np.linspace(0, 3, 10)
 tt, rr = np.meshgrid(theta,r)
 xx1_polar = np.cos(tt)*rr
 xx2_polar = np.sin(tt)*rr
-
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.plot_wireframe(xx1_polar, xx2_polar, xx2_polar*0, color = [0.5,0.5,0.5], linewidth = 0.25)
@@ -248,7 +243,6 @@ ax.set_box_aspect([1,1,1])
 ax.view_init(azim=90, elev=90)
 ax.grid(False)
 
-# fig.savefig('Figures/极坐标网格，平面.svg', format='svg')
 plt.show()
 
 ## 1
@@ -271,9 +265,7 @@ ax.set_box_aspect([1,1,1])
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 
-# fig.savefig('Figures/极坐标网格.svg', format='svg')
 plt.show()
-
 
 ## 2
 f_fcn = lambdify([x,y], f)
@@ -296,11 +288,10 @@ ax.set_box_aspect([1,1,1])
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 
-# fig.savefig('Figures/极坐标网格，函数.svg', format='svg')
 plt.show()
 
-
 #%% 三角网格
+xx1_square, xx2_square = np.meshgrid(np.linspace(-3, 3, 20), np.linspace(-3, 3, 20))
 points_square = np.column_stack((xx1_square.ravel(), xx2_square.ravel()))
 triang_square_auto = mtri.Triangulation(points_square[:,0], points_square[:,1])
 
@@ -313,11 +304,14 @@ ax.axis('off')
 ax.set_xlim(xx1_square.min(), xx1_square.max())
 ax.set_ylim(xx2_square.min(), xx2_square.max())
 
-# fig.savefig('Figures/三角网格，方正网格散点.svg', format='svg')
 plt.show()
 
-
 ## 2
+theta = np.linspace(0, 2*np.pi, 20)
+r     = np.linspace(0, 3, 10)
+tt, rr = np.meshgrid(theta,r)
+xx1_polar = np.cos(tt)*rr
+xx2_polar = np.sin(tt)*rr
 points_polar = np.column_stack((xx1_polar.ravel(),xx2_polar.ravel()))
 triang_polar_auto = mtri.Triangulation(points_polar[:,0], points_polar[:,1])
 fig, ax = plt.subplots()
@@ -330,13 +324,12 @@ ax.axis('off')
 ax.set_xlim(xx1_polar.min(), xx1_polar.max())
 ax.set_ylim(xx2_polar.min(), xx2_polar.max())
 
-# fig.savefig('Figures/三角网格，极坐标网格散点.svg', format='svg')
 plt.show()
 
 
 ## 3
 def circle_points(num_r, num_n):
-    r = np.linspace(0,3,num_r)
+    r = np.linspace(0, 3, num_r)
     # print(r)
     # 极轴 [0, 3] 分成若干等份
     n = r*num_n + 1
@@ -346,7 +339,7 @@ def circle_points(num_r, num_n):
     circles = np.empty((0,2))
     # 创建空数组
     for r_i, n_i in zip(r, n):
-        t_i = np.linspace(0, 2*np.pi, n_i, endpoint=False)
+        t_i = np.linspace(0, 2*np.pi, n_i, endpoint = False)
         r_i = np.ones_like(t_i)*r_i
         # 极坐标到直角坐标系转换
         x_i = r_i*np.cos(t_i)
@@ -355,7 +348,7 @@ def circle_points(num_r, num_n):
         circle_i = np.column_stack([x_i, y_i])
         # print(circle_i)
         # 拼接极坐标点
-        circles = np.append(circles, circle_i, axis=0)
+        circles = np.append(circles, circle_i, axis = 0)
     return circles
 
 points_circles = circle_points(10, 20)
@@ -368,7 +361,6 @@ ax.set_yticks([])
 ax.set_xlim(xx1_polar.min(), xx1_polar.max())
 ax.set_ylim(xx2_polar.min(), xx2_polar.max())
 ax.axis('off')
-# fig.savefig('Figures/三角网格，均匀圆盘散点.svg', format='svg')
 plt.show()
 
 #%%
@@ -381,11 +373,6 @@ from sympy.abc import x, y
 # 从SymPy库中导入符号变量 x 和 y
 from matplotlib import cm
 # 导入色谱模块
-import os
-
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
 
 # 自定义函数
 def mesh(num = 101):
@@ -410,21 +397,20 @@ z_level = 2
 xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-##  切面
-zz_ = np.zeros_like(xx_) + z_level
-ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
-
 ## 曲面和等高线
-ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride = 5, cstride = 5, linewidth = 0.25)
 ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
 
-ax.set_proj_type('ortho')
-# 另外一种设定正交投影的方式
+##  切面
+zz_ = np.zeros_like(xx_) + z_level
+ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1) # 中间
+ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)  # 边界，不能指定rstride, cstride
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_proj_type('ortho') # 另外一种设定正交投影的方式
+
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -435,7 +421,6 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
 plt.show()
 
 #############  三维等高线
@@ -443,9 +428,10 @@ z_level = 2
 xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
+## 曲面
 norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
-surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
+surf = ax.plot_surface(xx, yy, ff, facecolors = colors,
                         rstride = 3,
                         cstride = 3,
                         linewidth = 1, # 线宽
@@ -453,7 +439,7 @@ surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
 surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
 ## 曲面和等高线
-ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+# ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
 
 ##  切面
@@ -464,9 +450,9 @@ ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -477,21 +463,21 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
 plt.show()
-
 
 #############  三维等高线
 z_level = 2
-xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
+xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2), np.linspace(-3, 3, 2))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
 norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
 
 ## 曲面和等高线
-surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1)
-ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1,) # 删除阴影
+# surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
+
+# ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
 
 ##  切面
@@ -502,9 +488,9 @@ ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -515,22 +501,22 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/等高线原理，空间一条等高线.svg', format='svg')
+
 plt.show()
 
 ############### 三维等高线到平面
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 ax.contour(xx, yy, ff, levels = [z_level], colors = 'b', linewidths = 1)
 ax.contour(xx, yy, ff, levels = [z_level], zdir='z', offset=-8, colors = 'b')
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -541,14 +527,13 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/等高线原理，投影到平面.svg', format='svg')
+
 plt.show()
 
-
 ################## 一系列等高线
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 
-ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 CS = ax.contour(xx, yy, ff, levels = np.linspace(-8,8,17), cmap = 'RdYlBu_r', linewidths = 1)
 
@@ -559,9 +544,9 @@ ax.contour(xx, yy, ff, levels = np.linspace(-8,8,17), zdir='z', offset=-8, cmap 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -572,7 +557,7 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/等高线原理，一系列等高线.svg', format='svg')
+
 plt.show()
 
 #################  平面等高线
@@ -581,8 +566,8 @@ fig, ax = plt.subplots()
 CS = ax.contour(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r', linewidths = 1)
 fig.colorbar(CS)
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -601,15 +586,14 @@ CS = ax.contour(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r', li
 
 ax.clabel(CS, fmt = '%2.1f', colors = 'k', fontsize=10)
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
 ax.grid(False)
 ax.set_aspect('equal', adjustable='box')
-# fig.savefig('Figures/打印等高线数值.svg', format='svg')
-plt.show()
 
+plt.show()
 
 #################### 单色等高线
 fig, ax = plt.subplots()
@@ -617,21 +601,19 @@ fig, ax = plt.subplots()
 ax.contour(xx, yy, ff, levels = np.linspace(-8,9,18), colors = 'k', linewidths = 1)
 # 负数用虚线，默认
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
 ax.grid(False)
 ax.set_aspect('equal', adjustable='box')
-# fig.savefig('Figures/单色等高线.svg', format='svg')
+
 plt.show()
-
-
 
 ################### 填充等高线，空间
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 CS = ax.contourf(xx, yy, ff, levels = np.linspace(-8,9,18), cmap = 'RdYlBu_r')
 fig.colorbar(CS)
 ax.contourf(xx, yy, ff, levels = np.linspace(-8,9,18), zdir='z', offset=-8, cmap = 'RdYlBu_r')
@@ -639,9 +621,9 @@ ax.contourf(xx, yy, ff, levels = np.linspace(-8,9,18), zdir='z', offset=-8, cmap
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xticks([])
 ax.set_yticks([])
@@ -652,10 +634,8 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/填充等高线原理.svg', format='svg')
+
 plt.show()
-
-
 
 ################## 填充等高线，平面
 
@@ -666,13 +646,13 @@ fig.colorbar(CS_filled)
 CS = ax.contour(xx, yy, ff, levels = [0], colors = 'k', linewidths = 1)
 ax.clabel(CS, fmt = '%2.1f', colors = 'k', fontsize=10)
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
 ax.grid(False)
 ax.set_aspect('equal', adjustable='box')
-# fig.savefig('Figures/填充等高线，平面.svg', format='svg')
+
 plt.show()
 
 

@@ -11,17 +11,33 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import matplotlib
 from matplotlib import cm # Colormaps
 
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = False
-p["xtick.minor.visible"] = False
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
-plt.close('all')
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.linewidth'] = 1
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 16         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 16         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.labelspacing'] = 0.2
+
 
 cmaps = plt.colormaps()
 cmaps
@@ -35,6 +51,7 @@ len(cmaps) # 166
 plt.get_cmap('RdYlBu_r')
 plt.get_cmap('rainbow')
 plt.get_cmap('hsv')
+plt.get_cmap('jet')
 #>>>>>>>>>>>>>>>>>>>>>>  生成颜色映射
 values = np.linspace(0,1,11)
 cmap   = plt.get_cmap('RdYlBu_r')
@@ -45,8 +62,10 @@ rgba_color
 
 #>>>>>>>>>>>>>>>>>>>>>>  生成颜色映射
 cmap1 = matplotlib.colormaps.get_cmap('RdYlBu_r')
+cmap1 = matplotlib.colormaps['RdYlBu_r']
 cmap1
 colors1 = matplotlib.colormaps.get_cmap('RdYlBu_r')(values) # (11, 4)
+colors1 = matplotlib.colormaps['RdYlBu_r'](values) # (11, 4)
 rgba_color1 = cmap1(values[0])
 rgba_color1
 
@@ -57,17 +76,17 @@ plt.cm.RdYlBu_r(0.1)
 plt.cm.RdYlBu_r(0.9)
 
 #>>>>>>>>>>>>>>>>>>>>>>  生成颜色映射
-cmap2   = cm.RdYlBu_r
-colors2 = cm.RdYlBu_r(values)
-rgba_color2 = cm.RdYlBu_r(values[0])
-rgba_color2
-#>>>>>>>>>>>>>>>>>>>>>>  生成颜色映射
+cmap2   = matplotlib.cm.RdYlBu_r
+colors2 = matplotlib.cm.RdYlBu_r(values)
+rgba_color2 = matplotlib.cm.RdYlBu_r(values[0])
+# (0.19215686274509805, 0.21176470588235294, 0.5843137254901961, 1.0)
+# >>>>>>>>>>>>>>>>>>>>>>  生成颜色映射
 # 生成数据
 data = np.round(np.linspace(0, 1, 11).reshape(-1, 1),1)
 # (11, 1)
 
 # 用seaborn heatmap展示颜色，并在色块上打印RGB色号
-fig, ax = plt.subplots(figsize = (5,5))
+fig, ax = plt.subplots(figsize = (8,8))
 sns.heatmap(data, xticklabels = False, yticklabels = False, cmap = 'RdYlBu_r', annot=True, cbar=False, fmt='', ax=ax)
 # 打印RGB色号
 for i, value in enumerate(data):
@@ -82,7 +101,7 @@ colormap = matplotlib.colormaps.get_cmap('RdYlBu_r')
 # 生成数据
 data = np.round(np.linspace(0, 1, 21).reshape(-1, 1),2)
 # 用seaborn heatmap展示颜色，并在色块上打印RGB色号
-fig, ax = plt.subplots(figsize = (5,5))
+fig, ax = plt.subplots(figsize = (8,8))
 sns.heatmap(data, xticklabels = False, yticklabels = False, cmap=colormap, annot=True, cbar=False, fmt='', ax=ax)
 # 打印RGB色号
 for i, value in enumerate(data):
@@ -91,7 +110,6 @@ for i, value in enumerate(data):
     ax.text(0, i + 0.5, f'RGB: {rgb_color}', color='black', ha='left', va='center')
 # plt.savefig('color mapping, 2.svg')
 plt.show()
-
 
 #>>>>>>>>>>>>>>>>>>>>>>  数值到颜色映射
 import numpy as np
@@ -106,9 +124,8 @@ colormap = matplotlib.colormaps.get_cmap('RdYlBu_r')
 norm = Normalize(vmin=random_values.min(), vmax=random_values.max())
 normalized_values = norm(random_values)
 # 用seaborn heatmap展示颜色
-sns.heatmap(random_values.reshape(-1, 1), cmap=colormap, annot=True, xticklabels = False, yticklabels = False, cbar=False)
+sns.heatmap(normalized_values.reshape(-1, 1), cmap=colormap, annot=True, xticklabels = False, yticklabels = False, cbar=False)
 plt.show()
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用指定色谱绘制三维网格曲面
 
@@ -140,10 +157,8 @@ f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
 ff = f_xy_fcn(xx, yy)
 
-
 # 查看函数
 f_xy
-
 #>>>>>>>>>>>>>>>>>>>>>> 2. 用plot_surface() 绘制二元函数曲面
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 #  正交投影模式
@@ -199,17 +214,14 @@ fig.colorbar(surf, shrink=0.5, aspect=20)
 #>>>>>>>>>>>>>>>>>>>>>> 4. 只保留网格线
 # 同样使用 plot_surface()，不同的是只保留彩色网格
 # 请大家自行补齐注释
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-ax.set_proj_type('ortho')
+
 norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
 
-surf = ax.plot_surface(xx,yy,ff, facecolors=colors, linewidth=1, # 线宽
-                       shade=False) # 删除阴影
+surf = ax.plot_surface(xx,yy,ff, facecolors = colors, linewidth = 1, shade = False) # 删除阴影
 # 网格面填充为空
 surf.set_facecolor((0,0,0,0))
-
 
 # 白色背板
 # ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -222,7 +234,7 @@ ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
-
+ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 
 ax.grid(False)
@@ -231,14 +243,13 @@ plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.size"] = "10"
 # fig.savefig('Figures/只保留网格线.svg', format='svg')
 
-
 #>>>>>>>>>>>>>>>>>>>>>> 5. plot_wireframe() 绘制网格曲面 + 三维等高线
 # 在网格曲面基础上，叠加三维等高线
 # 请大家补齐注释
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, ff, color = [0.5,0.5,0.5], linewidth = 0.25)
+ax.plot_wireframe(xx,yy, ff, color = [0.5, 0.5, 0.5], linewidth = 0.25)
 
 colorbar = ax.contour(xx,yy, ff,20, cmap = 'RdYlBu_r')
 # 三维等高线
@@ -257,9 +268,7 @@ ax.view_init(azim=-135, elev=30)
 ax.grid(False)
 # fig.savefig('Figures/plot_wireframe() 绘制网格曲面 + 三维等高线.svg', format='svg')
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用指色谱绘制等高线
-
 # 导入包
 import math
 import numpy as np
@@ -275,7 +284,6 @@ from matplotlib import cm
 # 如果文件夹不存在，创建文件夹
 if not os.path.isdir("Figures"):
     os.makedirs("Figures")
-
 
 # 1. 定义函数
 num = 301;
@@ -293,7 +301,6 @@ f_xy_fcn = lambdify([x,y],f_xy)
 # 将符号函数表达式转换为Python函数
 ff = f_xy_fcn(xx,yy)
 
-
 # 2. 平面等高线，填充
 # 四种不同色谱
 cmap_arrays = ['RdYlBu_r', 'Blues_r', 'rainbow', 'viridis']
@@ -305,11 +312,11 @@ levels = np.linspace(-10, 10, 21)
 for cmap_idx in cmap_arrays:
     fig, ax = plt.subplots()
     # 绘制平面填充等高线
-    colorbar = ax.contourf(xx,yy, ff, levels = levels, cmap=cmap_idx)
-
+    colorbar = ax.contourf(xx,yy, ff, levels = levels, cmap = cmap_idx)
+    ax.contour(xx,yy, ff, levels = levels, colors = 'k')
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
-    cbar.ax.set_title(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
+    cbar.ax.set_title(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)', fontsize = 8)
     # 增加色谱条，并指定刻度
 
     ax.set_xlim(xx.min(), xx.max())
@@ -325,15 +332,12 @@ for cmap_idx in cmap_arrays:
     plt.title(title)
     # 给图像加标题
 
-    # fig.savefig('Figures/平面填充等高线_' + str(cmap_idx) + '.svg', format='svg')
-
-
 # 3. 平面等高线，非填充
 # 请大家自行补充注释
 for cmap_idx in cmap_arrays:
     fig, ax = plt.subplots()
     # 绘制平面等高线，非填充
-    colorbar = ax.contour(xx,yy, ff, levels = levels, cmap=cmap_idx)
+    colorbar = ax.contour(xx,yy, ff, levels = levels, cmap = cmap_idx)
 
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
@@ -349,26 +353,17 @@ for cmap_idx in cmap_arrays:
     title = 'Colormap = ' + str(cmap_idx)
     plt.title(title)
 
-    # fig.savefig('Figures/平面等高线_' + str(cmap_idx) + '.svg', format='svg')
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 可视化色谱在RGB色彩空间位置
-
 # 导入包
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 # 1. 了解 RdYlBu 的具体颜色
 mpl.colormaps['RdYlBu']
 
 # 如果大家对某个色谱中的具体色号感兴趣的话，可以用如下办法查看
-import matplotlib as mpl
 RdYlBu = mpl.colormaps['RdYlBu']
 # 请大家自己分析 rainbow 和其他色谱的颜色特点
 
@@ -388,7 +383,6 @@ elev_array = [34, 0, 0,  90]
 for idx, angles in enumerate(zip(azim_array, elev_array)):
     ax = fig.add_subplot(2,2,idx+1, projection = '3d')
     # 2 X 2 子图布置方案,每个子图展示一个视角
-
     # 绘制三维散点
     ax.scatter(color_codes[:,0],  # 色谱颜色的R值 (x坐标）
                color_codes[:,1],  # 色谱颜色的G值 (y坐标）
@@ -396,7 +390,6 @@ for idx, angles in enumerate(zip(azim_array, elev_array)):
                c = color_codes,   # 指定每个点的RGB色号
                s = 4,             # 散点大小
                alpha = 1)         # 透明度
-
     ax.set_xlim(0,1)
     ax.set_ylim(0,1)
     ax.set_zlim(0,1)
@@ -428,14 +421,12 @@ for idx, angles in enumerate(zip(azim_array, elev_array)):
 
     # 采用指定视角
     ax.view_init(azim=angles[0], elev=angles[1])
-# fig.savefig('Figures/RdYlBu色谱的色号在RGB空间的位置.svg', format='svg')
 
 # 3. 创建自定义函数
 # 根据之前分析，构造一个可视化函数
 # 函数输入为matplotlib中一个色谱的名称
 # 函数可视化该色谱在RGB空间的具体位置
 # 请大家自己补充注释
-
 def visualize_cm_in_RGB(cm_name_str):
     cm_name = mpl.colormaps[cm_name_str]
     color_codes = cm_name(np.linspace(0, 1, 200)) # (200, 4)
@@ -445,12 +436,12 @@ def visualize_cm_in_RGB(cm_name_str):
     elev_array = [34, 0, 0,  90]
 
     for idx, angles in enumerate(zip(azim_array, elev_array)):
-        ax = fig.add_subplot(2,2,idx+1, projection = '3d')
+        ax = fig.add_subplot(2, 2,idx + 1, projection = '3d')
         ax.scatter(color_codes[:,0], color_codes[:,1], color_codes[:,2], c = color_codes, s = 4, alpha = 1)
 
-        ax.set_xlim(0,1)
-        ax.set_ylim(0,1)
-        ax.set_zlim(0,1)
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_zlim(0, 1)
         ax.set_xticks([0, 1])
         ax.set_yticks([0, 1])
         ax.set_zticks([0, 1])
@@ -473,10 +464,7 @@ def visualize_cm_in_RGB(cm_name_str):
         ax.set_proj_type('ortho')
         ax.set_box_aspect(aspect = (1,1,1))
         ax.view_init(azim=angles[0], elev=angles[1])
-
-    # fig.savefig('Figures/' + cm_name_str + '色谱的色号位置.svg', format='svg')
-    # 注意，越靠近1，颜色越饱满，明亮
-
+        # 注意，越靠近1，颜色越饱满，明亮
 
 # 4. 可视化几个常用色谱
 cm_list = ['RdYlBu', 'viridis', 'Blues', 'cool', 'rainbow', 'jet', 'turbo', 'hsv']
@@ -608,15 +596,15 @@ def visualize_cm_in_RGB(continuous_cmap, fig_name):
         ax.set_ylabel('G')
         ax.set_zlabel('B')
 
-    #     # Transparent spines
-    #     ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    #     ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    #     ax.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        # Transparent spines
+        ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
 
-    #     # Transparent panes
-    #     ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    #     ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    #     ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        # Transparent panes
+        ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
         # ax.grid()
         plt.rcParams['grid.color'] = "k"
@@ -715,8 +703,6 @@ print(colors.to_rgb('g'))
 print(colors.to_hex('g'))
 
 
-
-
 # RGB色谱，循环
 list_nodes  = [0.0, 1/3, 2/3, 1.0]
 list_colors = ['r',[0, 1, 0],'b', 'r']
@@ -794,8 +780,6 @@ HM = sns.heatmap(data, ax = ax,
 # 删除横、纵轴刻度
 HM.tick_params(left=False, bottom=False)
 
-# fig.savefig('Figures/热图_连续色谱.svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>  2. 连续色谱，不均匀
 list_nodes  = [0.0, 0.1, 0.5, 0.9, 1.0]
 list_colors = ['darkblue','skyblue','white','pink','magenta']
@@ -828,10 +812,6 @@ HM = sns.heatmap(data, ax = ax,
 
 HM.tick_params(left=False, bottom=False)
 # 删除横、纵轴刻度
-
-# fig.savefig('Figures/热图_连续色谱_不均匀.svg', format='svg')
-
-
 
 #>>>>>>>>>>>>>>>>>>>  3. 离散色谱
 from matplotlib.colors import ListedColormap

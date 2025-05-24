@@ -2,13 +2,32 @@
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 平面线图颗粒度
-
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-# import os
-
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.linewidth'] = 1
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 16         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 16         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.labelspacing'] = 0.2
 
 #>>>>>>>>>>>>>>>>>>>  颗粒度较低
 x_array = np.linspace(0, 4*np.pi, 9)
@@ -22,8 +41,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/平面线图，低颗粒度_1.svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>
 x_array = np.linspace(0, 4*np.pi, 13)
 y_array = np.sin(x_array)
@@ -35,9 +52,6 @@ ax.set_xlim((0,4*np.pi))
 ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-
-# fig.savefig('Figures/平面线图，低颗粒度_2.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>  合理的颗粒度
 x_array = np.linspace(0, 4*np.pi, 101)
@@ -53,8 +67,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/平面线图，合理颗粒度_1.svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>
 fig, ax = plt.subplots(figsize=(5,3))
 
@@ -65,9 +77,6 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-
-# fig.savefig('Figures/平面线图，合理颗粒度_2.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>  特殊函数需要更高颗粒度
 x_array = np.linspace(-0.1, 0.1, 100001)
@@ -83,8 +92,6 @@ ax.set_xticks((x_array.min(),0, x_array.max()))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/特殊函数需要更高颗粒度.svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>  对数坐标
 x_array_log = np.logspace(0, 10, 101)
 y_array = np.log(x_array_log)
@@ -99,19 +106,10 @@ ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 plt.grid()
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 阶跃
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 
 # 向前填充
 x_array_coarse = np.linspace(0, 4*np.pi, 25)
@@ -133,10 +131,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/阶跃，向前填充.svg', format='svg')
-
-
-
 #>>>>>>>>>>>>>>>>>>>  中间填充
 x_array_coarse = np.linspace(0, 4*np.pi, 25)
 y_array_coarse = np.sin(x_array_coarse)
@@ -157,9 +151,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/阶跃，中间填充.svg', format='svg')
-
-
 #>>>>>>>>>>>>>>>>>>>  向后填充
 x_array_coarse = np.linspace(0, 4*np.pi, 25)
 y_array_coarse = np.sin(x_array_coarse)
@@ -170,32 +161,21 @@ y_array_fine = np.sin(x_array_fine)
 fig, ax = plt.subplots(figsize=(5,3))
 
 plt.plot(x_array_fine, y_array_fine, '--', ms = 10, color='#888888')
-plt.step(x_array_coarse, y_array_coarse, '.-', where = 'post', ms = 10, color='#0088FF')
+# plt.step(x_array_coarse, y_array_coarse, '.-', where = 'post', ms = 10, color='#0088FF')
 # where = 'pre' 默认
 # 也可以用：
-# plt.plot(x_array_coarse, y_array_coarse, '.-', drawstyle='steps-post', ms = 10, color='#0088FF')
+plt.plot(x_array_coarse, y_array_coarse, '.-', drawstyle='steps-post', ms = 10, color='#0088FF')
 
 ax.set_xlim((0,4*np.pi))
 ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/阶跃，向后填充.svg', format='svg')
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 火柴梗图¶
 
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 
 # 绘制数列
 num = 20
@@ -219,10 +199,6 @@ ax.set_xticks((1, 5, 10, 15, 20))
 ax.set_xlabel('$n$')
 ax.set_ylabel('n-th term, $a_n$')
 
-# fig.savefig('Figures/火柴梗图，数列.svg', format='svg')
-
-
-
 #>>>>>>>>>>>>>>>>>>>  绘制概率质量函数
 from scipy.stats import binom
 
@@ -242,21 +218,11 @@ ax.set_ylim((0, 0.3))
 ax.set_xlabel('$x$')
 ax.set_ylabel('PMF, $f_X(x)$')
 
-# fig.savefig('Figures/火柴梗图，概率质量函数.svg', format='svg')
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 参考线
 
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 #>>>>>>>>>>>>>>>>>>>  水平参考线
 x_array = np.linspace(0, 4*np.pi, 101)
@@ -278,8 +244,6 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-
-# fig.savefig('Figures/水平参考线.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>  水平参考线，指定范围
 x_array = np.linspace(0, 4*np.pi, 101)
@@ -303,9 +267,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/水平参考线，指定范围.svg', format='svg')
-
-
 #>>>>>>>>>>>>>>>>>>>  竖直参考线
 fig, ax = plt.subplots(figsize=(5,3))
 
@@ -320,11 +281,6 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-
-# fig.savefig('Figures/竖直参考线.svg', format='svg')
-
-
-
 
 #>>>>>>>>>>>>>>>>>>>  竖直参考线，指定范围
 x_array = np.linspace(0, 4*np.pi, 101)
@@ -345,9 +301,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-# fig.savefig('Figures/竖直参考线，指定范围.svg', format='svg')
-
-
 #>>>>>>>>>>>>>>>>>>>  斜线
 for pos in np.linspace(-5, 5, 11):
     plt.axline((0, pos), slope=0.5, color='k')
@@ -356,18 +309,10 @@ plt.ylim([-10, 10])
 plt.xlim([0, 10])
 plt.show()
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用面具mask
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 x_array = np.linspace(-3, 3, 501)
 y_array = x_array * np.exp(-x_array ** 2)
@@ -379,8 +324,6 @@ plt.axhline(y = -0.2, color = 'r', ls = '--')
 
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
-
-# fig.savefig('Figures/使用面具，原函数.svg', format='svg')
 
 #>>>>>>>>>>>>>>>>>>>  删除法
 mask = ((y_array > -0.2) & (y_array < 0.2))
@@ -394,9 +337,6 @@ plt.axhline(y = -0.2, color = 'r', ls = '--')
 
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
-
-# fig.savefig('Figures/使用面具，删除法.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>  用 NaN 代替
 y_array_IN = np.copy(y_array)
@@ -418,10 +358,6 @@ plt.axhline(y = -0.2, color = 'r', ls = '--')
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
 
-# fig.savefig('Figures/使用面具，用NaN代替.svg', format='svg')
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 交点
 
 import numpy as np
@@ -434,7 +370,6 @@ f1_array = np.sin(x_array)
 f2_array = x_array/5 - 1
 
 #>>>>>>>>>>>>>>>>>>>  绘制交点
-
 
 # 找到正负变号的位置
 loc_intersects = np.argwhere(np.diff(np.sign(f1_array - f2_array))).flatten()
@@ -457,7 +392,6 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 plt.legend()
 
-# fig.savefig('Figures/交点.svg', format='svg')
 ############################################################
 
 # input array
@@ -469,18 +403,12 @@ print ("Output indices of non zero array element: \n", out_arr)
 ############################################################
 
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 最大值、最小值
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 
 x_array = np.linspace(-10, 10, 1001)
 y_array = x_array * np.exp(-x_array ** 2)
@@ -499,10 +427,6 @@ plt.plot(x_array[n_min], y_array[n_min],'xr', ms = 10)
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
 
-# fig.savefig('Figures/极值.svg', format='svg')
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用色谱给一组曲线着色
 
 # 导数包
@@ -515,11 +439,6 @@ from scipy.stats import norm
 # 导入正态分布
 # 参考
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html
-
-import os
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 #>>>>>>>>>>>>>>>>>>>  1. 用for循环
 x_array = np.linspace(-6, 6, 200)
@@ -548,17 +467,11 @@ plt.ylim(0,1)
 plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
 
-# fig.savefig('Figures/用for循环.svg', format='svg')
-
 #>>>>>>>>>>>>>>>>>>>  2. 用LineCollection
 PDF_curves = [np.column_stack([x_array, norm.pdf(x_array, scale = sigma_idx)]) for sigma_idx in sigma_array]
-
 fig, ax = plt.subplots(figsize = (5,4))
-
 lc = LineCollection(np.array(PDF_curves), cmap = 'rainbow', array = sigma_array, linewidth = 1)
-# LineCollection 可以看成是一系列线段的集合
-# 可以用色谱分别渲染每一条线段
-# 这样可以得到颜色连续变化的效果
+# LineCollection 可以看成是一系列线段的集合,可以用色谱分别渲染每一条线段,这样可以得到颜色连续变化的效果
 line = ax.add_collection(lc) #add to the subplot
 fig.colorbar(line, label = '$\sigma$')
 # 添加色谱条
@@ -567,11 +480,8 @@ plt.xlim(x_array.min(), x_array.max())
 plt.ylim(0,1)
 plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
-# fig.savefig('Figures/用LineCollection.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>>>>  3. 用set_prop_cycle()
-
 cmap = plt.get_cmap('rainbow')
 colors = cmap(np.linspace(0, 1, num_lines))
 
@@ -589,8 +499,6 @@ plt.xlim(x_array.min(),x_array.max())
 plt.ylim(0,1)
 plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
-# fig.savefig('Figures/用set_prop_cycle().svg', format='svg')
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 分段渲染
 # 导入包
@@ -599,18 +507,6 @@ import numpy as np
 from matplotlib.collections import LineCollection
 # import os
 
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = False
-p["xtick.minor.visible"] = False
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
 
 x_array = np.linspace(0, 4*np.pi, 1001)
 # 等差数列的公差为 4*pi/100；数列有101个值
@@ -633,9 +529,6 @@ ax.set_xlim((0,4*np.pi))
 ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-# fig.savefig('1.svg')
-
-
 
 #>>>>>>>>>>>>>> 用x值作为渲染依据¶
 fig, ax = plt.subplots(figsize=(5,3))
@@ -652,8 +545,6 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-# fig.savefig('2.svg')
-
 
 #>>>>>>>>>>>>>> 用切线斜率 (一阶导数) 作为渲染依据
 fig, ax = plt.subplots(figsize=(5,3))
@@ -671,8 +562,6 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-# fig.savefig('3.svg')
-
 
 #>>>>>>>>>>>>>> 用凸凹性 (二阶导数) 作为渲染依据
 fig, ax = plt.subplots(figsize=(5,3))
@@ -690,31 +579,15 @@ ax.set_ylim((-1.2, 1.2))
 
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
-fig.savefig('4.svg')
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import os
 
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
-
 colormap = cm.get_cmap("rainbow")
-
 def plot_grid(xmin: float, xmax: float, ymin: float, ymax: float, n_lines: int, line_points: int, map_func,):
     lines = []
     # 水平线
@@ -759,15 +632,19 @@ def vortex(x: float, y: float):
 # 原图
 fig = plt.figure(figsize=(4, 4))
 ax = fig.add_subplot(111)
+xmin = 0
+xmax = 5
+ymin = 0
+ymax = 5
+n_lines = 20
+line_points = 20
 plot_grid(0, 5, 0, 5, 20, 20, identity)
 ax.axis('off')
-# fig.savefig('Figures/原始网格.svg', format='svg')
 
 fig = plt.figure(figsize=(8, 12))
 ax = fig.add_subplot(3, 2, 1)
 plot_grid(0, 5, 0, 5, 20, 20, rotate_scale)
 ax.axis('off')
-
 
 ax = fig.add_subplot(3, 2, 2)
 plot_grid(0, 5, 0, 5, 20, 20, shear)
@@ -789,40 +666,26 @@ ax = fig.add_subplot(3, 2, 6)
 plot_grid(0, 5, 0, 5, 20, 20, vortex)
 ax.axis('off')
 
-# fig.savefig('Figures/线性、非线性变换.svg', format='svg')
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用线条绘制等边三角形生成艺术
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 theta = 15 # rotation angle
-
 t = [0, 0]
-
 r = 1
-
 points_x = [0, np.sqrt(3)/2 * r, -np.sqrt(3)/2 * r, 0]
 points_y = [r, -1/2 * r, -1/2 * r, r]
-
-X = np.column_stack([points_x,points_y])
-
+X = np.column_stack([points_x, points_y])
 theta = np.deg2rad(theta)
-
 R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
-
 X = X @ R + t
 
 def eq_l_tri(ax, r, theta, t, color = 'b', fill = False):
     points_x = [0, np.sqrt(3)/2 * r, -np.sqrt(3)/2 * r, 0]
     points_y = [r, -1/2 * r, -1/2 * r, r]
 
-    X = np.column_stack([points_x,points_y])
+    X = np.column_stack([points_x, points_y])
     theta = np.deg2rad(theta)
     R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
     X = X @ R.T
@@ -831,64 +694,48 @@ def eq_l_tri(ax, r, theta, t, color = 'b', fill = False):
     if fill:
         ax.fill(X[:,0], X[:,1], color = color, alpha = 0.1)
 
-
-fig, ax = plt.subplots(figsize = (8,8))
+fig, ax = plt.subplots(figsize = (8, 8))
 ax.set_aspect('equal')
 eq_l_tri(ax, r, 10, t)
 plt.show()
 
-
-fig, ax = plt.subplots(figsize = (8,8))
+fig, ax = plt.subplots(figsize = (8, 8))
 ax.set_aspect('equal')
-ax.plot(0, 0,  color='r', marker='o', markersize=10)
-range_array = np.arange(100)
+ax.plot(0, 0,  color = 'r', marker = 'o', markersize = 10)
+range_array = np.arange(20)
 delta_angle = 2 # degrees
 colors = plt.cm.RdYlBu(np.linspace(0, 1, len(range_array)))
 for i in range_array:
     deg = delta_angle * i
     r = 0.05 + i * 0.05
-    eq_l_tri(ax, r, deg, (0,0), colors[i])
-
+    eq_l_tri(ax, r, deg, (0, 0), colors[i])
 plt.axis('off')
-# fig.savefig('Figures/旋转三角形_A.svg', format='svg')
 plt.show()
 
 
-
-fig, ax = plt.subplots(figsize = (8,8))
+fig, ax = plt.subplots(figsize = (8, 8))
 ax.set_aspect('equal')
-ax.plot(0, 0,  color='r', marker='o', markersize=10)
-range_array = np.arange(100)
+ax.plot(0, 0,  color = 'r', marker = 'o', markersize = 10)
+range_array = np.arange(20)
 delta_angle = 5 # degrees
 colors = plt.cm.RdYlBu(np.linspace(0, 1, len(range_array)))
 for i in range_array:
     deg = delta_angle * i
     r = 0.05 + i * 0.05
     eq_l_tri(ax, r, deg, (0,0), colors[i])
-
 plt.axis('off')
-# fig.savefig('Figures/旋转三角形_B.svg', format='svg')
 plt.show()
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  用线条创作生成艺术
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
 
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-
 def lerp(P_a, P_b, t_array):
     P_out = [P_a * (1 - t_idx) + P_b * t_idx for t_idx in t_array]
     P_out = np.array(P_out)
     return P_out
-
 
 #### 三角形
 P_0 = np.array([0, 0])
@@ -907,12 +754,12 @@ for i in range(num):
     P_1_2_idx = P_1_2[i, :]
     P_2_0_idx = P_2_0[i, :]
     P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_0_idx, P_0_1_idx))
-    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
-ax.set_aspect('equal', adjustable='box')
+    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color = colors[i], lw = 0.25)
+ax.set_aspect('equal', adjustable = 'box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
-ax.axis('off')
-# fig.savefig('Figures/等边三角形，贝塞尔序曲_示意.svg', format='svg')
+# ax.axis('off')
+plt.show()
 
 
 t_array = np.linspace(0, 1, 101, endpoint = True)
@@ -933,8 +780,6 @@ ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
 ax.axis('off')
-# fig.savefig('Figures/等边三角形，贝塞尔序曲t.svg', format='svg')
-
 
 #### 直角三角形
 P_0 = np.array([0, 0])
@@ -958,8 +803,6 @@ ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
 ax.axis('off')
-# fig.savefig('Figures/直角三角形，贝塞尔序曲t.svg', format='svg')
-
 
 #### 正方形
 P_0 = np.array([0, 0])
@@ -968,7 +811,6 @@ P_2 = np.array([1, 1])
 P_3 = np.array([0, 1])
 
 t_array = np.linspace(0, 1, 101, endpoint = True)
-
 P_0_1 = lerp(P_0, P_1, t_array)
 P_1_2 = lerp(P_1, P_2, t_array)
 P_2_3 = lerp(P_2, P_3, t_array)
@@ -978,7 +820,6 @@ ax = fig.add_subplot(111)
 
 num = len(P_0_1)
 colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
-
 for i in range(num):
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
@@ -990,8 +831,6 @@ ax.set_aspect('equal', adjustable='box')
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1])
 ax.axis('off')
-# fig.savefig('Figures/正方形，贝塞尔序曲t.svg', format='svg')
-
 
 #### 正五边形
 angles = np.linspace(18, 360+18, 5, endpoint = False)
@@ -1005,17 +844,16 @@ P_3 = np.array([np.cos(angles_radian[3]), np.sin(angles_radian[3])])
 P_4 = np.array([np.cos(angles_radian[4]), np.sin(angles_radian[4])])
 
 t_array = np.linspace(0, 1, 101, endpoint = True)
-
 P_0_1 = lerp(P_0, P_1, t_array)
 P_1_2 = lerp(P_1, P_2, t_array)
 P_2_3 = lerp(P_2, P_3, t_array)
 P_3_4 = lerp(P_3, P_4, t_array)
 P_4_0 = lerp(P_4, P_0, t_array)
 
-fig = plt.figure(figsize=(6, 6))
+fig = plt.figure(figsize = (6, 6))
 ax = fig.add_subplot(111)
 num = len(P_0_1)
-colors = plt.cm.rainbow(np.linspace(0,1,num, endpoint = True))
+colors = plt.cm.rainbow(np.linspace(0, 1, num, endpoint = True))
 for i in range(num):
     P_0_1_idx = P_0_1[i, :]
     P_1_2_idx = P_1_2[i, :]
@@ -1024,332 +862,12 @@ for i in range(num):
     P_4_0_idx = P_4_0[i, :]
 
     P_array_idx = np.row_stack((P_0_1_idx, P_1_2_idx, P_2_3_idx, P_3_4_idx, P_4_0_idx, P_0_1_idx))
-    plt.plot(P_array_idx[:,0], P_array_idx[:,1], color=colors[i], lw = 0.25)
+    plt.plot(P_array_idx[:, 0], P_array_idx[:,1], color=colors[i], lw = 0.25)
 
-ax.set_aspect('equal', adjustable='box')
+ax.set_aspect('equal', adjustable = 'box')
 ax.set_xlim([-1, 1])
 ax.set_ylim([-1, 1])
 ax.axis('off')
-# fig.savefig('Figures/正五边方形，贝塞尔序曲t.svg', format='svg')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

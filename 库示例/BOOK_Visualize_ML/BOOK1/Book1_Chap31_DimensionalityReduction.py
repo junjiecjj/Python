@@ -157,7 +157,6 @@ ax.set_aspect('equal', adjustable='box')
 ax.set_xbound(lower = -6, upper = 6)
 ax.set_ybound(lower = -6, upper = 6)
 
-
 # 完成投影
 proj2 = v2@v2.T
 z2_2D = X_scaled@proj2
