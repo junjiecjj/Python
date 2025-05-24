@@ -432,8 +432,8 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))
 norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
 surf = ax.plot_surface(xx, yy, ff, facecolors = colors,
-                        rstride = 3,
-                        cstride = 3,
+                        rstride = 2,
+                        cstride = 2,
                         linewidth = 1, # 线宽
                         shade = False) # 删除阴影
 surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
@@ -474,7 +474,8 @@ norm_plt = plt.Normalize(ff.min(), ff.max())
 colors = cm.RdYlBu_r(norm_plt(ff))
 
 ## 曲面和等高线
-surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1,) # 删除阴影
+# surf = ax.plot_surface(xx, yy, ff, color = 'r', alpha = 0.1, shade = False) # 删除阴影
+surf = ax.plot_surface(xx, yy, ff, facecolors = colors, rstride = 2, cstride = 2, linewidth = 1, shade = False) # 删除阴影
 # surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
 # ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
@@ -501,7 +502,6 @@ ax.set_ylim(yy.min(), yy.max())
 ax.set_zlim(-8, 8)
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
-
 plt.show()
 
 ############### 三维等高线到平面

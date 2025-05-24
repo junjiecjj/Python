@@ -7,28 +7,36 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from sklearn.datasets import load_iris
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.linewidth'] = 1
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 16         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 16         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.labelspacing'] = 0.2
 
 iris = load_iris()
 # 从sklearn导入鸢尾花数据
 
 X = iris.data
 y = iris.target
-X
+# X
 feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
 
 # Convert X array to dataframe
@@ -44,15 +52,8 @@ ax = sns.heatmap(X_df, # 数据
                  vmin=0, vmax=8) # 色谱最小、最大值
 plt.title('X')
 
-# fig.savefig('Figures/鸢尾花数据.svg', format='svg')
-
-
-
 # 聚类热图
 ax = sns.clustermap(X_df, cmap='RdYlBu_r', xticklabels=list(X_df.columns), yticklabels=False, figsize = (6,12), vmin=0, vmax=8)
-
-# plt.savefig('Figures/热图 + 树状图.svg', format='svg')
-
 
 # 计算格拉姆矩阵
 G = X.T @ X
@@ -80,8 +81,6 @@ plt.sca(axs[4])
 ax = sns.heatmap(X, cmap = 'RdYlBu_r', vmax = 0, vmin = 8, cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels=False, annot=False)
 plt.title('$X$')
 
-# fig.savefig('Figures/格拉姆矩阵.svg', format='svg')
-
 #>>>>>>>>>>>>>>>>> 上三角
 mask_tri = np.zeros_like(G)
 mask_tri[np.triu_indices_from(mask_tri)] = True
@@ -92,8 +91,6 @@ fig, axs = plt.subplots(1, 2)
 sns.heatmap(G, ax = axs[0], vmax = 5000, vmin = 0, annot = True, fmt=".0f", cmap = 'RdYlBu_r', square = True, mask = ~mask_tri, cbar = False, linecolor = [0.5, 0.5, 0.5])
 
 sns.heatmap(G, ax = axs[1], vmax = 5000, vmin = 0, cmap = 'RdYlBu_r', annot = True, fmt=".0f", square = True, mask = mask_tri, cbar = False, linecolor = [0.5, 0.5, 0.5])
-
-
 
 #>>>>>>>>>>>>>>>>> Cholesky分解
 L = np.linalg.cholesky(G)
@@ -119,9 +116,6 @@ plt.axis('off')
 plt.sca(axs[4])
 ax = sns.heatmap(L.T, cmap = 'RdYlBu_r', cbar_kws = {'orientation':'horizontal'}, xticklabels = False, yticklabels=False, annot=True)
 plt.title('$L^T$')
-
-# fig.savefig('Figures/格拉姆矩阵，Chol.svg', format='svg')
-
 
 #>>>>>>>>>>>>>>>>> 特征值分解
 Lambdas, V = np.linalg.eig(G)
@@ -158,7 +152,6 @@ plt.sca(axs[6])
 ax = sns.heatmap(V.T, cmap = 'RdYlBu_r', vmax = 1, vmin = -1, cbar_kws = {'orientation':'horizontal'}, yticklabels=False, xticklabels=False, square = 'equal')
 plt.title('$V^T$')
 
-# fig.savefig('Figures/格拉姆矩阵，EVD.svg', format='svg')
 #>>>>>>>>>>>>>>>>> 奇异值分解
 U,S,VT = np.linalg.svd(X, full_matrices = False)
 V = VT.T
@@ -206,26 +199,10 @@ fig, ax = plt.subplots(figsize = (4,4))
 sns.heatmap(Corr, ax = ax, cmap = 'RdYlBu_r', annot = True, fmt=".2f", square = True, cbar_kws = {'orientation':'vertical'}, linecolor = [0.5, 0.5, 0.5])
 
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图
 
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
 
 # generate 2 2d grids for the x & y bounds
 y, x = np.meshgrid(np.linspace(-3, 3, 16), np.linspace(-3, 3, 16))
@@ -251,30 +228,14 @@ c = ax.pcolor(x, y, z, cmap='RdBu', vmin=z_min, vmax=z_max)
 ax.axis([x.min(), x.max(), y.min(), y.max()])
 fig.colorbar(c, ax=ax)
 
-# fig.savefig('Figures/比较_pcolor.svg', format='svg')
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% kNN分类
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn import neighbors, datasets
 from matplotlib.colors import ListedColormap
 from sklearn.naive_bayes import GaussianNB
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
 
 # Create color maps for 3-class classification problem, as with iris
 cmap_light = ListedColormap(['#FFAAAA','#AAFFAA','#AAAAFF'])
@@ -304,27 +265,10 @@ for idx, n_neighbors in enumerate(num_neighbors):
     plt.ylabel('Sepal width (cm)')
     plt.axis('tight')
 
-# fig.savefig('Figures/kNN分类.svg', format='svg')
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图可视化几何变换
 
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
 
 delta = 1/10
 
@@ -340,67 +284,52 @@ colors = plt.cm.rainbow(np.linspace(0, 1, len(xx.flatten())))
 fig = plt.figure(figsize=(4, 4))
 ax = fig.add_subplot(1, 1, 1)
 ax.pcolormesh(xx, yy, zz*0 + np.nan, edgecolors = colors, shading='auto')
-
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
-
-# fig.savefig('Figures/pcolormesh_网格.svg', format='svg')
-# fig.savefig('pcolormesh_网格.svg', format='svg')
+plt.show()
 
 fig = plt.figure(figsize=(8, 12))
 ax = fig.add_subplot(3, 2, 1)
 ax.pcolormesh(np.real(complex_zz*np.exp(np.pi/6*1j)), np.imag(complex_zz*np.exp(np.pi/6*1j)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
+# plt.show()
 
 ax = fig.add_subplot(3, 2, 2)
 ax.pcolormesh(np.real(2*complex_zz*np.exp(np.pi/3*1j)), np.imag(2*complex_zz*np.exp(np.pi/3*1j)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
+# plt.show()
 
 ax = fig.add_subplot(3, 2, 3)
 ax.pcolormesh(np.real(np.exp(complex_zz)), np.imag(np.exp(complex_zz)), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
+# plt.show()
 
 ax = fig.add_subplot(3, 2, 4)
 ax.pcolormesh(np.real(complex_zz**3), np.imag(complex_zz**3), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
+# plt.show()
 
 ax = fig.add_subplot(3, 2, 5)
 ax.pcolormesh(np.real(1/complex_zz), np.imag(1/complex_zz), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
+# plt.show()
 
 ax = fig.add_subplot(3, 2, 6)
 ax.pcolormesh(np.real(complex_zz - 1/complex_zz), np.imag(complex_zz - 1/complex_zz), zz*0 + np.nan, edgecolors = colors, shading='auto')
 ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
-
-# fig.savefig('Figures/pcolormesh_线性、非线性变换.svg', format='svg')
-# fig.savefig('pcolormesh_线性、非线性变换.svg', format='svg')
+plt.show()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 非矢量图片
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 # 导入 matplotlib 库中用于处理图像的 image 模块，并将其命名为 mpimg
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-p = plt.rcParams
-p["font.sans-serif"] = ["Roboto"]
-p["font.weight"] = "light"
-p["ytick.minor.visible"] = True
-p["xtick.minor.visible"] = True
-p["axes.grid"] = True
-p["grid.color"] = "0.5"
-p["grid.linewidth"] = 0.5
 
 
 # 导入照
@@ -411,17 +340,9 @@ print(img)
 fig, ax = plt.subplots(figsize=(4,8))
 imgplot = plt.imshow(img)
 
-# fig.savefig('Figures/鸢尾花照片.svg', format='svg')
-
-
-
-
 # 展示部分像素
 fig, ax = plt.subplots(figsize=(4,8))
 imgplot = plt.imshow(img[400:400 + 10,400:400 + 10,:])
-
-# fig.savefig('Figures/鸢尾花照片，部分像素.svg', format='svg')
-
 
 # 分析图片
 fig, axs = plt.subplots(figsize=(6,3), ncols = 1, nrows = 3, sharex=True)
@@ -453,9 +374,6 @@ axs[2].spines['top'].set_visible(False)
 axs[2].spines['right'].set_visible(False)
 axs[2].spines['left'].set_visible(False)
 
-# fig.savefig('Figures/颜色分布.svg', format='svg')
-
-
 # 绘制红绿蓝三个不同通道
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
 
@@ -464,8 +382,6 @@ for i, subplot in zip(range(3), axs):
     temp[:,:,i] = img[:,:,i]
     subplot.imshow(temp)
     # subplot.set_axis_off()
-# fig.savefig('Figures/鸢尾花照片，三色通道.svg', format='svg')
-
 
 # 只保留两色
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
@@ -476,8 +392,6 @@ for i, subplot in zip(range(3), axs):
     temp[:,:,i] = zeros[:,:,i]
     subplot.imshow(temp)
     # subplot.set_axis_off()
-# fig.savefig('Figures/鸢尾花照片，保留两个通道.svg', format='svg')
-
 
 # 使用色谱
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
@@ -490,16 +404,12 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
 axs[0].imshow(img[:, :, 1], cmap = 'RdYlBu_r')
 axs[1].imshow(img[:, :, 1], cmap = 'Greys_r')
 axs[2].imshow(img[:, :, 1], cmap = 'Greens_r')
-# fig.savefig('Figures/鸢尾花照片，绿色通道，使用色谱.svg', format='svg')
 
 
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize = (4,12))
 axs[0].imshow(img[:, :, 2], cmap = 'RdYlBu_r')
 axs[1].imshow(img[:, :, 2], cmap = 'Greys_r')
 axs[2].imshow(img[:, :, 2], cmap = 'Blues_r')
-# fig.savefig('Figures/鸢尾花照片，蓝色通道，使用色谱.svg', format='svg')
-
-
 
 ## 灰度
 from skimage import color
@@ -562,711 +472,10 @@ do_plot(ax2, img, mtransforms.Affine2D().skew_deg(30, 15))
 do_plot(ax3, img, mtransforms.Affine2D().scale(-1, .5))
 # everything and a translation
 do_plot(ax4, img, mtransforms.Affine2D().rotate_deg(30).skew_deg(30, 15).scale(-1, .5).translate(.5, -1))
-# fig.savefig('Figures/仿射变换.svg', format='svg')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

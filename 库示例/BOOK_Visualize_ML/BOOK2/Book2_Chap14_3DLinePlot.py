@@ -41,7 +41,6 @@ ax.set_zlabel('z')
 ax.grid(False)
 plt.show()
 
-
 # 创建数据
 z = np.linspace(0, 2, 1000)
 r = z
@@ -50,9 +49,7 @@ y = r * np.cos(theta)
 # 可视化线图
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')
-
 ax.plot(x, y, z)
-
 ax.set_proj_type('ortho')
 
 ax.grid(False)
@@ -66,7 +63,6 @@ ax.grid(False)
 plt.show()
 
 #%% 一元高斯分布概率密度
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -74,16 +70,10 @@ from matplotlib import cm
 
 # 自定义一元高斯概率密度函数
 def gaussian_1D(x_array, mu, sigma):
-
     z = (x_array - mu)/sigma
-
     factor = 1/sigma/np.sqrt(2*np.pi)
-
     PDF_array = factor * np.exp(-z**2/2)
-
     return PDF_array
-
-
 
 # 随  𝜇 变化
 # 创建数据
@@ -127,7 +117,6 @@ ax.set_box_aspect((1, 1, 1))
 ax.grid(False)
 plt.show()
 
-
 # 随  𝜎 变化
 # 产生数据
 x_array = np.linspace(-8,8,121)
@@ -138,14 +127,11 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 colors = cm.rainbow(np.linspace(0,1,num_lines))
 # 选定色谱，并产生一系列色号
-
-for sigma_idx,color_idx in zip(sigma_array,colors):
-
+for sigma_idx,color_idx in zip(sigma_array, colors):
     # 可以使用：
     # ax.plot(x_array, gaussian_1D(x_array, 0, sigma_idx),
     #         zs = sigma_idx, zdir = 'y',
     #         color = color_idx)
-
     # 也可以：
     ax.plot(x_array, # x 坐标
             x_array*0 + sigma_idx, # y 坐标
@@ -175,7 +161,7 @@ import matplotlib.pyplot as plt
 # 产生网格数据
 grid = np.linspace(-3,3)
 
-xx1,xx2 = np.meshgrid(np.linspace(-3,3),np.linspace(-3,3))
+xx1, xx2 = np.meshgrid(np.linspace(-3,3), np.linspace(-3,3))
 ff = np.exp(- xx1**2 - xx2**2)
 # 高斯函数
 
@@ -342,7 +328,6 @@ ax.set_zticks((0,1))
 ax.view_init(azim=30, elev=30)
 ax.set_box_aspect((1, 1, 1))
 ax.set_proj_type('ortho')
-# fig.savefig('Figures/可视化散点.svg', format='svg')
 plt.show()
 
 # 12条参考线
@@ -436,10 +421,7 @@ ax.set_zticks((0,1))
 ax.view_init(azim=30, elev=30)
 ax.set_box_aspect((1, 1, 1))
 ax.set_proj_type('ortho')
-# fig.savefig('Figures/12条参考线.svg', format='svg')
 plt.show()
-
-
 
 
 #%% 可视化偏导数
@@ -449,7 +431,6 @@ from sympy.abc import x, y
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import cm
-
 
 # 创建数据
 num = 301 # number of mesh grids
@@ -487,20 +468,14 @@ def plot_d_x_tangent(x_t, y_t, df_dx_fcn, f_xy_fcn, color, ax):
     ax.plot(x_t, y_t, z_t, color = color, marker = '.', markersize = 10)
     return
 
-
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10,10))
-
-ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5],  rstride=15,
-                  cstride=0, ## 沿x方向
-                  linewidth = 2)
-
-colors = plt.cm.rainbow(np.linspace(0,1,len(xx_s.ravel())))
-
-for i in np.linspace(0, len(xx_s.ravel())-1, len(xx_s.ravel())):
+fig, ax = plt.subplots(subplot_kw = {'projection': '3d'}, figsize = (10,10))
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5],  rstride = 15, cstride = 0, linewidth = 2)
+colors = plt.cm.rainbow(np.linspace(0, 1, len(xx_s.ravel())))
+for i in np.linspace(0, len(xx_s.ravel()) - 1, len(xx_s.ravel())):
     i = int(i)
     x_t = xx_s.ravel()[i]
     y_t = yy_s.ravel()[i]
-    color = colors[i,:]
+    color = colors[i, :]
     plot_d_x_tangent(x_t, y_t, df_dx_fcn, f_xy_fcn, color, ax)
 ax.set_proj_type('ortho')
 
@@ -536,18 +511,14 @@ def plot_d_y_tangent(x_t, y_t, df_dy_fcn, f_xy_fcn, color, ax):
     ax.plot(y_array*0 + x_t,y_array, z_array, color = color, lw = 0.2)
     # partial x1, tangent line
 
-    ax.plot(x_t, y_t, z_t, color = color,
-              marker = '.', markersize = 5)
+    ax.plot(x_t, y_t, z_t, color = color,  marker = '.', markersize = 5)
     # tangent point
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10,10))
 
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  color = [0.5,0.5,0.5],
-                  rstride=0, cstride=15,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=0, cstride=15, linewidth = 0.25)
 
-colors = plt.cm.rainbow(np.linspace(0,1,len(yy_s.ravel())))
-for i in np.linspace(0,len(yy_s.ravel())-1,len(yy_s.ravel())):
+colors = plt.cm.rainbow(np.linspace(0, 1, len(yy_s.ravel())))
+for i in np.linspace(0, len(yy_s.ravel())-1, len(yy_s.ravel())):
     i = int(i)
     x_t = xx_s.ravel()[i]
     y_t = yy_s.ravel()[i]
@@ -586,3 +557,12 @@ ax.set_xticks([])
 ax.set_yticks([])
 ax.set_zticks([])
 plt.show()
+
+
+
+
+
+
+
+
+
