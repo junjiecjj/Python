@@ -165,7 +165,6 @@ ax.set_zlim(1, 7)
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
-
 plt.show()
 
 

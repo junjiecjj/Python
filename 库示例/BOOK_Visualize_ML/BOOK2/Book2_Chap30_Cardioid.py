@@ -41,22 +41,11 @@ def visualize(k = 2):
     ax.axis('off')
     # fig.savefig('Figures\\' + str(k) + '.svg') # png
 
-
-
-
-
 visualize(2)
-
-
-
-
-
 
 visualize(321)
 
-
 visualize(90)
-
 
 
 visualize(206)
@@ -68,34 +57,10 @@ visualize(310)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正方形
 
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-
 
 def linear_interpolation(point1, point2, num_intervals):
     x1, y1 = point1
@@ -108,8 +73,6 @@ def linear_interpolation(point1, point2, num_intervals):
 
     return interpolated_coordinates
 
-
-
 N = 360
 A = (0,0)
 B = (1,0)
@@ -121,27 +84,19 @@ BC = linear_interpolation(B, C, 90)
 CD = linear_interpolation(C, D, 90)
 DA = linear_interpolation(D, A, 90)
 
-
-
-
 points = AB[:-1] + BC[:-1] + CD[:-1] + DA
 
-
 points = np.array(points)
-
 
 def visualize(k = 2):
     fig, ax = plt.subplots(figsize=(8,8))
     colors = plt.cm.hsv(np.linspace(0, 1, N+1))
     for i in range(N+1):
         j = (i*k) % N
-        plt.plot([points[i,0], points[j,0]],
-                 [points[i,1], points[j,1]],
-                 lw = 0.1,c = colors[i])
+        plt.plot([points[i,0], points[j,0]], [points[i,1], points[j,1]], lw = 0.1,c = colors[i])
 
     ax.axis('off')
     # fig.savefig('Figures\\' + str(k) + '.svg') # png
-
 
 visualize(2)
 
@@ -153,46 +108,6 @@ visualize(270)
 visualize(188)
 
 visualize(358)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -251,10 +166,7 @@ def visualize(k = 2):
     fig.savefig('Figures\\' + str(k) + '.svg') # png
 visualize(7)
 
-
 visualize(241)
-
-
 
 
 visualize(270)

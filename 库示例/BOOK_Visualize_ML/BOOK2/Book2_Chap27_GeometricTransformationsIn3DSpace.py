@@ -5,16 +5,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import os
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 # 创建数据
 # 自定义函数，生成三维网格数据
-
 num = 21
-
 array_1_0 = np.linspace(0,1,num)
 array_0_0 = np.ones_like(array_1_0)
 array_1_1 = np.zeros_like(array_1_0)
@@ -31,15 +24,12 @@ C = np.roll(A, 2)
 Data   = np.vstack((A,B,C))
 Colors = np.vstack((A,B,C))
 
-
-
 # 可视化函数
 # 使用自定义函数生成RGB颜色色号，单一维度上有101个点
 def visualize(Data, Colors, name, elev=35, azim=35):
     fig = plt.figure(figsize = (6,6))
     ax = fig.add_subplot(111, projection = '3d')
     # 增加三维轴
-
     # 用三维散点图绘可视化立方体外侧三个鲜亮的侧面
     ax.scatter(Data[:,0], # x 坐标
                Data[:,1], # y 坐标
@@ -47,7 +37,6 @@ def visualize(Data, Colors, name, elev=35, azim=35):
                c = Colors,  # 颜色色号
                s = 2,              # 散点大小
                alpha = 1)          # 透明度，1 代表完全不透
-
     ax.quiver(0, 0, 0,
               2, 0, 0,
               length = 1,
@@ -56,7 +45,6 @@ def visualize(Data, Colors, name, elev=35, azim=35):
               arrow_length_ratio = .07,
               linestyles = 'solid',
               linewidths = 0.25)
-
     ax.quiver(0, 0, 0,
               0, 2, 0,
               length = 1,
@@ -65,7 +53,6 @@ def visualize(Data, Colors, name, elev=35, azim=35):
               arrow_length_ratio = .07,
               linestyles = 'solid',
               linewidths = 0.25)
-
     ax.quiver(0, 0, 0,
               0, 0, 2,
               length = 1,
@@ -74,132 +61,102 @@ def visualize(Data, Colors, name, elev=35, azim=35):
               arrow_length_ratio = .07,
               linestyles = 'solid',
               linewidths = 0.25)
-
     # 单位立方体的顶点
     A = [1, 1, 1]
-
     B = [1, 0, 1]
     C = [1, 1, 0]
     D = [0, 1, 1]
-
     E = [1, 0, 0]
     F = [0, 1, 0]
     G = [0, 0, 1]
-
     O = [0, 0, 0]
-
     # 绘制 AB、AC、AD
     ax.plot([A[0], B[0]],
             [A[1], B[1]],
             [A[2], B[2]], c = '0.5')
-
     ax.plot([A[0], C[0]],
             [A[1], C[1]],
             [A[2], C[2]], c = '0.5')
-
     ax.plot([A[0], D[0]],
             [A[1], D[1]],
             [A[2], D[2]], c = '0.5')
 
     # 绘制 OE、OF、OG
-
     ax.plot([O[0], E[0]],
             [O[1], E[1]],
             [O[2], E[2]], c = '0.5')
-
     ax.plot([O[0], F[0]],
             [O[1], F[1]],
             [O[2], F[2]], c = '0.5')
-
     ax.plot([O[0], G[0]],
             [O[1], G[1]],
             [O[2], G[2]], c = '0.5')
-
     # 绘制 OE、OF、OG
 
     ax.plot([O[0], E[0]],
             [O[1], E[1]],
             [O[2], E[2]], c = '0.5')
-
     ax.plot([O[0], F[0]],
             [O[1], F[1]],
             [O[2], F[2]], c = '0.5')
-
     ax.plot([O[0], G[0]],
             [O[1], G[1]],
             [O[2], G[2]], c = '0.5')
-
     # 绘制 BE、CE
-
     ax.plot([B[0], E[0]],
             [B[1], E[1]],
             [B[2], E[2]], c = '0.5')
-
     ax.plot([C[0], E[0]],
             [C[1], E[1]],
             [C[2], E[2]], c = '0.5')
-
     # 绘制 CF、DF
     ax.plot([C[0], F[0]],
             [C[1], F[1]],
             [C[2], F[2]], c = '0.5')
-
     ax.plot([D[0], F[0]],
             [D[1], F[1]],
             [D[2], F[2]], c = '0.5')
-
     # 绘制 GB、GD
     ax.plot([B[0], G[0]],
             [B[1], G[1]],
             [B[2], G[2]], c = '0.5')
-
     ax.plot([D[0], G[0]],
             [D[1], G[1]],
             [D[2], G[2]], c = '0.5')
-
     ax.plot((-2,2),(0,0),(0,0), c = '0.8', lw = 0.25)
     ax.plot((0,0),(-2,2),(0,0), c = '0.8', lw = 0.25)
     ax.plot((0,0),(0,0),(-2,2), c = '0.8', lw = 0.25)
-
     ax.view_init(elev=elev, azim=azim)
     # ax.view_init(elev=90, azim=-90) # x-y
     # ax.view_init(elev=0, azim=-90) # x-z
     # ax.view_init(elev=0, azim=0) # y-z
     # 设定观察视角
-
     ax.set_xlim(-2,2)
     ax.set_ylim(-2,2)
     ax.set_zlim(-2,2)
     # 设定 x、y、z 取值范围
-
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_zticks([])
     # 不显示刻度
-
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
     # 不显示轴背景
-
     ax.xaxis.pane.set_edgecolor('w')
     ax.yaxis.pane.set_edgecolor('w')
     ax.zaxis.pane.set_edgecolor('w')
     # 图脊设为白色
-
     # ax.set_xlabel('x')
     # ax.set_ylabel('y')
     # ax.set_zlabel('z')
 
     ax.grid(False)
     # 不显示网格
-
     ax.set_proj_type('ortho')
     # 正交投影
-
     ax.set_box_aspect(aspect = (1,1,1))
     # 等比例成像
-
     # Transparent spines
     ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
     ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
@@ -209,12 +166,7 @@ def visualize(Data, Colors, name, elev=35, azim=35):
     ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
-    # fig.savefig('Figures/' + name + '.svg', format='svg')
-    # fig.savefig('Figures/完全填充立方体，最艳丽的三个立面.png', format='png')
-
-
 visualize(Data, Colors, '原始')
-
 
 # 平移
 alpha = np.deg2rad(30)

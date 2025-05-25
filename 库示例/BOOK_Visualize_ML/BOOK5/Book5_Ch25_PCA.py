@@ -204,8 +204,6 @@ b = -26
 Xq = X.T - (w.T@X.T + b) * w/(w.T@w)
 Xq = Xq.T
 
-
-
 fig = plt.figure(figsize = (10, 10))
 ax = fig.add_subplot(projection='3d')
 

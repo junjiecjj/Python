@@ -17,9 +17,9 @@ def visualize(xx1, xx2, f2_array):
     ax_3D.plot_wireframe(xx1, xx2, f2_array,  rstride = 5, cstride = 5,  color = [0.5, 0.5, 0.5], linewidth = 0.5)
     ax_3D.contour(xx1, xx2, f2_array, levels = 16, cmap = 'RdYlBu_r')
 
-    ax_3D.set_xlabel('$x_1$')
-    ax_3D.set_ylabel('$x_2$')
-    ax_3D.set_zlabel('$f(x_1,x_2)$')
+    ax_3D.set_xlabel(r'$x_1$')
+    ax_3D.set_ylabel(r'$x_2$')
+    ax_3D.set_zlabel(r'$f(x_1,x_2)$')
     ax_3D.set_proj_type('ortho')
     ax_3D.set_xticks([])
     ax_3D.set_yticks([])
@@ -33,7 +33,7 @@ def visualize(xx1, xx2, f2_array):
     ax_2D = fig.add_subplot(1, 2, 2)
     ax_2D.contour(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
 
-    ax_2D.set_xlabel('$x_1$'); ax_2D.set_ylabel('$x_2$')
+    ax_2D.set_xlabel(r'$x_1$'); ax_2D.set_ylabel(r'$x_2$')
     ax_2D.set_xticks([]); ax_2D.set_yticks([])
     ax_2D.set_aspect('equal'); ax_2D.grid(False)
     ax_2D.set_xlim(xx1.min(), xx1.max());
@@ -44,7 +44,6 @@ def visualize(xx1, xx2, f2_array):
 # 生成数据
 x1_array = np.linspace(-2, 2, 201)
 x2_array = np.linspace(-2, 2, 201)
-
 xx1, xx2 = np.meshgrid(x1_array, x2_array)
 
 # 定义二元函数
@@ -67,8 +66,7 @@ A = np.array([[2, 0],
 f2_array = fcn(A, xx1, xx2)
 visualize(xx1, xx2, f2_array)
 
-
-#%% Bk2_Ch21_01
+#%% Bk2_Ch21_01   二元二次型
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -107,13 +105,11 @@ def fcn_n_grdnt(A, xx1, xx2):
 
     if isinstance(V[0], int):
         V[0] = np.zeros_like(xx1_)
-
     return ff_x, V
-
 
 # 可视化函数
 def visualize(xx1, xx2, f2_array, gradient_array):
-    fig = plt.figure( figsize=(12, 6))
+    fig = plt.figure( figsize=(12, 6), constrained_layout = True)
     # 第一幅子图
     ax = fig.add_subplot(1, 3, 1, projection='3d')
     ax.plot_wireframe(xx1, xx2, f2_array, rstride=10, cstride=10, color = [0.8,0.8,0.8], linewidth = 0.25)
@@ -138,9 +134,7 @@ def visualize(xx1, xx2, f2_array, gradient_array):
 
     # 第三幅子图
     ax = fig.add_subplot(1, 3, 3)
-
     ax.contourf(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
-
     xx1_ = xx1[::20,::20]
     xx2_ = xx2[::20,::20]
     color_array = np.sqrt(gradient_array[0]**2 + gradient_array[1]**2)
@@ -154,21 +148,917 @@ def visualize(xx1, xx2, f2_array, gradient_array):
     ax.set_xlim(xx1.min(), xx1.max());
     ax.set_ylim(xx2.min(), xx2.max())
 
-
-# 生成网格化数据
-
+## 生成网格化数据
 x1_array = np.linspace(-2,2,201)
 x2_array = np.linspace(-2,2,201)
 
 xx1, xx2 = np.meshgrid(x1_array, x2_array)
 
-
-# 正定性
+## 正定性
 A = np.array([[1, 0],
               [0, 1]])
 
 f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
 visualize(xx1,xx2,f2_array,gradient_array)
+
+## 半正定
+A = np.array([[1, 0],
+              [0, 0]])
+
+f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
+visualize(xx1,xx2,f2_array,gradient_array)
+
+
+## 负定
+A = np.array([[-1, 0],
+              [0, -1]])
+
+f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
+visualize(xx1,xx2,f2_array,gradient_array)
+
+
+## 半负定
+A = np.array([[-1, 0],
+              [0,  0]])
+
+f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
+visualize(xx1,xx2,f2_array,gradient_array)
+
+## 不定
+A = np.array([[0, 1],
+              [1, 0]])
+
+f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
+visualize(xx1,xx2,f2_array,gradient_array)
+
+
+
+#%% 三元二次型
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from sympy import symbols, simplify, expand, lambdify, diff
+
+## 自定义函数
+# 定义三元二次型
+def fcn_3(A,xxx1,xxx2,xxx3):
+    x1,x2,x3 = symbols('x1 x2 x3')
+
+    x = np.array([[x1,x2,x3]]).T
+
+    f_x = x.T@A@x
+    print(simplify(expand(f_x[0][0])))
+
+    f_x_fcn = lambdify([x1,x2,x3],f_x[0][0])
+
+    fff = f_x_fcn(xxx1,xxx2,xxx3)
+
+    return fff
+
+def fcn_n_grdnt(A, xxx1, xxx2, xxx3):
+
+    x1,x2,x3 = symbols('x1 x2 x3')
+    # 符号向量
+    x = np.array([[x1,x2,x3]]).T
+    # 二次型
+    f_x = x.T@A@x
+    f_x = f_x[0][0]
+    print(simplify(expand(f_x)))
+
+    # 计算梯度，符号
+    grad_f = [diff(f_x,var) for var in (x1,x2,x3)]
+
+    # 计算二元函数值 f(x1, x2)
+    f_x_fcn = lambdify([x1,x2,x3],f_x)
+    ff_x = f_x_fcn(xxx1,xxx2,xxx3)
+
+    # 梯度函数
+    grad_fcn = lambdify([x1,x2,x3],grad_f)
+
+    # 采样，降低颗粒度
+    xxx1_ = xxx1[::20,::20]
+    xxx2_ = xxx2[::20,::20]
+    xxx3_ = xxx3[::20,::20]
+
+    # 计算梯度
+    V = grad_fcn(xxx1_,xxx2_,xxx3_)
+
+    # 修复梯度值
+    if isinstance(V[0], int):
+        V[0] = np.zeros_like(xxx1_)
+
+    if isinstance(V[1], int):
+        V[1] = np.zeros_like(xxx1_)
+
+    if isinstance(V[2], int):
+        V[2] = np.zeros_like(xxx1_)
+
+    return ff_x, V
+
+## 创建数据
+x1_array = np.linspace(-2,2,101)
+x2_array = np.linspace(-2,2,101)
+x3_array = np.linspace(-2,2,101)
+
+xxx1, xxx2, xxx3 = np.meshgrid(x1_array, x2_array, x3_array)
+
+A = np.array([[1, 0, 0],
+              [0, 0, 0],
+              [0, 0, -1]])
+# 计算矩阵秩
+print(np.linalg.matrix_rank(A))
+f3_array = fcn_3(A,xxx1,xxx2,xxx3)
+
+
+## 切豆腐
+### 外立面
+# 设定统一等高线分层
+levels = np.linspace(f3_array.min(),f3_array.max(),21)
+# 定义等高线高度
+fig = plt.figure(figsize=(6,6))
+ax = fig.add_subplot(111, projection='3d')
+
+# 绘制三维等高线，填充
+ax.contourf(xxx1[:, :, -1],
+            xxx2[:, :, -1],
+            f3_array[:, :, -1],
+            levels = levels,
+            zdir='z', offset=xxx3.max(),
+            cmap = 'RdYlBu_r') # RdYlBu_r
+
+ax.contour(xxx1[:, :, -1],
+            xxx2[:, :, -1],
+            f3_array[:, :, -1],
+            levels = levels,
+            zdir='z', offset=xxx3.max(),
+            linewidths = 0.25,
+            colors = '1')
+
+ax.contourf(xxx1[0, :, :],
+            f3_array[0, :, :],
+            xxx3[0, :, :],
+            levels = levels,
+            zdir='y',
+            cmap = 'RdYlBu_r',
+            offset=xxx2.min())
+
+ax.contour(xxx1[0, :, :],
+            f3_array[0, :, :],
+            xxx3[0, :, :],
+            levels = levels,
+            zdir='y',
+            colors = '1',
+            linewidths = 0.25,
+            offset=xxx2.min())
+
+CS = ax.contourf(f3_array[:, 0, :],
+            xxx2[:, 0, :],
+            xxx3[:, 0, :],
+            levels = levels,
+            cmap = 'RdYlBu_r',
+            zdir='x',
+            offset=xxx1.min())
+
+ax.contour(f3_array[:, 0, :],
+            xxx2[:, 0, :],
+            xxx3[:, 0, :],
+            levels = levels,
+            zdir='x',
+            colors = '1',
+            linewidths = 0.25,
+            offset=xxx1.min())
+fig.colorbar(CS, ticks=np.linspace(np.floor(f3_array.min()),np.ceil(f3_array.max()), int(np.ceil(f3_array.max()) - np.floor(f3_array.min())) + 1))
+# Set limits of the plot from coord limits
+xmin, xmax = xxx1.min(), xxx1.max()
+ymin, ymax = xxx2.min(), xxx2.max()
+zmin, zmax = xxx3.min(), xxx3.max()
+ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+
+# 绘制框线
+edges_kw = dict(color='0.6', linewidth=1, zorder=1e5)
+# zorder 控制呈现 artist 的先后顺序
+# zorder 越小，artist 置于越底层
+# zorder 赋值很大的数，这样确保 zorder 置于最顶层
+
+ax.plot([xmin, xmax], [ymin, ymin], [zmax, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+# ax.set_xticks([-1,0,1])
+# ax.set_yticks([-1,0,1])
+# ax.set_zticks([-1,0,1])
+
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+
+ax.view_init(azim=-120, elev=30)
+ax.set_proj_type('ortho')
+# ax.set_xlabel('$x_1$')
+# ax.set_ylabel('$x_2$')
+# ax.set_zlabel('$x_3$')
+ax.set_box_aspect((1, 1, 1))
+# fig.savefig('Figures/一次函数，三元，3D外立面.svg', format='svg')
+
+### 将等高线展开，沿x3
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x3_array),25)):
+    ax = fig.add_subplot(len(np.arange(0,len(x3_array),25)), 1, fig_idx + 1, projection='3d')
+    x3_idx = x3_array[idx]
+    ax.contourf(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                f3_array[:, :, idx],
+                levels = levels,
+                zdir='z',
+                offset=x3_idx,
+                cmap = 'RdYlBu_r')
+    ax.contour(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                f3_array[:, :, idx],
+                levels = levels,
+                zdir='z',
+                offset=x3_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+    # 绘制框线
+    edges_kw = dict(color='0.5', linewidth=1, zorder=1e3)
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    # ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+# fig.savefig('Figures/一次函数，三元，沿x3分层等高线.svg', format='svg')
+
+
+### 将等高线展开，沿x2
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x2_array),25)):
+    ax = fig.add_subplot(len(np.arange(0,len(x2_array),25)), 1, fig_idx + 1, projection='3d')
+    x2_idx = x2_array[idx]
+    ax.contourf(xxx1[idx, :, :],
+                f3_array[idx, :, :],
+                xxx3[idx, :, :],
+                levels = levels,
+                zdir='y',
+                offset=x2_idx,
+                cmap = 'RdYlBu_r')
+    ax.contour(xxx1[idx, :, :],
+                f3_array[idx, :, :],
+                xxx3[idx, :, :],
+                levels = levels,
+                zdir='y',
+                offset=x2_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+    # Plot edges
+    edges_kw = dict(color='0.5', linewidth=1, zorder=1e3)
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    # Set zoom and angle view
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    # ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+# fig.savefig('Figures/一次函数，三元，沿x2分层等高线.svg', format='svg')
+
+
+### 将等高线展开，沿x1
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x1_array),25)):
+    ax = fig.add_subplot(len(np.arange(0,len(x1_array),25)), 1,  fig_idx + 1, projection='3d')
+    x1_idx = x1_array[idx]
+    ax.contourf(f3_array[:, idx, :],
+                xxx2[:, idx, :],
+                xxx3[:,idx,  :],
+                levels = levels,
+                zdir='x',
+                offset=x1_idx,
+                cmap = 'RdYlBu_r')
+    ax.contour(f3_array[:, idx, :],
+                xxx2[:, idx, :],
+                xxx3[:,idx,  :],
+                levels = levels,
+                zdir='x',
+                offset=x1_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+
+    # 绘制框线
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    # ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+# fig.savefig('Figures/一次函数，三元，沿x1分层等高线.svg', format='svg')
+
+
+
+#%% # 用切豆腐的方法展示三元欧氏距离
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as pio
+from sympy import init_printing
+from sympy import symbols, simplify, expand, sqrt, lambdify
+
+## 三元函数
+x1_array = np.linspace(-2,2,101)
+x2_array = np.linspace(-2,2,101)
+x3_array = np.linspace(-2,2,101)
+xxx1, xxx2, xxx3 = np.meshgrid(x1_array, x2_array, x3_array)
+# (101, 101, 101)
+# 定义三元二次型
+def Q3(A,xxx1,xxx2,xxx3):
+    x1,x2,x3 = symbols('x1 x2 x3')
+    x = np.array([[x1,x2,x3]]).T
+
+    f_x = x.T@A@x
+    f_x = sqrt(f_x[0][0])
+    # print(simplify(expand(f_x[0][0])))
+    f_x_fcn = lambdify([x1,x2,x3],f_x)
+    qqq = f_x_fcn(xxx1,xxx2,xxx3)
+    return qqq
+
+A = np.array([[1, 0, 0],
+              [0, 1, 0],
+              [0, 0, 1]])
+print(np.linalg.matrix_rank(A))
+f3_array = np.sqrt(xxx1**2 + xxx2**2 + xxx3**2)
+f3_array.shape  # (101, 101, 101)
+
+### Plotly Volume
+### 外立面
+# 设定统一等高线分层
+levels = np.linspace(0,4,21)
+# 定义等高线高度
+fig = plt.figure(figsize=(6,6))
+ax = fig.add_subplot(111, projection='3d')
+# 绘制三维等高线，填充
+ax.contourf(xxx1[:, :, -1],
+            xxx2[:, :, -1],
+            f3_array[:, :, -1],
+            levels = levels,
+            zdir='z', offset=xxx3.max(),
+            cmap = 'RdYlBu_r') # RdYlBu_r
+ax.contour(xxx1[:, :, -1],
+            xxx2[:, :, -1],
+            f3_array[:, :, -1],
+            levels = levels,
+            zdir='z', offset=xxx3.max(),
+            linewidths = 0.25,
+            colors = '1')
+ax.contourf(xxx1[0, :, :],
+            f3_array[0, :, :],
+            xxx3[0, :, :],
+            levels = levels,
+            zdir='y',
+            cmap = 'RdYlBu_r',
+            offset=xxx2.min())
+ax.contour(xxx1[0, :, :],
+            f3_array[0, :, :],
+            xxx3[0, :, :],
+            levels = levels,
+            zdir='y',
+            colors = '1',
+            linewidths = 0.25,
+            offset=xxx2.min())
+CS = ax.contourf(f3_array[:, 0, :],
+            xxx2[:, 0, :],
+            xxx3[:, 0, :],
+            levels = levels,
+            cmap = 'RdYlBu_r',
+            zdir='x',
+            offset=xxx1.min())
+ax.contour(f3_array[:, 0, :],
+            xxx2[:, 0, :],
+            xxx3[:, 0, :],
+            levels = levels,
+            zdir='x',
+            colors = '1',
+            linewidths = 0.25,
+            offset=xxx1.min())
+fig.colorbar(CS, ticks = np.linspace(np.floor(f3_array.min()),np.ceil(f3_array.max()), int(np.ceil(f3_array.max()) - np.floor(f3_array.min())) + 1))
+# Set limits of the plot from coord limits
+xmin, xmax = xxx1.min(), xxx1.max()
+ymin, ymax = xxx2.min(), xxx2.max()
+zmin, zmax = xxx3.min(), xxx3.max()
+ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+# 绘制框线
+edges_kw = dict(color='0.6', linewidth=1, zorder=1e5)
+# zorder 控制呈现 artist 的先后顺序
+# zorder 越小，artist 置于越底层
+# zorder 赋值很大的数，这样确保 zorder 置于最顶层
+ax.plot([xmin, xmax], [ymin, ymin], [zmax, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+# ax.set_xticks([-1,0,1])
+# ax.set_yticks([-1,0,1])
+# ax.set_zticks([-1,0,1])
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+ax.view_init(azim=-120, elev=30)
+ax.set_proj_type('ortho')
+# ax.set_xlabel('$x_1$')
+# ax.set_ylabel('$x_2$')
+# ax.set_zlabel('$x_3$')
+ax.set_box_aspect((1, 1, 1))
+plt.show()
+plt.close('all')
+
+
+### 将等高线展开，沿x3
+fig = plt.figure(figsize=(6, 36))
+for fig_idx, idx in enumerate(np.arange(0, len(x3_array), 25)):
+    ax = fig.add_subplot(len(np.arange(0, len(x3_array), 25)), 1, fig_idx + 1, projection = '3d')
+    x3_idx = x3_array[idx]
+    ax.contourf(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                f3_array[:, :, idx],
+                levels = levels,
+                zdir='z',
+                offset=x3_idx,
+                cmap = 'RdYlBu_r')
+    ax.contour(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                f3_array[:, :, idx],
+                levels = levels,
+                zdir = 'z',
+                offset = x3_idx,
+                linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+    # 绘制框线
+    edges_kw = dict(color='0.5', linewidth=1, zorder=1e3)
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    ax.set_xlabel(r'$x_1$')
+    ax.set_ylabel(r'$x_2$')
+    ax.set_zlabel(r'$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+
+### 将等高线展开，沿x2
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x2_array),25)):
+    ax = fig.add_subplot(len(np.arange(0,len(x2_array),25)), 1,
+                         fig_idx + 1, projection='3d')
+    x2_idx = x2_array[idx]
+    ax.contourf(xxx1[idx, :, :],
+                f3_array[idx, :, :],
+                xxx3[idx, :, :],
+                levels = levels,
+                zdir='y',
+                offset=x2_idx,
+                cmap = 'RdYlBu_r')
+    ax.contour(xxx1[idx, :, :],
+                f3_array[idx, :, :],
+                xxx3[idx, :, :],
+                levels = levels,
+                zdir='y',
+                offset=x2_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+
+    # Plot edges
+    edges_kw = dict(color='0.5', linewidth=1, zorder=1e3)
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    # Set zoom and angle view
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    # ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+
+### 将等高线展开，沿x1
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x1_array),25)):
+    ax = fig.add_subplot(len(np.arange(0,len(x1_array),25)), 1, fig_idx + 1, projection='3d')
+    x1_idx = x1_array[idx]
+    ax.contourf(f3_array[:, idx, :],
+                xxx2[:, idx, :],
+                xxx3[:,idx,  :],
+                levels = levels,
+                zdir='x',
+                offset=x1_idx,
+                cmap = 'RdYlBu_r')
+    ax.contour(f3_array[:, idx, :],
+                xxx2[:, idx, :],
+                xxx3[:,idx,  :],
+                levels = levels,
+                zdir='x',
+                offset=x1_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+
+    # 绘制框线
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    # ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+
+
+
+#%% # 平面Lp范数等高线
+## 创建数据
+p_values = [1, 1.5, 2, 4, 8, np.inf]
+# 给定不同p值
+x1 = np.linspace(-2.5, 2.5, num=101);
+x2 = x1;
+xx1, xx2 = np.meshgrid(x1,x2)
+## 自定义Lp范数函数
+def Lp_norm(p):
+    # 计算范数
+    if np.isinf(p):
+        zz = np.maximum(np.abs(xx1),np.abs(xx2))
+    else:
+        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
+    return zz
+## 可视化
+fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(6, 9))
+for p, ax in zip(p_values, axes.flat):
+    # 计算范数
+    zz = Lp_norm(p)
+    # 绘制等高线
+    ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
+    # 绘制Lp norm = 1的等高线
+    ax.contour (xx1, xx2, zz, [1], colors='k', linewidths = 2)
+
+    # 装饰
+    ax.axhline(y=0, color='k', linewidth = 0.25)
+    ax.axvline(x=0, color='k', linewidth = 0.25)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2.5, 2.5)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    ax.set_title('p = ' + str(p))
+    ax.set_aspect('equal', adjustable='box')
+
+
+#%% # 平面Lp范数等高线
+## 创建数据
+p_values = [1, 1.5, 2, 4, 8, np.inf]
+# 给定不同p值
+x1 = np.linspace(-2.5, 2.5, num=101);
+x2 = x1;
+xx1, xx2 = np.meshgrid(x1,x2)
+## 自定义Lp范数函数
+def Lp_norm(p):
+    # 计算范数
+    if np.isinf(p):
+        zz = np.maximum(np.abs(xx1),np.abs(xx2))
+    else:
+        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
+    return zz
+## 可视化
+# fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(12, 18), projection = '3d')
+fig = plt.figure(figsize=(12, 18), constrained_layout = True)
+for i, p in enumerate(p_values):
+    ax = fig.add_subplot(3, 2, i+1, projection='3d')
+    # 计算范数
+    zz = Lp_norm(p)
+
+    ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
+
+    ax.plot_wireframe(xx1, xx2, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
+
+    # 三维等高线
+    # colorbar = ax.contour(xx,yy, ff,20,  cmap = 'RdYlBu_r')
+    # 三维等高线
+    colorbar = ax.contour(xx1, xx2, zz, 20,  cmap = 'hsv')
+    # fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
+
+    # 二维等高线
+    ax.contour(xx1, xx2, zz, zdir = 'z', offset= zz.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
+
+    fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
+    ax.set_proj_type('ortho')
+
+    # 3D坐标区的背景设置为白色
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+
+    ax.set_xlabel(r'$\it{x_1}$')
+    ax.set_ylabel(r'$\it{x_2}$')
+    ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+    ax.set_title(f"p = {p}")
+    ax.set_xlim(x1.min(), x1.max())
+    ax.set_ylim(x2.min(), x2.max())
+
+    ax.view_init(azim=-135, elev=30)
+    ax.grid(False)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

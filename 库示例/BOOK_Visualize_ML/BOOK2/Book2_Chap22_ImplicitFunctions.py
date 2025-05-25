@@ -9,20 +9,10 @@ Created on Sun Jun 23 17:05:06 2024
 
 """
 
-
-
-
 #%% 绘制线段
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 
 x = np.linspace(-4, 4, num = 1001)
 y = np.linspace(-4, 4, num = 1001)
@@ -30,7 +20,7 @@ y = np.linspace(-4, 4, num = 1001)
 xx, yy = np.meshgrid(x, y);
 
 # 绘制 x + y = c
-fig, ax = plt.subplots(figsize=(5, 5))
+fig, ax = plt.subplots(figsize=(5, 5), constrained_layout = True)
 levels = np.arange(-6, 6 + 1)
 CS = plt.contour(xx, yy, xx + yy,
             levels = levels,
@@ -55,30 +45,20 @@ ax.grid()
 # fig.savefig('Figures/直线，1.svg', format='svg')
 plt.show()
 
-
-
 #%% 绘制抛物线
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 
 x = np.linspace(-4,4,num = 1001)
 y = np.linspace(-4,4,num = 1001)
 
 xx,yy = np.meshgrid(x,y);
 
-
 # 绘制 x - y**2 = c
-fig, ax = plt.subplots(figsize=(5, 5))
-levels = np.arange(-4,3 + 1)
-CS = plt.contour(xx,yy,xx - yy**2,
+fig, ax = plt.subplots(figsize=(5, 5), constrained_layout = True)
+levels = np.arange(-4, 3 + 1)
+CS = plt.contour(xx, yy, xx - yy**2,
             levels = levels,
             cmap = 'rainbow',
             inline = True)
@@ -102,20 +82,11 @@ ax.grid()
 plt.show()
 
 
-
-
 #%% 离心率可视化一组圆锥曲线
 
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 
 # 产生数据
 x = np.linspace(-4, 4, num = 1001)
@@ -126,24 +97,19 @@ xx,yy = np.meshgrid(x, y);
 # 一组离心率取值
 e_array = np.linspace(0, 3, num = 51)
 
-
 # 离心率绘制椭圆
 # 𝑦2−(𝑒2−1)𝑥2−2𝑥=0, 其中， 𝑒 为离心率
 
-fig, ax = plt.subplots(figsize=(5, 5))
+fig, ax = plt.subplots(figsize=(5, 5), constrained_layout = True)
 
 colors = plt.cm.rainbow(np.linspace(0,1,len(e_array)))
 # 利用色谱生成一组渐变色，颜色数量和 e_array 一致
 
 for i in range(0,len(e_array)):
-
     e = e_array[i]
-
     ellipse = yy**2 - (e**2 - 1)*xx**2 - 2*xx;
-
     color_code = colors[i,:].tolist()
-
-    plt.contour(xx,yy,ellipse,levels = [0], colors = [color_code])
+    plt.contour(xx, yy, ellipse,levels = [0], colors = [color_code])
 
 plt.axvline(x = 0, color = 'k', linestyle = '-')
 plt.axhline(y = 0, color = 'k', linestyle = '-')
@@ -161,34 +127,25 @@ ax.spines['left'].set_visible(False)
 plt.show()
 
 
-#%% 用等高线绘制几何体
+#%% 用等高线绘制几何体, f = f(x, y, z)
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 # 0. 可视化隐函数
 def plot_implicit(fn, X_plot, Y_plot, Z_plot, ax, bbox):
-
     # 等高线的起止范围
     xmin, xmax, ymin, ymax, zmin, zmax = bbox*3
-
     ax.set_proj_type('ortho')
-
     # 绘制三条参考线
     k = 1.5
     ax.plot((xmin * k, xmax * k), (0, 0), (0, 0), 'k')
     ax.plot((0, 0), (ymin * k, ymax * k), (0, 0), 'k')
     ax.plot((0, 0), (0, 0), (zmin * k, zmax * k), 'k')
-
     # 等高线的分辨率
     A = np.linspace(xmin, xmax, 500)
     # 产生网格数据
     A1, A2 = np.meshgrid(A, A)
-
     # 等高线的分割位置
     B = np.linspace(xmin, xmax, 20)
 
@@ -202,7 +159,6 @@ def plot_implicit(fn, X_plot, Y_plot, Z_plot, ax, bbox):
                               linewidths = 0.25,
                               colors = '#0066FF',
                               linestyles = 'solid')
-
     # 绘制 XZ 平面等高线
     if Y_plot == True:
         for y in B:
@@ -213,7 +169,6 @@ def plot_implicit(fn, X_plot, Y_plot, Z_plot, ax, bbox):
                               linewidths = 0.25,
                               colors = '#88DD66',
                               linestyles = 'solid')
-
     # 绘制 YZ 平面等高线
     if Z_plot == True:
         for x in B:
@@ -224,7 +179,6 @@ def plot_implicit(fn, X_plot, Y_plot, Z_plot, ax, bbox):
                               linewidths = 0.25,
                               colors = '#FF6600',
                               linestyles = 'solid')
-
     ax.set_zlim(zmin * k, zmax * k)
     ax.set_xlim(xmin * k, xmax * k)
     ax.set_ylim(ymin * k, ymax * k)
@@ -234,9 +188,8 @@ def plot_implicit(fn, X_plot, Y_plot, Z_plot, ax, bbox):
     # plt.show()
     return
 
-def visualize_four_ways(fn, title, bbox=(-2.5,2.5)):
-
-    fig = plt.figure(figsize=(20, 8))
+def visualize_four_ways(fn, title, bbox=(-2.5, 2.5)):
+    fig = plt.figure(figsize=(20, 8), constrained_layout = True)
 
     ax = fig.add_subplot(1, 4, 1, projection='3d')
     plot_implicit(fn, True, False, False, ax, bbox)
@@ -254,16 +207,11 @@ def visualize_four_ways(fn, title, bbox=(-2.5,2.5)):
     plt.show()
     return
 
-
-
-
 # 1. 单位球
 def unit_sphere(x,y,z):
     return x**2 + y**2 + z**2 - 1
 
 visualize_four_ways(unit_sphere, '单位球', bbox = (-1,1))
-
-
 
 # 2. 椭球
 # Ellipsoid
@@ -274,8 +222,6 @@ def Ellipsoid(x,y,z):
     return x**2/a**2 + y**2/b**2 + z**2/c**2 - 1
 
 visualize_four_ways(Ellipsoid, '椭球', bbox = (-2,2))
-
-
 
 # 3. 双曲抛物面
 # 双曲抛物面是一个二次曲面，其形状像一个双曲面和抛物面的组合。
@@ -288,16 +234,12 @@ def Hyperbolic_paraboloid(x,y,z):
 
 visualize_four_ways(Hyperbolic_paraboloid, '双曲抛物面', bbox = (-2,2))
 
-
-
-
 # 4. 旋转双曲抛物面:𝑥𝑦−𝑧=0
 # Hyperbolic_paraboloid, rotated
 def Hyperbolic_paraboloid_rotated(x,y,z):
     return x*y - z
 
 visualize_four_ways(Hyperbolic_paraboloid_rotated, '旋转双曲抛物面', bbox = (-2,2))
-
 
 # 5A. 正圆抛物面，开口朝上
 # 𝑥2+𝑦2−𝑧−2=0
@@ -307,7 +249,6 @@ def circular_paraboloid(x,y,z):
 
 visualize_four_ways(circular_paraboloid, '正圆抛物面，开口朝上', bbox = (-2,2))
 
-
 # 5B. 正圆抛物面，开口朝下
 # 𝑥2+𝑦2+𝑧−2=0
 #  Circular paraboloid
@@ -315,8 +256,6 @@ def circular_paraboloid(x,y,z):
     return x**2 + y**2 - 2 + z
 
 visualize_four_ways(circular_paraboloid, '正圆抛物面，开口朝下', bbox = (-2,2))
-
-
 
 # 5C. 正圆抛物面，x轴
 # 𝑦2+𝑧2−𝑥−2=0
@@ -334,9 +273,6 @@ def circular_paraboloid(x,y,z):
 
 visualize_four_ways(circular_paraboloid, '正圆抛物面，开口沿y轴', bbox = (-2,2))
 
-
-
-
 # 6A. 单叶双曲面，z轴
 # 𝑥2+𝑦2−𝑧2−2=0
 #  Hyperboloid of revolution of one sheet (special case of hyperboloid of one sheet)
@@ -344,9 +280,6 @@ def Hyperboloid_1_sheet(x,y,z):
     return x**2 + y**2 - z**2 - 2
 
 visualize_four_ways(Hyperboloid_1_sheet, '单叶双曲面，z轴', bbox = (-4,4))
-
-
-
 
 # 6B. 单叶双曲面，y轴
 # 𝑥2−𝑦2+𝑧2−2=0
@@ -356,8 +289,6 @@ def Hyperboloid_1_sheet(x,y,z):
 
 visualize_four_ways(Hyperboloid_1_sheet, '单叶双曲面，y轴', bbox = (-4,4))
 
-
-
 # 6C. 单叶双曲面，x轴
 # −𝑥2+𝑦2+𝑧2−2=0
 #  Hyperboloid of revolution of one sheet (special case of hyperboloid of one sheet)
@@ -365,7 +296,6 @@ def Hyperboloid_1_sheet(x,y,z):
     return - x**2 + y**2 + z**2 - 2
 
 visualize_four_ways(Hyperboloid_1_sheet, '单叶双曲面，x轴', bbox = (-4,4))
-
 
 # 7A. 双叶双曲面，z轴
 # 𝑥2+𝑦2−𝑧2+1=0
@@ -375,8 +305,6 @@ def Hyperboloid_2_sheets(x,y,z):
 
 visualize_four_ways(Hyperboloid_2_sheets, '双叶双曲面，z轴', bbox = (-4,4))
 
-
-
 # 7B. 双叶双曲面，y轴
 # 𝑥2−𝑦2+𝑧2+2=0
 #  Hyperboloid of revolution of two sheets
@@ -384,8 +312,6 @@ def Hyperboloid_2_sheets(x,y,z):
     return x**2 - y**2 + z**2 + 2
 
 visualize_four_ways(Hyperboloid_2_sheets, '双叶双曲面，y轴', bbox = (-4,4))
-
-
 
 # 7C. 双叶双曲面，x轴
 # −𝑥2+𝑦2+𝑧2+1=0
@@ -395,8 +321,6 @@ def Hyperboloid_2_sheets(x,y,z):
 
 visualize_four_ways(Hyperboloid_2_sheets, '双叶双曲面，x轴', bbox = (-4,4))
 
-
-
 # 8A. 圆锥面，z轴
 # 𝑥2+𝑦2−𝑧2=0
 #    Circular cone
@@ -404,8 +328,6 @@ def Circular_cone(x,y,z):
     return x**2 + y**2 - z**2
 
 visualize_four_ways(Circular_cone, '圆锥面', bbox = (-4, 4))
-
-
 
 # 8B. 圆锥面，y轴
 # 𝑥2−𝑦2+𝑧2=0
@@ -415,8 +337,6 @@ def Circular_cone(x,y,z):
 
 visualize_four_ways(Circular_cone, '圆锥面_y_轴', bbox = (-4, 4))
 
-
-
 # 8C. 圆锥面，x轴
 # −𝑥2+𝑦2+𝑧2=0
 #    Circular cone
@@ -425,8 +345,6 @@ def Circular_cone(x,y,z):
 
 visualize_four_ways(Circular_cone, '圆锥面_x_轴', bbox = (-4, 4))
 
-
-
 # 9A. 圆柱面，z轴
 # 𝑥2+𝑦2−1=0
 #    Circular cylinder
@@ -434,8 +352,6 @@ def Circular_cylinder(x,y,z):
     return x**2 + y**2 - 1
 
 visualize_four_ways(Circular_cylinder, '圆柱面，z轴', bbox = (-1,1))
-
-
 
 
 # 9B. 圆柱面，y轴
@@ -450,11 +366,6 @@ def Circular_cylinder(x,y,z):
     return x**2 + z**2 - 1
 visualize_four_ways(Circular_cylinder, '圆柱面，y轴', bbox = (-1,1))
 
-
-
-
-
-
 # 9C. 圆柱面，x轴
 # 𝑦2+𝑧2−1=0
 #    Circular cylinder
@@ -468,8 +379,6 @@ def Circular_cylinder(x,y,z):
 
 visualize_four_ways(Circular_cylinder, '圆柱面，x轴', bbox = (-1,1))
 
-
-
 # 10. 古尔萨特结
 def Tanglecube(x,y,z):
     a,b,c = 0.0,-5.0,11.8
@@ -477,20 +386,12 @@ def Tanglecube(x,y,z):
 
 visualize_four_ways(Tanglecube, '古尔萨特结')
 
-
-
-
-
-
 # 11. 心形
 # (𝑥2+9/4𝑦2+𝑧2−1)3−𝑥2𝑧3−9/80𝑦2𝑧3=0
 def heart(x,y,z):
     return (x**2 + 9/4*y**2 + z**2 - 1)**3 - x**2*z**3 - 9/80 * y**2 * z**3
 
 visualize_four_ways(heart, '心形', (-1.2,1.2))
-
-
-
 
 
 # 12. 环面
@@ -504,10 +405,6 @@ def Torus(x,y,z):
 
 visualize_four_ways(Torus, '环面', (-3,3))
 
-
-
-
-
 # 范数
 def vector_norm(x,y,z):
     p = 0.6
@@ -516,37 +413,25 @@ def vector_norm(x,y,z):
 visualize_four_ways(vector_norm, 'norm_0.6', bbox = (-1,1))
 
 
-
-
 def vector_norm(x,y,z):
     p = 1
     return (np.abs(x)**p + np.abs(y)**p + np.abs(z)**p)**(1/p) - 1
 visualize_four_ways(vector_norm, 'norm_1', bbox = (-1,1))
-
-
-
 
 def vector_norm(x,y,z):
     p = 1.5
     return (np.abs(x)**p + np.abs(y)**p + np.abs(z)**p)**(1/p) - 1
 visualize_four_ways(vector_norm, 'norm_1.5', bbox = (-1,1))
 
-
-
 def vector_norm(x,y,z):
     p = 2
     return (np.abs(x)**p + np.abs(y)**p + np.abs(z)**p)**(1/p) - 1
 visualize_four_ways(vector_norm, 'norm_2', bbox = (-1,1))
 
-
-
 def vector_norm(x,y,z):
     p = 3
     return (np.abs(x)**p + np.abs(y)**p + np.abs(z)**p)**(1/p) - 1
 visualize_four_ways(vector_norm, 'norm_3', bbox = (-1,1))
-
-
-
 
 
 def vector_norm(x,y,z):

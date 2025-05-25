@@ -38,7 +38,7 @@ def generate_grid(V, mu_x, mu_y):
 
 #%% import data
 iris_sns = sns.load_dataset("iris") # sepal_length  sepal_width  petal_length  petal_width
-
+iris_sns = iris_sns.drop('species', axis = 1)
 SIGMA = iris_sns.cov()
 CORR = iris_sns.corr()
 SIGMA = np.array(SIGMA)
@@ -170,9 +170,6 @@ ax.set_ybound(1,7)
 ax.contour(xx, yy, mahal_d_Xc,levels = [1, 2, 3], colors = 'r')
 plt.show()
 
-
-
-
 #%% Bk5_Ch23_02
 # 图 8. 成对特征图上绘制马氏距离等高线，不考虑标签
 import numpy as np
@@ -186,7 +183,7 @@ import seaborn as sns
 # Load the iris data
 iris_sns = sns.load_dataset("iris")
 # sepal_length  sepal_width  petal_length  petal_width
-
+iris_sns = iris_sns.drop('species', axis = 1)
 # with no class labels
 SIGMA = iris_sns.cov()
 SIGMA = np.array(SIGMA)
@@ -223,6 +220,7 @@ for i in [0, 1, 2, 3]:
 
 #%% with class labels
 # 图 9. 成对特征图上绘制马氏距离等高线，考虑标签
+iris_sns = sns.load_dataset("iris")
 dimensions = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
 g = sns.pairplot(iris_sns, hue="species", kind='scatter', plot_kws={'alpha':0.5})
 g.axes[0][0]
@@ -326,11 +324,8 @@ ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 plt.axis('scaled')
 
-
-
 #%% Bk5_Ch23_04
 # 图 12 马氏距离 d、自由度 df、概率值 α 三者关系
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats.distributions import chi2
@@ -358,6 +353,22 @@ plt.xlabel('Mahal d ($\sigma$)')
 plt.ylabel('$\u03B1$')
 
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 马氏距离
+from scipy.spatial import distance
+import numpy as np
+from numpy.linalg import inv
+
+# Variance-covariance matrix
+SIGMA = np.array([[2, 1], [1, 2]])
+
+q   = [0, 0];       # query point
+x_1 = [-3.5, -4];   # data point 1
+x_2 = [2.75, -1.5]; # data point 1
+
+# Calculate Mahal distances
+d_1 = distance.mahalanobis(q, x_1, inv(SIGMA))
+d_2 = distance.mahalanobis(q, x_2, inv(SIGMA))
 
 
 

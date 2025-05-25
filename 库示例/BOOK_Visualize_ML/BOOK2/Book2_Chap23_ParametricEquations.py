@@ -86,20 +86,10 @@ plt.show()
 import matplotlib.pyplot as plt
 import numpy as np
 
-import os
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
-
 k = 0
-
 fig = plt.figure(figsize = (12,12),constrained_layout=True)
 gspec = fig.add_gridspec(9, 9)
-
 nrows, ncols = gspec.get_geometry()
-
 axs = np.array([[fig.add_subplot(gspec[i, j]) for j in range(ncols)] for i in range(nrows)])
 t = np.linspace(0, 4, 1000)
 
@@ -112,18 +102,14 @@ for i in range(nrows):
         axs[i, j].plot(x_traj, y_traj)
         axs[i, j].set_aspect('equal', 'box')
         axs[i, j].axis('off')
-
 # fig.savefig('Figures/利萨茹曲线，k = 0.svg', format='svg')
 plt.show()
 
 
 k = 2
-
 fig = plt.figure(figsize = (12,12),constrained_layout=True)
 gspec = fig.add_gridspec(9, 9)
-
 nrows, ncols = gspec.get_geometry()
-
 axs = np.array([[fig.add_subplot(gspec[i, j]) for j in range(ncols)] for i in range(nrows)])
 t = np.linspace(0, 4, 1000)
 
@@ -143,21 +129,16 @@ plt.show()
 
 fig = plt.figure(figsize = (12,12),constrained_layout=True)
 gspec = fig.add_gridspec(9, 9)
-
 nrows, ncols = gspec.get_geometry()
-
 axs = np.array([[fig.add_subplot(gspec[i, j]) for j in range(ncols)] for i in range(nrows)])
 t = np.linspace(0, 4, 1000)
-
 nx_array = [1, 2, 3, 3, 4, 4, 5, 5, 5]
 ny_array = [1, 1, 1, 2, 1, 3, 1, 2, 3]
 for i in range(nrows):
     nx = nx_array[i]
     ny = ny_array[i]
     for j in range(ncols):
-
         k = j
-
         x_traj = np.cos(2*np.pi*nx*t)
         y_traj = np.cos(2*np.pi*ny*t + k*np.pi/4/nx)
 
@@ -166,7 +147,6 @@ for i in range(nrows):
         axs[i, j].axis('off')
         # axs[i, j].set_title('nx = ' + str(nx) + '; ny = ' + str(ny) +
         #                     '; k = ' + str(k), fontsize = 6)
-
 # fig.savefig('Figures/利萨茹曲线，k变化.svg', format='svg')
 plt.show()
 
@@ -206,8 +186,6 @@ def visualize(X, Y, Z, title):
     plt.show()
     return
 
-
-
 def plotly_visualize(X,Y,Z):
     data = go.Surface(x=X, y=Y, z=Z,
                       # surfacecolor=surfacecolor,
@@ -217,7 +195,6 @@ def plotly_visualize(X,Y,Z):
     fig.update_layout(autosize=False,
                       width=500, height=500,
                       margin=dict(l=65, r=50, b=65, t=90))
-
     fig.show()
     return
 
@@ -235,53 +212,38 @@ phi   = np.linspace(0, np.pi*2, nphi+1)
 
 # 单位球半径
 r = 1
-
 # 球坐标转化为三维直角坐标
 pp_, tt_ = np.meshgrid(phi,theta)
-
 # z轴坐标网格数据
 Z = r*np.cos(tt_)
-
 # x轴坐标网格数据
 X = r*np.sin(tt_)*np.cos(pp_)
-
 # y轴坐标网格数据
 Y = r*np.sin(tt_)*np.sin(pp_)
 
 visualize(X,Y,Z,'上半球')
 
 
-
-
-
 # 设置步数
 intervals = 50
 ntheta = intervals
 nphi = 2*intervals
-
 # 单位球，球坐标
 # theta取值范围为 [0, pi]
 theta = np.linspace(np.pi/2, np.pi, ntheta+1)
 # phi取值范围为 [0, 2*pi]
 phi   = np.linspace(0, np.pi*2, nphi+1)
-
 # 单位球半径
 r = 1
-
 # 球坐标转化为三维直角坐标
 pp_,tt_ = np.meshgrid(phi,theta)
-
 # z轴坐标网格数据
 Z = r*np.cos(tt_)
-
 # x轴坐标网格数据
 X = r*np.sin(tt_)*np.cos(pp_)
-
 # y轴坐标网格数据
 Y = r*np.sin(tt_)*np.sin(pp_)
-
 visualize(X,Y,Z,'下半球')
-
 ################ 球面
 # 设置步数
 intervals = 50
@@ -372,8 +334,6 @@ Y = r*np.sin(tt_)*np.sin(pp_)
 visualize(X,Y,Z,'右半球面')
 
 
-
-
 ################ 圆柱
 # 设置步数
 intervals = 50
@@ -393,7 +353,7 @@ r = 1
 pp_,tt_ = np.meshgrid(phi,theta)
 
 # z轴坐标网格数据
-Z = np.linspace(-1,1,intervals + 1)*np.ones_like(tt_).T
+Z = np.linspace(-1, 1, intervals + 1)*np.ones_like(tt_).T
 Z = Z.T
 
 # x轴坐标网格数据
@@ -520,7 +480,6 @@ visualize(x_trans,y_trans,z_trans,'椭球')
 
 
 
-
 ################### 救生圈
 # 设置步数
 intervals = 50
@@ -537,7 +496,7 @@ r = 0.5
 R = 2
 
 # 球坐标转化为三维直角坐标
-pp_,tt_ = np.meshgrid(phi,theta)
+pp_, tt_ = np.meshgrid(phi, theta)
 
 X = (R + r*np.cos(tt_))*np.cos(pp_)
 Y = (R + r*np.cos(tt_))*np.sin(pp_)

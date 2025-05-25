@@ -66,9 +66,6 @@ ax.set_box_aspect(aspect = (1,1,1))
 # fig.savefig('Figures/游泳圈.svg', format='svg')
 plt.show()
 
-
-
-
 #%% “花篮”
 dphi, dtheta = np.pi / 250.0, np.pi / 250.0
 [phi, theta] = np.mgrid[0:np.pi + dphi * 1.5:dphi, 0:2 * np.pi + dtheta * 1.5:dtheta]

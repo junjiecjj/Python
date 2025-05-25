@@ -106,7 +106,6 @@ ax.set_xlabel('$z_1$')
 ax.set_ylabel('$z_2$')
 plt.show()
 
-
 Z_df = pd.DataFrame(X[:,:2], columns = ['z_1', 'z_2'])
 sns.jointplot(data = Z_df, x = 'z_1', y = 'z_2', kind = 'kde', fill = True, ax = ax)
 ax.set_aspect('equal')

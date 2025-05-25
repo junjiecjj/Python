@@ -73,7 +73,7 @@ levels = np.linspace(-10, 10, 21)
 for cmap_idx in cmap_arrays:
     fig, ax = plt.subplots()
     colorbar = ax.contourf(xx,yy, ff, levels = levels, cmap=cmap_idx)
-    ax.contour(xx,yy, ff, levels = levels, colors = 'k')
+    ax.contour(xx, yy, ff, levels = levels, colors = 'k')
     # 绘制平面填充等高线
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])

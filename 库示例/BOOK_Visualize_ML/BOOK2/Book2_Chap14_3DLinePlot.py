@@ -423,7 +423,6 @@ ax.set_box_aspect((1, 1, 1))
 ax.set_proj_type('ortho')
 plt.show()
 
-
 #%% 可视化偏导数
 import numpy as np
 from sympy import lambdify, diff, exp, latex, simplify
@@ -445,8 +444,8 @@ f_xy_fcn = lambdify([x, y], f_xy)
 f_xy_zz = f_xy_fcn(xx, yy)
 
 ################## 沿x方向切线
-x_s = np.linspace(-2.4,2.4,9)
-y_s = np.linspace(-2.4,2.4,9)
+x_s = np.linspace(-2.4, 2.4, 9)
+y_s = np.linspace(-2.4, 2.4, 9)
 xx_s, yy_s = np.meshgrid(x_s, y_s)
 
 # 符号偏导
@@ -468,8 +467,8 @@ def plot_d_x_tangent(x_t, y_t, df_dx_fcn, f_xy_fcn, color, ax):
     ax.plot(x_t, y_t, z_t, color = color, marker = '.', markersize = 10)
     return
 
-fig, ax = plt.subplots(subplot_kw = {'projection': '3d'}, figsize = (10,10))
-ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5],  rstride = 15, cstride = 0, linewidth = 2)
+fig, ax = plt.subplots(subplot_kw = {'projection': '3d'}, figsize = (10, 10))
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5, 0.5, 0.5],  rstride = 15, cstride = 0, linewidth = 2)
 colors = plt.cm.rainbow(np.linspace(0, 1, len(xx_s.ravel())))
 for i in np.linspace(0, len(xx_s.ravel()) - 1, len(xx_s.ravel())):
     i = int(i)

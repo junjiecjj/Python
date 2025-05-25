@@ -14,14 +14,9 @@ from sympy.abc import x, y
 from matplotlib import cm
 # 导入色谱模块
 
-# import os
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
-
 # 1. 定义函数
 # 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)  - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
@@ -40,12 +35,12 @@ xx, yy = mesh(num = 11)
 zz = xx * 0
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-ax.plot_wireframe(xx,yy, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
+ax.plot_wireframe(xx, yy, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x}$')
-ax.set_ylabel('$\it{y}$')
+ax.set_xlabel(r'$\it{x}$')
+ax.set_ylabel(r'$\it{y}$')
 ax.set_zlabel('')
 ax.set_xticks([])
 ax.set_yticks([])
@@ -56,7 +51,6 @@ ax.set_ylim(yy.min(), yy.max())
 
 ax.view_init(azim=-135, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/展示网格面，网格粗糙.svg', format='svg')
 plt.show()
 
 # 4. 绘制函数网格曲面，网格粗糙
@@ -74,7 +68,6 @@ ax.set_ylim(yy.min(), yy.max())
 
 ax.view_init(azim=-135, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/绘制函数网格曲面，网格粗糙.svg', format='svg')
 plt.show()
 
 # 5. 展示网格面，网格过密
@@ -105,7 +98,6 @@ ax.set_ylim(yy.min(), yy.max())
 
 ax.view_init(azim=-135, elev=30)
 ax.grid(False)
-# fig.savefig('Figures/展示网格面，网格过密.svg', format='svg')
 plt.show()
 
 # 6. 绘制函数网格曲面，网格过密
@@ -121,9 +113,9 @@ ax.plot_wireframe(xx,yy, ff,
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x}$')
-ax.set_ylabel('$\it{y}$')
-ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
+ax.set_xlabel(r'$\it{x}$')
+ax.set_ylabel(r'$\it{y}$')
+ax.set_zlabel(r'$\it{f}$($\it{x}$,$\it{y}$)')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -141,15 +133,15 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 ax.plot_wireframe(xx,yy, ff,
                   color = '#0070C0',
-                  rstride=5, cstride=5,
+                  rstride = 5, cstride = 5,
                   linewidth = 0.25)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x}$')
-ax.set_ylabel('$\it{y}$')
-ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
+ax.set_xlabel(r'$\it{x}$')
+ax.set_ylabel(r'$\it{y}$')
+ax.set_zlabel(r'$\it{f}$($\it{x}$,$\it{y}$)')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -161,20 +153,17 @@ plt.show()
 
 # 8. 仅绘制沿x方向曲线
 ff = f_xy_fcn(xx,yy)
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx,yy, ff,
                   color = '#0070C0',
                   rstride=5, cstride=0,
                   linewidth = 0.25)
-
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x}$')
-ax.set_ylabel('$\it{y}$')
-ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
+ax.set_xlabel(r'$\it{x}$')
+ax.set_ylabel(r'$\it{y}$')
+ax.set_zlabel(r'$\it{f}$($\it{x}$,$\it{y}$)')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -187,11 +176,8 @@ plt.show()
 
 # 10. 特别强调特定曲线
 # 请大家试着绘制一条 x = 1曲线
-
 x_array = np.linspace(-3,3,100)
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx, yy, ff, color = '0.5', rstride=5, cstride=5, linewidth = 0.25)
 
 y_level = 0 + np.zeros_like(x_array)
@@ -214,11 +200,8 @@ plt.show()
 
 
 x_array = np.linspace(-2,3,100)
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx, yy, ff, color = '0.5', rstride=5, cstride=5, linewidth = 0.25)
-
 y_array = 1 - x_array
 # x + y = 1
 ax.plot(x_array, y_array, f_xy_fcn(x_array, y_array), c = 'r')
@@ -240,18 +223,12 @@ plt.show()
 
 # 11. 绘制网格化散点
 xx_scatter, yy_scatter = mesh(num = 21)
-
 ff_scatter = f_xy_fcn(xx_scatter, yy_scatter)
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx, yy, ff, color = [0.6,0.6,0.6], rstride=5, cstride=5, linewidth = 0.25)
-
-ax.scatter(xx_scatter.ravel(),yy_scatter.ravel(),ff_scatter,c = ff_scatter,s = 10,cmap = 'RdYlBu_r')
-
+ax.scatter(xx_scatter.ravel(), yy_scatter.ravel(), ff_scatter, c = ff_scatter, s = 10, cmap = 'RdYlBu_r')
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
-
 ax.set_xlabel('$\it{x}$')
 ax.set_ylabel('$\it{y}$')
 ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
@@ -266,11 +243,8 @@ plt.show()
 
 # 12. 绘制不规则散点
 xx_scatter, yy_scatter = mesh(num = 21)
-
 ff_scatter = f_xy_fcn(xx_scatter,yy_scatter)
-
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 x_rand = np.random.rand(500) * 6 - 3
@@ -302,11 +276,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from sympy.abc import x, y
 from sympy import lambdify, diff, exp, latex
-
-# import os
-# # 如果文件夹不存在，创建文件夹
-# if not os.path.isdir("Figures"):
-#     os.makedirs("Figures")
 
 def mesh(num = 101):
     # number of mesh grids
@@ -441,16 +410,13 @@ if not os.path.isdir("Figures"):
 
 # 1. 绘制xy平行面，网格
 s_fine = np.linspace(0, 10, 11)
-xx, yy = np.meshgrid(s_fine,s_fine)
+xx, yy = np.meshgrid(s_fine, s_fine)
 # 生成网格数据
-
 fig = plt.figure( figsize = (8,8))
 ax = fig.add_subplot(111, projection='3d')
 # 导入3D轴
-
 zz = np.zeros_like(xx) + 1
 # numpy.zeros_like(xx) 构造一个形状和 xx 一致的全 0 矩阵
-
 ax.plot_surface(xx, yy, zz, color = 'b', alpha = 0.1)
 # 绘制网格曲面，透明度为 0.1
 
@@ -468,17 +434,14 @@ ax.set_zlabel('z')
 ax.view_init(azim=-120, elev=30)
 ax.set_box_aspect([1,1,1])
 ax.grid(False)
-# fig.savefig('Figures/xy平行面.svg', format='svg')
 plt.show()
 
 
 # 2. 绘制xy平行面，无网格
-s_coarse = np.linspace(0, 10, 2)
+s_coarse = np.linspace(0, 10, 2) # 重点在这行导致无网格
 xx, yy = np.meshgrid(s_coarse,s_coarse)
-
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(111, projection='3d', )
-
 zz = np.zeros_like(xx) + 1
 ax.plot_surface(xx, yy, zz, color = 'b', alpha = 0.1)
 ax.plot_wireframe(xx, yy, np.zeros_like(xx) + 1)
@@ -493,7 +456,6 @@ ax.set_zlim([0,10])
 ax.view_init(azim=-120, elev=30)
 ax.set_box_aspect([1,1,1])
 ax.grid(False)
-# fig.savefig('Figures/xy平行面，无网格.svg', format='svg')
 plt.show()
 
 # 3. 绘制xy平行面，若干平行平面
@@ -542,7 +504,7 @@ ax.grid(False)
 plt.show()
 
 
-# 5. 绘制xz平行面，无网格
+# 5. 绘制xz平行面，无网格, 重点在这行导致无网格
 xx, zz = np.meshgrid(s_coarse,s_coarse)
 
 fig = plt.figure(figsize = (8,8))
@@ -590,7 +552,7 @@ plt.show()
 
 
 # 7. 绘制yz平行面，网格
-yy, zz = np.meshgrid(s_fine,s_fine)
+yy, zz = np.meshgrid(s_fine, s_fine)
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(111, projection='3d', )
@@ -609,9 +571,8 @@ ax.grid(False)
 # fig.savefig('Figures/yz平行面，网格.svg', format='svg')
 plt.show()
 
-
-
 # 8. 绘制yz平行面，无网格
+yy, zz = np.meshgrid(s_coarse,s_coarse)
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(111, projection='3d', )
@@ -689,10 +650,6 @@ import os
 from matplotlib import cm
 # 导入色谱模块
 
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
-
 # 1. 定义符号函数
 # 用 sympy 库定义 MATLAB二元函数 peaks()
 f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
@@ -705,7 +662,6 @@ def mesh(num = 101):
     x_array = np.linspace(-3,3,num)
     y_array = np.linspace(-3,3,num)
     xx,yy = np.meshgrid(x_array,y_array)
-
     return xx, yy
 
 # 2. 剖面线，平行于xy
@@ -714,21 +670,15 @@ ff = f_xy_fcn(xx,yy)
 z_level = 2
 # 指定 z 轴高度
 
-xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-3, 3, 2))
-
+xx_, yy_ = np.meshgrid(np.linspace(-3, 3, 2), np.linspace(-3, 3, 2))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 # 绘制剖面
 zz_ = np.zeros_like(xx_) + z_level
 ax.plot_surface(xx_, yy_, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(xx_, yy_, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(xx_, yy_, zz_, color = 'b', lw = 0.2)
 
 # 绘制网格曲面
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.6, 0.6, 0.6], rstride = 5, cstride = 5, linewidth = 0.25)
 
 # 绘制指定一条剖面线
 ax.contour(xx, yy, ff,
@@ -739,9 +689,9 @@ ax.contour(xx, yy, ff,
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x}$')
-ax.set_ylabel('$\it{y}$')
-ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
+ax.set_xlabel(r'$\it{x}$')
+ax.set_ylabel(r'$\it{y}$')
+ax.set_zlabel(r'$\it{f}$($\it{x}$,$\it{y}$)')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -760,20 +710,15 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 # 绘制剖面
 ax.plot_surface(xx_, xx_*0 + y_level, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(xx_, xx_*0 + y_level, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(xx_, xx_*0 + y_level, zz_, color = 'b', lw = 0.2)
 
 # 绘制曲面网格
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 # 绘制指定一条剖面线
 x_array = np.linspace(-3,3,101)
 y_array = x_array*0 + y_level
-ax.plot(x_array, y_array, f_xy_fcn(x_array,y_array),
-        color = 'r', lw = 1)
+ax.plot(x_array, y_array, f_xy_fcn(x_array,y_array), color = 'r', lw = 1)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -798,20 +743,15 @@ yy_, zz_ = np.meshgrid(np.linspace(-3, 3, 2),np.linspace(-8, 8, 2))
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 ax.plot_surface(yy_*0 + x_level, yy_, zz_, color = 'b', alpha = 0.1)
-ax.plot_wireframe(yy_*0 + x_level, yy_, zz_, color = 'b',
-                  lw = 0.2)
+ax.plot_wireframe(yy_*0 + x_level, yy_, zz_, color = 'b', lw = 0.2)
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.6, 0.6, 0.6],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx,yy, ff, color = [0.6, 0.6, 0.6], rstride=5, cstride=5, linewidth = 0.25)
 
 y_array = np.linspace(-3,3,101)
 
 # 绘制指定一条剖面线
 x_array = y_array*0 + x_level
-ax.plot(x_array, y_array, f_xy_fcn(x_array,y_array),
-        color = 'r', lw = 1)
+ax.plot(x_array, y_array, f_xy_fcn(x_array,y_array), color = 'r', lw = 1)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -837,14 +777,9 @@ import matplotlib.pyplot as plt
 
 from scipy.stats import multivariate_normal
 # 导入符号变量
-import os
 
 from matplotlib import cm
 # 导入色谱模块
-
-# 如果文件夹不存在，创建文件夹
-if not os.path.isdir("Figures"):
-    os.makedirs("Figures")
 
 def mesh(num = 101):
     # number of mesh grids
@@ -853,7 +788,6 @@ def mesh(num = 101):
     xx,yy = np.meshgrid(x_array,y_array)
 
     return xx, yy
-
 
 # 1. 二元高斯分布
 xx1, xx2 = mesh(num = 101)
@@ -882,15 +816,11 @@ for idx in range(len(x1_loc_array)):
     x_idx = x1[x_loc]
     x_i_array = x2*0 + x_idx
     z_array = PDF_ff[:,x_loc]
-
     ax.plot(x_i_array, x2, z_array, color=facecolors[idx,:], linewidth = 1.5)
-
     ax.add_collection3d(plt.fill_between(x2, 0*z_array, z_array, color=facecolors[idx,:], alpha=0.2), # 给定填充对象
-                        zs=x_idx, # 指定位置
-                        zdir='x') # 指定方向
-
+                        zs = x_idx, # 指定位置
+                        zdir = 'x') # 指定方向
 ax.set_proj_type('ortho')
-
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('Joint PDF, $f_{X_1,X_2}(x_1,x_2)$')
@@ -906,24 +836,18 @@ plt.show()
 
 # 3. 指定 x2 具体值
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx1, xx2, PDF_ff, color = [0.5,0.5,0.5], rstride=2, cstride=0, linewidth = 0.25)
-
 x2_loc_array = np.arange(0,len(x1),10)
 facecolors = cm.rainbow(np.linspace(0, 1, len(x2_loc_array)))
-
 for idx in range(len(x2_loc_array)):
     x_loc = x2_loc_array[idx]
     x_idx = x2[x_loc]
     x_i_array = x1*0 + x_idx
     z_array = PDF_ff[x_loc,:]
-
     ax.plot(x1, x_i_array, z_array, color=facecolors[idx,:], linewidth = 1.5)
-
     ax.add_collection3d(plt.fill_between(x1, 0*z_array, z_array, color=facecolors[idx,:], alpha=0.2), zs=x_idx, zdir='y')
 
 ax.set_proj_type('ortho')
-
 ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('Joint PDF, $f_{X_1,X_2}(x_1,x_2)$')
@@ -937,16 +861,12 @@ ax.grid(False)
 plt.show()
 
 
-
-
 #%% 圆形薄膜振荡模式
 import numpy as np
 from scipy.special import jn, jn_zeros
 import matplotlib.pyplot as plt
 mmax = 5
-
 def displacement(n, m, r, theta, mmax = 5):
-
     """
     鼓膜在极坐标系下的位移，
     其中
@@ -956,7 +876,6 @@ def displacement(n, m, r, theta, mmax = 5):
     theta表示角坐标
     mmax 表示Bessel函数的最大阶数
     """
-
     # 计算Bessel函数Jn的零点，并选择其中第m个零点，将其赋值给变量k
     k = jn_zeros(n, mmax+1)[m]
     #  返回计算得到的鼓膜位移，该位移是正弦函数和Bessel函数的乘积
@@ -970,18 +889,12 @@ theta = np.linspace(0, 2 * np.pi, 1001)
 xx = np.array([rr*np.cos(theta) for rr in r])
 yy = np.array([rr*np.sin(theta) for rr in r])
 
-
-
-def visualize(n,m,title):
-
+def visualize(n = 4, m = 0, title = '4,0'):
     zz = np.array([displacement(n, m, rr, theta) for rr in r])
-
     fig = plt.figure( figsize = (8,8))
     ax = fig.add_subplot(121, projection='3d',  )
-
-    surf = ax.plot_wireframe(xx,yy,zz, cstride = 50, rstride = 50, colors = '0.8', linewidth=0.25)
+    surf = ax.plot_wireframe(xx, yy, zz, cstride = 50, rstride = 50, colors = '0.8', linewidth=0.25)
     ax.contour(xx, yy, zz, cmap='RdYlBu_r', levels = 15, linewidths=1)
-
     ax.set_proj_type('ortho')
 
     ax.set_xlabel('$x$')
@@ -1001,18 +914,12 @@ def visualize(n,m,title):
     ax.axis('off')
 
     ax = fig.add_subplot(122)
-
-    ax.contourf(xx,yy,zz,
-               cmap='RdYlBu_r',
-               levels = 15)
-    ax.contour(xx,yy,zz,
-               colors = 'w',
-               levels = 15,
-               linewidths=0.25)
+    ax.contourf(xx, yy, zz, cmap = 'RdYlBu_r', levels = 15)
+    ax.contour(xx, yy, zz, colors = 'w', levels = 15, linewidths = 0.25)
 
     ax.plot(np.cos(theta),np.sin(theta),'k')
-    ax.set_xlabel('$x$')
-    ax.set_ylabel('$y$')
+    ax.set_xlabel(r'$x$')
+    ax.set_ylabel(r'$y$')
 
     ax.set_xlim(-2, 2)
     ax.set_ylim(-2, 2)
@@ -1020,12 +927,8 @@ def visualize(n,m,title):
     ax.set_yticks([])
     ax.grid(False)
     ax.axis('off')
-    # fig.savefig(title + '.svg')
     plt.show()
-
-visualize(4,0,'4,0')
-
-
+visualize(4, 0, '4,0')
 
 #%%=======================
 # 1 表面图（Surface plots）
@@ -1059,13 +962,13 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 ax.set_proj_type('ortho')
 #  正交投影模式
 
-surf = ax.plot_surface(xx,yy,ff, cmap=cm.RdYlBu, linewidth=0, antialiased=False)
+surf = ax.plot_surface(xx, yy, ff, cmap = cm.RdYlBu, linewidth = 0, antialiased = False)
 # 使用 RdYlBu 色谱
 # 请大家试着调用其他色谱
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 # 设定横纵轴标签
 
 ax.set_xlim(x_array.min(), x_array.max())
@@ -1078,10 +981,6 @@ ax.view_init(azim=-135, elev=30)
 ax.grid(False)
 # 删除网格
 
-plt.rcParams["font.family"] = "Times New Roman"
-plt.rcParams["font.size"] = "10"
-# 修改字体、字号
-
 fig.colorbar(surf, shrink=0.5, aspect=20)
 plt.show()
 
@@ -1090,9 +989,9 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 ax.set_proj_type('ortho')
 surf = ax.plot_surface(xx,yy,ff, cmap='RdYlBu_r', linewidth=0, antialiased=False)
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
@@ -1100,9 +999,6 @@ ax.set_ylim(y_array.min(), y_array.max())
 ax.view_init(azim=-135, elev=30)
 
 ax.grid(False)
-
-plt.rcParams["font.family"] = "Times New Roman"
-plt.rcParams["font.size"] = "10"
 
 fig.colorbar(surf, shrink=0.5, aspect=20)
 plt.show()
@@ -1115,39 +1011,33 @@ colors = cm.RdYlBu_r(norm_plt(ff))
 # colors = cm.Blues_r(norm_plt(ff))
 
 surf = ax.plot_surface(xx,yy,ff, facecolors = colors,
-                       rstride = 2,
-                       cstride = 2,
+                       rstride = 5,
+                       cstride = 5,
                        linewidth = 1, # 线宽
                        shade = False) # 删除阴影
 surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
-
 # 三维等高线
-# colorbar = ax.contour(xx,yy, ff, 20,  cmap = 'hsv')
-colorbar = ax.contour3D(xx,yy, ff, 20,  cmap = 'hsv')
-fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
+colorbar = ax.contour(xx,yy, ff, 20,  cmap = 'hsv')
+# colorbar = ax.contour3D(xx,yy, ff, 20,  cmap = 'hsv')
+# fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
 
 # 二维等高线
-ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
+# ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
 
 ax.set_proj_type('ortho')
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 # 设置X、Y、Z面的背景是白色
 # ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 # ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 # ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
-
 ax.view_init(azim=-135, elev=30)
 ax.grid(False)
-plt.rcParams["font.family"] = "Times New Roman"
-plt.rcParams["font.size"] = "10"
-# fig.savefig('Figures/只保留网格线.svg', format='svg')
 plt.show()
 
 ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
@@ -1172,9 +1062,9 @@ ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
-ax.set_xlabel('$\it{x_1}$')
-ax.set_ylabel('$\it{x_2}$')
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+ax.set_xlabel(r'$\it{x_1}$')
+ax.set_ylabel(r'$\it{x_2}$')
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
 
 ax.set_xlim(x_array.min(), x_array.max())
 ax.set_ylim(y_array.min(), y_array.max())
@@ -1199,17 +1089,17 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 ax.plot_wireframe(xx,yy, ff,
                   color = [0.6,0.6,0.6],
-                  rstride=5, cstride=5,
+                  rstride = 5, cstride=5,
                   linewidth = 0.25)
-
-ax.scatter(xx, yy, ff, c = ff, s = 10, cmap = 'RdYlBu_r')
+# ax.scatter(xx, yy, ff, c = ff, s = 10, cmap = 'RdYlBu_r')
+ax.scatter(xx, yy, ff, c = 'blue', s = 1,  )
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
-ax.set_xlabel('$\it{x}$')
-ax.set_ylabel('$\it{y}$')
-ax.set_zlabel('$\it{f}$($\it{x}$,$\it{y}$)')
+ax.set_xlabel(r'$\it{x}$')
+ax.set_ylabel(r'$\it{y}$')
+ax.set_zlabel(r'$\it{f}$($\it{x}$,$\it{y}$)')
 
 ax.set_xlim(xx.min(), xx.max())
 ax.set_ylim(yy.min(), yy.max())
@@ -1228,7 +1118,7 @@ surf = ax.plot_surface(xx,yy, ff,
                 rstride=2, cstride=2,
                 linewidth = 0.25,
                 edgecolors = [0.5,0.5,0.5],
-                ) # 删除阴影 shade = False
+                shade = False) # 删除阴影 shade = False
 # surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
 ax.set_proj_type('ortho')
