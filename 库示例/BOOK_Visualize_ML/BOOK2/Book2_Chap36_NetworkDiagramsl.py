@@ -4,6 +4,11 @@
 Created on Sun May 25 18:28:55 2025
 
 @author: jack
+
+sudo apt-get install graphviz graphviz-dev
+pip install pygraphviz
+
+
 """
 
 #%% plot_atlas.py
