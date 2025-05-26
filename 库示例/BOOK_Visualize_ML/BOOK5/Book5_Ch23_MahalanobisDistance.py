@@ -57,8 +57,6 @@ x = np.linspace(3,9,num = 201)
 y = np.linspace(1,7,num = 201)
 xx, yy = np.meshgrid(x,y) # (201, 201)
 
-
-
 #%% Euclidean distance,
 # 图 3. 花萼长度、花瓣长度平面上的欧氏距离等高线和网格
 I = np.array([[1, 0], [0, 1]])
