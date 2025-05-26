@@ -478,8 +478,6 @@ z_trans = position_trans[:,2].reshape(x.shape)
 
 visualize(x_trans,y_trans,z_trans,'椭球')
 
-
-
 ################### 救生圈
 # 设置步数
 intervals = 50

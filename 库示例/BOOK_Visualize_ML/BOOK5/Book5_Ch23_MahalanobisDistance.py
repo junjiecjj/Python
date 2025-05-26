@@ -15,13 +15,12 @@ from numpy import linalg as LA
 
 
 #%% rotated grid
-
 def generate_grid(V, mu_x, mu_y):
     # grid rotation
     x1_grid = np.arange(-10, 10 + 1, step = 1) # (21,)
     x2_grid = np.arange(-10, 10 + 1, step = 1)
 
-    XX1_grid,XX2_grid = np.meshgrid(x1_grid, x2_grid) # (21, 21)
+    XX1_grid, XX2_grid = np.meshgrid(x1_grid, x2_grid) # (21, 21)
 
     X_grid = np.column_stack((XX1_grid.ravel(), XX2_grid.ravel())) # (441, 2)
 
@@ -235,8 +234,8 @@ for i, i_dim in enumerate(dimensions):
             for k, label in enumerate(iris_sns['species'].unique()):
                 data = iris_sns.loc[iris_sns['species'] == label, [i_dim,j_dim]]
                 mu_i_j = data.mean()
-                mu_x = mu_i_j[1]
-                mu_y = mu_i_j[0]
+                mu_x = mu_i_j.iloc[1]
+                mu_y = mu_i_j.iloc[0]
 
                 SIGMA_i_j = data.cov()
                 CORR_i_j  = data.corr()

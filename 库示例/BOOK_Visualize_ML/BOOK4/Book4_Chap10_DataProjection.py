@@ -2,7 +2,7 @@
 
 
 
-# Bk4_Ch10_01.py
+#%% Bk4_Ch10_01.py
 
 import seaborn as sns
 import numpy as np
@@ -22,19 +22,14 @@ feature_names = ['Sepal length, x1','Sepal width, x2',
 # Convert X array to dataframe
 X_df = pd.DataFrame(X, columns=feature_names)
 
-#%% Original data, X
-
+# Original data, X
 X = X_df.to_numpy();
 
 # Gram matrix, G and orthogonal basis V
-
 G = X.T@X
 D, V = np.linalg.eig(G)
 
-#%%
-
 def heatmap(Matrices,Titles,Ranges,Equal_tags):
-
     M1 = Matrices[0]
     M2 = Matrices[1]
     M3 = Matrices[2]
@@ -90,11 +85,8 @@ def heatmap(Matrices,Titles,Ranges,Equal_tags):
     plt.title(Title_3)
 
 #%%
-
 def plot_four_figs(X,v_j,idx):
-
     # Fig 1: X@v_j = z_j
-
     z_j = X@v_j
     Titles = ['$X$',
               '$v_' + str(idx) + '$',

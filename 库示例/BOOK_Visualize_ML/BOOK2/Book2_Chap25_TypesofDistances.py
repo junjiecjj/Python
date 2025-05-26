@@ -307,13 +307,13 @@ ax.set_aspect('equal')
 ax.grid(False)
 ax.set_xlim(xx1.min(), xx1.max());
 ax.set_ylim(xx2.min(), xx2.max())
-plt.tight_layout()
+# plt.tight_layout()
 
 ax = fig.add_subplot(1, 3, 3)
 ax.contourf(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
 xx1_ = xx1[::20,::20]
 xx2_ = xx2[::20,::20]
-plt.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1], angles='xy', scale_units='xy', edgecolor='none', alpha=0.8)
+ax.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1], angles='xy', scale_units='xy', edgecolor='none', alpha=0.8)
 # ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
 ax.set_xticks([])
 ax.set_yticks([])

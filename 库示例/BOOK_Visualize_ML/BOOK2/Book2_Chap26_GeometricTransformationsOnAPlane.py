@@ -469,7 +469,7 @@ for theta_deg in theta_array:
     # 旋转一元高斯PDF曲线
     PDF1_v1 = PDF1@R1
 
-    fig, ax = plt.subplots(figsize = (10,10))
+    fig, ax = plt.subplots(figsize = (10,10), constrained_layout = True)
     # 绘制马氏距离等高线
     plt.contourf(xx_maha, yy_maha, mahal_d_Xc, cmap='Blues_r', levels = np.linspace(0,4,21))
     plt.contour(xx_maha, yy_maha, mahal_d_Xc, colors='k', levels = [1,2,3])
@@ -535,7 +535,7 @@ theta_array = np.linspace(0, 360, num = 12, endpoint= False)
 # 定义16个不同投影角度
 colors = cm.hsv(np.linspace(0, 1, len(theta_array)))
 
-fig, ax = plt.subplots(figsize = (8, 8))
+fig, ax = plt.subplots(figsize = (10, 10), constrained_layout = True)
 # 绘制质心
 plt.plot(x1[:,0].mean(), x1[:,1].mean(), marker = 'x', color = 'k', markersize = 18)
 # theta_array = [135, ]

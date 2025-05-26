@@ -8,37 +8,27 @@ import numpy as np
 from math import lcm
 ## 自定义函数
 def draw_spirograph(R, r, d):
-
     num = lcm(R,r)/R
     print(num)
     theta = np.linspace(0,num*2*np.pi, 10000)
     theta_cir = np.linspace(0,2*np.pi,180)
-
     x = (R-r) * np.cos(theta) + d * np.cos((R-r)/r * theta)
     y = (R-r) * np.sin(theta) - d * np.sin((R-r)/r * theta)
-
     fig, ax = plt.subplots(figsize = (3,3))
-
     plt.plot(0, 0, marker = 'x', markersize = 6)
-
     plt.plot(x, y, c='k')
-
     # 大圆圆周
     plt.plot(np.cos(theta_cir) * R,
              np.sin(theta_cir) * R,
              lw = 0.2, c = 'b', ls = '--')
-
     # 小圆圆心运动轨迹
     plt.plot(np.cos(theta_cir) * (R - r),
              np.sin(theta_cir) * (R - r),
              lw = 0.2, c = 'k', ls = 'dashed')
-
     plt.plot(np.cos(theta_cir) * r + (R - r),
              np.sin(theta_cir) * r,
              lw = 1, c = 'r')
-
     plt.plot(R - r, 0, marker = 'x', c = 'r', markersize = 6)
-
     # P点位置
     plt.plot(R - r + d, 0, marker = '.', c = 'k', markersize = 6)
 
@@ -66,7 +56,6 @@ from math import lcm
 from matplotlib.collections import LineCollection
 
 def draw_spirograph(R, r, d, Ratio = 1):
-
     num = lcm(R,r)/R
     print(num)
     theta = np.linspace(0,num*2*np.pi*Ratio, 10000)
@@ -74,12 +63,9 @@ def draw_spirograph(R, r, d, Ratio = 1):
     x = (R-r) * np.cos(theta) + d * np.cos((R-r)/r * theta)
     y = (R-r) * np.sin(theta) - d * np.sin((R-r)/r * theta)
     dist = np.sqrt(x**2 + y**2)
-
     points = np.array([x, y]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
-
     norm = plt.Normalize(theta.min(), theta.max())
-
     lc = LineCollection(segments, cmap='hsv', norm=norm)
     # Set the values used for colormapping
     lc.set_array(theta)
@@ -116,7 +102,6 @@ from math import lcm
 ## 自定义函数
 
 def draw_spirograph(R, r, d):
-
     num = lcm(R,r)/R
     print(num)
     theta = np.linspace(0,num*2*np.pi, 10000)
@@ -124,32 +109,23 @@ def draw_spirograph(R, r, d):
 
     x = (R+r) * np.cos(theta) - d * np.cos((R+r)/r * theta)
     y = (R+r) * np.sin(theta) - d * np.sin((R+r)/r * theta)
-
     fig, ax = plt.subplots(figsize = (3,3))
-
     plt.plot(0, 0, marker = 'x', markersize = 6)
-
     plt.plot(x, y, c='k')
-
     # 大圆圆周
     plt.plot(np.cos(theta_cir) * R,
              np.sin(theta_cir) * R,
              lw = 0.2, c = 'b', ls = '--')
-
     # 小圆圆心运动轨迹
     plt.plot(np.cos(theta_cir) * (R + r),
              np.sin(theta_cir) * (R + r),
              lw = 0.2, c = 'k', ls = 'dashed')
-
     plt.plot(np.cos(theta_cir) * r + (R + r),
              np.sin(theta_cir) * r,
              lw = 1, c = 'r')
-
     plt.plot(R + r, 0, marker = 'x', c = 'r', markersize = 6)
-
     # P点位置
     plt.plot(R + r - d, 0, marker = '.', c = 'k', markersize = 6)
-
     plt.xlim(-R-3,R+3)
     plt.ylim(-R-3,R+3)
     # plt.axis('equal')
@@ -165,15 +141,10 @@ draw_spirograph(2, 1, 1)
 
 draw_spirograph(4, 1, 0)
 
-
 draw_spirograph(6, 1, 2)
 
 
-
-
 #%% # 外旋轮线Epitrochoid
-
-
 import matplotlib.pyplot as plt
 import numpy as np
 from math import lcm
@@ -181,7 +152,6 @@ from matplotlib.collections import LineCollection
 
 
 def draw_spirograph(R, r, d, Ratio = 1):
-
     num = lcm(R,r)/R
     print(num)
     theta = np.linspace(0,num*2*np.pi*Ratio, 10000)

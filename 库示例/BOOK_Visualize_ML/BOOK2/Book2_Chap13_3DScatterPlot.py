@@ -242,68 +242,7 @@ ax.set_zticklabels([])
 plt.show()
 
 
-#%% 用三维散点可视化多项分布
-# 导入包
-from scipy.stats import multinomial
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
 
-def visualize_multinomial(p_array, num = 20):
-    x1_array = np.arange(num + 1)
-    x2_array = np.arange(num + 1)
-
-    xx1, xx2 = np.meshgrid(x1_array, x2_array)
-
-    xx3 = num - xx1 - xx2
-    xx3 = np.where(xx3 >= 0.0, xx3, np.nan)
-
-    PMF_ff = multinomial.pmf(x = np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])).T, n = num, p = p_array)
-    PMF_ff = np.where(PMF_ff > 0.0, PMF_ff, np.nan)
-    PMF_ff = np.reshape(PMF_ff, xx1.shape)
-
-    fig = plt.figure(figsize=(5, 5))
-    ax = plt.axes(projection = "3d")
-    scatter_plot = ax.scatter3D(xx1.ravel(), xx2.ravel(), xx3.ravel(), s = 50, marker = '.', alpha = 1, c = PMF_ff.ravel(), cmap = 'RdYlBu_r')
-
-    ax.set_proj_type('ortho')
-    ax.set_xlabel('$x_1$')
-    ax.set_ylabel('$x_2$')
-    ax.set_zlabel('$x_3$')
-    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-
-    ax.set_xticks([0,num])
-    ax.set_yticks([0,num])
-    ax.set_zticks([0,num])
-
-    ax.set_xlim(0, num)
-    ax.set_ylim(0, num)
-    ax.set_zlim3d(0, num)
-    ax.view_init(azim=30, elev=30)
-    ax.set_xlabel('$x_1$')
-    ax.set_ylabel('$x_2$')
-    ax.set_zlabel('$x_3$')
-    ax.set_box_aspect(aspect = (1,1,1))
-
-    ax.grid()
-    # fig.colorbar(scatter_plot, ax = ax, shrink = 0.5, aspect = 10)
-    title = '_'.join(str(round(p_i,2)) for p_i in p_array)
-    title = 'p_array_' + title
-    ax.set_title(title)
-    plt.show()
-
-p_array = [1/3, 1/3, 1/3]
-visualize_multinomial(p_array)
-
-p_array = [0.2, 0.2, 0.6]
-visualize_multinomial(p_array)
-
-p_array = [0.2, 0.6, 0.2]
-visualize_multinomial(p_array)
-plt.close('all')
 
 #%%  用三维散点切片可视化高斯分布
 import numpy as np
@@ -330,16 +269,12 @@ def Mahal_d_2_pdf(d, Sigma):
     # 将马氏距离转化为概率密度
     # 计算第一个缩放因子，和协方差行列式有关
     scale_1 = np.sqrt(np.linalg.det(Sigma))
-
     # 计算第二个缩放因子，和高斯函数有关
     scale_2 = (2*np.pi)**(3/2)
-
     # 高斯函数，马氏距离转为亲近度
     gaussian = np.exp(-d**2/2)
-
     # 完成缩放，得到概率密度值
     pdf = gaussian/scale_1/scale_2
-
     return pdf
 
 # 产生网格数据、概率密度
@@ -439,6 +374,69 @@ for fig_idx,x1_slice_idx in enumerate(np.arange(0,len(x1),5)):
     ax.set_box_aspect((1, 1, 1))
     ax.grid(False)
 plt.show()
+
+#%% 用三维散点可视化多项分布
+# 导入包
+from scipy.stats import multinomial
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+def visualize_multinomial(p_array, num = 20):
+    x1_array = np.arange(num + 1)
+    x2_array = np.arange(num + 1)
+
+    xx1, xx2 = np.meshgrid(x1_array, x2_array)
+
+    xx3 = num - xx1 - xx2
+    xx3 = np.where(xx3 >= 0.0, xx3, np.nan)
+
+    PMF_ff = multinomial.pmf(x = np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])).T, n = num, p = p_array)
+    PMF_ff = np.where(PMF_ff > 0.0, PMF_ff, np.nan)
+    PMF_ff = np.reshape(PMF_ff, xx1.shape)
+
+    fig = plt.figure(figsize=(5, 5))
+    ax = plt.axes(projection = "3d")
+    scatter_plot = ax.scatter3D(xx1.ravel(), xx2.ravel(), xx3.ravel(), s = 50, marker = '.', alpha = 1, c = PMF_ff.ravel(), cmap = 'RdYlBu_r')
+
+    ax.set_proj_type('ortho')
+    ax.set_xlabel('$x_1$')
+    ax.set_ylabel('$x_2$')
+    ax.set_zlabel('$x_3$')
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+
+    ax.set_xticks([0,num])
+    ax.set_yticks([0,num])
+    ax.set_zticks([0,num])
+
+    ax.set_xlim(0, num)
+    ax.set_ylim(0, num)
+    ax.set_zlim3d(0, num)
+    ax.view_init(azim=30, elev=30)
+    ax.set_xlabel('$x_1$')
+    ax.set_ylabel('$x_2$')
+    ax.set_zlabel('$x_3$')
+    ax.set_box_aspect(aspect = (1,1,1))
+
+    ax.grid()
+    # fig.colorbar(scatter_plot, ax = ax, shrink = 0.5, aspect = 10)
+    title = '_'.join(str(round(p_i,2)) for p_i in p_array)
+    title = 'p_array_' + title
+    ax.set_title(title)
+    plt.show()
+
+p_array = [1/3, 1/3, 1/3]
+visualize_multinomial(p_array)
+
+p_array = [0.2, 0.2, 0.6]
+visualize_multinomial(p_array)
+
+p_array = [0.2, 0.6, 0.2]
+visualize_multinomial(p_array)
+plt.close('all')
 
 #%% Dirichlet分布概率密度
 import numpy as np
@@ -592,6 +590,201 @@ visualize_sample(alpha_array)
 alpha_array = [8, 8, 8]
 visualize_sample(alpha_array)
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_11.py Dirichlet 分布：多元 Beta 分布
+import numpy as np
+import scipy.stats as st
+import scipy.interpolate as si
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# alpha = np.array([1, 1, 1])
+# alpha = np.array([2, 2, 2])
+# alpha = np.array([4, 4, 4])
+
+# alpha = np.array([1, 4, 4])
+# alpha = np.array([4, 1, 4])
+# alpha = np.array([4, 4, 1])
+
+# alpha = np.array([4, 2, 2])
+# alpha = np.array([2, 4, 2])
+# alpha = np.array([2, 2, 4])
+
+# alpha = np.array([1, 2, 4])
+# alpha = np.array([2, 1, 4])
+alpha = np.array([4, 2, 1])
+
+rv = st.dirichlet(alpha)
+
+x1 = np.linspace(0,1,201)
+x2 = np.linspace(0,1,201)
+
+xx1, xx2 = np.meshgrid(x1, x2)
+
+xx3 = 1.0 - xx1 - xx2
+xx3 = np.where(xx3 > 0.0, xx3, np.nan)
+
+PDF_ff = rv.pdf(np.array(([xx1.ravel(), xx2.ravel(), xx3.ravel()])))
+PDF_ff = np.reshape(PDF_ff, xx1.shape)
+
+# PDF_ff = np.nan_to_num(PDF_ff)
+
+#%% 2D contour
+
+fig, ax = plt.subplots(figsize=(10, 10))
+ax.contourf(xx1, xx2, PDF_ff, 20, cmap='RdYlBu_r')
+
+#%% 3D contour
+
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+
+ax.plot_wireframe(xx1, xx2, PDF_ff, color = [0.7,0.7,0.7], linewidth = 0.25, rstride=10, cstride=10)
+ax.contour(xx1, xx2, PDF_ff, levels = 20,  cmap='RdYlBu_r')
+
+ax.set_proj_type('ortho')
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xticks(np.linspace(0,1,6))
+ax.set_yticks(np.linspace(0,1,6))
+ax.set_xticks([0,1])
+ax.set_yticks([0,1])
+ax.set_zticks([0,20])
+ax.set_box_aspect(aspect = (1,1,1))
+ax.set_xlim(x1.min(), x1.max())
+ax.set_ylim(x2.min(), x2.max())
+ax.set_zlim3d([0,20])
+ax.view_init(azim=-120, elev=30)
+plt.tight_layout()
+ax.grid(True)
+plt.show()
+
+#%% 3D visualization
+
+x1_ = np.linspace(0,1,51)
+x2_ = np.linspace(0,1,51)
+
+xx1_, xx2_ = np.meshgrid(x1_, x2_)
+
+xx3_ = 1.0 - xx1_ - xx2_
+xx3_ = np.where(xx3_ > 0.0, xx3_, np.nan)
+
+PDF_ff_ = rv.pdf(np.array(([xx1_.ravel(), xx2_.ravel(), xx3_.ravel()])))
+PDF_ff_ = np.reshape(PDF_ff_, xx1_.shape)
+
+fig = plt.figure(figsize=(10, 10))
+ax = plt.axes(projection="3d")
+
+# Creating plot
+PDF_ff_ = np.nan_to_num(PDF_ff_)
+ax.scatter3D(xx1_.ravel(), xx2_.ravel(), xx3_.ravel(), c=PDF_ff_.ravel(), marker='.', cmap = 'RdYlBu_r')
+ax.contour(xx1_, xx2_, PDF_ff_, 15, zdir='z', offset=0, cmap='RdYlBu_r')
+
+ax.set_proj_type('ortho')
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+ax.set_zlabel('$x_3$')
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xticks(np.linspace(0,1,6))
+ax.set_yticks(np.linspace(0,1,6))
+ax.set_zticks(np.linspace(0,1,6))
+
+x, y, z = np.array([[0,0,0],[0,0,0],[0,0,0]])
+u, v, w = np.array([[1.2,0,0],[0,1.2,0],[0,0,1.2]])
+ax.quiver(x,y,z,u,v,w,arrow_length_ratio=0.1, color="black")
+# ax.set_axis_off()
+
+ax.set_xticks([0,1])
+ax.set_yticks([0,1])
+ax.set_zticks([0,1])
+
+ax.set_xlim(x1.min(), x1.max())
+ax.set_ylim(x2.min(), x2.max())
+ax.set_zlim3d([0,1])
+# ax.view_init(azim=20, elev=20)
+ax.view_init(azim=-30, elev=20)
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+ax.set_zlabel('$x_3$')
+# ax.set_aspect('equal')
+ax.set_box_aspect(aspect = (1,1,1))
+
+ax.grid()
+plt.show()
+
+#%% Marginal distributions
+
+from scipy.stats import beta
+
+x_array = np.linspace(0,1,200)
+
+alpha_array = alpha
+beta_array = alpha.sum() - alpha
+
+# PDF of Beta Distributions
+fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(20, 10))
+for alpha_idx, beta_idx, ax in zip(alpha_array.ravel(), beta_array.ravel(), axs.ravel()):
+    title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
+    ax.plot(x_array, beta.pdf(x_array, alpha_idx, beta_idx), lw=1)
+
+    ax.set_xlim(0,1)
+    ax.set_ylim(0,4)
+    ax.set_xticks([0,0.5,1])
+    ax.set_yticks([0,2,4])
+    ax.spines.right.set_visible(False)
+    ax.spines.top.set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="x", direction='in')
+    ax.tick_params(axis="y", direction='in')
+    ax.set_box_aspect(1)
+    ax.set_title(title_idx)
+
+#%% Scatter plot of random data
+random_data = np.random.dirichlet(alpha, 500).T
+
+fig = plt.figure(figsize=(10, 10))
+ax = plt.axes(projection="3d")
+
+ax.scatter3D(random_data[0,:], random_data[1,:], random_data[2,:], marker='.')
+
+ax.set_proj_type('ortho')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$x_3$')
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.set_xticks(np.linspace(0,1,6))
+ax.set_yticks(np.linspace(0,1,6))
+ax.set_zticks(np.linspace(0,1,6))
+
+x, y, z = np.array([[0,0,0],[0,0,0],[0,0,0]])
+u, v, w = np.array([[1.2,0,0],[0,1.2,0],[0,0,1.2]])
+ax.quiver(x,y,z,u,v,w,arrow_length_ratio=0.1, color="black")
+# ax.set_axis_off()
+
+ax.set_xticks([0,1])
+ax.set_yticks([0,1])
+ax.set_zticks([0,1])
+
+ax.set_xlim(x1.min(), x1.max())
+ax.set_ylim(x2.min(), x2.max())
+ax.set_zlim3d([0,1])
+# ax.view_init(azim=20, elev=20)
+ax.view_init(azim=30, elev=20)
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$x_3$')
+# ax.set_aspect('equal')
+ax.set_box_aspect(aspect = (1,1,1))
+ax.grid()
+plt.show()
 
 
 

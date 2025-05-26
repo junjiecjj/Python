@@ -40,9 +40,15 @@ U, s, VH = np.linalg.svd(A)
 S = np.zeros(A.shape)
 np.fill_diagonal(S, s)
 # S = np.diag(s)
-
 print(f"U@S@VH = \n{U@S@VH}")
 print(f"A = \n{A}")
+
+# from sympy import Matrix
+# A_ = Matrix(A)
+# U__, S__, V__ = A_.singular_value_decomposition()
+
+# print(A)
+# print(np.array(U__@S__@V__))
 
 
 ## 用矩阵A完成映射
@@ -63,10 +69,10 @@ ax.spines['right'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 
-fig.savefig('Figures/A转换.svg', format='svg')
+# fig.savefig('Figures/A转换.svg', format='svg')
 
 ## 奇异值分解
-U,S,VT = np.linalg.svd(A, full_matrices=True)
+U, S, VT = np.linalg.svd(A, full_matrices=True)
 V = VT.T
 S = np.diag(S)
 
@@ -76,11 +82,9 @@ A1T = V @ S.T @ U.T
 ## 平面旋转
 Z = X@V
 fig, ax = plt.subplots(figsize = (5,5))
-
 plt.scatter(Z[:,0].ravel(),
             Z[:,1].ravel(),
             c = colors, s = 15, cmap = 'RdYlBu', zorder=1e3)
-
 plt.axis('scaled')
 
 ax.axhline(y = 0, color = 'k')
@@ -97,14 +101,12 @@ ax.spines['left'].set_visible(False)
 
 # fig.savefig('Figures/V旋转.svg', format='svg')
 ## 缩放
+Z = X@V@S.T
 fig, ax = plt.subplots(figsize = (5,5))
-
 plt.scatter(Z[:,0].ravel(),
             Z[:,1].ravel(),
             c = colors, s = 15, cmap = 'RdYlBu', zorder=1e3)
-
 plt.axis('scaled')
-
 ax.axhline(y = 0, color = 'k')
 ax.axvline(x = 0, color = 'k')
 plt.xticks([])
@@ -121,12 +123,11 @@ ax.spines['left'].set_visible(False)
 
 
 ## 再次旋转
+Z = X@V@S.T@U.T
 fig, ax = plt.subplots(figsize = (5,5))
-
 plt.scatter(Z[:,0].ravel(),
             Z[:,1].ravel(),
             c = colors, s = 15, cmap = 'RdYlBu', zorder=1e3)
-
 plt.axis('scaled')
 
 ax.axhline(y = 0, color = 'k')
@@ -144,15 +145,11 @@ ax.spines['left'].set_visible(False)
 # fig.savefig('Figures/V旋转，S缩放，U旋转.svg', format='svg')
 
 
-
-
 #%%# 可视化3 * 3方阵奇异值分解
 
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
-
-
 ###patch start###
 from mpl_toolkits.mplot3d.axis3d import Axis
 
@@ -171,28 +168,24 @@ Axis._get_coord_info = _get_coord_info_new
 ## 创建数据
 num = 21
 
-array_1_0 = np.linspace(0,1,num)
+array_1_0 = np.linspace(0, 1, num)
 array_0_0 = np.ones_like(array_1_0)
 array_1_1 = np.zeros_like(array_1_0)
 
-A1 = np.column_stack([array_1_0,array_0_0,array_0_0])
-A2 = np.column_stack([array_1_0,array_1_1,array_0_0])
-A3 = np.column_stack([array_1_0,array_0_0,array_1_1])
-A4 = np.column_stack([array_1_0,array_1_1,array_1_1])
-
-A = np.vstack((A1,A2,A3,A4))
+A1 = np.column_stack([array_1_0, array_0_0, array_0_0])
+A2 = np.column_stack([array_1_0, array_1_1, array_0_0])
+A3 = np.column_stack([array_1_0, array_0_0, array_1_1])
+A4 = np.column_stack([array_1_0, array_1_1, array_1_1])
+A = np.vstack((A1, A2, A3, A4))
 B = np.roll(A, 1)
 C = np.roll(A, 2)
-
-X   = np.vstack((A,B,C))
+X   =  np.vstack((A,B,C))
 colors = np.vstack((A,B,C))
-
 
 ## 三维散点
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 ax.scatter(X[:,0], X[:,1], X[:,2], c = colors, s = 15, alpha = 1)
-
 
 ax.set_proj_type('ortho')
 ax.view_init(azim=30, elev=30)
@@ -205,8 +198,9 @@ ax.set_yticks([])
 ax.set_zticks([])
 x, y, z = np.array([[-3,0,0],[0,-3,0],[0,0,-3]])
 u, v, w = np.array([[6,0,0],[0,6,0],[0,0,6]])
-ax.quiver(x,y,z,u,v,w,arrow_length_ratio=0.05, color="black")
+ax.quiver(x, y, z, u, v, w, arrow_length_ratio=0.05, color="black")
 # fig.savefig('Figures/矮胖矩阵SVD，变换前.svg', format='svg')
+plt.show()
 
 
 ## 定义矩阵A

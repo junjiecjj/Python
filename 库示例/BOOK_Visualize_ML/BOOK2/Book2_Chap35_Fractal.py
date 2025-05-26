@@ -9,20 +9,15 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-
 def f1(x, y):
     return np.array([[0, 0], [0, 0.16]]).dot(np.array([x, y]))
 
 
 def f2(x, y):
-    return (np.array([[0.85, 0.04], [-0.04, 0.85]]).dot(np.array([x, y]))
-            + np.array([0, 1.6]))
-
+    return (np.array([[0.85, 0.04], [-0.04, 0.85]]).dot(np.array([x, y])) + np.array([0, 1.6]))
 
 def f3(x, y):
-    return (np.array([[0.20, -0.26], [0.23, 0.22]]).dot(np.array([x, y]))
-            + np.array([0, 1.6]))
-
+    return (np.array([[0.20, -0.26], [0.23, 0.22]]).dot(np.array([x, y])) + np.array([0, 1.6]))
 
 def f4(x, y):
     return (np.array([[-0.15, 0.28], [0.26, 0.24]]).dot(np.array([x, y])) + np.array([0, 0.44]))
@@ -42,17 +37,12 @@ def barnsley_fern(n):
             dot = f4(x[-1], y[-1])
         x.append(dot[0])
         y.append(dot[1])
-
     return x, y
 
-
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     ax = plt.subplot(3,2,idx + 1)
     x,y = barnsley_fern(2**(idx + 6))
-
     ax.plot(x, y, '.', markersize=2, color='g')
     ax.set_axis_off()
 plt.show()
@@ -67,16 +57,12 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-
 def f1(x, y):
-    return (1 / sqrt(2)) * np.array(
-        [[cos(pi/4), -sin(pi/4)], [sin(pi/4), cos(pi/4)]]).dot(
-            np.array([x, y]))
+    return (1 / sqrt(2)) * np.array( [[cos(pi/4), -sin(pi/4)], [sin(pi/4), cos(pi/4)]]).dot( np.array([x, y]))
 
 
 def f2(x, y):
-    return (1 / sqrt(2)) * np.array(
-        [[cos(3*pi/4), -sin(3*pi/4)], [sin(3*pi/4), cos(3*pi/4)]]).dot( np.array([x, y])) + np.array([1, 0])
+    return (1 / sqrt(2)) * np.array( [[cos(3*pi/4), -sin(3*pi/4)], [sin(3*pi/4), cos(3*pi/4)]]).dot( np.array([x, y])) + np.array([1, 0])
 
 def dragon_curve(n):
     x, y = [0], [0]
@@ -88,14 +74,10 @@ def dragon_curve(n):
             dot = f2(x[-1], y[-1])
         x.append(dot[0])
         y.append(dot[1])
-
     return x, y
 
-
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     ax = plt.subplot(3,2,idx + 1)
     x,y = dragon_curve(2**(idx + 6))
 
@@ -119,30 +101,23 @@ n = m
 iterations = 2**8
 s = m * 0.8
 
-
 def julia_set(iterations, c):
-
     c = np.full((n, m), c)
     x = np.linspace(-m / s, m / s, num=m).reshape((1, m))
     y = np.linspace(-n / s, n / s, num=n).reshape((n, 1))
     Z = np.tile(x, (n, 1)) + 1j * np.tile(y, (1, m))
     M = np.full((n, m), True, dtype=bool)
     N = np.zeros((n, m))
-
-
     for i in range(iterations):
         Z[M] = Z[M] * Z[M] + c[M]
         M[np.abs(Z) > 2] = False
         N[M] = i
-
     return np.flipud(N)
 
 
 c = 0.285 + 0.01 * 1j
 N = julia_set(iterations, c)
-
 fig, ax = plt.subplots(figsize = (10,10))
-
 ax.imshow(N, cmap='RdYlBu_r')
 ax.set_axis_off()
 
@@ -151,14 +126,11 @@ c = -0.4 + 0.6j
 N = julia_set(iterations, c)
 
 fig, ax = plt.subplots(figsize = (10,10))
-
 ax.imshow(N, cmap='RdYlBu_r')
 ax.set_axis_off()
 
 c = -0.70176 - 0.3842 * 1j
-
 N = julia_set(iterations, c)
-
 fig, ax = plt.subplots(figsize = (10,10))
 
 ax.imshow(N, cmap='RdYlBu_r')
@@ -167,28 +139,20 @@ ax.set_axis_off()
 c = -0.7269 - 0.1889 * 1j
 
 N = julia_set(iterations, c)
-
 fig, ax = plt.subplots(figsize = (10,10))
-
 ax.imshow(N, cmap='RdYlBu_r')
 ax.set_axis_off()
 
 c = -0.835 - 0.2321 * 1j
-
 N = julia_set(iterations, c)
-
 fig, ax = plt.subplots(figsize = (10,10))
-
 ax.imshow(N, cmap='RdYlBu_r')
 ax.set_axis_off()
 
 for theta_i in np.linspace(0, np.pi, 7):
     c = 0.7885 * np.exp(1j * theta_i)
-
     N = julia_set(iterations, c)
-
     fig, ax = plt.subplots(figsize = (10,10))
-
     ax.imshow(N, cmap='RdYlBu_r')
     ax.set_axis_off()
 plt.show()
@@ -222,7 +186,6 @@ def kockCurveConstruction(n):
     plt.axis("equal")
     plt.show()
 
-
 def kochSnowflake(n):
     xA, yA = 0, 0
     xB, yB = 1 / 2, sqrt(0.75)
@@ -234,12 +197,9 @@ def kochSnowflake(n):
     plt.tight_layout()
 
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     ax = plt.subplot(3,2,idx + 1)
     kochSnowflake(idx)
-
     ax.set_axis_off()
 plt.show()
 
@@ -258,12 +218,10 @@ import numpy as np
 
 width = 2**8
 height = 2**8
-
 center = -0.8+0.0j
 extent = 3.0+3.0j
 
 def Mandelbrot_set(max_iter):
-
     result = np.zeros((height, width), int)
     for j in range(height):
         for i in range(width):
@@ -279,11 +237,8 @@ def Mandelbrot_set(max_iter):
 
 
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     scale = max((extent / width).real, (extent / height).imag)
-
     ax = plt.subplot(3,2,idx + 1)
     plot_extent = (width + 1j * height) * scale
     z1 = center - plot_extent / 2
@@ -307,7 +262,6 @@ import matplotlib.pyplot as plt
 def pythagorasTree(x, y, length, alpha, angle, order, counter):
     dx = length * sin(alpha)
     dy = length * cos(alpha)
-
     X, Y = [x], [y]
 
     x1 = x + dx
@@ -378,17 +332,13 @@ def sierpinskiCarpet(n):
 
     return T
 
-
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     ax = plt.subplot(3,2,idx + 1)
     T = sierpinskiCarpet(idx)
 
     ax.pcolormesh(T, cmap='Blues_r', rasterized = True)
     ax.set_axis_off()
-
 plt.show()
 
 
@@ -400,7 +350,6 @@ https://en.wikipedia.org/wiki/Sierpi%C5%84ski_triangle
 import sys
 from math import sqrt
 import matplotlib.pyplot as plt
-
 
 def sierpinskyTriangle(n, x, y, c):
     if n != 0:
@@ -419,12 +368,8 @@ def sierpinskyTriangle(n, x, y, c):
     else:
         plt.fill([x, x + c, x + c / 2], [y, y, y + c * sqrt(3) / 2], 'b')
 
-
-
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     ax = plt.subplot(3,2,idx + 1)
     sierpinskyTriangle(idx, 0, 0, 10)
 
@@ -432,7 +377,6 @@ for idx in range(6):
 plt.show()
 
 #%%
-
 # 参考：
 # https://mathworld.wolfram.com/JuliaSet.html
 
@@ -449,9 +393,7 @@ n = m
 iterations = 2**8
 s = m * 0.8
 
-
 def julia_set(iterations, c):
-
     c = np.full((n, m), c)
     x = np.linspace(-m / s, m / s, num=m).reshape((1, m))
     y = np.linspace(-n / s, n / s, num=n).reshape((n, 1))
@@ -459,12 +401,10 @@ def julia_set(iterations, c):
     M = np.full((n, m), True, dtype=bool)
     N = np.zeros((n, m))
 
-
     for i in range(iterations):
         Z[M] = Z[M] * Z[M] + c[M]
         M[np.abs(Z) > 2] = False
         N[M] = i
-
     return np.flipud(N)
 
 
@@ -472,26 +412,19 @@ with st.sidebar:
     st.title('朱利亚集合')
     theta = st.slider('角度', 0.0,2*np.pi,0.0,0.01)
 
-
 c = 0.7885 * np.exp(1j * theta)
 
-
 N = julia_set(iterations, c)
-
 fig, ax = plt.subplots(figsize = (5,5))
-
 ax.imshow(N, cmap='RdYlBu_r')
 ax.set_aspect('equal', adjustable='box')
 ax.set_axis_off()
 st.pyplot(fig)
 plt.show()
 
-
-
 #%%
 
 import matplotlib.pyplot as plt
-
 def draw_fractal(ax, levels=4, x=0, y=0, size=1):
     if levels == 0:
         ax.add_patch(plt.Rectangle((x, y), size, size, color='navy'))
@@ -503,9 +436,7 @@ def draw_fractal(ax, levels=4, x=0, y=0, size=1):
                     draw_fractal(ax, levels - 1, x + i * size3, y + j * size3, size3)
 
 fig = plt.figure(figsize = (5,8))
-
 for idx in range(6):
-
     ax = plt.subplot(3,2,idx + 1)
     draw_fractal(ax, idx)
     ax.set_axis_off()
@@ -528,7 +459,6 @@ def draw_fractal(ax, levels=4, x=0, y=0, size=1):
             for j in range(3):
                 if i == 1 or j == 1:
                     draw_fractal(ax, levels - 1, x + i * size3, y + j * size3, size3)
-
 fig = plt.figure(figsize = (5,8))
 
 for idx in range(6):

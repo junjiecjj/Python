@@ -2,7 +2,7 @@
 
 
 
-# Bk4_Ch9_01.py
+#%%  Bk4_Ch9_01.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,10 +13,10 @@ x = np.array([[4], [3]])
 fig, axes = plt.subplots(figsize = (10, 10))
 for theta in thetas:
     v = np.array([[np.cos(theta)], [np.sin(theta)]])
-    proj = v.T@x
+    proj = (v.T@x)[0]
     # print(proj)
     plt.plot([-v[0]*6, v[0]*6], [-v[1]*6, v[1]*6])
-    plt.plot([x[0], v[0]*proj], [x[1], v[1]*proj], color = 'k')
+    plt.plot([x[0,0], (v[0]*proj)[0]], [x[1,0], (v[1]*proj)[0]], color = 'k')
     plt.plot(v[0]*proj, v[1]*proj, color = 'k', marker = 'x')
     plt.quiver (0, 0, v[0], v[1], angles='xy', scale_units='xy',scale=1)
 plt.plot(x[0],x[1], marker = 'x', color = 'r')
@@ -25,36 +25,33 @@ plt.axis('scaled')
 
 
 
-
-
-# Bk4_Ch9_02.py
-
+#%% Bk4_Ch9_02.py
 import numpy as np
 import matplotlib.pyplot as plt
 
 thetas = np.array([0, 15, 30, 45, 60, 75, 90, 120, 135])
-
 x = np.array([[4], [3]])
-
 i = 1
-fig = plt.figure()
+fig = plt.figure(figsize = (10, 10), constrained_layout = True)
 for theta in thetas:
     theta = theta/180*np.pi
     ax = fig.add_subplot(3, 3, i)
     v1 = np.array([[np.cos(theta)], [np.sin(theta)]])
-    proj = v1.T@x
+    proj = (v1.T@x)[0]
     print(proj)
     plt.plot([-v1[0]*6, v1[0]*6], [-v1[1]*6, v1[1]*6])
-    plt.plot([x[0], v1[0]*proj], [x[1], v1[1]*proj], color = 'k', linestyle = '--')
+    # plt.plot([x[0], v1[0]*proj], [x[1], v1[1]*proj], color = 'k', linestyle = '--')
+    plt.plot([x[0,0], (v[0]*proj)[0]], [x[1,0], (v[1]*proj)[0]], color = 'k', linestyle = '--')
     plt.plot(v1[0]*proj, v1[1]*proj, color = 'k', marker = 'x')
 
     plt.quiver (0, 0, v1[0], v1[1], angles='xy', scale_units='xy', scale=1, color = 'b')
     v2 = np.array([[-np.sin(theta)], [np.cos(theta)]])
-    proj = v2.T@x
+    # proj = v2.T@x
+    proj = (v2.T@x)[0]
     print(proj)
     plt.plot([-v2[0]*6, v2[0]*6], [-v2[1]*6, v2[1]*6])
-    plt.plot([x[0], v2[0]*proj], [x[1], v2[1]*proj], color = 'k', linestyle = '--')
-    plt.plot(v2[0]*proj, v2[1]*proj, color = 'k', marker = 'x')
+    plt.plot([x[0,0], (v2[0]*proj)[0]], [x[1,0], (v2[1]*proj)[0]], color = 'k', linestyle = '--')
+    plt.plot((v2[0]*proj)[0], (v2[1]*proj)[0], color = 'k', marker = 'x')
 
     plt.quiver (0, 0, v2[0], v2[1], angles='xy', scale_units='xy', scale=1,color = 'r')
 
