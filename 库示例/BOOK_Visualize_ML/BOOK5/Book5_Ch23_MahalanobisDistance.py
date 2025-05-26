@@ -75,7 +75,7 @@ sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 plt.axvline(x=mu_x, linestyle = '--', color = 'r', lw = 4)
 plt.axhline(y=mu_y, linestyle = '--', color = 'r', lw = 4)
 
-plt.plot(mu_x,mu_y, color = 'k', marker = 'x', markersize = 15)
+plt.plot(mu_x, mu_y, color = 'k', marker = 'x', markersize = 15)
 
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Petal length, $x_3$ (cm)')
@@ -91,8 +91,6 @@ ax.set_ybound(1,7)
 dd = np.sqrt((xx - mu_x)**2 + (yy - mu_y)**2)
 ax.contour(xx, yy, dd, levels = [1, 2, 3], colors = 'r')
 plt.show()
-
-
 
 #%% standardized Euclidean distance
 # 图 4. 花萼长度、花瓣长度平面上的标准化欧氏距离和网格
@@ -115,8 +113,8 @@ plt.plot(mu_x,mu_y, color = 'k', marker = 'x', markersize = 15)
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Petal length, $x_3$ (cm)')
 
-plt.plot(ZZ1_grid,ZZ2_grid,color = [0.7,0.7,0.7])
-plt.plot(ZZ1_grid.T,ZZ2_grid.T,color = [0.7,0.7,0.7])
+plt.plot(ZZ1_grid, ZZ2_grid, color = [0.7,0.7,0.7])
+plt.plot(ZZ1_grid.T, ZZ2_grid.T, color = [0.7,0.7,0.7])
 
 ax.axis('scaled')
 ax.set_xbound(3,9)
@@ -130,7 +128,6 @@ plt.show()
 # 图 6. 花萼长度、花瓣长度平面上的马氏距离等高线和网格
 lambdas, V = LA.eig(SIGMA_13)
 ZZ1_grid, ZZ2_grid = generate_grid(V@np.diag(np.sqrt(lambdas)), mu_x, mu_y)
-
 
 zz_maha = np.c_[xx.ravel(), yy.ravel()] # (40401, 2)
 X = iris_sns.to_numpy()
@@ -151,9 +148,9 @@ plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 
-plt.axvline(x=mu_x, linestyle = '--', color = 'r')
-plt.axhline(y=mu_y, linestyle = '--', color = 'r')
-plt.plot(mu_x,mu_y, color = 'k', marker = 'x', markersize = 15)
+plt.axvline(x = mu_x, linestyle = '--', color = 'r')
+plt.axhline(y = mu_y, linestyle = '--', color = 'r')
+plt.plot(mu_x, mu_y, color = 'k', marker = 'x', markersize = 15)
 
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Petal length, $x_3$ (cm)')
@@ -172,8 +169,6 @@ plt.show()
 import numpy as np
 import matplotlib.pyplot as plt
 # import pandas as pd
-# from statsmodels.distributions.empirical_distribution import ECDF
-# from scipy.stats import norm
 # import scipy
 import seaborn as sns
 
@@ -184,10 +179,8 @@ iris_sns = iris_sns.drop('species', axis = 1)
 # with no class labels
 SIGMA = iris_sns.cov()
 SIGMA = np.array(SIGMA)
-
 MU    = iris_sns.mean()
 MU    = np.array(MU)
-
 g = sns.pairplot(iris_sns, diag_kind = 'kde', kind='scatter', plot_kws={'alpha':0.5})
 
 for i in [0, 1, 2, 3]:
@@ -212,7 +205,7 @@ for i in [0, 1, 2, 3]:
             rho = cov_X_Y/sigma_X/sigma_Y
             ellipse = (((xx - mu_x)/sigma_X)**2 - 2*rho*((xx - mu_x)/sigma_X)*((yy - mu_y)/sigma_Y) + ((yy - mu_y)/sigma_Y)**2)/(1 - rho**2);
             ellipse = np.sqrt(ellipse)
-            ax.contour(xx,yy,ellipse,levels = [1,2,3], colors = 'r')
+            ax.contour(xx, yy, ellipse,levels = [1,2,3], colors = 'r')
 
 
 #%% with class labels
@@ -254,7 +247,7 @@ for i, i_dim in enumerate(dimensions):
                 ellipse = (((xx - mu_x)/sigma_X)**2 - 2*rho*((xx - mu_x)/sigma_X)*((yy - mu_y)/sigma_Y) + ((yy - mu_y)/sigma_Y)**2)/(1 - rho**2);
                 ellipse = np.sqrt(ellipse)
                 # print(str(i_dim) + '_' + str(j_dim) + '_' + str(rho))
-                ax.contour(xx,yy,ellipse,levels = [1,2,3], colors = colors[k])
+                ax.contour(xx, yy, ellipse, levels = [1,2,3], colors = colors[k])
 
 #%% Bk5_Ch23_03
 # 图 11 特征数 D = 2 时，概率值 α 和马氏距离椭圆位置
@@ -264,27 +257,22 @@ from sklearn.covariance import EmpiricalCovariance
 SIGMA = np.array([[5, 3],[3, 5]])/8
 mu = np.array([0, 0])
 R1, R2 = np.random.multivariate_normal(mu, SIGMA, 1000).T
-x1 = np.linspace(-3,3,100)
+x1 = np.linspace(-3, 3, 100)
 x2 = x1;
-[X1,X2] = np.meshgrid(x1,x2);
-X = np.array([X1.flatten(), X2.flatten()]).T
+[X1, X2] = np.meshgrid(x1, x2);
+X = np.array([X1.flatten(), X2.flatten()]).T # (10000, 2)
 
-#%% Mahal distance mesh
-
-emp_cov_Xc = EmpiricalCovariance().fit(np.vstack((R1,R2)).T)
+#
+emp_cov_Xc = EmpiricalCovariance().fit(np.vstack((R1, R2)).T) # np.vstack((R1, R2)).T.shape = (1000, 2)
 mahal_sq_Xc = emp_cov_Xc.mahalanobis(X)
 
 mahal_sq_Xc = mahal_sq_Xc.reshape(X1.shape)
 mahal_d_Xc = np.sqrt(mahal_sq_Xc)
 
-#%%
-
+#
 import matplotlib.pyplot as plt
-
-levels = np.linspace(1,5,9);
-
+levels = np.linspace(1, 5, 9);
 fig, ax = plt.subplots()
-
 ax.contour(X1, X2, mahal_d_Xc, levels = levels, cmap = 'rainbow')
 plt.scatter(R1,R2,s = 6, color = [0.5, 0.5, 0.5])
 
@@ -298,16 +286,11 @@ ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 plt.axis('scaled')
 
-#%%
-
+#
 intervals = np.linspace(0.9,0.99,10);
-
 from scipy.stats.distributions import chi2
-
 dist_chi2_sqrt = np.sqrt(chi2.ppf(intervals, df=2));
-
 fig, ax = plt.subplots()
-
 ax.contour(X1, X2, mahal_d_Xc, levels = dist_chi2_sqrt, cmap = 'rainbow')
 plt.scatter(R1,R2,s = 6, color = [0.5, 0.5, 0.5])
 
@@ -329,15 +312,14 @@ from scipy.stats.distributions import chi2
 
 intervals = np.linspace(0.9, 0.99, 11);
 
-np.sqrt(chi2.ppf((0.9,0.95,0.99), df=1))
-dist_chi2_sqrt = np.sqrt(chi2.ppf(intervals, df=2));
-num_sigma = np.linspace(1,3,3)
-prob = chi2.cdf(num_sigma**2, df=2)
+# dist_chi2_sqrt = np.sqrt(chi2.ppf(intervals, df = 2))
+# num_sigma = np.linspace(1,3,3)
+# prob = chi2.cdf(num_sigma**2, df=2)
 x = np.linspace(0,4,100) # mahal d
 fig, ax = plt.subplots(figsize=(8, 8))
 for df in [1,2,3,4,5,6]:
     prob_x_df_D = chi2.cdf(x**2, df=df)
-    plt.plot(x,prob_x_df_D, label = 'df = ' + str(df))
+    plt.plot(x, prob_x_df_D, label = 'df = ' + str(df))
 
 plt.grid(color = (0.8,0.8,0.8))
 plt.legend()
@@ -346,10 +328,8 @@ plt.xticks(np.linspace(0,4,21))
 
 plt.xlim(0,4)
 plt.ylim(0,1)
-plt.xlabel('Mahal d ($\sigma$)')
+plt.xlabel(r'Mahal d ($\sigma$)')
 plt.ylabel('$\u03B1$')
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 马氏距离
 from scipy.spatial import distance

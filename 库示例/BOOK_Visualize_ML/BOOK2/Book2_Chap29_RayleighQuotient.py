@@ -862,7 +862,7 @@ plt.show()
 ## 2
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 # 提取等高线
-all_contours = ax.contour(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r')
+all_contours = ax.contour(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r') # 四维到三维才需要这样的技巧画等高线，见Book2_chap32
 ax.cla() # 擦去等高线这个“艺术家”
 plt.show()
 
@@ -871,7 +871,7 @@ fig = plt.figure(figsize = (12, 12))
 ax = fig.add_subplot(111, projection='3d')
 norm_plt = plt.Normalize(Rayleigh_Q_.min(), Rayleigh_Q_.max())
 colors = cm.RdYlBu_r(norm_plt(Rayleigh_Q_))
-surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, facecolors=colors,  linewidth=0.25, shade=False)
+surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, facecolors = colors,  linewidth=0.25, shade=False)
 # surf.set_facecolor((0,0,0,0)) ##
 
 for level_idx, ctr_idx in zip(all_contours.levels, all_contours.allsegs):

@@ -25,7 +25,7 @@ y = np.random.uniform(-3, 3, 256)
 z = (1 - x/2 + x**5 + y**3) * np.exp(-x**2 - y**2)
 
 # plot:
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = (6, 6))
 
 ax.triplot(x, y)
 
@@ -40,7 +40,6 @@ import numpy as np
 
 import matplotlib.tri as tri
 
-
 # ----------------------------------------------------------------------------
 # Analytical test function
 # ----------------------------------------------------------------------------
@@ -49,9 +48,7 @@ def function_z(x, y):
     theta1 = np.arctan2(0.5 - x, 0.5 - y)
     r2 = np.sqrt((-x - 0.2)**2 + (-y - 0.2)**2)
     theta2 = np.arctan2(-x - 0.2, -y - 0.2)
-    z = -(2 * (np.exp((r1 / 10)**2) - 1) * 30. * np.cos(7. * theta1) +
-          (np.exp((r2 / 10)**2) - 1) * 30. * np.cos(11. * theta2) +
-          0.7 * (x**2 + y**2))
+    z = -(2 * (np.exp((r1 / 10)**2) - 1) * 30. * np.cos(7. * theta1) + (np.exp((r2 / 10)**2) - 1) * 30. * np.cos(11. * theta2) + 0.7 * (x**2 + y**2))
     return (np.max(z) - z) / (np.max(z) - np.min(z))
 
 # ----------------------------------------------------------------------------
@@ -88,27 +85,23 @@ tri_refi, z_test_refi = refiner.refine_field(z, subdiv=3)
 # ----------------------------------------------------------------------------
 # Plot the triangulation and the high-res iso-contours
 # ----------------------------------------------------------------------------
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = (6, 6))
 ax.set_aspect('equal')
 ax.triplot(triang, lw=0.5, color='white')
 
 levels = np.arange(0., 1., 0.025)
 ax.tricontourf(tri_refi, z_test_refi, levels=levels, cmap='terrain')
-ax.tricontour(tri_refi, z_test_refi, levels=levels,
-              colors=['0.25', '0.5', '0.5', '0.5', '0.5'],
-              linewidths=[1.0, 0.5, 0.5, 0.5, 0.5])
+ax.tricontour(tri_refi, z_test_refi, levels=levels, colors=['0.25', '0.5', '0.5', '0.5', '0.5'], linewidths=[1.0, 0.5, 0.5, 0.5, 0.5])
 ax.set_title("High-resolution tricontouring")
 
 plt.show()
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 import matplotlib.pyplot as plt
 import numpy as np
 
 from matplotlib.patches import Polygon
 from matplotlib.tri import Triangulation
-
 
 def update_polygon(tri):
     if tri == -1:
@@ -118,7 +111,6 @@ def update_polygon(tri):
     xs = triang.x[points]
     ys = triang.y[points]
     polygon.set_xy(np.column_stack([xs, ys]))
-
 
 def on_mouse_move(event):
     if event.inaxes is None:
@@ -141,15 +133,13 @@ angles[:, 1::2] += np.pi / n_angles
 x = (radii*np.cos(angles)).flatten()
 y = (radii*np.sin(angles)).flatten()
 triang = Triangulation(x, y)
-triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
-                         y[triang.triangles].mean(axis=1))
-                < min_radius)
+triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1)) < min_radius)
 
 # Use the triangulation's default TriFinder object.
 trifinder = triang.get_trifinder()
 
 # Setup plot and callbacks.
-fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
+fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'}, figsize = (6, 6))
 ax.triplot(triang, 'bo-')
 polygon = Polygon([[0, 0], [0, 0]], facecolor='y')  # dummy data for (xs, ys)
 update_polygon(-1)
@@ -182,11 +172,10 @@ triang = tri.Triangulation(x, y)
 # Mask off unwanted triangles.
 triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1)) < min_radius)
 
-fig1, ax1 = plt.subplots()
+fig1, ax1 = plt.subplots(figsize = (6, 6))
 ax1.set_aspect('equal')
 ax1.triplot(triang, 'bo-', lw=1)
 ax1.set_title('triplot of Delaunay triangulation')
-
 
 xy = np.asarray([
     [-0.101, 0.872], [-0.080, 0.883], [-0.069, 0.888], [-0.054, 0.890],
@@ -229,7 +218,7 @@ triangles = np.asarray([
     [42, 41, 40], [72, 33, 31], [32, 31, 33], [39, 38, 72], [33, 72, 38],
     [33, 38, 34], [37, 35, 38], [34, 38, 35], [35, 37, 36]])
 
-fig2, ax2 = plt.subplots()
+fig2, ax2 = plt.subplots(figsize = (6, 6))
 ax2.set_aspect('equal')
 ax2.triplot(x, y, triangles, 'go-', lw=1.0)
 ax2.set_title('triplot of user-specified triangulation')
@@ -296,7 +285,7 @@ E_norm = np.sqrt(Ex**2 + Ey**2)
 # ----------------------------------------------------------------------------
 # Plot the triangulation, the potential iso-contours and the vector field
 # ----------------------------------------------------------------------------
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = (6, 6))
 ax.set_aspect('equal')
 # Enforce the margins, and enlarge them to give room for the vectors.
 ax.use_sticky_edges = False
@@ -305,8 +294,7 @@ ax.margins(0.07)
 ax.triplot(triang, color='0.8')
 
 levels = np.arange(0., 1., 0.01)
-ax.tricontour(tri_refi, z_test_refi, levels=levels, cmap='hot',
-              linewidths=[2.0, 1.0, 1.0, 1.0])
+ax.tricontour(tri_refi, z_test_refi, levels=levels, cmap='hot', linewidths=[2.0, 1.0, 1.0, 1.0])
 # Plots direction of the electrical vector field
 ax.quiver(triang.x, triang.y, Ex/E_norm, Ey/E_norm, units='xy', scale=10., zorder=3, color='blue', width=0.007, headwidth=3., headlength=4.)
 

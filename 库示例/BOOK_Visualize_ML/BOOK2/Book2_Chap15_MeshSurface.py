@@ -845,7 +845,7 @@ for idx in range(len(x2_loc_array)):
     x_i_array = x1*0 + x_idx
     z_array = PDF_ff[x_loc,:]
     ax.plot(x1, x_i_array, z_array, color=facecolors[idx,:], linewidth = 1.5)
-    ax.add_collection3d(plt.fill_between(x1, 0*z_array, z_array, color=facecolors[idx,:], alpha=0.2), zs=x_idx, zdir='y')
+    ax.add_collection3d(plt.fill_between(x1, 0*z_array, z_array, color = facecolors[idx,:], alpha=0.2), zs=x_idx, zdir='y')
 
 ax.set_proj_type('ortho')
 ax.set_xlabel('$x_1$')

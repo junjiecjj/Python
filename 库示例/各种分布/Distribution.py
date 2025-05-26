@@ -265,7 +265,7 @@ Y = np.zeros(N)
 for i in range(df):
     Y += np.random.randn(N)**2
 
-axs.hist(Y, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label = f"sum of {a} tandard normal rvs", zorder = 3)
+axs.hist(Y, density = True, bins = 'auto', histtype = 'stepfilled', alpha = 0.1, facecolor = "#FF3300", label = f"sum of {df} normal rvs", zorder = 3)
 
 axs.set_xlabel( 'x',)
 axs.set_ylabel('pdf',)
@@ -1024,8 +1024,6 @@ plt.show()
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 二项分布 (Binomial Distribution)
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns

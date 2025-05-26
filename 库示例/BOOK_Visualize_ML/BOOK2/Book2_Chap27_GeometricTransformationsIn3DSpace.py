@@ -158,13 +158,13 @@ def visualize(Data, Colors, name, elev=35, azim=35):
     ax.set_box_aspect(aspect = (1,1,1))
     # 等比例成像
     # Transparent spines
-    ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
 
     # Transparent panes
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
 visualize(Data, Colors, '原始')
 
@@ -188,10 +188,6 @@ S_eq = np.array([[1.5, 0,   0],
 Data_around_x = Data @ S_eq.T # S_eq = S_eq.T
 
 visualize(Data_around_x, Colors, '等比例缩放')
-
-
-
-
 
 
 
@@ -672,13 +668,13 @@ def visualize(Data, Colors, fig, idx, elev=35, azim=35, roll = 0):
     # 等比例成像
 
     # Transparent spines
-    ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
 
     # Transparent panes
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 
 
 
@@ -925,7 +921,7 @@ def visualize(x,y,z,axes,elev,azim,idx,fig,facecolors):
               linestyles = 'solid',
               linewidths = 0.25, zorder = 1e5)
 
-    ax.plot_surface(x, y, z, rstride=5, cstride=5, facecolors = facecolors, edgecolors='w', linewidth = 0.1)
+    ax.plot_surface(x, y, z, rstride=5, cstride=5, facecolors = facecolors, linewidth = 0.1)
 
     axis_1 = axes[0, :]
     axis_2 = axes[1, :]
@@ -1037,11 +1033,6 @@ y_trans = position_trans[:,1].reshape(x.shape)
 z_trans = position_trans[:,2].reshape(x.shape)
 
 visualize_4(x_trans,y_trans,z_trans,axes_trans, '非等比例缩放',facecolors)
-
-
-
-
-
 
 # 缩放 + 压扁
 S_xz_y0 = np.array([[0, 0, 0],
