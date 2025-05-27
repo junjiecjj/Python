@@ -256,7 +256,7 @@ print(f"ESPRIT = {Theta_esprit}")
 
 ###>>>>>>>>>>
 colors = plt.cm.jet(np.linspace(0, 1, 5))
-fig, axs = plt.subplots(1, 1, figsize = (10, 8))
+fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
 
 axs.plot(Thetalst, Pmusic , color = colors[0], linestyle='-', lw = 2, label = "MUSIC", )
 axs.plot(angle_music, Pmusic[peak_music], linestyle='', marker = 'o', color=colors[0], markersize = 12)
@@ -278,7 +278,7 @@ plt.show()
 plt.close('all')
 
 ##>>>>>>>>>>>>>
-fig, axs = plt.subplots(1, 1, figsize = (6, 6))
+fig, axs = plt.subplots(1, 1, figsize = (6, 6), constrained_layout = True)
 
 theta = np.linspace(0, 2*np.pi, 400)
 axs.plot(np.cos(theta), np.sin(theta), 'k--', lw = 1, label='unit circle')

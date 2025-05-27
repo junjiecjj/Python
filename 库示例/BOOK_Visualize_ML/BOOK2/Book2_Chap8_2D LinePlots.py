@@ -1,7 +1,7 @@
 
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 平面线图颗粒度
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 平面线图颗粒度 BK_2_Ch08_01
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
@@ -106,7 +106,7 @@ ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 plt.grid()
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 阶跃
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 阶跃 BK_2_Ch08_02
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
@@ -171,7 +171,7 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 火柴梗图¶
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 火柴梗图 BK_2_Ch08_03
 
 # 导入包
 import matplotlib.pyplot as plt
@@ -218,7 +218,7 @@ ax.set_ylim((0, 0.3))
 ax.set_xlabel('$x$')
 ax.set_ylabel('PMF, $f_X(x)$')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 参考线
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 参考线 BK_2_Ch08_04
 
 # 导入包
 import matplotlib.pyplot as plt
@@ -309,7 +309,7 @@ plt.ylim([-10, 10])
 plt.xlim([0, 10])
 plt.show()
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用面具mask
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 使用面具mask BK_2_Ch08_05
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -358,7 +358,7 @@ plt.axhline(y = -0.2, color = 'r', ls = '--')
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 交点
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 交点 BK_2_Ch08_06
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -403,7 +403,7 @@ print ("Output indices of non zero array element: \n", out_arr)
 ############################################################
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 最大值、最小值
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 最大值、最小值 BK_2_Ch08_07
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -427,7 +427,7 @@ plt.plot(x_array[n_min], y_array[n_min],'xr', ms = 10)
 plt.xlim(-3,3)
 plt.ylim(-0.5,0.5)
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用色谱给一组曲线着色
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用色谱给一组曲线着色 BK_2_Ch08_08
 
 # 导数包
 from matplotlib.collections import LineCollection
@@ -500,7 +500,7 @@ plt.ylim(0,1)
 plt.xlabel('x')
 plt.ylabel('PDF, $f_X(x)$')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 分段渲染
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 分段渲染 BK_2_Ch08_09
 # 导入包
 import matplotlib.pyplot as plt
 import numpy as np
@@ -580,7 +580,7 @@ ax.set_ylim((-1.2, 1.2))
 ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格 BK_2_Ch08_10
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -666,7 +666,7 @@ ax = fig.add_subplot(3, 2, 6)
 plot_grid(0, 5, 0, 5, 20, 20, vortex)
 ax.axis('off')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用线条绘制等边三角形生成艺术
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 用线条绘制等边三角形生成艺术 BK_2_Ch08_11
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -726,7 +726,7 @@ for i in range_array:
 plt.axis('off')
 plt.show()
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  用线条创作生成艺术
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  用线条创作生成艺术  BK_2_Ch08_12
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -870,7 +870,7 @@ ax.set_ylim([-1, 1])
 ax.axis('off')
 
 
-
+#%%
 
 
 

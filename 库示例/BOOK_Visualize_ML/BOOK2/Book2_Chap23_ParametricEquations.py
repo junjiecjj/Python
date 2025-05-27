@@ -10,7 +10,7 @@ Created on Sun Jun 23 17:05:24 2024
 """
 
 
-#%% 心形线
+#%% BK_2_Ch23_01 心形线
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -48,7 +48,7 @@ x_array = 2*a*(1 + np.cos(phi_array)) * np.cos(phi_array)
 y_array = 2*a*(1 + np.cos(phi_array)) * np.sin(phi_array)
 
 fig, ax = plt.subplots(figsize=(8,8))
-ax.plot(x_array,y_array)
+ax.plot(x_array, y_array)
 ax.set_xlim(-5,5)
 ax.set_ylim(-5,5)
 ax.set_xticks(np.arange(-5,6))
@@ -82,7 +82,7 @@ plt.show()
 
 
 
-#%% 利萨茹曲线
+#%% BK_2_Ch23_02 利萨茹曲线
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -151,7 +151,7 @@ for i in range(nrows):
 plt.show()
 
 
-#%% 各种参数方程曲面
+#%% BK_2_Ch23_03 各种参数方程曲面, 参见Bk_2_Ch18_01，Book2_chap23
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -162,9 +162,7 @@ import plotly.graph_objects as go
 def visualize(X, Y, Z, title):
     fig = plt.figure(figsize = (10, 10))
     ax = fig.add_subplot(111, projection='3d')
-    surf = ax.plot_wireframe(X, Y, Z,
-                           rstride=1, cstride=1,
-                           linewidth=0.25)
+    surf = ax.plot_wireframe(X, Y, Z, rstride=1, cstride=1, linewidth=0.25)
     ax.set_proj_type('ortho')
     # 另外一种设定正交投影的方式
     ax.set_xlabel('$\it{x_1}$')
@@ -187,14 +185,10 @@ def visualize(X, Y, Z, title):
     return
 
 def plotly_visualize(X,Y,Z):
-    data = go.Surface(x=X, y=Y, z=Z,
-                      # surfacecolor=surfacecolor,
-                      colorscale = 'Plotly3')
+    data = go.Surface(x=X, y=Y, z=Z, colorscale = 'Plotly3')
     fig = go.Figure(data=[data])
 
-    fig.update_layout(autosize=False,
-                      width=500, height=500,
-                      margin=dict(l=65, r=50, b=65, t=90))
+    fig.update_layout(autosize=False, width=500, height=500, margin=dict(l=65, r=50, b=65, t=90))
     fig.show()
     return
 
@@ -213,7 +207,7 @@ phi   = np.linspace(0, np.pi*2, nphi+1)
 # 单位球半径
 r = 1
 # 球坐标转化为三维直角坐标
-pp_, tt_ = np.meshgrid(phi,theta)
+pp_, tt_ = np.meshgrid(phi, theta)
 # z轴坐标网格数据
 Z = r*np.cos(tt_)
 # x轴坐标网格数据
@@ -236,7 +230,7 @@ phi   = np.linspace(0, np.pi*2, nphi+1)
 # 单位球半径
 r = 1
 # 球坐标转化为三维直角坐标
-pp_,tt_ = np.meshgrid(phi,theta)
+pp_, tt_ = np.meshgrid(phi, theta)
 # z轴坐标网格数据
 Z = r*np.cos(tt_)
 # x轴坐标网格数据
@@ -303,8 +297,6 @@ Y = r*np.sin(tt_)*np.sin(pp_)
 
 visualize(X,Y,Z,'左半球面')
 
-
-
 # 设置步数
 intervals = 50
 ntheta = intervals
@@ -363,8 +355,6 @@ X = r*np.cos(pp_)
 Y = r*np.sin(pp_)
 
 visualize(X,Y,Z,'圆柱')
-
-
 
 ##################### 椎体
 # 设置步数
@@ -489,13 +479,11 @@ nphi = 2*intervals
 theta = np.linspace(0, 2*np.pi*1, ntheta+1)
 # phi取值范围为 [0, 2*pi]
 phi   = np.linspace(0, 2*np.pi, nphi+1)
-
 r = 0.5
 R = 2
 
 # 球坐标转化为三维直角坐标
 pp_, tt_ = np.meshgrid(phi, theta)
-
 X = (R + r*np.cos(tt_))*np.cos(pp_)
 Y = (R + r*np.cos(tt_))*np.sin(pp_)
 Z = r*np.sin(tt_)

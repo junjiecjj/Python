@@ -514,27 +514,24 @@ def normal_pdf_1d(x, mu,sigma):
     z = (x - mu)/sigma
     pdf = scaling*np.exp(-z**2/2)
     return pdf
+xx_maha, yy_maha = np.meshgrid( np.linspace(-20, 20, 400), np.linspace(-20, 20, 400),) # (400, 400)
+zz_maha = np.c_[xx_maha.ravel(), yy_maha.ravel()] # (160000, 2)
 
 # 创建数据
 cov = np.array([[1, 0.86], [0.86, 1]])
 x1 = np.random.multivariate_normal([0, 0], cov, size = 200) # (118, 2)
-
-xx_maha, yy_maha = np.meshgrid( np.linspace(-20, 20, 400), np.linspace(-20, 20, 400),) # (400, 400)
-zz_maha = np.c_[xx_maha.ravel(), yy_maha.ravel()] # (160000, 2)
 emp_cov_Xc = EmpiricalCovariance().fit(x1) #
 print(f"emp_cov_Xc.covariance_ = {emp_cov_Xc.covariance_}")
 mahal_sq_Xc = emp_cov_Xc.mahalanobis(zz_maha) # (160000, )
 mahal_sq_Xc = mahal_sq_Xc.reshape(xx_maha.shape) # (400, 400)
 mahal_d_Xc = np.sqrt(mahal_sq_Xc)
-
-central = x1.mean(axis = 0).reshape(-1,1)
+central = x1.mean(axis = 0).reshape(-1, 1)
 
 # 可视化
 theta_array = np.linspace(0, 360, num = 12, endpoint= False)
-
+# theta_array = [30, ]
 # 定义16个不同投影角度
 colors = cm.hsv(np.linspace(0, 1, len(theta_array)))
-
 fig, ax = plt.subplots(figsize = (10, 10), constrained_layout = True)
 # 绘制质心
 plt.plot(x1[:,0].mean(), x1[:,1].mean(), marker = 'x', color = 'k', markersize = 18)
@@ -547,7 +544,7 @@ for idx, theta in enumerate(theta_array):
     proj = v1@v1.T
     # 距离
     R = 18
-    alpha = theta - np.pi/2
+    alpha = theta + np.pi/2
     p0 = R*np.array([[np.cos(alpha)], [np.sin(alpha)]]) + central
     # 朝不过原点的直线投影结果，二维平面
     z1_2D = x1 @ proj + p0.T @ (np.eye(2) - proj) # (118, 2) + (1, 2)
@@ -559,13 +556,13 @@ for idx, theta in enumerate(theta_array):
     x1_array = np.linspace(mu1 - 4*std1, mu1 + 4*std1,100)
     # 乘4放大PDF曲线高度
     pdf1_array = normal_pdf_1d(x1_array, mu1, std1)*4
-    PDF1 = np.column_stack((x1_array, -pdf1_array))
+    PDF1 = np.column_stack((x1_array, pdf1_array))
     # 旋转矩阵
     R1 = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
     # 一元高斯曲线的几何变换
     PDF1_v1 = PDF1@R1 + p0.T @ (np.eye(2) - proj)
     # 绘制投影结果
-    plt.plot(z1_2D[:,0],z1_2D[:,1], marker = '.', markersize = 6, color = color_idx, markeredgecolor = 'w')
+    plt.plot(z1_2D[:,0], z1_2D[:,1], marker = '.', markersize = 6, color = color_idx, markeredgecolor = 'w')
     plt.plot(([i for (i,j) in z1_2D], [i for (i,j) in x1]), ([j for (i,j) in z1_2D], [j for (i,j) in x1]), c=color_idx, lw = 0.1)
     plt.plot(PDF1_v1[:,0], PDF1_v1[:,1], color = color_idx)
     # 绘制投影质心
@@ -581,9 +578,7 @@ ax.set_aspect('equal', adjustable='box')
 # ax.set_xbound(lower = -20, upper = 20)
 # ax.set_ybound(lower = -20, upper = 20)
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 3D 点面投影
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -629,13 +624,13 @@ ax.scatter(Xq[:,0], Xq[:,1], Xq[:,2],  s = 15,  c = label, cmap=rainbow)
 ax.plot_surface(XX, YY, Z, color = 'b', alpha = 0.2)
 
 ax.set_proj_type('ortho')
-# ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
-# ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-# ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 # font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-ax.set_xlabel('$\it{x_1}$',  )
-ax.set_ylabel('$\it{x_2}$', )
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)',  )
+ax.set_xlabel(r'$\it{x_1}$',  )
+ax.set_ylabel(r'$\it{x_2}$', )
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',  )
 
 # ax.set_xlim(X[:,0].min()-4, X[:,0].max()+4)
 # ax.set_ylim(X[:,1].min()-4, X[:,1].max()+4)

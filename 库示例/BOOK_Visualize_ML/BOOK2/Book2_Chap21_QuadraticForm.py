@@ -5,37 +5,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from sympy import init_printing, symbols, diff, lambdify, expand, simplify, sqrt
-init_printing("mathjax")
+# init_printing("mathjax")
 
 ## 二元函数
 x1_array = np.linspace(-2, 2, 20)
 x2_array = np.linspace(-2, 2, 20)
-
 xx1, xx2 = np.meshgrid(x1_array, x2_array)
 
 def fcn_n_grdnt(A, xx1, xx2):
     x1,x2 = symbols('x1 x2')
-    x = np.array([[x1,x2]]).T
+    x = np.array([[x1, x2]]).T
     f_x = x.T@A@x
     f_x = f_x[0][0]
-    f_x = sqrt(f_x)
+    # f_x = sqrt(f_x)
     # print(simplify(expand(f_x)))
 
     #take the gradient symbolically
     grad_f = [diff(f_x,var) for var in (x1,x2)]
-
-    f_x_fcn = lambdify([x1,x2],f_x)
-
+    f_x_fcn = lambdify([x1, x2], f_x)
     ff_x = f_x_fcn(xx1,xx2)
 
     #turn into a bivariate lambda for numpy
     grad_fcn = lambdify([x1,x2],grad_f)
-
     xx1_ = xx1[::20,::20]
     xx2_ = xx2[::20,::20]
-
     V = grad_fcn(xx1_,xx2_)
-
     if isinstance(V[1], int):
         V[1] = np.zeros_like(V[0])
 
@@ -90,8 +84,6 @@ ax.set_xlim(xx1.min(), xx1.max());
 ax.set_ylim(xx2.min(), xx2.max())
 plt.tight_layout()
 
-
-
 #%% Bk4_Ch21
 # 使用 Cholesky 分解判定矩阵是否为正定矩阵
 import numpy as np
@@ -126,13 +118,11 @@ def mesh_circ(c1, c2, r, num):
     return xx1, xx2
 
 #define symbolic vars, function
-x1,x2 = sympy.symbols('x1 x2')
+x1, x2 = sympy.symbols('x1 x2')
 
-A = np.array([[ 1, 0],
+A = np.array([[ 2, 0],
               [0,  1]])
-
 x = np.array([[x1, x2]]).T
-
 f_x = x.T@A@x
 f_x = f_x[0][0]
 f_x_fcn = sympy.lambdify([x1, x2], f_x)
@@ -140,12 +130,12 @@ xx1, xx2 = mesh_circ(0, 0, 4, 20)
 ff_x = f_x_fcn(xx1, xx2)
 
 #take the gradient symbolically
-grad_f = [sympy.diff(f_x, var) for var in (x1,x2)]
+grad_f = [sympy.diff(f_x, var) for var in (x1, x2)]
 #turn into a bivariate lambda for numpy
-grad_fcn = sympy.lambdify([x1,x2], grad_f)
+grad_fcn = sympy.lambdify([x1, x2], grad_f)
 
 # coarse mesh
-xx1_, xx2_ = mesh_circ(0, 0, 4, 10)
+xx1_, xx2_ = mesh_circ(0, 0, 4, 30)
 V = grad_fcn(xx1_,xx2_)
 V_z = np.ones_like(V[1]);
 
@@ -160,7 +150,7 @@ l_3D_vectors = np.sqrt(V[0]**2 + V[1]**2 + V_z**2)
 
 # 3D visualization
 ax = plt.figure(figsize=(10, 10)).add_subplot(projection='3d')
-ax.plot_wireframe(xx1, xx2, ff_x, rstride=1, cstride=1, color = [0.5,0.5,0.5], linewidth = 0.2)
+ax.plot_wireframe(xx1, xx2, ff_x, rstride = 1, cstride=1, color = [0.5,0.5,0.5], linewidth = 0.2)
 # ax.contour3D(xx1, xx2, ff_x, 20, cmap = 'RdYlBu_r')
 
 ax.xaxis.set_ticks([])
@@ -170,12 +160,11 @@ plt.xlim(xx1.min(),xx1.max())
 plt.ylim(xx2.min(),xx2.max())
 ax.set_proj_type('ortho')
 ax.view_init(30, -125)
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
-ax.set_zlabel('$f(x_1,x_2)$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$f(x_1,x_2)$')
 plt.tight_layout()
 plt.show()
-
 
 color_array = np.sqrt(V[0]**2 + V[1]**2)
 # 2D visualization
@@ -264,7 +253,7 @@ from sympy import symbols, diff, lambdify, expand, simplify
 
 # 二元函数
 def fcn_n_grdnt(A, xx1, xx2):
-    x1,x2 = symbols('x1 x2')
+    x1, x2 = symbols('x1 x2')
     # 符号向量
     x = np.array([[x1,x2]]).T
     # 二次型
@@ -305,8 +294,8 @@ def visualize(xx1, xx2, f2_array, gradient_array):
     ax.plot_wireframe(xx1, xx2, f2_array, rstride=10, cstride=10, color = [0.8,0.8,0.8], linewidth = 0.25)
     ax.contour(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
 
-    ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
-    ax.set_zlabel('$f(x_1,x_2)$')
+    ax.set_xlabel(r'$x_1$'); ax.set_ylabel(r'$x_2$')
+    ax.set_zlabel(r'$f(x_1,x_2)$')
     ax.set_proj_type('ortho')
     ax.set_xticks([]); ax.set_yticks([])
     ax.set_zticks([])
@@ -317,7 +306,7 @@ def visualize(xx1, xx2, f2_array, gradient_array):
     ax = fig.add_subplot(1, 3, 2)
     ax.contour(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
 
-    ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
+    ax.set_xlabel(r'$x_1$'); ax.set_ylabel(r'$x_2$')
     ax.set_xticks([]); ax.set_yticks([])
     ax.set_aspect('equal'); ax.grid(False)
     ax.set_xlim(xx1.min(), xx1.max()); ax.set_ylim(xx2.min(), xx2.max())
@@ -331,7 +320,7 @@ def visualize(xx1, xx2, f2_array, gradient_array):
     # ax.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1], color_array, angles='xy', scale_units='xy', cmap = 'RdYlBu_r', edgecolor='none', alpha=0.8)
     ax.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1],  angles='xy', scale_units='xy', cmap = 'RdYlBu_r', edgecolor='none', alpha=0.8)
 
-    ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
+    ax.set_xlabel(r'$x_1$'); ax.set_ylabel(r'$x_2$')
     ax.set_xticks([]); ax.set_yticks([])
     ax.set_aspect('equal')
     ax.grid(False)
@@ -349,7 +338,7 @@ A = np.array([[1, 0],
               [0, 1]])
 
 f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
-visualize(xx1,xx2,f2_array,gradient_array)
+visualize(xx1, xx2, f2_array, gradient_array)
 
 ## 半正定
 A = np.array([[1, 0],
@@ -383,7 +372,7 @@ visualize(xx1,xx2,f2_array,gradient_array)
 
 
 
-#%% 三元二次型
+#%% 三元二次型 Bk2_Ch21_02, 参见切豆腐:Bk_2_Ch16_07, Bk2_Ch21_02, BK_2_Ch25_04
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
@@ -393,72 +382,24 @@ from sympy import symbols, simplify, expand, lambdify, diff
 # 定义三元二次型
 def fcn_3(A,xxx1,xxx2,xxx3):
     x1,x2,x3 = symbols('x1 x2 x3')
-
     x = np.array([[x1,x2,x3]]).T
-
     f_x = x.T@A@x
     print(simplify(expand(f_x[0][0])))
-
-    f_x_fcn = lambdify([x1,x2,x3],f_x[0][0])
-
+    f_x_fcn = lambdify([x1,x2,x3], f_x[0][0])
     fff = f_x_fcn(xxx1,xxx2,xxx3)
-
     return fff
-
-def fcn_n_grdnt(A, xxx1, xxx2, xxx3):
-
-    x1,x2,x3 = symbols('x1 x2 x3')
-    # 符号向量
-    x = np.array([[x1,x2,x3]]).T
-    # 二次型
-    f_x = x.T@A@x
-    f_x = f_x[0][0]
-    print(simplify(expand(f_x)))
-
-    # 计算梯度，符号
-    grad_f = [diff(f_x,var) for var in (x1,x2,x3)]
-
-    # 计算二元函数值 f(x1, x2)
-    f_x_fcn = lambdify([x1,x2,x3],f_x)
-    ff_x = f_x_fcn(xxx1,xxx2,xxx3)
-
-    # 梯度函数
-    grad_fcn = lambdify([x1,x2,x3],grad_f)
-
-    # 采样，降低颗粒度
-    xxx1_ = xxx1[::20,::20]
-    xxx2_ = xxx2[::20,::20]
-    xxx3_ = xxx3[::20,::20]
-
-    # 计算梯度
-    V = grad_fcn(xxx1_,xxx2_,xxx3_)
-
-    # 修复梯度值
-    if isinstance(V[0], int):
-        V[0] = np.zeros_like(xxx1_)
-
-    if isinstance(V[1], int):
-        V[1] = np.zeros_like(xxx1_)
-
-    if isinstance(V[2], int):
-        V[2] = np.zeros_like(xxx1_)
-
-    return ff_x, V
 
 ## 创建数据
 x1_array = np.linspace(-2,2,101)
 x2_array = np.linspace(-2,2,101)
 x3_array = np.linspace(-2,2,101)
-
 xxx1, xxx2, xxx3 = np.meshgrid(x1_array, x2_array, x3_array)
-
 A = np.array([[1, 0, 0],
               [0, 0, 0],
               [0, 0, -1]])
 # 计算矩阵秩
 print(np.linalg.matrix_rank(A))
 f3_array = fcn_3(A,xxx1,xxx2,xxx3)
-
 
 ## 切豆腐
 ### 外立面
@@ -551,8 +492,8 @@ ax.set_box_aspect((1, 1, 1))
 
 ### 将等高线展开，沿x3
 fig = plt.figure(figsize=(6, 36))
-for fig_idx,idx in enumerate(np.arange(0,len(x3_array),25)):
-    ax = fig.add_subplot(len(np.arange(0,len(x3_array),25)), 1, fig_idx + 1, projection='3d')
+for fig_idx, idx in enumerate(np.arange(0, len(x3_array), 25)):
+    ax = fig.add_subplot(len(np.arange(0, len(x3_array), 25)), 1, fig_idx + 1, projection='3d')
     x3_idx = x3_array[idx]
     ax.contourf(xxx1[:, :, idx],
                 xxx2[:, :, idx],
@@ -679,9 +620,7 @@ for fig_idx,idx in enumerate(np.arange(0,len(x1_array),25)):
     ax.grid(False)
 # fig.savefig('Figures/一次函数，三元，沿x1分层等高线.svg', format='svg')
 
-
-
-#%% # 用切豆腐的方法展示三元欧氏距离
+#%% # 用切豆腐的方法展示三元欧氏距离 Book2_chap25
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
@@ -703,7 +642,7 @@ def Q3(A,xxx1,xxx2,xxx3):
     f_x = x.T@A@x
     f_x = sqrt(f_x[0][0])
     # print(simplify(expand(f_x[0][0])))
-    f_x_fcn = lambdify([x1,x2,x3],f_x)
+    f_x_fcn = lambdify([x1,x2,x3], f_x)
     qqq = f_x_fcn(xxx1,xxx2,xxx3)
     return qqq
 
@@ -787,13 +726,12 @@ ax.set_yticks([])
 ax.set_zticks([])
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
-# ax.set_xlabel('$x_1$')
-# ax.set_ylabel('$x_2$')
-# ax.set_zlabel('$x_3$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$x_3$')
 ax.set_box_aspect((1, 1, 1))
 plt.show()
 plt.close('all')
-
 
 ### 将等高线展开，沿x3
 fig = plt.figure(figsize=(6, 36))
@@ -921,102 +859,6 @@ for fig_idx,idx in enumerate(np.arange(0,len(x1_array),25)):
     ax.set_zticks([])
     ax.set_box_aspect((1, 1, 1))
     ax.grid(False)
-
-#%% # 平面Lp范数等高线  # Bk4_Ch3_01.py  Bk2_Ch25
-## 创建数据
-p_values = [1, 1.5, 2, 4, 8, np.inf]
-# 给定不同p值
-x1 = np.linspace(-2.5, 2.5, num=101);
-x2 = x1;
-xx1, xx2 = np.meshgrid(x1,x2)
-## 自定义Lp范数函数
-def Lp_norm(p):
-    # 计算范数
-    if np.isinf(p):
-        zz = np.maximum(np.abs(xx1),np.abs(xx2))
-    else:
-        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
-    return zz
-## 可视化
-fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(6, 9))
-for p, ax in zip(p_values, axes.flat):
-    # 计算范数
-    zz = Lp_norm(p)
-    # 绘制等高线
-    ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
-    # 绘制Lp norm = 1的等高线
-    ax.contour (xx1, xx2, zz, [1], colors='k', linewidths = 2)
-
-    # 装饰
-    ax.axhline(y=0, color='k', linewidth = 0.25)
-    ax.axvline(x=0, color='k', linewidth = 0.25)
-    ax.set_xlim(-2.5, 2.5)
-    ax.set_ylim(-2.5, 2.5)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    # ax.set_xlabel('$x_1$')
-    # ax.set_ylabel('$x_2$')
-    ax.set_title('p = ' + str(p))
-    ax.set_aspect('equal', adjustable='box')
-
-
-#%% # 平面Lp范数等高线
-## 创建数据
-p_values = [1, 1.5, 2, 4, 8, np.inf]
-# 给定不同p值
-x1 = np.linspace(-2.5, 2.5, num=101);
-x2 = x1;
-xx1, xx2 = np.meshgrid(x1,x2)
-## 自定义Lp范数函数
-def Lp_norm(p):
-    # 计算范数
-    if np.isinf(p):
-        zz = np.maximum(np.abs(xx1),np.abs(xx2))
-    else:
-        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
-    return zz
-## 可视化
-# fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(12, 18), projection = '3d')
-fig = plt.figure(figsize=(12, 18), constrained_layout = True)
-for i, p in enumerate(p_values):
-    ax = fig.add_subplot(3, 2, i+1, projection='3d')
-    # 计算范数
-    zz = Lp_norm(p)
-
-    ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
-    ax.plot_wireframe(xx1, xx2, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
-
-    # 三维等高线
-    # colorbar = ax.contour(xx,yy, ff,20,  cmap = 'RdYlBu_r')
-    # 三维等高线
-    colorbar = ax.contour(xx1, xx2, zz, 20,  cmap = 'hsv')
-    # fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
-
-    # 二维等高线
-    ax.contour(xx1, xx2, zz, zdir = 'z', offset= zz.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
-
-    fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
-    ax.set_proj_type('ortho')
-
-    # 3D坐标区的背景设置为白色
-    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-
-    ax.set_xlabel(r'$\it{x_1}$')
-    ax.set_ylabel(r'$\it{x_2}$')
-    ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
-    ax.set_title(f"p = {p}")
-    ax.set_xlim(x1.min(), x1.max())
-    ax.set_ylim(x2.min(), x2.max())
-
-    ax.view_init(azim=-135, elev=30)
-    ax.grid(False)
-plt.show()
 
 
 

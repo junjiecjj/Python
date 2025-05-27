@@ -14,7 +14,7 @@ from sklearn.covariance import EmpiricalCovariance, MinCovDet
 from numpy import linalg as LA
 
 
-#%% rotated grid
+#%% rotated grid, 参见Book2_Chap25
 def generate_grid(V, mu_x, mu_y):
     # grid rotation
     x1_grid = np.arange(-10, 10 + 1, step = 1) # (21,)

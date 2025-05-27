@@ -1,9 +1,34 @@
 
+
+"""
+关于plot_surface使用，
+
+(一)，ax.plot_surface(xx, yy, f_xy_zz, cmap='turbo', linewidth=1, shade=False) # 删除阴影
+    此时画出的表面图是全曲面的着色的，这种用法不多。
+(二) 第二种是去掉全曲面，只对线条着色
+    norm_plt = plt.Normalize(f_xy_zz.min(), f_xy_zz.max())
+    colors = cm.turbo(norm_plt(f_xy_zz))
+    surf = ax.plot_surface(xx, yy, f_xy_zz, facecolors = colors, linewidth = 1, shade = False) # 删除阴影
+    # or
+    V = np.sin(xx) * np.sin(yy)
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
+    norm_plt = plt.Normalize(V.min(), V.max())
+    colors = cm.turbo(norm_plt(V))
+    surf = ax.plot_surface(xx, yy,  f_xy_zz,  facecolors=colors,  linewidth=1, shade=False)
+    surf.set_facecolor((0,0,0,0))
+    f_xy_zz是根据z = f(x,y)计算出的z值，这个值一般是在3D中使用的Z值，也就是Z轴的高度。
+    此时会利用f_xx_yy或者V的函数值对曲面的颜色进行控制，
+    如果使用f_xy_zz，则Z轴的高度就是对应函数值，等高线将会是平行的，
+    如果使用V值，则是“将第四维数据 V(x,y) 投影到三维曲面 f(x,y)”，也就是曲线的形状是(x,y,f_xy_zz)，但是颜色不是f_xy_zz控制，而是第四维V控制，这时候如果想画等高线，得使用
+    for level_idx, ctr_idx in zip(all_contours.levels, all_contours.allsegs):的方式，见Book2_chap29,Book2_chap32。
+"""
+
+
 #%%==========================================================================================================
 ##########################################  3D Mesh Surface, 网格曲面 ######################################
 #==========================================================================================================
 
-#%% 绘制网格曲面
+#%% 绘制网格曲面 BK_2_Ch15_01
 # 导入包
 import math
 import numpy as np
@@ -105,10 +130,7 @@ ff = f_xy_fcn(xx,yy)
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.5,0.5,0.5],
-                  rstride=1, cstride=1,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx,yy, ff, color = [0.5,0.5,0.5], rstride=1, cstride=1, linewidth = 0.25)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -131,10 +153,7 @@ ff = f_xy_fcn(xx,yy)
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = '#0070C0',
-                  rstride = 5, cstride = 5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = '#0070C0', rstride = 5, cstride = 5, linewidth = 0.25)
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -154,10 +173,7 @@ plt.show()
 # 8. 仅绘制沿x方向曲线
 ff = f_xy_fcn(xx,yy)
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-ax.plot_wireframe(xx,yy, ff,
-                  color = '#0070C0',
-                  rstride=5, cstride=0,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = '#0070C0', rstride=5, cstride=0, linewidth = 0.25)
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -319,10 +335,7 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 norm_plt = plt.Normalize(f_xy_zz.min(), f_xy_zz.max())
 colors = cm.turbo(norm_plt(f_xy_zz))
 
-surf = ax.plot_surface(xx,yy,f_xy_zz,
-                       facecolors=colors,
-                       linewidth=1, # 线宽
-                       shade=False) # 删除阴影
+surf = ax.plot_surface(xx, yy, f_xy_zz, facecolors = colors, linewidth = 1, shade = False) # 删除阴影
 surf.set_facecolor((0,0,0,0))
 ax.set_proj_type('ortho')
 
@@ -398,7 +411,83 @@ ax.grid(False)
 # fig.savefig('Figures/调换第三、四维.svg', format='svg')
 plt.show()
 
-#%% 绘制填充平面,  平行于不同平面的剖面
+
+#%% Bk_2_Ch15_03 # 可视化 Dirichlet 分布
+
+import numpy as np
+from scipy.stats import dirichlet
+import matplotlib.pyplot as plt
+from matplotlib import cm
+### 1. 定义可视化函数
+
+def visualize(alpha_array, mesh_only = True):
+    # 生成网格化数据
+    theta_1_array = theta_2_array = np.linspace(0,1,201)
+    tt1, tt2 = np.meshgrid(theta_1_array, theta_2_array)
+    tt3 = 1 - tt1 - tt2
+    # Points = np.column_stack([tt1.ravel(), tt2.ravel(), tt3.ravel()])
+    # Points_filtered = Points[Points[:,2]>=0, :]
+    # pdf = dirichlet.pdf(Points_filtered.T, alpha_array)
+    PDF_array = []
+    for t_1_idx, t_2_idx in zip(tt1.ravel(), tt2.ravel()):
+        t_3_idx = 1 - t_1_idx - t_2_idx
+        if t_3_idx < 0.005:
+            PDF_idx = np.nan
+        else:
+            PDF_idx = dirichlet.pdf([t_1_idx, t_2_idx, t_3_idx], alpha_array)
+        PDF_array.append(PDF_idx)
+    PDF_FF = np.reshape(PDF_array, tt1.shape)
+    # 可视化
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+    norm_plt = plt.Normalize(np.nanmin(PDF_FF), np.nanmax(PDF_FF))
+    colors = cm.RdYlBu_r(norm_plt(PDF_FF))
+    surf = ax.plot_surface(tt1, tt2, tt3, facecolors = colors, linewidth = 0.25, shade = False, cstride = 10, rstride = 10)
+    if mesh_only:
+        surf.set_facecolor((0,0,0,0))
+    ax.view_init(azim=30, elev=30)
+    ax.set_proj_type('ortho')
+    ax.set_box_aspect([1,1,1])
+    ax.set_xlim((0,1))
+    ax.set_ylim((0,1))
+    ax.set_zlim((0,1))
+    ax.set_xlabel(r'$\theta_1$')
+    ax.set_ylabel(r'$\theta_2$')
+    ax.set_zlabel(r'$\theta_3$')
+    ax.set_xticks((0,1))
+    ax.set_yticks((0,1))
+    ax.set_zticks((0,1))
+    ax.grid(False)
+    title = '_'.join(str(v) for v in alpha_array)
+    title = 'alphas_' + title
+    if mesh_only:
+        title = title + '_mesh_only'
+    # fig.savefig('Figures/' + title + '.svg', format='svg')
+alpha_array = [1, 2, 2]
+visualize(alpha_array, True)
+
+alpha_array = [1, 2, 2]
+visualize(alpha_array, False)
+
+alpha_array = [2, 1, 2]
+visualize(alpha_array, True)
+
+alpha_array = [2, 2, 1]
+visualize(alpha_array, True)
+
+alpha_array = [2, 1, 2]
+visualize(alpha_array, False)
+
+alpha_array = [2, 2, 1]
+visualize(alpha_array, False)
+
+alpha_array = [2, 2, 2]
+visualize(alpha_array, True)
+
+alpha_array = [2, 2, 2]
+visualize(alpha_array, False)
+
+
+#%% 绘制填充平面,  BK_2_Ch15_04  平行于不同平面的剖面
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
@@ -637,7 +726,7 @@ ax.grid(False)
 plt.show()
 
 
-#%% 可视化剖面线
+#%% 可视化剖面线 BK_2_Ch15_05
 # 导入包
 import math
 import numpy as np
@@ -769,7 +858,7 @@ ax.grid(False)
 plt.show()
 
 
-#%%  三维线图的平面填充, 填充曲线下方剖面
+#%%  三维线图的平面填充, 填充曲线下方剖面 BK_2_Ch15_06
 # 导入包
 import math
 import numpy as np
@@ -861,7 +950,7 @@ ax.grid(False)
 plt.show()
 
 
-#%% 圆形薄膜振荡模式
+#%% 圆形薄膜振荡模式 BK_2_Ch15_07
 import numpy as np
 from scipy.special import jn, jn_zeros
 import matplotlib.pyplot as plt
@@ -948,12 +1037,12 @@ from matplotlib import cm
 num = 301; # number of mesh grids
 x_array = np.linspace(-3,3,num)
 y_array = np.linspace(-3,3,num)
-xx,yy = np.meshgrid(x_array,y_array)
+xx, yy = np.meshgrid(x_array, y_array)
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()
 f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
-f_xy_fcn = lambdify([x,y],f_xy)
+f_xy_fcn = lambdify([x, y], f_xy)
 # 将符号函数表达式转换为Python函数
 ff = f_xy_fcn(xx, yy)
 
@@ -1003,7 +1092,7 @@ ax.grid(False)
 fig.colorbar(surf, shrink=0.5, aspect=20)
 plt.show()
 
-## 3 只保留网格线, 同样使用 plot_surface()，不同的是只保留彩色网格
+## 3 只保留网格线, 同样使用 plot_surface()，不同的是只保留彩色网格(use facecolors)
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 ax.set_proj_type('ortho')
 norm_plt = plt.Normalize(ff.min(), ff.max())

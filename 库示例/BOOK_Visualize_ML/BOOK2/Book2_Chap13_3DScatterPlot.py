@@ -6,7 +6,8 @@
 ##########################################  3D Scatter Plot, 三维散点 ######################################
 #==========================================================================================================
 
-#%%
+#%% # 绘制三维散点图 BK_2_Ch13_01
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -243,8 +244,8 @@ plt.show()
 
 
 
+#%% # Gaussian多元分布概率密度 BK_2_Ch13_03
 
-#%%  用三维散点切片可视化高斯分布
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -375,7 +376,7 @@ for fig_idx,x1_slice_idx in enumerate(np.arange(0,len(x1),5)):
     ax.grid(False)
 plt.show()
 
-#%% 用三维散点可视化多项分布
+#%% 用三维散点可视化多项分布 BK_2_Ch13_02
 # 导入包
 from scipy.stats import multinomial
 import numpy as np
@@ -438,7 +439,7 @@ p_array = [0.2, 0.6, 0.2]
 visualize_multinomial(p_array)
 plt.close('all')
 
-#%% Dirichlet分布概率密度
+#%% Dirichlet分布概率密度 BK_2_Ch13_04
 import numpy as np
 import scipy.stats as st
 import pandas as pd
@@ -523,7 +524,7 @@ visualize_Dirichlet(alpha_array)
 alpha_array = [4, 4, 4]
 visualize_Dirichlet(alpha_array)
 
-#%% Dirichlet分布随机数
+#%% Dirichlet分布随机数 BK_2_Ch13_05
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D

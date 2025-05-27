@@ -10,149 +10,9 @@ import sympy
 import numpy as np
 import matplotlib.pyplot as plt
 
-#%%
-## 可视化函数
-def visualize(xx1, xx2, cc):
-    # 计算复数模、辐角
-    cc_norm = np.abs(cc);
-    cc_angle = np.angle(cc)
-    # 分离实部、虚部
-    cc_xx1 = cc.real;
-    cc_xx2 = cc.imag
 
-    fig = plt.figure(figsize=(6, 3))
-    # 第一幅子图
-    ax = fig.add_subplot(1, 2, 1)
-    ax.pcolormesh(xx1, xx2, cc_angle, cmap='hsv', shading = 'auto', rasterized = True)
-    ax.contour(xx1, xx2, cc_norm, levels = np.linspace(0,np.mean(cc_norm) + 5* np.std(cc_norm),31), colors = 'w', linewidths = 0.25)
-    ax.set_xlim(-2,2);
-    ax.set_ylim(-2,2)
-    ax.set_xticks([]);
-    ax.set_yticks([])
-    ax.axhline(y = 0, c = 'k');
-    ax.axvline(x = 0, c = 'k')
-    ax.set_aspect('equal')
-    # 第二幅子图
-    ax = fig.add_subplot(1, 2, 2)
-    ax.pcolormesh(cc_angle, cmap='hsv', shading = 'auto', rasterized = True)
-    ax.contour(np.abs(cc_xx1 - np.round(cc_xx1)), levels = 1, colors="black", linewidths=0.25)
-    ax.contour(np.abs(cc_xx2 - np.round(cc_xx2)), levels = 1, colors="black", linewidths=0.25)
-    ax.set_xticks([]); ax.set_yticks([])
-    ax.set_aspect('equal')
+#%% Bk2_Ch24_01 可视化复数
 
-
-## 产生数据
-xx1, xx2 = np.meshgrid(np.linspace(-2, 2, 2**4),np.linspace(-2, 2, 2**4))
-zz = xx1 + xx2 * 1j
-
-# 旋转
-cc = zz * np.exp(np.pi/6 * 1j)
-visualize(xx1, xx2, cc)
-
-cc = zz * np.exp(np.pi/3 * 1j)
-visualize(xx1, xx2, cc)
-
-# 旋转 + 缩放
-cc = zz * 2 * np.exp(np.pi*3/4 * 1j)
-visualize(xx1, xx2, cc)
-
-## 多项式
-cc = zz**2
-visualize(xx1, xx2, cc)
-
-cc = zz**3
-visualize(xx1, xx2, cc)
-
-cc = zz**3 + zz**2 + 1
-visualize(xx1, xx2, cc)
-
-cc = zz**6 + 1
-visualize(xx1, xx2, cc)
-
-cc = zz**6 - 1
-visualize(xx1, xx2, cc)
-
-cc = zz**(-6) + 1
-visualize(xx1, xx2, cc)
-
-## 分式
-cc = 1/zz
-visualize(xx1, xx2, cc)
-
-cc = 1/(1 - zz)
-visualize(xx1, xx2, cc)
-
-
-cc = (zz**2 - 1)/zz
-visualize(xx1, xx2, cc)
-
-cc = 1/(zz**2 - 1)
-visualize(xx1, xx2, cc)
-
-cc = 1/(zz**4 + 1)
-visualize(xx1, xx2, cc)
-
-cc = zz/(zz**2 + zz + 1)
-visualize(xx1, xx2, cc)
-
-
-## 根式
-cc = np.sqrt(zz + 1)
-visualize(xx1, xx2, cc)
-
-
-cc = np.sqrt(zz**2 + 1)
-visualize(xx1, xx2, cc)
-
-cc = 1/np.sqrt(zz**3 + 1)
-visualize(xx1, xx2, cc)
-
-
-## 三角
-cc = np.sin(zz)
-visualize(xx1, xx2, cc)
-
-
-cc = np.sin(1/zz)
-visualize(xx1, xx2, cc)
-
-
-cc = zz * np.sin(1/zz)
-visualize(xx1, xx2, cc)
-
-## 乘幂
-cc = zz ** zz
-visualize(xx1, xx2, cc)
-
-cc = (1/zz) ** zz
-visualize(xx1, xx2, cc)
-
-cc = zz ** (1/zz)
-visualize(xx1, xx2, cc)
-
-
-## 自然指数
-cc = np.exp(zz)
-visualize(xx1, xx2, cc)
-cc = np.exp(-zz ** 2)
-visualize(xx1, xx2, cc)
-
-cc = np.exp(1/zz)
-visualize(xx1, xx2, cc)
-
-## 自然对数
-cc = np.log(zz)
-visualize(xx1, xx2, cc)
-
-cc = np.log(zz**2 - 1)
-visualize(xx1, xx2, cc)
-
-cc = np.log(zz**4 + 1)
-visualize(xx1, xx2, cc)
-
-
-
-#%%
 
 import sympy
 import numpy as np
@@ -293,6 +153,146 @@ ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
 plt.show()
 
+#%% Bk2_Ch24_02 复数函数
+
+## 可视化函数
+def visualize(xx1, xx2, cc):
+    # 计算复数模、辐角
+    cc_norm = np.abs(cc);
+    cc_angle = np.angle(cc)
+    # 分离实部、虚部
+    cc_xx1 = cc.real;
+    cc_xx2 = cc.imag
+
+    fig = plt.figure(figsize=(6, 3))
+    # 第一幅子图
+    ax = fig.add_subplot(1, 2, 1)
+    ax.pcolormesh(xx1, xx2, cc_angle, cmap='hsv', shading = 'auto', rasterized = True)
+    ax.contour(xx1, xx2, cc_norm, levels = np.linspace(0,np.mean(cc_norm) + 5* np.std(cc_norm),31), colors = 'w', linewidths = 0.25)
+    ax.set_xlim(-2,2);
+    ax.set_ylim(-2,2)
+    ax.set_xticks([]);
+    ax.set_yticks([])
+    ax.axhline(y = 0, c = 'k');
+    ax.axvline(x = 0, c = 'k')
+    ax.set_aspect('equal')
+    # 第二幅子图
+    ax = fig.add_subplot(1, 2, 2)
+    ax.pcolormesh(cc_angle, cmap='hsv', shading = 'auto', rasterized = True)
+    ax.contour(np.abs(cc_xx1 - np.round(cc_xx1)), levels = 1, colors="black", linewidths=0.25)
+    ax.contour(np.abs(cc_xx2 - np.round(cc_xx2)), levels = 1, colors="black", linewidths=0.25)
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_aspect('equal')
+
+
+## 产生数据
+xx1, xx2 = np.meshgrid(np.linspace(-2, 2, 2**4),np.linspace(-2, 2, 2**4))
+zz = xx1 + xx2 * 1j
+
+# 旋转
+cc = zz * np.exp(np.pi/6 * 1j)
+visualize(xx1, xx2, cc)
+
+cc = zz * np.exp(np.pi/3 * 1j)
+visualize(xx1, xx2, cc)
+
+# 旋转 + 缩放
+cc = zz * 2 * np.exp(np.pi*3/4 * 1j)
+visualize(xx1, xx2, cc)
+
+## 多项式
+cc = zz**2
+visualize(xx1, xx2, cc)
+
+cc = zz**3
+visualize(xx1, xx2, cc)
+
+cc = zz**3 + zz**2 + 1
+visualize(xx1, xx2, cc)
+
+cc = zz**6 + 1
+visualize(xx1, xx2, cc)
+
+cc = zz**6 - 1
+visualize(xx1, xx2, cc)
+
+cc = zz**(-6) + 1
+visualize(xx1, xx2, cc)
+
+## 分式
+cc = 1/zz
+visualize(xx1, xx2, cc)
+
+cc = 1/(1 - zz)
+visualize(xx1, xx2, cc)
+
+
+cc = (zz**2 - 1)/zz
+visualize(xx1, xx2, cc)
+
+cc = 1/(zz**2 - 1)
+visualize(xx1, xx2, cc)
+
+cc = 1/(zz**4 + 1)
+visualize(xx1, xx2, cc)
+
+cc = zz/(zz**2 + zz + 1)
+visualize(xx1, xx2, cc)
+
+
+## 根式
+cc = np.sqrt(zz + 1)
+visualize(xx1, xx2, cc)
+
+
+cc = np.sqrt(zz**2 + 1)
+visualize(xx1, xx2, cc)
+
+cc = 1/np.sqrt(zz**3 + 1)
+visualize(xx1, xx2, cc)
+
+
+## 三角
+cc = np.sin(zz)
+visualize(xx1, xx2, cc)
+
+
+cc = np.sin(1/zz)
+visualize(xx1, xx2, cc)
+
+
+cc = zz * np.sin(1/zz)
+visualize(xx1, xx2, cc)
+
+## 乘幂
+cc = zz ** zz
+visualize(xx1, xx2, cc)
+
+cc = (1/zz) ** zz
+visualize(xx1, xx2, cc)
+
+cc = zz ** (1/zz)
+visualize(xx1, xx2, cc)
+
+
+## 自然指数
+cc = np.exp(zz)
+visualize(xx1, xx2, cc)
+cc = np.exp(-zz ** 2)
+visualize(xx1, xx2, cc)
+
+cc = np.exp(1/zz)
+visualize(xx1, xx2, cc)
+
+## 自然对数
+cc = np.log(zz)
+visualize(xx1, xx2, cc)
+
+cc = np.log(zz**2 - 1)
+visualize(xx1, xx2, cc)
+
+cc = np.log(zz**4 + 1)
+visualize(xx1, xx2, cc)
 
 
 

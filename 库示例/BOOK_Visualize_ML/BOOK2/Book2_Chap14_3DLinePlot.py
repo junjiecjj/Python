@@ -3,7 +3,8 @@
 ##########################################  3D Line Plot, 三维线图 ######################################
 #==========================================================================================================
 
-#%%
+#%% # 三维线图 BK_2_Ch14_01
+
 
 ## 三维线图
 # 导入包
@@ -62,7 +63,7 @@ ax.set_zlabel('z')
 ax.grid(False)
 plt.show()
 
-#%% 一元高斯分布概率密度
+#%% 一元高斯分布概率密度 BK_2_Ch14_02
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -153,7 +154,7 @@ ax.set_box_aspect((1, 1, 1))
 ax.grid(False)
 plt.show()
 
-#%% 投影
+#%% 投影 BK_2_Ch14_03
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
@@ -224,7 +225,7 @@ ax.set_box_aspect((1, 1, 1))
 # plt.show()
 
 
-#%% 火柴梗图
+#%% 火柴梗图 BK_2_Ch14_06
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import multinomial
@@ -281,7 +282,7 @@ title = 'p_array_' + title
 plt.show()
 
 
-#%% 单位正方体的 12 条边
+#%% 单位正方体的 12 条边 BK_2_Ch14_04
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -423,7 +424,7 @@ ax.set_box_aspect((1, 1, 1))
 ax.set_proj_type('ortho')
 plt.show()
 
-#%% 可视化偏导数
+#%% 可视化偏导数 BK_2_Ch14_05
 import numpy as np
 from sympy import lambdify, diff, exp, latex, simplify
 from sympy.abc import x, y

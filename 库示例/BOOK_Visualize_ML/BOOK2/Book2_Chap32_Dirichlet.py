@@ -432,7 +432,7 @@ visualize_Dirichlet(alpha_array)
 
 
 
-#%%# 重心坐标系 Bk_2_Ch32_06
+#%%# 重心坐标系 Bk_2_Ch32_06, 参考 Bk_2_Ch32_06, BK_2_Ch10_07, Bk_2_Ch18_03
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri

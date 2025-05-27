@@ -31,6 +31,9 @@ plt.rcParams['axes.spines.left'] = 1
 plt.rcParams['legend.fontsize'] = 18
 plt.rcParams['legend.labelspacing'] = 0.2
 
+
+#%% BK_2_Ch11_01 # 热图
+
 iris = load_iris()
 # 从sklearn导入鸢尾花数据
 
@@ -199,7 +202,7 @@ fig, ax = plt.subplots(figsize = (4,4))
 sns.heatmap(Corr, ax = ax, cmap = 'RdYlBu_r', annot = True, fmt=".2f", square = True, cbar_kws = {'orientation':'vertical'}, linecolor = [0.5, 0.5, 0.5])
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图 BK_2_Ch11_02
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -229,7 +232,7 @@ ax.axis([x.min(), x.max(), y.min(), y.max()])
 fig.colorbar(c, ax=ax)
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% kNN分类
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% kNN分类 BK_2_Ch11_03
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -265,15 +268,16 @@ for idx, n_neighbors in enumerate(num_neighbors):
     plt.ylabel('Sepal width (cm)')
     plt.axis('tight')
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图可视化几何变换
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 伪彩色网格图可视化几何变换 BK_2_Ch11_04
+
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 delta = 1/10
 
-x_array = np.linspace(-1 + delta/2,1 - delta/2,int(2/delta))
-y_array = np.linspace(-1 + delta/2,1 - delta/2,int(2/delta))
+x_array = np.linspace(-1 + delta/2, 1 - delta/2,int(2/delta))
+y_array = np.linspace(-1 + delta/2, 1 - delta/2,int(2/delta))
 
 xx, yy = np.meshgrid(x_array, y_array)
 zz = xx + yy
@@ -284,8 +288,10 @@ colors = plt.cm.rainbow(np.linspace(0, 1, len(xx.flatten())))
 fig = plt.figure(figsize=(4, 4))
 ax = fig.add_subplot(1, 1, 1)
 ax.pcolormesh(xx, yy, zz*0 + np.nan, edgecolors = colors, shading='auto')
-ax.set_xlim(-3,3)
-ax.set_ylim(-3,3)
+# ax.pcolormesh(xx, yy, zz*0 + np.nan, edgecolors = 'gray', lw = 0.1, shading='auto')
+# ax.scatter(xx.flatten(), yy.flatten(), c = 'b', s = 1)
+ax.set_xlim(-2,2)
+ax.set_ylim(-2,2 )
 plt.show()
 
 fig = plt.figure(figsize=(8, 12))
@@ -325,7 +331,7 @@ ax.set_xlim(-3,3)
 ax.set_ylim(-3,3)
 plt.show()
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 非矢量图片
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 非矢量图片 BK_2_Ch11_05
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 # 导入 matplotlib 库中用于处理图像的 image 模块，并将其命名为 mpimg

@@ -3,7 +3,7 @@
 
 
 
-# Bk4_Ch8_01.py
+#%% Bk4_Ch8_01.py
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -66,14 +66,11 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
-plt.xlabel('$x_1$')
-plt.ylabel('$x_2$')
+plt.xlabel(r'$x_1$')
+plt.ylabel(r'$x_2$')
 
 
-
-
-
-# Bk4_Ch8_02.py
+#%% Bk4_Ch8_02.py
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -130,9 +127,253 @@ for theta in thetas:
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
-    plt.xlabel('$x_1$')
-    plt.ylabel('$x_2$')
+    plt.xlabel(r'$x_1$')
+    plt.ylabel(r'$x_2$')
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  平面仿射变换 Bk_2_Ch12_13, 线性变换
+
+# 导入包
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 产生网格数据
+x1 = np.arange(-20, 20 + 1, step = 1)
+x2 = np.arange(-20, 20 + 1, step = 1)
+
+XX1, XX2 = np.meshgrid(x1,x2)
+X = np.column_stack((XX1.ravel(), XX2.ravel()))
+
+# 自定义可视化函数
+def visualize_transform(XX1, XX2, ZZ1, ZZ2, cube, arrows, fig_name):
+    colors = np.arange(len(XX1.ravel()))
+    fig, ax = plt.subplots(figsize = (5,5))
+    # 绘制原始网格
+    ax.plot(XX1 ,XX2, color = [0.8,0.8,0.8], lw = 0.25)
+    ax.plot(XX1.T, XX2.T, color = [0.8,0.8,0.8], lw = 0.25)
+    # plt.scatter(XX1.ravel(), XX2.ravel(), c = colors, s = 10, cmap = 'plasma', zorder=1e3)
+
+    #绘制几何变换后的网格
+    ax.plot(ZZ1, ZZ2, color = '#0070C0', lw = 0.25)
+    ax.plot(ZZ1.T, ZZ2.T, color = '#0070C0', lw = 0.25)
+
+    ax.fill(cube[:,0], cube[:,1], color = '#92D050', alpha = 0.5)
+    ax.quiver(0, 0, arrows[0,0], arrows[0,1], color = 'r', angles='xy', scale_units='xy', scale=1)
+    ax.quiver(0, 0, arrows[1,0], arrows[1,1], color = 'g', angles='xy', scale_units='xy', scale=1)
+
+    ax.axis('scaled')
+    ax.set_xlim([-3, 3])
+    ax.set_ylim([-3, 3])
+    ax.axhline(y = 0, color = 'k')
+    ax.axvline(x = 0, color = 'k')
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    # fig.savefig('Figures/' + fig_name + '.svg', format='svg')
+
+#>>>>>>>>>>> 原始网格
+colors = np.arange(len(XX1.ravel()))
+fig, ax = plt.subplots(figsize = (5,5))
+cube = np.array([[0, 0], [1, 0], [1, 1], [0, 1]])
+arrows = np.array([[1, 0], [0, 1]])
+
+# 绘制原始网格
+ax.plot(XX1, XX2, color = '#0070C0', lw = 0.25)
+ax.plot(XX1.T, XX2.T, color = '#0070C0', lw = 0.25)
+ax.fill(cube[:,0], cube[:,1], color = '#92D050', alpha = 0.5)
+ax.quiver(0,0,arrows[0,0], arrows[0,1], color = 'r', angles='xy', scale_units='xy', scale=1)
+ax.quiver(0,0,arrows[1,0], arrows[1,1], color = 'g', angles='xy', scale_units='xy', scale=1)
+ax.scatter(XX1, XX2, c = 'red')
+
+plt.axis('scaled')
+ax.set_xlim([-3, 3])
+ax.set_ylim([-3, 3])
+ax.axhline(y = 0, color = 'k')
+ax.axvline(x = 0, color = 'k')
+plt.xticks([])
+plt.yticks([])
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+
+#>>>>>>>>>>> 旋转
+# 绕原点，逆时针旋转30
+theta = 30/180*np.pi
+R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta),  np.cos(theta)]])
+Z = X@R.T
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+fig_name = '逆时针旋转30度'
+
+cube_ = cube @ R.T;
+arrows_ = arrows @ R.T;
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+#>>>>>>>>>>> 等比例放大
+S = np.array([[2, 0], [0, 2]])
+Z = X@S
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+
+fig_name = '等比例放大'
+cube_ = cube @ S.T;
+arrows_ = arrows @ S.T;
+
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+
+#>>>>>>>>>>> 等比例缩小
+S = np.array([[0.4, 0], [0,   0.4]])
+Z = X@S;
+
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+
+fig_name = '等比例缩小'
+cube_ = cube @ S.T;
+arrows_ = arrows @ S.T;
+
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+
+#>>>>>>>>>>> 非等比例缩放
+S = np.array([[2, 0], [0, 0.5]])
+Z = X@S;
+
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+
+fig_name = '非等比例缩放'
+cube_ = cube @ S.T;
+arrows_ = arrows @ S.T;
+
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+
+#>>>>>>>>>>> 先缩放，再旋转
+Z = X@S.T@R.T;
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+
+fig_name = '先缩放，再旋转'
+cube_ = cube @S.T@R.T;
+arrows_ = arrows @S.T@R.T;
+
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+
+#>>>>>>>>>>> 先旋转，再放大
+Z = X@R.T@S.T
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+
+fig_name = '先旋转，再缩放'
+cube_ = cube @R.T@S.T;
+arrows_ = arrows @R.T@S.T;
+
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+
+#>>>>>>>>>>> 沿横轴剪切
+T = np.array([[1, 1.5], [0, 1]])
+Z = X@T.T
+ZZ1 = Z[:,0].reshape((len(x1), len(x2)))
+ZZ2 = Z[:,1].reshape((len(x1), len(x2)))
+
+fig_name = '沿横轴剪切'
+cube_ = cube @T.T;
+arrows_ = arrows @T.T;
+
+visualize_transform(XX1, XX2, ZZ1, ZZ2, cube_, arrows_, fig_name)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格 BK_2_Ch08_10, 非线性变换
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import os
+import matplotlib
+
+# colormap = cm.get_cmap("rainbow")
+colormap = matplotlib.colormaps["rainbow"]
+def plot_grid(xmin: float, xmax: float, ymin: float, ymax: float, n_lines: int, line_points: int, map_func, ax):
+    lines = []
+    # 水平线
+    for y in np.linspace(ymin, ymax, n_lines):
+        lines.append([map_func(x, y) for x in np.linspace(xmin, xmax, line_points)])
+    # 竖直线
+    for x in np.linspace(xmin, xmax, n_lines):
+        lines.append([map_func(x, y) for y in np.linspace(ymin, ymax, line_points)])
+
+    # 绘制所有线条
+    for i, line in enumerate(lines):
+        p = i / (len(lines) - 1)
+        xs, ys = zip(*line)
+        # 利用颜色映射
+        # ax.plot(xs, ys, color = colormap(p))
+        ax.plot(xs, ys, color = 'gray', lw = 0.7, alpha = 0.3)
+        ax.scatter(xs, ys, c = 'r', s = 2)
+# 各种映射
+def identity(x, y):
+    return x, y
+
+def rotate_scale(x, y):
+    return x + y, x - y
+
+def shear(x, y):
+    return x, x + y
+
+def exp(x, y):
+    return math.exp(x), math.exp(y)
+
+def complex_sq(x, y):
+    c = complex(x, y) ** 2
+    return (c.real, c.imag)
+
+def sin_cos(x: float, y: float):
+    return x + math.sin(y * 2) * 0.2, y + math.cos(x * 2) * 0.3
+
+def vortex(x: float, y: float):
+    dst = (x - 2) ** 2 + (y - 2) ** 2
+    ang = math.atan2(y - 2, x - 2)
+    return math.cos(ang - dst * 0.1) * dst, math.sin(ang - dst * 0.1) * dst
+
+# 原图
+fig = plt.figure(figsize=(4, 4))
+ax = fig.add_subplot(111)
+xmin = 0
+xmax = 5
+ymin = 0
+ymax = 5
+n_lines = 20
+line_points = 20
+plot_grid(0, 5, 0, 5, 20, 20, identity, ax)
+ax.axis('off')
+
+fig = plt.figure(figsize=(8, 12))
+ax = fig.add_subplot(3, 2, 1)
+plot_grid(0, 5, 0, 5, 20, 20, rotate_scale, ax)
+ax.axis('off')
+
+ax = fig.add_subplot(3, 2, 2)
+plot_grid(0, 5, 0, 5, 20, 20, shear, ax)
+ax.axis('off')
+
+ax = fig.add_subplot(3, 2, 3)
+plot_grid(0, 5, 0, 5, 20, 20, exp, ax)
+ax.axis('off')
+
+ax = fig.add_subplot(3, 2, 4)
+plot_grid(0, 5, 0, 5, 20, 20, complex_sq, ax)
+ax.axis('off')
+
+ax = fig.add_subplot(3, 2, 5)
+plot_grid(0, 5, 0, 5, 20, 20, sin_cos, ax)
+ax.axis('off')
+
+ax = fig.add_subplot(3, 2, 6)
+plot_grid(0, 5, 0, 5, 20, 20, vortex, ax)
+ax.axis('off')
 
 
 

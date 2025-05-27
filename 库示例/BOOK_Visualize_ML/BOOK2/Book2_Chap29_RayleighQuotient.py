@@ -72,7 +72,7 @@ def visualize(Q, title):
     xx1, xx2 = mesh(num = 200)
     ff, f_x1x2 = Rayleigh_Q(Q, xx1, xx2)
 
-    levels = np.linspace(-2,2,41)
+    levels = np.linspace(-2, 2, 41)
 
     # 特征值分解
     _, V = np.linalg.eig(Q)
@@ -84,14 +84,12 @@ def visualize(Q, title):
     x1_circle = np.cos(theta_array)
     x2_circle = np.sin(theta_array)
 
-    fig = plt.figure(figsize=(8,4))
-
+    fig = plt.figure(figsize = (8, 4))
     ax = fig.add_subplot(1, 2, 1)
     ax.contourf(xx1, xx2, ff, levels = levels, cmap='RdYlBu_r')
     ax.plot(x1_circle, x2_circle, color = 'k')
     # 绘制向量 v1
     ax.quiver(0, 0, v1[0], v1[1], angles='xy', scale_units='xy', scale=1, color = 'k')
-
     # 绘制向量 v2
     ax.quiver(0, 0, v2[0], v2[1], angles='xy', scale_units='xy', scale=1, color = 'k')
 
@@ -141,31 +139,25 @@ Q = np.array([[1.5,0.5],
 print(np.linalg.eig(Q))
 f_x1x2 = visualize(Q, '开口朝上旋转椭圆面')
 
-
 Q = np.array([[-1,0],
               [0,-2]])
 print(np.linalg.eig(Q))
 f_x1x2 = visualize(Q, '开口朝下正椭圆面')
 
+Q = np.array([[-1.5,-0.5],
+              [-0.5,-1.5]])
+print(np.linalg.eig(Q))
+f_x1x2 = visualize(Q, '开口朝下旋转椭圆面')
 
-
-# Q = np.array([[-1.5,-0.5],
-#               [-0.5,-1.5]])
-# print(np.linalg.eig(Q))
-# f_x1x2 = visualize(Q, '开口朝下旋转椭圆面')
-
-
-# Q = np.array([[1,-1],
-#               [-1,1]])
-# print(np.linalg.eig(Q))
-# f_x1x2 = visualize(Q, '旋转山谷')
-
+Q = np.array([[1,-1],
+              [-1,1]])
+print(np.linalg.eig(Q))
+f_x1x2 = visualize(Q, '旋转山谷')
 
 Q = np.array([[-1,1],
               [1,-1]])
 print(np.linalg.eig(Q))
 f_x1x2 = visualize(Q, '旋转山脊')
-
 
 Q = np.array([[1,0],
               [0,-1]])
@@ -862,7 +854,7 @@ plt.show()
 ## 2
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 # 提取等高线
-all_contours = ax.contour(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r') # 四维到三维才需要这样的技巧画等高线，见Book2_chap32
+all_contours = ax.contour(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r') # 四维到三维才需要这样的技巧画等高线，见 Book2_chap32,
 ax.cla() # 擦去等高线这个“艺术家”
 plt.show()
 

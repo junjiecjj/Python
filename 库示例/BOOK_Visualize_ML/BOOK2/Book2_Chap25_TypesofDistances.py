@@ -7,7 +7,7 @@ Created on Mon Jun 24 18:04:51 2024
 """
 
 # 导入包
-#%% # 平面两点连线
+#%% BK_2_Ch25_01 平面两点连线
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -233,7 +233,7 @@ ax.set_xbound(lower = 0, upper = 8)
 ax.set_ybound(lower = 0, upper = 6)
 
 
-#%% # 不同方式展示二元欧氏距离
+#%% BK_2_Ch25_02 不同方式展示二元欧氏距离
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -323,7 +323,7 @@ ax.set_xlim(xx1.min(), xx1.max());
 ax.set_ylim(xx2.min(), xx2.max())
 plt.tight_layout()
 
-#%% # 三维两点连线
+#%% BK_2_Ch25_03 三维两点连线
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -391,7 +391,7 @@ ax.set_ylim(2, 5)
 ax.set_zlim(1, 7)
 ax.grid([])
 
-#%% # 用切豆腐的方法展示三元欧氏距离
+#%% BK_2_Ch25_04 用切豆腐的方法展示三元欧氏距离, 参见切豆腐:Bk_2_Ch16_07, Bk2_Ch21_02, BK_2_Ch25_04
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
@@ -504,7 +504,6 @@ ax.set_box_aspect((1, 1, 1))
 plt.show()
 plt.close('all')
 
-
 ### 将等高线展开，沿x3
 fig = plt.figure(figsize=(6, 36))
 for fig_idx, idx in enumerate(np.arange(0, len(x3_array), 25)):
@@ -545,7 +544,8 @@ for fig_idx, idx in enumerate(np.arange(0, len(x3_array), 25)):
     ax.set_zticks([])
     ax.set_box_aspect((1, 1, 1))
     ax.grid(False)
-
+plt.show()
+plt.close('all')
 ### 将等高线展开，沿x2
 fig = plt.figure(figsize=(6, 36))
 for fig_idx,idx in enumerate(np.arange(0,len(x2_array),25)):
@@ -589,7 +589,8 @@ for fig_idx,idx in enumerate(np.arange(0,len(x2_array),25)):
     ax.set_zticks([])
     ax.set_box_aspect((1, 1, 1))
     ax.grid(False)
-
+plt.show()
+plt.close('all')
 ### 将等高线展开，沿x1
 fig = plt.figure(figsize=(6, 36))
 for fig_idx,idx in enumerate(np.arange(0,len(x1_array),25)):
@@ -631,8 +632,9 @@ for fig_idx,idx in enumerate(np.arange(0,len(x1_array),25)):
     ax.set_zticks([])
     ax.set_box_aspect((1, 1, 1))
     ax.grid(False)
-
-#%% # 根据欧氏距离远近渲染两点连线
+plt.show()
+plt.close('all')
+#%% BK_2_Ch25_05 根据欧氏距离远近渲染两点连线
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
@@ -684,7 +686,7 @@ ax.set_aspect('equal')
 # fig.savefig('Figures/根据距离远近匹配颜色，圆盘.svg', format='svg')
 plt.show()
 
-#%% # 平面Lp范数等高线
+#%% BK_2_Ch25_06 平面Lp范数等高线
 ## 创建数据
 p_values = [1, 1.5, 2, 4, 8, np.inf]
 # 给定不同p值
@@ -726,7 +728,7 @@ for p, ax in zip(p_values, axes.flat):
     ax.set_aspect('equal', adjustable='box')
 
 
-#%% # 平面Lp范数等高线
+###   平面Lp范数等高线3D
 ## 创建数据
 p_values = [1, 1.5, 2, 4, 8, np.inf]
 # 给定不同p值
@@ -782,7 +784,7 @@ for i, p in enumerate(p_values):
 plt.show()
 
 
-#%% # 三维空间Lp范数
+#%% BK_2_Ch25_07 三维空间Lp范数
 # 导入包
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
@@ -864,7 +866,7 @@ def vector_norm(x,y,z):
 visualize_four_ways(vector_norm, 'norm_1000', bbox = (-1,1))
 
 
-#%% # 基于鸢尾花数据个各种距离度量等高线
+#%% BK_2_Ch25_08 基于鸢尾花数据个各种距离度量等高线,参见Book5_Chap23
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -893,7 +895,7 @@ mu_y = iris_sns['petal_length'].mean()
 
 x = np.linspace(3, 9, num = 201)
 y = np.linspace(1, 7, num = 201)
-xx,yy = np.meshgrid(x,y)
+xx, yy = np.meshgrid(x,y)
 
 ## 自定函数产生旋转网格
 def generate_grid(V, mu_x, mu_y):
@@ -912,16 +914,13 @@ def generate_grid(V, mu_x, mu_y):
 
     return ZZ1_grid, ZZ2_grid
 ##>>>>>>>>>>> 欧氏距离
-I = np.array([[1, 0],
-              [0, 1]])
+I = np.array([[1, 0], [0, 1]])
 ZZ1_grid, ZZ2_grid = generate_grid(I, mu_x, mu_y)
 x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
 
 fig, ax = plt.subplots(figsize = (6,6))
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7, 0.7, 0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7, 0.7, 0.7])
 ax = sns.scatterplot(data = iris_sns, x = "sepal_length", y = "petal_length")
 sns.rugplot(data = iris_sns, x = "sepal_length", y = "petal_length", ax = ax)
 
@@ -949,9 +948,7 @@ ZZ1_grid, ZZ2_grid = generate_grid(I, mu_x, mu_y)
 x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
 fig, ax = plt.subplots(figsize = (6,6))
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 plt.axvline(x=mu_x, linestyle = '--', color = 'r')
@@ -983,9 +980,7 @@ x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
 
 fig, ax = plt.subplots(figsize = (6,6))
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
@@ -1012,16 +1007,13 @@ dd = ((np.abs((xx - mu_x))**p) + (np.abs((yy - mu_y))**p))**(1./p)
 ax.contour(xx,yy,dd,levels = [1, 2, 3], colors = 'r')
 
 ##>>>>>>>>>>> L4范数
-I = np.array([[1, 0],
-              [0, 1]])
+I = np.array([[1, 0], [0, 1]])
 ZZ1_grid, ZZ2_grid = generate_grid(I, mu_x, mu_y)
 x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
 
 fig, ax = plt.subplots(figsize = (6,6))
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 
@@ -1043,32 +1035,23 @@ ax.set_ybound(1,7)
 # Euclidean distance
 p = 4
 dd = ((np.abs((xx - mu_x))**p) + (np.abs((yy - mu_y))**p))**(1./p)
-ax.contour(xx,yy,dd,levels = [1, 2, 3], colors = 'r')
+ax.contour(xx, yy, dd,levels = [1, 2, 3], colors = 'r')
 
 ##>>>>>>>>>>> L8范数
 I = np.array([[1, 0],
               [0, 1]])
-
 ZZ1_grid, ZZ2_grid = generate_grid(I, mu_x, mu_y)
-
 x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
-
 fig, ax = plt.subplots(figsize = (6,6))
-
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
-
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 
 plt.axvline(x=mu_x, linestyle = '--', color = 'r')
 plt.axhline(y=mu_y, linestyle = '--', color = 'r')
 
-plt.plot(mu_x,mu_y, color = 'k',
-         marker = 'x', markersize = 15)
-
+plt.plot(mu_x,mu_y, color = 'k', marker = 'x', markersize = 15)
 # ax.set_xlabel('Sepal length, $x_1$ (cm)')
 # ax.set_ylabel('Petal length, $x_3$ (cm)')
 
@@ -1088,15 +1071,12 @@ dd = ((np.abs((xx - mu_x))**p) + (np.abs((yy - mu_y))**p))**(1./p)
 ax.contour(xx, yy, dd,levels = [1, 2, 3], colors = 'r')
 
 ##>>>>>>>>>>> L_inf范数
-I = np.array([[1, 0],
-              [0, 1]])
+I = np.array([[1, 0], [0, 1]])
 ZZ1_grid, ZZ2_grid = generate_grid(I, mu_x, mu_y)
 x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
 fig, ax = plt.subplots(figsize = (6,6))
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
@@ -1124,11 +1104,12 @@ ax.set_xticks([])
 ax.set_yticks([])
 
 ##>>>>>>>>>>> 标准欧氏距离
+D = np.array([[sigma_x, 0], [0, sigma_y]])
+ZZ1_grid, ZZ2_grid = generate_grid(D, mu_x, mu_y)
+
 fig, ax = plt.subplots(figsize = (6,6))
 
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
@@ -1136,8 +1117,7 @@ sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 plt.axvline(x=mu_x, linestyle = '--', color = 'r')
 plt.axhline(y=mu_y, linestyle = '--', color = 'r')
 
-plt.plot(mu_x,mu_y, color = 'k',
-         marker = 'x', markersize = 15)
+plt.plot(mu_x,mu_y, color = 'k', marker = 'x', markersize = 15)
 
 # ax.set_xlabel('Sepal length, $x_1$ (cm)')
 # ax.set_ylabel('Petal length, $x_3$ (cm)')
@@ -1145,15 +1125,15 @@ plt.plot(mu_x,mu_y, color = 'k',
 ax.set_xticks([])
 ax.set_yticks([])
 
-plt.plot(ZZ1_grid,ZZ2_grid,color = [0.7,0.7,0.7])
-plt.plot(ZZ1_grid.T,ZZ2_grid.T,color = [0.7,0.7,0.7])
+plt.plot(ZZ1_grid, ZZ2_grid,color = [0.7,0.7,0.7])
+plt.plot(ZZ1_grid.T, ZZ2_grid.T,color = [0.7,0.7,0.7])
 
 ax.axis('scaled')
 ax.set_xbound(3,9)
 ax.set_ybound(1,7)
 # Euclidean distance
 dd = np.sqrt(((xx - mu_x)/sigma_x)**2 + ((yy - mu_y)/sigma_y)**2)
-ax.contour(xx,yy,dd,levels = [1, 2, 3], colors = 'r')
+ax.contour(xx, yy, dd, levels = [1, 2, 3], colors = 'r')
 
 ##>>>>>>>>>>> 马氏距离
 lambdas, V = LA.eig(SIGMA_13)
@@ -1170,16 +1150,14 @@ x_array = np.array(iris_sns["sepal_length"])
 y_array = np.array(iris_sns["petal_length"])
 
 fig, ax = plt.subplots(figsize = (6,6))
-plt.plot([x_array, mu_x+x_array*0],
-         [y_array, mu_y+y_array*0],
-         color = [0.7,0.7,0.7])
+plt.plot([x_array, mu_x+x_array*0], [y_array, mu_y+y_array*0], color = [0.7,0.7,0.7])
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="petal_length")
 sns.rugplot(data=iris_sns, x="sepal_length", y="petal_length", ax = ax)
 
 plt.axvline(x=mu_x, linestyle = '--', color = 'r')
 plt.axhline(y=mu_y, linestyle = '--', color = 'r')
 
-plt.plot(mu_x,mu_y, color = 'k', marker = 'x', markersize = 15)
+plt.plot(mu_x, mu_y, color = 'k', marker = 'x', markersize = 15)
 
 # ax.set_xlabel('Sepal length, $x_1$ (cm)')
 # ax.set_ylabel('Petal length, $x_3$ (cm)')

@@ -4,7 +4,7 @@
 ##########################################  3D Contours, 三维等高线 ######################################
 #==========================================================================================================
 
-#%% 沿z方向空间等高线
+#%% 沿z方向空间等高线 Bk_2_Ch16_01
 # 导入包
 import math
 import numpy as np
@@ -234,7 +234,7 @@ ax.grid(False)
 # fig.savefig('Figures/空间填充等高线，z = -8.svg', format='svg')
 plt.show()
 
-#%% 沿x、y方向空间等高线
+#%% 沿x、y方向空间等高线 Bk_2_Ch16_02
 # 导入包
 import math
 import numpy as np
@@ -489,7 +489,7 @@ ax.grid(False)
 # fig.savefig('Figures/空间等高线，y = -3.svg', format='svg')
 plt.show()
 
-#%% 沿x、y方向空间等高线在平面上投影
+#%% 沿x、y方向空间等高线在平面上投影 Bk_2_Ch16_03
 # 导入包
 import math
 import numpy as np
@@ -601,7 +601,7 @@ plt.ylabel('$f(x,y)$')
 
 plt.show()
 
-#%% 利用极坐标产生等高线坐标
+#%% 利用极坐标产生等高线坐标 Bk_2_Ch16_04
 # 导入包
 import math
 import numpy as np
@@ -734,7 +734,7 @@ Q = np.array([[0,1],
               [1,0]])
 f_x1x2 = visualize(Q, '旋转双曲面')
 
-#%% 提取等高线坐标
+#%% 提取等高线坐标 Bk_2_Ch16_05
 # 导入包
 import math
 import numpy as np
@@ -880,6 +880,373 @@ plt.tight_layout()
 ax.grid(False)
 # fig.savefig('Figures/对x2偏导为0映射到f(x1,x2)，三维曲面.svg', format='svg')
 plt.show()
+
+
+#%% Bk_2_Ch16_06 # 绘制交线
+# 导入包
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from sympy import lambdify, diff, exp, latex
+from sympy.abc import x, y
+
+from matplotlib import cm
+# 导入色谱模块
+def mesh(num = 101):
+    # number of mesh grids
+    x_array = np.linspace(-3,3,num)
+    y_array = np.linspace(-3,3,num)
+    xx,yy = np.meshgrid(x_array,y_array)
+
+    return xx, yy
+
+### 1. 定义符号函数
+# 用 sympy 库定义 MATLAB二元函数 peaks()
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
+f_xy_fcn = lambdify([x,y],f_xy)
+# 将符号函数表达式转换为Python函数
+xx, yy = mesh(num = 401)
+f_xy_zz = f_xy_fcn(xx, yy)
+
+### 2. 曲面和平面交线
+# x + y + 1 = 0
+linear_eq = xx + yy + 1
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+gap = f_xy_zz - linear_eq
+# 两个曲面之差
+CS_x = ax.contour(xx,yy, gap, levels = [0], colors = '#339933')
+# 两个曲面之差为0处，即交线位置
+ax.cla()
+# 清空图片
+
+norm_plt = plt.Normalize(f_xy_zz.min(), f_xy_zz.max())
+colors = cm.RdYlBu_r(norm_plt(f_xy_zz))
+
+surf = ax.plot_surface(xx,yy,f_xy_zz, facecolors=colors, rstride=5, cstride=5, linewidth=0.25, shade=False) # 删除阴影
+surf.set_facecolor((0,0,0,0))
+ax.plot_wireframe(xx,yy, linear_eq, color = 'k', rstride=5, cstride=5, linewidth = 0.25)
+# 分段绘制交线
+for i in range(0,len(CS_x.allsegs[0])):
+    contour_points_x_y = CS_x.allsegs[0][i]
+    contour_points_z = f_xy_fcn(contour_points_x_y[:,0], contour_points_x_y[:,1])
+    ax.plot3D(contour_points_x_y[:,0], contour_points_x_y[:,1], contour_points_z, color = 'k', linewidth = 1)
+ax.set_proj_type('ortho')
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+ax.set_zlabel('$f(x_1,x_2)$')
+ax.set_xlim(xx.min(), xx.max())
+ax.set_ylim(yy.min(), yy.max())
+ax.view_init(azim=-135, elev=30)
+ax.grid(False)
+# fig.savefig('Figures/曲面和平面交线_3D.svg', format='svg')
+
+
+fig, ax = plt.subplots()
+colorbar = ax.contourf(xx,yy, f_xy_zz, 20, cmap='RdYlBu_r')
+ax.contour(xx,yy, gap, levels = [0], colors = 'k')
+# fig.colorbar(colorbar, ax=ax)
+ax.set_xlim(xx.min(), xx.max())
+ax.set_ylim(yy.min(), yy.max())
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+
+plt.gca().set_aspect('equal', adjustable='box')
+# fig.savefig('Figures/曲面和平面交线_平面.svg', format='svg')
+
+
+#%% # 可视化三元高斯分布 Bk_2_Ch16_07, 参见切豆腐:Bk_2_Ch16_07, Bk2_Ch21_02, BK_2_Ch25_04
+# 导入包
+import matplotlib.pyplot as plt
+import numpy as np
+
+### 1. 自定义高斯分布概率密度函数,参见Book5, 第一章(test.6)多元正态分布的概率密度函数 PDF.
+def Mahal_d_2_pdf(d, Sigma):
+    # 将马氏距离转化为概率密度
+    scale_1 = np.sqrt(np.linalg.det(Sigma))
+    scale_2 = (2*np.pi)**(3/2)
+    pdf = np.exp(-d**2/2)/scale_1/scale_2
+    return pdf
+
+def Mahal_d(Mu, Sigma, x):
+    # 计算马哈距离
+    x_demeaned = x - Mu
+    # 中心化
+    inv_covmat = np.linalg.inv(Sigma)
+    # 矩阵逆
+    left = np.dot(x_demeaned, inv_covmat)
+    mahal = np.dot(left, x_demeaned.T)
+    return np.sqrt(mahal).diagonal()
+
+### 2. 生成数据
+x1 = np.linspace(-2,2,30)
+x2 = np.linspace(-2,2,30)
+x3 = np.linspace(-2,2,30)
+
+xxx1,xxx2,xxx3 = np.meshgrid(x1,x2,x3)
+Mu = np.array([[0, 0, 0]])
+Sigma = np.array([[1, 0.6, -0.4],
+                  [0.6, 1.5, 1],
+                  [-0.4, 1, 2]])
+x_array = np.vstack([xxx1.ravel(),xxx2.ravel(), xxx3.ravel()]).T
+# 首先计算马氏距离
+d_array = Mahal_d(Mu, Sigma, x_array)
+d_array = d_array.reshape(xxx1.shape)
+
+# 将马氏距离转化成概率密度PDF
+pdf_zz = Mahal_d_2_pdf(d_array, Sigma)
+
+# 设定统一等高线分层
+# levels = np.linspace(0,pdf_zz.max(),20)
+levels_PDF = np.linspace(0, 0.1, 22)
+levels_Mahal_D = np.linspace(0, 10, 22)
+
+### 3. 绘制概率密度箱体外立面
+# 定义等高线高度
+fig = plt.figure(figsize=(6,6))
+ax = fig.add_subplot(111, projection='3d')
+# 绘制三维等高线，填充
+ax.contourf(xxx1[:, :, -1],
+            xxx2[:, :, -1],
+            pdf_zz[:, :, -1],
+            levels = levels_PDF,
+            zdir='z', offset=xxx3.max(),
+            cmap = 'turbo') # RdYlBu_r
+
+ax.contour(xxx1[:, :, -1],
+            xxx2[:, :, -1],
+            pdf_zz[:, :, -1],
+            levels = levels_PDF,
+            zdir='z', offset=xxx3.max(),
+            linewidths = 0.25,
+            colors = '1')
+
+ax.contourf(xxx1[0, :, :],
+            pdf_zz[0, :, :],
+            xxx3[0, :, :],
+            levels = levels_PDF,
+            zdir='y',
+            cmap = 'turbo',
+            offset=xxx2.min())
+
+ax.contour(xxx1[0, :, :],
+            pdf_zz[0, :, :],
+            xxx3[0, :, :],
+            levels = levels_PDF,
+            zdir='y',
+            colors = '1',
+            linewidths = 0.25,
+            offset=xxx2.min())
+
+CS = ax.contourf(pdf_zz[:, 0, :],
+            xxx2[:, 0, :],
+            xxx3[:, 0, :],
+            levels = levels_PDF,
+            cmap = 'turbo',
+            zdir='x',
+            offset=xxx1.min())
+
+ax.contour(pdf_zz[:, 0, :],
+            xxx2[:, 0, :],
+            xxx3[:, 0, :],
+            levels = levels_PDF,
+            zdir='x',
+            colors = '1',
+            linewidths = 0.25,
+            offset=xxx1.min())
+
+fig.colorbar(CS, ticks=np.linspace(0,0.1,6))
+# Set limits of the plot from coord limits
+xmin, xmax = xxx1.min(), xxx1.max()
+ymin, ymax = xxx2.min(), xxx2.max()
+zmin, zmax = xxx3.min(), xxx3.max()
+ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+
+# 绘制框线
+edges_kw = dict(color='0.6', linewidth=1, zorder=1e5)
+# zorder 控制呈现 artist 的先后顺序
+# zorder 越小，artist 置于越底层
+# zorder 赋值很大的数，这样确保 zorder 置于最顶层
+ax.plot([xmin, xmax], [ymin, ymin], [zmax, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+ax.set_xticks([-2,0,2])
+ax.set_yticks([-2,0,2])
+ax.set_zticks([-2,0,2])
+ax.view_init(azim=-125, elev=30)
+ax.set_proj_type('ortho')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$x_3$')
+ax.set_box_aspect((1, 1, 1))
+ax.grid(False)
+
+### 4. 分层绘制等高线，沿x3
+fig = plt.figure(figsize=(6, 6))
+ax = fig.add_subplot(111, projection='3d')
+
+for idx in np.arange(0,len(x3),5):
+    x3_idx = x3[idx]
+    ax.contourf(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                pdf_zz[:, :, idx],
+                levels = levels_PDF,
+                zdir='z',
+                offset=x3_idx,
+                cmap = 'turbo')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+ax.set_xticks([-2,0,2])
+ax.set_yticks([-2,0,2])
+ax.set_zticks([-2,0,2])
+ax.view_init(azim=-125, elev=30)
+ax.set_proj_type('ortho')
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+ax.set_zlabel('$x_3$')
+ax.set_box_aspect((1, 1, 1))
+ax.grid(False)
+# fig.savefig('Figures/箱体分层x3_概率密度.svg', format='svg')
+
+
+### 5. 将等高线展开，沿x3
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x3),5)):
+    ax = fig.add_subplot(len(np.arange(0,len(x3),5)), 1, fig_idx + 1, projection='3d')
+    x3_idx = x3[idx]
+    ax.contourf(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                pdf_zz[:, :, idx],
+                levels = levels_PDF,
+                zdir='z',
+                offset=x3_idx,
+                cmap = 'turbo')
+    ax.contour(xxx1[:, :, idx],
+                xxx2[:, :, idx],
+                pdf_zz[:, :, idx],
+                levels = levels_PDF,
+                zdir='z',
+                offset=x3_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+
+    # 绘制框线
+    edges_kw = dict(color='0.5', linewidth=1, zorder=1e3)
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    ax.set_xlabel('$x_1$')
+    ax.set_ylabel('$x_2$')
+    ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+# fig.savefig('Figures/分层分图_x3_概率密度.svg', format='svg')
+
+### 6. 将等高线展开，沿x2
+fig = plt.figure(figsize=(6, 36))
+for fig_idx,idx in enumerate(np.arange(0,len(x2),5)):
+    ax = fig.add_subplot(len(np.arange(0,len(x2),5)), 1, fig_idx + 1, projection='3d')
+    x2_idx = x2[idx]
+    ax.contourf(xxx1[idx, :, :],
+                pdf_zz[idx, :, :],
+                xxx3[idx, :, :],
+                levels = levels_PDF,
+                zdir='y',
+                offset=x2_idx,
+                cmap = 'turbo')
+    ax.contour(xxx1[idx, :, :],
+                pdf_zz[idx, :, :],
+                xxx3[idx, :, :],
+                levels = levels_PDF,
+                zdir='y',
+                offset=x2_idx,
+               linewidths = 0.25,
+                colors = '1')
+    ax.plot([xmin, xmin], [ymin, ymax], [x3_idx, x3_idx], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [x3_idx, x3_idx], **edges_kw)
+    ax.set(xlim=[xmin, xmax], ylim=[ymin, ymax], zlim=[zmin, zmax])
+    # Plot edges
+    edges_kw = dict(color='0.5', linewidth=1, zorder=1e3)
+    ax.plot([xmin, xmin], [ymin, ymin], [zmin, zmax], **edges_kw)
+    ax.plot([xmin, xmin], [ymin, ymax], [zmax, zmax], **edges_kw)
+    ax.plot([xmax, xmin], [ymin, ymin], [zmax, zmax], **edges_kw)
+    # Set zoom and angle view
+    ax.view_init(azim=-125, elev=30)
+    ax.set_box_aspect(None)
+    ax.set_proj_type('ortho')
+    ax.set_xlabel('$x_1$')
+    ax.set_ylabel('$x_2$')
+    ax.set_zlabel('$x_3$')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_box_aspect((1, 1, 1))
+    ax.grid(False)
+# fig.savefig('Figures/分层分图_x2_概率密度.svg', format='svg')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
