@@ -633,7 +633,7 @@ A, B, C, D = plane_coeffs
 n = np.array([A, B, C])
 # 生成随机点集
 np.random.seed(42)
-points = np.random.rand(20, 3) + 10  # 20个随机点，范围约±5
+points = np.random.randn(20, 3) + 10  # 20个随机点，范围约±5
 
 # 计算投影点
 projected_points = project_points_to_plane(points, plane_coeffs)
@@ -669,7 +669,7 @@ ax.scatter(projected_points[:,0], projected_points[:,1], projected_points[:,2], 
 xlim, ylim = ax.get_xlim(), ax.get_ylim()
 xx, yy = np.meshgrid(np.linspace(xlim[0], xlim[1], 20), np.linspace(ylim[0], ylim[1], 20))
 zz = (-plane_coeffs[0] * xx - plane_coeffs[1] * yy - plane_coeffs[3]) / plane_coeffs[2]
-ax.plot_surface(xx, yy, zz, alpha=0.5, color='green', label=f'平面: {A}x{'+'+str(B) if B>=0 else B}y{'+'+str(C) if C>=0 else C}z{'+'+str(D) if D>=0 else D} = 0')
+ax.plot_surface(xx, yy, zz, alpha=0.4, color='b', label=f'平面: {A}x{'+'+str(B) if B>=0 else B}y{'+'+str(C) if C>=0 else C}z{'+'+str(D) if D>=0 else D} = 0')
 
 p0x = np.mean(xlim)
 p0y = np.mean(ylim)
