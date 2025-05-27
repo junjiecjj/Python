@@ -579,84 +579,194 @@ ax.set_aspect('equal', adjustable='box')
 # ax.set_ybound(lower = -20, upper = 20)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 3D 点面投影
+
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-from sklearn.datasets import load_iris
-import matplotlib
-from matplotlib.font_manager import FontProperties
-from pylab import tick_params
-import copy
-from matplotlib.pyplot import MultipleLocator
-
-x = np.linspace(2, 10, 20)
-y = np.linspace(0, 10, 20)
-XX, YY = np.meshgrid(x, y)
-Z = XX + YY - 26
-
-# Load the iris data
-iris_sns = sns.load_dataset("iris")
-# A copy from Seaborn
-iris = load_iris()
-# A copy from Sklearn
-
-X = iris.data
-label = iris.target
-feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
-# Convert X array to dataframe
-X_df = pd.DataFrame(X, columns=feature_names)
-X = X_df.iloc[:, [0,1,2]].to_numpy()
+from mpl_toolkits.mplot3d import Axes3D
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.linewidth'] = 1
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 16         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 16         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['axes.spines.left'] = 1
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.labelspacing'] = 0.2
 
 
-w = np.array([1, 1, -1]).reshape(-1,1)
-b = -26
-Xq = X.T - (w.T@X.T + b) * w/(w.T@w)
-Xq = Xq.T
+def project_points_to_plane(points, plane_coeffs):
+    """
+    将点集投影到任意平面
+    :param points: 点集，形状为 (n, 3) 的 numpy 数组
+    :param plane_coeffs: 平面系数 [A, B, C, D]，对应 Ax + By + Cz + D = 0
+    :return: 投影点集，形状为 (n, 3)
+    """
+    A, B, C, D = plane_coeffs
+    n = np.array([A, B, C])
+    denominator = A**2 + B**2 + C**2  # 分母
 
-fig = plt.figure(figsize = (10, 10))
-ax = fig.add_subplot(projection='3d')
+    # 计算投影点
+    t = -(A * points[:,0] + B * points[:,1] + C * points[:,2] + D) / denominator
+    projected_points = points + t[:, np.newaxis] * n
 
-rainbow = plt.get_cmap("rainbow")
-ax.scatter(X[:,0], X[:,1], X[:,2],  s = 15,  c = label, cmap=rainbow)
-ax.scatter(Xq[:,0], Xq[:,1], Xq[:,2],  s = 15,  c = label, cmap=rainbow)
+    return projected_points
 
-ax.plot_surface(XX, YY, Z, color = 'b', alpha = 0.2)
+# 定义一般平面方程：Ax + By + Cz + D = 0
+plane_coeffs = [0, 0, 1, -4]
+plane_coeffs = [1, -1, 1, -4] # A=1, B=2, C=-3, D=4
 
-ax.set_proj_type('ortho')
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
+A, B, C, D = plane_coeffs
+n = np.array([A, B, C])
+# 生成随机点集
+np.random.seed(42)
+points = np.random.rand(20, 3) + 10  # 20个随机点，范围约±5
+
+# 计算投影点
+projected_points = project_points_to_plane(points, plane_coeffs)
+
+# 验证投影点是否在平面上
+print(f"projected_points - points = {projected_points - points}")
+print(f"{projected_points @ np.array(plane_coeffs[:-1])[:,None]+ plane_coeffs[-1]}")
+# 验证正交性
+print("验证投影向量与法向量正交性:")
+
+if C != 0:
+    x = 1
+    y = 1
+    z = (-D-A*x-B*y)/C
+pointInPlane = np.array([x, y,z])
+for i in range(len(points)):
+    proj_vec = projected_points[i] - pointInPlane  # 投影向量（从原点到投影点）
+    dot = proj_vec @ n
+    print(f"点{i}: 点积 = {dot:.2e} (应接近0)")
+
+# 可视化
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
+ax.set_proj_type('ortho') # #  正交投影模式
+ax.view_init(azim = -135, elev = 30)
+ax.set_aspect('equal', adjustable='box')
+# 绘制原始点（红色）
+ax.scatter(points[:,0], points[:,1], points[:,2], c='r', s=50, label='原始点')
+
+# 绘制投影点（蓝色）
+ax.scatter(projected_points[:,0], projected_points[:,1], projected_points[:,2], c='b', s=50, label='投影点')
+
+# 绘制平面
+xlim, ylim = ax.get_xlim(), ax.get_ylim()
+xx, yy = np.meshgrid(np.linspace(xlim[0], xlim[1], 20), np.linspace(ylim[0], ylim[1], 20))
+zz = (-plane_coeffs[0] * xx - plane_coeffs[1] * yy - plane_coeffs[3]) / plane_coeffs[2]
+ax.plot_surface(xx, yy, zz, alpha=0.5, color='green', label=f'平面: {A}x{'+'+str(B) if B>=0 else B}y{'+'+str(C) if C>=0 else C}z{'+'+str(D) if D>=0 else D} = 0')
+
+p0x = np.mean(xlim)
+p0y = np.mean(ylim)
+p0z = (-plane_coeffs[0] * p0x - plane_coeffs[1] * p0y - plane_coeffs[3]) / plane_coeffs[2]
+d = 5
+n = n/np.linalg.norm(n)
+p1x = p0x + d*n[0]; p1y = p0y + d*n[1]; p1z = p0z + d*n[2]
+pointInPlane = np.array([p0x, p0y, p0z])
+# 绘制向量 c，投影到xy
+ax.quiver(*pointInPlane,  *n, length=3, color='k', label='法向量', arrow_length_ratio=0.1)
+ax.plot([p0x, p1x], [p0y, p1y], [p0z, p1z], 'g--', linewidth = 2, label='法向量',)
+# 绘制投影线
+for i in range(len(points)):
+    ax.plot([points[i,0], projected_points[i,0]], [points[i,1], projected_points[i,1]], [points[i,2], projected_points[i,2]], 'k--', linewidth=0.8, alpha=0.3)
+
+# ax.set_xlim(-10, 10)
+# ax.set_ylim(-10, 10)
+
+# 3D坐标区的背景设置为白色
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-# font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-ax.set_xlabel(r'$\it{x_1}$',  )
-ax.set_ylabel(r'$\it{x_2}$', )
-ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',  )
-
-# ax.set_xlim(X[:,0].min()-4, X[:,0].max()+4)
-# ax.set_ylim(X[:,1].min()-4, X[:,1].max()+4)
-# ax.set_zlim(X[:,2].min()-4, X[:,2].max()+4)
-
-ax.view_init(azim=-160, elev=30)
 ax.grid(False)
+# 设置等比例坐标轴
+ax.set_box_aspect([1, 1, 1])
+ax.set_xlabel('X轴')
+ax.set_ylabel('Y轴')
+ax.set_zlabel('Z轴')
+ax.legend()
+plt.title('三维点到一般平面的投影', pad=20)
+plt.tight_layout()
 plt.show()
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 3D 空间点集到空间直线的投影
 
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
+def project_points_to_line(points, Q, v):
+    """
+    将点集投影到直线
+    :param points: 点集，形状为 (n, 3) 的 numpy 数组
+    :param Q: 直线上的参考点，形状为 (3,)
+    :param v: 直线的方向向量，形状为 (3,)
+    :return: 投影点集，形状为 (n, 3)
+    """
+    v = v / np.linalg.norm(v)  # 单位化方向向量
+    t = np.dot(points - Q, v)   # 计算所有点的参数 t
+    return Q + t[:, np.newaxis] * v
 
+# 示例数据
+Q = np.array([1, 2, 0])       # 直线上的点
+v = np.array([1, -1, 1])       # 方向向量
+points = np.random.randn(4, 3) * 10  # 随机生成10个点
 
+# 计算投影点
+projected_points = project_points_to_line(points, Q, v)
 
+# 验证正交性
+for i in range(len(points)):
+    print(f"点 {i} 投影正交性:",
+          np.dot(points[i] - projected_points[i], v))  # 应接近0
 
+# 可视化
+fig = plt.figure(figsize=(12, 10))
+ax = fig.add_subplot(111, projection='3d')
 
+# 绘制直线
+xlim, ylim = ax.get_xlim(), ax.get_ylim()
+t_vals = np.linspace(-5, 5, 100)
+line_points = Q + t_vals[:, np.newaxis] * v
+ax.plot(line_points[:, 0], line_points[:, 1], line_points[:, 2], 'b-', linewidth=2, label='直线 L')
 
+# 绘制原始点（红色）和投影点（绿色）
+ax.scatter(points[:, 0], points[:, 1], points[:, 2], c='r', s=80, label='原始点')
+ax.scatter(projected_points[:, 0], projected_points[:, 1], projected_points[:, 2], c='g', s=80, label='投影点')
 
+# 绘制投影线（黑色虚线）
+for i in range(len(points)):
+    ax.plot([points[i, 0], projected_points[i, 0]], [points[i, 1], projected_points[i, 1]], [points[i, 2], projected_points[i, 2]], 'k--', alpha=0.5)
 
-
-
-
-
-
-
+# 3D坐标区的背景设置为白色
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.grid(False)
+# 设置等比例坐标轴
+ax.set_box_aspect([1, 1, 1])
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.legend()
+plt.title('空间点集到直线的投影', pad=20)
+plt.tight_layout()
+plt.show()
 
 
 

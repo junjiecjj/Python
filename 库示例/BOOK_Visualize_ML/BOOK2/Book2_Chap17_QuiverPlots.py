@@ -18,7 +18,7 @@ a = np.array([[-2],
 
 b = np.array([[5],
               [-1]])
-### 向量加法
+###>>>>>>>>>>>> 向量加法
 c = a + b
 fig, ax = plt.subplots(figsize=(5, 5))
 # 绘制向量 a
@@ -36,7 +36,7 @@ ax.plot([a[0], c[0]],  [a[1], c[1]],  c = 'k', ls = '--')
 ax.plot([b[0], c[0]], [b[1], c[1]], c = 'k', ls = '--')
 
 # 添加阴影填充
-fill_color = np.array([219,238,243])/255
+fill_color = np.array([219, 238, 243])/255
 
 X = np.array([[0, 0],
               [-2, 5],
@@ -66,8 +66,9 @@ ax.set_xticklabels([])
 ax.set_yticklabels([])
 plt.show()
 # fig.savefig('Figures/向量加法，第一方法.svg', format='svg')
+plt.close()
 
-
+###>>>>>>>>>>>> 向量加法，第二方法
 fig, ax = plt.subplots(figsize=(5, 5))
 # 绘制向量 a
 ax.quiver(0, 0, a[0], a[1], angles='xy', scale_units='xy', scale=1, color = '#92D050')
@@ -85,10 +86,7 @@ X = np.array([[0, 0],
               [3, 4],
               [0, 0]])
 
-plt.fill(X[:,0], X[:,1],
-     color = fill_color,
-     edgecolor = None,
-     alpha = 0.5)
+plt.fill(X[:,0], X[:,1], color = fill_color, edgecolor = None, alpha = 0.5)
 
 # 增加横轴、纵轴线
 ax.axhline(y = 0, c = 'k', lw = 0.25)
@@ -110,9 +108,9 @@ ax.set_xticklabels([])
 ax.set_yticklabels([])
 plt.show()
 # fig.savefig('Figures/向量加法，第二方法.svg', format='svg')
+plt.close()
 
-
-### 向量长度
+###>>>>>>>>>>>> 向量长度
 fig, ax = plt.subplots(figsize=(5, 5))
 
 # 绘制向量 c
@@ -142,7 +140,7 @@ plt.show()
 # fig.savefig('Figures/向量长度.svg', format='svg')
 
 
-### 向量减法
+###>>>>>>>>>>>> 向量减法
 d = a - b
 fig, ax = plt.subplots(figsize=(5, 5))
 # 绘制向量 a
@@ -184,7 +182,7 @@ ax.set_yticklabels([])
 plt.show()
 # fig.savefig('Figures/向量减法.svg', format='svg')
 
-### 标量乘向量
+###>>>>>>>>>>>> 标量乘向量
 fig, ax = plt.subplots(figsize=(5, 5))
 # 绘制向量 c
 ax.quiver(0, 0, c[0], c[1], angles='xy', scale_units='xy', scale=1, color = '#0099FF')
@@ -221,6 +219,8 @@ plt.show()
 
 
 #%% Bk_2_Ch17_02 三维箭头图
+
+###>>>>>>>>>>>>
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -277,7 +277,7 @@ ax.set_yticklabels([])
 ax.set_zticklabels([])
 # fig.savefig('Figures/三维向量加法.svg', format='svg')
 
-## 投影到平面
+###>>>>>>>>>>>> 投影到平面
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 # 绘制向量 c

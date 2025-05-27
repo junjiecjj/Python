@@ -1131,7 +1131,6 @@ plt.show()
 
 ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
-
 ax.plot_wireframe(xx,yy, ff, color = [0.5,0.5,0.5], linewidth = 0.25)
 
 # 三维等高线
