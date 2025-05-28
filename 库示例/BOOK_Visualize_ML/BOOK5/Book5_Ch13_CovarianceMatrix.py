@@ -35,7 +35,7 @@ SIGMA_inv = np.linalg.inv(SIGMA)
 fig, axs = plt.subplots()
 h = sns.heatmap(SIGMA_inv,cmap='rainbow', linewidths=.05, annot=True,fmt='.2f')
 h.set_aspect("equal")
-
+h.set_title('inv Covariance matrix')
 #%% compare covariance matrices given class label
 # 图 4. 协方差矩阵热图，考虑分类
 f,(ax1,ax2,ax3) = plt.subplots(1,3,sharey=True)
@@ -55,7 +55,7 @@ ax3.set_title('Y = 2, virginica')
 RHO = X_df.corr()
 
 fig, axs = plt.subplots()
-h = sns.heatmap(RHO,cmap='rainbow', linewidths=.05,annot=True)
+h = sns.heatmap(RHO, cmap='rainbow', linewidths=.05,annot=True)
 h.set_aspect("equal")
 h.set_title('Correlation matrix')
 
@@ -81,7 +81,7 @@ D = np.diag(np.sqrt(np.diag(SIGMA)))
 fig, axs = plt.subplots(1, 7, figsize=(12, 3))
 
 plt.sca(axs[0])
-ax = sns.heatmap(SIGMA,cmap='rainbow', vmin = -1, vmax = 2, cbar=False)
+ax = sns.heatmap(SIGMA, cmap='rainbow', vmin = -1, vmax = 2, cbar=False)
 ax.set_aspect("equal")
 plt.title('$\Sigma$')
 
@@ -90,7 +90,7 @@ plt.title('=')
 plt.axis('off')
 
 plt.sca(axs[2])
-ax = sns.heatmap(D,cmap='rainbow', vmin = -1, vmax = 2, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(D, cmap='rainbow', vmin = -1, vmax = 2, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('D')
 
@@ -108,9 +108,12 @@ plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[6])
-ax = sns.heatmap(D,cmap='rainbow', vmin = -1, vmax = 2, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(D, cmap='rainbow', vmin = -1, vmax = 2, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title('D')
+
+print(f"Sigma - D@P@D = \n{np.array(SIGMA) - D@np.array(RHO)@D}")
+
 
 
 #%% Eigen decomposition of covariance matrix
@@ -251,7 +254,7 @@ plt.title('$V^T$')
 
 #%% Eigen decomposition of correlation matrix
 # 图 16. 相关性系数矩阵的特征值分解
-LAMBDA_P_,V_P = np.linalg.eig(RHO)
+LAMBDA_P_, V_P = np.linalg.eig(RHO)
 
 LAMBDA_P = np.diag(LAMBDA_P_)
 

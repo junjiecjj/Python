@@ -23,9 +23,16 @@ X = iris.data
 Xc = X - X.mean(axis = 0)
 # 计算协方差矩阵
 XXT = np.matrix(Xc.T) * np.matrix(Xc) / (len(Xc)-1)
-
+# matrix([[ 0.68569351, -0.042434  ,  1.27431544,  0.51627069],
+#         [-0.042434  ,  0.18997942, -0.32965638, -0.12163937],
+#         [ 1.27431544, -0.32965638,  3.11627785,  1.2956094 ],
+#         [ 0.51627069, -0.12163937,  1.2956094 ,  0.58100626]])
 print(f"np.cov(X.T) = \n{np.cov(X.T)}")  # == XXT
-
+# np.cov(X.T) =
+# [[ 0.68569351 -0.042434    1.27431544  0.51627069]
+#  [-0.042434    0.18997942 -0.32965638 -0.12163937]
+#  [ 1.27431544 -0.32965638  3.11627785  1.2956094 ]
+#  [ 0.51627069 -0.12163937  1.2956094   0.58100626]]
 # 求协方差矩阵的特征值和特征向量
 eigVals, eigVects = np.linalg.eig(np.mat(XXT))
 print("特征值: ", eigVals)
@@ -54,9 +61,9 @@ print(pcamodel.components_.T)
 #  [-0.08452251  0.73016143]
 #  [ 0.85667061 -0.17337266]
 #  [ 0.3582892  -0.07548102]]
-X_pca1 = pcamodel.transform(X)
+X_pca1 = pcamodel.transform(X) # X_pca1.abs == Zc.abs
 # X_pca1 = pcamodel.fit_transform(X)
-# X_pca1 == Zc
+
 
 #>>>>>>>>>>>>>>>> 中心化数据在特征向量的投影
 Zc_n = Zc @ np.linalg.inv(np.diag(np.sqrt(eigVals[:2])))  # 这个才是和下面的pca.transform(X)完全一样的结果(可能某列差正负号)
@@ -76,7 +83,7 @@ print(pca.components_.T)
 #  [ 0.85667061 -0.17337266]
 #  [ 0.3582892  -0.07548102]]
 # 数据变换
-X_pca = pca.transform(X)
+X_pca = pca.transform(X)  # X_pca.abs = Zc_n.abs
 print(X_pca.shape) # 150, 2
 print(np.cov(X_pca.T))
 # (150, 2)
@@ -159,38 +166,38 @@ S = np.diag(s)
 
 # Vt.T 和 V完全一样，可能差个符号或者顺序
 print(f"V = \n{V}\nVt.T = \n{Vt.T}")
-
-# Xc的(奇异值)和Sigma的特征值的关系
-Lambda_reproduced = S**2/(len(X) - 1)
-print(Lambda_reproduced - Lambda)
-
 # Xc的特征向量和Sigma的特征向量的关系，某列可能差正负号.
 print(np.abs(V) - np.abs(Vt.T))
 
+# Xc的(奇异值)和Sigma的特征值的关系
+Lambda_reproduced = S**2/(len(X) - 1)  # == Lambda
+print(Lambda_reproduced - Lambda)
+
+
 # 矩阵 U 每一列数据相当于 Z 对应列向量的标准化：
-Z = Xc@V
+Zc = Xc@V
 US = U @ SS
-Z_US = np.abs(Z) - np.abs(US)
+Z_US = np.abs(Zc) - np.abs(US)
 print(f" {Z_US.min()}, {Z_US.max()}")
 
 ## 把原始数据 X 或中心化数据 Xc投影到 V 中结果不一样。从统计角度来看，差异主要体现在质心位置，而投影得到的数据协方差矩阵相同。
 ones = np.array([1]*X.shape[0])[:,None]
 Z = X@V
-Zc = Xc@V  # = X@V - 1^T X@V/n
+Zc = Xc@V  # = X@V - 1 1^T X@V/n
 print(Zc.mean(axis = 0))  # == [0,0,0,0]
 # print(np.cov(Z.T) - np.cov(Zc.T)) # 两者相等，因为求协方差本身就需要中心化，只不过Zc已经中心化，求Z的协方差之前先进行中心化
-Zc1 = X@V - ones.T @X@V/X.shape[0]  ## == Zc
+Zc1 = X@V - ones@ones.T @X@V/X.shape[0]  ## == Zc
 
 # 对Z直接求Z^T@Z与Zc.T@Zc的关系
 Zsigma = Z.T @ Z / (Z.shape[0] - 1)
 Zcsigma = Zc.T @ Zc / (Zc.shape[0] - 1)
 
-# Zcsigma1 == Zcsigma
+# Zcsigma1 == Zcsigma == Lambda
 Zcsigma1 = Z.T @ Z / (Z.shape[0] - 1) -  V.T@X.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0] # + V.T@X.T@ones@ones.T@ones@ones.T@X@V/(Z.shape[0] - 1)/Z.shape[0]**2
 
-
-Ex = ones.T @ X
-Zsigma_hat = Zcsigma +  V.T @ (Ex.T) @ Ex @ V / Zc.shape[0]/(Zc.shape[0] - 1)
+n = Zc.shape[0]
+Ex = ones.T @ X / n
+Zsigma_hat = Zcsigma + n**2 * V.T @ (Ex.T) @ Ex @ V / Zc.shape[0]/(Zc.shape[0] - 1)
 
 # Zsigma_hat == Zsigma
 # print(Zsigma_hat - Zsigma)
@@ -472,7 +479,7 @@ ax.set_aspect("equal")
 plt.title(r'$E = X - \hat{X}$')
 
 ################## 数据还原和误差
-Z = X @ V
+Z = X @ V  #  X = U*S*VT -> Z = X*V = U*S -> z_j = X*v_j = s_j*uj
 #  projection,  X 向 v_j 映射结果为 s_j u_j
 for j in [0, 1, 2, 3]:
     fig, axs = plt.subplots(1, 9, figsize=(12, 3))
@@ -525,6 +532,7 @@ for j in [0, 1, 2, 3]:
     plt.title('u_'+ str(j+1))
 
 ######## X = Z_1 @ v_1^T + Z_2 @ v_2^T + Z_3 @ v_4^T + Z_4 v_4^T
+## Z = XV -> X = Z*VT = \sum_j Zj * Vj^T
 # Tensor products, 计算张量积,以及绘制还原原始数据过程热图
 Z1_outer_v1 = np.outer(Z[:,0][:, None], V[:,0][:, None]);
 Z2_outer_v2 = np.outer(Z[:,1][:, None], V[:,1][:, None]);

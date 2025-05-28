@@ -20,7 +20,7 @@ A = np.array([[1,0],
 
 print(is_pos_def(A))
 
-# Bk4_Ch21_02.py
+#%% Bk4_Ch21_02.py
 import sympy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -205,8 +205,6 @@ ax.grid(False)
 ax.set_xlim(xx1.min(), xx1.max());
 ax.set_ylim(xx2.min(), xx2.max())
 plt.tight_layout()
-
-
 
 
 

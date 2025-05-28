@@ -9,7 +9,6 @@ import numpy as np
 from sympy.functions import exp
 import matplotlib.pyplot as plt
 
-
 #define symbolic vars, function
 x1,x2 = sympy.symbols('x1 x2')
 
@@ -17,13 +16,11 @@ f_x = x1*exp(-(x1**2 + x2**2))
 print(f_x)
 f_x_fcn = sympy.lambdify([x1,x2],f_x)
 
-
 #take the gradient symbolically
 grad_f = [sympy.diff(f_x,var) for var in (x1,x2)]
 print(grad_f)
 #turn into a bivariate lambda for numpy
 grad_fcn = sympy.lambdify([x1,x2],grad_f)
-
 
 xx1, xx2 = np.meshgrid(np.linspace(-2,2,40),np.linspace(-2,2,40))
 ff_x = f_x_fcn(xx1,xx2)

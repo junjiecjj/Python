@@ -1,6 +1,6 @@
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 扁平化文字对象的仿射变换
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch26_01 扁平化文字对象的仿射变换
 
 import matplotlib.pyplot as plt
 from matplotlib.text import TextPath
@@ -33,7 +33,7 @@ plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色
 plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
-#%%
+#
 text = 'Fuck you'
 text_path = TextPath((0, 0), text, size=10)
 
@@ -88,8 +88,11 @@ ax.set_aspect('equal', adjustable='box')
 ax.set_xlim(0, 100), ax.set_ylim(0, 100)
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 平面网格的仿射变换
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch26_02 平面网格的仿射变换
+# Bk_2_Ch12_13:平面仿射变换, 线性变换
+# Bk_2_Ch26_02 平面网格的仿射变换
+# BK_2_Ch08_10, 非线性变换,绘制网格
+# BK_2_Ch10_05 线性、非线性几何变换
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
@@ -319,7 +322,7 @@ fig_name = '沿纵轴剪切'
 visualize_transform(XX1, XX2, ZZ1, ZZ2, fig_name)
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 正圆散点的几何变换
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch26_03 正圆散点的几何变换
 # 导入包
 import numpy as np
 from matplotlib import pyplot as plt
@@ -395,7 +398,7 @@ for theta, ax_idx in zip(np.linspace(0, np.pi, 15, endpoint=False), axs.ravel())
     ax_idx.spines['bottom'].set_visible(False)
     ax_idx.spines['left'].set_visible(False)
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 平面点线投影
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch26_04 平面点线投影
 
 # 导入包
 import numpy as np
@@ -500,7 +503,7 @@ for theta_deg in theta_array:
     ax.set_xlim([x1[:,0].min() - 6, x1[:,0].max() + 3])
     ax.set_ylim([x1[:,1].min() - 3, x1[:,1].max() + 3])
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 二维数据分别朝16个不同方向投影
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk_2_Ch26_05 二维数据分别朝16个不同方向投影
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd

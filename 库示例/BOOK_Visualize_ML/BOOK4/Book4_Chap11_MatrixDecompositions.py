@@ -14,6 +14,7 @@ A = np.array([[ 5,  2, -2,  3],
               [-5,  4, -4,  8]])
 
 P,L,U = lu(A, permute_l = False)
+# P 为置换矩阵 (permutation matrix)。scipy.linalg.lu() 函数得到的矩阵 L 主对角线均为 1。
 # P, permutation matrix
 # L, lower triangular with unit diagonal elements
 # U, upper triangular
@@ -66,7 +67,6 @@ np.random.default_rng()
 X = np.random.randn(9, 5)
 
 # QR decomposition， complete version
-
 Q_complete, R_complete = np.linalg.qr(X, mode = 'complete')
 
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
@@ -95,7 +95,6 @@ ax.set_aspect("equal")
 plt.title('Rc')
 
 # properties of Q (reduced)
-
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
 
 plt.sca(axs[0])
@@ -122,7 +121,6 @@ ax.set_aspect("equal")
 plt.title('Qc')
 
 #%% QR decomposition， reduced version
-
 Q, R = np.linalg.qr(X)
 # default: reduced
 
@@ -152,7 +150,6 @@ ax.set_aspect("equal")
 plt.title('R')
 
 # properties of Q (reduced)
-
 fig, axs = plt.subplots(1, 5, figsize=(12, 3))
 
 plt.sca(axs[0])

@@ -431,26 +431,11 @@ for i in range(nrows):
         azim = angle_array[j]
         axs[i, j].plot(0, 0, 0, marker = '.', c = 'k', markersize = 12)
         # 红色箭头，代表x轴
-        axs[i, j].quiver(0, 0, 0, 1, 0, 0,
-                  color = 'r',
-                  normalize=False,
-                  arrow_length_ratio = .18,
-                  linestyles = 'solid',
-                  linewidths = 1)
+        axs[i, j].quiver(0, 0, 0, 1, 0, 0, color = 'r', normalize=False, arrow_length_ratio = .18, linestyles = 'solid', linewidths = 1)
         # 绿色箭头，代表y轴
-        axs[i, j].quiver(0, 0, 0, 0, 1, 0,
-                  color = 'g',
-                  normalize=False,
-                  arrow_length_ratio = .18,
-                  linestyles = 'solid',
-                  linewidths = 1)
+        axs[i, j].quiver(0, 0, 0, 0, 1, 0, color = 'g', normalize=False, arrow_length_ratio = .18, linestyles = 'solid', linewidths = 1)
         # 蓝色箭头，代表z轴
-        axs[i, j].quiver(0, 0, 0, 0, 0, 1,
-                  color = 'b',
-                  normalize=False,
-                  arrow_length_ratio = .18,
-                  linestyles = 'solid',
-                  linewidths = 1)
+        axs[i, j].quiver(0, 0, 0, 0, 0, 1, color = 'b', normalize=False, arrow_length_ratio = .18, linestyles = 'solid', linewidths = 1)
         axs[i, j].set_proj_type('ortho')
         axs[i, j].grid('off')
         axs[i, j].set_xticks([])
@@ -500,11 +485,7 @@ ax.quiver(xx1,xx2, # 向量始点位置坐标，网格化数据
           edgecolor='none', facecolor= 'b')
 
 # 绘制线性映射之后的向量
-ax.quiver(xx1,xx2,uu_new,vv_new,
-          angles='xy', scale_units='xy',
-          scale=0.8,
-          width = 0.0025,
-          edgecolor='none', facecolor= 'r')
+ax.quiver(xx1,xx2,uu_new,vv_new, angles='xy', scale_units='xy', scale=0.8, width = 0.0025, edgecolor='none', facecolor= 'r')
 
 plt.axis('scaled')
 ax.set_xlim([-10, 10])
@@ -521,16 +502,8 @@ fig, ax = plt.subplots(figsize = (6,6))
 import matplotlib
 cm = matplotlib.cm.rainbow
 norm = matplotlib.colors.Normalize()
-ax.quiver(xx1*0,xx2*0,uu,vv,
-          angles='xy', scale_units='xy',scale=1,
-          width = 0.0025,
-          edgecolor='none',
-          facecolor=cm(norm(range(len(xx1.ravel())))))
-ax.quiver(xx1*0,xx2*0,uu_new,vv_new,
-          angles='xy', scale_units='xy',scale=1,
-          width = 0.0025,
-          edgecolor='none',
-          facecolor=cm(norm(range(len(xx1.ravel())))))
+ax.quiver(xx1*0,xx2*0,uu,vv, angles='xy', scale_units='xy',scale=1, width = 0.0025, edgecolor='none', facecolor=cm(norm(range(len(xx1.ravel())))))
+ax.quiver(xx1*0,xx2*0,uu_new,vv_new, angles='xy', scale_units='xy',scale=1, width = 0.0025, edgecolor='none', facecolor=cm(norm(range(len(xx1.ravel())))))
 plt.axis('scaled')
 ax.set_xlim([-2, 2])
 ax.set_ylim([-2, 2])
@@ -579,9 +552,7 @@ W = V@A;
 uu_new = np.reshape(W[:,0],xx1_.shape);
 vv_new = np.reshape(W[:,1],xx1_.shape);
 fig, ax = plt.subplots(figsize = (5,5))
-plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_,
-            angles='xy', scale_units='xy', scale = 1,
-            edgecolor='none', alpha=0.8, cmap = 'hsv')
+plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
 ax.set_xlim(-4,4)
 ax.set_ylim(-4,4)
 ax.axhline(y = 0, c = 'k')
@@ -601,9 +572,7 @@ uu_new = np.reshape(W[:,0],xx1_.shape);
 vv_new = np.reshape(W[:,1],xx1_.shape);
 
 fig, ax = plt.subplots(figsize = (5,5))
-plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_,
-            angles='xy', scale_units='xy', scale = 1,
-            edgecolor='none', alpha=0.8, cmap = 'hsv')
+plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
 ax.set_xlim(-4,4)
 ax.set_ylim(-4,4)
 ax.axhline(y = 0, c = 'k')
@@ -620,9 +589,7 @@ W = V@A;
 uu_new = np.reshape(W[:,0],xx1_.shape);
 vv_new = np.reshape(W[:,1],xx1_.shape);
 fig, ax = plt.subplots(figsize = (5,5))
-plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_,
-            angles='xy', scale_units='xy', scale = 1,
-            edgecolor='none', alpha=0.8, cmap = 'hsv')
+plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
 ax.set_xlim(-4,4)
 ax.set_ylim(-4,4)
 ax.axhline(y = 0, c = 'k')
@@ -630,9 +597,6 @@ ax.axvline(x = 0, c = 'k')
 # plt.grid()
 ax.axis('off')
 # fig.savefig('Figures/用辐角大小给箭头着色，旋转 + 缩放.svg', format='svg')
-
-
-
 
 #%% Bk_2_Ch17_05 平面等高线 + 梯度
 
@@ -676,9 +640,7 @@ fig, ax = plt.subplots(figsize=(6,6))
 ax.contour(xx1, xx2, ff_x, 20, cmap = 'RdYlBu_r')
 
 # 用颗粒度低的数据绘制向量场
-ax.quiver(xx1_, xx2_, V[0], V[1],
-          width = 0.0025,
-          color = 'k')
+ax.quiver(xx1_, xx2_, V[0], V[1], width = 0.0025, color = 'k')
 
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
@@ -766,12 +728,7 @@ f3_array, V = fcn_n_grdnt(A,xxx1,xxx2,xxx3)
 # 可视化
 fig = plt.figure(figsize=(8,8))
 ax = fig.add_subplot(projection='3d')
-ax.quiver(xxx1.ravel(), xxx2.ravel(), xxx3.ravel(),
-          V[0].ravel(), V[1].ravel(), V[2].ravel(),
-          colors = 'b',
-          edgecolors='face',
-          arrow_length_ratio = 0,
-          length=0.8, normalize=True)
+ax.quiver(xxx1.ravel(), xxx2.ravel(), xxx3.ravel(), V[0].ravel(), V[1].ravel(), V[2].ravel(), colors = 'b', edgecolors='face', arrow_length_ratio = 0, length=0.8, normalize=True)
 
 ax.set_proj_type('ortho')
 ax.grid(False)
@@ -802,9 +759,7 @@ ax = fig.add_subplot(111)
 
 # plotting the vectors
 # ax.quiver(x,y,Fx,Fy)
-ax.streamplot(xx, yy, Fx, Fy,
-              density = 2,
-              arrowstyle = 'fancy')
+ax.streamplot(xx, yy, Fx, Fy, density = 2, arrowstyle = 'fancy')
 ax.set_aspect('equal')
 ax.set_xticks([])
 ax.set_yticks([])
@@ -817,12 +772,7 @@ ax = fig.add_subplot(111)
 
 # plotting the vectors
 # ax.quiver(x,y,Fx,Fy)
-ax.streamplot(xx, yy,
-              Fx, Fy,
-              color = color_array,
-              cmap = 'RdYlBu',
-              density = 2,
-              arrowstyle = 'fancy')
+ax.streamplot(xx, yy, Fx, Fy, color = color_array, cmap = 'RdYlBu', density = 2, arrowstyle = 'fancy')
 ax.set_aspect('equal')
 ax.set_xticks([])
 ax.set_yticks([])
@@ -836,9 +786,7 @@ ax = fig.add_subplot(111)
 
 # 比较水流图和向量场
 ax.quiver(x, y, Fx,Fy)
-ax.streamplot(x, y, Fx, Fy,
-              density = 2,
-              arrowstyle = 'fancy')
+ax.streamplot(x, y, Fx, Fy, density = 2, arrowstyle = 'fancy')
 ax.set_aspect('equal')
 ax.set_xticks([])
 ax.set_yticks([])

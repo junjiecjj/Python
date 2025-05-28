@@ -2,7 +2,6 @@
 
 
 #%% Bk4_Ch15_01.py
-
 import numpy as np
 import matplotlib.pyplot as plt
 

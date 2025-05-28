@@ -581,6 +581,11 @@ ax.set_xlabel('x')
 ax.set_ylabel('f(x)')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 绘制网格 BK_2_Ch08_10
+# Bk_2_Ch12_13:平面仿射变换, 线性变换
+# Bk_2_Ch26_02 平面网格的仿射变换
+# BK_2_Ch08_10, 非线性变换,绘制网格
+# BK_2_Ch10_05 线性、非线性几何变换
+
 import math
 import numpy as np
 import matplotlib.pyplot as plt

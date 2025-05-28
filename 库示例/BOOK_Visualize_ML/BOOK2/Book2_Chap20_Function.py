@@ -28,9 +28,6 @@ ax.spines['left'].set_visible(False)
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 plt.show()
 
-
-
-
 #%% 二元一次函数
 
 import numpy as np
@@ -57,8 +54,6 @@ ax.set_xticks(ticks_array); ax.set_yticks(ticks_array)
 ax.view_init(azim=-120, elev=30); ax.grid(False)
 ax.set_xlim(xx1.min(), xx1.max()); ax.set_ylim(xx2.min(), xx2.max())
 plt.tight_layout()
-
-
 
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(projection='3d')

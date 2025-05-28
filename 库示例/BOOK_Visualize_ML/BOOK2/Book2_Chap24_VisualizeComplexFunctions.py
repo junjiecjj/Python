@@ -9,7 +9,29 @@ Created on Sun May 25 03:28:04 2025
 import sympy
 import numpy as np
 import matplotlib.pyplot as plt
-
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+# plt.rcParams['axes.linewidth'] = 1
+# plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+# plt.rcParams['xtick.labelsize'] = 16         # 设置 x 轴刻度字体大小
+# plt.rcParams['ytick.labelsize'] = 16         # 设置 y 轴刻度字体大小
+# plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+# plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# # plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+# plt.rcParams['lines.linestyle'] = '-'
+# plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+# plt.rcParams['lines.color'] = 'blue'
+# plt.rcParams['lines.markersize'] = 6         # 标记大小
+# # plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+# plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+# plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+# plt.rcParams['axes.spines.left'] = 1
+# plt.rcParams['axes.spines.left'] = 1
+# plt.rcParams['legend.fontsize'] = 18
+# plt.rcParams['legend.labelspacing'] = 0.2
 
 #%% Bk2_Ch24_01 可视化复数
 
@@ -40,106 +62,94 @@ zeros = np.zeros_like(xx1_)
 ## 绘制箭头图
 fig, ax = plt.subplots(figsize = (5,5))
 ax.scatter(xx1_, xx2_, marker = '.')
-ax.quiver (zeros, zeros, xx1_, xx2_,
-           color = [0.6, 0.6, 0.6],
-           angles='xy', scale_units='xy', scale = 1,
-           edgecolor='none')
+ax.quiver (zeros, zeros, xx1_, xx2_, color = [0.6, 0.6, 0.6], angles='xy', scale_units='xy', scale = 1, edgecolor='none')
 ax.axhline(y = 0, c = 'k'); ax.axvline(x = 0, c = 'k')
 ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
 ax.set_xlabel(r"$Re(z)$"); ax.set_ylabel(r"$Im(z)$")
+ax.set_title("绘制箭头")
+plt.show()
+
+fig, ax = plt.subplots(figsize = (5,5))
+ax.quiver(zeros, zeros, xx1_, xx2_, zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
+ax.set_xlim(-2,2);
+ax.set_ylim(-2,2)
+ax.axhline(y = 0, c = 'k');
+ax.axvline(x = 0, c = 'k')
+ax.set_xticks(np.arange(-2,3));
+ax.set_yticks(np.arange(-2,3))
+ax.set_title("绘制箭头,彩色")
 plt.show()
 
 ## 辐角
 fig, ax = plt.subplots(figsize = (5,5))
-ax.pcolormesh(xx1, xx2, zz_angle,
-              cmap='hsv', shading = 'auto',
-              rasterized = True)
+ax.pcolormesh(xx1, xx2, zz_angle, cmap='hsv', shading = 'auto', rasterized = True)
 ax.set_xlim(-2,2);
 ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3));
 ax.set_yticks(np.arange(-2,3))
 ax.axhline(y = 0, c = 'k');
 ax.axvline(x = 0, c = 'k')
+ax.set_title("绘制辐角")
 plt.show()
 
-fig, ax = plt.subplots(figsize = (5,5))
-ax.quiver(zeros, zeros, xx1_, xx2_, zz_angle_,
-          angles='xy', scale_units='xy', scale = 1,
-          edgecolor='none', alpha=0.8, cmap = 'hsv')
-ax.set_xlim(-2,2);
-ax.set_ylim(-2,2)
-ax.axhline(y = 0, c = 'k');
-ax.axvline(x = 0, c = 'k')
-ax.set_xticks(np.arange(-2,3));
-ax.set_yticks(np.arange(-2,3))
-plt.show()
+
 
 ## 复数模
 fig, ax = plt.subplots(figsize = (5,5))
 
-plt.contour(xx1, xx2, zz_norm,
-            levels = np.linspace(0,5,26),
-            colors = [[0.8, 0.8, 0.8, 1]])
-plt.pcolormesh(xx1, xx2, zz_norm, cmap='RdYlBu_r',
-               shading = 'auto', rasterized = True)
+plt.contour(xx1, xx2, zz_norm, levels = np.linspace(0,5,26), colors = [[0.8, 0.8, 0.8, 1]])
+plt.pcolormesh(xx1, xx2, zz_norm, cmap='RdYlBu_r', shading = 'auto', rasterized = True)
 ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.axhline(y = 0, c = 'k'); ax.axvline(x = 0, c = 'k')
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
+ax.set_title("绘制复数模")
 plt.show()
 
 # 三维曲面渲染
 fig = plt.figure(figsize=(5,5))
 ax = fig.add_subplot(111, projection="3d")
-
-ax.plot_surface(xx1, xx2, zz_norm,
-                cmap="RdYlBu_r", shade=True, alpha=1)
+ax.plot_surface(xx1, xx2, zz_norm, cmap="RdYlBu_r", shade=True, alpha=1)
 ax.set_xlabel("$Re(z)$"); ax.set_ylabel("$Im(z)$")
 ax.set_proj_type('ortho')
 ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
 ax.view_init(azim=-120, elev=30); ax.grid(False)
 ax.set_xlim(xx1.min(), xx1.max());  ax.set_ylim(xx2.min(), xx2.max())
+ax.set_title("绘制复数模,三维曲面渲染")
 plt.show()
 
 ## 2D 幅角+模, 细粒度
 fig, ax = plt.subplots(figsize = (5,5))
-ax.pcolormesh(xx1, xx2, zz_angle, cmap='hsv',
-              shading = 'auto', rasterized = True)
-ax.contour(xx1, xx2, zz_norm,
-           levels = np.linspace(0,5,26),
-           colors = [[0.8, 0.8, 0.8, 1]])
+ax.pcolormesh(xx1, xx2, zz_angle, cmap='hsv', shading = 'auto', rasterized = True)
+ax.contour(xx1, xx2, zz_norm, levels = np.linspace(0,5,26), colors = [[0.8, 0.8, 0.8, 1]])
 ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
 ax.axhline(y = 0, c = 'k'); ax.axvline(x = 0, c = 'k')
+ax.set_title("幅角(pcolormesh)+模(等高线), 细粒度")
 plt.show()
 
 
 ## 2D 幅角+模, c粗粒度
 fig, ax = plt.subplots(figsize = (5,5))
-plt.quiver(zeros, zeros, xx1_, xx2_, zz_angle_,
-            angles='xy', scale_units='xy', scale = 1,
-            edgecolor='none', alpha=0.8, cmap = 'hsv')
-plt.contour(xx1, xx2, zz_norm,
-            levels = np.linspace(0,5,26),
-            colors = [[0.8, 0.8, 0.8, 1]])
+plt.quiver(zeros, zeros, xx1_, xx2_, zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
+plt.contour(xx1, xx2, zz_norm, levels = np.linspace(0,5,26), colors = [[0.8, 0.8, 0.8, 1]])
 ax.axhline(y = 0, c = 'k'); ax.axvline(x = 0, c = 'k')
 ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
+ax.set_title("幅角+模(等高线), 粗粒度")
+plt.show()
 
 
 # 网格
 fig, ax = plt.subplots(figsize = (5,5))
-
-plt.quiver(zeros, zeros, xx1_, xx2_, zz_angle_,
-            angles='xy', scale_units='xy', scale = 1,
-            edgecolor='none', alpha=0.8, cmap = 'hsv')
-
+plt.quiver(zeros, zeros, xx1_, xx2_, C = zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
 ax.contour(xx1, xx2, np.abs(xx1 - np.round(xx1)), levels = 1, colors="black", linewidths=0.25)
 ax.contour(xx1, xx2, np.abs(xx2 - np.round(xx2)), levels = 1, colors="black", linewidths=0.25)
 
 ax.axhline(y = 0, c = 'k'); ax.axvline(x = 0, c = 'k')
 ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
+ax.set_title("幅角+网格, 粗粒度")
 plt.show()
 
 
@@ -151,6 +161,7 @@ ax.contour(xx1, xx2, np.abs(xx2 - np.round(xx2)), levels = 1, colors="black", li
 ax.axhline(y = 0, c = 'k'); ax.axvline(x = 0, c = 'k')
 ax.set_xlim(-2,2); ax.set_ylim(-2,2)
 ax.set_xticks(np.arange(-2,3)); ax.set_yticks(np.arange(-2,3))
+ax.set_title("幅角+网格, 粗粒度")
 plt.show()
 
 #%% Bk2_Ch24_02 复数函数

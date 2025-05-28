@@ -22,7 +22,7 @@ feature_names = ['Sepal length, x1','Sepal width, x2', 'Petal length, x3','Petal
 # Convert X array to dataframe
 X_df = pd.DataFrame(X, columns=feature_names)
 
-#%% Heatmap of X
+# Heatmap of X
 
 plt.close('all')
 sns.set_style("ticks")
@@ -35,9 +35,7 @@ fig, ax = plt.subplots()
 ax = sns.heatmap(X, cmap='RdYlBu_r', xticklabels=list(X_df.columns), cbar_kws={"orientation": "vertical"}, vmin=-1, vmax=9)
 plt.title('X')
 
-#%%
-
-# Bk4_Ch22_01_B
+#%% Bk4_Ch22_01_B
 
 #%% centroid of data matrix, X
 v_1 = np.ones((len(X),1))
@@ -45,24 +43,21 @@ v_1 = np.ones((len(X),1))
 E_X = v_1.T@X/len(X)
 # validate: X.mean(axis = 0)
 
-#%% Demean, centralize
+# Demean, centralize
 
 X_demean = X_df.sub(X_df.mean())
-
 
 fig, ax = plt.subplots()
 ax = sns.heatmap(X_demean, cmap='RdYlBu_r', xticklabels=list(X_df.columns), cbar_kws={"orientation": "vertical"}, vmin=-3, vmax=3)
 plt.title('$X_{demean}$')
 
-#%% SSD
+# SSD
 
 SSD = (np.linalg.norm(X - E_X, axis = 1)**2).sum()
 # validate: ((X - E_X)**2).sum()
 # use trace: np.trace((X - E_X).T@(X - E_X))
 
-#%%
-
-# Bk4_Ch22_01_C
+#%%  Bk4_Ch22_01_C
 
 # distribution of column features of X
 

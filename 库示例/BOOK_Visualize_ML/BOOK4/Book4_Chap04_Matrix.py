@@ -1,170 +1,271 @@
 
 
-
-
-
-# Bk4_Ch2_11.py
+#%% Bk4_Ch4_01.py
 
 import numpy as np
-a = np.array([-2, 1, 1])
-b = np.array([1, -2, -1])
-# a = [-2, 1, 1]
-# b = [1, -2, -1]
 
-# calculate cross product of row vectors
-a_cross_b = np.cross(a, b)
-print(f"a_cross_b = {a_cross_b}")
+# 2d matrix
+A_matrix = np.matrix([[2,4],
+                      [6,8]])
+print(A_matrix.shape)
+print(type(A_matrix))
 
-a_col = np.array([[-2], [1], [1]])
-b_col = np.array([[1], [-2], [-1]])
+# 1d array
+A_1d = np.array([2,4])
+print(A_1d.shape)
+print(type(A_1d))
 
-# calculate cross product of column vectors
-a_cross_b_col = np.cross(a_col, b_col, axis=0)
-print(f"a_cross_b_col = {a_cross_b_col}")
+# 2d array
+A_2d = np.array([[2,4],
+                 [6,8]])
+print(A_2d.shape)
+print(type(A_2d))
 
+# 3d array
+A1 = [[2,4],
+      [6,8]]
 
-#%% Bk4_Ch2_12.py
+A2 = [[1,3],
+      [5,7]]
 
-import numpy as np
-a = np.array([-2, 1, 1])
-b = np.array([1, -2, -1])
-# a = [-2, 1, 1]
-# b = [1, -2, -1]
-
-
-# calculate element-wise product of row vectors
-a_times_b = np.multiply(a, b)
-a_times_b_2 = a*b
-
-a_col = np.array([[-2], [1], [1]])
-b_col = np.array([[1], [-2], [-1]])
-
-# calculate element-wise product of column vectors
-a_times_b_col = np.multiply(a_col, b_col)
-a_times_b_col_2 = a_col*b_col
+A3 = [[1,0],
+      [0,1]]
+A_3d = np.array([A1,A2,A3])
+print(A_3d.shape)
+print(type(A_3d))
 
 
 
-#%% Bk4_Ch2_13.py
-
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
-
-def plot_heatmap(x,title):
-
-    fig, ax = plt.subplots()
-    ax = sns.heatmap(x,
-                     cmap='RdYlBu_r',
-                     cbar_kws={"orientation": "horizontal"}, vmin=-1, vmax=1)
-    ax.set_aspect("equal")
-    plt.title(title)
-
-a = np.array([[0.5],[-0.7],[1],[0.25],[-0.6],[-1]])
-b = np.array([[-0.8],[0.5],[-0.6],[0.9]])
-
-a_outer_b = np.outer(a, b)
-a_outer_a = np.outer(a, a)
-b_outer_b = np.outer(b, b)
-
-# Visualizations
-plot_heatmap(a,'a')
-
-plot_heatmap(b,'b')
-
-plot_heatmap(a_outer_b,'a outer b')
-
-plot_heatmap(a_outer_a,'a outer a')
-
-plot_heatmap(b_outer_b,'b outer b')
-
-# Bk4_Ch3_01.py
-import matplotlib.pyplot as plt
-import numpy as np
-p_values = [0.05, 0.2, 0.5, 1, 1.5, 2, 4, 8, np.inf]
-
-x1 = np.linspace(-2.5, 2.5, num=101);
-x2 = x1;
-
-xx1, xx2 = np.meshgrid(x1,x2)
-
-fig, axes = plt.subplots(ncols=3,nrows=3, figsize=(12, 12))
-for p, ax in zip(p_values, axes.flat):
-    if np.isinf(p):
-        zz = np.maximum(np.abs(xx1),np.abs(xx2))
-    else:
-        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
-    # plot contour of Lp
-    ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
-
-    # plot contour of Lp = 1
-    ax.contour (xx1, xx2, zz, [1], colors='k', linewidths = 2)
-
-    # decorations
-
-    ax.axhline(y=0, color='k', linewidth = 0.25)
-    ax.axvline(x=0, color='k', linewidth = 0.25)
-    ax.set_xlim(-2.5, 2.5)
-    ax.set_ylim(-2.5, 2.5)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.set_xlabel('$x_1$')
-    ax.set_ylabel('$x_2$')
-    ax.set_title('p = ' + str(p))
-    ax.set_aspect('equal', adjustable='box')
-plt.show()
-
-
-
-# Bk4_Ch3_02.py
+#%% Bk4_Ch4_02.py
 
 import numpy as np
-from matplotlib import pyplot as plt
-import seaborn as sns
 
-u = [0,0,4, 3]
-v = [0,0,-2,4]
-u_bis = [4,3,v[2],v[3]]
-w = [0,0,2,7]
+A = np.matrix([[1,2,3],
+              [4,5,6],
+              [7,8,9]])
 
-fig, ax = plt.subplots()
+# extract diagonal elements
+a = np.diag(A)
 
-plt.quiver([u[0], u_bis[0], w[0]],
-           [u[1], u_bis[1], w[1]],
-           [u[2], u_bis[2], w[2]],
-           [u[3], u_bis[3], w[3]],
-           angles='xy', scale_units='xy',
-           scale=1, color=sns.color_palette())
-
-plt.axvline(x=0, color='grey')
-plt.axhline(y=0, color='grey')
-
-plt.text(3, 1, r'$||\vec{u}||_2$',
-         color=sns.color_palette()[0], size=12,
-         ha='center',va='center')
-
-plt.text(3, 6, r'$||\vec{v}||_2$',
-         color=sns.color_palette()[1], size=12,
-         ha='center',va='center')
-
-plt.text(0, 4, r'$||\vec{u}+\vec{v}||_2$',
-         color=sns.color_palette()[2], size=12,
-         ha='center',va='center')
-
-plt.ylabel('$x_2$')
-plt.xlabel('$x_1$')
-plt.axis('scaled')
-ax.set_xticks(np.arange(-2,8 + 1))
-ax.set_yticks(np.arange(-2,8 + 1))
-ax.set_xlim(-2, 8)
-ax.set_ylim(-2, 8)
-ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
-
-# reference: Essential Math for Data Science
+# construct a diagonal matrix
+A_diag = np.diag(a)
 
 
+#%% Bk4_Ch4_03.py
+
+import numpy as np
+
+# define matrix
+A = np.matrix([[1, 2], [3, 4]])
+B = np.matrix([[2, 6], [4, 8]])
+
+# matrix addition
+A_plus_B = np.add(A,B)
+A_plus_B_2 = A + B
+
+
+# matrix subtraction
+A_minus_B = np.subtract(A,B)
+A_minus_B_2 = A - B
+
+
+#%% Bk4_Ch4_04.py
+
+import numpy as np
+
+k = 2
+X = [[1,2],
+     [3,4]]
+
+# scalar multiplication
+k_times_X = np.dot(k,X)
+k_times_X_2 = k*np.matrix(X)
+
+
+#%% Bk4_Ch4_05.py
+
+import numpy as np
+
+# define matrix
+A = np.matrix([[1, 2],
+               [3, 4],
+               [5, 6]])
+
+# scaler
+k = 2;
+
+# column vector c
+c = np.array([[3],
+              [2],
+              [1]])
+
+# row vector r
+r = np.array([[2,1]])
+
+# broadcasting principles
+
+# matrix A plus scalar k
+A_plus_k = A + k
+
+# matrix A plus column vector c
+A_plus_a = A + c
+
+# matrix A plus row vector r
+A_plus_r = A + r
+
+# column vector c plus row vector r
+c_plus_r = c + r
+
+
+
+#%% Bk4_Ch4_06.py
+
+import numpy as np
+
+A = np.array([[1, 2],
+              [3, 4]])
+
+B = np.array([[2, 4],
+              [1, 3]])
+
+# matrix multiplication
+A_times_B = np.matmul(A, B)
+A_times_B_2 = A@B
+
+
+
+#%% Bk4_Ch4_07.py
+
+import numpy as np
+
+A = np.array([[1, 2]])
+
+B = np.array([[5, 6],
+              [8, 9]])
+
+print(A*B)
+
+A = np.array([[1, 2]])
+
+B = np.matrix([[5, 6],
+              [8, 9]])
+
+print(A*B)
+
+A = np.matrix([[1, 2]])
+
+B = np.matrix([[5, 6],
+              [8, 9]])
+
+print(A*B)
+
+
+
+#%% Bk4_Ch4_08.py
+
+from numpy.linalg import matrix_power as pw
+A = np.array([[1., 2.],
+              [3., 4.]])
+
+# matrix inverse
+A_3 = pw(A,3)
+A_3_v3 = A@A@A
+
+# piecewise power
+A_3_piecewise = A**3
+
+
+
+
+#%% Bk4_Ch4_09.py
+
+import numpy as np
+
+A = np.matrix([[1,3],
+               [2,4]])
+
+print(A**2)
+
+B = np.array([[1,3],
+              [2,4]])
+
+print(B**2)
+
+
+
+
+#%% Bk4_Ch4_10.py
+
+import numpy as np
+
+A = np.array([[1, 2],
+              [3, 4],
+              [5, 6]])
+
+# matrix transpose
+A_T = A.transpose()
+A_T_2 = A.T
+
+
+
+
+
+#%% Bk4_Ch4_11.py
+
+from numpy.linalg import inv
+A = np.array([[1., 2.],
+              [3., 4.]])
+
+# matrix inverse
+A_inverse = inv(A)
+A_times_A_inv = A@A_inverse
+
+
+
+
+
+
+#%% Bk4_Ch4_12.py
+
+import numpy as np
+
+A = np.matrix([[1, 2],
+               [3, 4]])
+
+# print(A.I)
+
+B = np.array([[1, 2],
+              [3, 4]])
+
+# print(B.I)
+
+
+
+#%% Bk4_Ch4_13.py
+
+import numpy as np
+A = np.array([[1, -1, 0],
+              [3,  2, 4],
+              [-2, 0, 3]])
+
+# calculate trace of A
+tr_A = np.trace(A)
+
+
+
+#%% Bk4_Ch4_14.py
+
+import numpy as np
+
+A = np.array([[1,2],
+              [3,4]])
+
+B = np.array([[5,6],
+              [7,8]])
+
+# Hadamard product
+A_times_B_piecewise = np.multiply(A,B)
+A_times_B_piecewise_V2 = A*B
 
 
 
@@ -172,18 +273,14 @@ ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 
 
 
+#%% Bk4_Ch4_15.py
 
+import numpy as np
+A = np.array([[4, 2],
+              [1, 3]])
 
-
-
-
-
-
-
-
-
-
-
+# calculate determinant of A
+det_A = np.linalg.det(A)
 
 
 

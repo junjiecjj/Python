@@ -130,9 +130,6 @@ U_Z, S_Z, V_Z = svd(Z_X, full_matrices = False)
 V_Z = V_Z.T
 S_Z = np.diag(S_Z)
 
-
-
-
 #%%
 # A copy from Seaborn
 iris = load_iris()
@@ -157,15 +154,10 @@ cov_x = np.cov(X.T)
 # 计算相关性系数矩阵
 corr_x = np.corrcoef(X.T)
 
-
-
-
 #%% QR 分解:获得正交系
 # %% QR decomposition
 from numpy.linalg import qr
 Q, R = qr(X, mode = 'reduced')
-
-
 
 #%% 24.3 Cholesky 分解:找到列向量的坐标
 
@@ -283,14 +275,9 @@ Lambs_P, V_P = eig(corr_x)
 Lambs_P = np.diag(Lambs_P)
 
 
-
-
-
-
 #%% 24.5 SVD 分解:获得四个空间
 
 #%% SVD, original data X
-
 from numpy.linalg import svd
 
 U_X,S_X_,V_X = svd(X, full_matrices=False)

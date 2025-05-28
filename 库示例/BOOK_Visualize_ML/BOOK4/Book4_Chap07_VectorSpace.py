@@ -5,12 +5,7 @@
 
 
 
-###############
-# Authored by Weisheng Jiang
-# Book 4  |  From Basic Arithmetic to Machine Learning
-# Published and copyrighted by Tsinghua University Press
-# Beijing, China, 2022
-###############
+#%% Streamlit_Bk4_Ch7_01
 
 import plotly.graph_objects as go
 import numpy as np
@@ -145,7 +140,7 @@ x1_ = xx1.ravel()
 x2_ = xx2.ravel()
 x3_ = xx3.ravel()
 
-#%%
+#%% Streamlit_Bk4_Ch7_02
 df = pd.DataFrame({'X': x1_,
                    'Y': x2_,
                    'Z': x3_,
