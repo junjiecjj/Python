@@ -773,10 +773,63 @@ plt.show()
 
 
 
+#%%%%%%%%%%% 空间曲线的切线方程，并给出python代码，画出空间曲线上多个点的切线
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
+# 定义空间曲线（示例：螺旋线）
+def curve(t):
+    x = np.cos(t)
+    y = np.sin(t)
+    z = t/5
+    return np.array([x, y, z])
 
+# 计算导数（数值微分）
+def derivative(f, t, h=1e-5):
+    return (f(t + h) - f(t - h)) / (2 * h)
 
+# 生成曲线上的点
+t_vals = np.linspace(0, 4*np.pi, 100)
+curve_points = np.array([curve(t) for t in t_vals]).T
 
+# 选择多个切点（每隔20个点取一个）
+t_tangent = t_vals[::20]
+tangent_points = np.array([curve(t) for t in t_tangent]).T
+tangent_vectors = np.array([derivative(curve, t) for t in t_tangent]).T
+
+# 绘制切线（每条切线延伸长度）
+s_vals = np.linspace(-1, 1, 10)  # 切线参数范围
+
+# 创建图形
+fig = plt.figure(figsize=(12, 10))
+ax = fig.add_subplot(111, projection='3d')
+
+# 绘制原始曲线
+ax.plot(curve_points[0], curve_points[1], curve_points[2],  'b-', linewidth=2, label='空间曲线')
+
+# 绘制切线和切点
+for i in range(len(t_tangent)):
+    # 切线方程: T(s) = curve(t) + s * derivative(t)
+    tangent_line = tangent_points[:, i][:, np.newaxis] + s_vals * tangent_vectors[:, i][:, np.newaxis]
+    ax.plot(tangent_line[0], tangent_line[1], tangent_line[2], 'r-', alpha=0.7, linewidth=1.5)
+    ax.scatter(*tangent_points[:, i], c='g', s=50)
+
+# 设置坐标轴
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.set_title('空间曲线的切线可视化', pad=20)
+ax.legend()
+plt.tight_layout()
+plt.show()
+
+# 检查切向量与相邻曲线的方向一致性
+for i in range(len(t_tangent)):
+    t = t_tangent[i]
+    delta = curve(t + 0.01) - curve(t - 0.01)
+    cos_angle = np.dot(tangent_vectors[:, i], delta) / (np.linalg.norm(tangent_vectors[:, i]) * np.linalg.norm(delta))
+    print(f"切点 t={t:.2f} 的夹角余弦值: {cos_angle:.6f} (应接近1)")
 
 
 

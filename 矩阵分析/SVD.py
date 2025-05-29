@@ -15,6 +15,20 @@ https://blog.csdn.net/qfikh/article/details/103994319
 
 """
 import numpy as np
+import scipy
+
+
+#%% 验证A的奇异值与A^HA的特征值，以及A^HA特征向量的关系
+A = np.array([[1, 2, 3], [4, 5, 6]])
+# A = np.random.randn(2, 3) + 1j * np.random.randn(2, 3)
+U, s, VH = np.linalg.svd(A)
+
+AHA = A.conj().T@A
+lambda_, V_ = np.linalg.eig(AHA)
+
+
+
+
 
 #%% 实数的情况
 A = np.array([[1,2,3],[4,5,6]])
@@ -68,7 +82,7 @@ print(f"US2UH = \n{US2UH}")
 print(f"Lambda1 = \n{Lambda1}")
 # Lambda1 =
 # [ 0.59732747 90.40267253]
-print(f"Uhat = \n{Uhat}")
+print(f"Uhat = \n{Uhat}") # == U, 顺序可能改变
 # array([[-0.92236578,  0.3863177 ],
 #        [ 0.3863177 ,  0.92236578]])
 print(f"S @ S.conj().T = \n{S @ S.conj().T}")
@@ -76,12 +90,16 @@ print(f"S @ S.conj().T = \n{S @ S.conj().T}")
 # [[90.40267253  0.        ]
 #  [ 0.          0.59732747]]
 
+scipy.linalg.inv(U) @ A@A.T @ U == S @ S.conj().T # 说明U是X*X^T的特征向量
+
+
 # 验证 A^HA = VS^2V^H,  V是A^HA的特征值，也是A的右奇异向量.注意，特征值和特征向量的顺序可能改变，且正负号也可能变，但是对应关系不会变
 V = VH.conj().T
 AHA =  A.conj().T @ A
 VS2VH = V @ S.conj().T @ S @  V.conj().T
 Lambda2, Vhat = np.linalg.eigh(AHA)
 
+print("V = \n",V)
 print(f"AHA = \n{AHA}")
 # AHA =
 # [[17 22 27]
@@ -95,7 +113,7 @@ print(f"VS2VH = \n{VS2VH}")
 print(f"Lambda2 = \n{Lambda2}")
 # Lambda2 =
 # [-7.28862329e-15  5.97327474e-01  9.04026725e+01]
-print(f"Vhat = \n{Vhat}")
+print(f"Vhat = \n{Vhat}") # == V,  顺序可能改变
 # array([[ 0.40824829, -0.80596391, -0.42866713],
 #        [-0.81649658, -0.11238241, -0.56630692],
 #        [ 0.40824829,  0.58119908, -0.7039467 ]])
@@ -104,6 +122,9 @@ print(f"S.conj().T @ S = \n{S.conj().T @ S}")
 # [[90.40267253  0.          0.        ]
 #  [ 0.          0.59732747  0.        ]
 #  [ 0.          0.          0.        ]]
+
+scipy.linalg.inv(V) @ A.T@A @ V == S.conj().T @ S # 说明V是X^T*X的特征向量
+
 
 #%% 复数的情况
 # A = np.array([[1,2,3],[4,5,6]])
@@ -159,7 +180,6 @@ print(f"S @ S.conj().T = \n{S @ S.conj().T}")
 
 
 #  验证 A^HA = VS^2V^H,  V是A^HA的特征值，也是A的右奇异向量.注意，特征值和特征向量的顺序可能改变，且正负号也可能变，但是对应关系不会变
-
 AHA =  A.conj().T @ A
 VS2VH = V @ S.conj().T @ S @  V.conj().T
 Lambda2, Vhat = np.linalg.eigh(AHA)
@@ -182,7 +202,6 @@ np.random.seed(1)
 n = 12
 X = np.random.randn(n, 6)
 
-
 ###>>>>>  对原始矩阵 X 进行经济型 SVD 分解
 U1, s1, VT1 = np.linalg.svd(X, full_matrices = True)
 SS1 = np.zeros(X.shape)
@@ -199,7 +218,6 @@ Lambda1 = np.diag(Lambda1_)
 # X的(奇异值)和 G 的特征值的关系
 Lambda1_reproduced = S1**2/(n - 1)
 # print(Lambda1_reproduced - Lambda1) # == 0
-
 
 print(f"s1 = {s1}, Lambda1_ = {Lambda1_}, \nV1 = {V1}")
 

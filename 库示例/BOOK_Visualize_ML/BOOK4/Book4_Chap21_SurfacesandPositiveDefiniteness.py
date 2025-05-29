@@ -36,12 +36,9 @@ def mesh_circ(c1, c2, r, num):
 
 #define symbolic vars, function
 x1,x2 = sympy.symbols('x1 x2')
-
 A = np.array([[ 1, 0],
               [0,  1]])
-
 x = np.array([[x1, x2]]).T
-
 f_x = x.T@A@x
 f_x = f_x[0][0]
 f_x_fcn = sympy.lambdify([x1, x2], f_x)
@@ -79,11 +76,7 @@ norm_plt = plt.Normalize(ff_x.min(), ff_x.max())
 colors = cm.RdYlBu_r(norm_plt(ff_x))
 # colors = cm.Blues_r(norm_plt(ff))
 
-surf = ax.plot_surface(xx1,xx2,ff_x, facecolors = colors,
-                       rstride = 1,
-                       cstride = 1,
-                       linewidth = 1, # 线宽
-                       shade = False) # 删除阴影
+surf = ax.plot_surface(xx1,xx2,ff_x, facecolors = colors, rstride = 1, cstride = 1, linewidth = 1, shade = False) # 删除阴影
 surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
 ax.xaxis.set_ticks([])
@@ -109,8 +102,8 @@ plt.contour(xx1, xx2, ff_x,20, cmap = 'RdYlBu_r')
 ax.set_aspect('equal')
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
 plt.tight_layout()
 plt.show()
 
@@ -396,6 +389,14 @@ A = np.array([[0, 1],
 f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
 visualize(xx1,xx2,f2_array,gradient_array)
 
+
+
+## 不定
+A = np.array([[1, 0],
+              [0, -1]])
+
+f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
+visualize(xx1,xx2,f2_array,gradient_array)
 
 
 

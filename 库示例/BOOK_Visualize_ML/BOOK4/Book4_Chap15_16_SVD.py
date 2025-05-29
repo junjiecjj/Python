@@ -7,15 +7,14 @@ import matplotlib.pyplot as plt
 
 def visualize(X_circle, X_vec, title_txt):
     fig, ax = plt.subplots()
-
-    plt.plot(X_circle[:,0], X_circle[:,1],'k', linestyle = '--', linewidth = 0.5)
-    plt.quiver(0,0,X_vec[0,0],X_vec[0,1], angles='xy', scale_units='xy',scale=1, color = [0, 0.4392, 0.7529])
-    plt.quiver(0,0,X_vec[1,0],X_vec[1,1], angles='xy', scale_units='xy',scale=1, color = [1,0,0])
+    plt.plot(X_circle[:,0], X_circle[:,1], 'k', linestyle = '--', linewidth = 0.5)
+    plt.quiver(0, 0, X_vec[0,0], X_vec[0,1], angles='xy', scale_units='xy',scale=1, color = [0, 0.4392, 0.7529])
+    plt.quiver(0, 0, X_vec[1,0], X_vec[1,1], angles='xy', scale_units='xy',scale=1, color = [1,0,0])
     plt.axvline(x=0, color= 'k', zorder=0)
     plt.axhline(y=0, color= 'k', zorder=0)
 
-    plt.ylabel('$x_2$')
-    plt.xlabel('$x_1$')
+    plt.ylabel(r'$x_2$')
+    plt.xlabel(r'$x_1$')
 
     ax.set_aspect(1)
     ax.set_xlim([-2.5, 2.5])
@@ -82,10 +81,9 @@ S_VT_e2 = S@VT_e2
 U_S_VT_e1 = U@S_VT_e1
 U_S_VT_e2 = U@S_VT_e2
 
-
-
 #%% Bk4_Ch15_02_A
 import numpy as np
+import scipy
 from matplotlib import pyplot as plt
 plt.rcParams['image.cmap'] = 'RdBu_r'
 import seaborn as sns
@@ -94,7 +92,6 @@ PRECISION = 3
 def svd(X):
     full_matrices = True
     U, s, Vt = np.linalg.svd(X, full_matrices = full_matrices)
-
     # Put the vector singular values into a padded matrix
     if full_matrices:
         S = np.zeros(X.shape)
@@ -162,6 +159,10 @@ X, U, S, V = visualize_svd(X,'$X$','$U$','$S$','$V^T$', fig_height=3)
 X_2, U_2, S_2, V_2 = visualize_svd(X.T@X,'$X^TX$','$V$','$S^TS$','$V^T$', fig_height=3)
 X_3, U_3, S_3, V_3 = visualize_svd(X@X.T,'$XX^T$','$U$','$SS^T$','$U^T$', fig_height=3)
 
+# V == U_3 = V_3
+# V = U_2 = V_2
+scipy.linalg.inv(U) @ X@X.T @ U == S @ S.conj().T # 说明U是X*X^T的特征向量
+scipy.linalg.inv(V) @ X.T@X @ V == S.conj().T @ S # 说明V是X^T*X的特征向量
 
 
 #%% Bk4_Ch15_02_B
@@ -297,9 +298,7 @@ all_min = -2
 #%% full, 数据 X 完全型 SVD 分解矩阵热图
 print("数据 X 完全型 SVD 分解矩阵热图")
 U, S, V = svd(X, full_matrices = True)
-
 fig, axs = plt.subplots(1, 4, figsize=(12, 3))
-
 plt.sca(axs[0])
 ax = sns.heatmap(X,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
@@ -320,10 +319,9 @@ ax = sns.heatmap(V.T,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"ori
 ax.set_aspect("equal")
 plt.title('$V^T$')
 
-#%%Bk4_Ch16_01_B
+#%% Bk4_Ch16_01_B
 #  Economy-size, thin, 数据 X 经济型 SVD 分解热图
 print("Economy-size, thin, 数据 X 经济型 SVD 分解热图")
-
 U, S, V = svd(X, full_matrices = False)
 fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 
@@ -364,7 +362,6 @@ ax = sns.heatmap(X_rank_3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws=
 ax.set_aspect("equal")
 plt.title('$X$')
 
-
 plt.sca(axs[1])
 ax = sns.heatmap(U_rank_3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
@@ -383,7 +380,7 @@ plt.title('$V^T$')
 #%% Bk4_Ch16_01_D
 # Truncated,  采用截断型 SVD 分解还原数据运算热图
 print("采用截断型 SVD 分解还原数据运算热图")
-num_p = 2;
+num_p = 3;
 U_truc = U[:,0:num_p]
 S_truc = S[0:num_p, 0:num_p]
 V_truc = V[:, 0:num_p]
@@ -395,23 +392,22 @@ fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X_hat, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}$')
+plt.title(r'$\hat{X}$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(U_truc,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$U$')
+plt.title(r'$U$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(S_truc,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$S$')
+plt.title(r'$S$')
 
 plt.sca(axs[3])
 ax = sns.heatmap(V_truc.T,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V^T$')
-
+plt.title(r'$V^T$')
 
 ######### Error
 fig, axs = plt.subplots(1, 3, figsize=(12, 3))
@@ -419,17 +415,17 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_hat,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}$')
+plt.title(r'$\hat{X}$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X - X_hat,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$E = X - \hat{X}$')
+plt.title(r'$E = X - \hat{X}$')
 
 #%% Bk4_Ch16_01_E
 # Tensor products, 计算张量积,以及绘制还原原始数据过程热图
@@ -444,23 +440,22 @@ fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(u1_outer_v1,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$u1v1^T$')
+plt.title(r'$u1v1^T$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(u2_outer_v2,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$u2v2^T$')
+plt.title(r'$u2v2^T$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(u3_outer_v3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$u3v3^T$')
+plt.title(r'$u3v3^T$')
 
 plt.sca(axs[3])
 ax = sns.heatmap(u4_outer_v4,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$u4v4^T$')
-
+plt.title(r'$u4v4^T$')
 
 X_1 = S[0,0]*u1_outer_v1
 # X_1 = S[0,0]*U[:,0][:, None]@V[:,0][None, :];
@@ -477,22 +472,22 @@ fig, axs = plt.subplots(1, 4, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X_1, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_1$')
+plt.title(r'$\hat{X}_1$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_2, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_2$')
+plt.title(r'$\hat{X}_2$')
 
 plt.sca(axs[2])
 ax = sns.heatmap(X_3, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_3$')
+plt.title(r'$\hat{X}_3$')
 
 plt.sca(axs[3])
 ax = sns.heatmap(X_4, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_4$')
+plt.title(r'$\hat{X}_4$')
 
 #%% Bk4_Ch16_01_F
 # Reproduction and error,  绘制本节数据还原和误差热图
@@ -502,36 +497,36 @@ fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_1 + X_2,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_1 + \hat{X}_2$')
+plt.title(r'$\hat{X}_1 + \hat{X}_2$')
 
 
 plt.sca(axs[2])
 ax = sns.heatmap(X - (X_1 + X_2),cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X - (\hat{X}_1 + \hat{X}_2)$')
+plt.title(r'$X - (\hat{X}_1 + \hat{X}_2)$')
 
 
 fig, axs = plt.subplots(1, 3, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(X,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X$')
+plt.title(r'$X$')
 
 plt.sca(axs[1])
 ax = sns.heatmap(X_1 + X_2 + X_3,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\hat{X}_1 + \hat{X}_2 + \hat{X}_3$')
+plt.title(r'$\hat{X}_1 + \hat{X}_2 + \hat{X}_3$')
 
 
 plt.sca(axs[2])
 ax = sns.heatmap(X - (X_1 + X_2 + X_3),cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$X - (\hat{X}_1 + \hat{X}_2 + \hat{X}_3)$')
+plt.title(r'$X - (\hat{X}_1 + \hat{X}_2 + \hat{X}_3)$')
 
 
 

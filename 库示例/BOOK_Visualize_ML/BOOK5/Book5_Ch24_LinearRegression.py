@@ -1,5 +1,14 @@
 
 
+"""
+
+Book4_Chap09:
+Boo4_Chap25: 25.4
+
+
+
+"""
+
 
 
 #%% Bk5_Ch24_01
@@ -14,6 +23,7 @@ from sklearn.datasets import load_iris
 iris_sns = sns.load_dataset("iris")
 # sepal_length  sepal_width  petal_length  petal_width
 # Scatter plot of x1 and x2
+iris_sns = iris_sns.drop('species', axis=1)
 SIGMA = iris_sns.cov()
 CORR = iris_sns.corr()
 SIGMA = np.array(SIGMA)

@@ -77,7 +77,7 @@ for cmap_idx in cmap_arrays:
     # 绘制平面填充等高线
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
-    cbar.ax.set_title('$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
+    cbar.ax.set_title(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
     # 增加色谱条，并指定刻度
 
     ax.set_xlim(xx.min(), xx.max())
@@ -101,7 +101,7 @@ for cmap_idx in cmap_arrays:
 
     cbar = fig.colorbar(colorbar, ax=ax)
     cbar.set_ticks([-10, -5, 0, 5, 10])
-    cbar.ax.set_title('$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
+    cbar.ax.set_title(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)',fontsize=8)
 
     ax.set_xlim(xx.min(), xx.max())
     ax.set_ylim(yy.min(), yy.max())
@@ -117,8 +117,8 @@ for cmap_idx in cmap_arrays:
 #===================================================================================
 ##  10 平面等高线
 #===================================================================================
-#%%   BK_2_Ch10_01
-### 一维
+#%% # 不同类型网格 BK_2_Ch10_01
+########### 一维
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -143,7 +143,7 @@ ax.plot(y_array, x_array, color = [0.5,0.5,0.5], linewidth = 1.25)
 ax.axis('off')
 plt.show()
 
-#%%  二维
+########### 二维
 ## 1
 xx1_square, xx2_square = np.meshgrid(np.linspace(-3, 3, 20), np.linspace(-3, 3, 20))
 
@@ -185,7 +185,29 @@ ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 plt.show()
 
-#%% 二维函数
+########### ### 三维网格
+xxx1_square, xxx2_square,xxx3_square = np.meshgrid(np.linspace(-3,3,13), np.linspace(-3,3,13), np.linspace(-3,3,13))
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+ax.scatter(xxx1_square, xxx2_square, xxx3_square, s = 5)
+ax.set_proj_type('ortho')
+# 另外一种设定正交投影的方式
+
+ax.set_xlabel('$\it{x_1}$')
+ax.set_ylabel('$\it{x_2}$')
+ax.set_zlabel('')
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+
+# ax.set_xlim(xx.min(), xx.max())
+# ax.set_ylim(yy.min(), yy.max())
+ax.set_box_aspect([1,1,1])
+ax.view_init(azim=-120, elev=30)
+ax.grid(False)
+# fig.savefig('Figures/三维.svg', format='svg')
+plt.show()
+
+########### 二维函数
 # 定义一个符号函数
 from sympy import symbols
 x,y = symbols("x,y")
@@ -217,7 +239,7 @@ ax.grid(False)
 
 plt.show()
 
-#%% 极坐标网格
+########### 极坐标网格
 theta = np.linspace(0, 2*np.pi, 20)
 r     = np.linspace(0, 3, 10)
 tt, rr = np.meshgrid(theta,r)
@@ -290,7 +312,65 @@ ax.grid(False)
 
 plt.show()
 
-#%% 三角网格
+### 面具
+mask_tri = (xx1_square + xx2_square >= 0)
+xx1_square_tri_mask = np.copy(xx1_square)
+xx2_square_tri_mask = np.copy(xx2_square)
+
+xx1_square_tri_mask[mask_tri] = np.nan
+xx2_square_tri_mask[mask_tri] = np.nan
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+
+ax.plot_wireframe(xx1_square_tri_mask, xx2_square_tri_mask, xx1_square_tri_mask*0, color = [0.5,0.5,0.5], linewidth = 0.25)
+ax.scatter(xx1_square_tri_mask, xx2_square_tri_mask, xx1_square_tri_mask*0, s = 5)
+ax.set_proj_type('ortho')
+# 另外一种设定正交投影的方式
+
+ax.set_xlabel('$\it{x_1}$')
+ax.set_ylabel('$\it{x_2}$')
+ax.set_zlabel('')
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+
+ax.set_xlim(xx1_square.min(), xx1_square.max())
+ax.set_ylim(xx2_square.min(), xx2_square.max())
+ax.set_box_aspect([1,1,1])
+ax.view_init(azim=-120, elev=30)
+ax.grid(False)
+# fig.savefig('Figures/面具，三角.svg', format='svg')
+plt.show()
+
+
+mask_circle = (xx1_square**2 + xx2_square**2 >= 4)
+xx1_square_circle_mask = np.copy(xx1_square)
+xx2_square_circle_mask = np.copy(xx2_square)
+
+xx1_square_circle_mask[mask_circle] = np.nan
+xx2_square_circle_mask[mask_circle] = np.nan
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+
+ax.plot_wireframe(xx1_square_circle_mask, xx2_square_circle_mask, xx1_square_circle_mask*0, color = [0.5,0.5,0.5], linewidth = 0.25)
+ax.scatter(xx1_square_circle_mask, xx2_square_circle_mask, xx1_square_circle_mask*0, s = 5)
+ax.set_proj_type('ortho')
+# 另外一种设定正交投影的方式
+
+ax.set_xlabel('$\it{x_1}$')
+ax.set_ylabel('$\it{x_2}$')
+ax.set_zlabel('')
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_zticks([])
+
+ax.set_xlim(xx1_square.min(), xx1_square.max())
+ax.set_ylim(xx2_square.min(), xx2_square.max())
+ax.set_box_aspect([1,1,1])
+ax.view_init(azim=-120, elev=30)
+ax.grid(False)
+# fig.savefig('Figures/面具，圆形.svg', format='svg')
+plt.show()
+
+########### 三角网格
 xx1_square, xx2_square = np.meshgrid(np.linspace(-3, 3, 20), np.linspace(-3, 3, 20))
 points_square = np.column_stack((xx1_square.ravel(), xx2_square.ravel()))
 triang_square_auto = mtri.Triangulation(points_square[:,0], points_square[:,1])
@@ -364,7 +444,7 @@ ax.axis('off')
 # fig.savefig('Figures/三角网格，均匀圆盘散点.svg', format='svg')
 plt.show()
 
-#%% # 等高线原理 BK_2_Ch10_02
+#%% 等高线原理 BK_2_Ch10_02
 
 # 导入包
 import math

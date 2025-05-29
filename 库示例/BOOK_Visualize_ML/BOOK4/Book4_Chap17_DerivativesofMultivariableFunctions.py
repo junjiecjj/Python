@@ -14,7 +14,7 @@ x1,x2 = sympy.symbols('x1 x2')
 
 f_x = x1*exp(-(x1**2 + x2**2))
 print(f_x)
-f_x_fcn = sympy.lambdify([x1,x2],f_x)
+f_x_fcn = sympy.lambdify([x1, x2],f_x)
 
 #take the gradient symbolically
 grad_f = [sympy.diff(f_x,var) for var in (x1,x2)]
@@ -29,8 +29,7 @@ ff_x = f_x_fcn(xx1,xx2)
 xx1_, xx2_ = np.meshgrid(np.linspace(-2,2,20),np.linspace(-2,2,20))
 V = grad_fcn(xx1_,xx2_)
 
-
-color_array = np.sqrt(V[0]**2 + V[1]**2)
+# color_array = np.sqrt(V[0]**2 + V[1]**2)
 
 # 3D visualization
 ax = plt.figure().add_subplot(projection='3d')
@@ -47,7 +46,6 @@ ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 ax.set_zlabel('$f(x_1,x_2)$')
 plt.tight_layout()
-
 
 # 2D visualization
 fig, ax = plt.subplots()
@@ -92,7 +90,7 @@ xx1_, xx2_ = np.meshgrid(np.linspace(-2,2,15),np.linspace(-2,2,15))
 V = grad_fcn(xx1_, xx2_)
 ff_x_ = f_x_fcn(xx1_,xx2_)
 
-color_array = np.sqrt(V[0]**2 + V[1]**2)
+# color_array = np.sqrt(V[0]**2 + V[1]**2)
 
 # 3D visualization + vectors
 ax = plt.figure(figsize = (10, 10)).add_subplot(projection='3d')
@@ -107,12 +105,12 @@ for x1,y1,z1,u1,v1,w1,l in zip(xx1_.flatten(), xx2_.flatten(), ff_x_.flatten(), 
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
 ax.zaxis.set_ticks([])
-plt.xlim(-2,2)
-plt.ylim(-2,2)
+plt.xlim(-2, 2)
+plt.ylim(-2, 2)
 ax.view_init(30, -125)
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
-ax.set_zlabel('$f(x_1,x_2)$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$f(x_1,x_2)$')
 
 plt.tight_layout()
 plt.show()
@@ -138,24 +136,23 @@ def mesh_circ(c1, c2, r, num):
     return xx1, xx2
 
 xx1, xx2 = mesh_circ(0, 0, 3, 30)
-f_x = -4*x1**2 -4*x2**2
+f_x = -4*x1**2 - 4*x2**2
 f_x_fcn = sympy.lambdify([x1, x2], f_x)
 # quadratic surface
 ff_x = f_x_fcn(xx1, xx2)
-
 
 f_p = -4*p1**2 -4*p2**2
 #take the gradient symbolically
 grad_f = [sympy.diff(f_p, var) for var in (p1,p2)]
 #turn into a bivariate lambda for numpy
-grad_fcn = sympy.lambdify([x1, x2], grad_f)
+# grad_fcn = sympy.lambdify([x1, x2], grad_f)
 
 t_x = Matrix(grad_f).T*Matrix([[x1 - p1], [x2 - p2]]) + Matrix([f_p])
 t_x_fcn = sympy.lambdify([x1, x2, p1, p2], t_x)
 
 # expansion point
-p1 = 0
-p2 = 0
+p1 = 1
+p2 = 2
 py = f_x_fcn(p1, p2)
 
 # coarse mesh

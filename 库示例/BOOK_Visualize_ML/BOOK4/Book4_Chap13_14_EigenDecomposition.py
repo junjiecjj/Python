@@ -110,9 +110,9 @@ plt.close()
 A = np.array([[2,  0],
               [0, 1]])
 V = np.array([xx1_.flatten(),xx2_.flatten()]).T;
-W = V@A;
-uu_new = np.reshape(W[:,0],xx1_.shape);
-vv_new = np.reshape(W[:,1],xx1_.shape);
+W = V@A
+uu_new = np.reshape(W[:,0],xx1_.shape)
+vv_new = np.reshape(W[:,1],xx1_.shape)
 fig, ax = plt.subplots(figsize = (5,5))
 plt.quiver (zeros, zeros, uu_new, vv_new, zz_angle_, angles='xy', scale_units='xy', scale = 1, edgecolor='none', alpha=0.8, cmap = 'hsv')
 ax.set_xlim(-4,4)
@@ -189,8 +189,8 @@ vv = np.sin(thetas);
 
 fig, ax = plt.subplots()
 ax.quiver(xx1,xx2,uu,vv, angles='xy', scale_units='xy',scale=1, edgecolor='none', facecolor= 'b')
-plt.ylabel('$x_2$')
-plt.xlabel('$x_1$')
+plt.ylabel(r'$x_2$')
+plt.xlabel(r'$x_1$')
 plt.axis('scaled')
 ax.set_xlim([-10, 10])
 ax.set_ylim([-10, 10])
@@ -221,8 +221,8 @@ plt.show()
 
 
 fig, ax = plt.subplots()
-ax.quiver(xx1*0,xx2*0,uu,vv, angles='xy', scale_units='xy',scale=1, edgecolor='none', facecolor= 'b')
-ax.quiver(xx1*0,xx2*0,uu_new,vv_new, angles='xy', scale_units='xy',scale=1, edgecolor='none', facecolor= 'r')
+ax.quiver(xx1*0, xx2*0, uu,vv, angles='xy', scale_units='xy', scale=1, edgecolor='none', facecolor= 'b')
+ax.quiver(xx1*0, xx2*0, uu_new, vv_new, angles='xy', scale_units='xy', scale=1, edgecolor='none', facecolor= 'r')
 
 plt.ylabel(r'$x_2$')
 plt.xlabel(r'$x_1$')
@@ -236,7 +236,6 @@ plt.show()
 
 
 #%% Bk4_Ch13_02.py
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -302,56 +301,24 @@ visualize(A@X_circle, A@V_vec,r'$A$')
 
 
 
-#%% Bk4_Ch13_03.py
-import numpy as np
-import matplotlib.pyplot as plt
-theta = np.deg2rad(30)
-r = 0.8 # 1.2, scaling factor
-R = np.array([[np.cos(theta), -np.sin(theta)],
-              [np.sin(theta),  np.cos(theta)]])
-S = np.array([[r, 0],
-              [0, r]])
-A = R@S
-# A = np.array([[1, -1],
-#               [1, 1]])
-Lamb, V = np.linalg.eig(A)
-theta_array = np.arange(0,np.pi*2,np.pi*2/18)
-colors = plt.cm.rainbow(np.linspace(0,1,len(theta_array)))
-
-fig, ax = plt.subplots()
-for j, theat_i in enumerate(theta_array):
-    # initial point
-    x = np.array([[5*np.cos(theat_i)],
-                  [5*np.sin(theat_i)]])
-    plt.plot(x[0],x[1], marker = 'x',color = colors[j], markersize = 15)
-    # plot the initial point
-    x_array = x
-    for i in np.arange(20):
-        x = A@x
-        x_array = np.column_stack((x_array,x))
-    colors_j = colors[j,:]
-    plt.plot(x_array[0,:],x_array[1,:], marker = '.',color = colors_j)
-
-plt.axis('scaled')
-
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.axvline(x=0,color = 'k')
-ax.axhline(y=0,color = 'k')
 
 
 
 #%% Bk4_Ch14_01.py  利用特征值分解完成方阵开方
 # 能特征值分解的矩阵存在平方根矩阵
 import numpy as np
+import scipy
+
 A = np.matrix([[1.25, -0.75],
                [-0.75, 1.25]])
 LAMBDA, V = np.linalg.eig(A)
 B = V@np.diag(np.sqrt(LAMBDA))@np.linalg.inv(V)
+print(B)
 A_reproduced = B@B
 print(A_reproduced)
+
+B_hat = scipy.linalg.sqrtm(A)  # == B
+print(B_hat)
 
 # 可以用 scipy.linalg.expm() 计算矩阵指数。
 import scipy
@@ -405,7 +372,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy import linalg as L
 
-
 def mesh_circ(c1, c2, r, num):
     theta = np.linspace(0, 2*np.pi, num)
     r     = np.linspace(0,r, num)
@@ -420,16 +386,11 @@ A = np.array([[0.5, -0.5],
               [-0.5, 0.5]])
 Lambda, V = L.eig(A)
 x = np.array([[x1,x2]]).T
-
 f_x = x.T@A@x
 f_x = f_x[0][0]
-
 f_x_fcn = sympy.lambdify([x1,x2],f_x)
-
 xx1, xx2 = mesh_circ(0, 0, 1, 50)
-
 ff_x = f_x_fcn(xx1,xx2)
-
 if Lambda[1] > 0:
     levels = np.linspace(0,Lambda[0],21)
 else:
@@ -439,11 +400,8 @@ t = np.linspace(0,np.pi*2,100)
 
 # 2D visualization
 fig, ax = plt.subplots()
-
 ax.plot(np.cos(t), np.sin(t), color = 'k')
-
-cs = plt.contourf(xx1, xx2, ff_x,
-                  levels=levels, cmap = 'RdYlBu_r')
+cs = plt.contourf(xx1, xx2, ff_x, levels=levels, cmap = 'RdYlBu_r')
 plt.show()
 ax.set_aspect('equal')
 ax.xaxis.set_ticks([])
@@ -454,32 +412,25 @@ ax.set_xlim(-1,1)
 ax.set_ylim(-1,1)
 clb = fig.colorbar(cs, ax=ax)
 clb.set_ticks(levels)
+plt.show()
+plt.close()
 
-#%% 3D surface of f(x1,x2)
 
+#  3D surface of f(x1,x2)
 x1_ = np.linspace(-1.2,1.2,31)
 x2_ = np.linspace(-1.2,1.2,31)
 
 xx1_fine, xx2_fine = np.meshgrid(x1_,x2_)
-
 ff_x_fine = f_x_fcn(xx1_fine,xx2_fine)
-
 f_circle = f_x_fcn(np.cos(t), np.sin(t))
-
 # 3D visualization
-
 fig, ax = plt.subplots()
 ax = plt.axes(projection='3d')
-
 ax.plot(np.cos(t), np.sin(t), f_circle, color = 'k')
 # circle projected to f(x1,x2)
 
-ax.plot_wireframe(xx1_fine,xx2_fine,ff_x_fine,
-                  color = [0.8,0.8,0.8],
-                  linewidth = 0.25)
-
-ax.contour3D(xx1_fine,xx2_fine,ff_x_fine,15,
-             cmap = 'RdYlBu_r')
+ax.plot_wireframe(xx1_fine, xx2_fine, ff_x_fine, color = [0.8,0.8,0.8], linewidth = 0.25)
+ax.contour3D(xx1_fine, xx2_fine, ff_x_fine, 15, cmap = 'RdYlBu_r')
 
 ax.view_init(elev=30, azim=60)
 ax.xaxis.set_ticks([])
@@ -491,34 +442,35 @@ plt.tight_layout()
 ax.set_proj_type('ortho')
 plt.show()
 
-
-#%% Bk4_Ch14_04.py
+# %% Bk4_Ch13_03.py
 import numpy as np
 import matplotlib.pyplot as plt
 theta = np.deg2rad(30)
 r = 0.8 # 1.2, scaling factor
 R = np.array([[np.cos(theta), -np.sin(theta)],
-              [np.sin(theta), np.cos(theta)]])
+              [np.sin(theta),  np.cos(theta)]])
 S = np.array([[r, 0],
               [0, r]])
 A = R@S
 # A = np.array([[1, -1],
-#              [1, 1]])
+#               [1, 1]])
 Lamb, V = np.linalg.eig(A)
 theta_array = np.arange(0,np.pi*2,np.pi*2/18)
 colors = plt.cm.rainbow(np.linspace(0,1,len(theta_array)))
-fig, ax = plt.subplots(figsize = (10, 10))
+
+fig, ax = plt.subplots()
 for j, theat_i in enumerate(theta_array):
     # initial point
     x = np.array([[5*np.cos(theat_i)],
                   [5*np.sin(theat_i)]])
-    plt.plot(x[0], x[1], marker = 'x',color = colors_j, markersize = 15)
+    plt.plot(x[0],x[1], marker = 'x',color = colors[j], markersize = 15)
     # plot the initial point
     x_array = x
     for i in np.arange(20):
         x = A@x
-        x_array = np.column_stack((x_array, x))
-    plt.plot(x_array[0,:], x_array[1,:], marker = '.', color = colors[j,:])
+        x_array = np.column_stack((x_array,x))
+    # colors_j = colors[j,:]
+    plt.plot(x_array[0,:],x_array[1,:], lw = 1, marker = '.',color = colors[j,:])
 plt.axis('scaled')
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
@@ -526,7 +478,44 @@ ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.axvline(x=0,color = 'k')
 ax.axhline(y=0,color = 'k')
-plt.show()
+
+
+# #%% Bk4_Ch14_04.py
+# import numpy as np
+# import matplotlib.pyplot as plt
+# theta = np.deg2rad(30)
+# r = 0.8 # 1.2, scaling factor
+# R = np.array([[np.cos(theta), -np.sin(theta)],
+#               [np.sin(theta), np.cos(theta)]])
+# S = np.array([[r, 0],
+#               [0, r]])
+# A = R@S
+# # A = np.array([[1, -1],
+# #              [1, 1]])
+# Lamb, V = np.linalg.eig(A)
+# theta_array = np.arange(0,np.pi*2,np.pi*2/18)
+# colors = plt.cm.rainbow(np.linspace(0,1,len(theta_array)))
+# fig, ax = plt.subplots(figsize = (10, 10))
+# for j, theat_i in enumerate(theta_array):
+#     # initial point
+#     x = np.array([[5*np.cos(theat_i)],
+#                   [5*np.sin(theat_i)]])
+#     plt.plot(x[0], x[1], marker = 'x',color = colors[j], markersize = 15)
+#     # plot the initial point
+#     x_array = x
+#     for i in np.arange(20):
+#         x = A@x
+#         x_array = np.column_stack((x_array, x))
+#     # colors_j = colors[j,:]
+#     plt.plot(x_array[0,:], x_array[1,:], marker = '.', color = colors[j,:])
+# plt.axis('scaled')
+# ax.spines['top'].set_visible(False)
+# ax.spines['right'].set_visible(False)
+# ax.spines['bottom'].set_visible(False)
+# ax.spines['left'].set_visible(False)
+# ax.axvline(x=0,color = 'k')
+# ax.axhline(y=0,color = 'k')
+# plt.show()
 
 
 

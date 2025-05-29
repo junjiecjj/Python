@@ -4,8 +4,9 @@
 
 
 # Bk4_Ch19_01.py
-
 import sympy
+import numpy as np
+import matplotlib.pyplot as plt
 
 #define symbolic vars, function
 x1,x2 = sympy.symbols('x1 x2')
@@ -13,24 +14,21 @@ x1,x2 = sympy.symbols('x1 x2')
 f_x = x1 - x2
 
 #take the gradient symbolically
-grad_f = [sympy.diff(f_x,var) for var in (x1,x2)]
+grad_f = [sympy.diff(f_x, var) for var in (x1, x2)]
 
-f_x_fcn = sympy.lambdify([x1,x2],f_x)
+f_x_fcn = sympy.lambdify([x1, x2], f_x)
 
 #turn into a bivariate lambda for numpy
-grad_fcn = sympy.lambdify([x1,x2],grad_f)
+grad_fcn = sympy.lambdify([x1, x2], grad_f)
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-xx1, xx2 = np.meshgrid(np.linspace(-4,4,41),np.linspace(-4,4,41))
+xx1, xx2 = np.meshgrid(np.linspace(-4, 4, 41), np.linspace(-4, 4, 41))
 
 # coarse mesh
-xx1_, xx2_ = np.meshgrid(np.linspace(-4,4,10),np.linspace(-4,4,10))
+xx1_, xx2_ = np.meshgrid(np.linspace(-4, 4, 10), np.linspace(-4, 4, 10))
 V = grad_fcn(xx1_,xx2_)
-V_z = np.ones_like(V[1]);
+V_z = np.ones_like(V[1])
 
-ff_x = f_x_fcn(xx1,xx2)
+ff_x = f_x_fcn(xx1, xx2)
 # ff_x_ = f_x_fcn(xx1_,xx2_)
 
 color_array = np.sqrt(V[0]**2 + V[1]**2)
@@ -46,27 +44,27 @@ ax.contour3D(xx1, xx2, ff_x, levels = 0, colors = 'k')
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
 ax.zaxis.set_ticks([])
-plt.xlim(-4,4)
-plt.ylim(-4,4)
+ax.set_xlim(-4,4)
+ax.set_ylim(-4,4)
 ax.view_init(30, -125)
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
-ax.set_zlabel('$f(x_1,x_2)$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+ax.set_zlabel(r'$f(x_1,x_2)$')
 plt.tight_layout()
 plt.show()
 
 # 2D
 fig, ax = plt.subplots()
-plt.quiver (xx1_, xx2_, V[0], V[1], color_array, angles='xy', scale_units='xy',scale=2, edgecolor='none', facecolor= 'b')
+ax.quiver (xx1_, xx2_, V[0], V[1], color_array, angles = 'xy', scale_units = 'xy', scale = 2, edgecolor = 'none', facecolor = 'b')
 
-plt.contour(xx1, xx2, ff_x,20)
-plt.contour(xx1, xx2, ff_x, levels = 0, colors = 'k')
-plt.show()
+ax.contour(xx1, xx2, ff_x,20)
+ax.contour(xx1, xx2, ff_x, levels = 0, colors = 'k')
+# ax.show()
 ax.set_aspect('equal')
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
 plt.tight_layout()
 plt.show()
 
