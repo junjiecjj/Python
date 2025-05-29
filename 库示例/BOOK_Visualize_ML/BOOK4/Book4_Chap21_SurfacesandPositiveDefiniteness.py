@@ -24,6 +24,7 @@ print(is_pos_def(A))
 import sympy
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 def mesh_circ(c1, c2, r, num):
     theta = np.arange(0, 2*np.pi+np.pi/num, np.pi/num)
@@ -31,13 +32,12 @@ def mesh_circ(c1, c2, r, num):
     theta,r = np.meshgrid(theta,r)
     xx1 = np.cos(theta)*r + c1
     xx2 = np.sin(theta)*r + c2
-
     return xx1, xx2
 
 #define symbolic vars, function
 x1,x2 = sympy.symbols('x1 x2')
-A = np.array([[ 1, 0],
-              [0,  1]])
+A = np.array([[ 2, 0],
+              [0, 1]])
 x = np.array([[x1, x2]]).T
 f_x = x.T@A@x
 f_x = f_x[0][0]
@@ -67,15 +67,12 @@ l_3D_vectors = np.sqrt(V[0]**2 + V[1]**2 + V_z**2)
 # 3D visualization
 ax = plt.figure(figsize=(10, 10)).add_subplot(projection='3d')
 # ax.plot_wireframe(xx1, xx2, ff_x, rstride=1, cstride=1, color = [0.5,0.5,0.5], linewidth = 0.2)
-# # ax.contour3D(xx1, xx2, ff_x, 20, cmap = 'RdYlBu_r')
+# ax.contour3D(xx1, xx2, ff_x, 20, cmap = 'RdYlBu_r')
 # ax.plot_wireframe(xx1, xx2, ff_x, rstride = 1, cstride = 1, color = [0.8,0.8,0.8], linewidth = 0.25)
 # ax.contour(xx1, xx2, ff_x, levels = 12, cmap = 'jet')
-
-from matplotlib import cm
 norm_plt = plt.Normalize(ff_x.min(), ff_x.max())
 colors = cm.RdYlBu_r(norm_plt(ff_x))
 # colors = cm.Blues_r(norm_plt(ff))
-
 surf = ax.plot_surface(xx1,xx2,ff_x, facecolors = colors, rstride = 1, cstride = 1, linewidth = 1, shade = False) # 删除阴影
 surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
@@ -92,12 +89,10 @@ ax.set_zlabel('$f(x_1,x_2)$')
 plt.tight_layout()
 plt.show()
 
-
-color_array = np.sqrt(V[0]**2 + V[1]**2)
 # 2D visualization
+color_array = np.sqrt(V[0]**2 + V[1]**2)
 fig, ax = plt.subplots(figsize=(10, 10))
-plt.quiver (xx1_, xx2_, -V[0], -V[1], color_array, angles='xy', scale_units='xy', edgecolor='none', alpha=0.8,cmap = 'RdYlBu_r')
-
+plt.quiver(xx1_, xx2_, -V[0], -V[1], color_array, angles='xy', scale_units='xy', edgecolor='none', alpha=0.8,cmap = 'RdYlBu_r')
 plt.contour(xx1, xx2, ff_x,20, cmap = 'RdYlBu_r')
 ax.set_aspect('equal')
 ax.xaxis.set_ticks([])
