@@ -15,6 +15,7 @@ import pandas as pd
 from sklearn.datasets import load_iris
 import seaborn as sns
 from scipy.stats import zscore
+from sklearn.metrics.pairwise import cosine_similarity
 plt.rcParams['image.cmap'] = 'RdBu_r'
 #  Bk4_Ch15_02_A
 PRECISION = 3
@@ -38,10 +39,10 @@ def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
 
     all_max = max(all_.max(),all_.min())
     all_min = -max(all_.max(),all_.min())
-    all_max = 6
-    all_min = -6
+    # all_max = 6
+    # all_min = -6
     # Visualization
-    fig, axs = plt.subplots(1, 7, figsize=(12, fig_height))
+    fig, axs = plt.subplots(1, 7, figsize=(22, fig_height))
 
     plt.sca(axs[0])
     ax = sns.heatmap(X, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
@@ -91,6 +92,15 @@ X = X_df.to_numpy();
 
 # Gram matrix, G
 G = X.T@X
+## 余弦相似度矩阵 (cosine similarity matrix)C, C != rho
+D = np.diag(np.linalg.norm(X, ord = 2, axis=0))
+C = scipy.linalg.inv(D) @ G @ scipy.linalg.inv(D)
+# D_norm = np.diag(np.sqrt(np.diag(G)))
+# C = scipy.linalg.inv(D_norm)@G@scipy.linalg.inv(D_norm)
+## or use package cosine_similarity
+C1 = cosine_similarity(X.T)
+
+visualize_svd(X, r'$X$', r'$U_x$', r'$S_x$', r'$V_x^T$', fig_height=5)
 
 #%% Demean, centralize, X_c
 EX = X.mean(axis = 0)
@@ -106,14 +116,14 @@ Zx = (X - EX) / StdX        # == Zx
 
 
 #%% Cosine similarity matrix, C
-from sklearn.metrics.pairwise import cosine_similarity
-C = cosine_similarity(X.T)
-from numpy.linalg import inv
+
+
+# from numpy.linalg import inv
 
 S_norm = np.diag(np.sqrt(np.diag(G)))
 # scaling matrix, diagnal element is the norm of x_j
 
-C = inv(S_norm)@G@inv(S_norm)
+C1 = np.linalg.inv(S_norm)@G@np.linalg.inv(S_norm)
 
 #%% centroid of data matrix, E(X)
 E_X = X_df.mean().to_frame().T
@@ -137,19 +147,18 @@ corr_xt = np.corrcoef(X.T)
 
 #%% Bk4_Ch24_01_B
 #%% QR decomposition
-from numpy.linalg import qr
 
-Q, R = qr(X_df, mode = 'reduced')
+Q, R = np.linalg.qr(X_df, mode = 'reduced')
 
 #%%  Bk4_Ch24_01_C
 #%% Cholesky decomposition
-from numpy.linalg import cholesky as chol
 
-L_G = chol(G)
+
+L_G = np.linalg.cholesky(G)
 R_G = L_G.T
 
 #%% Cholesky decompose covariance matrix, SIGMA
-L_Sigma = chol(SIGMA)
+L_Sigma = np.linalg.cholesky(SIGMA)
 
 R_Sigma = L_Sigma.T
 
@@ -157,23 +166,22 @@ R_Sigma = L_Sigma.T
 #%% eigen decompose G
 from numpy.linalg import eig
 
-Lambs_G, V_G = eig(G)
+Lambs_G, V_G = np.linalg.eig(G)
 Lambs_G = np.diag(Lambs_G)
 
 #%% eigen decompose Sigma, covariance matrix
-Lambs_sigma, V_sigma = eig(SIGMA)
+Lambs_sigma, V_sigma = np.linalg.eig(SIGMA)
 Lambs_sigma = np.diag(Lambs_sigma)
 
 #%% eigen decompose P, correlation matrix
-Lambs_P, V_P = eig(RHO)
+Lambs_P, V_P = np.linalg.eig(RHO)
 Lambs_P = np.diag(Lambs_P)
 
 #%% Bk4_Ch24_01_E
 #%% SVD, original data X
 
-from numpy.linalg import svd
 
-U_X,S_X_,V_X = svd(X_df, full_matrices=False)
+U_X,S_X_,V_X = np.linalg.svd(X_df, full_matrices=False)
 V_X = V_X.T
 
 # full_matrices=True
@@ -186,12 +194,12 @@ S_X = np.diag(S_X_)
 
 #%% SVD, original data Xc
 
-U_Xc, S_Xc, V_Xc = svd(X_c, full_matrices=False)
+U_Xc, S_Xc, V_Xc = np.linalg.svd(X_c, full_matrices=False)
 V_Xc = V_Xc.T
 S_Xc = np.diag(S_Xc)
 
 #%% SVD, z scores
-U_Z, S_Z, V_Z = svd(Z_X, full_matrices = False)
+U_Z, S_Z, V_Z = np.linalg.svd(Z_X, full_matrices = False)
 V_Z = V_Z.T
 S_Z = np.diag(S_Z)
 
@@ -345,7 +353,7 @@ Lambs_P = np.diag(Lambs_P)
 #%% SVD, original data X
 from numpy.linalg import svd
 
-U_X,S_X_,V_X = svd(X, full_matrices=False)
+U_X,S_X_,V_X = np.linalg.svd(X, full_matrices=False)
 V_X = V_X.T
 
 # full_matrices=True
@@ -359,7 +367,7 @@ S_X = np.diag(S_X_)
 #%% SVD, centralized data Xc
 X_c = X - X.mean(axis = 0)
 
-U_Xc, S_Xc, V_Xc = svd(X_c, full_matrices=False)
+U_Xc, S_Xc, V_Xc = np.linalg.svd(X_c, full_matrices=False)
 V_Xc = V_Xc.T
 S_Xc = np.diag(S_Xc)
 
@@ -368,7 +376,7 @@ from scipy.stats import zscore
 
 Z_X = zscore(X)
 
-U_Z, S_Z, V_Z = svd(Z_X, full_matrices = False)
+U_Z, S_Z, V_Z = np.linalg.svd(Z_X, full_matrices = False)
 V_Z = V_Z.T
 S_Z = np.diag(S_Z)
 

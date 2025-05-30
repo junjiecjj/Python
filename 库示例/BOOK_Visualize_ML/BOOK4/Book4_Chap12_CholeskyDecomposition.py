@@ -9,12 +9,10 @@ import seaborn as sns
 from sklearn.datasets import load_iris
 
 #%% Bk4_Ch12_01.py
+x1 = np.arange(-2, 2, 0.05)
+x2 = np.arange(-2, 2, 0.05)
 
-
-x1 = np.arange(-2,2,0.05)
-x2 = np.arange(-2,2,0.05)
-
-xx1_fine, xx2_fine = np.meshgrid(x1,x2)
+xx1_fine, xx2_fine = np.meshgrid(x1, x2)
 a = 1; b = 0; c = 2;
 yy_fine = a*xx1_fine**2 + 2*b*xx1_fine*xx2_fine + c*xx2_fine**2
 
