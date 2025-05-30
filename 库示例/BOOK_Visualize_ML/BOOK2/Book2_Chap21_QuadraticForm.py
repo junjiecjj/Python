@@ -8,8 +8,8 @@ from sympy import init_printing, symbols, diff, lambdify, expand, simplify, sqrt
 # init_printing("mathjax")
 
 ## 二元函数
-x1_array = np.linspace(-2, 2, 20)
-x2_array = np.linspace(-2, 2, 20)
+x1_array = np.linspace(-2, 2, 201)
+x2_array = np.linspace(-2, 2, 201)
 xx1, xx2 = np.meshgrid(x1_array, x2_array)
 
 def fcn_n_grdnt(A, xx1, xx2):
@@ -20,13 +20,13 @@ def fcn_n_grdnt(A, xx1, xx2):
     # f_x = sqrt(f_x)
     # print(simplify(expand(f_x)))
 
-    #take the gradient symbolically
+    # take the gradient symbolically
     grad_f = [diff(f_x,var) for var in (x1,x2)]
     f_x_fcn = lambdify([x1, x2], f_x)
     ff_x = f_x_fcn(xx1,xx2)
 
     #turn into a bivariate lambda for numpy
-    grad_fcn = lambdify([x1,x2],grad_f)
+    grad_fcn = lambdify([x1, x2], grad_f)
     xx1_ = xx1[::20,::20]
     xx2_ = xx2[::20,::20]
     V = grad_fcn(xx1_,xx2_)
@@ -42,7 +42,7 @@ A = np.array([[1, 0],
               [0, 1]])
 f2_array, gradient_array = fcn_n_grdnt(A, xx1, xx2)
 ### 网格面
-fig = plt.figure(figsize=(6,3))
+fig = plt.figure(figsize=(12, 6), constrained_layout = True)
 ax = fig.add_subplot(1, 3, 1, projection='3d')
 ax.plot_wireframe(xx1, xx2, f2_array, rstride = 10, cstride = 10, color = [0.8,0.8,0.8], linewidth = 0.25)
 ax.contour(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
@@ -57,10 +57,13 @@ ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 ax.set_xlim(xx1.min(), xx1.max());
 ax.set_ylim(xx2.min(), xx2.max())
-plt.tight_layout()
+# plt.tight_layout()
 
+xx1_ = xx1[::20,::20]
+xx2_ = xx2[::20,::20]
 ax = fig.add_subplot(1, 3, 2)
 ax.contour(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
+ax.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1],  angles='xy', scale_units='xy', cmap = 'RdYlBu_r', edgecolor='none', alpha=0.8)
 # ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
 ax.set_xticks([])
 ax.set_yticks([])
@@ -72,9 +75,8 @@ ax.set_ylim(xx2.min(), xx2.max())
 
 ax = fig.add_subplot(1, 3, 3)
 ax.contourf(xx1, xx2, f2_array, levels = 12, cmap = 'RdYlBu_r')
-xx1_ = xx1[::20,::20]
-xx2_ = xx2[::20,::20]
-ax.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1], angles='xy', scale_units='xy', edgecolor='none', alpha=0.8)
+
+ax.quiver(xx1_, xx2_, gradient_array[0], gradient_array[1],  angles='xy', scale_units='xy', cmap = 'RdYlBu_r', edgecolor='none', alpha=0.8)
 # ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
 ax.set_xticks([])
 ax.set_yticks([])
@@ -82,7 +84,7 @@ ax.set_aspect('equal')
 ax.grid(False)
 ax.set_xlim(xx1.min(), xx1.max());
 ax.set_ylim(xx2.min(), xx2.max())
-plt.tight_layout()
+# plt.tight_layout()
 
 #%% Bk4_Ch21
 # 使用 Cholesky 分解判定矩阵是否为正定矩阵
@@ -110,7 +112,7 @@ import matplotlib.pyplot as plt
 def mesh_circ(c1, c2, r, num):
     theta = np.arange(0, 2*np.pi+np.pi/num, np.pi/num)
     r     = np.arange(0, r, r/num)
-    theta,r = np.meshgrid(theta,r)
+    theta, r = np.meshgrid(theta,r)
     xx1 = np.cos(theta)*r + c1
     xx2 = np.sin(theta)*r + c2
 
@@ -174,8 +176,8 @@ plt.contour(xx1, xx2, ff_x,20, cmap = 'RdYlBu_r')
 ax.set_aspect('equal')
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
 plt.tight_layout()
 plt.show()
 
@@ -209,12 +211,12 @@ if Lambda[1] > 0:
 else:
     levels = np.linspace(Lambda[1],Lambda[0],21)
 
-t = np.linspace(0,np.pi*2,100)
+t = np.linspace(0, np.pi*2, 100)
 
 # 2D visualization
 fig, ax = plt.subplots()
 ax.plot(np.cos(t), np.sin(t), color = 'k')
-cs = plt.contourf(xx1, xx2, ff_x, levels=levels, cmap = 'RdYlBu_r')
+cs = ax.contourf(xx1, xx2, ff_x, levels = levels, cmap = 'RdYlBu_r')
 plt.show()
 ax.set_aspect('equal')
 ax.xaxis.set_ticks([])
@@ -234,7 +236,7 @@ x1_ = np.linspace(-1.2,1.2,31)
 x2_ = np.linspace(-1.2,1.2,31)
 
 xx1_fine, xx2_fine = np.meshgrid(x1_,x2_)
-ff_x_fine = f_x_fcn(xx1_fine,xx2_fine)
+ff_x_fine = f_x_fcn(xx1_fine, xx2_fine)
 f_circle = f_x_fcn(np.cos(t), np.sin(t))
 # 3D visualization
 fig, ax = plt.subplots()
@@ -243,7 +245,7 @@ ax.plot(np.cos(t), np.sin(t), f_circle, color = 'k')
 # circle projected to f(x1,x2)
 
 ax.plot_wireframe(xx1_fine, xx2_fine, ff_x_fine, color = [0.8,0.8,0.8], linewidth = 0.25)
-ax.contour3D(xx1_fine, xx2_fine, ff_x_fine, 15, cmap = 'RdYlBu_r')
+ax.contour(xx1_fine, xx2_fine, ff_x_fine, 15, cmap = 'RdYlBu_r')
 
 ax.view_init(elev=30, azim=60)
 ax.xaxis.set_ticks([])

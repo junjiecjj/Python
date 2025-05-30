@@ -88,7 +88,6 @@ ax.contour(xx,yy,dd_one_sigma,levels = [1], colors = 'r')
 
 
 #%% Bk5_Ch24_02
-
 import seaborn as sns
 
 # Load the iris data

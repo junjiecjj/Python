@@ -1,22 +1,85 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri May 30 17:29:40 2025
 
-
-
-
+@author: jack
+"""
 
 
 # Bk4_Ch24_01_A
-
+import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
+import seaborn as sns
+from scipy.stats import zscore
+plt.rcParams['image.cmap'] = 'RdBu_r'
+#  Bk4_Ch15_02_A
+PRECISION = 3
+
+def svd(X):
+    full_matrices = True
+    U, s, Vt = np.linalg.svd(X, full_matrices = full_matrices)
+    # Put the vector singular values into a padded matrix
+    if full_matrices:
+        S = np.zeros(X.shape)
+        np.fill_diagonal(S, s)
+    else:
+        S = np.diag(s)
+    # Rounding for display
+    return np.round(U, PRECISION), np.round(S, PRECISION), np.round(Vt.T, PRECISION)
+
+def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
+    # Run SVD, as defined above
+    U, S, V = svd(X)
+    all_ = np.r_[X.flatten(order='C'), U.flatten(order='C'), S.flatten(order='C'), V.flatten(order='C')]
+
+    all_max = max(all_.max(),all_.min())
+    all_min = -max(all_.max(),all_.min())
+    all_max = 6
+    all_min = -6
+    # Visualization
+    fig, axs = plt.subplots(1, 7, figsize=(12, fig_height))
+
+    plt.sca(axs[0])
+    ax = sns.heatmap(X, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_X)
+
+    plt.sca(axs[1])
+    plt.title('=')
+    plt.axis('off')
+
+    plt.sca(axs[2])
+    ax = sns.heatmap(U, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_U)
+
+    plt.sca(axs[3])
+    plt.title('@')
+    plt.axis('off')
+
+    plt.sca(axs[4])
+    ax = sns.heatmap(S, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_S)
+
+    plt.sca(axs[5])
+    plt.title('@')
+    plt.axis('off')
+
+    plt.sca(axs[6])
+    ax = sns.heatmap(V.T, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_V)
+    return X, U, S, V
 
 # A copy from Seaborn
 iris = load_iris()
-
 X = iris.data
 y = iris.target
-
 feature_names = ['Sepal length, x1','Sepal width, x2',
                  'Petal length, x3','Petal width, x4']
 
@@ -26,8 +89,21 @@ X_df = pd.DataFrame(X, columns=feature_names)
 #%% 原始数据矩阵 X
 X = X_df.to_numpy();
 
-#%% Gram matrix, G
+# Gram matrix, G
 G = X.T@X
+
+#%% Demean, centralize, X_c
+EX = X.mean(axis = 0)
+VarX = X.var(axis = 0)
+StdX = X.std(axis = 0)
+X_c = X_df.sub(X_df.mean()).to_numpy();
+# 中心化
+Xc = X - X.mean(axis = 0)  # == X_c
+
+#%% 标准化数据矩阵 ZX
+Z_x = zscore(X_df).to_numpy();
+Zx = (X - EX) / StdX        # == Zx
+
 
 #%% Cosine similarity matrix, C
 from sklearn.metrics.pairwise import cosine_similarity
@@ -42,8 +118,6 @@ C = inv(S_norm)@G@inv(S_norm)
 #%% centroid of data matrix, E(X)
 E_X = X_df.mean().to_frame().T
 
-#%% Demean, centralize, X_c
-X_c = X_df.sub(X_df.mean())
 
 #%% covariance matrix, Sigma
 
@@ -59,11 +133,7 @@ RHO = X_df.corr()
 # corr_x = np.corrcoef(X)
 corr_xt = np.corrcoef(X.T)
 
-#%% Normalize data, Z_X
 
-from scipy.stats import zscore
-
-Z_X = zscore(X_df)
 
 #%% Bk4_Ch24_01_B
 #%% QR decomposition

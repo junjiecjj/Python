@@ -25,7 +25,11 @@ U, s, VH = np.linalg.svd(A)
 
 AHA = A.conj().T@A
 lambda_, V_ = np.linalg.eig(AHA)
+# s**2 == lambda_
 
+AAH = A@A.conj().T
+lambda1_, V1_ = np.linalg.eig(AAH)
+# s**2 == lambda1_
 
 
 
