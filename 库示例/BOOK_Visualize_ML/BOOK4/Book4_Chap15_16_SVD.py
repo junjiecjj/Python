@@ -395,17 +395,17 @@ ax.set_aspect("equal")
 plt.title(r'$\hat{X}$')
 
 plt.sca(axs[1])
-ax = sns.heatmap(U_truc,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(U_truc, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title(r'$U$')
 
 plt.sca(axs[2])
-ax = sns.heatmap(S_truc,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(S_truc, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title(r'$S$')
 
 plt.sca(axs[3])
-ax = sns.heatmap(V_truc.T,cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(V_truc.T, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title(r'$V^T$')
 

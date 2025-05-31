@@ -129,8 +129,6 @@ ax.set_ylim([-2,6])
 plt.show()
 
 
-
-
 #%% 3D特征值分解投影
 # 方式一
 plt.subplot(projection='3d')
@@ -144,8 +142,6 @@ x = np.linspace(0, 10, 20)
 y = np.linspace(2, 8, 20)
 z = 2*x + 5*y + 3
 plt.plot(x, y, z)
-
-
 
 # https://www.cnblogs.com/shanger/p/13201139.html
 plt.subplot(projection='3d')

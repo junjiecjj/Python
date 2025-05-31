@@ -14,7 +14,6 @@ iris_sns = sns.load_dataset("iris")
 # A copy from Seaborn
 iris = load_iris()
 # A copy from Sklearn
-
 X = iris.data
 y = iris.target
 
@@ -222,7 +221,7 @@ fig, axs = plt.subplots(1, 7, figsize=(12, 3))
 plt.sca(axs[0])
 ax = sns.heatmap(SIGMA_inv,cmap='rainbow', cbar=False)
 ax.set_aspect("equal")
-plt.title('$\Sigma^{-1}$')
+plt.title(r'$\Sigma^{-1}$')
 
 plt.sca(axs[1])
 plt.title('=')
@@ -231,7 +230,7 @@ plt.axis('off')
 plt.sca(axs[2])
 ax = sns.heatmap(V,cmap='rainbow', cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V$')
+plt.title(r'$V$')
 
 plt.sca(axs[3])
 plt.title('@')
@@ -240,7 +239,7 @@ plt.axis('off')
 plt.sca(axs[4])
 ax = sns.heatmap(np.linalg.inv(LAMBDA),cmap='rainbow', cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$\Lambda^{-1}$')
+plt.title(r'$\Lambda^{-1}$')
 
 plt.sca(axs[5])
 plt.title('@')
@@ -249,7 +248,7 @@ plt.axis('off')
 plt.sca(axs[6])
 ax = sns.heatmap(V.T,cmap='rainbow', cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V^T$')
+plt.title(r'$V^T$')
 
 
 #%% Eigen decomposition of correlation matrix
@@ -304,36 +303,34 @@ S = np.diag(S_)
 fig, axs = plt.subplots(1, 7, figsize=(12, 4))
 
 plt.sca(axs[0])
-ax = sns.heatmap(X_c_df,cmap='rainbow', yticklabels=False, cbar_kws={"orientation": "horizontal"})
-plt.title('$X_c$')
+ax = sns.heatmap(X_c_df, cmap='rainbow', yticklabels=False, cbar_kws={"orientation": "horizontal"})
+plt.title(r'$X_c$')
 
 plt.sca(axs[1])
 plt.title('=')
 plt.axis('off')
 
 plt.sca(axs[2])
-ax = sns.heatmap(U,cmap='rainbow', yticklabels=False, cbar_kws={"orientation": "horizontal"})
-plt.title('$U$')
+ax = sns.heatmap(U, cmap='rainbow', yticklabels=False, cbar_kws={"orientation": "horizontal"})
+plt.title(r'$U$')
 
 plt.sca(axs[3])
 plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[4])
-ax = sns.heatmap(S,cmap='rainbow',
-                 cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(S, cmap='rainbow', cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$S$')
+plt.title(r'$S$')
 
 plt.sca(axs[5])
 plt.title('@')
 plt.axis('off')
 
 plt.sca(axs[6])
-ax = sns.heatmap(V.T,cmap='rainbow',
-                 cbar_kws={"orientation": "horizontal"})
+ax = sns.heatmap(V.T, cmap='rainbow', cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
-plt.title('$V^T$')
+plt.title(r'$V^T$')
 
 #%% projection Yc = Xc @ V
 # 图 18. 矩阵 Xc投影到 V
