@@ -48,7 +48,7 @@ plt.title('Distribution of X columns')
 g = sns.pairplot(iris_sns)
 g.map_upper(sns.scatterplot, color = 'b')
 g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues_r")
-g.map_diag(sns.distplot, kde=False, color = 'b')
+g.map_diag(sns.histplot, kde=False, color = 'b')
 
 # with class labels
 g = sns.pairplot(iris_sns,hue="species", plot_kws={"s": 16}, palette = "viridis")
@@ -194,13 +194,11 @@ Z_df['species'] = iris_sns['species']
 g = sns.pairplot(Z_df)
 g.map_upper(sns.scatterplot, color = 'g')
 g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Greens_r")
-g.map_diag(sns.distplot, kde=False, color = 'g')
+g.map_diag(sns.histplot, kde=False, color = 'g')
 
 # with class labels
 g = sns.pairplot(Z_df, hue="species", plot_kws={"s": 6}, palette = "husl")
 g.map_lower(sns.kdeplot)
-
-
 
 #%% Pairplot of data Z
 PCA_df = pd.DataFrame(data = pca, columns=["PC1", "PC2","PC3", "PC4"])
@@ -210,7 +208,7 @@ PCA_df['species'] = iris_sns['species']
 g = sns.pairplot(PCA_df)
 g.map_upper(sns.scatterplot, color = 'g')
 g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Greens_r")
-g.map_diag(sns.distplot, kde=False, color = 'g')
+g.map_diag(sns.histplot, kde=False, color = 'g')
 
 # with class labels
 g = sns.pairplot(PCA_df, hue="species", plot_kws={"s": 6}, palette = "husl")
@@ -224,7 +222,7 @@ Zbar_df['species'] = iris_sns['species']
 g = sns.pairplot(Zbar_df)
 g.map_upper(sns.scatterplot, color = 'g')
 g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Greens_r")
-g.map_diag(sns.distplot, kde=False, color = 'g')
+g.map_diag(sns.histplot, kde=False, color = 'g')
 
 # with class labels
 g = sns.pairplot(Zbar_df, hue="species", plot_kws={"s": 6}, palette = "husl")

@@ -68,38 +68,37 @@ Z_X = zscore(X_df)
 #%% Bk4_Ch24_01_B
 #%% QR decomposition
 from numpy.linalg import qr
-
 Q, R = qr(X_df, mode = 'reduced')
 
 #%%  Bk4_Ch24_01_C
-#%% Cholesky decomposition
+# Cholesky decomposition
 from numpy.linalg import cholesky as chol
 
 L_G = chol(G)
 R_G = L_G.T
 
-#%% Cholesky decompose covariance matrix, SIGMA
+# Cholesky decompose covariance matrix, SIGMA
 L_Sigma = chol(SIGMA)
 
 R_Sigma = L_Sigma.T
 
 #%% Bk4_Ch24_01_D
-#%% eigen decompose G
+# eigen decompose G
 from numpy.linalg import eig
 
 Lambs_G, V_G = eig(G)
 Lambs_G = np.diag(Lambs_G)
 
-#%% eigen decompose Sigma, covariance matrix
+# eigen decompose Sigma, covariance matrix
 Lambs_sigma, V_sigma = eig(SIGMA)
 Lambs_sigma = np.diag(Lambs_sigma)
 
-#%% eigen decompose P, correlation matrix
+# eigen decompose P, correlation matrix
 Lambs_P, V_P = eig(RHO)
 Lambs_P = np.diag(Lambs_P)
 
 #%% Bk4_Ch24_01_E
-#%% SVD, original data X
+# SVD, original data X
 
 from numpy.linalg import svd
 
@@ -114,13 +113,13 @@ V_X = V_X.T
 # full_matrices=False
 S_X = np.diag(S_X_)
 
-#%% SVD, original data Xc
+# SVD, original data Xc
 
 U_Xc, S_Xc, V_Xc = svd(X_c, full_matrices=False)
 V_Xc = V_Xc.T
 S_Xc = np.diag(S_Xc)
 
-#%% SVD, z scores
+# SVD, z scores
 U_Z, S_Z, V_Z = svd(Z_X, full_matrices = False)
 V_Z = V_Z.T
 S_Z = np.diag(S_Z)
@@ -166,7 +165,7 @@ L_Sigma = chol(cov_x)
 R_Sigma = L_Sigma.T
 
 L_rho = chol(corr_x)
-R_rho = L_Sigma.T
+R_rho = L_rho.T
 
 
 #%% 24.4 特征值分解:获得行空间和零空间
@@ -182,7 +181,6 @@ Lambs_G, V_G = eig(G)
 Lambs_G = np.diag(Lambs_G)
 
 ##### 1: V_G @ Lambs_G @ V_G.T == G
-
 
 all_max = 6
 all_min = -6
@@ -263,7 +261,6 @@ plt.sca(axs[6])
 ax = sns.heatmap(V_sigma.T, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
 ax.set_aspect("equal")
 plt.title("$V_c^T$")
-
 
 ########3:  eigen decompose P, correlation matrix
 Lambs_P, V_P = eig(corr_x)

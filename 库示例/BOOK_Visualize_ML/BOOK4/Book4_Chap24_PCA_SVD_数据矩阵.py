@@ -32,20 +32,19 @@ def svd(X):
     # Rounding for display
     return np.round(U, PRECISION), np.round(S, PRECISION), np.round(Vt.T, PRECISION)
 
-def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
+def visualize_3M(X, U, S, V, title_X, title_U, title_S, title_V, fig_height = 5):
     # Run SVD, as defined above
-    U, S, V = svd(X)
-    all_ = np.r_[X.flatten(order='C'), U.flatten(order='C'), S.flatten(order='C'), V.flatten(order='C')]
-
-    all_max = max(all_.max(),all_.min())
-    all_min = -max(all_.max(),all_.min())
+    # U, S, V = svd(X)
+    # all_ = np.r_[X.flatten(order='C'), U.flatten(order='C'), S.flatten(order='C'), V.flatten(order='C')]
+    # all_max = max(all_.max(),all_.min())
+    # all_min = -max(all_.max(),all_.min())
     # all_max = 6
     # all_min = -6
     # Visualization
-    fig, axs = plt.subplots(1, 7, figsize=(22, fig_height))
+    fig, axs = plt.subplots(1, 7, figsize=(20, fig_height))
 
     plt.sca(axs[0])
-    ax = sns.heatmap(X, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax = sns.heatmap(X, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
     ax.set_aspect("equal")
     plt.title(title_X)
 
@@ -54,7 +53,7 @@ def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
     plt.axis('off')
 
     plt.sca(axs[2])
-    ax = sns.heatmap(U, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax = sns.heatmap(U, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
     ax.set_aspect("equal")
     plt.title(title_U)
 
@@ -63,7 +62,7 @@ def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
     plt.axis('off')
 
     plt.sca(axs[4])
-    ax = sns.heatmap(S, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax = sns.heatmap(S, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
     ax.set_aspect("equal")
     plt.title(title_S)
 
@@ -72,10 +71,40 @@ def visualize_svd(X, title_X, title_U, title_S, title_V, fig_height=5):
     plt.axis('off')
 
     plt.sca(axs[6])
-    ax = sns.heatmap(V.T, cmap='RdBu_r', vmax = all_max, vmin = all_min, cbar_kws={"orientation": "horizontal"})
+    ax = sns.heatmap(V.T, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
     ax.set_aspect("equal")
     plt.title(title_V)
     return X, U, S, V
+
+def visualize_2M(X, Q, R, title_X, title_Q, title_R):
+    # QR decomposition， complete version
+    # Q, R = np.linalg.qr(X, mode = 'complete')
+
+    fig, axs = plt.subplots(1, 5, figsize=(12, 5))
+
+    plt.sca(axs[0])
+    ax = sns.heatmap(X, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_X)
+
+    plt.sca(axs[1])
+    plt.title('=')
+    plt.axis('off')
+
+    plt.sca(axs[2])
+    ax = sns.heatmap(Q, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_Q)
+
+    plt.sca(axs[3])
+    plt.title('@')
+    plt.axis('off')
+
+    plt.sca(axs[4])
+    ax = sns.heatmap(R, cmap='rainbow', linewidths=.05, annot=True, fmt='.2f', cbar_kws={"orientation": "horizontal"})
+    ax.set_aspect("equal")
+    plt.title(title_R)
+    return
 
 # A copy from Seaborn
 iris = load_iris()
@@ -83,12 +112,15 @@ X = iris.data
 y = iris.target
 feature_names = ['Sepal length, x1','Sepal width, x2',
                  'Petal length, x3','Petal width, x4']
-
 # Convert X array to dataframe
-X_df = pd.DataFrame(X, columns=feature_names)
+X_df = pd.DataFrame(X, columns = feature_names)
 
 #%% 原始数据矩阵 X
-X = X_df.to_numpy();
+# X = X_df.to_numpy();
+X = np.array([[2.1, 1.1, 3.1], [0.9, 0.8, 2.6], [5.1, 1.9, 7], [3.3, 4.4, -2.2]])
+EX = X.mean(axis = 0)
+VarX = X.var(axis = 0)
+StdX = X.std(axis = 0)
 
 # Gram matrix, G
 G = X.T@X
@@ -100,296 +132,98 @@ C = scipy.linalg.inv(D) @ G @ scipy.linalg.inv(D)
 ## or use package cosine_similarity
 C1 = cosine_similarity(X.T)
 
-visualize_svd(X, r'$X$', r'$U_x$', r'$S_x$', r'$V_x^T$', fig_height=5)
+## SVD 分解
+Ux, Sx, Vx = svd(X)
+visualize_3M(X, Ux, Sx, Vx.T, r'$X$', r'$U_x$', r'$S_x$', r'$V_x^T$', fig_height = 5)
 
-#%% Demean, centralize, X_c
-EX = X.mean(axis = 0)
-VarX = X.var(axis = 0)
-StdX = X.std(axis = 0)
-X_c = X_df.sub(X_df.mean()).to_numpy();
+### QR 分解:获得正交系
+Q, R = np.linalg.qr(X, mode = 'reduced')
+visualize_2M(X, Q, R, r'$X$', r'$Q_X$', r'$R_X$', )
+
+## 特征值分解
+Lambda_X, V_x = np.linalg.eigh(G)
+Lambda_X = np.diag(Lambda_X)
+visualize_3M(G, V_x, Lambda_X, V_x.T, r'$G$', r'$V_x$', r'$\Lambda_x$', r'$V_x^T$', fig_height = 5)
+
+print(f"Sx.T@Sx = \n{Sx.T @ Sx}")
+print(f"Lambda_X = \n{Lambda_X}")
+
+## Cholesky 分解:找到列向量的坐标
+L_G = np.linalg.cholesky(G)
+R_G = L_G.T
+visualize_2M(G, L_G, L_G.T, r'$G$', r'$L_G$', r'$L_G^T$' )
+
+
+
+#%% 中心化数据矩阵, X_c
+# X_c = X_df.sub(X_df.mean()).to_numpy();
 # 中心化
 Xc = X - X.mean(axis = 0)  # == X_c
 
+# 计算协方差矩阵
+# SIGMA = np.array(X_df.cov()) # == XXT
+SIGMA = np.matrix(Xc.T) * np.matrix(Xc) / (len(Xc)-1)
+Sigma = np.cov(X.T)  #  == SIGMA
+
+
+## SVD 分解
+Uc, Sc, Vc = svd(Xc)
+visualize_3M(Xc, Uc, Sc, Vc.T, r'$X_c$', r'$U_c$', r'$S_c$', r'$V_c^T$', fig_height = 5)
+
+### QR 分解:获得正交系
+Qc, Rc = np.linalg.qr(Xc, mode = 'reduced')
+visualize_2M(Xc, Qc, Rc, r'$X_c$', r'$Q_C$', r'$R_C$', )
+
+## 特征值分解
+Lambda_C, V_c = np.linalg.eigh(SIGMA)
+Lambda_C = np.diag(Lambda_C)
+visualize_3M(SIGMA, V_c, Lambda_C, V_c.T, r'$\Sigma$', r'$V_c$', r'$\Lambda_C$', r'$V_c^T$', fig_height = 5)
+
+n = len(X)
+print(f"Sc.T@Sc/(n-1) = \n{Sc.T @ Sc/(n-1)}")
+print(f"Lambda_C = \n{Lambda_C}")
+
+## Cholesky 分解:找到列向量的坐标
+L_C = np.linalg.cholesky(SIGMA)
+R_C = L_C.T
+visualize_2M(SIGMA, L_C, L_C.T, r'$\Sigma$', r'$L_C$', r'$L_C^T$' )
+
+
 #%% 标准化数据矩阵 ZX
-Z_x = zscore(X_df).to_numpy();
+# Z_x = zscore(X_df).to_numpy();
+Z_x = zscore(X)
 Zx = (X - EX) / StdX        # == Zx
 
-
-#%% Cosine similarity matrix, C
-
-
-# from numpy.linalg import inv
-
-S_norm = np.diag(np.sqrt(np.diag(G)))
-# scaling matrix, diagnal element is the norm of x_j
-
-C1 = np.linalg.inv(S_norm)@G@np.linalg.inv(S_norm)
-
-#%% centroid of data matrix, E(X)
-E_X = X_df.mean().to_frame().T
-
-
-#%% covariance matrix, Sigma
-
-SIGMA = X_df.cov()
-# 计算协方差矩阵
-# cov_x = np.cov(X)
-cov_xt = np.cov(X.T)
-
-#%% correlation matrix, P
-RHO = X_df.corr()
-
-# 计算相关性系数矩阵
-# corr_x = np.corrcoef(X)
-corr_xt = np.corrcoef(X.T)
-
-
-
-#%% Bk4_Ch24_01_B
-#%% QR decomposition
-
-Q, R = np.linalg.qr(X_df, mode = 'reduced')
-
-#%%  Bk4_Ch24_01_C
-#%% Cholesky decomposition
-
-
-L_G = np.linalg.cholesky(G)
-R_G = L_G.T
-
-#%% Cholesky decompose covariance matrix, SIGMA
-L_Sigma = np.linalg.cholesky(SIGMA)
-
-R_Sigma = L_Sigma.T
-
-#%% Bk4_Ch24_01_D
-#%% eigen decompose G
-from numpy.linalg import eig
-
-Lambs_G, V_G = np.linalg.eig(G)
-Lambs_G = np.diag(Lambs_G)
-
-#%% eigen decompose Sigma, covariance matrix
-Lambs_sigma, V_sigma = np.linalg.eig(SIGMA)
-Lambs_sigma = np.diag(Lambs_sigma)
-
-#%% eigen decompose P, correlation matrix
-Lambs_P, V_P = np.linalg.eig(RHO)
-Lambs_P = np.diag(Lambs_P)
-
-#%% Bk4_Ch24_01_E
-#%% SVD, original data X
-
-
-U_X,S_X_,V_X = np.linalg.svd(X_df, full_matrices=False)
-V_X = V_X.T
-
-# full_matrices=True
-# indices_diagonal = np.diag_indices(4)
-# S_X = np.zeros_like(X_df)
-# S_X[indices_diagonal] = S_X_
-
-# full_matrices=False
-S_X = np.diag(S_X_)
-
-#%% SVD, original data Xc
-
-U_Xc, S_Xc, V_Xc = np.linalg.svd(X_c, full_matrices=False)
-V_Xc = V_Xc.T
-S_Xc = np.diag(S_Xc)
-
-#%% SVD, z scores
-U_Z, S_Z, V_Z = np.linalg.svd(Z_X, full_matrices = False)
-V_Z = V_Z.T
-S_Z = np.diag(S_Z)
-
-#%%
-# A copy from Seaborn
-iris = load_iris()
-X = iris.data
-y = iris.target
-
-feature_names = ['Sepal length, x1','Sepal width, x2', 'Petal length, x3','Petal width, x4']
-
-# Convert X array to dataframe
-X_df = pd.DataFrame(X, columns=feature_names)
-
-#  Original data, X
-X = X_df.to_numpy()
-
-
-#%% Gram matrix, G
-G = X.T@X
-
-# 计算协方差矩阵
-cov_x = np.cov(X.T)
-
-# 计算相关性系数矩阵
-corr_x = np.corrcoef(X.T)
-
-#%% QR 分解:获得正交系
-# %% QR decomposition
-from numpy.linalg import qr
-Q, R = qr(X, mode = 'reduced')
-
-#%% 24.3 Cholesky 分解:找到列向量的坐标
-
-from numpy.linalg import cholesky as chol
-
-L_G = chol(G)
-R_G = L_G.T
-
-# Cholesky decompose covariance matrix, SIGMA
-L_Sigma = chol(cov_x)
-R_Sigma = L_Sigma.T
-
-L_rho = chol(corr_x)
-R_rho = L_Sigma.T
-
-
-#%% 24.4 特征值分解:获得行空间和零空间
-import numpy as np
-from matplotlib import pyplot as plt
-plt.rcParams['image.cmap'] = 'RdBu_r'
-import seaborn as sns
-PRECISION = 3
-
-from numpy.linalg import eig
-
-Lambs_G, V_G = eig(G)
-Lambs_G = np.diag(Lambs_G)
-
-##### 1: V_G @ Lambs_G @ V_G.T == G
-
-
-all_max = 6
-all_min = -6
-# Visualization
-fig, axs = plt.subplots(1, 7, figsize=(12, 3))
-
-plt.sca(axs[0])
-ax = sns.heatmap(G, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$G$")
-
-plt.sca(axs[1])
-plt.title('=')
-plt.axis('off')
-
-plt.sca(axs[2])
-ax = sns.heatmap(V_G, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$V_x$")
-
-plt.sca(axs[3])
-plt.title('@')
-plt.axis('off')
-
-plt.sca(axs[4])
-ax = sns.heatmap(Lambs_G, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$\Lambda$")
-
-plt.sca(axs[5])
-plt.title('@')
-plt.axis('off')
-
-plt.sca(axs[6])
-ax = sns.heatmap(V_G.T, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$V_x.T$")
-
-
-#####2: eigen decompose Sigma, covariance matrix
-Lambs_sigma, V_sigma = eig(cov_x)
-Lambs_sigma = np.diag(Lambs_sigma)
-
-
-all_max = 6
-all_min = -6
-# Visualization
-fig, axs = plt.subplots(1, 7, figsize=(12, 3))
-
-plt.sca(axs[0])
-ax = sns.heatmap(cov_x, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$\sigma$")
-
-plt.sca(axs[1])
-plt.title('=')
-plt.axis('off')
-
-plt.sca(axs[2])
-ax = sns.heatmap(V_sigma, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$V_{c}$")
-
-plt.sca(axs[3])
-plt.title('@')
-plt.axis('off')
-
-plt.sca(axs[4])
-ax = sns.heatmap(Lambs_sigma, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$\Lambda$")
-
-plt.sca(axs[5])
-plt.title('@')
-plt.axis('off')
-
-plt.sca(axs[6])
-ax = sns.heatmap(V_sigma.T, cmap='RdBu_r',vmax = all_max,vmin = all_min, cbar_kws={"orientation": "horizontal"})
-ax.set_aspect("equal")
-plt.title("$V_c^T$")
-
-
-########3:  eigen decompose P, correlation matrix
-Lambs_P, V_P = eig(corr_x)
-Lambs_P = np.diag(Lambs_P)
-
-
-#%% 24.5 SVD 分解:获得四个空间
-
-#%% SVD, original data X
-from numpy.linalg import svd
-
-U_X,S_X_,V_X = np.linalg.svd(X, full_matrices=False)
-V_X = V_X.T
-
-# full_matrices=True
-# indices_diagonal = np.diag_indices(4)
-# S_X = np.zeros_like(X_df)
-# S_X[indices_diagonal] = S_X_
-
-# full_matrices=False
-S_X = np.diag(S_X_)
-
-#%% SVD, centralized data Xc
-X_c = X - X.mean(axis = 0)
-
-U_Xc, S_Xc, V_Xc = np.linalg.svd(X_c, full_matrices=False)
-V_Xc = V_Xc.T
-S_Xc = np.diag(S_Xc)
-
-#%% SVD, z scores
-from scipy.stats import zscore
-
-Z_X = zscore(X)
-
-U_Z, S_Z, V_Z = np.linalg.svd(Z_X, full_matrices = False)
-V_Z = V_Z.T
-S_Z = np.diag(S_Z)
-
-
-
-
-
-
-
-
-
-
-
+#  相关性系数矩阵
+# RHO = np.array(X_df.corr()) # == rho
+# rho = np.corrcoef(X.T)
+rho1 = np.cov(Z_x.T)
+S = np.diag(StdX)
+S1 = np.diag(np.sqrt(np.diag(SIGMA)))
+SPS = S@rho1@S  # == Sigma
+
+
+## SVD 分解
+Uz, Sz, Vz = svd(Zx)
+visualize_3M(Zx, Uz, Sz, Vz.T, r'$Z_x$', r'$U_z$', r'$S_z$', r'$V_z^T$', fig_height = 5)
+
+### QR 分解:获得正交系
+Qz, Rz = np.linalg.qr(Zx, mode = 'reduced')
+visualize_2M(Zx, Qz, Rz, r'$Z_x$', r'$Q_Z$', r'$R_Z$', )
+
+## 特征值分解
+Lambda_Z, V_z = np.linalg.eigh(rho1)
+Lambda_Z = np.diag(Lambda_Z)
+visualize_3M(rho1, V_z, Lambda_Z, V_z.T, r'$\rho$', r'$V_z$', r'$\Lambda_Z$', r'$V_Z^T$', fig_height = 5)
+
+n = len(X)
+print(f"Sz.T@Sz/(n-1) = \n{Sz.T @ Sz/(n-1)}")
+print(f"Lambda_Z = \n{Lambda_Z}")
+
+## Cholesky 分解:找到列向量的坐标
+L_Z = np.linalg.cholesky(rho1)
+R_Z = L_Z.T
+visualize_2M(rho1, L_Z, L_Z.T, r'$\rho$', r'$L_Z$', r'$L_Z^T$' )
 
 
 
