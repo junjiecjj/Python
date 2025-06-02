@@ -12,12 +12,23 @@ import numpy as np
 
 
 # 产生傅里叶矩阵
-def FFTmatrix(row,col):
-     mat = np.zeros((row,col),dtype=complex)
-     for i in range(row):
-          for j in range(col):
-               mat[i,j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row)# / (np.sqrt(row)*1.0)
-     return mat
+def FFTmatrix(row, col):
+    assert row == col
+    mat = np.zeros((row, col),dtype = complex)
+    for i in range(row):
+         for j in range(col):
+              mat[i, j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row)    # / (np.sqrt(row)*1.0)
+    return mat
+
+# 产生傅里叶矩阵
+def FFTmatrix1(row, col):
+    assert row == col
+    w = np.exp(-1j*2.0*np.pi/row)
+    mat = np.zeros((row, col),dtype = complex)
+    for i in range(row):
+         for j in range(col):
+              mat[i, j] = 1.0*w**(i*j)    # / (np.sqrt(row)*1.0)
+    return mat
 
 # 生成 循环矩阵
 def CirculantMatric(gen, row):
@@ -30,7 +41,7 @@ def CirculantMatric(gen, row):
      mat = np.zeros((row, col), np.complex128)
      mat[0,:] = gen
      for i in range(1,row):
-          mat[i,:] = np.roll(gen,i)
+          mat[i,:] = np.roll(gen, i)
 
      return mat
 
@@ -48,14 +59,14 @@ FH = F.T.conjugate()/(L*1.0)
 
 
 F_FT = F@FH
-F_FT = np.around(F_FT,decimals = 2)
+F_FT = np.around(F_FT, decimals = 2)
 print(f"傅里叶矩阵自身与其共轭转置的乘积:\n{F_FT} \n")
 
-# FT_F = FH@F
-# FT_F = np.around(FT_F,decimals = 2)
-# print(f"傅里叶矩阵的共轭转置与自身乘积:\n{FT_F} \n")
+FT_F = FH@F
+FT_F = np.around(FT_F, decimals = 2)
+print(f"傅里叶矩阵的共轭转置与自身乘积:\n{FT_F} \n")
 
-
+## 任意循环矩阵可以被傅里叶变换矩阵对角化, 对角化元素为该循环矩阵第一行的傅里叶变换
 FH_A_F = FH@A@F
 FH_A_F = np.around(FH_A_F, decimals = 2)
 print(f"FH_A_F:\n{FH_A_F}")
@@ -69,16 +80,12 @@ print(f"F.T.conjugate()@X = \n{F.T.conjugate()@X} ")
 print(f"L * diag[ifft(X)] = \n{L * np.diag(np.fft.ifft(X))} \n")
 # 从上面可以看出，对于循环矩阵A， F^H*A*F 和 F*A*F^H都是对角矩阵，且值一样只是顺序不同。
 
-
 B = A.T
 F_B_FH = F@B@FH
 F_B_FH = np.around(F_B_FH, decimals = 2)
 print(f"F_B_FH:\n{F_B_FH}")
 
-
-
 X1 = B[0,:]
-
 FH_B_F = FH@B@F
 FH_B_F = np.around(FH_B_F, decimals = 2)
 print(f"FH_B_F:\n{FH_B_F}")

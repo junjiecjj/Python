@@ -290,9 +290,6 @@ visualizer = PCA(scale=True, proj_features=True,projection = 3)
 visualizer.fit_transform(iris_sns[[ 'sepal_length', 'sepal_width', 'petal_length','petal_width']], y)
 visualizer.show()
 
-
-
-
 #%% Scree plot
 # pcamodel.explained_variance_
 # pcamodel.explained_variance_ratio_

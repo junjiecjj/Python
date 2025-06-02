@@ -357,7 +357,6 @@ labels = ['SP500','TSLA','WMT','MCD','USB',
            'YUM','NFLX','JPM','PFE',
            'F','GM','COST','JNJ'];
 
-
 #%% Lineplot of stock prices
 # normalize the initial stock price levels to 1
 normalized_stock_levels = stock_levels_df['Adj Close']/stock_levels_df['Adj Close'].iloc[0]

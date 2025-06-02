@@ -189,7 +189,7 @@ Yc = X_df_centered@V
 print(Yc.T@Yc)
 fig, axs = plt.subplots()
 
-h = sns.heatmap(Yc.T@Yc,cmap='rainbow', linewidths=.05)
+h = sns.heatmap(Yc.T@Yc, cmap='rainbow', linewidths=.05)
 h.set_aspect("equal")
 
 #%% tensor products
@@ -366,7 +366,7 @@ Lambda_reproduced = S**2/(len(X_df) - 1)
 
 print(f"Σ 特征值分解和对 Xc进行 SVD 分解的关系 = {Lambda_reproduced - LAMBDA}")
  # for test only
-Lambda_reproduced - LAMBDA
+
 
 fig, axs = plt.subplots(1, 7, figsize=(12, 4))
 
@@ -419,8 +419,6 @@ for idx in range(4):
     ax = sns.heatmap(tensor_prod,cmap='rainbow', cbar=False, vmax = X_c_df.max().max(),vmin = X_c_df.min().min())
     # ax.set_aspect("equal")
     plt.title('$s_' + str(idx + 1) + 'u_' + str(idx + 1) + ' @ v_'  + str(idx + 1) + '^T$')
-
-
 
 #%% SIGMA_inv to Mahal distance sq
 # 图 24 计算 d2的矩阵运算热图
