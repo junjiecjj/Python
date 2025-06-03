@@ -231,8 +231,7 @@ def generate_paths(step_num,path_num, p, up_down):
     # random walk
     step_shape = (step_num, path_num)
 
-    steps = np.random.choice(a= up_down, size=step_shape,
-                             p = p)
+    steps = np.random.choice(a= up_down, size=step_shape, p = p)
     paths = np.concatenate([start_locs, steps]).cumsum(0)
 
     return paths
@@ -360,7 +359,7 @@ SIGMA_z = [[1, 0], [0, 1]]
 # diagonal covariance
 
 z1, z2 = np.random.multivariate_normal(mu_z, SIGMA_z, 500).T
-Z       = np.matrix([z1,z2]).T
+Z       = np.matrix([z1, z2]).T
 # IID standard normal
 
 
@@ -395,10 +394,6 @@ g.plot_joint(sns.kdeplot, color="g", zorder=0, fill = False)
 g.plot_marginals(sns.rugplot, color="k")
 g.ax_joint.axvline(x=X_Chol_df.mean()['X1'], color = 'r', linestyle = '--')
 g.ax_joint.axhline(y=X_Chol_df.mean()['X2'], color = 'r', linestyle = '--')
-
-
-
-
 
 
 
@@ -448,7 +443,7 @@ X_rand_df = pd.DataFrame(X_rand, columns = X_df.columns)
 # without class labels
 g = sns.pairplot(X_rand_df)
 g.map_upper(sns.scatterplot, color = 'b')
-g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues_d")
+g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues_r")
 g.map_diag(sns.distplot, kde=False, color = 'b')
 
 

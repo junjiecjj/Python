@@ -6,55 +6,45 @@ Created on Thu Mar 21 20:43:25 2024
 @author: jack
 """
 
-
-
 import numpy as np
-
 
 # 产生傅里叶矩阵
 def FFTmatrix(row, col):
     assert row == col
-    mat = np.zeros((row, col),dtype = complex)
+    mat = np.zeros((row, col), dtype = complex)
     for i in range(row):
          for j in range(col):
               mat[i, j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row)    # / (np.sqrt(row)*1.0)
     return mat
-
 # 产生傅里叶矩阵
 def FFTmatrix1(row, col):
     assert row == col
     w = np.exp(-1j*2.0*np.pi/row)
-    mat = np.zeros((row, col),dtype = complex)
+    mat = np.zeros((row, col), dtype = complex)
     for i in range(row):
          for j in range(col):
               mat[i, j] = 1.0*w**(i*j)    # / (np.sqrt(row)*1.0)
     return mat
-
-# 生成 循环矩阵
+# 生成循环矩阵
 def CirculantMatric(gen, row):
      if type(gen) == list:
           col = len(gen)
      elif type(gen) == np.ndarray:
           col = gen.size
      row = col
-
      mat = np.zeros((row, col), np.complex128)
      mat[0,:] = gen
      for i in range(1,row):
           mat[i,:] = np.roll(gen, i)
-
      return mat
 
+X =  np.array([1+1j, 2+2j, 3+3j, 4+1j ])
 
-generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
-# generateVec =  [1 , 2  , 3 , 4  ]
+L = X.size
+A = CirculantMatric(X, L)
 
-X = np.array(generateVec)
-
-L = len(generateVec)
-A = CirculantMatric(generateVec, L)
-
-F = FFTmatrix(L, L)
+F = FFTmatrix(L, L)  # F = F.T, F^H = F^*
+print(f"F.T - F = \n{F - F.T}, \nF^H - F^* = \n{F.conj().T - F.conj()}")
 FH = F.T.conjugate()/(L*1.0)
 
 
@@ -72,6 +62,11 @@ FH_A_F = np.around(FH_A_F, decimals = 2)
 print(f"FH_A_F:\n{FH_A_F}")
 print(f"F@X = \n{F@X} ")
 print(f"diag[fft(X)] = \n{np.diag(np.fft.fft(X))} \n")
+
+print(f"np.fft.fft(A[:,0]) = {np.fft.fft(A[:,0])}")
+
+lambdas, V = np.linalg.eig(A)
+print(f"lambdas = \n{lambdas}\nV = \n{V}")
 
 F_A_FH = F@A@FH
 F_A_FH = np.around(F_A_FH, decimals = 2)
