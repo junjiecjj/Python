@@ -151,8 +151,7 @@ y = np.linspace(2, 8, 20)
 X,Y = np.meshgrid(x, y)
 Z = 2*X + 5*Y + 3
 
-plt.figure(figsize=(14, 10))
-axes = plt.gca(projection='3d')
+fig, axes = plt.subplots(1, 1, subplot_kw={'projection': '3d'}, figsize = (6, 6), constrained_layout = True)
 axes.plot_surface(X, Y, Z, color = 'b', alpha = 0.2)
 
 axes.plot(x, y, z, c='k', lw=2,)
@@ -170,11 +169,6 @@ from matplotlib.font_manager import FontProperties
 from pylab import tick_params
 import copy
 from matplotlib.pyplot import MultipleLocator
-
-font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 x = np.linspace(2, 10, 20)
 y = np.linspace(0, 10, 20)
@@ -213,10 +207,10 @@ ax.set_proj_type('ortho')
 # ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
 # ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 # ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-ax.set_xlabel('$\it{x_1}$', fontproperties=font3)
-ax.set_ylabel('$\it{x_2}$', fontproperties=font3)
-ax.set_zlabel('$\it{f}$($\it{x_1}$,$\it{x_2}$)', fontproperties=font3)
+# font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
+ax.set_xlabel(r'$\it{x_1}$',  )
+ax.set_ylabel(r'$\it{x_2}$', )
+ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)', )
 
 # ax.set_xlim(X[:,0].min()-4, X[:,0].max()+4)
 # ax.set_ylim(X[:,1].min()-4, X[:,1].max()+4)

@@ -1,34 +1,34 @@
- 
+
 #=====================================================================================
                       2025-03-01-19:32:44
 #=====================================================================================
 
 ######### [program config] #########
-minimum_snr              : 0                                       
-maximum_snr              : 13                                      
-increment_snr            : 1                                       
-maximum_error_number     : 150                                     
-maximum_block_number     : 1000000                                 
-K                        : 6                                       
-max_iteration            : 50                                      
-encoder_active           : 1                                       
-file_name_of_the_H       : PEG1024regular0.5.txt                   
-home                     : /home/jack                              
-smallprob                : 1e-15                                   
-type                     : psk                                     
-M                        : 2                                       
-channel_type             : large_fast                              
-B                        : 4000000.0                               
-P_total                  : 6                                       
-P_max                    : 2.0                                     
-rmin                     : 0.2                                     
+minimum_snr              : 0
+maximum_snr              : 13
+increment_snr            : 1
+maximum_error_number     : 150
+maximum_block_number     : 1000000
+K                        : 6
+max_iteration            : 50
+encoder_active           : 1
+file_name_of_the_H       : PEG1024regular0.5.txt
+home                     : /home/jack
+smallprob                : 1e-15
+type                     : psk
+M                        : 2
+channel_type             : large_fast
+B                        : 4000000.0
+P_total                  : 6
+P_max                    : 2.0
+rmin                     : 0.2
 ######### [code config] ##########
-codedim                  : 512                                     
-codelen                  : 1024                                    
-codechk                  : 512                                     
-coderate                 : 0.5                                     
-row                      : 512                                     
-col                      : 1024                                    
+codedim                  : 512
+codelen                  : 1024
+codechk                  : 512
+coderate                 : 0.5
+row                      : 512
+col                      : 1024
 
 #=============================== args end  ===============================
 
@@ -63,6 +63,4 @@ col                      : 1024
 [-176.00, 0.26595745, 0.02831685, 0.07991190, 0.00000000, 17.066],
 [-178.00, 0.28735632, 0.02997785, 0.08306394, 0.00000000, 17.906],
 [-180.00, 0.29411765, 0.03281250, 0.09216452, 0.00000000, 18.131],
-
-
 [-130.00, 0.50000000, 0.10894531, 0.40410156, 0.00000000, 26.947],

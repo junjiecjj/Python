@@ -37,8 +37,6 @@ def PCA(X, method = 'demean'):
     explained_variance_ratio = variance_V / np.sum(variance_V)
     return [explained_variance_ratio, variance_V, V, original_variance, GG, XX]
 
-
-
 #%% visualization tools
 # ==================================================
 # Define a function for plotting vector on a plane
@@ -117,7 +115,6 @@ def heatmap_GG(GG, variance_V):
     ax[1].set_title('Lambdas')
     ax[1].tick_params(axis='y', rotation=90)
 
-
 # ==================================================
 # Define a function for plotting heatmap of matrix V
 # ==================================================
@@ -137,8 +134,6 @@ def heatmap_V(V, X, title):
                 cbar=False)
     ax.set_title(title)
     plt.yticks(rotation=0)
-
-
 
 # ==================================================
 # Define a function of generating biplot
@@ -162,7 +157,6 @@ def biplot(V, X, title):
     ax.set_ylim(-1,1)
     ax.grid(color = [0.6,0.6,0.6])
     ax.set_title(title)
-
 
 # ==================================================
 # Define a function of generating 6 biplots

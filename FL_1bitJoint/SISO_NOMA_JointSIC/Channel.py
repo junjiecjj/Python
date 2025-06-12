@@ -111,7 +111,7 @@ def Large_rayleigh_fast(K, frame_len, PL_Au, noisevar = 1):
     return H.T
 
 
-
+#%%
 # np.random.seed(42)
 # frame_len = 1000000
 # B      = 5e6                  # bandwidth, Hz

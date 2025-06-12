@@ -148,17 +148,12 @@ def est_pi(n):
     y = X[:,1]
 
     masks = np.sqrt(x**2 + y**2) < 1
-
     pi_est = 4 * sum(masks)/len(x)
-
     return pi_est
 
 n_array = np.linspace(1000,1000*100,100)
-
 est_pi_array = np.empty(len(n_array))
-
 # convergence of estimated pi
-
 i = 0
 for n in n_array:
     pi_est = est_pi(n)
@@ -166,7 +161,6 @@ for n in n_array:
     i = i + 1
 
 fig, ax = plt.subplots()
-
 plt.semilogx(n_array, est_pi_array)
 plt.xlabel("Number of random number")
 plt.ylabel("Estimated $\pi$")
@@ -175,8 +169,6 @@ plt.axhline(np.pi, color="r");
 plt.grid(True, which="both", ls="--")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch15_05
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -201,9 +193,7 @@ x_rand = np.random.random(num)*x_max
 ind_below = np.where(x_rand < f(theta_rand))
 ind_above = np.where(x_rand >= f(theta_rand))
 
-
 fig, ax = plt.subplots()
-
 plt.scatter(theta_rand[ind_below], x_rand[ind_below], color = "b", marker = '.')
 plt.scatter(theta_rand[ind_above], x_rand[ind_above], color = "r", marker = 'x')
 plt.plot(theta_array, x_array, color = "k")
@@ -213,9 +203,6 @@ plt.ylabel('$x$')
 
 estimated_pi = num/np.sum(x_rand < f(theta_rand))*2*l/t
 print(estimated_pi)
-
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch15_06
 import numpy as np
@@ -244,14 +231,11 @@ probs = [1-p, p]
 step_num = 20 # n in binomial distribution
 
 path_num = 20
-
 colors = plt.cm.rainbow(np.linspace(0,1,path_num))
 
 # generate random paths
 paths = generate_paths(step_num, path_num, probs, up_down)
-
 fig, ax = plt.subplots()
-
 for i in np.arange(0,path_num):
     plt.plot(np.arange(step_num+1), paths[:,i], marker='.', markersize=8, color = colors[i,:]);
 
@@ -263,16 +247,11 @@ plt.gca().spines['top'].set_visible(False)
 
 ax.set_xlim(0,step_num)
 plt.xticks(np.arange(0,step_num+1,5))
-
-ax.set_ylim(np.floor(paths.min()) - 1,
-            np.ceil(paths.max())  + 1)
-
+ax.set_ylim(np.floor(paths.min()) - 1, np.ceil(paths.max())  + 1)
 plt.axhline(y=0, linestyle = '--', color = 'k')
 
 #%% distribution of the finishing locations
-
 fig, axes = plt.subplots(1, 3, figsize=(15,4), gridspec_kw={'width_ratios': [1, 1, 1]})
-
 for i,path_num in enumerate([50, 100, 5000]):
     paths = generate_paths(step_num, path_num, probs, up_down)
     stop_locs = paths[-1,:]
@@ -290,7 +269,6 @@ for i,path_num in enumerate([50, 100, 5000]):
     plt.ylim(0,0.12)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch15_06
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -324,7 +302,6 @@ plt.axvline(x = mu_X2 + sigma_X2, color = 'g')
 plt.ylim(0,0.2)
 
 #%% Y = X1 + X2
-
 for rho in [-0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8]:
     MU =    [mu_X1, mu_X2]
     SIGMA = [[sigma_X1**2, sigma_X1*sigma_X2*rho], [sigma_X1*sigma_X2*rho, sigma_X2**2]]
@@ -346,9 +323,7 @@ for rho in [-0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8]:
     plt.ylim(0,0.2)
 
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch15_08
-
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -374,8 +349,7 @@ g.ax_joint.axvline(x=Z_df.mean()['Z1'], color = 'r', linestyle = '--')
 g.ax_joint.axhline(y=Z_df.mean()['Z2'], color = 'r', linestyle = '--')
 
 #%% Use Cholesky decomposition
-#   generate multivariate normal random numbers
-
+# generate multivariate normal random numbers
 E_X     = [2, 4]
 SIGMA_X = [[4, 2], [2, 2]]
 
@@ -395,11 +369,7 @@ g.plot_marginals(sns.rugplot, color="k")
 g.ax_joint.axvline(x=X_Chol_df.mean()['X1'], color = 'r', linestyle = '--')
 g.ax_joint.axhline(y=X_Chol_df.mean()['X2'], color = 'r', linestyle = '--')
 
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch15_09
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -407,7 +377,6 @@ from sklearn.datasets import load_iris
 from scipy.stats import norm
 import scipy
 import seaborn as sns
-
 
 iris = load_iris()
 # A copy from Sklearn

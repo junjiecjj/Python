@@ -153,17 +153,6 @@ class QLDPC_Coding(object):
         yy = yy.sum(axis  = 0) + noise
         return yy
 
-    def post_probability_mess(self, yy, H, noise_var):
-        pp = np.exp(-np.abs(yy - BPSK(self.qbits) @ H)**2 /(2 * noise_var))
-        pp = pp/ pp.sum(axis = 0)
-
-        tmp = copy.deepcopy(pp[1,:])
-        pp[1,:] = pp[2,:]
-        pp[2,:] = tmp
-
-        pp = np.clip(pp, self.smallprob, 1 - self.smallprob)
-        return pp
-
     def post_probability(self, yy, H, noise_var):
         pp = np.exp(-np.abs(yy - BPSK(self.qbits) @ H)**2 /(2 * noise_var))
         pp = pp/ pp.sum(axis = 0)
