@@ -248,7 +248,7 @@ class QLDPC_Coding(object):
                     self.MV2C[row, col, :] = np.clip(self.MV2C[row, col, :], self.smallprob, 1-self.smallprob)
         return uu_hat, iter_num + 1
 
-    ## hadmard变换后的算法
+    ## 利用Hadmark变换加速后的算法
     def decoder_FFTQSPA(self, pp, maxiter = 50):
         self.MV2C = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )
         self.MC2V = np.zeros((self.num_row, self.num_col, self.q), dtype = np.float64 )

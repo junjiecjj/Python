@@ -3,7 +3,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug 10 21:08:38 2023
+Created on Thu Aug 10 21:08:38 2024
 
 @author: jack
 
@@ -17,17 +17,13 @@ numpy.where() 函数返回输入数组中满足给定条件的元素的索引。
 ## system lib
 # import galois
 import numpy  as np
-# import datetime
-# import commpy as cpy
-# import copy
-# import argparse
-# import  os
+import time
 
 ##  自己编写的库
 from sourcesink import SourceSink
 from Config import parameters
 from Channel import channelConfig
-from Channel import AWGN_mac, BlockFading_mac, FastFading_mac, Large_rayleigh_fast, Large_rician_fast
+from Channel import AWGN_mac, BlockFading_mac, FastFading_mac, Large_rayleigh_fast
 import utility
 from QLDPCcoder import QLDPC_Coding, BPSK
 # from SICdetector_LDPC import SeparatedDecoding_BlockFading, SeparatedDecoding_FastFading
@@ -49,7 +45,7 @@ coderargs = {'codedim':ldpc.codedim,
 source = SourceSink()
 # rho = 1
 # logf = f"./resultsTXT/{args.channel_type.split('-')[0]}/BER_Joint_Block_{args.K}u_w_powerdiv_{rho}.txt"
-logf = f"./resultsTXT/{args.channel_type.split('_')[1]}/BER_Joint_{args.channel_type}_{args.K}U_w_pa.txt"
+logf = f"./resultsTXT/{args.channel_type.split('_')[1]}/BER_Joint_{args.channel_type}_{args.K}U_wo_pa.txt"
 source.InitLog(logfile = logf, promargs = args, codeargs = coderargs,)
 
 ## modulator
@@ -60,32 +56,30 @@ framelen = int(ldpc.codelen/bps)
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = args.rmin)
 
 # 遍历SNR
-n0     = np.arange(-126.6, -130, -0.2)    # 噪声功率谱密度, dBm/Hz
+n0     = np.arange(-127.2, -130, -0.2)    # 噪声功率谱密度, dBm/Hz
 n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
 N0     = n00 * args.B                     # 噪声功率, Watts
 
 for noisePsd, noisepower in zip(n0, N0):
     source.ClrCnt()
     print( f"\n noisePsd = {noisePsd}(dBm/Hz), {noisepower}(w):")
-    P = JointCapacityOptim(PL_Au, args.P_total,)
-    # P = np.ones(args.K) * args.P_total/args.K
+    # P = JointCapacityOptim(PL_Au, args.P_total,)
+    P = np.ones(args.K) * args.P_total/args.K
+    t0 = time.time()
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
         if args.channel_type == 'AWGN':
             H = AWGN_mac(args.K, framelen)
-            # H = H * P.reshape(-1,1)
         elif args.channel_type == 'block-fading':
             H = BlockFading_mac(args.K, framelen)
-            # H = H * P.reshape(-1,1)
         elif args.channel_type == 'fast-fading':
             H = FastFading_mac(args.K, framelen)
-            # H = H * P.reshape(-1,1)
         elif args.channel_type == 'large_fast':
             H = Large_rayleigh_fast(args.K, framelen, PL_Au, noisevar = noisepower)
         H = H * np.sqrt(P[:,None])
 
         ## 编码
         uu = source.SourceBits(args.K, ldpc.codedim)
-        uu_sum = ldpc.bits2sum(uu)
+        # uu_sum = ldpc.bits2sum(uu)
 
         cc = np.zeros((args.K, ldpc.codelen), dtype = np.int8)
         for k in range(args.K):
@@ -106,10 +100,11 @@ for noisePsd, noisepower in zip(n0, N0):
         ## llr
         pp = ldpc.post_probability(yy, H, 1)
         ## Decoding
-        uu_hat, uu_hat_sum, iter_num = ldpc.decoder_FFTQSPA_sum(pp, maxiter = 50)
+        uu_hat, iter_num = ldpc.decoder_FFTQSPA(pp, maxiter = 50)
 
-        source.tot_iter += iter_num
-        source.CntSumErr(uu_sum, uu_hat_sum)
+        source.tot_iter += iter_num * args.K
+        source.tot_time = (time.time() - t0)*args.K/60.0
+        # source.CntSumErr(uu_sum, uu_hat_sum)
         # break
         source.CntBerFer(uu, uu_hat)
         if source.tot_blk % 1 == 0:

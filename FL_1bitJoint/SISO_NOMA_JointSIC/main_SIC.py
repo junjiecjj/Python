@@ -9,13 +9,14 @@ Created on  2024.11.12
 
 """
 ## system lib
-import galois
+# import galois
+import time
 import numpy  as np
-import datetime
-import commpy as cpy
-import copy
-import argparse
-import os
+# import datetime
+# import commpy as cpy
+# import copy
+# import argparse
+# import os
 
 ##  自己编写的库
 import utility
@@ -68,6 +69,7 @@ for noisePsd, noisepower in zip(n0, N0):
     ## (2) Without Power allocation, equal allocation. for fast fading.
     # P = np.ones(args.K) * args.P_total/args.K
     order = np.argsort(P*Hbar)[::-1]
+    t0 = time.time()
     while source.tot_blk < args.maximum_block_number and source.err_blk < args.maximum_error_number:
         if args.channel_type == 'large_fast':
             H = Large_rayleigh_fast(args.K, framelen, PL_Au, noisevar = noisepower)
@@ -75,7 +77,7 @@ for noisePsd, noisepower in zip(n0, N0):
         H = H * np.sqrt(P[:,None])
         ## 编码
         uu = source.SourceBits(args.K, ldpc.codedim)
-        uu_sum = ldpc.bits2sum(uu)
+        # uu_sum = ldpc.bits2sum(uu)
 
         cc = np.zeros((args.K, ldpc.codelen), dtype = np.int8)
         for k in range(args.K):
@@ -98,9 +100,12 @@ for noisePsd, noisepower in zip(n0, N0):
         if args.channel_type == 'large_block':
             pass
         elif args.channel_type == 'large_fast':
-            uu_hat, uu_hat_sum, iter_num = SIC_LDPC_FastFading(H, yy, order, inteleaverM,  Es, modem, ldpc, noisevar = 1, maxiter = 50)
+            uu_hat, iter_num = SIC_LDPC_FastFading(H, yy, order, inteleaverM,  Es, modem, ldpc, noisevar = 1, maxiter = 50)
         source.tot_iter += iter_num
-        source.CntSumErr(uu_sum, uu_hat_sum)
+        # source.tot_iter += iter_num * args.K
+        source.tot_time = (time.time() - t0)*args.K/60.0
+
+        # source.CntSumErr(uu_sum, uu_hat_sum)
         # break
         source.CntBerFer(uu, uu_hat)
         if source.tot_blk % 1 == 0:

@@ -73,8 +73,8 @@ def SIC_LDPC_FastFading(H, yy, order, inteleaverM, Es, modem, ldpc, noisevar = 1
         # sym_k = sym_k[inteleaverM[k]]
         yy0 = yy0 -  H[k] * sym_k/np.sqrt(Es)
 
-    uu_sum = ldpc.bits2sum(uu_hat)
-    return uu_hat, uu_sum, tot_iter
+    # uu_sum = ldpc.bits2sum(uu_hat)
+    return uu_hat,  tot_iter
 
 
 

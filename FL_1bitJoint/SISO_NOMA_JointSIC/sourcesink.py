@@ -31,6 +31,8 @@ class SourceSink(object):
         self.fer  = 0     # 误帧率
         self.ser = 0      # 误符号率
         self.sumerr = 0   #
+        self.tot_time = 0
+        self.ave_time = 0
         # self.InitLog()
         return
 
@@ -67,23 +69,46 @@ class SourceSink(object):
         self.ave_iter = 0.0
         self.err_sum = 0.0
         self.tot_sum = 0.0
+        self.tot_time = 0
+        self.ave_time = 0
         return
 
-    def CntErr(self, uu, uu_hat, accumulator = 1):
-        assert uu.shape == uu_hat.shape
-        Len = uu.shape[-1]
-        temp_err = np.sum(uu != uu_hat)
+    # def CntErr(self, uu, uu_hat, accumulator = 1):
+    #     assert uu.shape == uu_hat.shape
+    #     Len = uu.shape[-1]
+    #     temp_err = np.sum(uu != uu_hat)
 
-        if accumulator == 1:
-            if temp_err > 0:
-                self.err_bit += temp_err
-                self.err_blk += 1
-            self.tot_blk += 1.0
-            self.tot_bit += Len
-            self.ber = self.err_bit / self.tot_bit
-            self.fer = self.err_blk / self.tot_blk
-        self.ave_iter =  self.tot_iter / self.tot_blk
-        return
+    #     if accumulator == 1:
+    #         if temp_err > 0:
+    #             self.err_bit += temp_err
+    #             self.err_blk += 1
+    #         self.tot_blk += 1.0
+    #         self.tot_bit += Len
+    #         self.ber = self.err_bit / self.tot_bit
+    #         self.fer = self.err_blk / self.tot_blk
+    #     self.ave_iter =  self.tot_iter / self.tot_blk
+    #     return
+
+    # def CntSer(self, symbol, symbol_hat, ):
+    #     assert symbol.shape == symbol_hat.shape
+    #     J, Len = symbol.shape
+    #     temp_err = np.sum(symbol != symbol_hat)
+    #     if temp_err > 0:
+    #         self.err_symb += temp_err
+    #     self.tot_symb += J * Len
+    #     self.ser = self.err_symb / self.tot_symb
+    #     return
+
+    # def CntSumErr(self, uu_sum, uu_hat_sum, ):
+    #     assert uu_sum.shape == uu_hat_sum.shape
+    #     Len = uu_sum.shape[-1]
+    #     temp_err = np.sum(uu_sum != uu_hat_sum)
+
+    #     if temp_err > 0:
+    #         self.err_sum += temp_err
+    #     self.tot_sum += Len
+    #     self.sumerr = self.err_sum / self.tot_sum
+    #     return
 
     def CntBerFer(self, uu, uu_hat, ):
         assert uu.shape == uu_hat.shape
@@ -98,37 +123,17 @@ class SourceSink(object):
         self.ber = self.err_bit / self.tot_bit
         self.fer = self.err_blk / self.tot_blk
         self.ave_iter =  self.tot_iter / self.tot_blk
-        return
-
-    def CntSer(self, symbol, symbol_hat, ):
-        assert symbol.shape == symbol_hat.shape
-        J, Len = symbol.shape
-        temp_err = np.sum(symbol != symbol_hat)
-        if temp_err > 0:
-            self.err_symb += temp_err
-        self.tot_symb += J * Len
-        self.ser = self.err_symb / self.tot_symb
-        return
-
-    def CntSumErr(self, uu_sum, uu_hat_sum, ):
-        assert uu_sum.shape == uu_hat_sum.shape
-        Len = uu_sum.shape[-1]
-        temp_err = np.sum(uu_sum != uu_hat_sum)
-
-        if temp_err > 0:
-            self.err_sum += temp_err
-        self.tot_sum += Len
-        self.sumerr = self.err_sum / self.tot_sum
+        self.ave_time = self.tot_time / self.tot_blk
         return
 
     def SaveToFile(self, filename = "SNR_BerFer.txt", snr = '', open_type = 'a+'):
-        log = f"[{snr:.2f}, {self.fer:.8f}, {self.ber:.8f}, {self.sumerr:.8f}, {self.ser:.8f}, {self.ave_iter:.3f}],"
+        log = f"[{snr:.2f}, {self.fer:.8f}, {self.ber:.8f}, {self.sumerr:.8f}, {self.ser:.8f}, {self.ave_iter:.3f}, {self.ave_time:.10f}],"
         with open(filename, open_type) as f:
             f.write(log + "\n")
         return
 
     def PrintScreen(self, snr = '',  ):
-        print(f"  snr = {snr:.2f}(dBm/Hz):iter = {self.ave_iter:.3}, bits = {self.err_bit}/{self.tot_bit}, blk = {self.err_blk}/{self.tot_blk}, fer = {self.fer:.10f}, ber = {self.ber:.10f}, sumerr = {self.sumerr:.6f}={self.err_sum}/{self.tot_sum}")
+        print(f"  snr = {snr:.2f}(dBm/Hz):iter = {self.ave_iter:.3}, bits = {self.err_bit}/{self.tot_bit}, blk = {self.err_blk}/{self.tot_blk}, fer = {self.fer:.10f}, ber = {self.ber:.10f}, time = {self.ave_time:.10f}")
         return
 
 

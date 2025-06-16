@@ -142,8 +142,8 @@ sleep()函数在给定的秒数内暂停（延迟）当前线程的执行。
 time.struct_time类
 时间模块中的几个函数（例如gmtime()，asctime()等）将time.struct_time对象作为参数或将其返回。
 这是一个time.struct_time对象的实例。
-time.struct_time(tm_year=2018, tm_mon=12, tm_mday=27, 
-                    tm_hour=6, tm_min=35, tm_sec=17, 
+time.struct_time(tm_year=2018, tm_mon=12, tm_mday=27,
+                    tm_hour=6, tm_min=35, tm_sec=17,
                     tm_wday=3, tm_yday=361, tm_isdst=0)
 
 索引   属性	         属性值
@@ -196,13 +196,13 @@ print ("本地时间为 :", localtime)
 
 
 import time
- 
+
 # 格式化成2016-03-20 11:45:39形式
 print( time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
- 
+
 # 格式化成Sat Mar 28 22:24:24 2016形式
 print (time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()) )
-  
+
 # 将格式字符串转换为时间戳
 a = "Sat Mar 28 22:24:24 2016"
 print( time.mktime(time.strptime(a,"%a %b %d %H:%M:%S %Y")))
@@ -216,10 +216,8 @@ import time
 print("time.time() = {}\n".format(time.time()))
 # 1477471508.05
 
-
 #struct_time to timestamp
 print("time.mktime(time.localtime()) = {}\n".format(time.mktime(time.localtime())))
-
 
 print("time.mktime(time.localtime(time.time())) = {}\n".format(time.mktime(time.localtime(time.time()))))
 
@@ -257,7 +255,7 @@ print("-"*70)
 print("https://www.runoob.com/python/python-date-time.html  start")
 print("-"*70)
 import calendar
- 
+
 cal = calendar.month(2016, 1)
 print ("以下输出2016年1月份的日历:\n{}".format(cal))
 
@@ -340,7 +338,7 @@ format -- 格式化字符串。
 返回struct_time对象。
 """
 import time
- 
+
 struct_time = time.strptime("30 Nov 00", "%d %b %y")
 print ("返回的元组: {}\n".format(struct_time))
 
@@ -362,7 +360,7 @@ t -- 推迟执行的秒数。
 
 """
 import time
- 
+
 print( "Start : %s" % time.ctime())
 time.sleep( 5 )
 print( "End : %s" % time.ctime())
@@ -402,7 +400,7 @@ time.localtime([ sec ])
 返回值:该函数没有任何返回值。
 """
 import time
- 
+
 print ("time.localtime() = {}\n".format(time.localtime()))
 
 

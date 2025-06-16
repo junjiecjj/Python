@@ -593,7 +593,7 @@ tup_time = time.strptime(str_time,"%Y-%m-%d %X")
 print("tup_time = {}".format(tup_time))
 print("year = {}, mon = {}, day = {}, hour = {}, min = {}. sec = {} ".format(tup_time.tm_year,tup_time.tm_mon,tup_time.tm_mday,tup_time.tm_hour,tup_time.tm_min,tup_time.tm_sec))
 # tup_time = time.struct_time(tm_year=2022, tm_mon=4, tm_mday=26, tm_hour=23, tm_min=0, tm_sec=51, tm_wday=1, tm_yday=116, tm_isdst=-1)
-# year = 2022, mon = 4, day = 26, hour = 23, min = 0. sec = 51 
+# year = 2022, mon = 4, day = 26, hour = 23, min = 0. sec = 51
 
 
 time_sec = time.mktime(tup_time)
@@ -871,11 +871,6 @@ print(f"today.time() = {today.time()}")
 # today.time() = 23:17:23.842433
 
 
-
-
-
-
-
 #===================================================================================
 #  datetime.timedelta类
 #===================================================================================
@@ -909,9 +904,6 @@ datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0,
     ⑷week转换成7 days
 
 """
-
-
-
 
 from datetime import timedelta
 
@@ -985,10 +977,7 @@ td.total_seconds() 	时间差中包含的总秒数
 datetime.datetime.now()  	返回当前本地时间（datetime.datetime对象实例）
 datetime.datetime.fromtimestamp(timestamp)  	返回指定时间戳对应的时间（datetime.datetime对象实例）
 datetime.timedelta()    	返回一个时间间隔对象，可以直接与datetime.datetime对象做加减操作
-
-
 """
-
 
 from datetime import datetime, timedelta
 
@@ -1018,9 +1007,7 @@ print(TimeEquation.total_seconds())
 
 """
 
-
 from datetime import datetime,timedelta
-
 future = datetime.strptime("2032-02-01 08:00:00","%Y-%m-%d %H:%M:%S")
 now = datetime.now()
 
@@ -1039,9 +1026,6 @@ print(TimeEquation.days, hours, minutes, seconds)
 # 3567 8.66 0.0 0.0
 
 
-
-
-
 #===================================================================================
 #  Python中的时区转换
 #===================================================================================
@@ -1058,7 +1042,6 @@ Python中的时区转换
     ⑵aware时间：获取的时间对象知道自己的时间表示的是哪个时区的
 
 """
-
 from datetime import datetime,timedelta,timezone
 import pytz
 
@@ -1067,8 +1050,6 @@ print(now)
 
 utc_timezone = pytz.timezone("UTC")#使用pytz.timezone()方法来创建一个时区对象
 utc_now = now.astimezone(utc_timezone)#使用astimezone()方法来将时间转换为另一个时区的时间
-
-
 
 """
 注：
@@ -1086,9 +1067,6 @@ utc_now = now.astimezone(utc_timezone)#使用astimezone()方法来将时间转�
 5、因此正确的将一个时区的时间转为另一个时区的时间，可以使用下面这种方法
 
 """
-
-
-
 
 
 

@@ -35,7 +35,6 @@ from matplotlib.font_manager import FontProperties
 # plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 # plt.rcParams['legend.fontsize'] = 22
 
-
 def AWGN_mac(K,  frame_len):
     H = np.ones((K, frame_len))
     return H
@@ -59,7 +58,7 @@ def channelConfig(K, r = 100, rmin = 0.1):
 
     ## Rician factor
     beta_Au = 3.0   # dB
-    beta_Au =  10**(beta_Au/10)
+    beta_Au = 10**(beta_Au/10)
 
     # Location, Case II
     BS_locate = np.array([[0, 0, 10]])
@@ -78,10 +77,8 @@ def channelConfig(K, r = 100, rmin = 0.1):
 
     ## Distance
     d_Au = pairwise_distances(users_locate, BS_locate, metric = 'euclidean',)
-
     ## generate path-loss
     PL_Au = C0 * (d_Au/d0)**(-alpha_Au)
-
     return BS_locate, users_locate, beta_Au, PL_Au, d_Au
 
 def Large_rician_block(K, frame_len, beta_Au, PL_Au, noisevar = 1):
@@ -96,7 +93,7 @@ def Large_rician_fast(K, frame_len, beta_Au, PL_Au, noisevar = 1):
     hdLos = np.sqrt(1/2) * (np.ones((frame_len, K)) + 1j * np.ones((frame_len, K)))
     hdNLos = np.sqrt(1/2) * (np.random.randn(frame_len, K) + 1j * np.random.randn(frame_len, K))
     h_ds = np.sqrt(beta_Au/(1 + beta_Au)) * hdLos + np.sqrt(1/(1 + beta_Au)) * hdNLos
-    H = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/noisevar))
+    H = h_ds @ np.diag(np.sqrt(PL_Au.flatten()/noisevar)) # 为了数值稳定, 除以noisevar. 后续将noisevar看为1, 和原始公式等效
     return H.T
 
 def Large_rayleigh_block(K, frame_len, PL_Au, noisevar = 1):
