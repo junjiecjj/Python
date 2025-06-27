@@ -61,7 +61,6 @@ def parameters():
     return args
 args = parameters()
 
-
 ## SCMA
 scma = SCMA_SISO()
 scmaCB = scma.CB
