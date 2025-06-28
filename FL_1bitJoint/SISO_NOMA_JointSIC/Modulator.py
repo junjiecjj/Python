@@ -123,6 +123,7 @@ def demod_fastfading(constellation, input_symbols, demod_type, H = None,  Es = N
     return demod_bits
 
 
+
 ## BPSK, QPSK, 8PSK, 16QAM, 64 QAM, 256QAM + AWGN
 def demod_awgn(constellation, input_symbols, demod_type, Es = None, noise_var = 0):
     M = len(constellation)

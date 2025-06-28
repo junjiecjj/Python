@@ -121,14 +121,14 @@ axs.legend(fontsize = 20)
 plt.show()
 plt.close()
 
-#%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel
+#%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel, EsN0dBs
 from Modulations import NormFactor
 from ChannelModels import add_awgn_noise
 
 nSym = 10000
 EsN0dBs = np.arange(-10, 40, 1)
 # EsN0s = np.arange(-10, 40, 1)
-channelModel = 'rayleigh'
+channelModel = 'awgn'
 
 mod_type = 'qam'
 if mod_type == 'pam' or mod_type == 'psk':
@@ -192,7 +192,7 @@ axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
 plt.show()
 plt.close()
 
-#%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel
+#%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel, EbN0dBs
 from Modulations import NormFactor
 from ChannelModels import add_awgn_noise
 

@@ -147,7 +147,7 @@ fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
 for i, EsN0dB in enumerate(EsN0dBs):
     for j, sym in enumerate(range(nSym)):
-        print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
+        # print(f"{i}/{EsN0dB.size}, {j}/{nSym}")
         ## Transmitter
         d = np.random.randint(low = 0, high = M, size = N)
         X = modem.modulate(d)
@@ -491,7 +491,7 @@ pilotIdx = np.hstack([pilotIdx, np.array([allIdx[-1]])]) # 为了方便信道估
 P = P + 1
 dataIdx = np.delete(allIdx, pilotIdx)                    # 数据编号
 plotDataPilot(allIdx, pilotIdx)
-esti_way = 'ls'
+esti_way = 'mmse'
 DFT_CE = True
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)

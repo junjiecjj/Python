@@ -122,12 +122,25 @@ plt.show()
 plt.close()
 
 #%% Program 3.6: CapacityDCMC.m: Capacity of M-ary transmission through DCMC AWGN channel
-from Modulations import NormFactor
-from ChannelModels import add_awgn_noise
+# from Modulations import NormFactor
+# from ChannelModels import add_awgn_noise
+
+
+def add_awgn_noise(x, snrdB, L = 1):
+    snr = 10**(snrdB/10)
+    P = L * np.sum(np.abs(x)**2)/x.size
+    N0 = P/snr
+    if x.dtype == 'complex':
+        n = np.sqrt(N0/2) * (np.random.randn(*x.shape) + 1j * np.random.randn(*x.shape))
+    elif x.dtype == 'float' or x.dtype == 'int' :
+        n = np.sqrt(N0/2) * np.random.randn(1, x.shape)
+    r = x + n
+    return r, N0
 
 nSym = 10000
 snrdB = np.arange(-10, 36, 1)
 channelModel = 'rayleigh'
+# channelModel = 'awgn'
 
 mod_type = 'qam'
 if mod_type == 'pam' or mod_type == 'psk':
@@ -148,7 +161,7 @@ for m, M in enumerate(arrayOfM):
         modem = commpy.QAMModem(M)
     elif mod_type == 'psk':
         modem =  commpy.PSKModem(M)
-    Es = NormFactor(mod_type = mod_type, M = M,)
+    # Es = NormFactor(mod_type = mod_type, M = M,)
     # map_table, demap_table = modem.plot_constellation(f"{M}-{modutype.upper()} ")
     # print(f"map_table = \n{map_table}\ndemap_table = \n{demap_table}")
 

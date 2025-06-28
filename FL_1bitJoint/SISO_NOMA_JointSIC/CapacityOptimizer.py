@@ -108,7 +108,6 @@ def NOMAcapacityOptim(H2bar, d_Au, P_total, P_max, noisevar = 1 ):
             'disp': False           # 显示优化过程信息
         }
     )
-
     optimized_powers = result.x
     total_capacity = -result.fun
     SINR, Capacity = getSINR(H2bar.copy(), result.x, noisevar = noisevar)
@@ -149,11 +148,9 @@ def JointCapacityOptim(PL_Au, P_total, ):
     return optimized_powers.flatten()
 
 def EquaCapacityOptim(H2bar, d_Au, P_total, ):
-
     optimized_powers = np.ones(H2bar.size) * P_total/H2bar.size
 
     # H_compensate = H1 * np.sqrt(optimized_powers)
-
     # Hbar1 = np.mean(np.abs(H_compensate)**2, axis = 1)
     # SINR, Capacity = getSINR(H2bar.copy(), optimized_powers.flatten(), noisevar = noisevar)
     # total_capacity = Capacity.sum()
@@ -176,7 +173,9 @@ def EquaCapacityOptim(H2bar, d_Au, P_total, ):
 
 
 
+def OFDMWaterFull():
 
+    return
 
 
 
