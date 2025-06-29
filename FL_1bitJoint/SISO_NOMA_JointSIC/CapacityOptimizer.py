@@ -172,10 +172,46 @@ def EquaCapacityOptim(H2bar, d_Au, P_total, ):
 # print(f"{optimized_powers2}, {total_capacity2}, {SINR2}, {Capacity2}")
 
 
+import cvxpy as cp
+# cp.log 以e为底, updateVRF中it设置为100，
+def updateP(Qt, beta, Ps, K, sigma2):
+    lamba = 1
+    qkk = np.real(np.diag(Qt))
+    x = cp.Variable(shape = K)
+    alpha = cp.Parameter(K, nonneg = True)
+    alpha.value = beta
+    obj = cp.Maximize(cp.sum(cp.multiply(alpha, cp.log(1 + x/sigma2))))
+    constraints = [x >= 0, cp.sum(cp.multiply(x, qkk)) - Ps == 0]
+    # Solve
+    prob = cp.Problem(obj, constraints)
+    prob.solve()
+    if(prob.status=='optimal'):
+        P = np.identity(K)
+        np.fill_diagonal(P, x.value)
+        Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
+        curpow = (x.value * qkk).sum()
+        print(f"      updateP, {prob.status}, {curpow}/{Ps}, {x.value}, {prob.value*np.log2(np.e)}/{Cap}")
 
-def OFDMWaterFull():
+    return P, curpow, 1
 
-    return
+def OFDMWaterFilling(Hbar, P_total,):
+    x = cp.Variable(shape = Hbar.size)
+    obj = cp.Maximize(cp.sum(cp.log(1 + cp.multiply(x, Hbar))))
+    constraints = [x >= 1e-6, cp.sum(x) - P_total == 0]
+    # Solve
+    prob = cp.Problem(obj, constraints)
+    prob.solve()
+    if(prob.status=='optimal'):
+        # P = np.identity(K)
+        # np.fill_diagonal(P, x.value)
+        Cap = np.sum(np.log2(1 +  x.value * Hbar))
+        # curpow = (x.value * qkk).sum()
+        print(f"  {prob.status}, {x.value}, {prob.value*np.log2(np.e)}/{Cap}")
+
+        return x.value
+    else:
+        tmp  = P_total / Hbar.size
+        return np.ones(Hbar.size) * tmp
 
 
 

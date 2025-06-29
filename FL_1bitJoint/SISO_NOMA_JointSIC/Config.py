@@ -21,7 +21,7 @@ def parameters():
     "increment_snr" : 1,
     "maximum_error_number" : 150,
     "maximum_block_number" : 1000000,
-    "K" : 2,               # User num
+    "K" : 6,               # User num
 
     ## LDPC***0***PARAMETERS
     "max_iteration" : 50,
