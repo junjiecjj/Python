@@ -58,7 +58,7 @@ framelen = int(ldpc.codelen/bps)
 BS_locate, users_locate, beta_Au, PL_Au, d_Au = channelConfig(args.K, r = 100, rmin = args.rmin)
 
 # 遍历SNR
-n0     = np.arange(-120, -130, -1)        # 噪声功率谱密度, dBm/Hz
+n0     = np.arange(-127.2, -130, -0.2)        # 噪声功率谱密度, dBm/Hz
 n00    = 10**(n0/10.0)/1000               # 噪声功率谱密度, Watts/Hz
 N0     = n00 * args.B                     # 噪声功率, Watts
 
@@ -99,7 +99,6 @@ for noisePsd, noisepower in zip(n0, N0):
         symbs  = symbs / np.sqrt(Es)
 
         ## Pass Channel
-        # yy = ldpc.MACchannel(symbs, H, 1)
         noise = np.sqrt(1/2) * (np.random.randn(*symbs.shape) + 1j*np.random.randn(*symbs.shape))
         yy = H * symbs + noise
 

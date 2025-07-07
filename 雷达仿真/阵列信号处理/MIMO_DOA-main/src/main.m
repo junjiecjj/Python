@@ -14,8 +14,8 @@ M = 32;                         % 阵元数量
 L = 128;                        % 快拍数
 snr = 20;                       % 信噪比 dB
 scan_angle = deg2rad(-60:0.1:60);   % 扫描角度
-is_space_smooth = false;        % 是否使用空间平滑法
-is_coherent = false;            % 是否产生相干的信源
+is_space_smooth = false;            % 是否使用空间平滑法
+is_coherent = false;                % 是否产生相干的信源
 
 %% 参数计算区
 lambda = c / f0;                % 载波波长 m*

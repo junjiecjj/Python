@@ -43,7 +43,7 @@ end
 % 计算回波
 x_sig = A * S;
 % 添加噪声
-[x_sig,sigma] = awgn(x_sig,snr,"measured");
+[x_sig,sigma] = awgn(x_sig, snr, "measured");
 % 计算回波的自相关矩阵
 R_sig = (x_sig * x_sig')./shot_len;
 end

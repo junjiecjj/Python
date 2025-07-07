@@ -170,6 +170,34 @@ def EquaCapacityOptim(H2bar, d_Au, P_total, ):
 # optimized_powers2, total_capacity2, SINR2, Capacity2 = EquaCapacityOptim(Hbar, d_Au, P_total, P_max, noisevar = 1, )
 # print(f"{optimized_powers2}, {total_capacity2}, {SINR2}, {Capacity2}")
 
+import cvxpy as cp
+def OFDMWaterFilling(Hbar, P_total,):
+    x = cp.Variable(shape = Hbar.size)
+    obj = cp.Maximize(cp.sum(cp.log(1 + cp.multiply(x, Hbar))))
+    constraints = [x >= 1e-6, cp.sum(x) - P_total == 0]
+    # Solve
+    prob = cp.Problem(obj, constraints)
+    try:
+        prob.solve()
+        if(prob.status=='optimal'):
+            # P = np.identity(K)
+            # np.fill_diagonal(P, x.value)
+            Cap = np.sum(np.log2(1 +  x.value * Hbar))
+            # curpow = (x.value * qkk).sum()
+            print(f"  {prob.status}, {x.value}, {prob.value*np.log2(np.e)}/{Cap}")
+
+            return x.value
+        else:
+            tmp  = P_total / Hbar.size
+            return np.ones(Hbar.size) * tmp
+    except:
+        print("  [Power allocate error]")
+        tmp  = P_total / Hbar.size
+        return np.ones(Hbar.size) * tmp
+
+
+
+
 
 
 

@@ -171,7 +171,6 @@ def Capon(Rxx, K, N):
 # （1）求根MUSIC算法与谱搜索方式的MUSIC算法原理是一样的，只不过是用一个关于z的矢量来代替导向矢量，从而用求根过程代替搜索过程；
 # （2）由于噪声的存在，求出的根不可能在单位圆上，可选择接近单位圆上的根为真实信号的根，这就存在一定的误差；
 # （3）求根MUSIC算法与谱搜索的MUSIC算法相似，同样存在两种表达方式，一个是利用噪声子空间，另一个是利用信号子空间。
-
 def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
     """
     Root-MUSIC 算法进行 DOA 估计（适用于 ULA）。
@@ -213,6 +212,159 @@ def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
 
     return np.sort(doa_estimates_deg), roots_all
 
+
+def DOA_ML(Rxx):
+    Thetalst = np.arange(-90, 90.1, 0.5)
+    angle = np.deg2rad(Thetalst)
+    P_ml = np.zeros(angle.size, dtype = complex)
+    for i, ang in enumerate(angle):
+        scan = np.exp(-1j * np.pi * np.arange(N) * np.sin(ang)).reshape(-1, 1)
+        Pa = scan/(scan.conjugate().T @ scan) * scan.conjugate().T
+        P_ml[i] = np.trace(Pa @ Rxx) / N
+
+    P_ml = np.abs(P_ml) / np.abs(P_ml).max()
+    P_ml = 10 * np.log10(P_ml)
+
+    peaks, _ =  scipy.signal.find_peaks(P_ml, height = -10, distance = 10)
+    angle_est = Thetalst[peaks]
+
+    return Thetalst, P_ml, angle_est, peaks
+
+
+def DOA_FOCUSS(Rxx, spar = 0, reg = 1e-4, err = 1e-4, maxIter = 1000):
+    #   DOA_FOCUSS 基于欠定系统局灶解法(Focal Under determinedSystem Solver)
+    #   实现稀疏恢复获得DOA估计结果
+    #   scan_a      DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    #   u           对回波自相关矩阵做酉对角化后，最大特征值对应的酉向量
+    #   lamda_spe   稀疏因子，效果类似于结果的范数约束
+    #   lamda_reg   正则化因子，过大会趋于0解，过小结果发散
+    #   lamda_err   迭代结束误差
+    #   P_focuss    通过FOCUSS法得到的归一化来波方向功率估计
+    N = Rxx.shape[0]   # 计算阵元数
+    Thetalst = np.arange(-90, 90.1, 0.5)
+    angle = np.deg2rad(Thetalst)
+    # DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    Dg = np.exp(-1j * np.pi * np.arange(N)[:,None] * np.sin(angle))
+
+    # 特征值分解
+    eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
+    idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
+    eigvector = eigvector[:, idx]
+    u = eigvector[:,-1]     # 对回波自相关矩阵做酉对角化后，最大特征值对应的酉向量
+
+    s0 = Dg.conjugate().T @ scipy.linalg.inv(Dg @ Dg.conjugate().T) @ u
+
+    for _ in range(maxIter):
+        W = np.diag(s0 ** (1-spar/2))
+        s = W @ W.conjugate().T @ Dg.conjugate().T @ scipy.linalg.inv(Dg@(W @ W.conjugate().T)@Dg.conjugate().T + reg * np.eye(N) ) @ u
+        if np.linalg.norm(s - s0)/np.linalg.norm(s0) < err:
+            break
+        s0 = s
+    P_focuss = np.abs(s)
+    P_focuss = np.abs(P_focuss) / np.abs(P_focuss).max()
+    P_focuss[np.where(P_focuss < 1e-4)] = 1e-4
+    P_focuss = 10 * np.log10(P_focuss)
+
+    peaks, _ =  scipy.signal.find_peaks(P_focuss, height = -10, distance = 10)
+    angle_est = Thetalst[peaks]
+
+    return Thetalst, P_focuss, angle_est, peaks
+
+def DOA_PINV(Rxx, ):
+    # DOA_PINV 基于伪逆法实现稀疏恢复，效果等同于最大似然估计法
+    #   u       对回波自相关矩阵做酉对角化后，最大特征值对应的酉向量
+    #   scan_a  DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    #   s_pinv  基于PINV法得到的不同来波方向的归一化功率
+    N = Rxx.shape[0]   # 计算阵元数
+    Thetalst = np.arange(-90, 90.1, 0.5)
+    angle = np.deg2rad(Thetalst)
+    # DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    scan_a = np.exp(-1j * np.pi * np.arange(N)[:,None] * np.sin(angle))
+
+
+    # 特征值分解
+    eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
+    idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
+    eigvector = eigvector[:, idx]
+    u = eigvector[:,-1]     # 对回波自相关矩阵做酉对角化后，最大特征值对应的酉向量
+
+    s_pinv = u.conjugate().T @ scipy.linalg.pinv(scan_a).conjugate().T
+    s_pinv = np.abs(s_pinv)
+
+    # P_focuss = np.abs(s)
+    s_pinv = np.abs(s_pinv) / np.abs(s_pinv).max()
+    # P_focuss[np.where(P_focuss < 1e-4)] = 1e-4
+    s_pinv = 10 * np.log10(s_pinv)
+
+    peaks, _ =  scipy.signal.find_peaks(s_pinv, height = -10, distance = 10)
+    angle_est = Thetalst[peaks]
+
+    return Thetalst, s_pinv, angle_est, peaks
+
+def DOA_EM_SBL(noisevar, Rxx, Ns, err = 1e-3, timelim = 30):
+    # 基于期望最大化-稀疏贝叶斯学习方法实现DOA估计
+    #   noisevar    估计的噪声方差
+    #   scan_a      DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    #   Rxx         回波自相关矩阵
+    #   Ns          快拍数
+    #   err         迭代误差限，迭代退出的条件之一
+    #   timelim     迭代次数限制，迭代退出的条件之二
+    N = Rxx.shape[0]   # 计算阵元数
+    Thetalst = np.arange(-90, 90.1, 0.5)
+
+    angle = np.deg2rad(Thetalst)
+    # DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    scan_a = np.exp(-1j * np.pi * np.arange(N)[:,None] * np.sin(angle))
+    scan_len = scan_a.shape[-1]
+    times_cnt = 0
+    Gamma = np.eye(scan_len, dtype=complex) * 0.1
+    while 1:
+        times_cnt += 1
+        # E-step
+        Sigma_x = scipy.linalg.pinv(noisevar * (scan_a.conjugate().T @ scan_a) + scipy.linalg.pinv(Gamma))
+        Mu_x = Sigma_x / noisevar @ scan_a.conjugate().T @ Rxx
+        # M-step
+        Gamma_new = Gamma
+        for i in range(scan_len):
+            mu_xn = Mu_x[i, :]
+            Gamma_new[i, i] = mu_xn @ mu_xn.conjugate().T / Ns + Sigma_x[i, i]
+        if np.sum(np.abs(np.diag(Gamma_new - Gamma))) < err or times_cnt > timelim:
+            break
+        Gamma = Gamma_new
+    Gamma_new = np.abs(np.diag(Gamma_new))
+    s_sbl = Gamma_new / np.max(Gamma_new)
+    s_sbl = 10 * np.log10(s_sbl)
+    peaks, _ =  scipy.signal.find_peaks(s_sbl, height = -10, distance = 10)
+    angle_est = Thetalst[peaks]
+    return Thetalst, s_sbl, angle_est, peaks
+
+import cvxpy as cpy
+def DOA_CVX(Rxx, p_norm, tor_lim = 1e-1):
+    Thetalst = np.arange(-90, 90.1, 0.5)
+    angle = np.deg2rad(Thetalst)
+    # DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
+    scan_a = np.exp(-1j * np.pi * np.arange(N)[:,None] * np.sin(angle))
+    scan_len = scan_a.shape[-1]
+    # 特征值分解
+    eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
+    idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
+    eigvector = eigvector[:, idx]
+    u = eigvector[:,-1][:,None]     # 对回波自相关矩阵做酉对角化后，最大特征值对应的酉向量
+
+    s_cvx = cpy.Variable((scan_len, 1))
+    constraints = [cpy.norm(u - scan_a @ s_cvx, 2) <= tor_lim]
+    prob = cpy.Problem(cpy.Minimize(cpy.sum(cpy.power(s_cvx, p_norm))), constraints)
+    prob.solve()
+    s_cvx = np.abs(s_cvx.value.flatten())
+    s_cvx = s_cvx / np.max(s_cvx)
+    s_cvx = 10 * np.log10(s_cvx)
+    peaks, _ =  scipy.signal.find_peaks(s_cvx, height = -10, distance = 10)
+    angle_est = Thetalst[peaks]
+    return Thetalst, s_cvx, angle_est, peaks
+
+
+
+
 derad = np.pi/180             # 角度->弧度
 N = 8                         # 阵元个数
 K = 4                         # 信源数目
@@ -225,7 +377,7 @@ Ns = 1000                                 # 快拍数
 fs = 1e8                                  # 满足采样定理，fs >> f0
 Ts = 1/fs
 t = np.arange(Ns) * Ts
-SNR = 10                                  # 信噪比(dB)
+SNR = 20                                  # 信噪比(dB)
 
 # generate signals
 X = np.zeros((N, Ns), dtype = complex)
@@ -236,7 +388,8 @@ for i in range(K):
     X += np.outer(a_k, s)
 
 # add noise
-noisevar = 10 ** (-SNR / 20)
+Xpow = np.mean(np.abs(X)**2)
+noisevar = Xpow * 10 ** (-SNR / 10)
 noise = np.sqrt(noisevar/2) * (np.random.randn(*X.shape) + 1j * np.random.randn(*X.shape))
 X += noise
 Rxx = X @ X.T.conjugate() / Ns
@@ -246,6 +399,11 @@ Thetalst, Pcbf, angle_cbf, perak_cbf = CBF(Rxx, K, N)
 Thetalst, Pcapon, angle_capon, peak_capon = Capon(Rxx, K, N)
 Theta_esprit = ESPRIT(Rxx, K, N)
 Theta_root, roots_all = ROOT_MUSIC(Rxx, K )
+Thetalst, P_ml, angle_ml, peak_ml = DOA_ML(Rxx)
+Thetalst, P_focuss, angle_focuss, peak_focuss = DOA_FOCUSS(Rxx)
+Thetalst, P_pinv, angle_pinv, peak_pinv = DOA_PINV(Rxx)
+Thetalst, P_sbl, angle_sbl, peak_sbl = DOA_EM_SBL(noisevar, Rxx, Ns)
+
 
 print(f"True = {doa_deg}")
 print(f"MUSIC = {angle_music}")
@@ -266,6 +424,16 @@ axs.plot(angle_cbf, Pcbf[perak_cbf], linestyle='', marker = 'd', color=colors[1]
 
 axs.plot(Thetalst, Pcapon , color = colors[2], linestyle='-.', lw = 2, label = "CAPON", )
 axs.plot(angle_capon, Pcapon[peak_capon], linestyle='', marker = 's', color=colors[2], markersize = 12)
+
+# axs.plot(Thetalst, P_ml , color = colors[3], linestyle='-.', lw = 2, label = "ML", )
+# axs.plot(angle_ml, P_ml[peak_ml], linestyle='', marker = 's', color=colors[3], markersize = 12)
+
+# axs.plot(Thetalst, P_focuss , color = colors[4], linestyle='-.', lw = 2, label = "Focuss", )
+# axs.plot(angle_focuss, P_focuss[peak_focuss], linestyle='', marker = 's', color=colors[4], markersize = 12)
+
+
+# axs.plot(Thetalst, P_pinv , color = colors[5], linestyle='-.', lw = 2, label = "Pinv", )
+# axs.plot(angle_pinv, P_pinv[peak_pinv], linestyle='', marker = 's', color=colors[5], markersize = 12)
 
 axs.plot(Theta_esprit, np.zeros(K), linestyle='', marker = '*', color=colors[3], markersize = 12, label = "ESPRIT", )
 axs.plot(Theta_root, np.zeros(K)-5, linestyle='', marker = 'v', color='r', markersize = 12, label = "ROOT MUSIC", )
@@ -293,12 +461,57 @@ plt.show()
 plt.close('all')
 
 
+###>>>>>>>>>>
+colors = plt.cm.jet(np.linspace(0, 1, 5))
+fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
+
+axs.plot(Thetalst, P_ml , color = colors[0], linestyle='-.', lw = 2, label = "ML", )
+axs.plot(angle_ml, P_ml[peak_ml], linestyle='', marker = 's', color=colors[0], markersize = 12)
+
+axs.plot(Thetalst, P_focuss , color = colors[1], linestyle='-.', lw = 2, label = "Focuss", )
+axs.plot(angle_focuss, P_focuss[peak_focuss], linestyle='', marker = 's', color=colors[1], markersize = 12)
+
+axs.plot(Thetalst, P_pinv , color = colors[2], linestyle='-.', lw = 2, label = "Pinv", )
+axs.plot(angle_pinv, P_pinv[peak_pinv], linestyle='', marker = 's', color=colors[2], markersize = 12)
+
+axs.plot(Thetalst, P_sbl , color = colors[3], linestyle='-.', lw = 2, label = "SBL", )
+axs.plot(angle_sbl, P_sbl[peak_sbl], linestyle='', marker = 's', color=colors[3], markersize = 12)
+
+
+axs.set_xlabel( "DOA/(degree)",)
+axs.set_ylabel('Normalized Spectrum/(dB)',)
+axs.legend()
+
+plt.show()
+plt.close('all')
 
 
 
+#%% CVX
+# Thetalst, P_cvx1, angle_cvx1, peak_cvx1 = DOA_CVX(Rxx, 1, tor_lim = 1e-1)
+# Thetalst, P_cvx15, angle_cvx15, peak_cvx15 = DOA_CVX(Rxx, 1.5, tor_lim = 1e-1)
+Thetalst, P_cvx2, angle_cvx2, peak_cvx2 = DOA_CVX(Rxx, 2, tor_lim = 1e-1)
+
+###>>>>>>>>>>
+colors = plt.cm.jet(np.linspace(0, 1, 5))
+fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
+
+# axs.plot(Thetalst, P_cvx1 , color = colors[0], linestyle='-.', lw = 2, label = "ML", )
+# axs.plot(angle_ml, P_cvx1[peak_cvx1], linestyle='', marker = 's', color=colors[0], markersize = 12)
+
+# axs.plot(Thetalst, P_cvx15 , color = colors[1], linestyle='-.', lw = 2, label = "Focuss", )
+# axs.plot(angle_focuss, P_cvx15[peak_cvx15], linestyle='', marker = 's', color=colors[1], markersize = 12)
+
+axs.plot(Thetalst, P_cvx2 , color = colors[2], linestyle='-.', lw = 2, label = "Pinv", )
+axs.plot(angle_pinv, P_cvx2[peak_cvx2], linestyle='', marker = 's', color=colors[2], markersize = 12)
 
 
+axs.set_xlabel( "DOA/(degree)",)
+axs.set_ylabel('Normalized Spectrum/(dB)',)
+axs.legend()
 
+plt.show()
+plt.close('all')
 
 
 

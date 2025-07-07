@@ -34,7 +34,7 @@ class checkpoint(object):
         elif args.transmitWay == 'flip':
             way = args.transmitWay + str(args.flip_rate) + '_'
             way = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
-        elif args.transmitWay == 'proposed' or args.transmitWay == 'sic':
+        elif args.transmitWay == 'proposed' or args.transmitWay == 'sic' or args.transmitWay == 'TDMA' or args.transmitWay == 'OFDM':
             way = args.transmitWay + str(args.noisePSD) + '(dBm)_'
             way = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
         tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{way}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
