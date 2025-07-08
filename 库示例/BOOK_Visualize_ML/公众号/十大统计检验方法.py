@@ -59,9 +59,6 @@ plt.show()
 
 
 
-
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>> 2. 卡方检验 (Chi-Square Test)
 import numpy as np
 import pandas as pd

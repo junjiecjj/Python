@@ -353,12 +353,12 @@ def DOA_CVX(Rxx, p_norm, tor_lim = 1e-1):
 
     s_cvx = cpy.Variable((scan_len, 1))
     constraints = [cpy.norm(u - scan_a @ s_cvx, 2) <= tor_lim]
-    prob = cpy.Problem(cpy.Minimize(cpy.sum(cpy.power(s_cvx, p_norm))), constraints)
+    prob = cpy.Problem(cpy.Minimize(cpy.sum(cpy.pnorm(s_cvx, p_norm))), constraints)
     prob.solve()
     s_cvx = np.abs(s_cvx.value.flatten())
     s_cvx = s_cvx / np.max(s_cvx)
     s_cvx = 10 * np.log10(s_cvx)
-    peaks, _ =  scipy.signal.find_peaks(s_cvx, height = -10, distance = 10)
+    peaks, _ =  scipy.signal.find_peaks(s_cvx, height = -10, distance = 20)
     angle_est = Thetalst[peaks]
     return Thetalst, s_cvx, angle_est, peaks
 
@@ -488,22 +488,22 @@ plt.close('all')
 
 
 #%% CVX
-# Thetalst, P_cvx1, angle_cvx1, peak_cvx1 = DOA_CVX(Rxx, 1, tor_lim = 1e-1)
-# Thetalst, P_cvx15, angle_cvx15, peak_cvx15 = DOA_CVX(Rxx, 1.5, tor_lim = 1e-1)
+Thetalst, P_cvx1, angle_cvx1, peak_cvx1 = DOA_CVX(Rxx, 1, tor_lim = 1e-1)
+Thetalst, P_cvx15, angle_cvx15, peak_cvx15 = DOA_CVX(Rxx, 1.5, tor_lim = 1e-1)
 Thetalst, P_cvx2, angle_cvx2, peak_cvx2 = DOA_CVX(Rxx, 2, tor_lim = 1e-1)
 
 ###>>>>>>>>>>
 colors = plt.cm.jet(np.linspace(0, 1, 5))
 fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
 
-# axs.plot(Thetalst, P_cvx1 , color = colors[0], linestyle='-.', lw = 2, label = "ML", )
-# axs.plot(angle_ml, P_cvx1[peak_cvx1], linestyle='', marker = 's', color=colors[0], markersize = 12)
+axs.plot(Thetalst, P_cvx1 , color = colors[0], linestyle='-.', lw = 2, label = "Cvx1", )
+axs.plot(angle_cvx1, P_cvx1[peak_cvx1], linestyle='', marker = 's', color=colors[0], markersize = 12)
 
-# axs.plot(Thetalst, P_cvx15 , color = colors[1], linestyle='-.', lw = 2, label = "Focuss", )
-# axs.plot(angle_focuss, P_cvx15[peak_cvx15], linestyle='', marker = 's', color=colors[1], markersize = 12)
+axs.plot(Thetalst, P_cvx15 , color = colors[1], linestyle='-.', lw = 2, label = "Cvx1.5", )
+axs.plot(angle_cvx15, P_cvx15[peak_cvx15], linestyle='', marker = 's', color=colors[1], markersize = 12)
 
-axs.plot(Thetalst, P_cvx2 , color = colors[2], linestyle='-.', lw = 2, label = "Pinv", )
-axs.plot(angle_pinv, P_cvx2[peak_cvx2], linestyle='', marker = 's', color=colors[2], markersize = 12)
+axs.plot(Thetalst, P_cvx2 , color = colors[2], linestyle='-.', lw = 2, label = "Cvx2", )
+axs.plot(angle_cvx2, P_cvx2[peak_cvx2], linestyle='', marker = 's', color=colors[2], markersize = 12)
 
 
 axs.set_xlabel( "DOA/(degree)",)
