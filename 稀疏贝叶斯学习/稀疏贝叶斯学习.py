@@ -537,21 +537,24 @@ if __name__ == "__main__":
     N = 8  # 阵元数
     wavelength = 1.0
     array_pos = np.arange(N) * 0.5 * wavelength  # ULA
-    theta_true = np.array([-20, 0, 45])  # 真实DOA
+    theta_true = np.array([-30, 0, 45])  # 真实DOA
+    T = 100  # 快拍数
     theta_grid = np.arange(-80, 80, 0.5)  # 1度分辨率
 
-    # 生成理论协方差矩阵（跳过原始信号生成）
+    # 生成接收信号（含相干信号）
     A = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(np.deg2rad(theta_true)[None, :]))
-    Rss = np.diag([1]*len(theta_true))  # 信号功率
-    Rxx = A @ Rss @ A.conj().T + 0.5 * np.eye(N)  # SNR=20dB
+    S = np.random.randn(len(theta_true), T) + 1j * np.random.randn(len(theta_true), T)  # 相干信号源
+    Y = A @ S + 0.5 * (np.random.randn(N, T) + 1j * np.random.randn(N, T)) / np.sqrt(2)
 
-    # 加入估计误差（模拟样本协方差）
-    Rxx += 0.1 * (np.random.randn(N, N) + 1j * np.random.randn(N, N)) / np.sqrt(2)
-    Rxx = (Rxx + Rxx.conj().T) / 2  # 强制Hermitian
+    # 方法1：直接处理原始信号
+    # theta_est1, ps1 = SBL_DOA_enhanced(Y, array_pos, theta_grid, use_covariance=False)
 
-    # DOA估计
-    theta_est, ps = SBL_DOA_Rxx(Rxx, array_pos, theta_grid)
-    print(f"Estimated DOAs: {theta_est}")
+    # 方法2：使用协方差矩阵输入
+    Rxx = Y @ Y.conj().T / T
+    theta_est2, ps2 = SBL_DOA_Rxx(Rxx, array_pos, theta_grid,  )
+
+    # print(f"原始信号输入结果: {theta_est1}")
+    print(f"协方差矩阵输入结果: {theta_est2}")
 
 
 #%% https://blog.csdn.net/qq_45471796/article/details/130487580

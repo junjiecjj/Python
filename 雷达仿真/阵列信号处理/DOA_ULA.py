@@ -341,14 +341,12 @@ def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
     from scipy.signal import find_peaks
     """
     基于协方差矩阵的稀疏贝叶斯学习DOA估计
-
     参数:
         Rxx: 样本协方差矩阵 (N x N)
         array_pos: 阵列位置（单位：波长）
         theta_grid: 角度搜索网格（度）
         max_iter: 最大迭代次数
         tol: 收敛阈值
-
     返回:
         theta_est: 估计的DOA角度（度）
         power_spectrum: 空间谱（dB）
