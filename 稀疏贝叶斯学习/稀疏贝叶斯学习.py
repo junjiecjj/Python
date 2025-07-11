@@ -443,7 +443,7 @@ if __name__ == "__main__":
     # print(f"原始信号输入结果: {theta_est1}")
     print(f"协方差矩阵输入结果: {theta_est2}")
 
-###>>>>>>>>>>>>>>>>>>>>>>>>>> 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现
+###>>>>>>>>>>>>>>>>>>>>>>>>>> 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现, 版本一
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import inv, sqrtm
@@ -555,6 +555,112 @@ if __name__ == "__main__":
 
     # print(f"原始信号输入结果: {theta_est1}")
     print(f"协方差矩阵输入结果: {theta_est2}")
+
+###>>>>>>>>>>>>>>>>>>>>>>>>>> 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现, 版本2
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import inv, eigvalsh
+from scipy.signal import find_peaks
+
+def SBL_DOA_Rxx(Rxx, array_pos, theta_grid, max_iter=100, tol=1e-6):
+    """
+    严格理论实现的SBL DOA估计 (复数域运算)
+
+    参数:
+        Rxx: 样本协方差矩阵 (N x N)，可为复数Hermitian矩阵
+        array_pos: 阵列位置 (波长单位)
+        theta_grid: 角度网格 (度)
+        max_iter: 最大迭代次数
+        tol: 收敛阈值
+
+    返回:
+        theta_est: 估计的DOA (度)
+        power_spectrum: 空间谱 (dB)
+    """
+    # ===== 1. 初始化 =====
+    N = Rxx.shape[0]
+    M = len(theta_grid)
+
+    # 构造字典矩阵 (保持复数)
+    theta_rad = np.deg2rad(theta_grid)
+    Phi = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(theta_rad[None, :]))
+
+    # 初始化超参数 (理论形式)
+    alpha = np.ones(M, dtype=complex)  # 复数初始化
+    beta = 1 / np.mean(np.real(eigvalsh(Rxx)[:N//2]))  # 实数噪声方差
+
+    # ===== 2. EM算法迭代 =====
+    for iter in range(max_iter):
+        # --- E-step: 严格理论实现 ---
+        Sigma_x = inv(np.diag(alpha) + beta * Phi.conj().T @ Phi + 1e-10 * np.eye(M))
+        Mu_x = beta * Sigma_x @ Phi.conj().T @ Rxx
+
+        # --- M-step: 理论更新公式 ---
+        gamma = 1 - alpha * np.diag(Sigma_x)
+        alpha_new = gamma / np.diag(Mu_x @ Mu_x.conj().T + 1e-10)
+
+        # 噪声方差更新 (保持实数)
+        residual = Rxx - Phi @ Mu_x
+        beta_new = N / np.real(np.trace(residual) + 1e-10)
+
+        # --- 复数模收敛检查 ---
+        if np.max(np.abs(alpha_new - alpha) / (np.abs(alpha) + 1e-10)) < tol:
+            break
+
+        alpha, beta = alpha_new, beta_new
+
+    # ===== 3. 空间谱计算 (理论形式) ====
+    power = 1 / (np.abs(alpha) + 1e-10)  # 取模处理
+    power_db = 10 * np.log10(power / np.max(power) + 1e-10)
+
+    # ===== 4. 峰值检测 (复数兼容) ====
+    peaks, _ = find_peaks(np.real(power_db), height=-5, distance=10)
+    theta_est = theta_grid[peaks]
+
+    # ===== 5. 可视化 =====
+    plt.figure(figsize=(10, 5))
+    plt.plot(theta_grid, np.real(power_db))
+    plt.scatter(theta_est, np.real(power_db[peaks]), c='r', label=f'Estimated DOAs: {theta_est}')
+    plt.xlabel('Angle (degrees)')
+    plt.ylabel('Power (dB)')
+    plt.title('Theoretical SBL DOA Estimation (Complex Domain)')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    return theta_est, power_db
+
+
+# 示例使用
+if __name__ == "__main__":
+    # 参数设置
+    np.random.seed(0)
+    N = 8  # 阵元数
+    wavelength = 1.0
+    array_pos = np.arange(N) * 0.5 * wavelength  # ULA
+    theta_true = np.array([-20, 0, 45])  # 真实DOA
+    T = 100  # 快拍数
+    theta_grid = np.arange(-80, 80, 0.5)  # 1度分辨率
+
+    # 生成接收信号（含相干信号）
+    A = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(np.deg2rad(theta_true)[None, :]))
+    S = np.random.randn(len(theta_true), T) + 1j * np.random.randn(len(theta_true), T)  # 相干信号源
+    Y = A @ S + 0.5 * (np.random.randn(N, T) + 1j * np.random.randn(N, T)) / np.sqrt(2)
+
+    # 方法1：直接处理原始信号
+    # theta_est1, ps1 = SBL_DOA_enhanced(Y, array_pos, theta_grid, use_covariance=False)
+
+    # 方法2：使用协方差矩阵输入
+    Rxx = Y @ Y.conj().T / T
+    theta_est2, ps2 = SBL_DOA_Rxx(Rxx, array_pos, theta_grid,  )
+
+    # print(f"原始信号输入结果: {theta_est1}")
+    print(f"协方差矩阵输入结果: {theta_est2}")
+
+
+
+
 
 
 #%% https://blog.csdn.net/qq_45471796/article/details/130487580
@@ -758,11 +864,6 @@ if __name__ == "__main__":
 
     plt.grid(True)
     plt.show()
-
-
-
-
-
 
 
 
