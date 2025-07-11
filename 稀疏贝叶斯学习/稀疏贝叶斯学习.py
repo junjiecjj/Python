@@ -50,20 +50,19 @@ print("Confusion matrix:\n", confusion_matrix(y_test, y_pred))
 
 
 #%% DeepSeek, SBL for Compress senesing
+# https://zhuanlan.zhihu.com/p/1893622601374468027
 import numpy as np
 import matplotlib.pyplot as plt
 
-def sparse_bayesian_learning(Phi, y, max_iter=100, tol=1e-4, prune_threshold=1e3):
+def CS_SBL(Phi, y, max_iter=100, tol=1e-4, prune_threshold=1e3):
     """
     Sparse Bayesian Learning (SBL) via EM algorithm.
-
     Parameters:
         Phi: Design matrix (N x M)
         y: Observation vector (N x 1)
         max_iter: Maximum iterations
         tol: Convergence tolerance
         prune_threshold: Threshold for pruning small weights
-
     Returns:
         w: Estimated sparse weights (M x 1)
         alpha: Hyperparameters (M x 1)
@@ -78,16 +77,16 @@ def sparse_bayesian_learning(Phi, y, max_iter=100, tol=1e-4, prune_threshold=1e3
         A = np.diag(alpha)
         Sigma = np.linalg.inv(sigma2 ** (-1) * Phi.T @ Phi + A)
         mu = sigma2 ** (-1) * Sigma @ Phi.T @ y
-
         # M-Step: Update alpha and sigma2
         gamma = 1 - alpha * np.diag(Sigma)
         alpha_new = gamma / (mu ** 2 + 1e-10)  # Avoid division by zero
-        sigma2_new = np.linalg.norm(y - Phi @ mu) ** 2 / (N - np.sum(gamma))
+        # sigma2_new = np.linalg.norm(y - Phi @ mu) ** 2 / (N - np.sum(gamma))
+        ## or
+        sigma2_new = (np.linalg.norm(y - Phi @ mu) ** 2 + sigma2 * np.sum(gamma))/ N
 
         # Check convergence
         if np.max(np.abs(alpha_new - alpha)) < tol and np.abs(sigma2_new - sigma2) < tol:
             break
-
         alpha, sigma2 = alpha_new, sigma2_new
 
     # Prune small weights (set to zero if alpha > prune_threshold)
@@ -117,7 +116,7 @@ def plot_results(w_true, w_est):
 
 # Example usage
 if __name__ == "__main__":
-    np.random.seed(0)
+    np.random.seed(42)
     N, M = 100, 200
     K = 10
     Phi = np.random.randn(N, M)
@@ -128,7 +127,7 @@ if __name__ == "__main__":
     y = Phi @ w_true + 0.01 * np.random.randn(N)  # Observations with noise
 
     # Run SBL
-    w_est, alpha, sigma2 = sparse_bayesian_learning(Phi, y)
+    w_est, alpha, sigma2 = CS_SBL(Phi, y)
 
     # Plot results
     plot_results(w_true, w_est)
@@ -138,8 +137,9 @@ if __name__ == "__main__":
     print("Estimated Non-zero weight indices:", np.where(np.abs(w_est) > 0.1)[0])
 
 
-#%% SBL of DOA estimate
+#%% DeepSeek, SBL of DOA estimate
 
+####>>>>>>>>>>>>>>>>>>>>>>>>>>.原始接收信号矩阵Y, T = 1
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -171,8 +171,9 @@ def sparse_bayesian_doa(y, array_geometry, theta_grid, max_iter=100, tol=1e-4):
         alpha_new = gamma / (np.abs(mu) ** 2 + 1e-10)  # Add epsilon to avoid division by zero
 
         # Update sigma2
-        sigma2_new = np.linalg.norm(y - Phi @ mu) ** 2 / (N - np.sum(gamma))
-
+        # sigma2_new = np.linalg.norm(y - Phi @ mu) ** 2 / (N - np.sum(gamma))
+        ## or
+        sigma2_new = (np.linalg.norm(y - Phi @ mu) ** 2 + sigma2 * np.sum(gamma))/ N
         # Check convergence
         if np.max(np.abs(alpha_new - alpha)) < tol and np.abs(sigma2_new - sigma2) < tol:
             break
@@ -200,7 +201,7 @@ def plot_doa_spectrum(theta_grid, w_est, true_doas=None):
 
 # Example usage
 if __name__ == "__main__":
-    np.random.seed(0)
+    np.random.seed(42)
     N = 8  # Number of sensors
     wavelength = 1.0
     array_geometry = np.arange(N) * 0.5 * wavelength  # ULA
@@ -208,7 +209,7 @@ if __name__ == "__main__":
     theta_grid = np.linspace(-80, 80, 180)  # Angle grid
 
     # Generate signal
-    A = np.zeros((N, len(theta_true)), dtype=complex)
+    A = np.zeros((N, len(theta_true)), dtype = complex)
     for k in range(len(theta_true)):
         A[:, k] = np.exp(-2j * np.pi * array_geometry * np.sin(np.deg2rad(theta_true[k])))
     s = np.random.randn(len(theta_true)) + 1j * np.random.randn(len(theta_true))
@@ -218,8 +219,340 @@ if __name__ == "__main__":
     w_est, doa_estimates = sparse_bayesian_doa(y, array_geometry, theta_grid)
 
     # Plot results
-    plot_doa_spectrum(theta_grid, w_est, true_doas=theta_true)
+    plot_doa_spectrum(theta_grid, w_est, true_doas = theta_true)
     print("Estimated DOAs (degrees):", doa_estimates)
+
+####>>>>>>>>>>>>>>>>>>>>>>>>>>.原始接收信号矩阵Y, T = 1000
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import sqrtm, inv
+
+def SBL_DOA(Y, array_pos, theta_grid, max_iter=100, tol=1e-4):
+    """
+    基于稀疏贝叶斯学习的DOA估计（数值稳定版本）
+    """
+    N, T = Y.shape
+    M = len(theta_grid)
+
+    # 构造字典矩阵（添加微小正则项确保数值稳定）
+    Phi = np.zeros((N, M), dtype=complex)
+    for m in range(M):
+        Phi[:, m] = np.exp(-2j * np.pi * array_pos * np.sin(np.deg2rad(theta_grid[m])))
+    Phi += 1e-10 * np.random.randn(N, M)  # 微小扰动避免奇异矩阵
+
+    # 初始化（确保非零）
+    alpha = np.ones(M) + 1e-6
+    beta = 1 / (np.var(Y) + 1e-10)
+    mu_x = np.zeros((M, T), dtype=complex)
+
+    for it in range(max_iter):
+        try:
+            # E-step: 添加正则项确保矩阵可逆
+            Sigma_x = inv(np.diag(alpha) + beta * Phi.conj().T @ Phi + 1e-8 * np.eye(M))
+            mu_x = beta * Sigma_x @ Phi.conj().T @ Y
+
+            # M-step: 添加保护避免除零
+            gamma = np.clip(1 - alpha * np.diag(Sigma_x), 1e-10, 1)
+            mu_power = np.mean(np.abs(mu_x)**2, axis=1)
+            alpha_new = gamma / (mu_power + 1e-10)
+
+            # 噪声方差更新（确保正值）
+            residual = Y - Phi @ mu_x
+            beta_new = (N*T) / (np.linalg.norm(residual, 'fro')**2 + 1e-10)
+            beta_new = np.clip(beta_new, 1e-10, 1e10)
+
+            # 检查收敛
+            if np.max(np.abs(alpha_new - alpha)) < tol and np.abs(beta_new - beta) < tol:
+                break
+
+            alpha, beta = alpha_new, beta_new
+
+        except np.linalg.LinAlgError:
+            print(f"矩阵求逆失败于迭代 {it}，添加更强的正则项")
+            Sigma_x = inv(np.diag(alpha) + beta * Phi.conj().T @ Phi + 1e-6 * np.eye(M))
+            continue
+
+    # 计算空间谱（对数尺度处理零值）
+    P = np.mean(np.abs(mu_x)**2, axis=1)
+    P = P / (np.max(P) + 1e-10)
+
+    # 提取DOA估计（基于峰值检测）
+    peaks = np.where(P > 0.5 * np.max(P))[0]
+    theta_est = theta_grid[peaks]
+
+    return theta_est, P
+
+# 示例使用
+if __name__ == "__main__":
+    # 参数设置
+    N = 8  # 阵元数
+    wavelength = 1.0
+    array_pos = np.arange(N) * 0.5 * wavelength  # ULA
+    theta_true = np.array([-20, 10, 30])  # 真实DOA
+    T = 1000  # 快拍数
+    theta_grid = np.linspace(-40, 40, 181)  # 角度网格
+
+    # 生成接收信号
+    A = np.zeros((N, len(theta_true)), dtype=complex)
+    for k in range(len(theta_true)):
+        A[:, k] = np.exp(-2j * np.pi * array_pos * np.sin(np.deg2rad(theta_true[k])))
+    S = (np.random.randn(len(theta_true), T) + 1j * np.random.randn(len(theta_true), T)) / np.sqrt(2)
+    Y = A @ S + 0.1 * (np.random.randn(N, T) + 1j * np.random.randn(N, T)) / np.sqrt(2)
+
+    # DOA估计
+    theta_est, P = SBL_DOA(Y, array_pos, theta_grid)
+
+    # 绘制结果
+    plt.figure(figsize=(10, 5))
+    plt.plot(theta_grid, 10 * np.log10(P + 1e-10))
+    plt.scatter(theta_true, np.zeros(len(theta_true)), c='r', marker='x', label='True DOA')
+    plt.xlabel('Angle (degrees)')
+    plt.ylabel('Power (dB)')
+    plt.title('DOA Estimation using SBL')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    print("Estimated DOAs:", theta_est)
+
+####>>>>>>>>>>>>>>>>>>>>>>>>>>.回波自相关矩阵Rxx
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import inv, pinv
+from scipy.signal import find_peaks
+
+def SBL_DOA_enhanced(Y, array_pos, theta_grid, max_iter=100, tol=1e-4, use_covariance=True):
+    """
+    增强型稀疏贝叶斯学习DOA估计（支持原始信号和协方差矩阵输入）
+
+    参数:
+        Y: 接收信号矩阵 (N x T) 或协方差矩阵 (N x N)
+        array_pos: 阵列位置（单位：波长）
+        theta_grid: 角度搜索网格（度）
+        max_iter: 最大迭代次数
+        tol: 收敛阈值
+        use_covariance: 是否自动检测输入为协方差矩阵
+
+    返回:
+        theta_est: 估计的DOA角度
+        power_spectrum: 空间谱（dB）
+    """
+    # 输入检测和预处理
+    if Y.shape[0] == Y.shape[1] and use_covariance:
+        Rxx = Y  # 直接使用输入的协方差矩阵
+        N = Rxx.shape[0]
+        T = 1  # 虚拟快拍数
+    else:
+        N, T = Y.shape
+        # 计算样本协方差矩阵（添加正则项确保正定）
+        Rxx = (Y @ Y.conj().T) / T + 1e-8 * np.eye(N)
+
+    M = len(theta_grid)
+
+    # 构造字典矩阵（带微扰防止奇异）
+    theta_rad = np.deg2rad(theta_grid)
+    Phi = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(theta_rad[None, :]))
+    Phi += 1e-10 * (np.random.randn(*Phi.shape) + 1j * np.random.randn(*Phi.shape))
+
+    # 初始化参数（基于特征值分解）
+    eigvals = np.linalg.eigvalsh(Rxx)
+    noise_var = np.real(np.mean(eigvals[:N//2]))  # 噪声方差估计
+    Gamma = np.eye(M) * 0.1  # 初始稀疏性参数
+    power_history = []
+
+    # EM算法主循环
+    for it in range(max_iter):
+        try:
+            # E-step: 使用Woodbury矩阵恒等式加速计算
+            PhiH_Phi = Phi.conj().T @ Phi
+            K = inv(Gamma) + PhiH_Phi / noise_var
+            Sigma_x = inv(K)
+            Mu_x = Sigma_x @ Phi.conj().T @ Rxx / noise_var
+
+            # M-step: 参数更新（带数值保护）
+            diag_Mu = np.real(np.diag(Mu_x @ Mu_x.conj().T))
+            diag_Sigma = np.real(np.diag(Sigma_x))
+            Gamma_new = np.diag(diag_Mu / T + diag_Sigma)
+            Gamma_new = np.maximum(Gamma_new, 1e-10)  # 确保正定性
+
+            # 噪声方差更新
+            residual = Rxx - Phi @ Mu_x
+            noise_var_new = np.real(np.trace(residual)) / N
+            noise_var_new = max(noise_var_new, 1e-10)
+
+            # 收敛检查
+            gamma_diff = np.linalg.norm(Gamma_new - Gamma, 'fro')
+            if gamma_diff < tol and abs(noise_var_new - noise_var) < tol:
+                break
+
+            Gamma, noise_var = Gamma_new, noise_var_new
+            power_history.append(np.diag(Gamma).copy())
+
+        except np.linalg.LinAlgError:
+            print(f"Iteration {it}: 矩阵求逆失败，增加正则项")
+            K = inv(Gamma) + PhiH_Phi/noise_var + 1e-6 * np.eye(M)
+            Sigma_x = inv(K)
+            continue
+
+    # 结果后处理
+    power = np.real(np.diag(Gamma))
+    power_db = 10 * np.log10(power / np.max(power) + 1e-10)
+
+    # 峰值检测（自适应阈值）
+    median_power = np.median(power_db)
+    peaks, _ = find_peaks(power_db,
+                         height = median_power + 5,  # 高于中值5dB
+                         distance=len(theta_grid)//20)  # 最小角度间隔
+
+    # 结果可视化
+    plt.figure(figsize=(12, 6))
+    plt.plot(theta_grid, power_db, label='SBL Power Spectrum')
+    plt.scatter(theta_grid[peaks], power_db[peaks], c='r', label=f'Detected DOAs: {theta_grid[peaks]}')
+    plt.xlabel('Angle (degrees)')
+    plt.ylabel('Normalized Power (dB)')
+    plt.title('Enhanced SBL DOA Estimation')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    return theta_grid[peaks], power_db
+
+# 示例使用
+if __name__ == "__main__":
+    # 参数设置
+    np.random.seed(0)
+    N = 8  # 阵元数
+    wavelength = 1.0
+    array_pos = np.arange(N) * 0.5 * wavelength  # ULA
+    theta_true = np.array([-30, 0, 45])  # 真实DOA
+    T = 100  # 快拍数
+    theta_grid = np.linspace(-80, 80, 201)  # 1度分辨率
+
+    # 生成接收信号（含相干信号）
+    A = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(np.deg2rad(theta_true)[None, :]))
+    S = np.random.randn(len(theta_true), T) + 1j * np.random.randn(len(theta_true), T)  # 相干信号源
+    Y = A @ S + 0.5 * (np.random.randn(N, T) + 1j * np.random.randn(N, T)) / np.sqrt(2)
+
+    # 方法1：直接处理原始信号
+    # theta_est1, ps1 = SBL_DOA_enhanced(Y, array_pos, theta_grid, use_covariance=False)
+
+    # 方法2：使用协方差矩阵输入
+    Rxx = Y @ Y.conj().T / T
+    theta_est2, ps2 = SBL_DOA_enhanced(Rxx, array_pos, theta_grid, use_covariance=True)
+
+    # print(f"原始信号输入结果: {theta_est1}")
+    print(f"协方差矩阵输入结果: {theta_est2}")
+
+###>>>>>>>>>>>>>>>>>>>>>>>>>> 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import inv, sqrtm
+from scipy.signal import find_peaks
+
+def SBL_DOA_Rxx(Rxx, array_pos, theta_grid, max_iter=100, tol=1e-4):
+    """
+    基于协方差矩阵的稀疏贝叶斯学习DOA估计
+
+    参数:
+        Rxx: 样本协方差矩阵 (N x N)
+        array_pos: 阵列位置（单位：波长）
+        theta_grid: 角度搜索网格（度）
+        max_iter: 最大迭代次数
+        tol: 收敛阈值
+
+    返回:
+        theta_est: 估计的DOA角度（度）
+        power_spectrum: 空间谱（dB）
+    """
+    # 输入校验
+    assert Rxx.shape[0] == Rxx.shape[1], "Rxx必须是方阵"
+    N = Rxx.shape[0]
+    M = len(theta_grid)
+
+    # 构造字典矩阵（带正则化）
+    theta_rad = np.deg2rad(theta_grid)
+    Phi = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(theta_rad[None, :]))
+    Phi += 1e-10 * (np.random.randn(*Phi.shape) + 1j * np.random.randn(*Phi.shape))
+
+    # 初始化参数
+    Gamma = np.eye(M) * 0.1  # 稀疏性参数
+    noise_var = np.real(np.mean(np.linalg.eigvalsh(Rxx)[:N//2]))  # 噪声方差估计
+
+    # EM算法主循环
+    for it in range(max_iter):
+        try:
+            # E-step: 计算后验统计量 (使用Woodbury恒等式)
+            PhiH_Phi = Phi.conj().T @ Phi
+            K = inv(Gamma) + PhiH_Phi / noise_var
+            Sigma_x = inv(K + 1e-8 * np.eye(M))  # 正则化
+            Mu_x = Sigma_x @ Phi.conj().T @ Rxx / noise_var
+
+            # M-step: 更新参数
+            diag_Mu = np.real(np.diag(Mu_x @ Mu_x.conj().T))
+            diag_Sigma = np.real(np.diag(Sigma_x))
+            Gamma_new = np.diag(diag_Mu + diag_Sigma)  # T=1时的简化形式
+
+            # 噪声更新
+            residual = Rxx - Phi @ Mu_x
+            noise_var_new = np.real(np.trace(residual)) / N
+
+            # 收敛检查
+            if np.linalg.norm(Gamma_new - Gamma, 'fro') < tol:
+                break
+
+            Gamma, noise_var = Gamma_new, noise_var_new
+
+        except np.linalg.LinAlgError:
+            print(f"Iter {it}: 矩阵求逆失败，增加正则化")
+            K = inv(Gamma) + PhiH_Phi/noise_var + 1e-6 * np.eye(M)
+            Sigma_x = inv(K)
+
+    # 计算空间谱（对数尺度）
+    power = np.real(np.diag(Gamma))
+    power_db = 10 * np.log10(power / np.max(power) + 1e-10)
+
+    # 峰值检测（自适应阈值）
+    peaks, _ = find_peaks(power_db,
+                         height=np.median(power_db) + 5,  # 高于中值5dB
+                         distance=len(theta_grid)//20)    # 最小角度间隔
+
+    # 可视化
+    plt.figure(figsize=(10, 5))
+    plt.plot(theta_grid, power_db, label='SBL Power Spectrum')
+    plt.scatter(theta_grid[peaks], power_db[peaks], c='r',
+               label=f'Estimated DOAs: {theta_grid[peaks]}')
+    plt.xlabel('Angle (degrees)')
+    plt.ylabel('Normalized Power (dB)')
+    plt.title('SBL DOA Estimation using Covariance Matrix')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    return theta_grid[peaks], power_db
+
+# 示例使用
+if __name__ == "__main__":
+    # 参数设置
+    np.random.seed(0)
+    N = 8  # 阵元数
+    wavelength = 1.0
+    array_pos = np.arange(N) * 0.5 * wavelength  # ULA
+    theta_true = np.array([-20, 0, 45])  # 真实DOA
+    theta_grid = np.arange(-80, 80, 0.5)  # 1度分辨率
+
+    # 生成理论协方差矩阵（跳过原始信号生成）
+    A = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(np.deg2rad(theta_true)[None, :]))
+    Rss = np.diag([1]*len(theta_true))  # 信号功率
+    Rxx = A @ Rss @ A.conj().T + 0.5 * np.eye(N)  # SNR=20dB
+
+    # 加入估计误差（模拟样本协方差）
+    Rxx += 0.1 * (np.random.randn(N, N) + 1j * np.random.randn(N, N)) / np.sqrt(2)
+    Rxx = (Rxx + Rxx.conj().T) / 2  # 强制Hermitian
+
+    # DOA估计
+    theta_est, ps = SBL_DOA_Rxx(Rxx, array_pos, theta_grid)
+    print(f"Estimated DOAs: {theta_est}")
+
 
 #%% https://blog.csdn.net/qq_45471796/article/details/130487580
 import numpy as np

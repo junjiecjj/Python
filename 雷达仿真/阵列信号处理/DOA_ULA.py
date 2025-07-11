@@ -212,7 +212,6 @@ def ROOT_MUSIC(Rxx, K, d = 0.5, wavelength = 1.0):
 
     return np.sort(doa_estimates_deg), roots_all
 
-
 def DOA_ML(Rxx):
     Thetalst = np.arange(-90, 90.1, 0.5)
     angle = np.deg2rad(Thetalst)
@@ -229,7 +228,6 @@ def DOA_ML(Rxx):
     angle_est = Thetalst[peaks]
 
     return Thetalst, P_ml, angle_est, peaks
-
 
 def DOA_FOCUSS(Rxx, spar = 0, reg = 1e-4, err = 1e-4, maxIter = 1000):
     #   DOA_FOCUSS 基于欠定系统局灶解法(Focal Under determinedSystem Solver)
@@ -281,7 +279,6 @@ def DOA_PINV(Rxx, ):
     # DOA估计的栅格，在稀疏恢复理论中也称为"超完备字典"
     scan_a = np.exp(-1j * np.pi * np.arange(N)[:,None] * np.sin(angle))
 
-
     # 特征值分解
     eigenvalues, eigvector = np.linalg.eigh(Rxx)          # 特征值分解
     idx = np.argsort(eigenvalues)                         # 将特征值排序 从小到大
@@ -317,7 +314,7 @@ def DOA_EM_SBL(noisevar, Rxx, Ns, err = 1e-3, timelim = 30):
     scan_a = np.exp(-1j * np.pi * np.arange(N)[:,None] * np.sin(angle))
     scan_len = scan_a.shape[-1]
     times_cnt = 0
-    Gamma = np.eye(scan_len, dtype=complex) * 0.1
+    Gamma = np.eye(scan_len, dtype = float) * 0.1
     while 1:
         times_cnt += 1
         # E-step
@@ -337,6 +334,93 @@ def DOA_EM_SBL(noisevar, Rxx, Ns, err = 1e-3, timelim = 30):
     peaks, _ =  scipy.signal.find_peaks(s_sbl, height = -10, distance = 10)
     angle_est = Thetalst[peaks]
     return Thetalst, s_sbl, angle_est, peaks
+
+
+def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
+    from scipy.linalg import inv, sqrtm
+    from scipy.signal import find_peaks
+    """
+    基于协方差矩阵的稀疏贝叶斯学习DOA估计
+
+    参数:
+        Rxx: 样本协方差矩阵 (N x N)
+        array_pos: 阵列位置（单位：波长）
+        theta_grid: 角度搜索网格（度）
+        max_iter: 最大迭代次数
+        tol: 收敛阈值
+
+    返回:
+        theta_est: 估计的DOA角度（度）
+        power_spectrum: 空间谱（dB）
+    """
+
+    # 输入校验
+    assert Rxx.shape[0] == Rxx.shape[1], "Rxx必须是方阵"
+    N = Rxx.shape[0]
+
+
+    wavelength = 1.0
+    array_pos = np.arange(N) * 0.5 * wavelength  # ULA
+    # theta_true = np.array([-20, 0, 45])  # 真实DOA
+    theta_grid = np.arange(-90, 90.1, 0.5)
+    M = len(theta_grid)
+    # 构造字典矩阵（带正则化）
+    theta_rad = np.deg2rad(theta_grid)
+    Phi = np.exp(-2j * np.pi * array_pos[:, None] * np.sin(theta_rad[None, :]))
+    Phi += 1e-10 * (np.random.randn(*Phi.shape) + 1j * np.random.randn(*Phi.shape))
+
+    # 初始化参数
+    Gamma = np.eye(M) * 0.1  # 稀疏性参数
+    noise_var = np.real(np.mean(np.linalg.eigvalsh(Rxx)[:N//2]))  # 噪声方差估计
+
+    # EM算法主循环
+    for it in range(max_iter):
+        try:
+            # E-step: 计算后验统计量 (使用Woodbury恒等式)
+            PhiH_Phi = Phi.conj().T @ Phi
+            K = inv(Gamma) + PhiH_Phi / noise_var
+            Sigma_x = inv(K + 1e-8 * np.eye(M))  # 正则化
+            Mu_x = Sigma_x @ Phi.conj().T @ Rxx / noise_var
+
+            # M-step: 更新参数
+            diag_Mu = np.real(np.diag(Mu_x @ Mu_x.conj().T))
+            diag_Sigma = np.real(np.diag(Sigma_x))
+            Gamma_new = np.diag(diag_Mu + diag_Sigma)  # T=1时的简化形式
+
+            # 噪声更新
+            residual = Rxx - Phi @ Mu_x
+            noise_var_new = np.real(np.trace(residual)) / N
+
+            # 收敛检查
+            if np.linalg.norm(Gamma_new - Gamma, 'fro') < tol:
+                break
+
+            Gamma, noise_var = Gamma_new, noise_var_new
+
+        except np.linalg.LinAlgError:
+            print(f"Iter {it}: 矩阵求逆失败，增加正则化")
+            K = inv(Gamma) + PhiH_Phi/noise_var + 1e-6 * np.eye(M)
+            Sigma_x = inv(K)
+
+    # 计算空间谱（对数尺度）
+    power = np.real(np.diag(Gamma))
+    power_db = 10 * np.log10(power / np.max(power) + 1e-10)
+
+    # 峰值检测（自适应阈值）
+    peaks, _ = find_peaks(power_db,
+                         height=np.median(power_db) + 5,  # 高于中值5dB
+                         distance=len(theta_grid)//20)    # 最小角度间隔
+
+    # Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
+    # Pmusic = 10 * np.log10(Pmusic)
+    # peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -10, distance = 10)
+
+    angle_est = Thetalst[peaks]
+
+    return theta_grid, power_db, angle_est, peaks
+    # return theta_grid[peaks], power_db
+
+
 
 import cvxpy as cpy
 def DOA_CVX(Rxx, p_norm, tor_lim = 1e-1):
@@ -403,7 +487,7 @@ Thetalst, P_ml, angle_ml, peak_ml = DOA_ML(Rxx)
 Thetalst, P_focuss, angle_focuss, peak_focuss = DOA_FOCUSS(Rxx)
 Thetalst, P_pinv, angle_pinv, peak_pinv = DOA_PINV(Rxx)
 Thetalst, P_sbl, angle_sbl, peak_sbl = DOA_EM_SBL(noisevar, Rxx, Ns)
-
+Thetalst1, P_sbl1, angle_sbl1, peak_sbl1 = SBL_DOA_Rxx(Rxx)
 
 print(f"True = {doa_deg}")
 print(f"MUSIC = {angle_music}")
@@ -476,6 +560,9 @@ axs.plot(angle_pinv, P_pinv[peak_pinv], linestyle='', marker = 's', color=colors
 
 axs.plot(Thetalst, P_sbl , color = colors[3], linestyle='-.', lw = 2, label = "SBL", )
 axs.plot(angle_sbl, P_sbl[peak_sbl], linestyle='', marker = 's', color=colors[3], markersize = 12)
+
+axs.plot(Thetalst1, P_sbl1 , color = colors[4], linestyle='-.', lw = 2, label = "SBL1", )
+axs.plot(angle_sbl1, P_sbl1[peak_sbl1], linestyle='', marker = 's', color=colors[4], markersize = 12)
 
 
 axs.set_xlabel( "DOA/(degree)",)
