@@ -14,7 +14,7 @@ x = Symbol('x')
 f_x = x**2 + 1/2
 # f_x = x**2 - 1/2
 
-f_x_fcn = lambdify([x],f_x)
+f_x_fcn = lambdify([x], f_x)
 
 integral_f_x = integrate(f_x, x)
 integral_f_x_fcn = lambdify([x], integral_f_x)
@@ -219,7 +219,7 @@ est_pi = 24*(np.sqrt(3)/32 - np.cumsum(expansion))
 fig, ax = plt.subplots()
 
 plt.axhline(y=np.pi, color='r', linestyle='-')
-plt.plot(n_array,est_pi, color = 'b', marker = 'x')
+plt.plot(n_array, est_pi, color = 'b', marker = 'x')
 
 plt.tight_layout()
 plt.xlabel('n')
@@ -254,11 +254,10 @@ integral_a_b = integral_f_x_fcn(b) - integral_f_x_fcn(a)
 integral_a_b_v2 = integrate(f_x, (x, a, b))
 integral_a_b_v2 = float(integral_a_b_v2)
 
-print('$\int_a^b  f(x)dx = %0.3f$'%integral_a_b)
+print( r'$\int_a^b f(x)dx = {}$'.format(integral_a_b))
 
 
 #%% Visualizations
-
 num_interval = 20
 delta_x = (b - a)/num_interval
 
@@ -270,10 +269,8 @@ y_array_fine = f_x_fcn(x_array_fine)
 
 
 fig = plt.figure(figsize=(15,5))
-
 #########(1) Left Riemann sum
 ax = fig.add_subplot(1,3,1)
-
 plt.plot(x_array_fine, y_array_fine, color = '#0070C0')
 
 # left endpoints
@@ -281,7 +278,6 @@ x_left = x_array[:-1]
 y_left = y_array[:-1]
 
 plt.plot(x_left, y_left,'rx',markersize=10)
-
 # plot the rectangles
 plt.bar(x_left, y_left, width=delta_x, facecolor = '#DEEAF6', align='edge', edgecolor='#B2B2B2')
 
@@ -289,7 +285,6 @@ ax.axvline(x = a, color = 'r', linestyle = '-')
 ax.axvline(x = b, color = 'r', linestyle = '-')
 
 left_riemann_sum = np.sum(f_x_fcn(x_left) * delta_x)
-
 plt.title('Left Riemann sum (N = %0.0f) = %0.3f' %(num_interval,left_riemann_sum))
 plt.xlim((a,b))
 plt.gca().spines['right'].set_visible(False)
@@ -326,13 +321,13 @@ plt.show()
 
 #########(3) Right Riemann sum
 ax = fig.add_subplot(1,3,3)
-plt.plot(x_array_fine,y_array_fine, color = '#0070C0')
+plt.plot(x_array_fine, y_array_fine, color = '#0070C0')
 
 # right endpoints
 x_right = x_array[1:]
 y_right = f_x_fcn(x_right)
 
-plt.plot(x_right,y_right,'rx',markersize=10)
+plt.plot(x_right, y_right,'rx',markersize=10)
 
 # plot the rectangles
 plt.bar(x_right, y_right, width = -delta_x, facecolor = '#DEEAF6', align='edge', edgecolor='#B2B2B2')
@@ -399,30 +394,25 @@ plt.show()
 num_array = [5, 10, 15, 20]
 
 for num in num_array:
-    x_array = np.linspace(a, b - (b - a)/num,num)
-    y_array = np.linspace(c, d - (d - c)/num,num)
+    x_array = np.linspace(a, b - (b - a)/num, num)
+    y_array = np.linspace(c, d - (d - c)/num, num)
 
-    xx,yy = np.meshgrid(x_array,y_array)
+    xx, yy = np.meshgrid(x_array, y_array)
     xx_array = xx.ravel()
     yy_array = yy.ravel()
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    zz_array = np.zeros_like(yy_array)
+    zz_down = np.zeros_like(yy_array)
+    zz_up = f_xy_fcn(xx_array, yy_array)
 
     dx = np.ones_like(yy_array)/num*(b - a)
     dy = np.ones_like(yy_array)/num*(d - c)
 
-    dz = f_xy_fcn(xx_array, yy_array)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-    ax.bar3d(xx_array, yy_array, zz_array, dx, dy, dz, shade=False, color = '#DEEAF6', edgecolor = '#B2B2B2')
+    ax.bar3d(xx_array, yy_array, zz_down, dx, dy, zz_up, shade=False, color = '#DEEAF6', edgecolor = '#B2B2B2')
 
-    # ax.scatter(xx_array, yy_array, dz, c=dz, cmap='RdYlBu_r',marker = '.')
-
-    # ax.plot_wireframe(xx_fine,yy_fine, zz_fine,
-    #                   color = '#0070C0',
-    #                   rstride=10, cstride=10,
-    #                   linewidth = 0.25)
+    # ax.scatter(xx_array, yy_array, zz_up, c = zz_up, cmap = 'RdYlBu_r', marker = '.')
+    # ax.plot_wireframe(xx_fine, yy_fine, zz_fine, color = '#0070C0', rstride = 10, cstride = 10, linewidth = 0.25)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
@@ -434,7 +424,7 @@ for num in num_array:
     ax.grid(False)
     ax.view_init(azim=-135, elev=30)
     ax.set_proj_type('ortho')
-    estimated_volume = dz.sum()*(b - a)/num*(d - c)/num
+    estimated_volume = zz_up.sum()*(b - a)/num*(d - c)/num
     ax.set_title('Estimated volume = %0.3f'%estimated_volume)
 plt.show()
 volume = integrate(f_xy, (y, c, d), (x, a, b))

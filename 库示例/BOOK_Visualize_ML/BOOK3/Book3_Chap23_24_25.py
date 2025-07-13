@@ -2,8 +2,6 @@
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk3_Ch23_1.py
-
-
 # Bk3_Ch24_1
 
 import numpy as np
@@ -30,10 +28,6 @@ print(sol)
 from sympy.solvers.solveset import linsolve
 sol_ = linsolve([x1 + x2 - 35, 2*x1 + 4*x2 - 94], [x1, x2])
 print(sol_)
-
-
-
-
 
 
 # Bk3_Ch23_2
@@ -181,9 +175,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
 
-
 # Bk3_Ch23_4
-
 import numpy as np
 
 A = np.array([[1,1],
@@ -199,8 +191,6 @@ b = np.array([[30],
 x = np.linalg.inv(A.T@A)@A.T@b
 
 print(x)
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk3_Ch24
@@ -300,9 +290,6 @@ for i in range(0,len(num_rabbits_predicted)):
     plot_square(num_chickens[i],num_rabbits[i],num_rabbits_predicted[i]);
 
 fig_decor(ax)
-
-
-
 
 #%% Bk3_Ch24_2
 
@@ -420,15 +407,11 @@ plt.scatter(num_chickens, num_rabbits)
 num_rabbits_predicted = a_star*num_chickens + b_star
 
 plt.plot(np.vstack((num_chickens,num_chickens)), np.vstack((num_rabbits, num_rabbits_predicted)), color = np.array([255,182,0])/255)
-
 plt.plot(num_chickens, num_rabbits_predicted, linestyle = 'None', marker = 'x', markerfacecolor = 'darkorange', markeredgecolor = 'darkorange', markersize = 10)
-
 for i in range(0,len(num_rabbits_predicted)):
     plot_square(num_chickens[i],num_rabbits[i],num_rabbits_predicted[i]);
 
 fig_decor(ax)
-
-
 
 #%% Bk3_Ch24_3
 
@@ -563,17 +546,6 @@ print('Intercept, b:', model.intercept_)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk3_Ch25
 # Bk3_Ch25_1
 
@@ -667,8 +639,6 @@ plt.title('$\pi_{i+2}$')
 plt.yticks(rotation=0)
 
 
-
-
 # Bk3_Ch25_2
 
 import numpy as np
@@ -697,11 +667,7 @@ for ini in np.arange(0,np.shape(pi_array)[1]):
         ax.set_aspect("equal")
         plt.title('$\pi(' + str(i) + ')$')
         ax.tick_params(left=False, bottom=False)
-
         pi = T@pi
-
-
-
 
 # Bk3_Ch25_3
 
@@ -729,15 +695,10 @@ num_steps = 12
 colors = plt.cm.rainbow(np.linspace(0,1,num_steps + 1))
 
 for ini in np.arange(0,np.shape(pi_array)[1]):
-
     pi = pi_array[:,ini]
-
-
     fig, ax = plt.subplots(figsize=(10, 10))
-
     # plot a reference line
-    plt.plot(x1,1-x1,color = 'k',
-             linestyle = '--')
+    plt.plot(x1,1-x1,color = 'k', linestyle = '--')
 
     # plot a unit circle as reference
     plt.contour(xx1, xx2, zz, levels = [1], colors='k', linestyles = ['--'])

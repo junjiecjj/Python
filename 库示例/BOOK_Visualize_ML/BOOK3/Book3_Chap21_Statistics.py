@@ -15,9 +15,7 @@ iris_sns = sns.load_dataset("iris")
 
 #%% Scatter plot of x1 and x2
 fig, ax = plt.subplots()
-
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width")
-
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Sepal width, $x_2$ (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
@@ -27,10 +25,10 @@ ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 
+
+
 fig, ax = plt.subplots()
-
 ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "species")
-
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
 ax.set_ylabel('Sepal width, $x_2$ (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
@@ -61,9 +59,9 @@ plt.show()
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
 
+
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 scatter_h = ax.scatter(x1, x2, x3, c = labels, cmap=rainbow)
-
 classes = ['Setosa', 'Versicolor', 'Virginica']
 plt.legend(handles=scatter_h.legend_elements()[0], labels=classes)
 ax.set_xlabel('Sepal length, $x_1$ (cm)')
@@ -72,6 +70,8 @@ ax.set_zlabel('Petal length, $x_3$ (cm)')
 plt.show()
 ax.set_proj_type('ortho')
 ax.view_init(azim=-135, elev=30)
+
+
 
 #%% pairwise plot
 sns.pairplot(iris_sns)
@@ -134,64 +134,76 @@ feature_names = ['Sepal length, x1','Sepal width, x2',
                  'Petal length, x3','Petal width, x4']
 # Convert X array to dataframe
 X_df = pd.DataFrame(X, columns = feature_names)
-
 SIGMA = X_df.cov()
 
 fig, axs = plt.subplots()
-
 h = sns.heatmap(SIGMA, cmap='RdBu_r', linewidths=.05, annot = True)
 h.set_aspect("equal")
-h.set_title('$\Sigma$')
+h.set_title(r'$\Sigma$')
 
 #%% compare covariance matrices, with class labels
 
-f,(ax1,ax2,ax3) = plt.subplots(1,3,sharey=True)
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, sharey=True, figsize=(15, 5))
 
-g1 = sns.heatmap(iris_sns.loc[iris_sns['species'] == 'setosa'].cov(), cmap="RdYlBu_r", annot=True,cbar=False,ax=ax1,square=True, vmax = 0.4, vmin = 0)
+# 选择数值列（排除 'species'）
+numeric_cols = iris_sns.select_dtypes(include=['float64', 'int64']).columns
+
+# 绘制 setosa 的协方差矩阵
+setosa_data = iris_sns.loc[iris_sns['species'] == 'setosa', numeric_cols]
+g1 = sns.heatmap(setosa_data.cov(), cmap="RdYlBu_r", annot=True, cbar=False, ax=ax1, square=True, vmax=0.4, vmin=0)
 ax1.set_title('Y = 0, setosa')
 
-g2 = sns.heatmap(iris_sns.loc[iris_sns['species'] == 'versicolor'].cov(), cmap="RdYlBu_r", annot=True,cbar=False,ax=ax2,square=True, vmax = 0.4, vmin = 0)
+# 绘制 versicolor 的协方差矩阵
+versicolor_data = iris_sns.loc[iris_sns['species'] == 'versicolor', numeric_cols]
+g2 = sns.heatmap(versicolor_data.cov(), cmap="RdYlBu_r", annot=True, cbar=False, ax=ax2, square=True, vmax=0.4, vmin=0)
 ax2.set_title('Y = 1, versicolor')
 
-g3 = sns.heatmap(iris_sns.loc[iris_sns['species'] == 'virginica'].cov(), cmap="RdYlBu_r", annot=True,cbar=False,ax=ax3,square=True, vmax = 0.4, vmin = 0)
+# 绘制 virginica 的协方差矩阵
+virginica_data = iris_sns.loc[iris_sns['species'] == 'virginica', numeric_cols]
+g3 = sns.heatmap(virginica_data.cov(), cmap="RdYlBu_r", annot=True, cbar=False, ax=ax3, square=True, vmax=0.4, vmin=0)
 ax3.set_title('Y = 2, virginica')
+
+plt.tight_layout()
+plt.show()
 
 
 # Bk3_Ch21_1_E
 
 #%% correlation matrix
 
-RHO = iris_sns.corr()
+RHO = iris_sns.select_dtypes(include=['float64', 'int64']).corr()
 
 fig, axs = plt.subplots()
 
-h = sns.heatmap(RHO,cmap='RdBu_r', linewidths=.05, annot = True)
+h = sns.heatmap(RHO, cmap='RdBu_r', linewidths=.05, annot = True)
 h.set_aspect("equal")
 h.set_title('$\u03A1$')
 
 
 #%% compare correlation matrices, with class labels
 
-f,(ax1,ax2,ax3) = plt.subplots(1,3,sharey=True)
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, sharey=True, figsize=(15, 5))
 
-g1 = sns.heatmap(iris_sns.loc[iris_sns['species'] == 'setosa'].corr(),
-                 cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax1,square=True,
-                 vmax = 1, vmin = 0.15)
+# 选择数值列（排除 'species'）
+numeric_cols = iris_sns.select_dtypes(include=['float64', 'int64']).columns
+
+# 绘制 setosa 的协方差矩阵
+setosa_data = iris_sns.loc[iris_sns['species'] == 'setosa', numeric_cols]
+g1 = sns.heatmap(setosa_data.corr(), cmap="RdYlBu_r", annot=True, cbar=False, ax=ax1, square=True, vmax=0.4, vmin=0)
 ax1.set_title('Y = 0, setosa')
 
-g2 = sns.heatmap(iris_sns.loc[iris_sns['species'] == 'versicolor'].corr(),
-                 cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax2,square=True,
-                 vmax = 1, vmin = 0.15)
+# 绘制 versicolor 的协方差矩阵
+versicolor_data = iris_sns.loc[iris_sns['species'] == 'versicolor', numeric_cols]
+g2 = sns.heatmap(versicolor_data.corr(), cmap="RdYlBu_r", annot=True, cbar=False, ax=ax2, square=True, vmax=0.4, vmin=0)
 ax2.set_title('Y = 1, versicolor')
 
-g3 = sns.heatmap(iris_sns.loc[iris_sns['species'] == 'virginica'].corr(),
-                 cmap="RdYlBu_r",
-                 annot=True,cbar=False,ax=ax3,square=True,
-                 vmax = 1, vmin = 0.15)
+# 绘制 virginica 的协方差矩阵
+virginica_data = iris_sns.loc[iris_sns['species'] == 'virginica', numeric_cols]
+g3 = sns.heatmap(virginica_data.corr(), cmap="RdYlBu_r", annot=True, cbar=False, ax=ax3, square=True, vmax=0.4, vmin=0)
 ax3.set_title('Y = 2, virginica')
 
+plt.tight_layout()
+plt.show()
 
 
 
