@@ -44,14 +44,9 @@ ax.set_box_aspect(1)
 
 
 #%% x and y log scale
-x_log_1 = np.logspace(np.log10(0.1), np.log10(3), num=100,
-                      endpoint=True, base=10.0)
-
-x_log_2 = np.logspace(np.log10(0.1), np.log10(1000), num=100,
-                      endpoint=True, base=10.0)
-
-x_log_3 = np.logspace(np.log10(1), np.log10(1000), num=100,
-                      endpoint=True, base=10.0)
+x_log_1 = np.logspace(np.log10(0.1), np.log10(3), num=100, endpoint=True, base=10.0)
+x_log_2 = np.logspace(np.log10(0.1), np.log10(1000), num=100, endpoint=True, base=10.0)
+x_log_3 = np.logspace(np.log10(1), np.log10(1000), num=100, endpoint=True, base=10.0)
 
 f1 = 10**x_log_1
 f2 = x_log_2
@@ -75,22 +70,13 @@ ax.set_box_aspect(1)
 
 import matplotlib.pyplot as plt
 
-def plot_curve(x_array, y_array,
-               x_array_new, y_array_new):
-
+def plot_curve(x_array, y_array, x_array_new, y_array_new):
     fig, ax = plt.subplots()
+    plt.plot(x_array, y_array, color = '#0070C0', label = 'Original')
 
-    plt.plot(x_array, y_array, color = '#0070C0',
-             label = 'Original')
+    ax.fill_between(x_array, y_array, edgecolor = 'none', facecolor = '#0070C0', alpha = 0.2)
 
-    ax.fill_between(x_array,
-                    y_array,
-                    edgecolor = 'none',
-                    facecolor = '#0070C0',
-                    alpha = 0.2)
-
-    plt.plot(x_array_new, y_array_new, color = 'r',
-             label = 'Transformed')
+    plt.plot(x_array_new, y_array_new, color = 'r', label = 'Transformed')
 
     plt.xlabel('x')
     plt.ylabel('y')
@@ -127,52 +113,37 @@ f_x_array = f_x_fcn(x_array) # original function
 #%% vertical shift
 
 for c in [2,-3]:
-
     f_x_array_new = f_x_array + c
-
-    plot_curve(x_array, f_x_array,
-               x_array, f_x_array_new)
+    plot_curve(x_array, f_x_array, x_array, f_x_array_new)
 
 
 #%% horizontal shift
 
 for c in [3,-1]:
-
     f_x_new = 2*exp(- ((x+c)-1)**2);
     f_x_new_fcn = lambdify([x],f_x_new)
-
     f_x_array_new = f_x_new_fcn(x_array)
-
-    plot_curve(x_array, f_x_array,
-               x_array, f_x_array_new)
+    plot_curve(x_array, f_x_array, x_array, f_x_array_new)
 
 #%% vertical scaling
 
 for c in [1/2,2]:
-
     f_x_array_new = c*f_x_array
-
-    plot_curve(x_array, f_x_array,
-               x_array, f_x_array_new)
+    plot_curve(x_array, f_x_array, x_array, f_x_array_new)
 
 #%% horizontal scaling
 
 for c in [1/2,2]:
-
     f_x_new = 2*exp(- (c*x-1)**2);
     f_x_new_fcn = lambdify([x],f_x_new)
-
     f_x_array_new = f_x_new_fcn(x_array)
-
-    plot_curve(x_array, f_x_array,
-               x_array, f_x_array_new)
+    plot_curve(x_array, f_x_array, x_array, f_x_array_new)
 
 #%% reflection about x-axis
 
 f_x_array_new = -f_x_array
 
-plot_curve(x_array, f_x_array,
-           x_array, f_x_array_new)
+plot_curve(x_array, f_x_array, x_array, f_x_array_new)
 
 #%% reflection about y-axis
 
@@ -181,8 +152,7 @@ f_x_new_fcn = lambdify([x],f_x_new)
 
 f_x_array_new = f_x_new_fcn(x_array)
 
-plot_curve(x_array, f_x_array,
-           x_array, f_x_array_new)
+plot_curve(x_array, f_x_array, x_array, f_x_array_new)
 
 
 

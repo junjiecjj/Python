@@ -116,9 +116,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
 
-# 读取数据集
-data = pd.read_csv("Mall_Customers.csv")
-X = data[['Annual Income (k$)', 'Spending Score (1-100)']].values
 
 # 初始化参数
 def initialize_params_fixed(X, K):
@@ -136,31 +133,31 @@ def multivariate_gaussian(X, mu, sigma):
 def expectation_step_stable(X, pi, mu, sigma):
     N = X.shape[0]
     K = len(pi)
-    gamma = np.zeros((N, K))
+    post_prob = np.zeros((N, K))
     for k in range(K):
         try:
-            gamma[:, k] = pi[k] * multivariate_gaussian(X, mu[k], sigma[k])  ## 书上公式(21)(22)
+            post_prob[:, k] = pi[k] * multivariate_gaussian(X, mu[k], sigma[k])  ## 书上公式(21)(22)
         except np.linalg.LinAlgError:
             # 如果协方差矩阵是奇异矩阵，加入微小正则化项以确保正定性
             sigma[k] += np.eye(X.shape[1]) * 1e-6
-            gamma[:, k] = pi[k] * multivariate_gaussian(X, mu[k], sigma[k])  ##
+            post_prob[:, k] = pi[k] * multivariate_gaussian(X, mu[k], sigma[k])  ##
     # 防止零除错误，保证数值稳定性
-    gamma_sum = np.sum(gamma, axis = 1, keepdims = True)
+    gamma_sum = np.sum(post_prob, axis = 1, keepdims = True)
     gamma_sum[gamma_sum == 0] = 1e-10  # 防止除以零
-    gamma = gamma / gamma_sum  ## 书上公式(23)
-    return gamma
+    post_prob = post_prob / gamma_sum  ## 书上公式(23)
+    return post_prob
 
 # M 步：更新GMM的参数
-def maximization_step(X, gamma):
+def maximization_step(X, post_prob):
     N, d = X.shape
-    K = gamma.shape[1]
-    Nk = np.sum(gamma, axis = 0)  # 计算每个聚类的总责任值
+    K = post_prob.shape[1]
+    Nk = np.sum(post_prob, axis = 0)  # 计算每个聚类的总责任值
     pi = Nk / N  # 更新混合系数, 书上公式(24)
-    mu = gamma.T @ X / Nk[:, np.newaxis]  # 更新均值, 书上公式(25)
+    mu = post_prob.T @ X / Nk[:, np.newaxis]  # 更新均值, 书上公式(25)
     sigma = np.zeros((K, d, d))  # 更新协方差矩阵, 书上公式(26)
     for k in range(K):
         X_centered = X - mu[k]
-        gamma_diag = np.diag(gamma[:, k])
+        gamma_diag = np.diag(post_prob[:, k])
         sigma[k] =  X_centered.T @ gamma_diag @ X_centered / Nk[k]   ##  np.dot(X_centered.T, np.dot(gamma_diag, X_centered)) / Nk[k]
     return pi, mu, sigma
 
@@ -182,9 +179,9 @@ def gmm_fixed_stable(X, K, max_iter = 100, tol = 1e-6):
     log_likelihoods = []
     for i in range(max_iter):
         # E 步
-        gamma = expectation_step_stable(X, pi, mu, sigma)
+        post_prob = expectation_step_stable(X, pi, mu, sigma)
         # M 步
-        pi, mu, sigma = maximization_step(X, gamma)
+        pi, mu, sigma = maximization_step(X, post_prob)
         # 添加小的正则化项，确保协方差矩阵为正定
         sigma += np.eye(sigma.shape[1]) * 1e-6
         # 计算对数似然
@@ -193,7 +190,7 @@ def gmm_fixed_stable(X, K, max_iter = 100, tol = 1e-6):
         # 检查是否收敛
         if i > 0 and abs(log_likelihoods[-1] - log_likelihoods[-2]) < tol:
             break
-    return pi, mu, sigma, log_likelihoods, gamma
+    return pi, mu, sigma, log_likelihoods, post_prob
 
 # 数据可视化：原始数据分布
 def plot_original_data(X):
@@ -206,12 +203,13 @@ def plot_original_data(X):
     return
 
 # 分类结果展示
-def plot_clusters(X, gamma, mu):
-    K = gamma.shape[1]
+def plot_clusters(X, post_prob, mu):
+    K = post_prob.shape[1]
     colors = ['r', 'g', 'b', 'y', 'm']
+    classresults = post_prob.argmax(axis = 1)
     plt.figure(figsize = (8, 6))
     for k in range(K):
-        plt.scatter(X[:, 0], X[:, 1], c = gamma[:, k], cmap = 'viridis', label = f'Cluster {k+1}', alpha = 0.6)
+        plt.scatter(X[classresults == k, 0], X[classresults == k, 1], c = colors[k], label = f'Cluster {k+1}', alpha = 0.6)
     plt.scatter(mu[:, 0], mu[:, 1], c = 'black', marker = 'x', s = 100, label = 'Centroids')
     plt.title('GMM Clustering')
     plt.xlabel('Annual Income (k$)')
@@ -231,11 +229,11 @@ def plot_log_likelihood(log_likelihoods):
     return
 
 # 各类别概率分布图
-def plot_probability_distributions(gamma):
+def plot_probability_distributions(post_prob):
     plt.figure(figsize=(8, 6))
-    K = gamma.shape[1]
+    K = post_prob.shape[1]
     for k in range(K):
-        plt.hist(gamma[:, k], bins = 20, alpha = 0.5, label = f'Cluster {k+1}')
+        plt.hist(post_prob[:, k], bins = 20, alpha = 0.5, label = f'Cluster {k+1}')
     plt.title('Probability Distributions for Each Cluster')
     plt.xlabel('Probability')
     plt.ylabel('Number of Points')
@@ -243,15 +241,164 @@ def plot_probability_distributions(gamma):
     plt.show()
     return
 
+# 读取数据集
+data = pd.read_csv("Mall_Customers.csv")
+X = data[['Annual Income (k$)', 'Spending Score (1-100)']].values
+
 # 运行 GMM 算法
 K = 3  # 假设数据有 3 个聚类
-pi, mu, sigma, log_likelihoods, gamma = gmm_fixed_stable(X, K)
+pi, mu, sigma, log_likelihoods, post_prob = gmm_fixed_stable(X, K)
 
 # 绘制图形
 plot_original_data(X)  # 原始数据分布图
-plot_clusters(X, gamma, mu)  # 分类结果图
+plot_clusters(X, post_prob, mu)  # 分类结果图
 plot_log_likelihood(log_likelihoods)  # 对数似然收敛图
-plot_probability_distributions(gamma)  # 各类别概率分布图
+plot_probability_distributions(post_prob)  # 各类别概率分布图
+
+#%%>>>>>>>>>>>>>>>>>>>>>>> 1. 最大似然估计 (Maximum Likelihood Estimation, MLE)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+from scipy.optimize import minimize
+
+# 生成模拟数据
+np.random.seed(42)
+true_mu = 5
+true_sigma = 2
+data = np.random.normal(true_mu, true_sigma, size=1000)
+
+# 定义负对数似然函数
+def neg_log_likelihood(params, data):
+    mu, sigma = params[0], params[1]
+    if sigma <= 0:
+        return np.inf
+    log_likelihood = np.sum(np.log(norm.pdf(data, mu, sigma)))
+    return -log_likelihood
+
+# 使用优化器找到 MLE 参数
+initial_guess = [0, 1]
+result = minimize(neg_log_likelihood, initial_guess, args=(data,), method='L-BFGS-B', bounds=[(None, None), (1e-5, None)])
+mle_mu, mle_sigma = result.x  # 其实就是data的均值和标准差
+
+# 绘制数据的直方图与拟合的正态分布曲线对比图
+x = np.linspace(min(data), max(data), 1000)
+pdf_true = norm.pdf(x, true_mu, true_sigma)
+pdf_mle = norm.pdf(x, mle_mu, mle_sigma)
+
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.hist(data, bins=30, density=True, alpha=0.6, color='g', label='Histogram of data')
+plt.plot(x, pdf_true, 'r--', label=f'True Gaussian\n($\\mu$={true_mu}, $\\sigma$={true_sigma})')
+plt.plot(x, pdf_mle, 'b-', label=f'MLE Gaussian\n($\\mu$={mle_mu:.2f}, $\\sigma$={mle_sigma:.2f})')
+plt.title('Data Histogram and Fitted Gaussian')
+plt.xlabel('Data')
+plt.ylabel('Density')
+plt.legend()
+
+# 绘制对数似然函数关于均值和标准差的等高线图
+mu_values = np.linspace(4, 6, 100)
+sigma_values = np.linspace(1.5, 2.5, 100)
+log_likelihood_values = np.zeros((len(mu_values), len(sigma_values)))
+
+for i, mu in enumerate(mu_values):
+    for j, sigma in enumerate(sigma_values):
+        log_likelihood_values[i, j] = -neg_log_likelihood([mu, sigma], data)
+
+mu_grid, sigma_grid = np.meshgrid(mu_values, sigma_values)
+plt.subplot(1, 2, 2)
+contour = plt.contour(mu_grid, sigma_grid, log_likelihood_values.T, levels=50, cmap='viridis')
+plt.plot(mle_mu, mle_sigma, 'ro', label='MLE Estimate')
+plt.colorbar(contour, label='Negative Log-Likelihood')
+plt.title('Log-Likelihood Contours')
+plt.xlabel('Mean (mu)')
+plt.ylabel('Standard Deviation (sigma)')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+
+#%%>>>>>>>>>>>>>>>>>>>>>>> 2. 贝叶斯估计 (Bayesian Estimation)
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import norm, invgamma
+
+# 设置随机数种子
+np.random.seed(42)
+
+# 生成虚拟数据集
+true_mu = 5
+true_sigma = 2
+n_samples = 50
+data = np.random.normal(true_mu, true_sigma, n_samples)
+
+# 贝叶斯推断: 假设先验为常见的非信息性先验,均值的先验分布为高斯分布,方差的先验分布为Inverse-Gamma分布
+mu_prior_mean = 0
+mu_prior_std = 10
+alpha_prior = 1
+beta_prior = 1
+
+# Gibbs采样
+n_iter = 1000
+mu_samples = np.zeros(n_iter)
+sigma_samples = np.zeros(n_iter)
+
+mu_current = np.mean(data)
+sigma2_current = np.var(data)
+
+for i in range(n_iter):
+    # 更新均值mu
+    mu_n = (mu_prior_mean / (mu_prior_std**2) + np.sum(data) / sigma2_current) / (1/(mu_prior_std**2) + n_samples / sigma2_current)
+    sigma_n = np.sqrt(1 / (1/(mu_prior_std**2) + n_samples / sigma2_current))
+    mu_current = np.random.normal(mu_n, sigma_n)
+
+    # 更新方差sigma^2
+    alpha_n = alpha_prior + n_samples / 2
+    beta_n = beta_prior + 0.5 * np.sum((data - mu_current)**2)
+    sigma2_current = invgamma.rvs(alpha_n, scale=beta_n)
+
+    mu_samples[i] = mu_current
+    sigma_samples[i] = np.sqrt(sigma2_current)
+
+# 生成图形
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+# 数据分布和拟合的高斯分布
+sns.histplot(data, kde=True, color="blue", ax=axs[0, 0])
+x = np.linspace(min(data), max(data), 100)
+for i in range(100):
+    sample_mu = mu_samples[i]
+    sample_sigma = sigma_samples[i]
+    axs[0, 0].plot(x, norm.pdf(x, sample_mu, sample_sigma), color='red', alpha=0.1)
+axs[0, 0].set_title('Data Distribution with Posterior Samples')
+
+# 均值mu的后验分布
+sns.histplot(mu_samples, kde=True, ax=axs[0, 1])
+axs[0, 1].axvline(x=true_mu, color='red', linestyle='--')
+axs[0, 1].set_title('Posterior Distribution of $\\mu$')
+
+# 方差sigma的后验分布
+sns.histplot(sigma_samples, kde=True, ax=axs[1, 0])
+axs[1, 0].axvline(x=true_sigma, color='red', linestyle='--')
+axs[1, 0].set_title('Posterior Distribution of $\\sigma$')
+
+# 均值与方差的联合后验分布
+sns.scatterplot(x=mu_samples, y=sigma_samples, ax=axs[1, 1], s=10, alpha=0.5)
+axs[1, 1].set_title('Joint Posterior Distribution of $\\mu$ and $\\sigma$')
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+
+
 
 
 

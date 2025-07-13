@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 
-x = np.linspace(-4,4,num = 201)
-y = np.linspace(-4,4,num = 201)
+x = np.linspace(-4, 4, num = 201)
+y = np.linspace(-4, 4, num = 201)
 m = 1
 n = 1.5
-xx,yy = np.meshgrid(x,y);
+xx, yy = np.meshgrid(x,y);
 e_array = np.linspace(0, 3,num = 11)
 fig, ax = plt.subplots(figsize=(8, 8))
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(e_array)))
@@ -40,17 +40,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 
-a = 2
+a = 1
 b = 1
 
 x = np.linspace(-4,4,num = 201)
 y = np.linspace(-4,4,num = 201)
 
 xx,yy = np.meshgrid(x,y);
-k_array = np.linspace(0, 2, num = 11)
-# k_array = np.linspace(0,1,num = 21)
-k_array = np.linspace(0,-2,num = 21)
-# k_array = np.linspace(0,-1,num = 21)
+# k_array = np.linspace(0, 2, num = 11)
+# k_array = np.linspace(0, 1, num = 21)
+# k_array = np.linspace(0, -2, num = 21)
+k_array = np.linspace(0, -1, num = 21)
 fig, ax = plt.subplots(figsize=(8, 8))
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(k_array)))
 for i in range(0,len(k_array)):
@@ -112,7 +112,7 @@ ax.spines['left'].set_visible(False)
 plt.show()
 plt.close()
 
-#%% Bk3_Ch9_04
+#%% Bk3_Ch9_04, 超椭圆：和范数有关
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -140,7 +140,7 @@ for p, q, ax in zip(pp, qq, axes.flat):
     # plot contour of Lp
     ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
     # plot contour of Lp = 1
-    ax.contour (xx1, xx2, zz, [1], colors='k', linewidths = 2)
+    ax.contour(xx1, xx2, zz, [1], colors='k', linewidths = 2)
     # decorations
 
     ax.axhline(y=0, color='k', linewidth = 0.25)

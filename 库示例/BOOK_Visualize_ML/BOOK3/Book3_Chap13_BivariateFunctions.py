@@ -27,8 +27,7 @@ def plot_surf(xx1,xx2,ff,caption):
     norm_plt = plt.Normalize(ff.min(), ff.max())
     colors = cm.coolwarm(norm_plt(ff))
 
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
     surf = ax.plot_surface(xx1,xx2,ff,
     facecolors=colors, shade=False)
     surf.set_facecolor((0,0,0,0))
@@ -78,63 +77,48 @@ xx1,xx2 = mesh_square(x1_0,x2_0,r,num); # generate mesh
 plt.close('all')
 
 # f(x1,x2) = -x1
-
 ff = -xx1;
 caption = '$\it{f} = -\it{x_1}$';
-plot_surf (xx1,xx2,ff,caption)
-plot_contourf (xx1,xx2,ff,caption)
+plot_surf(xx1,xx2,ff,caption)
+plot_contourf(xx1,xx2,ff,caption)
 
 
 #%% f(x1,x2) = x2
-
 ff = xx2;
 caption = '$\it{f} = \it{x_2}$';
-plot_surf (xx1,xx2,ff,caption)
-plot_contourf (xx1,xx2,ff,caption)
+plot_surf(xx1,xx2,ff,caption)
+plot_contourf(xx1,xx2,ff,caption)
 
 #%% f(x1,x2) = x1 + x2
-
 ff = xx1 + xx2;
 caption = '$\it{f} = \it{x_1} + \it{x_2}$';
-plot_surf (xx1,xx2,ff,caption)
-plot_contourf (xx1,xx2,ff,caption)
+plot_surf(xx1,xx2,ff,caption)
+plot_contourf(xx1,xx2,ff,caption)
 
 #%% f(x1,x2) = -x1 + x2
-
 ff = -xx1 + xx2;
 caption = '$\it{f} = -\it{x_1} + \it{x_2}$';
-plot_surf (xx1,xx2,ff,caption)
-plot_contourf (xx1,xx2,ff,caption)
-
-
-
-
+plot_surf(xx1,xx2,ff,caption)
+plot_contourf(xx1,xx2,ff,caption)
 
 # Bk3_Ch13_02
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 def mesh_circ(c1, c2, r, num):
-
     theta = np.arange(0,2*np.pi+np.pi/num,np.pi/num)
     r     = np.arange(0,r,r/num)
     theta,r = np.meshgrid(theta,r)
     xx1 = np.cos(theta)*r + c1
     xx2 = np.sin(theta)*r + c2
-
     return xx1, xx2
 
 xx1, xx2 = mesh_circ(0, 0, 4, 20)
-
 ff_x = np.sqrt(xx1**2 + xx2**2)
 
 # 3D visualization
 ax = plt.figure().add_subplot(projection='3d')
-ax.plot_wireframe(xx1, xx2, ff_x, rstride=1,
-                  cstride=1, color = [0.5,0.5,0.5],
-                  linewidth = 0.2)
-
+ax.plot_wireframe(xx1, xx2, ff_x, rstride = 1, cstride=1, color = [0.5,0.5,0.5], linewidth = 0.2)
 ax.contour3D(xx1, xx2, ff_x, 20, cmap = 'RdYlBu_r')
 
 ax.xaxis.set_ticks([])

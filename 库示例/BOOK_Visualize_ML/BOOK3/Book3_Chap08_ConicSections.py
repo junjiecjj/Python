@@ -40,11 +40,11 @@ plot_curve(Eq_sym)
 Eq_sym = Eq((x1-0.5)**2 + (x2-0.5)**2/4, 1)
 plot_curve(Eq_sym)
 
-# major axis rotated counter clockwise by pi/4
+# major axis rotated counter clockwise by pi/4, 逆时针旋转 θ = 45° = π/4 获得
 Eq_sym = Eq(5*x1**2/8 -3*x1*x2/4 + 5*x2**2/8, 1)
 plot_curve(Eq_sym)
 
-# major axis rotated counter clockwise by 3*pi/4
+# major axis rotated counter clockwise by 3*pi/4, 逆时针旋转 θ = 135° = 3π/4 获
 Eq_sym = Eq(5*x1**2/8 +3*x1*x2/4 + 5*x2**2/8, 1)
 plot_curve(Eq_sym)
 

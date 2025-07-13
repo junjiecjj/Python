@@ -17,9 +17,7 @@ xx, yy = np.meshgrid(x_array,y_array)
 
 plt.close('all')
 # f_xy = x*exp(- x**2 - y**2);
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
-    - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)\
-    - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x,y],f_xy)
 f_xy_zz = f_xy_fcn(xx,yy)
@@ -27,12 +25,7 @@ f_xy_zz = f_xy_fcn(xx,yy)
 #%% visualize the surface
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  color = [0.5,0.5,0.5],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
+ax.plot_wireframe(xx,yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=5, cstride=5, linewidth = 0.25)
 ax.set_proj_type('ortho')
 ax.set_xlabel('$x$'); ax.set_ylabel('$y$')
 ax.set_zlabel('$f(x,y)$')
@@ -47,29 +40,18 @@ plt.show()
 #%% evaluate f(x1,x2) with x2 = c
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-ax.plot_wireframe(xx, yy, f_xy_zz,
-                  color = [0.5,0.5,0.5],
-                  rstride = 5, cstride = 0,
-                  linewidth = 0.25)
-
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], rstride = 5, cstride = 0, linewidth = 0.25)
 # x2 = b
-
 colors = plt.cm.rainbow(np.linspace(0,1,7))
-
 i = 0
-
 for b in [-3,-2,-1,0,1,2,3]:
     f_xy_b = f_xy.subs(y, b)
-
     print('==========')
     print('x_2 = %0.0f'%b)
     print('f(x1,x2 = %0.0f) = %s)'%(b, str(simplify(f_xy_b))))
     print('==========')
-
     f_xy_b_fcn = lambdify([x],f_xy_b)
     f_xy_b_zz = f_xy_b_fcn(x_array)
-
     ax.plot(x_array, x_array*0 + b, f_xy_b_zz, color = colors[i,:], label = '$x_2$ = %0.0f'%b)
     i = i + 1
 
@@ -86,10 +68,7 @@ plt.show()
 
 #%% surface projected along Y to X-Z plane
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  rstride=5, cstride=0,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, f_xy_zz, rstride=5, cstride=0, color = [0.5,0.5,0.5], linewidth = 0.25)
 
 ax.contour(xx, yy, f_xy_zz, levels = 60, zdir = 'y', offset = yy.max(), cmap='rainbow')
 
@@ -108,14 +87,10 @@ plt.show()
 
 down_step = 2;
 y_array_downsample = y_array[0::down_step]
-
 fig, ax = plt.subplots()
-
 colors = plt.cm.rainbow(np.linspace(0,1,len(y_array_downsample)))
-
 for i in np.linspace(1,len(y_array_downsample),len(y_array_downsample)):
-    plt.plot(x_array,f_xy_zz[(int(i)-1)*down_step,:],
-             color = colors[int(i)-1])
+    plt.plot(x_array, f_xy_zz[(int(i)-1)*down_step,:], color = colors[int(i)-1])
 
 plt.axhline(y=0, color='k', linestyle='-')
 ax.spines['right'].set_visible(False)
@@ -130,18 +105,12 @@ plt.show()
 #%% evaluate f(x1,x2) with x1 = a
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  color = [0.5,0.5,0.5],
-                  rstride=0, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], rstride=0, cstride=5, linewidth = 0.25)
 # x1 = a
 colors = plt.cm.rainbow(np.linspace(0,1,7))
-
 i = 0
-
 for a in [-3,-2,-1,0,1,2,3]:
     f_x_a_y = f_xy.subs(x, a)
-
     print('==========')
     print('x_1 = %0.0f'%a)
     print('f(x1 = %0.0f,x2) = %s)'%(a,str(simplify(f_x_a_y))))
@@ -150,9 +119,7 @@ for a in [-3,-2,-1,0,1,2,3]:
     f_x_a_y_fcn = lambdify([y],f_x_a_y)
     f_x_a_y_zz = f_x_a_y_fcn(y_array)
 
-    ax.plot(y_array*0 + a,y_array,f_x_a_y_zz,
-            color = colors[i,:],
-            label = '$x_1$ = %0.0f'%a)
+    ax.plot(y_array*0 + a, y_array, f_x_a_y_zz, color = colors[i,:], label = '$x_1$ = %0.0f'%a)
     i = i + 1
 plt.legend()
 ax.set_proj_type('ortho')
@@ -173,14 +140,9 @@ plt.show()
 
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  rstride=0, cstride=5,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, f_xy_zz, rstride=0, cstride=5, color = [0.5,0.5,0.5], linewidth = 0.25)
 
-ax.contour(xx,yy, f_xy_zz,
-           levels = 60, zdir='x', \
-            offset= xx.max(), cmap='rainbow')
+ax.contour(xx,yy, f_xy_zz, levels = 60, zdir='x', offset= xx.max(), cmap='rainbow')
 
 ax.set_xlabel('$x$')
 ax.set_ylabel('$y$')
@@ -209,8 +171,7 @@ fig, ax = plt.subplots()
 colors = plt.cm.rainbow(np.linspace(0,1,len(x_array_downsample)))
 
 for i in np.linspace(1,len(x_array_downsample),len(x_array_downsample)):
-    plt.plot(y_array,f_xy_zz[:,(int(i)-1)*down_step],
-             color = colors[int(i)-1])
+    plt.plot(y_array,f_xy_zz[:,(int(i)-1)*down_step], color = colors[int(i)-1])
 plt.axhline(y=0, color='k', linestyle='-')
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
@@ -226,12 +187,7 @@ ax.set_xlim(xx.min(), xx.max())
 ########################   用冷暖色表示函数的不同高度取值
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (12, 12))
 
-surf = ax.plot_surface(xx,yy, f_xy_zz,
-                cmap=cm.RdYlBu_r,
-                rstride=5, cstride=5,
-                linewidth = 0.25,
-                edgecolors = [0.5,0.5,0.5],
-                ) # 删除阴影 shade = False
+surf = ax.plot_surface(xx, yy, f_xy_zz, cmap=cm.RdYlBu_r, rstride=5, cstride=5, linewidth = 0.25, edgecolors = [0.5,0.5,0.5], ) # 删除阴影 shade = False
 # surf.set_facecolor((0,0,0,0)) # 网格面填充为空, 利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
 
 ax.set_proj_type('ortho')
@@ -250,12 +206,9 @@ plt.show()
 ########################   二元函数三维等高线
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, f_xy_zz, color = [0.5,0.5,0.5], linewidth = 0.25)
 
-colorbar = ax.contour(xx,yy, f_xy_zz,20,
-             cmap = 'RdYlBu_r')
+colorbar = ax.contour(xx, yy, f_xy_zz, 20, cmap = 'RdYlBu_r')
 
 fig.colorbar(colorbar, ax=ax)
 
@@ -287,10 +240,7 @@ plt.show()
 ######################## 三维曲面投影在水平面上得到平面填充等高线
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, f_xy_zz,
-                  rstride=5, cstride=5,
-                  color = [0.5,0.5,0.5],
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, f_xy_zz, rstride=5, cstride=5, color = [0.5,0.5,0.5], linewidth = 0.25)
 
 colorbar = ax.contourf(xx,yy, f_xy_zz, levels = 20, zdir='z',  offset= f_xy_zz.min(), cmap='RdYlBu_r')
 

@@ -32,7 +32,6 @@ sum_result_2 = np.sum(AP_sequence)
 print("Sum of AP sequence = " , sum_result)
 
 fig, ax = plt.subplots(figsize=(20, 8))
-
 plt.xlabel("Index, k")
 plt.ylabel("Term, $a_k$")
 plt.stem(index, AP_sequence)
@@ -42,12 +41,9 @@ plt.ylim(0,AP_sequence.max() + 1)
 plt.gca().spines['right'].set_visible(False)
 plt.gca().spines['top'].set_visible(False)
 
-#%% cumulative sum
-
+### cumulative sum
 cumsum_AP = np.cumsum(AP_sequence)
-
 fig, ax = plt.subplots(figsize=(20, 8))
-
 plt.xlabel("Index, k")
 plt.ylabel("Cumulative sum, $S_k$")
 plt.stem(index, cumsum_AP)
@@ -58,12 +54,7 @@ plt.gca().spines['right'].set_visible(False)
 plt.gca().spines['top'].set_visible(False)
 
 
-
-
-
-
-
-# Bk3_Ch14_02
+#%% Bk3_Ch14_02
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -100,8 +91,6 @@ for i in range(n):
     print(fib(i))
 
 
-
-
 # Bk3_Ch14_04
 
 import numpy as np
@@ -109,10 +98,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 def heatmap_sum(data,i_array,j_array,title):
-
     fig, ax = plt.subplots(figsize=(10, 10))
-
-
     ax = sns.heatmap(data,cmap='RdYlBu_r',
                      cbar_kws={"orientation": "horizontal"},
                      yticklabels=i_array, xticklabels=j_array,
@@ -132,17 +118,14 @@ n = 8  # i = 1 ~ m
 
 j_array = np.arange(1,m + 1)
 i_array = np.arange(1,n + 1)
-
 jj, ii = np.meshgrid(j_array,i_array)
-
 a_ij = np.random.normal(loc=0.0, scale=1.0, size=(n, m))
 
-#%% heatmap of a_i_j
-
+### heatmap of a_i_j
 title = '$a_{i,j}$'
 heatmap_sum(a_ij,i_array,j_array,title)
 
-#%% partial summation of a_ij over i
+### partial summation of a_ij over i
 
 # sum_over_i = a_ij.sum(axis = 0).reshape((1,-1))
 
@@ -153,10 +136,9 @@ sum_over_i = all_1.T@a_ij
 title = '$\sum_{i=1}^{n} a_{i,j}$'
 heatmap_sum(sum_over_i,i_array,j_array,title)
 
-#%% partial summation of a_ij over j
+### partial summation of a_ij over j
 
 # sum_over_j = a_ij.sum(axis = 1).reshape((-1,1))
-
 all_1 = np.ones((12, 1))
 sum_over_j = a_ij@all_1
 # sum over column dimension
@@ -165,7 +147,7 @@ title = '$\sum_{j=1}^{m} a_{i,j}$'
 heatmap_sum(sum_over_j,i_array,j_array,title)
 
 
-# Bk3_Ch14_05
+#%% Bk3_Ch14_05
 
 from sympy import limit_seq, Sum, lambdify, factorial
 from sympy.abc import n, k
@@ -177,21 +159,13 @@ seq_sum = Sum(1 /((k + 1)*(k + 2)),(k, 0, n))
 seq_sum = Sum(1 /factorial(k),(k, 0, n))
 
 seq_limit = limit_seq(seq_sum, n)
-
 seq_sum_fcn = lambdify(n,seq_sum)
-
 seq_sum.evalf(subs={n: 5})
-
 n_array = np.arange(0,100 + 1,1)
-
 seq_sum_array = []
-
 for n in n_array:
-
     seq_n = seq_sum_fcn(n)
-
     seq_sum_array.append(seq_n)
-
 fig, ax = plt.subplots()
 
 ax.plot(n_array,seq_sum_array,linestyle = 'None', marker = '.')
@@ -205,21 +179,6 @@ ax.spines['top'].set_visible(False)
 plt.grid(True, which="both", axis='x')
 plt.tight_layout()
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

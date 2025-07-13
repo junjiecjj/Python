@@ -113,8 +113,8 @@ ax.contour(xx1, xx2, yy_nlc, levels = [0], colors="k")
 
 plt.plot(optimized_x[0], optimized_x[1], 'rx', markersize = 12)
 
-ax.set_xlabel('$\it{x}_1$')
-ax.set_ylabel('$\it{x}_2$')
+ax.set_xlabel(r'$\it{x}_1$')
+ax.set_ylabel(r'$\it{x}_2$')
 ax.axis('square')
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 ax.set_xlim([rr.min(),rr.max()])

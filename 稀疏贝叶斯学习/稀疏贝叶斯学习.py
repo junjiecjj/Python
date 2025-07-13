@@ -317,6 +317,7 @@ if __name__ == "__main__":
 
 
 ###>>>>>>>>>>>>>>>>>>>>>>>>>> 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现, 版本一
+# 版本一参考Wipf 2004年的协方差矩阵稀疏化方法，更适合工程实现
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import inv, sqrtm
@@ -430,7 +431,7 @@ if __name__ == "__main__":
     print(f"协方差矩阵输入结果: {theta_est2}")
 
 ###>>>>>>>>>>>>>>>>>>>>>>>>>> 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现, 版本2
-
+# 严格遵循 Tipping 2001年的原始SBL理论，保留完整复数运算
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import inv, eigvalsh
@@ -530,10 +531,6 @@ if __name__ == "__main__":
 
     # print(f"原始信号输入结果: {theta_est1}")
     print(f"协方差矩阵输入结果: {theta_est2}")
-
-
-
-
 
 
 #%% https://blog.csdn.net/qq_45471796/article/details/130487580

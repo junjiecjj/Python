@@ -32,11 +32,9 @@ f_x_2_diff = diff(f_x, x,2)
 # f_x_2_diff_fcn = lambdify(x, f_x_2_diff)
 
 fig, ax = plt.subplots(figsize = (12, 12))
-
-ax.plot(x_array, f_x_array, linewidth = 6, color = 'black')
+ax.plot(x_array, f_x_array, linewidth = 3, color = 'black')
 ax.set_xlabel("$\it{x}$")
 ax.set_ylabel("$\it{f}(\it{x})$")
-
 for i in np.arange(len(x_0_array)):
     color = colors[i,:]
     x_0 = x_0_array[i]
@@ -77,8 +75,8 @@ f_x_2_diff_fcn = lambdify(x,f_x_2_diff)
 
 fig, ax = plt.subplots(figsize = (12, 12))
 ax.plot(x_array, f_x_1_diff_array_new, linewidth = 4)
-ax.set_xlabel("$\it{x}$")
-ax.set_ylabel("$\it{f}(\it{x})$")
+ax.set_xlabel(r"$\it{x}$")
+ax.set_ylabel(r"$\it{f}(\it{x})$")
 
 for i in np.arange(len(x_0_array)):
     color = colors[i,:]
@@ -145,7 +143,7 @@ colors = plt.cm.rainbow(np.linspace(0, 1, len(order_array)))
 
 i = 0
 for order in order_array:
-    f_series = f_x.series(x, x_0, order + 1).removeO()
+    f_series = f_x.series(x, x_0, order + 1).removeO()   # order+1阶泰勒展开，移除o(order+1)以上的阶
     # order + 1 = number of terms
     f_series_fcn = lambdify(x, f_series)
     f_series_array = f_series_fcn(x_array)
@@ -200,7 +198,7 @@ error = f_x_array - f_series_array
 ax.plot(x_array, error, 'r', linewidth = 1.5)
 ax.fill_between(x_array, error, color = '#DEEAF6')
 plt.axhline(y=0, color='k', linestyle='--', linewidth = 0.25)
-ax.set_xlabel("$\it{x}$")
+ax.set_xlabel(r"$\it{x}$")
 ax.set_ylabel("Error")
 
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
@@ -222,7 +220,6 @@ from sympy.abc import x, y
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import cm
-
 
 num = 301       # number of mesh grids
 x_array = np.linspace(-1.5, 1.5, num)  # (301,)
@@ -247,10 +244,8 @@ y_b_array = np.linspace(y_b - 0.5, y_b + 0.5, 101)
 xx_local, yy_local = np.meshgrid(x_a_array, y_b_array)
 f_xy_zz_local = f_xy_fcn(xx_local, yy_local)  #  (101, 101)
 
-
 # expansion point
 f_ab = f_xy_fcn(x_a, y_b) # 0.9512
-
 
 #%% constant approximation, 用常数函数估计二元高斯函数
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10))

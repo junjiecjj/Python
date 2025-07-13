@@ -337,7 +337,7 @@ def DOA_EM_SBL(noisevar, Rxx, Ns, err = 1e-3, timelim = 30):
 
 
 def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
-    from scipy.linalg import inv, sqrtm
+    from scipy.linalg import inv
     from scipy.signal import find_peaks
     """
     基于协方差矩阵的稀疏贝叶斯学习DOA估计
