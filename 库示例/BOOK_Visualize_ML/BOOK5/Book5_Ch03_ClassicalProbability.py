@@ -28,8 +28,6 @@ plt.ylabel('Probability')
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 
 
-
-
 #%%
 
 import numpy as np
