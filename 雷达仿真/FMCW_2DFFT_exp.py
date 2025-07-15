@@ -67,9 +67,9 @@ S = B/Tc          # 调频斜率
 Ns = 1024         # ADC采样点数
 Nchirp = 256      # chirp数量
 lamba = c/f0      # 波长
-Fs = Ns/Tc        # = 1/(t[1] - t[0])     # 模拟信号采样频率
-NumRangeFFT = Ns * 2                          # Range FFT Length
-NumDopplerFFT = Nchirp * 2                    # Doppler FFT Length
+Fs = Ns/Tc        # = 1/(t[1] - t[0])      # 模拟信号采样频率,此时要注意，本文采用“数字信号的形式”来模拟发射信号与回波信号，实际上是不会通过这种方式实现的，发射信号和回波信号都是模拟信号。因此在本文中，混频之后得到的中频信号只有单一的频谱，即只保留了混频乘法器积化和差公式后的“差频”信号，“和频”信号由于MATLAB采用数字信号的形式导致采样率过低，N/Tchirp=1024/Tchirp=139MHz，对“和频信号”相当于欠采样，因此并不会保留高频信号，只保留目标的最大中频信号（27.27MHz），从而MATLAB自身形成一个低通（或带通）滤波器。
+NumRangeFFT = Ns * 2                      # Range FFT Length
+NumDopplerFFT = Nchirp * 2                # Doppler FFT Length
 rangeRes = c/(2*B)                        # 距离分辨率
 maxRange = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
 velRes = lamba / (2 * Nchirp * Tc)        # 速度分辨率

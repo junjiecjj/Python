@@ -133,10 +133,9 @@ for rx in range(nRx):
             fr = f0 * (t + tau) + S / 2 * (t + tau)**2
             noise = (np.random.randn(*Sx.shape) + 1j * np.random.randn(*Sx.shape)) * np.sqrt(sigma[k])
             Rx[rx, chirp, :] += (np.exp(1j * 2 * np.pi * fr + 1j * phase_shift) + noise )
-sigReceive = np.conjugate(Sx) * Rx # 混频
+sigReceive = np.conjugate(Sx) * Rx     # 混频
 
-
-range_win = np.hamming(Ns)           # 加海明窗
+range_win = np.hamming(Ns)             # 加海明窗
 doppler_win = np.hamming(Nchirp)
 
 # 3D FFT处理

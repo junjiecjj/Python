@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr  7 18:23:29 2025
-
-@author: jack
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks

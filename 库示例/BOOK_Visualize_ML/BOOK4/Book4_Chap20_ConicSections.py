@@ -68,8 +68,6 @@ for theta in thetas:
     plt.ylabel(r'$x_2$')
     plt.show()
 
-
-
 #%% Bk4_Ch20_02.py
 import numpy as np
 import matplotlib.pyplot as plt
@@ -79,7 +77,7 @@ alphas = np.linspace(0, 2*np.pi, 100)
 # unit circle
 r = np.sqrt(1.0)
 
-z1 = r*1/np.cos(alphas)
+z1 = r*1/np.cos(alphas)  # 参数方程
 z2 = r*np.tan(alphas)
 
 Z = np.array([z1, z2]).T # data of unit circle
@@ -125,8 +123,8 @@ x2 = np.linspace(-3,3,200)
 xx1,xx2 = np.meshgrid(x1,x2)
 
 fig, ax = plt.subplots()
-theta_array = np.linspace(0,2*np.pi,100)
-plt.plot(a*np.cos(b*np.sin(theta)),b*np.sin(b*np.sin(theta)),color = 'k')
+theta_array = np.linspace(0, 2*np.pi, 100)
+plt.plot(a*np.cos(b*np.sin(theta)), b*np.sin(b*np.sin(theta)), color = 'k')
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(theta_array)))
 for i in range(len(theta_array)):
     theta = theta_array[i]
@@ -145,7 +143,7 @@ ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.axvline(x=0,color = 'k')
 ax.axhline(y=0,color = 'k')
-
+plt.show()
 
 
 
