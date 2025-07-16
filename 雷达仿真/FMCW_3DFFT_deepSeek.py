@@ -1,3 +1,5 @@
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
@@ -35,7 +37,7 @@ d = 0.5 * (c / fc)  # 天线间距 (m)
 
 # 目标参数 (两个目标)
 targets = [
-    {"range": 50, "velocity": 10, "angle": 30},  # 目标1
+    {"range": 50, "velocity": 10, "angle": 30},   # 目标1
     {"range": 75, "velocity": -5, "angle": -20}   # 目标2
 ]
 
@@ -73,13 +75,13 @@ rx_signal += np.sqrt(noise_power/2) * (np.random.randn(*rx_signal.shape) + 1j * 
 
 # 3D FFT处理
 # 1. 距离FFT (对每个chirp的采样点做FFT)
-range_fft = np.fft.fft(rx_signal, axis=2)
+range_fft = np.fft.fft(rx_signal, axis = 2)
 
 # 2. 多普勒FFT (对每个距离门的chirp序列做FFT)
-doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, axis=1), axes=1)
+doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, axis = 1), axes = 1)
 
 # 3. 角度FFT (对每个距离-多普勒单元的天线阵列做FFT)
-angle_fft = np.fft.fftshift(np.fft.fft(doppler_fft, n=1024, axis=0), axes=0)
+angle_fft = np.fft.fftshift(np.fft.fft(doppler_fft, n = 1024, axis = 0), axes = 0)
 
 # 计算各个维度的坐标
 # 距离坐标

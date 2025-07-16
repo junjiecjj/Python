@@ -6,6 +6,19 @@ Created on Fri Apr 18 11:09:23 2025
 @author: jack
 % https://blog.csdn.net/qq_35844208/article/details/128547667
 
+下面是关于3DFFT同时测速测距测角的雷达的一些代码(FMCW_MIMO_IF.py, FMCW_MIMO_batch.py, FMCW_MIMO.py, FMCW_3DFFT.py, FMCW_3DFFT_deepSeek.py, FMCW_3DFFT_deepseek.py, FMCW_3DFFT_angle.py)的说明：
+FMCW_3DFFT_angle.py是使用直接差频方式(干货 | 利用MATLAB实现FMCW雷达的距离多普勒估计)进行测速测距测角；
+FMCW_3DFFT_deepSeek.py, FMCW_3DFFT_deepseek.py 也是直接使用差频方式进行测速测距测角，其中一个是单个目标一个是多个目标，但是差频信号格式是使用deepseek生成的，从仿真结果貌似是对的；
+代码 FMCW_3DFFT.py 是总结了 FMCW_3DFFT_deepSeek.py, FMCW_3DFFT_deepseek.py, FMCW_3DFFT_angle.py三者，在代码里三中生成方式都有；
+
+
+FMCW_MIMO.py 是按照 (https://blog.csdn.net/qq_35844208/article/details/128547667) 的Matlab代码写的，目标都是手动建模的，且信号都是直接得到差频信号，
+因此 FMCW_MIMO_batch.py 将 FMCW_MIMO.py 改成了自适应多目标的，仅此不同；
+FMCW_MIMO_IF.py 是进一步使用混频得到差频信号，是最接近理论的代码实现。
+
+综上，推荐使用 FMCW_3DFFT.py 和 FMCW_MIMO_IF.py进行学习。
+
+
 """
 
 import numpy as np
@@ -37,10 +50,10 @@ plt.rcParams['legend.fontsize'] = 18
 c = 3e8                      # speed of light
 BW = 150e6                   # bandwidth 有效
 fc = 77e9                    # carrier frequency
-numADC = 256                 # of adc samples
-numChirps = 128              # of chirps per frame
+numADC = 1024                 # of adc samples
+numChirps = 256              # of chirps per frame
 numCPI = 10                  # 10帧
-Tc = 10e-6                   # PRI, 默认不存在空闲时间
+Tc = 20e-6                   # PRI, 默认不存在空闲时间
 PRF = 1/Tc                   #
 Fs = numADC/Tc               # sampling frequency
 dt = 1/Fs                    # sampling interval
@@ -57,11 +70,12 @@ dV = lamba/(2*numChirps*Tc)           # velocity resol, lambda/(2*framePeriod)
 Vmax = lamba/(4*Tc)                   # Max Unamb velocity m/s
 d_rx = lamba/2                        # dist. between rxs
 d_tx = 4*d_rx                         # dist. between txs
-N_Dopp = numChirps                    # length of doppler FFT
-N_range = numADC                      # length of range FFT
+N_Dopp = numChirps                     # length of doppler FFT
+N_range = numADC                       # length of range FFT
 N_azimuth = numTX*numRX
-R = np.arange(0, Rmax, dR)                   # range axis
-V = np.linspace(-Vmax, Vmax, numChirps)      # Velocity axis
+R = np.arange(0, Rmax/2, dR)                 # range axis
+R = np.arange(int(N_range/2)) / N_range * Rmax
+V = np.linspace(-Vmax, Vmax, N_Dopp)      # Velocity axis
 ang_ax = np.arange(-90, 91)                  # angle axis
 
 #%% 发射天线位置
@@ -79,6 +93,11 @@ rx_loc = np.array(rx_loc)
 R_radial   = [100, 200]
 V_radial   = [10, -25]
 Ang_radial = [-30, 30]
+
+R_radial = [100, 200, 300]  # 目标距离
+V_radial = [-30, 15, 30]    # 目标速度
+Ang_radial = [0, 30, 60]    # 目标角度
+
 numTarget  = len(R_radial)
 tar_loc = np.zeros((numTarget, t.size, 3))
 for k in range(numTarget):
@@ -103,7 +122,7 @@ Sx = np.exp(1j * 2 * np.pi * ft)                  # 发射信号
 
 ## Rx
 RDC = np.zeros((numADC, numChirps, numCPI, numTX*numRX), dtype = complex)   # radar data cubic
-RDMs = np.zeros((numADC, numChirps, numCPI, numTX*numRX), dtype = complex)  # range-doppler FFT
+RDMs = np.zeros((N_range, N_Dopp, numCPI, numTX*numRX), dtype = complex)  # range-doppler FFT
 Rx = np.zeros((numADC, numChirps, numCPI, numTX*numRX), dtype = complex)
 N = numCPI*numChirps*numADC                                                 # total of adc samples
 t = np.linspace(0, Tc*numCPI*numChirps, N)                                  # time axis, one frame 等间隔时间/点数
@@ -118,7 +137,7 @@ for i in range(numTX):
                     fr = fc * (t_onePulse + tau) + slope / 2 * (t_onePulse + tau)**2
                     Rx[:, ncip, ncpi, Annt] += np.exp(1j * 2 * np.pi * fr )
 
-## IF
+## IF, 混频得到差频信号
 for i in range(numTX):
     for j in range(numRX):
         Annt = j*numTX + i
@@ -131,7 +150,7 @@ for i in range(numCPI):
     RDMs[:,:,i,:] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(0, 1)), axes = 1)
 
 #%%  range-Dopples 2D-plot
-tmp = np.sum(np.abs(RDMs), axis = (-2, -1))
+tmp = np.sum(np.abs(RDMs), axis = (-2, -1))[:int(N_range/2),:]
 # tmp = np.abs(RDMs[:,:,0,0])
 fig = plt.figure(figsize = (8, 12), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
@@ -190,6 +209,7 @@ tmp = np.abs(RDMs[:,:,0,0])
 RDM_dB = 10*np.log10(tmp/ tmp.max())
 RDM_mask, cfar_ranges, cfar_dopps, K = ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET)
 print(f"K = {K}")
+RDM_mask = RDM_mask[:int(N_range/2),:]
 fig = plt.figure(figsize = (8, 12), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
 im = ax1.imshow(RDM_mask, aspect = 'auto', cmap = 'jet', extent = [V[0], V[-1], R[-1], R[0]])
@@ -219,7 +239,7 @@ plt.close()
 rangeFFT = scipy.fft.fft(RDC[:,:,0,:], N_range, axis = 0)
 doppFFT = scipy.fft.fftshift(scipy.fft.fft(rangeFFT, N_Dopp, axis = 1), axes  = 1)
 angleFFT = scipy.fft.fftshift(scipy.fft.fft(doppFFT, ang_ax.size, axis = 2), axes = 2)
-range_az =  np.sum(np.abs(angleFFT), axis = 1)                          # range-azimuth map
+range_az =  np.sum(np.abs(angleFFT), axis = 1)[:int(N_range/2),:]                          # range-azimuth map
 tmp = 10*np.log10(np.abs(range_az)/np.abs(range_az).max())
 Ang, RR = np.meshgrid(ang_ax, R)
 
@@ -314,12 +334,12 @@ Thetalst = np.arange(-90, 90.1, 0.5)
 angle = np.deg2rad(Thetalst)
 Pmusic = np.zeros(angle.size)
 for i, ang in enumerate(angle):
-    a = np.exp(1j * np.pi * np.arange(numTX*numRX) * np.sin(ang)).reshape(-1, 1)
+    a = np.exp(-1j * np.pi * np.arange(numTX*numRX) * np.sin(ang)).reshape(-1, 1)
     Pmusic[i] = 1/np.abs(a.T.conjugate() @ UnUnH @ a)[0,0]
 
 Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
 Pmusic = 10 * np.log10(Pmusic)
-peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -10, distance = 10)
+peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -20, distance = 10)
 angle_est = Thetalst[peaks]
 
 colors = plt.cm.jet(np.linspace(0, 1, 3))
@@ -355,9 +375,9 @@ plt.show()
 plt.close()
 
 ## (四) MUSIC 距离-AOA谱
-range_az_music = np.zeros((N_range, ang_ax.size), dtype = complex)
+range_az_music = np.zeros((int(N_range), ang_ax.size), dtype = complex)
 rangeFFT1 = scipy.fft.fft(RDC, axis = 0)
-for i in range(N_range):
+for i in range(int(N_range)):
     Rxx = np.zeros((numTX*numRX, numTX*numRX), dtype = complex)
     for m in range(M):
         A =  np.sum(rangeFFT1[i, :, m, :], 0)

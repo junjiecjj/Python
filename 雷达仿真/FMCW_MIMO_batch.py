@@ -78,9 +78,14 @@ for i in range(numRX):
 rx_loc = np.array(rx_loc)
 
 #%% 目标位置
-R_radial   = [100, 200]
-V_radial   = [10, -25]
-Ang_radial = [-30, 30]
+# R_radial   = [100, 200]
+# V_radial   = [10, -25]
+# Ang_radial = [-30, 30]
+R_radial = [100, 200, 150]  # 目标距离
+V_radial = [-30, 15, 30]    # 目标速度
+Ang_radial = [0, 30, 60]    # 目标角度
+
+
 numTarget  = len(R_radial)
 tar_loc = np.zeros((numTarget, t.size, 3))
 for k in range(numTarget):
@@ -317,7 +322,7 @@ Thetalst = np.arange(-90, 90.1, 0.5)
 angle = np.deg2rad(Thetalst)
 Pmusic = np.zeros(angle.size)
 for i, ang in enumerate(angle):
-    a = np.exp(1j * np.pi * np.arange(numTX*numRX) * np.sin(ang)).reshape(-1, 1)
+    a = np.exp(-1j * np.pi * np.arange(numTX*numRX) * np.sin(ang)).reshape(-1, 1)
     Pmusic[i] = 1/np.abs(a.T.conjugate() @ UnUnH @ a)[0,0]
 
 Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()

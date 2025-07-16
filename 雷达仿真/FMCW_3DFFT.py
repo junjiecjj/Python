@@ -71,8 +71,8 @@ Fs = Ns/Tc        # = 1/(t[1] - t[0])     # 模拟信号采样频率
 nRx = 8           # RX天线通道数
 d = lamba/2       # 天线阵列间距
 
-NumRangeFFT = Ns                          # Range FFT Length
-NumDopplerFFT = Nchirp                    # Doppler FFT Length
+NumRangeFFT = Ns                        # Range FFT Length
+NumDopplerFFT = Nchirp                 # Doppler FFT Length
 rangeRes = c/(2*B)                        # 距离分辨率
 maxRange = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
 velRes = lamba / (2 * Nchirp * Tc)        # 速度分辨率
@@ -97,7 +97,7 @@ for k in range(len(tarR)):
     Dic = {"range": tarR[k], "velocity": tarV[k], "angle": tarA[k]}
     targets.append(Dic)
 
-# ### 模拟接收信号, 直接获取差频信号；
+# ### 模拟接收信号, 直接获取差频信号. DeepSeek；
 # t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
 # sigReceive = np.zeros((nRx, Nchirp, Ns), dtype = np.complex_)
 # for rx in range(nRx):
@@ -182,7 +182,7 @@ for i, ang in enumerate(angle):
 
 Pmusic = np.abs(Pmusic) / np.abs(Pmusic).max()
 Pmusic = 10 * np.log10(Pmusic)
-peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -10, distance = 10)
+peaks, _ =  scipy.signal.find_peaks(Pmusic, height = -20, distance = 10)
 angle_est = Thetalst[peaks]
 
 colors = plt.cm.jet(np.linspace(0, 1, 3))
@@ -227,11 +227,11 @@ plt.close()
 ##>>>>>>>>>>>>>>  3D FFT处理
 # 1. 距离FFT (对每个chirp的采样点做FFT)
 sigReceive1 = sigReceive * range_win[None,:]
-range_fft = np.fft.fft(sigReceive1, axis = 2)
+range_fft = np.fft.fft(sigReceive1, n = NumRangeFFT, axis = 2)
 
 # 2. 多普勒FFT (对每个距离门的chirp序列做FFT)
 range_fft = range_fft * doppler_win[:,None]
-doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, axis = 1), axes = 1)
+doppler_fft = np.fft.fftshift(np.fft.fft(range_fft, n = NumDopplerFFT, axis = 1), axes = 1)
 # sigDopplerFFT = doppler_fft[3, :, :]
 sigDopplerFFT = np.sum(np.abs(doppler_fft), axis = 0)
 # 3. 角度FFT (对每个距离-多普勒单元的天线阵列做FFT)
@@ -281,10 +281,10 @@ ax1.set_title('DopplerFFT', fontsize = 18)
 ax1.view_init(azim = -135, elev = 30)
 
 ax2 = fig.add_subplot(122, )
-# im = ax2.imshow(np.abs(Z.T), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
-im = ax2.imshow(20*np.log10(np.abs(Z.T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
-ax2.set_xlabel('速度 (m/s)')
-ax2.set_ylabel('距离 (m)')
+# im = ax2.imshow(np.abs(Z), aspect='auto', cmap='jet', extent=[x[0], x[-1], y[-1], y[0] ])
+im = ax2.imshow(20*np.log10(np.abs(Z)), aspect='auto', cmap='jet', extent=[x[0], x[-1], y[-1], y[0] ])
+ax2.set_xlabel('距离 (m)')
+ax2.set_ylabel('速度 (m/s)')
 ax2.set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label='强度 (dB)') # label='强度 (dB)'
 
@@ -307,10 +307,10 @@ ax1.set_title('DopplerFFT', fontsize = 18)
 ax1.view_init(azim = -135, elev = 30)
 
 ax2 = fig.add_subplot(122, )
-im = ax2.imshow(np.abs(Z.T), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
-# im = ax2.imshow(20*np.log10(np.abs(Z.T)), aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
-ax2.set_xlabel('速度 (m/s)')
-ax2.set_ylabel('距离 (m)')
+im = ax2.imshow(np.abs(Z), aspect='auto', cmap='jet', extent=[x[0], x[-1], y[-1], y[0] ])
+# im = ax2.imshow(20*np.log10(np.abs(Z)), aspect='auto', cmap='jet', extent=[x[0], x[-1], y[-1], y[0] ])
+ax2.set_xlabel('距离 (m)')
+ax2.set_ylabel('速度 (m/s)')
 ax2.set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = ax2, orientation = 'vertical', label='强度 (dB)') # label='强度 (dB)'
 
@@ -318,7 +318,7 @@ plt.show()
 plt.close()
 
 #####>>>>>>>>>>>>>>>>>>>>>>>> # 检测目标
-power_spectrum = np.abs(angle_fft[..., :Ns//2])**2
+power_spectrum = np.abs(angle_fft[..., :NumRangeFFT//2])**2
 spectrum_2d = np.sum(power_spectrum, axis = 0)  # 压缩角度维度
 
 # 寻找峰值 (距离-多普勒平面)
@@ -354,7 +354,7 @@ fig, axs = plt.subplots(1, 3, figsize = (18, 5), constrained_layout = True)
 
 # 距离-多普勒图 (第一个天线)
 # plt.subplot(131)
-range_vel = np.abs(doppler_fft[3, :, :Ns//2]).T  # or Z.T
+range_vel = np.abs(doppler_fft[3, :, :NumRangeFFT//2]).T  # or Z.T
 range_vel = range_vel/range_vel.max()
 tmp = 10*np.log10(range_vel)
 im = axs[0].imshow(tmp, aspect='auto', cmap='jet', extent=[y[0], y[-1], x[-1], x[0]])
@@ -413,7 +413,7 @@ fig = plt.figure(figsize=(18, 5) )
 # 距离-多普勒图 (第一个天线)
 X, Y = np.meshgrid(x, y)
 ax1 = fig.add_subplot(131, projection = '3d')
-angle_vel = np.abs(doppler_fft[3, :, :Ns//2])  # Z
+angle_vel = np.abs(doppler_fft[3, :, :NumRangeFFT//2])  # Z
 angle_vel = angle_vel/angle_vel.max()
 tmp = 10*np.log10(angle_vel)
 # ax1.plot_surface(X, Y, angle_range, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))

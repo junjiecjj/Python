@@ -4,6 +4,11 @@
 Created on Sat Apr  5 16:16:47 2025
 
 @author: jack
+
+代码说明：
+(1) FMCW_2DFFT.py是严格按照收发信号建模的理论实现的代码，只有测速测距，信号使用复数域，处理起来简单，参考意义比较大；
+(2) FWCW_2DFFT_multi.py中(一)(二)是按照等效差频信号实现的，只有测速测距，参考意义其次。
+
 """
 
 #%% 接收方使用混频技术得到差频信号(exp形式)做后续处理,FFT先做距离维再做速度维,直接用FFT2D完成
@@ -68,8 +73,8 @@ Ns = 1024         # ADC采样点数
 Nchirp = 256      # chirp数量
 lamba = c/f0      # 波长
 Fs = Ns/Tc        # = 1/(t[1] - t[0])      # 模拟信号采样频率,此时要注意，本文采用“数字信号的形式”来模拟发射信号与回波信号，实际上是不会通过这种方式实现的，发射信号和回波信号都是模拟信号。因此在本文中，混频之后得到的中频信号只有单一的频谱，即只保留了混频乘法器积化和差公式后的“差频”信号，“和频”信号由于MATLAB采用数字信号的形式导致采样率过低，N/Tchirp=1024/Tchirp=139MHz，对“和频信号”相当于欠采样，因此并不会保留高频信号，只保留目标的最大中频信号（27.27MHz），从而MATLAB自身形成一个低通（或带通）滤波器。
-NumRangeFFT = Ns                       # Range FFT Length
-NumDopplerFFT = Nchirp                 # Doppler FFT Length
+NumRangeFFT = Ns*2                       # Range FFT Length
+NumDopplerFFT = Nchirp*2                 # Doppler FFT Length
 rangeRes = c/(2*B)                        # 距离分辨率
 maxRange = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
 velRes = lamba / (2 * Nchirp * Tc)        # 速度分辨率
@@ -81,10 +86,14 @@ tarR = [100, 200]      # 目标距离
 tarV = [10, -20]       # 目标速度
 sigma = [0.1, 1.1 ]    # 高斯白噪声标准差
 
-tarR = [100, 200, 300, 400]         # 目标距离,注意，上面的maxRange是2*Fs采样率下的最大探测距离，也就是Ns下的最大探测距离，而根据奈奎斯特采样定理，Fs采样率下的最大距离应该是maxRange/2,所以这里的tarR的最大值不能超过maxRange/2，否则会出现很奇怪的现象，可以改变参数试试。
-tarV = [20, 10, -30, 40]            # 目标速度
-sigma = [0., 0., 0., 0.]            # 高斯白噪声标准差
-# sigma = [1.1, 1.1, 1.1, 1.1]      # 高斯白噪声标准差
+tarR = [100, 200, 300]  # 目标距离
+tarV = [-30, 15, 30]    # 目标速度
+sigma = [0., 0., 0. ]
+
+# tarR = [100, 200, 300, 400]    # 目标距离,注意，上面的maxRange是2*Fs采样率下的最大探测距离，也就是Ns下的最大探测距离，而根据奈奎斯特采样定理，Fs采样率下的最大距离应该是maxRange/2,所以这里的tarR的最大值不能超过maxRange/2，否则会出现很奇怪的现象，可以改变参数试试。
+# tarV = [20, 10, -30, 40]       # 目标速度
+# sigma = [0., 0., 0., 0.]       # 高斯白噪声标准差
+# # sigma = [1.1, 1.1, 1.1, 1.1]  # 高斯白噪声标准差
 
 f_IFmax = (S*2*maxRange)/c     # 最高中频频率=Fs,
 f_IF = (S*2*max(tarR))/c       # 当前中频频率

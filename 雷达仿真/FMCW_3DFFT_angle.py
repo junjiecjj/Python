@@ -97,7 +97,7 @@ for k in range(len(tarR)):
     Dic = {"range": tarR[k], "velocity": tarV[k], "angle": tarA[k]}
     targets.append(Dic)
 
-# ##### 模拟接收信号, 直接获取差频信号；
+# ##### 模拟接收信号, 直接获取差频信号(干货 | 利用MATLAB实现FMCW雷达的距离多普勒估计)；
 # t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
 # sigReceive = np.zeros((nRx, Nchirp, Ns), dtype = np.complex_)
 # for rx in range(nRx):
@@ -117,9 +117,9 @@ for k in range(len(tarR)):
 #                 ))
 
 ### 模拟接收信号, 收发相乘获取差频信号；
-t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
+t = np.linspace(0, Tc, Ns)             # 单个chirp的采样时间
 ft = f0 * t + S / 2 * t**2
-Sx = np.exp(1j * 2 * np.pi * ft)          # 发射信号
+Sx = np.exp(1j * 2 * np.pi * ft)       # 发射信号
 
 Rx = np.zeros((nRx, Nchirp, Ns), dtype = np.complex_)
 for rx in range(nRx):

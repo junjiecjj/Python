@@ -45,7 +45,14 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
     return f, Y, A, Pha, R, I
 
-#%% 接收方直接用理论上精确的差频信号(exp形式)做处理，FFT先做距离维再做速度维，手动完成FFT
+#%% (一)接收方直接用理论上精确的差频信号(exp形式)做处理，FFT先做距离维再做速度维，手动完成FFT
+# 利用Python实现FMCW雷达的距离多普勒估计(2D-FFT, 距离FFT，速度FFT)
+# https://blog.csdn.net/caigen0001/article/details/108815569
+# 干货 | 利用MATLAB实现FMCW雷达的距离多普勒估计:
+# https://mp.weixin.qq.com/s?__biz=MzI2NzE1MTU3OQ==&mid=2649214285&idx=1&sn=241742b17b557c433ac7f5010758cd0f&chksm=f2905cf9c5e7d5efc16e84cab389ac24c5561a73d27fb57ca4d0bf72004f19af92b013fbd33b&scene=21#wechat_redirect
+# 干货 | 利用Python实现FMCW雷达的距离多普勒估计:
+# https://mp.weixin.qq.com/s/X8uYol6cWoWAX6aUeR7S2A
+
 c = 3e8           # Speed of Light
 f0 = 77e9         # Start Frequency
 B = 150e6         # 发射信号带宽
@@ -130,7 +137,8 @@ ax2.view_init(azim = 270, elev = 90)
 plt.show()
 plt.close()
 
-#%% 接收方直接用理论上精确的差频信号(exp形式)做处理，FFT先做距离维再做速度维，直接用FFT2D完成
+#%% (二) 接收方直接用理论上精确的差频信号(exp形式)做处理，FFT先做距离维再做速度维.
+# 直接用FFT2D替换 “干货 | 利用Python实现FMCW雷达的距离多普勒估计”
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -204,7 +212,7 @@ ax2.view_init(azim = 270, elev = 90)
 plt.show()
 plt.close()
 
-#%% 接收方使用混频技术得到差频信号(exp形式)做后续处理, FFT先做距离维再做速度维, 直接用FFT2D完成, 重点看这段
+#%%  (三) 接收方使用混频技术得到差频信号(exp形式)做后续处理, FFT先做距离维再做速度维, 直接用FFT2D完成, 重点看这段
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy

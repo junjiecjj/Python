@@ -130,9 +130,9 @@ for i in range(numTX):
             signal_2[int(k*numADC):int((k+1)*numADC)] = np.exp(1j*(phase_t - phase_2))
         mixed[i, j] = signal_1 + signal_2
 
-## add noise
+# ## add noise
 # signal_power = np.sum(np.abs(mixed)**2)/mixed.size
-# SNRdB = 100
+# SNRdB = 10
 # noise_pow = signal_power / (10.0**(SNRdB/10.0))
 # mixed = mixed + np.sqrt(noise_pow/2) * (np.random.randn(*mixed.shape) + 1j * np.random.randn(*mixed.shape))
 
