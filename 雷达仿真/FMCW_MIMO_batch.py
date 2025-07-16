@@ -53,10 +53,8 @@ numTX = 1
 numRX = 8                             # 等效后
 dR = c/(2*BW)                         # range resol
 Rmax = Fs*c/(2*slope)                 # TI's MIMO Radar doc
-# Rmax2 = c/2/PRF                     # lecture 2.3
 dV = lamba/(2*numChirps*Tc)           # velocity resol, lambda/(2*framePeriod)
 Vmax = lamba/(4*Tc)                   # Max Unamb velocity m/s
-# DFmax = 1/2*PRF                     # = Vmax/(c/f0/2); % Max Unamb Dopp Freq
 d_rx = lamba/2                        # dist. between rxs
 d_tx = 4*d_rx                         # dist. between txs
 N_Dopp = numChirps                    # length of doppler FFT
@@ -84,7 +82,6 @@ rx_loc = np.array(rx_loc)
 R_radial = [100, 200, 150]  # 目标距离
 V_radial = [-30, 15, 30]    # 目标速度
 Ang_radial = [0, 30, 60]    # 目标角度
-
 
 numTarget  = len(R_radial)
 tar_loc = np.zeros((numTarget, t.size, 3))
@@ -134,9 +131,6 @@ RDMs = np.zeros((numADC, numChirps, numTX*numRX, numCPI), dtype = complex)
 for i in range(numCPI):
     RD_frame = RDC[:, int(i*numChirps): int((i+1)*numChirps), :]
     RDMs[:,:,:,i] = scipy.fft.fftshift(np.fft.fft2(RD_frame, (N_range, N_Dopp), axes=(0, 1)), axes = 1)
-
-#%%
-
 
 #%%  range-Dopples 2D-plot
 tmp = np.sum(np.abs(RDMs), axis = (-2, -1))

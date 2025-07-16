@@ -73,7 +73,6 @@ d_tx = 4*d_rx                         # dist. between txs
 N_Dopp = numChirps                     # length of doppler FFT
 N_range = numADC                       # length of range FFT
 N_azimuth = numTX*numRX
-R = np.arange(0, Rmax/2, dR)                 # range axis
 R = np.arange(int(N_range/2)) / N_range * Rmax
 V = np.linspace(-Vmax, Vmax, N_Dopp)      # Velocity axis
 ang_ax = np.arange(-90, 91)                  # angle axis
@@ -90,10 +89,9 @@ for i in range(numRX):
 rx_loc = np.array(rx_loc)
 
 #%% 目标位置
-R_radial   = [100, 200]
-V_radial   = [10, -25]
-Ang_radial = [-30, 30]
-
+# R_radial   = [100, 200]
+# V_radial   = [10, -25]
+# Ang_radial = [-30, 30]
 R_radial = [100, 200, 300]  # 目标距离
 V_radial = [-30, 15, 30]    # 目标速度
 Ang_radial = [0, 30, 60]    # 目标角度
@@ -122,7 +120,7 @@ Sx = np.exp(1j * 2 * np.pi * ft)                  # 发射信号
 
 ## Rx
 RDC = np.zeros((numADC, numChirps, numCPI, numTX*numRX), dtype = complex)   # radar data cubic
-RDMs = np.zeros((N_range, N_Dopp, numCPI, numTX*numRX), dtype = complex)  # range-doppler FFT
+RDMs = np.zeros((N_range, N_Dopp, numCPI, numTX*numRX), dtype = complex)    # range-doppler FFT
 Rx = np.zeros((numADC, numChirps, numCPI, numTX*numRX), dtype = complex)
 N = numCPI*numChirps*numADC                                                 # total of adc samples
 t = np.linspace(0, Tc*numCPI*numChirps, N)                                  # time axis, one frame 等间隔时间/点数
@@ -154,10 +152,11 @@ tmp = np.sum(np.abs(RDMs), axis = (-2, -1))[:int(N_range/2),:]
 # tmp = np.abs(RDMs[:,:,0,0])
 fig = plt.figure(figsize = (8, 12), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
-im = ax1.imshow(10*np.log10(tmp/ tmp.max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+# im = ax1.imshow(10*np.log10(tmp.T/ tmp.max()), aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
+im = ax1.imshow(10*np.log10(tmp.T/ tmp.max()), aspect='auto', cmap='jet', extent=[R[0], R[-1], V[-1], V[0]])
 # im = ax1.imshow(tmp, aspect='auto', cmap='jet', extent=[V[0], V[-1], R[-1], R[0]])
-ax1.set_xlabel('速度 (m/s)')
-ax1.set_ylabel('距离 (m)')
+ax1.set_xlabel('距离 (m)')
+ax1.set_ylabel('速度 (m/s)')
 ax1.set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = ax1, orientation = 'vertical', label='强度 (dB)') # label='强度 (dB)'
 
@@ -212,10 +211,10 @@ print(f"K = {K}")
 RDM_mask = RDM_mask[:int(N_range/2),:]
 fig = plt.figure(figsize = (8, 12), constrained_layout = True)
 ax1 = fig.add_subplot(211, )
-im = ax1.imshow(RDM_mask, aspect = 'auto', cmap = 'jet', extent = [V[0], V[-1], R[-1], R[0]])
+im = ax1.imshow(RDM_mask.T, aspect = 'auto', cmap = 'jet', extent = [R[0], R[-1], V[-1], V[0]])
 # ax1.scatter( V[cfar_dopps], R[cfar_ranges], s = 12, c = 'red')
-ax1.set_xlabel('速度 (m/s)')
-ax1.set_ylabel('距离 (m)')
+ax1.set_xlabel('距离 (m)')
+ax1.set_ylabel('速度 (m/s)')
 ax1.set_title('距离-速度图')
 cbar = fig.colorbar(im, ax = ax1, orientation = 'vertical', label = '强度 (dB)')
 
@@ -376,7 +375,7 @@ plt.close()
 
 ## (四) MUSIC 距离-AOA谱
 range_az_music = np.zeros((int(N_range), ang_ax.size), dtype = complex)
-rangeFFT1 = scipy.fft.fft(RDC, axis = 0)
+rangeFFT1 = scipy.fft.fft(RDC, n = N_range, axis = 0)
 for i in range(int(N_range)):
     Rxx = np.zeros((numTX*numRX, numTX*numRX), dtype = complex)
     for m in range(M):
@@ -420,9 +419,9 @@ for k in range(K):
     result = prob.solve()
     print("status:", prob.status)
     S = np.abs(s.value).flatten()
-    ax1.plot(ang_ax, np.log10(S), color = colors[k])
+    ax1.plot(ang_ax, np.log10(S/S.max()), color = colors[k])
     Idxs = scipy.signal.find_peaks(S , np.max(S)*0.5, distance = 10)[0]
-    ax1.scatter(ang_ax[Idxs], np.log10(S)[Idxs], s = 50, c = 'blue')
+    ax1.scatter(ang_ax[Idxs], np.log10(S/S.max())[Idxs], s = 50, c = 'blue')
 ax1.set_xlabel('Azimuth')
 ax1.set_ylabel('dB')
 ax1.set_title('Angle Estimation with Compressed Sensing')
