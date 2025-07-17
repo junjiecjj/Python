@@ -50,7 +50,7 @@ plt.rcParams['legend.fontsize'] = 18
 c = 3e8                      # speed of light
 BW = 150e6                   # bandwidth 有效
 fc = 77e9                    # carrier frequency
-numADC = 1024                 # of adc samples
+numADC = 1024                # of adc samples
 numChirps = 256              # of chirps per frame
 numCPI = 10                  # 10帧
 Tc = 20e-6                   # PRI, 默认不存在空闲时间
@@ -70,11 +70,11 @@ dV = lamba/(2*numChirps*Tc)           # velocity resol, lambda/(2*framePeriod)
 Vmax = lamba/(4*Tc)                   # Max Unamb velocity m/s
 d_rx = lamba/2                        # dist. between rxs
 d_tx = 4*d_rx                         # dist. between txs
-N_Dopp = numChirps                     # length of doppler FFT
-N_range = numADC                       # length of range FFT
+N_Dopp = numChirps                    # length of doppler FFT
+N_range = numADC                      # length of range FFT
 N_azimuth = numTX*numRX
 R = np.arange(int(N_range/2)) / N_range * Rmax
-V = np.linspace(-Vmax, Vmax, N_Dopp)      # Velocity axis
+V = np.linspace(-Vmax, Vmax, N_Dopp)         # Velocity axis
 ang_ax = np.arange(-90, 91)                  # angle axis
 
 #%% 发射天线位置
