@@ -4,6 +4,10 @@
 Created on Thu Jul 17 15:28:29 2025
 
 @author: jack
+
+https://github.com/LiZhuoRan0/CRLB-demo
+
+
 """
 
 
@@ -34,10 +38,19 @@ plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
 
-def genSteerVector(theta, N, d, lamba_c):
+def genSteerVector(theta_deg, N, d, lambda_c):
     n = np.arange(N)
+    at = np.exp(1j * 2 * np.pi * d * np.sin(theta) * n / lambda_c)
+    return at
+
+def genPartialSteerVector(theta, N, d, lamda, flag):
+    n = np.arange(N)
+    if flag == 1:
+        at = (1j * 2 * np.pi * d * np.cos())
+    else:
 
     return
+
 
 
 #%% 参数设置
@@ -49,7 +62,8 @@ T               =           10
 Nit             =           1e2
 SNRdBs          =           np.arange(-10, 22, 2)
 #%%
-theta   = 0.5      #  pi/6
+theta   = np.deg2rad(30)  #  np.pi/6
+
 H   = genSteerVector(theta, N, d, lambda_c)
 Y   = np.zeros(N, T)
 A   = np.eye(N)
