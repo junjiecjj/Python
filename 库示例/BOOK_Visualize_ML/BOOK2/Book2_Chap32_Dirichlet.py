@@ -19,12 +19,13 @@ tt3[mask] = None
 
 # 定义可视化函数
 def plot_Dirichlet_PDF_contour(alpha_array):
-    PDF = dirichlet.pdf([tt1.ravel(),tt2.ravel(),tt3.ravel()], alpha_array)
+    PDF = dirichlet.pdf([tt1.ravel(), tt2.ravel(), tt3.ravel()], alpha_array)
     fig, ax = plt.subplots(figsize = (5,5))
     plt.contour(tt1, tt2, PDF.reshape(tt1.shape), levels = 20, cmap='RdYlBu_r')
-    plt.plot((0,1),(1,0), c = 'k',lw = 1.25)
+    plt.plot((0, 1),(1, 0), c = 'k',lw = 1.25)
     plt.axis('equal')
-    plt.xlim(0, 1); plt.ylim(0, 1)
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
     plt.xlabel(r'$\theta_1$')
     plt.ylabel(r'$\theta_2$')
 
@@ -59,6 +60,7 @@ alpha_array = [8,8,8]
 plot_Dirichlet_PDF_contour(alpha_array)
 
 
+plt.close('all')
 
 #%% # Dirichlet分布PDF投影到斜面 Bk_2_Ch32_02
 from scipy.stats import dirichlet
@@ -67,9 +69,9 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib import cm
 
-theta_1_array = np.linspace(0,1,1001)
-theta_2_array = np.linspace(0,1,1001)
-tt1,tt2 = np.meshgrid(theta_1_array,theta_2_array)
+theta_1_array = np.linspace(0, 1, 1001)
+theta_2_array = np.linspace(0, 1, 1001)
+tt1,tt2 = np.meshgrid(theta_1_array, theta_2_array)
 tt3 = 1 - tt1 - tt2
 mask = ((tt3 > 1) | (tt3 < 0))
 tt1[mask] = None
@@ -78,7 +80,7 @@ tt3[mask] = None
 
 ### 自定义可视化函数
 def visualize_Dirichlet(alpha_array, num = 50):
-    PDF = dirichlet.pdf([tt1.ravel(),tt2.ravel(),tt3.ravel()], alpha_array)
+    PDF = dirichlet.pdf([tt1.ravel(), tt2.ravel(), tt3.ravel()], alpha_array)
     fig = plt.figure(figsize=(5, 5), )
     # 四维到三维才需要这样的技巧画等高线，见Book2_chap29
     all_contours = plt.contour(tt1, tt2, PDF.reshape(tt1.shape), levels = 20, cmap='RdYlBu_r')
@@ -150,6 +152,7 @@ alpha_array = [8,8,8]
 visualize_Dirichlet(alpha_array)
 
 
+plt.close('all')
 
 #%% # 斜面等高线 + x1x2等高线  Bk_2_Ch32_03
 from scipy.stats import dirichlet
@@ -196,7 +199,7 @@ def visualize_Dirichlet(alpha_array, num = 50):
     ax.contour(tt1, tt2, PDF.reshape(tt1.shape), zdir = 'z', offset = 0, levels = 20, zorder = 1, cmap='RdYlBu_r')
     for level_idx, ctr_idx in zip(all_contours.levels, all_contours.allsegs):
         for i in range(0,len(ctr_idx)):
-            t1_i,t2_i = ctr_idx[i][:,0],ctr_idx[i][:,1]
+            t1_i, t2_i = ctr_idx[i][:,0], ctr_idx[i][:,1]
             t3_i = 1 - t1_i - t2_i
             # 绘制映射结果
             ax.plot(t1_i, t2_i, t3_i, color = mapper.to_rgba(level_idx), linewidth = 1, zorder = 1000)
@@ -205,9 +208,9 @@ def visualize_Dirichlet(alpha_array, num = 50):
     ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.plot((1,0),(0,1),(0,0),lw = 1,c = 'k')
-    ax.plot((0,0),(1,0),(0,1),lw = 1,c = 'k')
-    ax.plot((1,0),(0,0),(0,1),lw = 1,c = 'k')
+    ax.plot((1,0), (0,1), (0,0), lw = 1, c = 'k')
+    ax.plot((0,0), (1,0), (0,1), lw = 1, c = 'k')
+    ax.plot((1,0), (0,0), (0,1), lw = 1, c = 'k')
 
     ax.set_xticks([0,1])
     ax.set_yticks([0,1])
@@ -218,16 +221,16 @@ def visualize_Dirichlet(alpha_array, num = 50):
     ax.set_zlim(0, 1)
     # ax.view_init(azim=20, elev=20)
     ax.view_init(azim=30, elev=30)
-    ax.set_xlabel(r'$\theta_1$')
-    ax.set_ylabel(r'$\theta_2$')
-    ax.set_zlabel(r'$\theta_3$')
+    ax.set_xlabel(r'$\alpha_1$')
+    ax.set_ylabel(r'$\alpha_2$')
+    ax.set_zlabel(r'$\alpha_3$')
 
     ax.set_box_aspect(aspect = (1,1,1))
 
     ax.grid()
     title = '_'.join(str(v) for v in alpha_array)
     title = 'alphas_' + title
-
+    plt.title(title)
     # fig.savefig('Figures/斜面等高线 + 12水平等高线_' + title + '.svg', format='svg')
 
 alpha_array = [1, 2, 4]
@@ -319,15 +322,16 @@ def visualize_Dirichlet(alpha_array, num = 50):
     ax.set_zlim(0, 1)
     # ax.view_init(azim=20, elev=20)
     ax.view_init(azim=30, elev=30)
-    ax.set_xlabel(r'$\theta_1$')
-    ax.set_ylabel(r'$\theta_2$')
-    ax.set_zlabel(r'$\theta_3$')
+    ax.set_xlabel(r'$\alpha_1$')
+    ax.set_ylabel(r'$\alpha_2$')
+    ax.set_zlabel(r'$\alpha_3$')
 
     ax.set_box_aspect(aspect = (1,1,1))
 
     ax.grid()
     title = '_'.join(str(v) for v in alpha_array)
     title = 'alphas_' + title
+    plt.title(title)
     # fig.savefig('Figures/斜面等高线 + 13水平等高线_' + title + '.svg', format='svg')
 
 alpha_array = [1, 2, 4]
@@ -342,7 +346,7 @@ visualize_Dirichlet(alpha_array)
 alpha_array = [8,8,8]
 visualize_Dirichlet(alpha_array)
 
-
+plt.close('all')
 
 #%% # 斜面等高线 + x2x3等高线 Bk_2_Ch32_05
 from scipy.stats import dirichlet
@@ -389,6 +393,7 @@ def visualize_Dirichlet(alpha_array, num = 50):
     mapper = cm.ScalarMappable(norm=norm, cmap=cm.RdYlBu_r)
     ax = plt.axes(projection="3d")
     ax.contour(PDF.reshape(tt1.shape), tt2, tt3, zdir = 'x', offset = 0, levels = 20, zorder = 1, cmap='RdYlBu_r')
+    # ax.contour(tt1, tt2, tt3, zdir = 'x', offset = 0, levels = 20, zorder = 1, cmap='RdYlBu_r')
     for level_idx, ctr_idx in zip(all_contours.levels, all_contours.allsegs):
         for i in range(0,len(ctr_idx)):
             t1_i,t2_i = ctr_idx[i][:,0],ctr_idx[i][:,1]
@@ -412,9 +417,9 @@ def visualize_Dirichlet(alpha_array, num = 50):
     ax.set_zlim(0, 1)
     # ax.view_init(azim=20, elev=20)
     ax.view_init(azim=30, elev=30)
-    ax.set_xlabel(r'$\theta_1$')
-    ax.set_ylabel(r'$\theta_2$')
-    ax.set_zlabel(r'$\theta_3$')
+    ax.set_xlabel(r'$\alpha_1$')
+    ax.set_ylabel(r'$\alpha_2$')
+    ax.set_zlabel(r'$\alpha_3$')
 
     ax.set_box_aspect(aspect = (1,1,1))
 
@@ -426,11 +431,10 @@ def visualize_Dirichlet(alpha_array, num = 50):
 alpha_array = [1, 2, 4]
 visualize_Dirichlet(alpha_array)
 
-
 alpha_array = [2,2,2]
 visualize_Dirichlet(alpha_array)
 
-
+plt.close('all')
 
 #%%# 重心坐标系 Bk_2_Ch32_06, 参考 Bk_2_Ch32_06, BK_2_Ch10_07, Bk_2_Ch18_03
 import numpy as np
@@ -463,6 +467,8 @@ for x_idx, y_idx in zip(trimesh_2.x, trimesh_2.y):
 ax.set_aspect('equal')
 ax.set_xlim(0,1); ax.set_ylim(0,1)
 plt.show()
+plt.close('all')
+
 
 ### 坐标转换
 # 提取大三角形的三个顶点列向量 (坐标点)
@@ -485,7 +491,7 @@ theta_1_2_3 = np.clip(theta_1_2_3, 1e-6, 1.0 - 1e-6)
 # numpy.clip(a, a_min, a_max, out=None) 其中a是一个数组，后面两个参数分别表示最小和最大值， 将数组中的元素限制在a_min, a_max之间， 大于a_max的就使得它等于 a_max， 小于a_min, 的就使得它等于a_min
 
 ### 重心坐标系坐标
-fig, ax = plt.subplots(figsize = (5,5))
+fig, ax = plt.subplots(figsize = (10,10))
 plt.triplot(trimesh_2)
 plt.plot(r_array[0,:], r_array[1,:], '.r', markersize = 10)
 for theta_idx, x_idx, y_idx in zip(theta_1_2_3.T, trimesh_2.x, trimesh_2.y):
@@ -493,7 +499,7 @@ for theta_idx, x_idx, y_idx in zip(theta_1_2_3.T, trimesh_2.x, trimesh_2.y):
     theta_2 = theta_idx[1]
     theta_3 = theta_idx[2]
     text_idx = ('(' + format(theta_1, '.2f') + ', ' + format(theta_2, '.2f') + ', ' + format(theta_3, '.2f') + ')')
-    plt.text(x_idx, y_idx+0.03, text_idx, fontsize = 7, horizontalalignment = 'center', bbox=dict(facecolor='w', alpha=0.5, edgecolor = 'None'))
+    plt.text(x_idx, y_idx+0.03, text_idx, fontsize = 10, horizontalalignment = 'center', bbox=dict(facecolor='w', alpha=0.5, edgecolor = 'None'))
 plt.axis('equal')
 plt.xlim(0, 1)
 plt.text(0.9, 0.45,  r'$\theta_1$')
@@ -508,8 +514,9 @@ ax.spines['right'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.axis('off')
-plt.show()
 
+plt.show()
+plt.close('all')
 #%%# # 重心坐标系中混合红绿蓝 Bk_2_Ch32_07
 # 导入包
 import matplotlib.pyplot as plt
@@ -538,6 +545,49 @@ for subdiv,ax in zip(range(1, 7), axs.ravel()):
     ax.set_aspect('equal')
     ax.set_xlim(-0.01,1.05); ax.set_ylim(-0.01,1.05)
     ax.axis('off')
+plt.show()
+plt.close('all')
+
+
+#%%>>>>>>>>>>>>>>>>>>>>> Dirichlet distribution
+import matplotlib.pyplot as plt
+from mpltern.datasets import get_dirichlet_pdfs
+
+fig = plt.figure(figsize=(10.8, 8.8))
+fig.subplots_adjust(
+    left=0.1,
+    right=0.9,
+    bottom=0.1,
+    top=0.9,
+    wspace=0.5,
+    hspace=0.5,
+)
+
+alphas = ((1.5, 1.5, 1.5), (5.0, 5.0, 5.0), (1.0, 2.0, 2.0), (2.0, 4.0, 8.0))
+for i, alpha in enumerate(alphas):
+    ax = fig.add_subplot(2, 2, i + 1, projection="ternary")
+    t, l, r, v = get_dirichlet_pdfs(n = 61, alpha = alpha)
+    cmap = "Blues"
+    shading = "gouraud"
+    cs = ax.tripcolor(t, l, r, v, cmap=cmap, shading=shading, rasterized=True)
+    ax.tricontour(t, l, r, v, colors="k", linewidths=0.5)
+
+    ax.set_tlabel("$x_1$")
+    ax.set_llabel("$x_2$")
+    ax.set_rlabel("$x_3$")
+
+    ax.taxis.set_label_position("tick1")
+    ax.laxis.set_label_position("tick1")
+    ax.raxis.set_label_position("tick1")
+
+    ax.set_title("${\\mathbf{\\alpha}}$ = " + str(alpha))
+
+    cax = ax.inset_axes([1.05, 0.1, 0.05, 0.9], transform=ax.transAxes)
+    colorbar = fig.colorbar(cs, cax=cax)
+    colorbar.set_label("PDF", rotation=270, va="baseline")
+
+plt.show()
+plt.close('all')
 
 #%%# 可视化Dirichlet分布 Bk_2_Ch32_08
 from scipy.stats import dirichlet
@@ -555,7 +605,7 @@ trimesh_8 = refiner.refine_triangulation(subdiv=8)
 # 自定义函数
 def xy2bc(trimesh_8):
     # 每个列向量代表一个三角网格坐标点
-    r_array = np.row_stack((trimesh_8.x,trimesh_8.y))
+    r_array = np.row_stack((trimesh_8.x, trimesh_8.y))
 
     r1 = corners[:,[0]]
     r2 = corners[:,[1]]
@@ -581,6 +631,7 @@ def plot_Dirichlet_PDF_contour(alpha_array):
     plt.text(0.15, 0.45, r'$\theta_2$')
     plt.text(0.5, -0.1,  r'$\theta_3$')
     plt.axis('off'); plt.title(alpha_array)
+    plt.show()
 
 alpha_array = [1, 1, 2]
 plot_Dirichlet_PDF_contour(alpha_array)
@@ -588,6 +639,7 @@ plot_Dirichlet_PDF_contour(alpha_array)
 alpha_array = [2, 2, 2]
 plot_Dirichlet_PDF_contour(alpha_array)
 
+plt.close('all')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_11.py Dirichlet 分布：多元 Beta 分布
 import numpy as np
@@ -612,12 +664,9 @@ import matplotlib.pyplot as plt
 # alpha = np.array([1, 2, 4])
 # alpha = np.array([2, 1, 4])
 alpha = np.array([4, 2, 1])
-
 rv = st.dirichlet(alpha)
-
-x1 = np.linspace(0,1,201)
-x2 = np.linspace(0,1,201)
-
+x1 = np.linspace(0, 1, 201)
+x2 = np.linspace(0, 1, 201)
 xx1, xx2 = np.meshgrid(x1, x2)
 
 xx3 = 1.0 - xx1 - xx2
@@ -630,6 +679,8 @@ PDF_ff = np.reshape(PDF_ff, xx1.shape)
 #>>>>>>>>>> 2D contour
 fig, ax = plt.subplots(figsize=(6, 6))
 ax.contourf(xx1, xx2, PDF_ff, 20, cmap='RdYlBu_r')
+plt.show()
+plt.close()
 
 # 3D contour
 fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={'projection': '3d'})
@@ -655,10 +706,11 @@ ax.view_init(azim=-120, elev=30)
 plt.tight_layout()
 ax.grid(True)
 plt.show()
+plt.close()
 
 #>>>>>>>>>>  3D visualization
-x1_ = np.linspace(0,1,51)
-x2_ = np.linspace(0,1,51)
+x1_ = np.linspace(0, 1, 51)
+x2_ = np.linspace(0, 1, 51)
 xx1_, xx2_ = np.meshgrid(x1_, x2_)
 xx3_ = 1.0 - xx1_ - xx2_
 xx3_ = np.where(xx3_ > 0.0, xx3_, np.nan)
@@ -706,7 +758,7 @@ ax.set_box_aspect(aspect = (1,1,1))
 
 ax.grid()
 plt.show()
-
+plt.close('all')
 #>>>>>>>>>>  Marginal distributions
 from scipy.stats import beta
 x_array = np.linspace(0,1,200)
@@ -770,6 +822,7 @@ ax.set_zlabel(r'$x_3$')
 ax.set_box_aspect(aspect = (1,1,1))
 ax.grid()
 plt.show()
+plt.close('all')
 
 
 #%% Book2_Chap13  Dirichlet分布概率密度
@@ -849,6 +902,8 @@ visualize_Dirichlet(alpha_array)
 alpha_array = [4, 4, 4]
 visualize_Dirichlet(alpha_array)
 
+# plt.show()
+plt.close('all')
 #%% Dirichlet分布随机数
 import numpy as np
 import matplotlib.pyplot as plt
@@ -908,7 +963,8 @@ visualize_sample(alpha_array)
 alpha_array = [8, 8, 8]
 visualize_sample(alpha_array)
 
-
+# plt.show()
+plt.close('all')
 
 #%% Book2_Chap13 用三维散点可视化多项分布
 # 导入包

@@ -40,7 +40,7 @@ colorbar = fig.colorbar(pc, cax=cax)
 colorbar.set_label("Length", rotation=270, va="baseline")
 
 plt.show()
-
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>>   Quiver
 import numpy as np
@@ -72,6 +72,7 @@ colorbar = fig.colorbar(pc, cax=cax)
 colorbar.set_label('Length', rotation=270, va='baseline')
 
 plt.show()
+plt.close('all')
 
 
 #%%>>>>>>>>>>>>>>>>>>>>> Dirichlet distribution
@@ -112,6 +113,7 @@ for i, alpha in enumerate(alphas):
     colorbar.set_label("PDF", rotation=270, va="baseline")
 
 plt.show()
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>> Tick locators
 import numpy as np
@@ -142,6 +144,7 @@ ax.grid(axis='l', which='minor', linestyle='--')
 ax.grid(axis='r', which='both', linestyle=':')
 
 plt.show()
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>> Colored axes
 import matplotlib.pyplot as plt
@@ -175,10 +178,7 @@ ax.spines['lside'].set_color('C1')
 ax.spines['rside'].set_color('C2')
 
 plt.show()
-
-
-
-
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>> Contour
 import numpy as np
@@ -216,10 +216,7 @@ colorbar = fig.colorbar(cs, cax=cax)
 colorbar.set_label('Entropy', rotation=270, va='baseline')
 
 plt.show()
-
-
-
-
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>> Triangle rotation
 import matplotlib.pyplot as plt
@@ -248,6 +245,7 @@ for i, rotation in enumerate(rotations):
     ax.set_title(f"rotation={rotation}")
 
 plt.show()
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>> Evolutionary game theory
 import matplotlib.pyplot as plt
@@ -277,6 +275,7 @@ ax.set_llabel("$x_1$")
 ax.set_rlabel("$x_2$")
 
 plt.show()
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>> Axis and Tick
 
@@ -307,6 +306,7 @@ for i, rotation in enumerate(rotations):
     ax.set_title(f"rotation={rotation}")
 
 plt.show()
+plt.close('all')
 
 # Ticks
 import matplotlib.pyplot as plt
@@ -328,6 +328,7 @@ ax.fill_betweenx(y, x0, x1, alpha=0.2, transform=ax.get_laxis_transform())
 ax.fill_betweenx(y, x0, x1, alpha=0.2, transform=ax.get_raxis_transform())
 
 plt.show()
+plt.close('all')
 
 
 # Axis-label rotation
@@ -359,6 +360,7 @@ for i, mode in enumerate(modes):
     ax.set_title("label_rotation_mode='{}'".format(mode), pad=pad)
 
 plt.show()
+plt.close('all')
 
 
 # Tick rotation
@@ -372,10 +374,8 @@ for i, labelrotation in enumerate(["tick", "axis", "horizontal"]):
     ax = fig.add_subplot(1, 3, i + 1, projection='ternary')
     ax.tick_params(labelrotation=labelrotation)
     ax.set_title(f"labelrotation='{labelrotation}'", pad=36)
-
 plt.show()
-
-
+plt.close('all')
 
 # Tick direction
 import matplotlib.pyplot as plt
@@ -388,8 +388,8 @@ for i, direction in enumerate(["in", "out", "inout"]):
     ax = fig.add_subplot(1, 3, i + 1, projection='ternary')
     ax.tick_params(direction=direction)
     ax.set_title(f"ax.tick_params(direction='{direction}')", pad=36)
-
 plt.show()
+plt.close('all')
 
 # Tick position
 import matplotlib.pyplot as plt
@@ -420,8 +420,8 @@ for i, position in enumerate(positions):
     ax.raxis.set_label_position(position)
 
     ax.set_title(f"position='{position}'", pad=42)
-
 plt.show()
+plt.close('all')
 
 
 # Tick formatters
@@ -448,8 +448,7 @@ ax.laxis.set_major_formatter(PercentFormatter())
 ax.raxis.set_major_formatter(PercentFormatter())
 
 plt.show()
-
-
+plt.close('all')
 
 #%%>>>>>>>>>>>>>>>>>>>>>
 

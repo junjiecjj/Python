@@ -55,20 +55,16 @@ mahal_d_Xc = np.sqrt(mahal_sq_Xc)
 
 #%% visualizations
 
-theta = -5 # -4.8575, optimal angle
+theta = 120 # -4.8575, optimal angle
 print('====================')
 print('theta = ' + str(theta))
 theta = theta*np.pi/180
 
 v1 = np.array([[np.cos(theta)],
                [np.sin(theta)]])
-
 T1 = v1@v1.T
-
 z1_2D = x1@T1
-
 z1_1D = x1@v1
-
 
 mu1 = z1_1D.mean()
 std1 = z1_1D.std(ddof = 1)
@@ -79,20 +75,13 @@ print('std1 = ' + str(std1))
 print('var1 = ' + str(var1))
 
 x1_array = np.linspace(mu1 - 4*std1,mu1 + 4*std1,100)
-
-
 R1 = np.array([[np.cos(theta), np.sin(theta)],
               [-np.sin(theta), np.cos(theta)]])
-
 pdf1_array = normal_pdf_1d(x1_array,mu1,std1)
-
 PDF1 = np.column_stack((x1_array,pdf1_array))
-
 PDF1_v1 = PDF1@R1
 
-
-fig, ax = plt.subplots()
-
+fig, ax = plt.subplots(figsize = (16, 16))
 plt.contourf(xx_maha, yy_maha, mahal_d_Xc, cmap='Blues_r', levels=np.linspace(0,4,21))
 plt.contour(xx_maha, yy_maha, mahal_d_Xc, colors='k', levels=[1,2,3])
 
@@ -107,17 +96,13 @@ plt.plot(([i for (i,j) in z1_2D], [i for (i,j) in x1]),
 plt.plot((-10,10),(-10*np.tan(theta),10*np.tan(theta)),c = 'k')
 
 # plot the projected PDF curves
-plt.plot(PDF1_v1[:,0],PDF1_v1[:,1],
-         color = 'b')
-
+plt.plot(PDF1_v1[:,0],PDF1_v1[:,1], color = 'b')
 
 # plot the centroid and projected centroids
-
 plt.plot(x1[:,0].mean(),x1[:,1].mean(),
          marker = 'x',
          color = 'k',
          markersize = 18)
-
 plt.plot(z1_2D[:,0].mean(),z1_2D[:,1].mean(),
          marker = 'x',
          color = 'b',

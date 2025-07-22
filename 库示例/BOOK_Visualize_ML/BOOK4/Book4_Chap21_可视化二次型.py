@@ -283,13 +283,292 @@ f2_array, gradient_array, f_circle = fcn_n_grdnt(A, xx1, xx2, xx1_, xx2_, t)
 visualize(xx1, xx2, f2_array, xx1_, xx2_,gradient_array, t, f_circle)
 
 
+#%% BK_2_Ch25_06 平面Lp范数等高线
+## 创建数据
+p_values = [1, 1.5, 2, 4, 8, np.inf]
+# 给定不同p值
+x1 = np.linspace(-2.5, 2.5, num=101);
+x2 = x1;
+xx1, xx2 = np.meshgrid(x1,x2)
+## 自定义Lp范数函数
+def Lp_norm(p):
+    # 计算范数
+    if np.isinf(p):
+        zz = np.maximum(np.abs(xx1),np.abs(xx2))
+    else:
+        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
+    return zz
+## 可视化
+fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(6, 9))
+for p, ax in zip(p_values, axes.flat):
+    # 计算范数
+    zz = Lp_norm(p)
+    # 绘制等高线
+    ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
+    # 绘制Lp norm = 1的等高线
+    ax.contour (xx1, xx2, zz, [1], colors='k', linewidths = 2)
+
+    # 装饰
+    ax.axhline(y=0, color='k', linewidth = 0.25)
+    ax.axvline(x=0, color='k', linewidth = 0.25)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2.5, 2.5)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    ax.set_title('p = ' + str(p))
+    ax.set_aspect('equal', adjustable='box')
 
 
+###   平面Lp范数等高线3D
+## 创建数据
+p_values = [1, 1.5, 2, 4, 8, np.inf]
+# 给定不同p值
+x1 = np.linspace(-2.5, 2.5, num=101);
+x2 = x1;
+xx1, xx2 = np.meshgrid(x1,x2)
+## 自定义Lp范数函数
+def Lp_norm(p):
+    # 计算范数
+    if np.isinf(p):
+        zz = np.maximum(np.abs(xx1),np.abs(xx2))
+    else:
+        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
+    return zz
+## 可视化
+# fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(12, 18), projection = '3d')
+fig = plt.figure(figsize=(12, 18), constrained_layout = True)
+for i, p in enumerate(p_values):
+    ax = fig.add_subplot(3, 2, i+1, projection='3d')
+    # 计算范数
+    zz = Lp_norm(p)
+
+    ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
+
+    ax.plot_wireframe(xx1, xx2, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
+
+    # 三维等高线
+    # colorbar = ax.contour(xx,yy, ff,20,  cmap = 'RdYlBu_r')
+    # 三维等高线
+    colorbar = ax.contour(xx1, xx2, zz, 20,  cmap = 'hsv')
+    # fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
+
+    # 二维等高线
+    ax.contour(xx1, xx2, zz, zdir = 'z', offset= zz.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
+
+    fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
+    ax.set_proj_type('ortho')
+
+    # 3D坐标区的背景设置为白色
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+
+    ax.set_xlabel(r'$\it{x_1}$')
+    ax.set_ylabel(r'$\it{x_2}$')
+    ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+    ax.set_title(f"p = {p}")
+    ax.set_xlim(x1.min(), x1.max())
+    ax.set_ylim(x2.min(), x2.max())
+
+    ax.view_init(azim=-135, elev=30)
+    ax.grid(False)
+plt.show()
 
 
+#%% BK_2_Ch25_07 三维空间Lp范数
+# 导入包
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+import numpy as np
+
+## 自定义函数展示隐函数
+def plot_implicit(fn, X_plot, Y_plot, Z_plot, ax, bbox):
+    # 等高线的起止范围
+    xmin, xmax, ymin, ymax, zmin, zmax = bbox*3
+    ax.set_proj_type('ortho')
+    # 绘制三条参考线
+    k = 1.5
+    ax.plot((xmin * k, xmax * k), (0, 0), (0, 0), 'k')
+    ax.plot((0, 0), (ymin * k, ymax * k), (0, 0), 'k')
+    ax.plot((0, 0), (0, 0), (zmin * k, zmax * k), 'k')
+    # 等高线的分辨率
+    A = np.linspace(xmin, xmax, 100)
+    # 产生网格数据
+    A1,A2 = np.meshgrid(A,A)
+    # 等高线的分割位置
+    B = np.linspace(xmin, xmax, 20)
+    # 绘制 XY 平面等高线
+    if X_plot == True:
+        for z in B:
+            X,Y = A1,A2
+            Z = fn(X,Y,z)
+            cset = ax.contour(X, Y, Z+z, [z],
+                              zdir='z',
+                              linewidths = 0.25,
+                              colors = '#0066FF',
+                              linestyles = 'solid')
+    # 绘制 XZ 平面等高线
+    if Y_plot == True:
+        for y in B:
+            X,Z = A1,A2
+            Y = fn(X,y,Z)
+            cset = ax.contour(X, Y+y, Z, [y],
+                              zdir='y',
+                              linewidths = 0.25,
+                              colors = '#88DD66',
+                              linestyles = 'solid')
+    # 绘制 YZ 平面等高线
+    if Z_plot == True:
+        for x in B:
+            Y,Z = A1,A2
+            X = fn(x,Y,Z)
+            cset = ax.contour(X+x, Y, Z, [x],
+                              zdir='x',
+                              linewidths = 0.25,
+                              colors = '#FF6600',
+                              linestyles = 'solid')
+    ax.set_zlim(zmin * k,zmax * k)
+    ax.set_xlim(xmin * k,xmax * k)
+    ax.set_ylim(ymin * k,ymax * k)
+    ax.set_box_aspect([1,1,1])
+    ax.view_init(azim=-120, elev=30)
+    ax.axis('off')
+
+def visualize_four_ways(fn, title, bbox=(-2.5,2.5)):
+    fig = plt.figure(figsize=(12, 4), constrained_layout = True)
+
+    ax = fig.add_subplot(1, 4, 1, projection='3d')
+    plot_implicit(fn, True, False, False, ax, bbox)
+
+    ax = fig.add_subplot(1, 4, 2, projection='3d')
+    plot_implicit(fn, False, True, False, ax, bbox)
+
+    ax = fig.add_subplot(1, 4, 3, projection='3d')
+    plot_implicit(fn, False, False, True, ax, bbox)
+
+    ax = fig.add_subplot(1, 4, 4, projection='3d')
+    plot_implicit(fn, True, True, True, ax, bbox)
+
+## 可视化
+def vector_norm(x,y,z):
+    p = 4
+    return (np.abs(x)**p + np.abs(y)**p + np.abs(z)**p)**(1/p) - 1
+
+visualize_four_ways(vector_norm, 'norm_1000', bbox = (-1,1))
 
 
+#%% # 平面Lp范数等高线  # Bk4_Ch3_01.py  Bk2_Ch25
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+from sympy import init_printing, symbols, diff, lambdify, expand, simplify, sqrt
+# init_printing("mathjax")
 
+
+## 创建数据
+p_values = [1, 1.5, 2, 4, 8, np.inf]
+# 给定不同p值
+x1 = np.linspace(-2.5, 2.5, num=101);
+x2 = x1;
+xx1, xx2 = np.meshgrid(x1,x2)
+
+## 自定义Lp范数函数
+def Lp_norm(p):
+    # 计算范数
+    if np.isinf(p):
+        zz = np.maximum(np.abs(xx1),np.abs(xx2))
+    else:
+        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
+    return zz
+
+## 可视化
+fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(6, 9))
+for p, ax in zip(p_values, axes.flat):
+    # 计算范数
+    zz = Lp_norm(p)
+    # 绘制等高线
+    ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
+    # 绘制Lp norm = 1的等高线
+    ax.contour (xx1, xx2, zz, [1], colors='k', linewidths = 2)
+
+    # 装饰
+    ax.axhline(y=0, color='k', linewidth = 0.25)
+    ax.axvline(x=0, color='k', linewidth = 0.25)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2.5, 2.5)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    # ax.set_xlabel('$x_1$')
+    # ax.set_ylabel('$x_2$')
+    ax.set_title('p = ' + str(p))
+    ax.set_aspect('equal', adjustable='box')
+
+
+#%% # 平面Lp范数等高线
+## 创建数据
+p_values = [1, 1.5, 2, 4, 8, np.inf]
+# 给定不同p值
+x1 = np.linspace(-2.5, 2.5, num=101);
+x2 = x1;
+xx1, xx2 = np.meshgrid(x1,x2)
+
+## 自定义Lp范数函数
+def Lp_norm(p):
+    # 计算范数
+    if np.isinf(p):
+        zz = np.maximum(np.abs(xx1),np.abs(xx2))
+    else:
+        zz = ((np.abs((xx1))**p) + (np.abs((xx2))**p))**(1./p)
+    return zz
+
+## 可视化
+# fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(12, 18), projection = '3d')
+fig = plt.figure(figsize=(12, 18), constrained_layout = True)
+for i, p in enumerate(p_values):
+    ax = fig.add_subplot(3, 2, i+1, projection='3d')
+    # 计算范数
+    zz = Lp_norm(p)
+
+    ## 4 plot_wireframe() 绘制网格曲面 + 三维等高线
+    ax.plot_wireframe(xx1, xx2, zz, color = [0.5,0.5,0.5], linewidth = 0.25)
+
+    # 三维等高线
+    # colorbar = ax.contour(xx,yy, ff,20,  cmap = 'RdYlBu_r')
+    # 三维等高线
+    colorbar = ax.contour(xx1, xx2, zz, 20,  cmap = 'hsv')
+    # fig.colorbar(colorbar, ax = ax, shrink=0.5, aspect=20)
+
+    # 二维等高线
+    ax.contour(xx1, xx2, zz, zdir = 'z', offset= zz.min(), levels = 20, linewidths = 2, cmap = "hsv")  # 生成z方向投影，投到x-y平面
+
+    fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
+    ax.set_proj_type('ortho')
+
+    # 3D坐标区的背景设置为白色
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+
+    ax.set_xlabel(r'$\it{x_1}$')
+    ax.set_ylabel(r'$\it{x_2}$')
+    ax.set_zlabel(r'$\it{f}$($\it{x_1}$,$\it{x_2}$)')
+    ax.set_title(f"p = {p}")
+    ax.set_xlim(x1.min(), x1.max())
+    ax.set_ylim(x2.min(), x2.max())
+
+    ax.view_init(azim=-135, elev=30)
+    ax.grid(False)
+plt.show()
 
 
 
