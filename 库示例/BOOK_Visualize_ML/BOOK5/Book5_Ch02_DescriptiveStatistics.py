@@ -34,16 +34,16 @@ plt.title('X')
 #%% Histograms, 图 4. 鸢尾花四个特征数据的直方图，纵轴为频数
 fig, axes = plt.subplots(2,2, figsize = (12, 8))
 
-sns.histplot(data = X_df, x = feature_names[0], binwidth = 0.2, ax = axes[0][0])
+sns.histplot(data = X_df, x = feature_names[0], binwidth = 0.1, ax = axes[0][0])
 axes[0][0].set_xlim([0, 8]); axes[0][0].set_ylim([0, 40])
 
-sns.histplot(data = X_df, x = feature_names[1], binwidth = 0.2, ax = axes[0][1])
+sns.histplot(data = X_df, x = feature_names[1], binwidth = 0.1, ax = axes[0][1])
 axes[0][1].set_xlim([0, 8]); axes[0][1].set_ylim([0, 40])
 
-sns.histplot(data = X_df, x = feature_names[2], binwidth = 0.2, ax = axes[1][0])
+sns.histplot(data = X_df, x = feature_names[2], binwidth = 0.1, ax = axes[1][0])
 axes[1][0].set_xlim([0, 8]); axes[1][0].set_ylim([0, 40])
 
-sns.histplot(data = X_df, x = feature_names[3], binwidth = 0.2, ax = axes[1][1])
+sns.histplot(data = X_df, x = feature_names[3], binwidth = 0.1, ax = axes[1][1])
 axes[1][1].set_xlim([0, 8]); axes[1][1].set_ylim([0, 40])
 
 plt.tight_layout()
@@ -53,58 +53,75 @@ plt.close('all')
 #%% draw multiple histograms on the same plot, 图 5. 直方图，比较频数和概率密度
 fig, ax = plt.subplots()
 sns.histplot(data=X_df, palette = "rocket_r", binwidth = 0.2)
+plt.show()
 
 fig, ax = plt.subplots()
-sns.histplot(data=X_df, palette = "viridis",binwidth = 0.2, stat="density", common_norm=False)
+sns.histplot(data=X_df, palette = "viridis", binwidth = 0.2, stat="density", common_norm=False)
+plt.show()
 
 fig, ax = plt.subplots()
-sns.histplot(data=X_df, palette = "viridis",binwidth = 0.2, stat="density", common_norm=True)
-# plt.close('all')
+sns.histplot(data=X_df, palette = "viridis", binwidth = 0.2, stat="density", common_norm=True)
+plt.show()
+
+plt.close('all')
 
 #%% cumulative, 图 6. 累积频数图，累积概率图
 fig, ax = plt.subplots()
 sns.histplot(data=X_df, palette = "viridis",fill = False, binwidth = 0.2,element="step", cumulative=True, common_norm=False)
+plt.show()
 
 fig, ax = plt.subplots()
 sns.histplot(data=X_df, palette = "viridis",fill = False, binwidth = 0.2,element="step",stat="density", cumulative=True, common_norm=False)
-
-
+plt.show()
+plt.close('all')
 #%% variations of histograms, 图 7. 比较多边形图和和概率密度估计曲线
 fig, ax = plt.subplots()
 sns.histplot(data=X_df, palette = "viridis",fill = False, binwidth = 0.2,element="poly", stat="density", common_norm=False)
+plt.show()
 
 fig, ax = plt.subplots()
 sns.histplot(data=X_df, palette = "viridis", binwidth = 0.2, element="step", kde = True, stat="density", common_norm=False)
+plt.show()
+plt.close('all')
 
 #%% KDE
 plt.tight_layout()
 
 fig, ax = plt.subplots()
 sns.kdeplot(data=X_df, fill=True, common_norm=False, alpha=.3, linewidth=1, palette = "viridis")
-
+plt.show()
+plt.close('all')
 
 #%% bivariate, 图 10. 二维数据直方图热图，二维 KDE 概率密度曲面等高线
 
 fig, ax = plt.subplots()
 sns.histplot(iris_sns, x="sepal_length", y="sepal_width", bins = 20)
 sns.displot(iris_sns, x="sepal_length", y="sepal_width", kind="kde", rug=True)
-
+plt.show()
+plt.close('all')
 
 #%% variations of joint plots
 # 图 9. 二维数据散点图及扩展
+# fig, ax = plt.subplots()
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", marginal_kws=dict(bins=20, fill=True))
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'reg', marginal_kws=dict(bins=20, fill=True))
+plt.show()
+plt.close('all')
 
 # 图 10. 二维数据直方图热图，二维 KDE 概率密度曲面等高线
+# fig, ax = plt.subplots()
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'hex', bins = 20, marginal_kws=dict(bins=20, fill=True))
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde')
-
+plt.show()
+plt.close('all')
 
 # 图 11. 直方图热图和概率密度曲面等高线拓展
+# fig, ax = plt.subplots()
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'hist', bins = 20, marginal_kws=dict(bins=20, fill=True))
 g = sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', fill = True)
 g.plot_joint(sns.kdeplot, color="r",lw = 3, zorder=0, levels=20)
-
+plt.show()
+plt.close('all')
 #%% Categorical data
 #%% 图 14. 直方图，考虑鸢尾花分类标签
 for i in [0,1,2,3]:

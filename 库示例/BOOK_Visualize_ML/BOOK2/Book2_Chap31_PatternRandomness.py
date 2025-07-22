@@ -103,16 +103,8 @@ from sklearn.datasets import load_iris
 
 # 从seaborn中导入鸢尾花样本数据
 iris_sns = sns.load_dataset("iris")
-
 fig, ax = plt.subplots()
-
-ax = sns.kdeplot(
-    data=iris_sns,
-    x="sepal_length",
-    y="sepal_width",
-    fill=True,
-    cmap = 'RdYlBu_r',
-    n_levels = 20)
+ax = sns.kdeplot( data=iris_sns, x="sepal_length", y="sepal_width", fill=True, cmap = 'RdYlBu_r', n_levels = 20)
 
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
@@ -142,33 +134,22 @@ samples = iris_sns[['sepal_length','sepal_width']].to_numpy()
 kernel = st.gaussian_kde(samples.T)
 
 PDF_xy = np.reshape(kernel(positions).T, XX.shape)
-
 fig, ax = plt.subplots()
-
-ax = sns.scatterplot(data=iris_sns,
-                     x="sepal_length",
-                     y="sepal_width")
-
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width")
 plt.contour(XX,YY,PDF_xy,levels = 15, cmap = 'RdYlBu_r')
-
 # 利用 seaborn.scatterplot() 绘制散点图
 # x对应横轴特征，鸢尾花数据帧列名 "sepal_length"
 # y对应纵轴特征，鸢尾花数据帧列名 "sepal_width"
-
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 # 设置横纵轴标签
-
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
 ax.set_yticks(np.arange(1, 5 + 1, step=1))
 # 设置横纵轴刻度
-
 ax.axis('scaled')
 # 设定横纵轴尺度1:1
-
 ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
 # 增加刻度网格，颜色为浅灰 (0.8,0.8,0.8)
-
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 # 设置横纵轴取值范围
@@ -176,30 +157,20 @@ ax.set_ybound(lower = 1, upper = 5)
 
 ### 用散点颜色代表概率密度
 fig, ax = plt.subplots()
-
-ax = sns.scatterplot(data=iris_sns,
-                     x="sepal_length",
-                     y="sepal_width",
-                     hue = kernel(samples.T),
-                     palette = 'RdYlBu_r')
-
+ax = sns.scatterplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = kernel(samples.T), palette = 'RdYlBu_r')
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 # 设置横纵轴标签
-
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
 ax.set_yticks(np.arange(1, 5 + 1, step=1))
 # 设置横纵轴刻度
-
 ax.axis('scaled')
 # 设定横纵轴尺度1:1
 ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
 # 增加刻度网格，颜色为浅灰 (0.8,0.8,0.8)
-
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 # 设置横纵轴取值范围
-
 
 ### 使用自己定义的色谱
 blues_cmap = sns.light_palette('#0091FE', as_cmap=True)
@@ -207,43 +178,24 @@ blues_cmap = sns.light_palette('#0091FE', as_cmap=True)
 # 类似函数，seaborn.dark_palette()
 
 fig, ax = plt.subplots()
-
-ax = sns.kdeplot(
-    data=iris_sns,
-    x="sepal_length",
-    y="sepal_width",
-    fill=True,
-    cmap = blues_cmap,
-    n_levels = 15)
-
+ax = sns.kdeplot(data=iris_sns, x="sepal_length", y="sepal_width", fill=True, cmap = blues_cmap, n_levels = 15)
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 # 设置横纵轴标签
-
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
 ax.set_yticks(np.arange(1, 5 + 1, step=1))
 # 设置横纵轴刻度
-
 ax.axis('scaled')
 # 设定横纵轴尺度1:1
 ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
 # 增加刻度网格，颜色为浅灰 (0.8,0.8,0.8)
-
 ax.set_xbound(lower = 4, upper = 8)
 ax.set_ybound(lower = 1, upper = 5)
 # 设置横纵轴取值范围
 
 
 fig, ax = plt.subplots()
-
-ax = sns.kdeplot(
-    data=iris_sns,
-    x="sepal_length",
-    y="sepal_width",
-    hue = "species",
-    fill=False,
-    n_levels = 10)
-
+ax = sns.kdeplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = "species", fill=False, n_levels = 10)
 ax.set_xlabel('Sepal length (cm)')
 ax.set_ylabel('Sepal width (cm)')
 # 设置横纵轴标签
@@ -251,7 +203,6 @@ ax.set_ylabel('Sepal width (cm)')
 ax.set_xticks(np.arange(4, 8 + 1, step=1))
 ax.set_yticks(np.arange(1, 5 + 1, step=1))
 # 设置横纵轴刻度
-
 ax.axis('scaled')
 # 设定横纵轴尺度1:1
 ax.grid(linestyle='--', linewidth=0.25, color=[0.7,0.7,0.7])
@@ -280,16 +231,12 @@ X_grid = np.linspace(-3,3,200)
 Y_grid = np.linspace(-3,3,200)
 
 XX, YY = np.meshgrid(X_grid, Y_grid)
-
 XXYY = np.dstack((XX, YY))
 
 ## 可视化
 rho_array = [-0.8, -0.5, -0.2, 0.2, 0.5, 0.8]
-
 fig = plt.figure(figsize = (6,9))
-
 for idx in range(6):
-
     rho = rho_array[idx]
     # covariance
     SIGMA = [[sigma_X**2, sigma_X*sigma_Y*rho],
@@ -302,14 +249,11 @@ for idx in range(6):
 
     ax = plt.subplot(3,2,idx + 1)
     # plot center of data
-    plt.plot(X,Y,'.', color = '#223C6C',
-             alpha = 1, markersize = 5)
+    plt.plot(X,Y,'.', color = '#223C6C', alpha = 1, markersize = 5)
 
     levels = np.linspace(-pdf_fine.max() * 0.2, pdf_fine.max() * 1.1, 20)
-    ax.contourf(XX,YY,pdf_fine,levels = levels,
-               cmap = 'RdYlBu_r')
-    ax.contour(XX,YY,pdf_fine,levels = levels,
-               colors = 'w')
+    ax.contourf(XX, YY, pdf_fine, levels = levels, cmap = 'RdYlBu_r')
+    ax.contour(XX, YY, pdf_fine, levels = levels, colors = 'w')
     ax.axvline(x = 0, color = 'k', linestyle = '--')
     ax.axhline(y = 0, color = 'k', linestyle = '--')
 
@@ -326,7 +270,6 @@ for idx in range(6):
     ax.axis('off')
 
 #%% # 用色谱分段渲染一条曲线
-
 # 导入包
 import numpy as np
 import matplotlib.pyplot as plt
@@ -355,16 +298,13 @@ def colorline(x, y, cmap):
     return lc
 
 def make_segments(x, y):
-
     # 将一条线打散成一系列线段
-
     points = np.array([x, y]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
     return segments
 
 
 ### 2. 生成平面随机轨迹
-
 N_steps = 10000;
 # 随机轨迹的步数
 

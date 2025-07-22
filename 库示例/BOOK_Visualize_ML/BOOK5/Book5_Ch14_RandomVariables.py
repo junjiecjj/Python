@@ -16,11 +16,9 @@ from numpy import linalg as LA
 iris_sns = sns.load_dataset("iris")
 
 def normal_pdf_1d(x, mu,sigma):
-
     scaling = 1/sigma/np.sqrt(2*np.pi)
     z = (x - mu)/sigma
     pdf = scaling*np.exp(-z**2/2)
-
     return pdf
 
 def draw_vector(vector,RBG):
@@ -41,20 +39,15 @@ x1 = np.array(x1, dtype=float)
 
 # Mahal distance grid
 
-xx_maha, yy_maha = np.meshgrid(
-            np.linspace(0,10, 400),
-            np.linspace(0,10, 400),)
+xx_maha, yy_maha = np.meshgrid(np.linspace(0,10, 400),
+                               np.linspace(0,10, 400),)
 zz_maha = np.c_[xx_maha.ravel(), yy_maha.ravel()]
-
 emp_cov_Xc = EmpiricalCovariance().fit(x1)
-
 mahal_sq_Xc = emp_cov_Xc.mahalanobis(zz_maha)
-
 mahal_sq_Xc = mahal_sq_Xc.reshape(xx_maha.shape)
 mahal_d_Xc = np.sqrt(mahal_sq_Xc)
 
 #%% visualizations
-
 theta = 120 # -4.8575, optimal angle
 print('====================')
 print('theta = ' + str(theta))
