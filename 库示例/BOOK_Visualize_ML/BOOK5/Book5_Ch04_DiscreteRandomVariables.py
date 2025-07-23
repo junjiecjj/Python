@@ -13,8 +13,9 @@ def plot_stem(df, column):
     pmf_df = df[column].value_counts().to_frame().sort_index()/len(df)
 
     fig, ax = plt.subplots()
-    centroid = np.sum(pmf_df[column].astype(float) * pmf_df.index)
-    plt.stem(pmf_df.index, pmf_df[column].astype(float))
+    centroid = (pmf_df['count'].astype(float) * pmf_df.index).sum()
+
+    plt.stem(pmf_df.index, pmf_df.astype(float))
     plt.vlines(centroid, 0, 0.3, colors = 'r', linestyles = '--')
     plt.ylim(0, 0.3)
     plt.xlim(-5,40)
@@ -128,7 +129,7 @@ df['circle'] = (df['X1'] - 3.5) ** 2 + (df['X2'] - 3.5) ** 2
 YY_circle = (XX1_fine - 3.5) ** 2 + (XX2_fine - 3.5) ** 2
 plot_contour(XX1,XX2, df, 'circle', XX1_fine, XX2_fine, YY_circle)
 plot_stem(df, 'circle')
-
+plt.close('all')
 
 
 #%% Bk5_Ch04_02.py
@@ -143,8 +144,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # Load the iris data
 X_df = sns.load_dataset("iris")
 
-#%% self-defined function
-
+### self-defined function
 def heatmap_sum(data, i_array, j_array, title, vmin, vmax, cmap):
     fig, ax = plt.subplots(figsize=(10, 10))
     #'YlGnBu', # YlGnBu
@@ -204,18 +204,17 @@ title = 'No species label, frequency'
 heatmap_sum(frequency_matrix, sepal_width_array, sepal_length_array,title, 0, 50, 'plasma_r')
 
 title = 'No species label, probability'
-heatmap_sum(probability_matrix, sepal_width_array, sepal_length_array,title,0, 0.4, 'viridis_r')
+heatmap_sum(probability_matrix, sepal_width_array, sepal_length_array,title, 0, 0.4, 'viridis_r')
 
 #%% 图 30. 花萼长度的边缘频数和概率热图，不考虑分类
-
 freq_sepal_length = frequency_matrix.sum(axis = 0).to_numpy().reshape((1,-1))
 prob_sepal_length = probability_matrix.sum(axis = 0).to_numpy().reshape((1,-1))
 
 title = 'Marginal count, frequency, sepal length'
-heatmap_sum(freq_sepal_length,[],sepal_length_array, title, 0, 50,'plasma_r')
+heatmap_sum(freq_sepal_length, [], sepal_length_array, title, 0, 50,'plasma_r')
 
 title = 'Marginal count, probability, sepal length'
-heatmap_sum(prob_sepal_length,[],sepal_length_array, title, 0, 0.4,'viridis_r')
+heatmap_sum(prob_sepal_length,[], sepal_length_array, title, 0, 0.4,'viridis_r')
 
 #%% 期望值 of X1
 E_X1 = prob_sepal_length @ sepal_length_array.reshape(-1,1)
@@ -243,12 +242,10 @@ E_X2 = sepal_width_array.reshape(1,-1) @ prob_sepal_width
 E_X2_ = X_df['sepal_width'].mean() # test only
 
 
-
 #%% assumption: independence, 图 32. 联合概率，假设独立
 title = 'Assumption: independence'
 # joint probability
-heatmap_sum(prob_sepal_width@prob_sepal_length, sepal_width_array, sepal_length_array, title,0,0.4,'viridis_r')
-
+heatmap_sum(prob_sepal_width@prob_sepal_length, sepal_width_array, sepal_length_array, title, 0, 0.4, 'viridis_r')
 
 #%% conditional probability, given sepal length, 给定花萼长度，花萼宽度的条件概率
 given_sepal_length = 5
@@ -264,7 +261,7 @@ probability_matrix_ = probability_matrix.to_numpy()
 conditional_X2_given_X1_matrix = probability_matrix_/(np.ones((6,1))@np.array([probability_matrix_.sum(axis = 0)]))
 
 title = 'X2 given X1'
-heatmap_sum(conditional_X2_given_X1_matrix,sepal_width_array,sepal_length_array,title,0,0.4,'viridis_r')
+heatmap_sum(conditional_X2_given_X1_matrix, sepal_width_array, sepal_length_array, title, 0, 0.4, 'viridis_r')
 
 #%% conditional probability, given sepal width, 给定花萼宽度，花萼长度的条件概率 pX1 | X2(x1 | x2)
 given_sepal_width = 2.5

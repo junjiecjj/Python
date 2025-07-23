@@ -129,6 +129,16 @@ for i in [0,1,2,3]:
     sns.histplot(data=iris_sns, x=iris_sns.columns[i], hue="species", binwidth = 0.2, element="step")
     ax.set_xlim([0,8])
 
+#%% Joy plot, 图 15. 鸢尾花山数据山脊图，特征分类
+import joypy
+# you might have to install joypy
+joypy.joyplot(iris_sns, ylim='own')
+
+joypy.joyplot(iris_sns, column=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'],  by="species", ylim='own')
+
+joypy.joyplot(iris_sns, by="species", column="sepal_width", hist=True, bins=40, overlap=0,grid=True)
+
+
 #%% classes, bivariate, 图 16. 二维数据散点图，KDE 概率密度曲面等高线，考虑鸢尾花分类标签
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", hue="species")
 sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', hue="species")
@@ -137,8 +147,7 @@ sns.jointplot(data=iris_sns, x="sepal_length", y="sepal_width", kind = 'kde', fi
 #%% Regression by classes
 sns.lmplot(data = iris_sns, x="sepal_length", y="sepal_width", hue="species")
 sns.lmplot(data = iris_sns, x="sepal_length", y="sepal_width", hue="species", col="species")
-
-
+plt.close('all')
 
 #%% penguins
 penguins = sns.load_dataset("penguins")
@@ -162,28 +171,31 @@ g = sns.jointplot(data=penguins, x="bill_length_mm", y="bill_depth_mm")
 g.plot_joint(sns.kdeplot, color="r", zorder=0, levels=6)
 g.plot_marginals(sns.rugplot, color="r", height=-.15, clip_on=False)
 
+g = sns.jointplot(data=penguins, x="bill_length_mm", hue="species", y="bill_depth_mm")
+g.plot_joint(sns.kdeplot, zorder=0, levels=6)
+g.plot_marginals(sns.rugplot, height=-.15, clip_on=False)
+
 
 
 #%% multivariate pairwise
 # without class labels
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
 g = sns.pairplot(iris_sns)
 g.map_upper(sns.scatterplot, color = 'b')
-g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues_d")
+g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues")
 g.map_diag(sns.histplot, kde=False, color = 'b')
 
 
 # 成对特征散点图
 sns.pairplot(iris_sns)
 
-# 绘制成对特征散点图
-sns.pairplot(iris_sns, hue = 'species')
 
+# 绘制成对特征散点图
+# sns.pairplot(iris_sns, hue = 'species')
 g = sns.pairplot(iris_sns, hue = 'species')
 g.map_lower(sns.kdeplot, levels=4, color=".2")
-
 plt.show()
-plt.close('all')
+# plt.close('all')
 
 
 #%% pairwise
@@ -197,14 +209,6 @@ fig, ax = plt.subplots()
 pd.plotting.parallel_coordinates(iris_sns, 'species', colormap=plt.get_cmap("Set2"))
 plt.show()
 
-#%% Joy plot, 图 15. 鸢尾花山数据山脊图，特征分类
-import joypy
-# you might have to install joypy
-joypy.joyplot(iris_sns, ylim='own')
-
-joypy.joyplot(iris_sns, column=['sepal_length', 'sepal_width', 'petal_length', 'petal_width'],  by="species", ylim='own')
-
-joypy.joyplot(iris_sns, by="species", column="sepal_width", hist=True, bins=40, overlap=0,grid=True)
 
 #%% add mean values to the histograms, 图 19. 鸢尾花四个特征数据均值在直方图位置
 fig, axes = plt.subplots(2,2)
@@ -251,12 +255,11 @@ for label,color in zip(['setosa','versicolor','virginica'], ['b','r','g']):
 #%% add mean values and std bands to the histograms, 图 23. 鸢尾花四个特征数据均值、标准差所在位置在直方图位置
 num = 0
 fig, axes = plt.subplots(2,2)
-
 for i in [0,1]:
     for j in [0,1]:
         sns.histplot(data=X_df, x = feature_names[num], binwidth = 0.2, ax = axes[i][j])
-        axes[i][j].set_xlim([0,8]); axes[0][0].set_ylim([0,40])
-
+        axes[i][j].set_xlim([0,8])
+        axes[0][0].set_ylim([0,40])
         mu  = X_df[feature_names[num]].mean()
         std = X_df[feature_names[num]].std()
 
@@ -273,7 +276,6 @@ print(iris_sns.describe(percentiles = [0.01, 0.25, 0.5, 0.75, 0.99]))
 
 #%% 4-quantiles, quartiles
 # visualize locations of three quartiles, 图 24. 鸢尾花数据直方图，以及 25%、50%和 75%百分位
-
 num = 0
 fig, axes = plt.subplots(2,2)
 for i in [0,1]:
@@ -285,15 +287,12 @@ for i in [0,1]:
         axes[i][j].axvline(x=q75, color = 'r')
         axes[i][j].axvline(x=q50, color = 'r')
         axes[i][j].axvline(x=q25, color = 'r')
-
         num = num + 1
 
 #%% 100-quantiles, percentile
 # visualize two tails (1%, 99%), 图 25. 鸢尾花数据直方图，以及 1%和 99%百分位
-
 num = 0
 fig, axes = plt.subplots(2,2)
-
 for i in [0,1]:
     for j in [0,1]:
         sns.histplot(data=X_df, x = feature_names[num], binwidth = 0.2, ax = axes[i][j])
@@ -335,11 +334,9 @@ sns.boxplot(data=iris_long, x="value", y="variable", orient="h", hue = 'species'
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 
 #%% Heatmap of covariance matrix, 图 37. 协方差矩阵、相关性系数矩阵热图
-
 SIGMA = X_df.cov()
 
 fig, axs = plt.subplots()
-
 h = sns.heatmap(SIGMA,cmap='RdYlBu_r', linewidths=.05,annot=True)
 h.set_aspect("equal")
 h.set_title('Covariance matrix')
