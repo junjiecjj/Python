@@ -3,7 +3,7 @@
 
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_01.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_01.py, 连续均匀分布
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,7 +47,7 @@ plt.xlim(a,b)
 plt.xticks([0,2,4,6,8,10])
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_02
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_02, 一元高斯分布
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,28 +58,23 @@ x = np.linspace(-3, 5, num=100)
 
 # plot PDF
 fig = plt.figure()
-
 mean     = 0
 variance = 1
-
 plt.plot(x, norm.pdf(x, loc=mean, scale=np.sqrt(variance)), label="$N(0, 1)$")
 
 # The location (loc) keyword specifies the mean.
 # The scale (scale) keyword specifies the standard deviation.
 plt.axvline(x = mean, linestyle = '--', color = 'r')
-
 mean     = 2
 variance = 3
 
 plt.plot(x, norm.pdf(x, loc=mean, scale=np.sqrt(variance)), label="$N(2, 3)$")
 plt.axvline(x = mean, linestyle = '--', color = 'r')
-
 mean     = -1
 variance = 0.5
 
 plt.plot(x, norm.pdf(x, loc=mean, scale=np.sqrt(variance)), label="$N(2, 3)$")
 plt.axvline(x = mean, linestyle = '--', color = 'r')
-
 plt.xlabel('$x$')
 plt.ylabel('PDF, $f(x)$')
 
@@ -89,13 +84,11 @@ plt.legend(loc=1)
 
 # plot CDF curves
 fig = plt.figure()
-
 mean     = 0
 variance = 1
 
 plt.plot(x, norm.cdf(x, loc=mean, scale=np.sqrt(variance)), label="$N(0, 1)$")
 plt.axvline(x = mean, linestyle = '--', color = 'r')
-
 mean     = 2
 variance = 3
 
@@ -104,12 +97,10 @@ plt.axvline(x = mean, linestyle = '--', color = 'r')
 
 mean     = -1
 variance = 0.5
-
 plt.plot(x, norm.cdf(x, loc=mean, scale=np.sqrt(variance)), label="$N(-1, 0.5)$")
 plt.axvline(x = mean, linestyle = '--', color = 'r')
 
 plt.axhline(y = 0.5, linestyle = '--', color = 'r')
-
 plt.xlabel('$x$')
 plt.ylabel('CDF, $F(x)$')
 
@@ -118,9 +109,7 @@ plt.xlim([-3, 5])
 plt.legend(loc=4)
 
 
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_03.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_03.py, 逻辑分布：类似高斯分布
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import logistic
@@ -164,7 +153,7 @@ plt.legend()
 plt.show()
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_04.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_04.py, 学生 t-分布
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -211,7 +200,7 @@ plt.legend()
 plt.show()
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_05.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_05.py, 对数正态分布：源自正态分布
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import lognorm
@@ -339,15 +328,12 @@ ax3.yaxis.set_label_position('left')
 ax3.set_xlim(X.min(),X.max())
 ax3.set_ylim(0, pdf_X.max()*1.1)
 
-
 ax4 = plt.subplot(gs[3])
 ax4.set_visible(False)
 
 plt.show()
 
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_07.py
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_07.py, 指数分布：泊松分布的连续随机变量版
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -394,9 +380,7 @@ from matplotlib import cm # Colormaps
 x = np.linspace(start = 0, stop = 10, num = 200)
 
 # plot PDF curves
-
 fig, ax = plt.subplots()
-
 DFs = range(1,10)
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(DFs)))
 
@@ -410,9 +394,7 @@ plt.ylabel("PDF")
 plt.legend()
 plt.show()
 
-
 # plot CDF curves
-
 fig, ax = plt.subplots()
 
 DFs = range(1,10)
@@ -427,8 +409,6 @@ plt.title("CDF of $\\chi^2_k$")
 plt.ylabel("CDF")
 plt.legend()
 plt.show()
-
-
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bk5_Ch07_09.py F-分布：和两个服从卡方分布的独立随机变量有关
 
@@ -446,8 +426,7 @@ dfn_array_, dfd_array_ = np.meshgrid(dfn_array, dfd_array)
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
 for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel()):
     title_idx = '$d_1$ = ' + str(dfn_idx) + '; $d_2$ = ' + str(dfd_idx)
-    ax.plot(x_array, f.pdf(x_array, dfn_idx, dfd_idx),
-            'b', lw=1)
+    ax.plot(x_array, f.pdf(x_array, dfn_idx, dfd_idx), 'b', lw=1)
     ax.set_title(title_idx)
     ax.set_xlim(0,4)
     ax.set_ylim(0,2)
@@ -461,12 +440,10 @@ for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel
     ax.tick_params(axis="y", direction='in')
 
 #%% CDF of F Distributions
-
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
 for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel()):
     title_idx = '$d_1$ = ' + str(dfn_idx) + '; $d_2$ = ' + str(dfd_idx)
-    ax.plot(x_array, f.cdf(x_array, dfn_idx, dfd_idx),
-            'b', lw=1)
+    ax.plot(x_array, f.cdf(x_array, dfn_idx, dfd_idx), 'b', lw=1)
     ax.set_title(title_idx)
     ax.set_xlim(0,1)
     ax.set_ylim(0,1)
@@ -479,10 +456,7 @@ for dfn_idx, dfd_idx,ax in zip(dfn_array_.ravel(), dfd_array_.ravel(), axs.ravel
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-
-
-#%% Bk5_Ch07_10.py Beta 分布：概率的概率
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Bk5_Ch07_10.py Beta 分布：概率的概率
 from scipy.stats import beta
 import matplotlib.pyplot as plt
 import numpy as np
@@ -492,7 +466,7 @@ alpha_array = [0.1, 0.5, 1, 2, 4]
 beta_array = [0.1, 0.5, 1, 2, 4]
 alpha_array_, beta_array_ = np.meshgrid(alpha_array, beta_array)
 
-#%% PDF of Beta Distributions
+### PDF of Beta Distributions
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
 for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs.ravel()):
     title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)
@@ -509,8 +483,7 @@ for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs
     ax.tick_params(axis="x", direction='in')
     ax.tick_params(axis="y", direction='in')
 
-#%% CDF of Beta Distributions
-
+### CDF of Beta Distributions
 fig, axs = plt.subplots(nrows=5, ncols=5, figsize=(20, 20))
 for alpha_idx, beta_idx,ax in zip(alpha_array_.ravel(), beta_array_.ravel(), axs.ravel()):
     title_idx = '\u03B1 = ' + str(alpha_idx) + '; \u03B2 = ' + str(beta_idx)

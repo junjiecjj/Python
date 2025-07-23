@@ -35,8 +35,7 @@ f_X_Y_joint = bi_norm.pdf(XXYY) # (321, 321)
 # f_X_Y_joint = bi_norm.cdf(XXYY) # (321, 321)
 
 # 3D visualization
-fig, ax = plt.subplots(1,2)
-ax = plt.axes(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 ax.plot_wireframe(XX,YY, f_X_Y_joint, rstride=10, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
 
@@ -58,8 +57,7 @@ plt.show()
 
 #%% surface projected along Y to X-Z plane
 # 图 2. PDF 函数曲面 fX,Y(x,y)，沿 x 方向的剖面线，σX = 1, σY = 2, ρX,Y = 0.75
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=10, cstride=0, color = [0.3,0.3,0.3], linewidth = 0.25)
 
@@ -98,8 +96,7 @@ plt.close('all')
 
 #%% surface projected along Y to Y-Z plane
 # 图 3. PDF 函数曲面 fX,Y(x,y)，沿 y 方向的剖面线，σX = 1, σY = 2, ρX,Y = 0.75
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=0, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour(XX, YY, f_X_Y_joint, levels = 33, zdir='x', offset=YY.max(), cmap=cm.RdYlBu_r)
@@ -135,15 +132,10 @@ plt.show()
 
 #%% surface projected along Z to X-Y plane
 # 图 4. PDF 函数曲面 fX,Y(x,y)，空间等高线和平面填充等高线，σX = 1, σY = 2, ρX,Y = 0.75
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=10, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
-
 ax.contour3D(XX,YY, f_X_Y_joint,15,  cmap = 'RdYlBu_r')
-
-# ax.contourf(XX, YY, f_X_Y_joint, levels = 12, zdir='z', \
-#             offset=0, cmap=cm.RdYlBu_r)
+# ax.contourf(XX, YY, f_X_Y_joint, levels = 12, zdir='z',  offset=0, cmap=cm.RdYlBu_r)
 
 ax.set_xlabel('$x$')
 ax.set_ylabel('$y$')
@@ -260,10 +252,7 @@ ax4.set_visible(False)
 
 plt.show()
 
-
-
 #%% Bk5_Ch10_03
-
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
@@ -273,8 +262,7 @@ y = np.linspace(-4,4,num = 201)
 sigma_X = 1
 sigma_Y = 2
 
-xx,yy = np.meshgrid(x,y);
-
+xx, yy = np.meshgrid(x,y);
 kk = np.linspace(-0.8,0.8,num = 9)
 
 ## 1
@@ -317,10 +305,6 @@ ax.spines['right'].set_color('none')
 ax.spines['top'].set_position('zero')
 ax.spines['bottom'].set_color('none')
 plt.show()
-
-
-
-
 
 
 #%% Bk5_Ch10_04

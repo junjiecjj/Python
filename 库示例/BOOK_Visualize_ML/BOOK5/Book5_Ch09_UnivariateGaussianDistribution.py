@@ -528,7 +528,6 @@ for feature in feature_names:
 
     stats.probplot(sample, dist="norm", plot=pylab)
 
-
     plt.axhline(y=mu, color = 'r', linestyle = '--')
     plt.axhline(y=mu + std, color = 'r', linestyle = '--')
     plt.axhline(y=mu - std, color = 'r', linestyle = '--')

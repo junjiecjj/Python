@@ -11,32 +11,22 @@ import seaborn as sns
 from sklearn.datasets import load_iris
 pd.options.mode.chained_assignment = None  # default='warn'
 
-# Load the iris data
-X_df = sns.load_dataset("iris")
 
-#%% self-defined function
-
-def heatmap_sum(data,i_array,j_array,title,vmin,vmax,cmap):
-
+### self-defined function
+def heatmap_sum(data, i_array, j_array, title, vmin, vmax, cmap):
     fig, ax = plt.subplots(figsize=(10, 10))
-
-
-    ax = sns.heatmap(data,cmap= cmap, #'YlGnBu', # YlGnBu
-                     cbar_kws={"orientation": "horizontal"},
-                     yticklabels=i_array, xticklabels=j_array,
-                     ax = ax, annot = True,
-                     linewidths=0.25, linecolor='grey',
-                     vmin = vmin, vmax = vmax)
-
+    ax = sns.heatmap(data, cmap= cmap, cbar_kws={"orientation": "horizontal"}, yticklabels=i_array, xticklabels=j_array, ax = ax, annot = True, linewidths=0.25, linecolor='grey', vmin = vmin, vmax = vmax)
     ax.set_xlabel('Sepal length')
     ax.set_ylabel('Sepal width')
-
     ax.set_aspect("equal")
     plt.title(title)
     plt.yticks(rotation=0)
 
-#%% Prepare data
+### Load the iris data
+X_df = sns.load_dataset("iris")
 
+
+### Prepare data
 X_df.sepal_length = round(X_df.sepal_length*2)/2
 X_df.sepal_width  = round(X_df.sepal_width*2)/2
 
@@ -64,30 +54,24 @@ probability_matrix_ = probability_matrix.to_numpy()
 X1_array = np.sort(X_df.sepal_length.unique()).reshape(1,-1)
 X2_array = np.sort(X_df.sepal_width.unique())[::-1].reshape(1,-1)
 
-#%% marginal distributions
-
+### marginal distributions
 marginal_X1 = probability_matrix.sum(axis = 0).to_numpy().reshape((1,-1))
-
 marginal_X2 = probability_matrix.sum(axis = 1).to_numpy().reshape((-1,1))
 
 # marginal_X2.sum() # test only
 # marginal_X1.sum() # test only
 
 #%% conditional PMF X2 given X1
-
 conditional_X2_given_X1_matrix = probability_matrix_/(np.ones((6,1))@np.array([probability_matrix_.sum(axis = 0)]))
 
 title = '$p_{X_2 | X_1}(x_2 | x_1)$'
 heatmap_sum(conditional_X2_given_X1_matrix,sepal_width_array,sepal_length_array,title,0,0.4,'viridis_r')
 
 #%% X2 * X2 given X1
-
-
 title = '$x_2$ * $p_{X_2 | X_1}(x_2 | x_1)$'
 heatmap_sum(X2_array.T * conditional_X2_given_X1_matrix,sepal_width_array,sepal_length_array,title,0,3,'RdYlBu_r')
 
 #%% Conditional Expectation, X2 given X1
-
 E_X2_given_X1 = X2_array@conditional_X2_given_X1_matrix
 
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -100,20 +84,16 @@ plt.ylim(0, 4)
 plt.ylabel('$E(X_2 | X_1 = x_1)$')
 
 #%% Law of total expectation
-
 E_X2 = E_X2_given_X1 @ marginal_X1.T
 E_X2_ = X_df_12['sepal_width'].mean()
 
 
 #%% X2 sq * X2 given X1
-
-
 title = '$x_2^2$ * $p_{X_2 | X_1}(x_2 | x_1)$'
 heatmap_sum((X2_array**2).T * conditional_X2_given_X1_matrix, sepal_width_array,sepal_length_array,title,0,16,'RdYlBu_r')
 
 
 #%% Conditional Expectation, X2 ^ 2 given X1
-
 E_X2_sq_given_X1 = (X2_array**2)@conditional_X2_given_X1_matrix
 
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -126,7 +106,6 @@ plt.ylim(0, 16)
 plt.ylabel('$E(X_2^2 | X_1 = x_1)$')
 
 #%% Conditional Variance, X2 given X1
-
 var_X2_given_X1 = E_X2_sq_given_X1 - E_X2_given_X1**2
 
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -139,7 +118,6 @@ plt.ylim(0, 0.35)
 plt.ylabel('$var(X_2 | X_1 = x_1)$')
 
 #%% law of total variance
-
 # part A: expectation of conditional variances
 E_var_X2_given_X1 = var_X2_given_X1 @ marginal_X1.T
 E_var_X2_given_X1_each = var_X2_given_X1*marginal_X1
@@ -165,16 +143,9 @@ var_X2_drill_down_df.plot.pie(y = 'var', autopct='%1.1f%%', legend = False, cmap
 var_X2_drill_down_df.plot.barh(y = 'var')
 
 #%% Conditional standard deviation, X2 given X1
-
 std_X2_given_X1 = np.sqrt(var_X2_given_X1)
-
 fig, ax = plt.subplots()
-
-
-ax.errorbar(X1_array[0], E_X2_given_X1[0],
-            yerr=std_X2_given_X1[0],
-            capsize = 5,
-            fmt='--o')
+ax.errorbar(X1_array[0], E_X2_given_X1[0], yerr=std_X2_given_X1[0], capsize = 5, fmt='--o')
 
 plt.show()
 plt.grid()
@@ -185,7 +156,6 @@ plt.ylabel('$\mu_{X_2 | X_1 = x_1} \pm \sigma_{X_2 | X_1 = x_1} $')
 
 
 #%% conditional PMF X1 given X2
-
 conditional_X1_given_X2_matrix = probability_matrix_/(probability_matrix_.sum(axis = 1).reshape(-1,1)@np.ones((1,8)))
 
 title = '$p_{X_1 | X_2}(x_1 | x_2)$'
@@ -213,7 +183,6 @@ title = '$x_1^2$ * $p_{X_1 | X_2}(x_1 | x_2)$'
 heatmap_sum((X1_array**2) * conditional_X1_given_X2_matrix, sepal_width_array, sepal_length_array, title, 0, 30, 'RdYlBu_r')
 
 #%% Conditional Expectation, X2 ^ 2 given X1
-
 E_X1_sq_given_X2 = conditional_X1_given_X2_matrix @ (X1_array**2).T
 
 fig, ax = plt.subplots(figsize=(10, 8))
