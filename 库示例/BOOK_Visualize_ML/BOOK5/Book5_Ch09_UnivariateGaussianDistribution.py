@@ -44,7 +44,6 @@ ax.view_init(azim=-120, elev=30)
 plt.tight_layout()
 plt.show()
 
-
 fig, ax = plt.subplots()
 colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(mu)))
 for i in np.linspace(1,len(mu),len(mu)):
@@ -54,10 +53,6 @@ plt.xlabel('X')
 plt.ylabel('$f_{X}(x)$')
 ax.set_xlim(-5, 5)
 ax.set_ylim(0, f_x_varying_mu.max())
-
-
-
-
 
 #%% Bk5_Ch09_02
 # 图 3. µ 对一元高斯分布 CDF 曲线位置的影响
@@ -160,15 +155,11 @@ ax.set_xlim(-5, 5)
 ax.set_ylim(0, F_x_varying_mu.max())
 
 
-
 #%% Bk5_Ch09_03
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm # Colormaps
 from scipy.stats import norm
-
 
 X = np.arange(-3, 3, 0.05)
 mu = 0
@@ -211,7 +202,6 @@ ax.set_xlabel('X')
 ax.set_ylabel('PDF, $f_{Z}(z)$')
 
 # Standard normal PDF and evenly spaced percentiles
-
 percentiles = np.linspace(0.025, 0.975, num=39)
 f_x = norm.pdf(X, loc=mu, scale=sigma)
 fig, ax = plt.subplots()
@@ -308,7 +298,6 @@ for feature in feature_names:
     plt.show()
 
 plt.close('all')
-
 
 
 #%% Bk5_Ch09_04

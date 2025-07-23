@@ -211,10 +211,10 @@ freq_sepal_length = frequency_matrix.sum(axis = 0).to_numpy().reshape((1,-1))
 prob_sepal_length = probability_matrix.sum(axis = 0).to_numpy().reshape((1,-1))
 
 title = 'Marginal count, frequency, sepal length'
-heatmap_sum(freq_sepal_length, [], sepal_length_array, title, 0, 50,'plasma_r')
+heatmap_sum(freq_sepal_length, [], sepal_length_array, title, 0, 50, 'plasma_r')
 
 title = 'Marginal count, probability, sepal length'
-heatmap_sum(prob_sepal_length,[], sepal_length_array, title, 0, 0.4,'viridis_r')
+heatmap_sum(prob_sepal_length, [], sepal_length_array, title, 0, 0.4, 'viridis_r')
 
 #%% 期望值 of X1
 E_X1 = prob_sepal_length @ sepal_length_array.reshape(-1,1)
@@ -241,7 +241,6 @@ heatmap_sum(prob_sepal_width,sepal_width_array,[],title,0,0.4,'viridis_r')
 E_X2 = sepal_width_array.reshape(1,-1) @ prob_sepal_width
 E_X2_ = X_df['sepal_width'].mean() # test only
 
-
 #%% assumption: independence, 图 32. 联合概率，假设独立
 title = 'Assumption: independence'
 # joint probability
@@ -254,7 +253,7 @@ prob_given_length = probability_matrix[given_sepal_length]
 prob_given_length = prob_given_length/prob_given_length.sum()
 prob_given_length = prob_given_length.to_frame()
 title = 'No species label, probability given sepal length'
-heatmap_sum(prob_given_length,sepal_width_array,[],title,0,0.4,'viridis_r')
+heatmap_sum(prob_given_length, sepal_width_array, [], title, 0, 0.4, 'viridis_r')
 
 #%% Matrix, 图 36. 给定花萼长度，花萼宽度的条件概率 pX2 | X1(x2 | x1)
 probability_matrix_ = probability_matrix.to_numpy()
@@ -263,21 +262,21 @@ conditional_X2_given_X1_matrix = probability_matrix_/(np.ones((6,1))@np.array([p
 title = 'X2 given X1'
 heatmap_sum(conditional_X2_given_X1_matrix, sepal_width_array, sepal_length_array, title, 0, 0.4, 'viridis_r')
 
-#%% conditional probability, given sepal width, 给定花萼宽度，花萼长度的条件概率 pX1 | X2(x1 | x2)
+#%% conditional probability, given sepal width, 给定花萼宽度，花萼长度的条件概率 pX1|X2(x1|x2)
 given_sepal_width = 2.5
 
 prob_given_width = probability_matrix.loc[given_sepal_width,:]
 prob_given_width = prob_given_width/prob_given_width.sum()
 prob_given_width = prob_given_width.to_frame().T
 title = 'No species label, probability given sepal width'
-heatmap_sum(prob_given_width,[],sepal_length_array,title,0,0.4,'viridis_r')
+heatmap_sum(prob_given_width, [], sepal_length_array, title, 0, 0.4, 'viridis_r')
 
 
-#%% Matrix, 图 39. 给定花萼宽度，花萼长度的条件概率 pX1 | X2(x1 | x2)
+#%% Matrix, 图 39. 给定花萼宽度，花萼长度的条件概率 pX1|X2(x1|x2)
 conditional_X1_given_X2_matrix = probability_matrix_/(probability_matrix_.sum(axis = 1).reshape(-1,1)@np.ones((1,8)))
 
 title = 'X1 given X2'
-heatmap_sum(conditional_X1_given_X2_matrix,sepal_width_array,sepal_length_array,title,0,0.4,'viridis_r')
+heatmap_sum(conditional_X1_given_X2_matrix, sepal_width_array, sepal_length_array, title, 0, 0.4, 'viridis_r')
 
 
 #%% Given Y
@@ -314,7 +313,7 @@ frequency_matrix_given_Y = frequency_matrix_given_Y.iloc[::-1]
 
 probability_matrix_given_Y = frequency_matrix_given_Y/frequency_matrix_given_Y.sum().sum()
 
-# 图 43. 频数和条件概率 pX1,X2 | Y(x1, x2 | y = C3) 热图，给定分类标签 Y = C3 (virginica)
+# 图 43. 频数和条件概率 pX1,X2|Y(x1,x2|y=C3) 热图，给定分类标签 Y = C3 (virginica)
 title = 'Given Y, frequency'
 heatmap_sum(frequency_matrix_given_Y,sepal_width_array,sepal_length_array,title,0,50,'plasma_r')
 

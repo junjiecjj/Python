@@ -25,9 +25,9 @@ def plot_surface(xx1, xx2, surface, z_height, title_txt):
     ax.set_xlabel('Sepal length, $x_1$')
     ax.set_ylabel('Sepal width, $x_2$')
     ax.set_zlabel('PDF')
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     ax.set_xticks([4, 5, 6, 7, 8])
     ax.set_yticks([1, 2, 3, 4, 5])
     ax.set_xlim(x1.min(), x1.max())
@@ -38,16 +38,14 @@ def plot_surface(xx1, xx2, surface, z_height, title_txt):
     ax.grid(False)
 
     ax = fig.add_subplot(1, 2, 2)
-
     # Contourf plot
     # cfset = ax.contourf(xx1, xx2, surface, 12, cmap = 'RdYlBu_r')
     # cset = ax.contour(xx1, xx2, surface, 12, colors = 'w')
-
     cset = ax.contour(xx1, xx2, surface, 20, cmap='RdYlBu_r')
     ax.set_xticks([4, 5, 6, 7, 8])
     ax.set_yticks([1, 2, 3, 4, 5])
-    ax.set_xlim(x1.min(), x1.max())
-    ax.set_ylim(x2.min(), x2.max())
+    ax.set_xlim(xx1.min(), xx1.max())
+    ax.set_ylim(xx2.min(), xx2.max())
     # Label plot
     # ax.clabel(cset, inline=1, fontsize=10)
     ax.set_xlabel('Sepal length, $x_1$')
@@ -111,7 +109,6 @@ def plot_joint_marginal(xx1, xx2, surface, x1, f_x1, x2, f_x2, x1_s, x2_s, color
 
 
 #%% prepare data
-
 plt.close('all')
 iris = load_iris()
 
@@ -124,14 +121,17 @@ feature_names = ['Sepal length, $X_1$', 'Sepal width, $X_2$', 'Petal length, $X_
 X_df = pd.DataFrame(X_1_to_4, columns = feature_names)
 y_df = pd.DataFrame(y, columns = ['label'])
 
-y_df[y_df == 0] = 'C_1'
-y_df[y_df == 1] = 'C_2'
-y_df[y_df == 2] = 'C_3'
+# 先转换为字符串类型
+y_df['label'] = y_df['label'].astype(str)
+
+y_df['label'] = y_df['label'].replace({0: 'C_1', 1: 'C_2', 2: 'C_3'})
+
 
 X1_2_df = X_df[['Sepal length, $X_1$', 'Sepal width, $X_2$']]
 
-x1 = np.linspace(4, 8, 161)
-x2 = np.linspace(1, 5, 161)
+GridNum = 161
+x1 = np.linspace(4, 8, GridNum)
+x2 = np.linspace(1, 5, GridNum)
 
 xx1, xx2 = np.meshgrid(x1, x2)
 positions = np.vstack([xx1.ravel(), xx2.ravel()]) # (2, 25921)
@@ -145,20 +145,19 @@ z_height = 0.5
 title_txt = '$f_{X1, X2}(x_1, x_2)$, joint PDF'
 plot_surface(xx1, xx2, f_x1_x2_SM, z_height, title_txt)
 
-
 #%% joint PDF at a specific X1
 # 图 26. 固定 x1时，概率密度函数 f_{X1,X2}(x1,x2) 随 x2变化
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-ax.plot_wireframe(xx1, xx2, f_x1_x2_SM, color = [0.7,0.7,0.7], linewidth = 0.25, rstride=0, cstride=4)
-ax.contour(xx1, xx2, f_x1_x2_SM, levels = 40, zdir='x', offset= xx1.max(), cmap='rainbow')
+ax.plot_wireframe(xx1, xx2, f_x1_x2_SM, color = [0.7, 0.7, 0.7], linewidth = 0.25, rstride = 0, cstride = 4)
+ax.contour(xx1, xx2, f_x1_x2_SM, levels = 40, zdir = 'x', offset = xx1.max(), cmap = 'rainbow')
 ax.set_proj_type('ortho')
 
 ax.set_xlabel('Sepal length, $x_1$')
 ax.set_ylabel('Sepal width, $x_2$')
 ax.set_title('Joint PDF, $f_{X_1,X_2}(x_1 = c,x_2)$')
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.set_xticks([4,5,6,7,8])
 ax.set_yticks([1,2,3,4,5])
 ax.set_zticks([0, 0.5, 1.0, 1.5])
@@ -175,11 +174,11 @@ plt.close('all')
 down_step = 4
 array_downsample = x1[0::down_step]
 fig, ax = plt.subplots()
-colors = plt.cm.rainbow_r(np.linspace(0,1,len(array_downsample)))
-for i in np.linspace(1,len(array_downsample),len(array_downsample)):
-    plt.plot(x2,f_x1_x2_SM[:,(int(i)-1)*down_step], color = colors[int(i)-1])
+colors = plt.cm.rainbow_r(np.linspace(0, 1, len(array_downsample)))
+for i in np.linspace(1, len(array_downsample), len(array_downsample)):
+    plt.plot(x2, f_x1_x2_SM[:,(int(i)-1)*down_step], color = colors[int(i)-1])
 
-plt.axhline(y=0, color='k', linestyle='-')
+plt.axhline(y = 0, color = 'k', linestyle = '-')
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 ax.set_xlabel('Sepal width, $x_2$')
@@ -216,7 +215,6 @@ ax.grid(False)
 plt.show()
 
 # project down-sampled surface
-
 down_step = 2;
 array_downsample = x2[0::down_step]
 
@@ -268,30 +266,26 @@ for idx in range(len(x_loc_array)):
     x_loc = x_loc_array[idx]
     x_idx = x1[x_loc]
     x_i_array = x2*0 + x_idx
-    z_array = f_x1_x2_SM[:,x_loc]
-    ax.plot(x_i_array, x2, z_array, color=facecolors[idx,:], linewidth = 1.5)
-    ax.add_collection3d(plt.fill_between(x2, 0*z_array, z_array, color=facecolors[idx,:], alpha=0.3), zs=x_idx, zdir='x')
+    z_array = f_x1_x2_SM[:, x_loc]
+    ax.plot(x_i_array, x2, z_array, color = facecolors[idx,:], linewidth = 1.5)
+    ax.add_collection3d(plt.fill_between(x2, 0*z_array, z_array, color = facecolors[idx,:], alpha = 0.3), zs = x_idx, zdir = 'x')
 
-## 3
-# add marginal distribution over X1
+## 3 add marginal distribution over X1
 ax.plot(x1, x1*0 + 5, f_x1_marginal, linewidth = 1.5, color = '#00448A')
 for i in range(len(x_loc_array)):
     x_loc = x_loc_array[i]
     x_idx = x1[x_loc]
-    ax.plot([x_idx, x_idx], [x2.max(), x2.max()], [0, f_x1_marginal[x_loc]], color=facecolors[i,:], linewidth = 1.5)
-    ax.plot(x_idx, x2.max(), f_x1_marginal[x_loc], marker = 'x', color=facecolors[i,:])
+    ax.plot([x_idx, x_idx], [x2.max(), x2.max()], [0, f_x1_marginal[x_loc]], color=facecolors[i,:], linewidth = 1.5) # 画竖线
+    ax.plot(x_idx, x2.max(), f_x1_marginal[x_loc], marker = 'x', color=facecolors[i,:]) # 画xx
 
 plt.show()
 plt.close('all')
 
-
-
 #%% Marginal, X2,
 # 图 29. 偏积分求解边缘概率 fX2(x2)
-
 X2_df = X_df['Sepal width, $X_2$']
 KDE_X2 = sm.nonparametric.KDEUnivariate(X2_df)
-KDE_X2.fit(bw=0.1)
+KDE_X2.fit(bw = 0.1)
 f_x2_marginal = KDE_X2.evaluate(x2)
 
 ## 1:machinery for understanding marginal distribution
@@ -335,12 +329,12 @@ plt.tight_layout()
 plt.show()
 
 
-#%% joint and marginal,
+#%% joint and marginal, 联合 PDF vs 边缘 PDF
 # 图 30. 联合 PDF 和边缘 PDF 之间关系
 title_txt = 'Joint PDF, $f_{X1,X2}(x_1,x_2)$'
 plot_joint_marginal(xx1, xx2, f_x1_x2_SM, x1, f_x1_marginal, x2, f_x2_marginal, X1_2_df['Sepal length, $X_1$'], X1_2_df['Sepal width, $X_2$'], '#00448A', title_txt)
 
-# %% assumption: independence,
+# %% assumption: independence, 假设独立
 # 图 31. 联合概率，假设 X1和 X2独立
 title_txt = 'Joint PDF, $f_{X1,X2}(x_1,x_2)$, independence'
 plot_joint_marginal(xx1, xx2, f_x2_marginal.reshape(-1,1)@f_x1_marginal.reshape(1,-1), x1,f_x1_marginal, x2,f_x2_marginal, X1_2_df['Sepal length, $X_1$'],X1_2_df['Sepal width, $X_2$'], '#00448A',title_txt)
@@ -349,9 +343,9 @@ plot_joint_marginal(xx1, xx2, f_x2_marginal.reshape(-1,1)@f_x1_marginal.reshape(
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Conditional PDF, X2 given X1,
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# 图 34. fX2 | X1(x2 | x1) 条件概率密度三维等高线和平面等高线，不考虑分类
-delta_x = 4/160
-conditional_X2_given_X1_matrix = f_x1_x2_SM/(np.ones((161,1)) @ np.array([f_x1_x2_SM.sum(axis = 0)])*delta_x)
+# 图 34. fX2|X1(x2|x1) 条件概率密度三维等高线和平面等高线，不考虑分类
+delta_x = 4/(GridNum - 1)
+conditional_X2_given_X1_matrix = f_x1_x2_SM/(np.ones((GridNum, 1)) @ np.array([f_x1_x2_SM.sum(axis = 0)])*delta_x)
 partial_integral_over_x2 = conditional_X2_given_X1_matrix.sum(axis = 0)*delta_x
 # test only
 print(partial_integral_over_x2)
@@ -360,16 +354,13 @@ z_height = 1.5
 title_txt = 'Conditional PDF, $f_{X_2 | X_1}(x_2 | x_1)$'
 plot_surface(xx1, xx2, conditional_X2_given_X1_matrix, z_height, title_txt)
 
-
-
 #%% mesh plot of conditional X2 given X1 at specific X1
 # 图 32. 计算条件概率 fX2 | X1(x2 | x1) 原理
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.plot_wireframe(xx1, xx2, conditional_X2_given_X1_matrix, color = [0.7,0.7,0.7], linewidth = 0.25, rstride=0, cstride=2)
 ax.set_proj_type('ortho')
 
-
-x_loc_array = np.arange(0,len(x1),20)
+x_loc_array = np.arange(0, len(x1), 20)
 facecolors = cm.rainbow(np.linspace(0, 1, len(x_loc_array)))
 for idx in range(len(x_loc_array)):
     x_loc = x_loc_array[idx]
@@ -381,13 +372,11 @@ for idx in range(len(x_loc_array)):
 
 # add partial integral over X2
 ax.plot(x1, x1*0 + 5, partial_integral_over_x2, linewidth = 1.5, color = '#00448A')
-
 for i in range(len(x_loc_array)):
     x_loc = x_loc_array[i]
     x_idx = x1[x_loc]
     ax.plot([x_idx,x_idx], [x2.max(), x2.max()], [0,partial_integral_over_x2[x_loc]], color=facecolors[i,:], linewidth = 1.5)
     ax.plot(x_idx, x2.max(), partial_integral_over_x2[x_loc], marker = 'x', color=facecolors[i,:])
-
 ax.set_xlabel('Sepal length, $x_1$')
 ax.set_ylabel('Sepal width, $x_2$')
 ax.set_title('Conditional PDF, $f_{X_2 | X_1}(x_2 | x_1)$')
@@ -405,10 +394,9 @@ ax.grid(False)
 plt.tight_layout()
 plt.show()
 
-
 # %% mesh plot of conditional X2 given X1,
 # 图 33. fX2 | X1(x2 | x1) 曲线投影到平面
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+fig, ax = plt.subplots(subplot_kw = {'projection': '3d'})
 ax.plot_wireframe(xx1, xx2, conditional_X2_given_X1_matrix, color = [0.7,0.7,0.7], linewidth = 0.25, rstride=0, cstride=2)
 ax.contour(xx1, xx2, conditional_X2_given_X1_matrix, levels = 80, zdir='x', offset= xx1.max(), cmap='rainbow')
 ax.set_proj_type('ortho')
@@ -418,17 +406,16 @@ ax.set_title('Conditional PDF, $f_{X_2 | X_1}(x_2 | x_1)$')
 ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xticks([4,5,6,7,8])
-ax.set_yticks([1,2,3,4,5])
+ax.set_xticks([4, 5, 6, 7, 8])
+ax.set_yticks([1, 2, 3, 4, 5])
 ax.set_zticks([0, 0.5, 1.0, 1.5])
 ax.set_xlim(x1.min(), x1.max())
 ax.set_ylim(x2.min(), x2.max())
-ax.set_zlim3d([0,1.5])
+ax.set_zlim3d([0, 1.5])
 ax.view_init(azim=-120, elev=30)
 ax.grid(False)
 plt.tight_layout()
 plt.show()
-
 
 # project down-sampled surface
 down_step = 2;
@@ -436,7 +423,6 @@ y_array_downsample = x1[0::down_step]
 
 fig, ax = plt.subplots()
 colors = plt.cm.rainbow_r(np.linspace(0,1,len(y_array_downsample)))
-
 for i in np.linspace(1,len(y_array_downsample),len(y_array_downsample)):
     plt.plot(x2,conditional_X2_given_X1_matrix[:,(int(i)-1)*down_step], color = colors[int(i)-1])
 
@@ -450,12 +436,11 @@ ax.set_ylim(0,1.5)
 ax.set_yticks([0, 0.5, 1.0, 1.5])
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%% Conditional PDF, X2 given X1
+#%% Conditional PDF, X1 given X2
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 # 图 37. fX1 | X2(x1 | x2) 条件概率密度三维等高线和平面等高线，不考虑分类
-delta_x = 4/160
-conditional_X1_given_X2_matrix = f_x1_x2_SM/(f_x1_x2_SM.sum(axis = 1).reshape(-1,1) @ np.ones((1,161))*delta_x)
+delta_x = 4/(GridNum - 1)
+conditional_X1_given_X2_matrix = f_x1_x2_SM/(f_x1_x2_SM.sum(axis = 1).reshape(-1,1) @ np.ones((1,GridNum))*delta_x)
 partial_integral_over_x1 = conditional_X1_given_X2_matrix.sum(axis = 1)*delta_x
 # test only
 # print(partial_integral_over_x1)
@@ -505,7 +490,6 @@ ax.set_ylim(0,1.5)
 ax.set_yticks([0, 0.5, 1.0, 1.5])
 
 
-
 #%% mesh plot of conditional X1 given X2 at specific X2
 # 图 35. 计算条件概率 fX1 | X2(x1 | x2) 原理
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
@@ -553,10 +537,8 @@ plt.tight_layout()
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%  图 39. 条件概率 fX1,X2 | Y(x1, x2 | y = C1) 平面等高线和条件边缘概率密度曲线，给定分类标签 Y = C1 (setosa)
 # given C1 (y = 0)
-
 kernel = st.gaussian_kde(X1_2_df[y==0].values.T)
 f_x1_x2_given_C1 = np.reshape(kernel(positions).T, xx1.shape)
-
 
 x1_s_C1 = X1_2_df['Sepal length, $X_1$'][y==0]
 KDE_x1_given_C1 = sm.nonparametric.KDEUnivariate(x1_s_C1)
@@ -571,11 +553,8 @@ f_x2_given_C1 = KDE_x2_given_C1.evaluate(x2)
 title_txt = '$f_{X1,X2|Y}(x_1,x_2|C_1)$'
 plot_joint_marginal(xx1, xx2, f_x1_x2_given_C1, x1, f_x1_given_C1, x2, f_x2_given_C1, x1_s_C1, x2_s_C1, '#FF3300', title_txt)
 
-
-
 # given C2 (y = 1),
 # 图 40. 条件 PDF fX1,X2 | Y(x1, x2 | y = C2) 平面等高线和条件边缘概率密度曲线，给定分类标签 Y = C2 (versicolor)
-
 kernel = st.gaussian_kde(X1_2_df[y==1].values.T)
 f_x1_x2_given_C2 = np.reshape(kernel(positions).T, xx1.shape)
 

@@ -109,7 +109,7 @@ E_X2_ = X_df_12['sepal_width'].mean()
 
 
 title = '$x_2^2$ * $p_{X_2 | X_1}(x_2 | x_1)$'
-heatmap_sum((X2_array**2).T * conditional_X2_given_X1_matrix,sepal_width_array,sepal_length_array,title,0,16,'RdYlBu_r')
+heatmap_sum((X2_array**2).T * conditional_X2_given_X1_matrix, sepal_width_array,sepal_length_array,title,0,16,'RdYlBu_r')
 
 
 #%% Conditional Expectation, X2 ^ 2 given X1
@@ -193,13 +193,10 @@ heatmap_sum(conditional_X1_given_X2_matrix,sepal_width_array,sepal_length_array,
 
 
 #%% X1 * X1 given X2
-
 title = '$x_1$ * $p_{X_1 | X_2}(x_1 | x_2)$'
 heatmap_sum(X1_array * conditional_X1_given_X2_matrix,sepal_width_array,sepal_length_array,title,0,5.5,'RdYlBu_r')
 
-
 #%% Conditional Expectation, X1 given X2
-
 E_X1_given_X2 = conditional_X1_given_X2_matrix@X1_array.T
 
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -212,10 +209,8 @@ plt.ylabel('$E(X_1 | X_2 = x_2)$')
 
 
 #%% X1 sq * X1 given X2
-
-
 title = '$x_1^2$ * $p_{X_1 | X_2}(x_1 | x_2)$'
-heatmap_sum((X1_array**2) * conditional_X1_given_X2_matrix,sepal_width_array,sepal_length_array,title,0,30,'RdYlBu_r')
+heatmap_sum((X1_array**2) * conditional_X1_given_X2_matrix, sepal_width_array, sepal_length_array, title, 0, 30, 'RdYlBu_r')
 
 #%% Conditional Expectation, X2 ^ 2 given X1
 
@@ -231,7 +226,6 @@ plt.ylim(0, 40)
 plt.ylabel('$E(X_1^2 | X_2 = x_2)$')
 
 #%%  Conditional Variance, X1 given X2
-
 var_X1_given_X2 = E_X1_sq_given_X2 - E_X1_given_X2**2
 
 fig, ax = plt.subplots(figsize=(10, 8))
@@ -243,16 +237,10 @@ plt.ylim(0, 1)
 plt.ylabel('$var(X_1 | X_2 = x_2)$')
 
 #%% Conditional standard deviation, X1 given X2
-
 std_X1_given_X2 = np.sqrt(var_X1_given_X2)
 
 fig, ax = plt.subplots()
-
-
-ax.errorbar(X2_array[0], E_X1_given_X2.T[0],
-            yerr=std_X1_given_X2.T[0],
-            capsize = 5,
-            fmt='--o')
+ax.errorbar(X2_array[0], E_X1_given_X2.T[0], yerr=std_X1_given_X2.T[0], capsize = 5, fmt='--o')
 
 plt.show()
 plt.grid()
@@ -262,12 +250,10 @@ plt.ylim(0, 7)
 plt.ylabel('$\mu_{X_1 | X_2 = x_2} \pm \sigma_{X_1 | X_2 = x_2} $')
 
 #%% Given Y, iris class label
-
 Y_array = ['setosa', 'versicolor', 'virginica']
 # iris class labels
 
 for Given_Y in Y_array:
-
     print('====================')
     print('Iris class label:')
     print(Given_Y)
