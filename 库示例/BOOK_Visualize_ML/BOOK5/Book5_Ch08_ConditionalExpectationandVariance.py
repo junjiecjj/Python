@@ -75,7 +75,7 @@ heatmap_sum(X2_array.T * conditional_X2_given_X1_matrix,sepal_width_array,sepal_
 E_X2_given_X1 = X2_array@conditional_X2_given_X1_matrix
 
 fig, ax = plt.subplots(figsize=(10, 8))
-plt.stem(X1_array.T, E_X2_given_X1.T, use_line_collection=True)
+plt.stem(X1_array.T, E_X2_given_X1.T, )
 plt.xlabel('Sepal length, $x_1$')
 plt.show()
 plt.grid()
@@ -239,7 +239,6 @@ for Given_Y in Y_array:
     probability_matrix_given_Y = frequency_matrix_given_Y/frequency_matrix_given_Y.sum().sum()
 
     # Conditional Marginal, sepal length X1 given Y
-
     prob_sepal_length_given_Y = probability_matrix_given_Y.sum(axis = 0).to_numpy().reshape((1,-1))
 
     title = 'Conditional Marginal count, probability, sepal length'
@@ -258,7 +257,6 @@ for Given_Y in Y_array:
     print('std_X1_given_Y: ' + str(std_X1_given_Y))
 
     # Conditional Marginal, sepal width X2 given Y
-
     prob_sepal_width_given_Y = probability_matrix_given_Y.sum(axis = 1).to_numpy().reshape((-1,1))
 
     title = 'Conditional Marginal count, probability, sepal width'
