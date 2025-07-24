@@ -1,5 +1,5 @@
 
-
+# contour是线条，contourf是全彩色，这个是等高线的关键区别
 #==========================================================================================================
 ##########################################  3D Contours, 三维等高线 ######################################
 #==========================================================================================================
@@ -58,14 +58,9 @@ plt.show()
 # 3. 空间等高线，z = 8
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 # 绘制单色网格曲面
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5, linewidth = 0.25)
 # 绘制三维等高线
-ax.contour(xx, yy, ff,
-           zdir='z', offset=8,
-           levels = 20, cmap='RdYlBu_r')
+ax.contour(xx, yy, ff, zdir='z', offset=8, levels = 20, cmap='RdYlBu_r')
 
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
@@ -84,10 +79,7 @@ plt.show()
 # 4. 空间等高线，z = 0
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx,yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5, linewidth = 0.25)
 
 ax.contour(xx, yy, ff, zdir='z', offset=0, levels = 20, cmap='RdYlBu_r')
 
@@ -109,14 +101,8 @@ plt.show()
 
 # 5. 空间等高线，z = -8
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
+ax.plot_wireframe(xx, yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5, linewidth = 0.25)
 ax.contour(xx, yy, ff, zdir='z', offset=-8, levels = 20, cmap='RdYlBu_r')
-
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -134,11 +120,7 @@ plt.show()
 
 # 6. 空间填充等高线，z方向
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.8, 0.8, 0.8], rstride = 5, cstride = 5, linewidth = 0.25)
 # contour是线条，contourf是全彩色，这个是等高线的关键区别
 # ax.contourf(xx, yy, ff, levels = 20, cmap='RdYlBu_r')
 ax.contour(xx, yy, ff, levels = 20, cmap='RdYlBu_r')
@@ -159,14 +141,8 @@ plt.show()
 
 # 7. 空间填充等高线，z = 8
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
-
+ax.plot_wireframe(xx, yy, ff, color = [0.8, 0.8, 0.8], rstride = 5, cstride = 5, linewidth = 0.25)
 ax.contourf(xx, yy, ff, zdir='z', offset=8, levels = 20, cmap='RdYlBu_r')
-
 ax.set_proj_type('ortho')
 # 另外一种设定正交投影的方式
 
@@ -185,10 +161,7 @@ plt.show()
 
 # 8. 空间填充等高线，z = 0
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-ax.plot_wireframe(xx,yy, ff,
-                  color = [0.8, 0.8, 0.8],
-                  rstride=5, cstride=5,
-                  linewidth = 0.25)
+ax.plot_wireframe(xx, yy, ff, color = [0.8, 0.8, 0.8], rstride=5, cstride=5, linewidth = 0.25)
 ax.contourf(xx, yy, ff, zdir='z', offset=0, levels = 20, cmap='RdYlBu_r' )
 # ax.contour(xx, yy, ff, zdir='z', offset=0, levels = 20, cmap='RdYlBu_r')
 # ax.contour(xx, yy, ff, zdir='z', offset=0, levels = 20, colors = 'k')

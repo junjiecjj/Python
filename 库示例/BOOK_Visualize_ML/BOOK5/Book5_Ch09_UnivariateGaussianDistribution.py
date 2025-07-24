@@ -441,10 +441,10 @@ for feature in feature_names:
     fig, ax = plt.subplots()
 
     # plot empirical CDF
-    ax.step(x_array,ecdf_y)
+    ax.step(x_array, ecdf_y)
 
     # plot parametric (normal) CDF
-    ax.plot(x_array,N_cdf, 'r')
+    ax.plot(x_array, N_cdf, 'r')
 
     ax.axvline(x=mu, color = 'r', linestyle = '--')
     ax.axvline(x=mu + std, color = 'r', linestyle = '--')
@@ -464,6 +464,26 @@ for feature in feature_names:
 
 plt.close('all')
 
+
+#%% useage of scipy.stats.rv_histogram,
+
+import scipy.stats
+import numpy as np
+data = scipy.stats.norm.rvs(size=100000, loc=0, scale=1.5, random_state=123)
+hist = np.histogram(data, bins=100)
+hist_dist = scipy.stats.rv_histogram(hist, density=False)
+
+
+X = np.linspace(-5.0, 5.0, 100)
+fig, ax = plt.subplots()
+ax.set_title("PDF from Template")
+ax.hist(data, density=True, bins=100)
+ax.plot(X, hist_dist.pdf(X), label='PDF')
+ax.plot(X, hist_dist.cdf(X), label='CDF')
+ax.legend()
+plt.show()
+plt.close()
+
 #%% convereted CDF scatter data, copula pairwise
 import seaborn as sns
 # Load the iris data
@@ -480,12 +500,10 @@ for index in np.arange(0,4):
     # option B
     # ecdf = ECDF(sample)
     # ecdf_y = ecdf(sample)
-
     iris_CDF_df[feature] = np.array(ecdf_y)
 
 iris_CDF_df['species'] = iris_sns['species']
 print(iris_CDF_df.head())
-
 
 # fig, ax = plt.subplots()
 g = sns.jointplot(data=iris_CDF_df, x = 'sepal_length',  y = 'sepal_width', xlim = (0,1), ylim = (0,1))
@@ -493,24 +511,14 @@ g = sns.jointplot(data=iris_CDF_df, x = 'sepal_length',  y = 'sepal_width', xlim
 # with no class labels
 g = sns.pairplot(iris_CDF_df)
 g.map_upper(sns.scatterplot, color = 'b')
-g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues_d")
-g.map_diag(sns.distplot, kde=False, color = 'b')
-
-# g.axes[0,0].set_xlim((0,1))
-# g.axes[0,1].set_xlim((0,1))
-# g.axes[0,2].set_xlim((0,1))
-# g.axes[0,3].set_xlim((0,1))
-
-# g.axes[0,0].set_ylim((0,1))
-# g.axes[1,0].set_ylim((0,1))
-# g.axes[2,0].set_ylim((0,1))
-# g.axes[3,0].set_ylim((0,1))
+g.map_lower(sns.kdeplot, levels=8, fill=True, cmap="Blues")
+g.map_diag(sns.histplot, kde=False, color = 'b')
 
 
 #%% compare ICDF curves
 # 图 22. 逆经验累积分布函数和高斯 PPF
 cdf_array = np.linspace(0.001,0.999,100)
-
+x_array = np.linspace(0,8,100)
 for feature in feature_names:
     sample = X_df[feature]
     mu  = sample.mean()

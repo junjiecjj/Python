@@ -1,3 +1,12 @@
+
+"""
+
+与圆锥曲线相关的章节：
+Book03_08, Book03_09, Book04_20, Book05_10
+
+"""
+
+
 #%% Bk3_Ch8_01
 
 from matplotlib import pyplot as plt
@@ -82,7 +91,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 
-a = 1
+a = 2
 b = 1
 
 x = np.linspace(-4,4,num = 201)
@@ -92,7 +101,7 @@ xx,yy = np.meshgrid(x,y);
 # k_array = np.linspace(0, 2, num = 11)
 # k_array = np.linspace(0, 1, num = 21)
 # k_array = np.linspace(0, -2, num = 21)
-k_array = np.linspace(0, -1, num = 21)
+k_array = np.linspace(0,  2, num = 21)
 fig, ax = plt.subplots(figsize=(8, 8))
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(k_array)))
 for i in range(0,len(k_array)):
@@ -121,24 +130,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 
-x = np.linspace(-4,4,num = 201)
-y = np.linspace(-4,4,num = 201)
+x = np.linspace(-4, 4, num = 201)
+y = np.linspace(-4, 4, num = 201)
 m = 1
 n = 1.5
 
 xx,yy = np.meshgrid(x, y);
-rho_array = np.linspace(-0.95,0,num = 20)
+rho_array = np.linspace(-0.95, 0, num = 3)
 fig, ax = plt.subplots(figsize=(8, 8))
 # Create a Rectangle patch
 rect = patches.Rectangle((-m, -n), 2*m, 2*n, linewidth = 0.25, edgecolor='k', linestyle = '--', facecolor = 'none')
 # Add the patch to the Axes
 ax.add_patch(rect)
-colors = plt.cm.RdYlBu(np.linspace(0,1,len(rho_array)))
+colors = plt.cm.hsv(np.linspace(0,1,len(rho_array)))
 for i in range(0,len(rho_array)):
     rho = rho_array[i]
     ellipse = ((xx/m)**2 - 2*rho*(xx/m)*(yy/n) + (yy/n)**2)/(1 - rho**2);
     color_code = colors[i,:].tolist()
-    plt.contour(xx,yy,ellipse,levels = [1], colors = [color_code])
+    ax.contour(xx, yy, ellipse, levels = [1], colors = [color_code])
+    ax.plot(m, rho * n, marker = 'x', color = 'r', ms = 12)
+    ax.plot(rho * m, n, marker = 'x', color = 'b', ms = 12)
+    ax.plot(-m, -rho * n, marker = 'x', color = 'g', ms = 12)
+    ax.plot(-rho * m, -n, marker = 'x', color = 'c', ms = 12)
 
 plt.axvline(x = 0, color = 'k', linestyle = '-')
 plt.axhline(y = 0, color = 'k', linestyle = '-')
@@ -155,7 +168,6 @@ plt.show()
 plt.close()
 
 #%% Bk3_Ch9_04, 超椭圆：和范数有关
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -176,9 +188,9 @@ xx1, xx2 = np.meshgrid(x1,x2)
 fig, axes = plt.subplots(ncols=4, nrows=4,  figsize=(12, 12))
 for p, q, ax in zip(pp, qq, axes.flat):
     if np.isinf(p):
-        zz = np.maximum(np.abs(xx1/a),np.abs(xx2/b))
+        zz = np.maximum(np.abs(xx1/a), np.abs(xx2/b))
     else:
-        zz = ((np.abs((xx1/a))**p) + (np.abs((xx2/b))**q))**(1./q)
+        zz = ((np.abs(xx1/a)**p) + (np.abs(xx2/b)**q)) **(1./q)
     # plot contour of Lp
     ax.contourf(xx1, xx2, zz, 20, cmap='RdYlBu_r')
     # plot contour of Lp = 1
@@ -201,13 +213,9 @@ plt.show()
 plt.close()
 
 
-
-
-#%% Bk4_Ch20_01.py
-
+#%% Bk4_Ch20_01.py, 图 3. 通过单位圆获得几个不同的旋转椭圆
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 alphas = np.linspace(0, 2*np.pi, 100)
 # unit circle
@@ -254,8 +262,8 @@ for theta in thetas:
 
     ax.quiver(0, 0, c[0], c[1],color = 'k', angles='xy', scale_units='xy', scale=1)
 
-    ax.quiver(c[0],c[1], V[0,0]/np.sqrt(LAMBDA[0]), V[1,0]/np.sqrt(LAMBDA[0]), color = 'r', angles='xy', scale_units='xy', scale=1)
-    ax.quiver(c[0],c[1], V[0,1]/np.sqrt(LAMBDA[1]), V[1,1]/np.sqrt(LAMBDA[1]), color = 'r', angles='xy', scale_units='xy', scale=1)
+    ax.quiver(c[0], c[1], V[0,0]/np.sqrt(LAMBDA[0]), V[1,0]/np.sqrt(LAMBDA[0]), color = 'r', angles='xy', scale_units='xy', scale=1)
+    ax.quiver(c[0], c[1], V[0,1]/np.sqrt(LAMBDA[1]), V[1,1]/np.sqrt(LAMBDA[1]), color = 'r', angles='xy', scale_units='xy', scale=1)
     ax.quiver(c[0], c[1], -V[0,0]/np.sqrt(LAMBDA[0]), -V[1,0]/np.sqrt(LAMBDA[0]), color = 'r', angles='xy', scale_units='xy', scale=1)
     ax.quiver(c[0], c[1], -V[0,1]/np.sqrt(LAMBDA[1]), -V[1,1]/np.sqrt(LAMBDA[1]), color = 'r', angles='xy', scale_units='xy', scale=1)
 
@@ -269,8 +277,10 @@ for theta in thetas:
     plt.xlabel(r'$x_1$')
     plt.ylabel(r'$x_2$')
     plt.show()
+plt.close()
 
-#%% Bk4_Ch20_02.py
+
+#%% Bk4_Ch20_02.py, 图 5. 通过单位双曲线旋转得到的一系列双曲线
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -313,7 +323,7 @@ for theta in thetas:
     plt.ylabel(r'$x_2$')
     plt.show()
 
-#%% Bk4_Ch20_03.py
+#%% Bk4_Ch20_03.py, 图 7. 椭圆切线分布
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -322,11 +332,12 @@ b = 1
 
 x1 = np.linspace(-3,3,200)
 x2 = np.linspace(-3,3,200)
-xx1,xx2 = np.meshgrid(x1,x2)
-
-fig, ax = plt.subplots()
+xx1,xx2 = np.meshgrid(x1, x2)
+theta = np.arange(0, 2*np.pi, 0.1)
+fig, ax = plt.subplots(figsize=(10, 10))
 theta_array = np.linspace(0, 2*np.pi, 100)
-plt.plot(a*np.cos(b*np.sin(theta)), b*np.sin(b*np.sin(theta)), color = 'k')
+ax.plot(a*np.cos(theta), b*np.sin(theta),color = 'k', lw = 4)
+# plt.show()
 colors = plt.cm.RdYlBu(np.linspace(0,1,len(theta_array)))
 for i in range(len(theta_array)):
     theta = theta_array[i]
@@ -346,6 +357,114 @@ ax.spines['left'].set_visible(False)
 ax.axvline(x=0,color = 'k')
 ax.axhline(y=0,color = 'k')
 plt.show()
+
+
+#%%  图 11. 椭圆法线分布
+import numpy as np
+import matplotlib.pyplot as plt
+
+a = 1.5
+b = 1
+
+x1 = np.linspace(-3,3,200)
+x2 = np.linspace(-3,3,200)
+xx1,xx2 = np.meshgrid(x1, x2)
+theta = np.arange(0, 2*np.pi, 0.1)
+fig, ax = plt.subplots(figsize=(10, 10))
+theta_array = np.linspace(0, 2*np.pi, 100)
+ax.plot(a*np.cos(theta), b*np.sin(theta), color = 'k', lw = 4)
+# plt.show()
+colors = plt.cm.RdYlBu(np.linspace(0,1,len(theta_array)))
+for i in range(len(theta_array)):
+    theta = theta_array[i]
+    p1 = a*np.cos(theta)
+    p2 = b*np.sin(theta)
+    tangent = p2*xx1/b**2 - p1*xx2/a**2 - p1*p2/b**2 + p1*p2/a**2
+    colors_i = colors[int(i),:]
+    ax.contour(xx1, xx2, tangent, levels = [0], colors = [colors_i])
+
+plt.axis('scaled')
+ax.set_xlim(-3,3)
+ax.set_ylim(-3,3)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.axvline(x=0,color = 'k')
+ax.axhline(y=0,color = 'k')
+plt.show()
+
+#%% Bk4_Ch20_03.py, 图 8. 单位圆切线分布
+import numpy as np
+import matplotlib.pyplot as plt
+
+r = 1.5
+
+x1 = np.linspace(-3,3,200)
+x2 = np.linspace(-3,3,200)
+xx1,xx2 = np.meshgrid(x1,x2)
+theta = np.arange(0, 2*np.pi, 0.1)
+fig, ax = plt.subplots(figsize=(10, 10))
+theta_array = np.linspace(0, 2*np.pi, 100)
+ax.plot(r*np.cos(theta), r*np.sin(theta), color = 'k', lw = 5)
+colors = plt.cm.RdYlBu(np.linspace(0,1,len(theta_array)))
+for i in range(len(theta_array)):
+    theta = theta_array[i]
+    p1 = r*np.cos(theta)
+    p2 = r*np.sin(theta)
+    tangent = p1*xx1 + p2*xx2  - r**2
+    colors_i = colors[int(i),:]
+    ax.contour(xx1, xx2, tangent, levels = [0], colors = [colors_i])
+
+plt.axis('scaled')
+ax.set_xlim(-3,3)
+ax.set_ylim(-3,3)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.axvline(x=0,color = 'k')
+ax.axhline(y=0,color = 'k')
+plt.show()
+
+
+
+#%% Bk4_Ch20_03.py, 图 10. 双曲线左右两侧切线分布
+import numpy as np
+import matplotlib.pyplot as plt
+
+a = 1.5
+b = 1
+
+x1 = np.linspace(-3, 3, 200)
+x2 = np.linspace(-3, 3, 200)
+xx1,xx2 = np.meshgrid(x1, x2)
+theta = np.arange(0, 2*np.pi, 0.1)
+fig, ax = plt.subplots(figsize=(10, 10))
+theta_array = np.linspace(0, 2*np.pi, 100)
+ax.plot(a/np.cos(theta), b*np.tan(theta), color = 'k', lw = 5)
+# plt.show()
+colors = plt.cm.RdYlBu(np.linspace(0,1,len(theta_array)))
+for i in range(len(theta_array)):
+    theta = theta_array[i]
+    p1 = a/np.cos(theta)
+    p2 = b*np.tan(theta)
+    tangent = p1*xx1/a**2 - p2*xx2/b**2 - p1**2/a**2 + p2**2/b**2
+    colors_i = colors[int(i),:]
+    ax.contour(xx1, xx2, tangent, levels = [0], colors = [colors_i])
+
+plt.axis('scaled')
+ax.set_xlim(-3,3)
+ax.set_ylim(-3,3)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.axvline(x=0,color = 'k')
+ax.axhline(y=0,color = 'k')
+plt.show()
+
+
 
 
 

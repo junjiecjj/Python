@@ -25,8 +25,8 @@ width = 3
 mu    = [mu_X, mu_Y]
 Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 
-X = np.linspace(-width,width,101)
-Y = np.linspace(-width,width,101)
+X = np.linspace(-width, width,101)
+Y = np.linspace(-width, width,101)
 
 XX, YY = np.meshgrid(X, Y)
 
@@ -47,7 +47,7 @@ k = np.tan(theta)
 axis_minor = mu_Y + k*(X - mu_X)
 axis_major = mu_Y - 1/k*(X - mu_X)
 
-fig, ax = plt.subplots(figsize=(7, 7))
+fig, ax = plt.subplots(figsize=(7, 7), constrained_layout=True)
 
 # Plot bivariate normal
 plt.contour(XX, YY, f_X_Y_joint, 25, cmap=cm.RdYlBu_r)
@@ -61,13 +61,15 @@ plt.plot(X,E_Y_given_X, color = 'k', linewidth = 1.25)
 plt.plot(X,axis_minor, color = 'r', linewidth = 1.25)
 plt.plot(X,axis_major, color = 'r', linewidth = 1.25)
 
-rect = Rectangle(xy = [mu_X - sigma_X, mu_Y - sigma_Y] , width = 2*sigma_X, height = 2*sigma_Y, edgecolor = 'k',facecolor="none")
+rect = Rectangle(xy = [mu_X - 2 * sigma_X, mu_Y - 2 * sigma_Y] , width = 2*sigma_X, height = 2*sigma_Y, edgecolor = 'k',facecolor="none")
 
 ax.add_patch(rect)
 ax.set_xlabel('$X$')
 ax.set_ylabel('$Y$')
-ax.set_xlim(-width,width)
-ax.set_ylim(-width,width)
+ax.set_xlim(-width*2, width*2)
+ax.set_ylim(-width*2, width*2)
+plt.show()
+plt.close()
 
 
 
@@ -87,7 +89,7 @@ sigma_Y = 2
 
 RHOs = np.linspace(-0.8,0.8,num = 9)
 
-fig = plt.figure(figsize=(30,5))
+fig = plt.figure(figsize=(30, 5), constrained_layout=True)
 
 for i in range(0,len(RHOs)):
     rho = RHOs[i]
@@ -143,6 +145,8 @@ for i in range(0,len(RHOs)):
     ax.spines['bottom'].set_color('none')
     plt.gca().set_aspect('equal', adjustable='box')
     ax.set_title('\u03C1 = %0.1f' %rho)
+plt.show()
+plt.close()
 
 
 

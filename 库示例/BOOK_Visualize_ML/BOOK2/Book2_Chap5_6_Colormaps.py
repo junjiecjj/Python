@@ -57,8 +57,7 @@ def plot_surf(xx1,xx2,ff,caption):
     norm_plt = plt.Normalize(ff.min(), ff.max())
     colors = cm.coolwarm(norm_plt(ff)) # (30, 30, 4)
 
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
     surf = ax.plot_surface(xx1, xx2, ff, facecolors=colors, shade=False)
     surf.set_facecolor((0,0,0,0))
     # z_lim = [ff.min(),ff.max()]
@@ -333,9 +332,7 @@ y_array = np.linspace(-3,3,num)
 xx,yy = np.meshgrid(x_array,y_array)
 
 # 用 sympy 库定义 MATLAB二元函数 peaks()
-f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2)\
-    - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2)\
-    - 1/3*exp(-(x+1)**2 - y**2)
+f_xy =  3*(1-x)**2*exp(-(x**2) - (y+1)**2) - 10*(x/5 - x**3 - y**5)*exp(-x**2-y**2) - 1/3*exp(-(x+1)**2 - y**2)
 
 f_xy_fcn = lambdify([x,y],f_xy)
 # 将符号函数表达式转换为Python函数
@@ -459,9 +456,9 @@ ax.contour(xx, yy, ff, zdir='z', offset= ff.min(), levels = 20, linewidths = 2, 
 fig.colorbar(colorbar, ax=ax, shrink=0.5, aspect=20)
 ax.set_proj_type('ortho')
 
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
 ax.set_xlabel('$\it{x_1}$')
 ax.set_ylabel('$\it{x_2}$')

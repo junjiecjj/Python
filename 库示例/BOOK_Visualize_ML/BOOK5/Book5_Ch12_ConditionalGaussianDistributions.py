@@ -191,8 +191,7 @@ plt.show()
 
 ## surface projected along X to Y-Z plane
 # 图 8. fY|X(y|x) 曲面在 yz 平面上投影
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (10, 10), )
 ax.plot_wireframe(XX, YY, f_Y_given_X, rstride=0, cstride=1, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour(XX, YY, f_Y_given_X, levels = 20, zdir='x', offset=YY.max(), cmap=cm.RdYlBu_r)
 ax.set_xlabel('$x$')
@@ -226,8 +225,7 @@ ax.set_ylim(0, f_Y_given_X.max())
 
 #%% surface projected along Z to X-Y plane
 # 图 9. fY|X(y|x) 曲面等高线
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, constrained_layout=True)
 
 ax.plot_wireframe(XX, YY, f_Y_given_X, color = [0.3,0.3,0.3], linewidth = 0.25)
 

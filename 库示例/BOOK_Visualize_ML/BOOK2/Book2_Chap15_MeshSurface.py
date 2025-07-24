@@ -1,6 +1,11 @@
 
 
 """
+
+contour是线条，contourf是全彩色，这个是等高线的关键区别
+
+
+
 关于plot_surface使用，
 
 (一)，ax.plot_surface(xx, yy, f_xy_zz, cmap='turbo', linewidth=1, shade=False) # 删除阴影
@@ -20,7 +25,7 @@
     此时会利用f_xx_yy或者V的函数值对曲面的颜色进行控制，
     如果使用f_xy_zz，则Z轴的高度就是对应函数值，等高线将会是平行的，
     如果使用V值，则是“将第四维数据 V(x,y) 投影到三维曲面 f(x,y)”，也就是曲线的形状是(x,y,f_xy_zz)，但是颜色不是f_xy_zz控制，而是第四维V控制，这时候如果想画等高线，得使用
-    for level_idx, ctr_idx in zip(all_contours.levels, all_contours.allsegs):的方式，见Book2_chap29,Book2_chap32。
+    for level_idx, ctr_idx in zip(all_contours.levels, all_contours.allsegs):的方式，见Book2_chap29, Book2_chap32。
 """
 
 

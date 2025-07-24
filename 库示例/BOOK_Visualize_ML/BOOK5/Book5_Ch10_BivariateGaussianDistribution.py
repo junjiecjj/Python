@@ -30,42 +30,42 @@ XXYY = np.dstack((XX, YY)) # (321, 321, 2)
 bi_norm = multivariate_normal(mu, Sigma)
 
 #%% visualize joint PDF surface
-
 f_X_Y_joint = bi_norm.pdf(XXYY) # (321, 321)
 # f_X_Y_joint = bi_norm.cdf(XXYY) # (321, 321)
 
 # 3D visualization
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, constrained_layout=True)
+ax.set_proj_type('ortho')
 ax.plot_wireframe(XX,YY, f_X_Y_joint, rstride=10, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
-
-ax.set_xlabel('$x$')
-ax.set_ylabel('$y$')
-ax.set_zlabel('$f_{X,Y}(x,y)$')
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+ax.set_zlabel(r'$f_{X,Y}(x,y)$')
 # ax.set_proj_type('ortho')
 # ax.xaxis._axinfo["grid"].update({"linewidth":1.25, "linestyle" : ":"})
 # ax.yaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 # ax.zaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 
+# 3D坐标区的背景设置为白色
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+ax.grid(False)
 # ax.set_xlim(-width, width)
 # ax.set_ylim(-width, width)
 # ax.set_zlim(f_X_Y_joint.min(), f_X_Y_joint.max())
 ax.view_init(azim=-120, elev=30)
-plt.tight_layout()
+# plt.tight_layout()
 plt.show()
-
+plt.close()
 
 #%% surface projected along Y to X-Z plane
 # 图 2. PDF 函数曲面 fX,Y(x,y)，沿 x 方向的剖面线，σX = 1, σY = 2, ρX,Y = 0.75
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, constrained_layout=True)
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=10, cstride=0, color = [0.3,0.3,0.3], linewidth = 0.25)
-
 ax.contour(XX, YY, f_X_Y_joint, levels = 33, zdir='y', offset=XX.max(), cmap=cm.RdYlBu_r)
-
-ax.set_xlabel('$x$')
-ax.set_ylabel('$y$')
-ax.set_zlabel('$f_{X,Y}(x,y)$')
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+ax.set_zlabel(r'$f_{X,Y}(x,y)$')
 ax.set_proj_type('ortho')
 ax.xaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 ax.yaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
@@ -77,22 +77,21 @@ ax.set_zlim(f_X_Y_joint.min(),f_X_Y_joint.max())
 ax.view_init(azim=-120, elev=30)
 plt.tight_layout()
 plt.show()
+plt.close()
 
 
 fig, ax = plt.subplots()
-
 colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(X)))
-
 for i in np.arange(1,len(X),5):
     plt.plot(X,f_X_Y_joint[int(i)-1,:], color = colors[int(i)-1])
-plt.xlabel('x')
-plt.ylabel('$f_{X,Y}(x,y)$')
+plt.xlabel(r'x')
+plt.ylabel(r'$f_{X,Y}(x,y)$')
 ax.set_xlim(-width, width)
 ax.set_ylim(0, f_X_Y_joint.max())
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
-plt.close('all')
+plt.close()
 
 #%% surface projected along Y to Y-Z plane
 # 图 3. PDF 函数曲面 fX,Y(x,y)，沿 y 方向的剖面线，σX = 1, σY = 2, ρX,Y = 0.75
@@ -100,10 +99,9 @@ fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=0, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour(XX, YY, f_X_Y_joint, levels = 33, zdir='x', offset=YY.max(), cmap=cm.RdYlBu_r)
-
-ax.set_xlabel('$x$')
-ax.set_ylabel('$y$')
-ax.set_zlabel('$f_{X,Y}(x,y)$')
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+ax.set_zlabel(r'$f_{X,Y}(x,y)$')
 ax.set_proj_type('ortho')
 ax.xaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 ax.yaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
@@ -115,31 +113,33 @@ ax.set_zlim(f_X_Y_joint.min(),f_X_Y_joint.max())
 ax.view_init(azim=-120, elev=30)
 plt.tight_layout()
 plt.show()
+plt.close()
 
 fig, ax = plt.subplots()
 colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(Y)))
 for i in np.arange(1,len(X),5):
     plt.plot(X,f_X_Y_joint[:,int(i)-1], color = colors[int(i)-1])
 
-plt.xlabel('y')
-plt.ylabel('$f_{X,Y}(x,y)$')
+plt.xlabel(r'y')
+plt.ylabel(r'$f_{X,Y}(x,y)$')
 ax.set_xlim(-width, width)
 ax.set_ylim(0, f_X_Y_joint.max())
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
+plt.close()
 
 
 #%% surface projected along Z to X-Y plane
 # 图 4. PDF 函数曲面 fX,Y(x,y)，空间等高线和平面填充等高线，σX = 1, σY = 2, ρX,Y = 0.75
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=10, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
-ax.contour3D(XX,YY, f_X_Y_joint,15,  cmap = 'RdYlBu_r')
-# ax.contourf(XX, YY, f_X_Y_joint, levels = 12, zdir='z',  offset=0, cmap=cm.RdYlBu_r)
+ax.contour3D(XX,YY, f_X_Y_joint, 12,  cmap = 'RdYlBu_r')
+ax.contour(XX, YY, f_X_Y_joint, levels = 12, zdir='z',  offset=0, cmap=cm.RdYlBu_r)
 
-ax.set_xlabel('$x$')
-ax.set_ylabel('$y$')
-ax.set_zlabel('$f_{X,Y}(x,y)$')
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+ax.set_zlabel(r'$f_{X,Y}(x,y)$')
 ax.view_init(azim=-120, elev=30)
 ax.set_proj_type('ortho')
 ax.xaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
@@ -154,16 +154,16 @@ plt.show()
 
 # Plot filled contours
 fig, ax = plt.subplots(figsize=(7, 7))
-
 # Plot bivariate normal
+ax.contour(XX, YY, f_X_Y_joint, 20, cmap=cm.RdYlBu_r)
 plt.contourf(XX, YY, f_X_Y_joint, 20, cmap=cm.RdYlBu_r)
-plt.axvline(x = mu_X, color = 'r', linestyle = '--')
-plt.axhline(y = mu_Y, color = 'r', linestyle = '--')
+ax.axvline(x = mu_X, color = 'r', linestyle = '--')
+ax.axhline(y = mu_Y, color = 'r', linestyle = '--')
 
-ax.set_xlabel('$x$')
-ax.set_ylabel('$y$')
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
 plt.show()
-
+plt.close()
 
 
 #%% Bk5_Ch10_02
@@ -182,13 +182,11 @@ sigma_Y = 1 # 1, 2
 mu_X = 0
 mu_Y = 0
 mu   = [mu_X, mu_Y]
-
 Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 
 width = 4
-X = np.arange(-width,width,0.05)
-Y = np.arange(-width,width,0.05)
-
+X = np.arange(-width, width, 0.05)
+Y = np.arange(-width, width, 0.05)
 XX, YY = np.meshgrid(X, Y) # (160, 160)
 
 XXYY = np.dstack((XX, YY))  # (160, 160, 2)
@@ -196,7 +194,7 @@ bi_norm = multivariate_normal(mu, Sigma)
 
 # visualize PDF
 f_X_Y_joint = bi_norm.pdf(XXYY) # (160, 160)
-
+# f_X_Y_joint = bi_norm.cdf(XXYY) # (160, 160)
 # Plot the conditional distributions
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 2, width_ratios=[3, 1], height_ratios=[3, 1])
@@ -212,8 +210,8 @@ ax1.contourf(XX, YY, f_X_Y_joint, 15, cmap=cm.RdYlBu_r)
 ax1.axvline(x = mu_X, color = 'k', linestyle = '--')
 ax1.axhline(y = mu_Y, color = 'k', linestyle = '--')
 
-ax1.set_xlabel('$X$')
-ax1.set_ylabel('$Y$')
+ax1.set_xlabel(r'$X$')
+ax1.set_ylabel(r'$Y$')
 ax1.yaxis.set_label_position('right')
 ax1.set_xticks([])
 ax1.set_yticks([])
@@ -221,10 +219,8 @@ ax1.set_yticks([])
 # Plot Y marginal
 ax2 = plt.subplot(gs[1])
 f_Y = norm.pdf(Y, loc=mu_Y, scale=sigma_Y)
-
 ax2.plot(f_Y, Y, 'b', label='$f_{Y}(y)$')
 ax2.axhline(y = mu_Y, color = 'r', linestyle = '--')
-
 ax2.fill_between(f_Y,Y, edgecolor = 'none', facecolor = '#DBEEF3')
 ax2.legend(loc=0)
 ax2.set_xlabel('PDF')
@@ -236,23 +232,22 @@ ax2.yaxis.tick_right()
 # Plot X marginal
 ax3 = plt.subplot(gs[2])
 f_X = norm.pdf(X, loc=mu_X, scale=sigma_X)
-
 ax3.plot(X, f_X, 'b', label='$f_{X}(x)$')
 ax3.axvline(x = mu_X, color = 'r', linestyle = '--')
-
 ax3.fill_between(X,f_X, edgecolor = 'none', facecolor = '#DBEEF3')
 ax3.legend(loc=0)
 ax3.set_ylabel('PDF')
 ax3.yaxis.set_label_position('left')
 ax3.set_xlim(-width, width)
 ax3.set_ylim(0, 0.5)
-
 ax4 = plt.subplot(gs[3])
 ax4.set_visible(False)
 
 plt.show()
+plt.close()
 
-#%% Bk5_Ch10_03
+
+#%% Bk5_Ch10_03, 图 18. 椭圆和矩形切点随 σX、σY、ρX,Y变化关系
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
@@ -305,7 +300,7 @@ ax.spines['right'].set_color('none')
 ax.spines['top'].set_position('zero')
 ax.spines['bottom'].set_color('none')
 plt.show()
-
+plt.close()
 
 #%% Bk5_Ch10_04
 # 图 21. 相关性系数的几种可视化方案
@@ -359,22 +354,22 @@ pdf_fine = bi_norm.pdf(XXYY)
 ### 3D visualization
 fig, ax = plt.subplots(figsize=(8, 8))
 ax = plt.axes(projection='3d')
-ax.plot_wireframe(XX,YY, pdf_fine, cstride = 10, rstride = 10, color = [0.7,0.7,0.7], linewidth = 0.25)
+ax.plot_wireframe(XX,YY, pdf_fine, cstride = 2, rstride = 2, color = [0.7,0.7,0.7], linewidth = 0.25)
 ax.contour3D(XX, YY, pdf_fine, 15, cmap = 'RdYlBu_r')
 ax.set_proj_type('ortho')
 ax.view_init(azim=-120, elev=30)
-ax.xaxis.set_ticks([])
-ax.yaxis.set_ticks([])
-ax.zaxis.set_ticks([])
+# ax.xaxis.set_ticks([])
+# ax.yaxis.set_ticks([])
+# ax.zaxis.set_ticks([])
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('PDF')
-ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-ax.set_xlim3d([-3,3])
-ax.set_ylim3d([-3,3])
-ax.set_zlim3d([0,0.3])
+# ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+# ax.set_xlim3d([-3,3])
+# ax.set_ylim3d([-3,3])
+# ax.set_zlim3d([0,0.3])
 plt.show()
 
 ### 2D visualization
