@@ -20,17 +20,16 @@ mu    = [mu_X, mu_Y]
 Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 
 width = 4
-X = np.linspace(-width,width,81)
-Y = np.linspace(-width,width,81)
-XX, YY = np.meshgrid(X, Y) # (81, 81)
-XXYY = np.dstack((XX, YY)) # (81, 81, 2)
+X = np.linspace(-width, width, 81)
+Y = np.linspace(-width, width, 81)
+XX, YY = np.meshgrid(X, Y)   # (81, 81)
+XXYY = np.dstack((XX, YY))   # (81, 81, 2)
 bi_norm = multivariate_normal(mu, Sigma)
 
 #%% visualize PDF,
 # 图 2. y = −2 时，联合 PDF、边缘 PDF、条件 PDF 的关系
 y_cond_i = 60 # 20, 30, 40, 50, 60, index
 f_X_Y_joint = bi_norm.pdf(XXYY) # (81, 81)
-
 
 ## 3D
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
@@ -52,7 +51,7 @@ ax.view_init(azim=-120, elev=30)
 plt.show()
 
 
-### Plot the tional distributions
+### Plot the conditional distributions
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 2, width_ratios=[3, 1], height_ratios=[3, 1])
 

@@ -52,7 +52,6 @@ ax.grid(False)
 # ax.set_ylim(-width, width)
 # ax.set_zlim(f_X_Y_joint.min(), f_X_Y_joint.max())
 ax.view_init(azim=-120, elev=30)
-# plt.tight_layout()
 plt.show()
 plt.close()
 
@@ -73,7 +72,6 @@ ax.set_xlim(-width, width)
 ax.set_ylim(-width, width)
 ax.set_zlim(f_X_Y_joint.min(),f_X_Y_joint.max())
 ax.view_init(azim=-120, elev=30)
-plt.tight_layout()
 plt.show()
 plt.close()
 
@@ -109,7 +107,6 @@ ax.set_xlim(-width, width)
 ax.set_ylim(-width, width)
 ax.set_zlim(f_X_Y_joint.min(),f_X_Y_joint.max())
 ax.view_init(azim=-120, elev=30)
-plt.tight_layout()
 plt.show()
 plt.close()
 
@@ -146,7 +143,6 @@ ax.zaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 ax.set_xlim(-width, width)
 ax.set_ylim(-width, width)
 ax.set_zlim(f_X_Y_joint.min(),f_X_Y_joint.max())
-plt.tight_layout()
 plt.show()
 plt.close()
 
@@ -192,12 +188,25 @@ rect = patches.Rectangle((mu_X - sigma_X, mu_Y - sigma_Y), 2*sigma_X, 2*sigma_Y,
 # Add the patch to the Axes
 ax.add_patch(rect)
 
-ax.plot(mu_X + rho * sigma_X, mu_Y + sigma_Y, marker = 'x', color = 'r', ms = 12)
-ax.plot(mu_Y + sigma_X, mu_Y + rho * sigma_Y, marker = 'x', color = 'b', ms = 12)
-ax.plot(mu_X - rho * sigma_X, mu_Y - sigma_Y, marker = 'x', color = 'g', ms = 12)
-ax.plot(mu_Y - sigma_X, mu_Y - rho * sigma_Y, marker = 'x', color = 'c', ms = 12)
+## 椭圆的四个切点
+A = [mu_X + rho * sigma_X, mu_Y + sigma_Y]
+B = [mu_Y + sigma_X, mu_Y + rho * sigma_Y]
+C = [mu_X - rho * sigma_X, mu_Y - sigma_Y]
+D = [mu_Y - sigma_X, mu_Y - rho * sigma_Y]
+ax.plot(A[0], A[1], marker = 'x', color = 'r', ms = 12)
+ax.plot(B[0], B[1], marker = 'x', color = 'b', ms = 12)
+ax.plot(C[0], C[1], marker = 'x', color = 'r', ms = 12)
+ax.plot(D[0], D[1], marker = 'x', color = 'b', ms = 12)
+ax.plot([A[0], C[0]], [A[1], C[1]],  color = 'r',  )
+ax.plot([B[0], D[0]], [B[1], D[1]],  color = 'b',  )
 
-
+# LAMBDA, V = np.linalg.eig(Sigma)
+## 椭圆的四个顶点
+LAMBDA, V = np.linalg.eig(Sigma)
+ax.plot(mu_X + V[0,0]*np.sqrt(LAMBDA[0]), mu_Y + V[1,0]*np.sqrt(LAMBDA[0]), marker = 'd', color = 'b', ms = 12)
+ax.plot(mu_X - V[0,0]*np.sqrt(LAMBDA[0]), mu_Y - V[1,0]*np.sqrt(LAMBDA[0]), marker = 'd', color = 'b', ms = 12)
+ax.plot(mu_X + V[0,1]*np.sqrt(LAMBDA[1]), mu_Y + V[1,1]*np.sqrt(LAMBDA[1]), marker = 'd', color = 'b', ms = 12)
+ax.plot(mu_X - V[0,1]*np.sqrt(LAMBDA[1]), mu_Y - V[1,1]*np.sqrt(LAMBDA[1]), marker = 'd', color = 'b', ms = 12)
 
 ax.set_xlim(-width , width )
 ax.set_ylim(-width , width )
@@ -301,7 +310,7 @@ sigma_X = 1
 sigma_Y = 2
 
 xx, yy = np.meshgrid(x, y);
-rho_array = np.linspace(-0.95, 0.95, num = 7)
+rho_array = np.linspace(-0.95, 0.95, num = 5)
 fig, ax = plt.subplots(figsize=(8, 8))
 # Create a Rectangle patch
 rect = patches.Rectangle((-sigma_X, -sigma_Y), 2*sigma_X, 2*sigma_Y, linewidth = 0.25, edgecolor='k', linestyle = '--', facecolor = 'none')
@@ -313,10 +322,20 @@ for i in range(0,len(rho_array)):
     ellipse = ((xx/sigma_X)**2 - 2*rho*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - rho**2);
     color_code = colors[i,:].tolist()
     ax.contour(xx, yy, ellipse, levels = [1], colors = [color_code])
+    ## 椭圆的四个切点
     ax.plot(sigma_X, rho * sigma_Y, marker = 'x', color = color_code, ms = 12)
     ax.plot(rho * sigma_X, sigma_Y, marker = 'x', color = color_code, ms = 12)
     ax.plot(-sigma_X, -rho * sigma_Y, marker = 'x', color = color_code, ms = 12)
     ax.plot(-rho * sigma_X, -sigma_Y, marker = 'x', color = color_code, ms = 12)
+
+    ## 椭圆的四个顶点
+    Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
+    LAMBDA, V = np.linalg.eig(Sigma)
+    ax.plot(V[0,0]*np.sqrt(LAMBDA[0]), V[1,0]*np.sqrt(LAMBDA[0]), marker = 'd', color = color_code, ms = 12)
+    ax.plot(-V[0,0]*np.sqrt(LAMBDA[0]), -V[1,0]*np.sqrt(LAMBDA[0]), marker = 'd', color = color_code, ms = 12)
+    ax.plot(V[0,1]*np.sqrt(LAMBDA[1]), V[1,1]*np.sqrt(LAMBDA[1]), marker = 'd', color = color_code, ms = 12)
+    ax.plot(-V[0,1]*np.sqrt(LAMBDA[1]), -V[1,1]*np.sqrt(LAMBDA[1]), marker = 'd', color = color_code, ms = 12)
+
 
 plt.axvline(x = 0, color = 'k', linestyle = '-')
 plt.axhline(y = 0, color = 'k', linestyle = '-')

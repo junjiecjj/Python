@@ -50,7 +50,6 @@ Eq_sym = Eq(5*x1**2/8 +3*x1*x2/4 + 5*x2**2/8, 1)
 plot_curve(Eq_sym)
 
 
-
 #%% Bk3_Ch9_01
 
 import matplotlib.pyplot as plt
@@ -62,9 +61,9 @@ y = np.linspace(-4, 4, num = 201)
 m = 1
 n = 1.5
 xx, yy = np.meshgrid(x,y);
-e_array = np.linspace(0, 3,num = 11)
+e_array = np.linspace(0, 3, num = 11)
 fig, ax = plt.subplots(figsize=(8, 8))
-colors = plt.cm.RdYlBu(np.linspace(0,1,len(e_array)))
+colors = plt.cm.RdYlBu(np.linspace(0, 1, len(e_array)))
 for i in range(0,len(e_array)):
     e = e_array[i]
     ellipse = yy**2 - (e**2 - 1)*xx**2 - 2*xx;
@@ -108,7 +107,7 @@ for i in range(0,len(k_array)):
     k = k_array[i]
     ellipse = (xx/a)**2 + (yy/b)**2 - 2*k*(xx/a)*(yy/b);
     color_code = colors[i,:].tolist()
-    plt.contour(xx,yy,ellipse,levels = [1], colors = [color_code])
+    plt.contour(xx, yy, ellipse,levels = [1], colors = [color_code])
 
 plt.axvline(x = 0, color = 'k', linestyle = '-')
 plt.axhline(y = 0, color = 'k', linestyle = '-')
@@ -132,11 +131,11 @@ import matplotlib.patches as patches
 
 x = np.linspace(-4, 4, num = 201)
 y = np.linspace(-4, 4, num = 201)
-m = 1
-n = 1.5
+sigma_X = 1
+sigma_Y = 1.5
 
 xx, yy = np.meshgrid(x, y);
-rho_array = np.linspace(-0.95, 0, num = 3)
+rho_array = np.linspace(-0.95, 0.95, num = 4)
 fig, ax = plt.subplots(figsize=(8, 8))
 # Create a Rectangle patch
 rect = patches.Rectangle((-m, -n), 2*m, 2*n, linewidth = 0.25, edgecolor='k', linestyle = '--', facecolor = 'none')
@@ -145,13 +144,35 @@ ax.add_patch(rect)
 colors = plt.cm.hsv(np.linspace(0,1,len(rho_array)))
 for i in range(0,len(rho_array)):
     rho = rho_array[i]
-    ellipse = ((xx/m)**2 - 2*rho*(xx/m)*(yy/n) + (yy/n)**2)/(1 - rho**2);
+    Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
+    ellipse = ((xx/sigma_X)**2 - 2*rho*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - rho**2);
     color_code = colors[i,:].tolist()
     ax.contour(xx, yy, ellipse, levels = [1], colors = [color_code])
-    ax.plot(m, rho * n, marker = 'x', color = 'r', ms = 12)
-    ax.plot(rho * m, n, marker = 'x', color = 'b', ms = 12)
-    ax.plot(-m, -rho * n, marker = 'x', color = 'g', ms = 12)
-    ax.plot(-rho * m, -n, marker = 'x', color = 'c', ms = 12)
+    ax.plot(sigma_X, rho * sigma_Y, marker = 'x', color = 'r', ms = 12)
+    ax.plot(rho * sigma_X, sigma_Y, marker = 'x', color = 'b', ms = 12)
+    ax.plot(-sigma_X, -rho * sigma_Y, marker = 'x', color = 'g', ms = 12)
+    ax.plot(-rho * sigma_X, -sigma_Y, marker = 'x', color = 'c', ms = 12)
+
+    ## 椭圆的四个顶点
+    LAMBDA, V = np.linalg.eig(Sigma)
+    ax.plot(V[0,0]*np.sqrt(LAMBDA[0]), V[1,0]*np.sqrt(LAMBDA[0]), marker = 'o', mfc = 'none', color = color_code, ms = 12)
+    ax.plot(-V[0,0]*np.sqrt(LAMBDA[0]), -V[1,0]*np.sqrt(LAMBDA[0]), marker = 'o',mfc = 'none', color = color_code, ms = 12)
+    ax.plot(V[0,1]*np.sqrt(LAMBDA[1]), V[1,1]*np.sqrt(LAMBDA[1]), marker = 'o', mfc = 'none', color = color_code, ms = 12)
+    ax.plot(-V[0,1]*np.sqrt(LAMBDA[1]), -V[1,1]*np.sqrt(LAMBDA[1]), marker = 'o', mfc = 'none', color = color_code, ms = 12)
+
+    ## 椭圆的四个顶点, Book5_Chap11_page19, eq(37)
+    lamba1 = (sigma_X**2 + sigma_Y**2)/2 + np.sqrt((rho*sigma_X*sigma_Y)**2 + ((sigma_X**2-sigma_Y**2)/2)**2)
+    lamba2 = (sigma_X**2 + sigma_Y**2)/2 - np.sqrt((rho*sigma_X*sigma_Y)**2 + ((sigma_X**2-sigma_Y**2)/2)**2)
+    v1 = np.array([(sigma_X**2 - sigma_Y**2)/2 + np.sqrt((rho*sigma_X*sigma_Y)**2 + ((sigma_X**2-sigma_Y**2)/2)**2), rho * sigma_X * sigma_Y])
+    v1 = v1/np.linalg.norm(v1)
+    v2 = np.array([(sigma_X**2 - sigma_Y**2)/2 - np.sqrt((rho*sigma_X*sigma_Y)**2 + ((sigma_X**2-sigma_Y**2)/2)**2), rho * sigma_X * sigma_Y])
+    v2 = v2/np.linalg.norm(v2)
+    LAMBDA = np.array([lamba1, lamba2])
+    V = np.vstack([v1,v2]).T
+    ax.plot(V[0,0]*np.sqrt(LAMBDA[0]), V[1,0]*np.sqrt(LAMBDA[0]), marker = '*', color = color_code, ms = 12)
+    ax.plot(-V[0,0]*np.sqrt(LAMBDA[0]), -V[1,0]*np.sqrt(LAMBDA[0]), marker = '*', color = color_code, ms = 12)
+    ax.plot(V[0,1]*np.sqrt(LAMBDA[1]), V[1,1]*np.sqrt(LAMBDA[1]), marker = '*', color = color_code, ms = 12)
+    ax.plot(-V[0,1]*np.sqrt(LAMBDA[1]), -V[1,1]*np.sqrt(LAMBDA[1]), marker = '*', color = color_code, ms = 12)
 
 plt.axvline(x = 0, color = 'k', linestyle = '-')
 plt.axhline(y = 0, color = 'k', linestyle = '-')
