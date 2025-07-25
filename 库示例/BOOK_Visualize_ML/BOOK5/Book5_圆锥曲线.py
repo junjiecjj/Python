@@ -135,7 +135,7 @@ y = np.linspace(-4, 4, num = 201)
 m = 1
 n = 1.5
 
-xx,yy = np.meshgrid(x, y);
+xx, yy = np.meshgrid(x, y);
 rho_array = np.linspace(-0.95, 0, num = 3)
 fig, ax = plt.subplots(figsize=(8, 8))
 # Create a Rectangle patch
@@ -155,8 +155,8 @@ for i in range(0,len(rho_array)):
 
 plt.axvline(x = 0, color = 'k', linestyle = '-')
 plt.axhline(y = 0, color = 'k', linestyle = '-')
-ax.set_xticks([])
-ax.set_yticks([])
+# ax.set_xticks([])
+# ax.set_yticks([])
 ax.set_xlim([-2,2])
 ax.set_ylim([-2,2])
 
@@ -253,7 +253,7 @@ for theta in thetas:
     fig, ax = plt.subplots(1)
     ax.plot(z1, z2, 'b') # plot the unit circle
     ax.plot(x1, x2, 'r') # plot the transformed shape
-    ax.plot(c[0],c[1],'xk') # plot the center
+    ax.plot(c[0], c[1], 'xk') # plot the center
 
     ax.quiver(0, 0, 1, 0, color = 'b', angles='xy', scale_units='xy', scale=1)
     ax.quiver(0, 0, 0, 1, color = 'b', angles='xy', scale_units='xy', scale=1)
@@ -277,7 +277,7 @@ for theta in thetas:
     plt.xlabel(r'$x_1$')
     plt.ylabel(r'$x_2$')
     plt.show()
-plt.close()
+    plt.close()
 
 
 #%% Bk4_Ch20_02.py, 图 5. 通过单位双曲线旋转得到的一系列双曲线

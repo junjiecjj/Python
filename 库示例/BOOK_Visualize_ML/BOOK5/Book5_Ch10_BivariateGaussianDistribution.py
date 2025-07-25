@@ -21,12 +21,10 @@ mu    = [mu_X, mu_Y]
 Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 
 width = 4
-X = np.linspace(-width,width,321)
-Y = np.linspace(-width,width,321)
-
-XX, YY = np.meshgrid(X, Y) #  (321, 321)
-
-XXYY = np.dstack((XX, YY)) # (321, 321, 2)
+X = np.linspace(-width, width, 321)
+Y = np.linspace(-width, width, 321)
+XX, YY  = np.meshgrid(X, Y)    # (321, 321)
+XXYY    = np.dstack((XX, YY))  # (321, 321, 2)
 bi_norm = multivariate_normal(mu, Sigma)
 
 #%% visualize joint PDF surface
@@ -62,7 +60,7 @@ plt.close()
 # 图 2. PDF 函数曲面 fX,Y(x,y)，沿 x 方向的剖面线，σX = 1, σY = 2, ρX,Y = 0.75
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, constrained_layout=True)
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=10, cstride=0, color = [0.3,0.3,0.3], linewidth = 0.25)
-ax.contour(XX, YY, f_X_Y_joint, levels = 33, zdir='y', offset=XX.max(), cmap=cm.RdYlBu_r)
+ax.contour(XX, YY, f_X_Y_joint, levels = 33, zdir='y', offset = XX.max(), cmap = cm.RdYlBu_r)
 ax.set_xlabel(r'$x$')
 ax.set_ylabel(r'$y$')
 ax.set_zlabel(r'$f_{X,Y}(x,y)$')
@@ -81,9 +79,9 @@ plt.close()
 
 
 fig, ax = plt.subplots()
-colors = plt.cm.RdYlBu_r(np.linspace(0,1,len(X)))
+colors = plt.cm.RdYlBu_r(np.linspace(0, 1,len(X)))
 for i in np.arange(1,len(X),5):
-    plt.plot(X,f_X_Y_joint[int(i)-1,:], color = colors[int(i)-1])
+    plt.plot(X, f_X_Y_joint[int(i)-1,:], color = colors[int(i)-1])
 plt.xlabel(r'x')
 plt.ylabel(r'$f_{X,Y}(x,y)$')
 ax.set_xlim(-width, width)
@@ -132,11 +130,11 @@ plt.close()
 
 #%% surface projected along Z to X-Y plane
 # 图 4. PDF 函数曲面 fX,Y(x,y)，空间等高线和平面填充等高线，σX = 1, σY = 2, ρX,Y = 0.75
-fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize=(10, 10))
 ax.plot_wireframe(XX, YY, f_X_Y_joint, rstride=10, cstride=10, color = [0.3,0.3,0.3], linewidth = 0.25)
 ax.contour3D(XX,YY, f_X_Y_joint, 12,  cmap = 'RdYlBu_r')
-ax.contour(XX, YY, f_X_Y_joint, levels = 12, zdir='z',  offset=0, cmap=cm.RdYlBu_r)
-
+# ax.contour(XX, YY, f_X_Y_joint, levels = 12, zdir='z',  offset=0, cmap=cm.RdYlBu_r)
+# ax.contour(XX, YY, f_X_Y_joint, levels = 12, zdir='z', cmap=cm.RdYlBu_r)
 ax.set_xlabel(r'$x$')
 ax.set_ylabel(r'$y$')
 ax.set_zlabel(r'$f_{X,Y}(x,y)$')
@@ -145,21 +143,64 @@ ax.set_proj_type('ortho')
 ax.xaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 ax.yaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
 ax.zaxis._axinfo["grid"].update({"linewidth":0.25, "linestyle" : ":"})
-
 ax.set_xlim(-width, width)
 ax.set_ylim(-width, width)
 ax.set_zlim(f_X_Y_joint.min(),f_X_Y_joint.max())
 plt.tight_layout()
 plt.show()
+plt.close()
 
 # Plot filled contours
-fig, ax = plt.subplots(figsize=(7, 7))
+fig, ax = plt.subplots(figsize=(10, 10))
 # Plot bivariate normal
-ax.contour(XX, YY, f_X_Y_joint, 20, cmap=cm.RdYlBu_r)
-plt.contourf(XX, YY, f_X_Y_joint, 20, cmap=cm.RdYlBu_r)
+ax.contourf(XX, YY, f_X_Y_joint, 20, cmap=cm.RdYlBu_r)
 ax.axvline(x = mu_X, color = 'r', linestyle = '--')
 ax.axhline(y = mu_Y, color = 'r', linestyle = '--')
 
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+plt.show()
+plt.close()
+
+fig, ax = plt.subplots(figsize=(10, 10))
+# Plot bivariate normal
+ax.contour(XX, YY, f_X_Y_joint, 20, cmap=cm.RdYlBu_r)
+ax.axvline(x = mu_X, color = 'r', linestyle = '--')
+ax.axhline(y = mu_Y, color = 'r', linestyle = '--')
+ax.set_xlim(-width, width)
+ax.set_ylim(-width, width)
+ax.set_xlabel(r'$x$')
+ax.set_ylabel(r'$y$')
+plt.show()
+plt.close()
+
+###
+import matplotlib.patches as patches
+fig, ax = plt.subplots(figsize=(12, 12))
+# x1 = mu_X + rho * sigma_X
+# x2 = mu_Y + sigma_Y
+x1 = mu_X + sigma_X
+x2 = mu_Y + rho * sigma_Y
+tmp = bi_norm.pdf([x1, x2])
+# Plot bivariate normal
+ax.contour(XX, YY, f_X_Y_joint, levels = [tmp], cmap=cm.RdYlBu_r)
+ax.axvline(x = mu_X, color = 'r', linestyle = '--')
+ax.axhline(y = mu_Y, color = 'r', linestyle = '--')
+
+# left_x = bi_norm.pdf([mu_X - sigma_X, mu_Y - sigma_Y])
+rect = patches.Rectangle((mu_X - sigma_X, mu_Y - sigma_Y), 2*sigma_X, 2*sigma_Y, linewidth = 1, edgecolor='k', linestyle = '--', facecolor = 'none')
+# Add the patch to the Axes
+ax.add_patch(rect)
+
+ax.plot(mu_X + rho * sigma_X, mu_Y + sigma_Y, marker = 'x', color = 'r', ms = 12)
+ax.plot(mu_Y + sigma_X, mu_Y + rho * sigma_Y, marker = 'x', color = 'b', ms = 12)
+ax.plot(mu_X - rho * sigma_X, mu_Y - sigma_Y, marker = 'x', color = 'g', ms = 12)
+ax.plot(mu_Y - sigma_X, mu_Y - rho * sigma_Y, marker = 'x', color = 'c', ms = 12)
+
+
+
+ax.set_xlim(-width , width )
+ax.set_ylim(-width , width )
 ax.set_xlabel(r'$x$')
 ax.set_ylabel(r'$y$')
 plt.show()
@@ -184,7 +225,7 @@ mu_Y = 0
 mu   = [mu_X, mu_Y]
 Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 
-width = 4
+width = 6
 X = np.arange(-width, width, 0.05)
 Y = np.arange(-width, width, 0.05)
 XX, YY = np.meshgrid(X, Y) # (160, 160)
@@ -213,8 +254,8 @@ ax1.axhline(y = mu_Y, color = 'k', linestyle = '--')
 ax1.set_xlabel(r'$X$')
 ax1.set_ylabel(r'$Y$')
 ax1.yaxis.set_label_position('right')
-ax1.set_xticks([])
-ax1.set_yticks([])
+# ax1.set_xticks([])
+# ax1.set_yticks([])
 
 # Plot Y marginal
 ax2 = plt.subplot(gs[1])
@@ -246,6 +287,51 @@ ax4.set_visible(False)
 plt.show()
 plt.close()
 
+#%%
+# 图 15. 椭圆和中心在 (µX, µY) 长 2σX、宽 2σY 的矩形相切
+# 图 16. 三种标准差 σX、σY 大小不同的情况
+
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.patches as patches
+
+x = np.linspace(-4, 4, num = 201)
+y = np.linspace(-4, 4, num = 201)
+sigma_X = 1
+sigma_Y = 2
+
+xx, yy = np.meshgrid(x, y);
+rho_array = np.linspace(-0.95, 0.95, num = 7)
+fig, ax = plt.subplots(figsize=(8, 8))
+# Create a Rectangle patch
+rect = patches.Rectangle((-sigma_X, -sigma_Y), 2*sigma_X, 2*sigma_Y, linewidth = 0.25, edgecolor='k', linestyle = '--', facecolor = 'none')
+# Add the patch to the Axes
+ax.add_patch(rect)
+colors = plt.cm.hsv(np.linspace(0,1,len(rho_array)))
+for i in range(0,len(rho_array)):
+    rho = rho_array[i]
+    ellipse = ((xx/sigma_X)**2 - 2*rho*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - rho**2);
+    color_code = colors[i,:].tolist()
+    ax.contour(xx, yy, ellipse, levels = [1], colors = [color_code])
+    ax.plot(sigma_X, rho * sigma_Y, marker = 'x', color = color_code, ms = 12)
+    ax.plot(rho * sigma_X, sigma_Y, marker = 'x', color = color_code, ms = 12)
+    ax.plot(-sigma_X, -rho * sigma_Y, marker = 'x', color = color_code, ms = 12)
+    ax.plot(-rho * sigma_X, -sigma_Y, marker = 'x', color = color_code, ms = 12)
+
+plt.axvline(x = 0, color = 'k', linestyle = '-')
+plt.axhline(y = 0, color = 'k', linestyle = '-')
+# ax.set_xticks([])
+# ax.set_yticks([])
+ax.set_xlim([-2,2])
+ax.set_ylim([-2,2])
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['left'].set_visible(False)
+plt.show()
+plt.close()
+
 
 #%% Bk5_Ch10_03, 图 18. 椭圆和矩形切点随 σX、σY、ρX,Y变化关系
 import matplotlib.pyplot as plt
@@ -267,7 +353,7 @@ for i in range(0,len(kk)):
     ax = fig.add_subplot(1,len(kk),int(i+1))
     ellipse = ((xx/sigma_X)**2 - 2*k*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - k**2);
 
-    plt.contour(xx, yy, ellipse,levels = [1], colors = '#0099FF')
+    plt.contour(xx, yy, ellipse, levels = [1], colors = '#0099FF')
     rect = Rectangle(xy = [- sigma_X, - sigma_Y] , width = 2*sigma_X, height = 2*sigma_Y, edgecolor = 'k',facecolor="none")
     ax.add_patch(rect)
 
@@ -281,13 +367,16 @@ for i in range(0,len(kk)):
     ax.spines['bottom'].set_color('none')
     plt.gca().set_aspect('equal', adjustable='box')
     ax.set_title('\u03C1 = %0.1f' %k)
-
+plt.show()
+plt.close()
 ## 2
+colors = plt.cm.hsv(np.linspace(0, 1, len(kk)))
 fig, ax = plt.subplots(figsize=(7, 7))
-for i in range(0,len(kk)):
+for i in range(0, len(kk)):
     k = kk[i]
-    ellipse = ((xx/sigma_X)**2 - 2*k*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - k**2);
-    plt.contour(xx,yy,ellipse,levels = [1], colors = '#0099FF')
+    ellipse = ((xx/sigma_X)**2 - 2*k*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - k**2)
+    color_code = colors[i,:].tolist()
+    ax.contour(xx, yy, ellipse, levels = [1], colors = [color_code]) # '#0099FF')
 rect = Rectangle(xy = [- sigma_X, - sigma_Y] , width = 2*sigma_X, height = 2*sigma_Y, edgecolor = 'k',facecolor="none")
 ax.add_patch(rect)
 
@@ -326,21 +415,21 @@ X, Y = multi_norm(MU, SIGMA, num).T  # (500,)
 center_X = np.mean(X)
 center_Y = np.mean(Y)
 
-fig, ax = plt.subplots(figsize=(8, 8))
-
 ### plot center of data
-plt.plot(X,Y,'.', color = '#00448A', alpha = 0.25, markersize = 10)
-
+fig, ax = plt.subplots(figsize=(8, 8))
+ax.plot(X, Y, '.', color = '#00448A', alpha = 0.25, markersize = 10)
 ax.axvline(x = 0, color = 'k', linestyle = '--')
 ax.axhline(y = 0, color = 'k', linestyle = '--')
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
-ax.set_xlim((-3,3))
-ax.set_ylim((-3,3))
+ax.set_xlim((-3, 3))
+ax.set_ylim((-3, 3))
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
 plt.show()
+plt.close()
 
+### 3D visualization
 from scipy.stats import multivariate_normal
 X_grid = np.linspace(-3,3,200)
 Y_grid = np.linspace(-3,3,200)
@@ -351,7 +440,6 @@ bi_norm = multivariate_normal(MU, SIGMA)
 # visualize PDF
 pdf_fine = bi_norm.pdf(XXYY)
 
-### 3D visualization
 fig, ax = plt.subplots(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.plot_wireframe(XX,YY, pdf_fine, cstride = 2, rstride = 2, color = [0.7,0.7,0.7], linewidth = 0.25)
@@ -371,6 +459,7 @@ ax.set_zlabel('PDF')
 # ax.set_ylim3d([-3,3])
 # ax.set_zlim3d([0,0.3])
 plt.show()
+plt.close()
 
 ### 2D visualization
 fig, ax = plt.subplots(figsize=(8, 8))
@@ -383,7 +472,7 @@ ax.set_aspect('equal')
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 plt.show()
-
+plt.close()
 
 ###
 def draw_vector(vector,RBG):
@@ -406,7 +495,7 @@ ax.set_xlim([-1.5, 1.5])
 ax.set_ylim([-1.5, 1.5])
 ax.grid(linestyle='--', linewidth=0.25, color=[0.5,0.5,0.5])
 plt.show()
-
+plt.close()
 
 
 

@@ -21,7 +21,7 @@ sigma_X = 1
 sigma_Y = 1.5
 mu_X = 0
 mu_Y = 0
-width = 3
+width = 5
 mu    = [mu_X, mu_Y]
 Sigma = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 
@@ -50,24 +50,27 @@ axis_major = mu_Y - 1/k*(X - mu_X)
 fig, ax = plt.subplots(figsize=(7, 7), constrained_layout=True)
 
 # Plot bivariate normal
-plt.contour(XX, YY, f_X_Y_joint, 25, cmap=cm.RdYlBu_r)
-plt.axvline(x = mu_X, color = 'k', linestyle = '--')
-plt.axhline(y = mu_Y, color = 'k', linestyle = '--')
+ax.contour(XX, YY, f_X_Y_joint, 25, cmap=cm.RdYlBu_r)
 
-plt.plot(E_X_given_Y,Y, color = 'k', linewidth = 1.25)
-plt.plot(X,E_Y_given_X, color = 'k', linewidth = 1.25)
+# tmp = bi_norm.pdf([mu_X + 2 * sigma_X, mu_Y + 2 * sigma_Y])
+# ax.contour(XX, YY, f_X_Y_joint, levels = [tmp], cmap=cm.RdYlBu_r)
+ax.axvline(x = mu_X, color = 'k', linestyle = '--')
+ax.axhline(y = mu_Y, color = 'k', linestyle = '--')
+
+ax.plot(E_X_given_Y, Y, color = 'k', linewidth = 1.25)
+ax.plot(X, E_Y_given_X, color = 'k', linewidth = 1.25)
 
 # plot ellipse minor and major axes
-plt.plot(X,axis_minor, color = 'r', linewidth = 1.25)
-plt.plot(X,axis_major, color = 'r', linewidth = 1.25)
+ax.plot(X,axis_minor, color = 'r', linewidth = 1.25)
+ax.plot(X,axis_major, color = 'r', linewidth = 1.25)
 
-rect = Rectangle(xy = [mu_X - 2 * sigma_X, mu_Y - 2 * sigma_Y] , width = 2*sigma_X, height = 2*sigma_Y, edgecolor = 'k',facecolor="none")
-
+rect = Rectangle(xy = [mu_X - 2 * sigma_X, mu_Y - 2 * sigma_Y] , width = 4*sigma_X, height = 4*sigma_Y, edgecolor = 'k',facecolor="none")
 ax.add_patch(rect)
-ax.set_xlabel('$X$')
-ax.set_ylabel('$Y$')
-ax.set_xlim(-width*2, width*2)
-ax.set_ylim(-width*2, width*2)
+
+ax.set_xlabel(r'$X$')
+ax.set_ylabel(r'$Y$')
+ax.set_xlim(-width , width )
+ax.set_ylim(-width , width )
 plt.show()
 plt.close()
 
@@ -88,15 +91,13 @@ sigma_X = 1
 sigma_Y = 2
 
 RHOs = np.linspace(-0.8,0.8,num = 9)
-
 fig = plt.figure(figsize=(30, 5), constrained_layout=True)
-
 for i in range(0,len(RHOs)):
     rho = RHOs[i]
     ax = fig.add_subplot(1,len(RHOs),int(i+1))
     ellipse = ((xx/sigma_X)**2 - 2*rho*(xx/sigma_X)*(yy/sigma_Y) + (yy/sigma_Y)**2)/(1 - rho**2);
 
-    plt.contour(xx, yy, ellipse,levels = [1], colors = '#0099FF')
+    plt.contour(xx, yy, ellipse, levels = [1], colors = '#0099FF')
 
     A = (sigma_X**2 + sigma_Y**2)/2
     B = np.sqrt((rho*sigma_X*sigma_Y)**2 + ((sigma_X**2 - sigma_Y**2)/2)**2)

@@ -158,11 +158,126 @@ plt.tight_layout()
 plt.show()
 
 
+#%% https://mp.weixin.qq.com/s?__biz=MzAwNTkyNTUxMA==&mid=2247492478&idx=1&sn=4faf3572374c6c8c0274f64c362fc7cd&chksm=9a1df3f99e0b89662f0d93895942f4dde3f61f2ba5435768e98197a41adcd3a10fcccfbb1531&mpshare=1&scene=1&srcid=0224K5QFb3pn7veOQnZZTZVI&sharer_shareinfo=5d89d6fb55da7773bf826f150124b95d&sharer_shareinfo_first=ddb1ad27516d45facaf51e5f1db6dd5c&exportkey=n_ChQIAhIQ7lmrHdoDhCdcqwLSv29ChhKfAgIE97dBBAEAAAAAAEoTB3SByDwAAAAOpnltbLcz9gKNyK89dVj0YAhQdTjX9B2GpdARf28%2F1gEZTPwP6bMMWYyBHvbjN1K2ESBGqF9O1LV9Q6lV0qnNaNCzjYMgvPh6%2BvNYsbxATN%2Bur2xMEaHhU8BW%2FZEVQoKcS39tSZcc2kxhAQHKzQYyfsZB1%2Fwi9tyRNkIdAOQpciGzPlylVfRd0OpHd7%2BhUVxMgLuKqL3mvhVZnPVVPvP1nG7NldaWkB%2BCwIuDL%2BV3TTm3zAGFLZRJcjnQ1%2FPA0VRWuBZn%2Ba9IYYNe3nke2pXWRikj0SZ%2FpcT0Wh%2F6mn%2FN43tByoi95EL6m2AxrDu7N%2BXaf21Ku6nkid6U%2BJ9tOGYlBb8HJaZpIpQ2&acctmode=0&pass_ticket=ysYJxrDKREyWalk6uWKhXi3SKrbRDnwdlYxbl4%2F1Q8svVPKcE2FAuvThE5OjtzpE&wx_header=0#rd
 
 
 
+import torch
+import gpytorch
+import numpy as np
+import matplotlib.pyplot as plt
 
+# 设置随机种子，保证结果可复现
+torch.manual_seed(42)
+np.random.seed(42)
 
+# 定义真实函数（正弦函数）
+def true_function(x):
+    return torch.sin(2 * np.pi * x)
+
+# 生成虚拟训练数据：在 [0, 1] 区间均匀取样，并加入噪声
+n_train = 200
+train_x = torch.linspace(0, 1, n_train)
+noise_std = 0.2
+train_y = true_function(train_x) + noise_std * torch.randn(train_x.size())
+
+# 生成测试数据：用于预测和绘图
+n_test = 500
+test_x = torch.linspace(0, 1, n_test)
+
+# 定义高斯过程模型（使用 gpytorch 的 ExactGP）
+class ExactGPModel(gpytorch.models.ExactGP):
+    def __init__(self, train_x, train_y, likelihood):
+        super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
+        # 均值函数：采用常数均值
+        self.mean_module = gpytorch.means.ConstantMean()
+        # 协方差函数：采用 RBF 核，并用 ScaleKernel 包装
+        self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
+
+    def forward(self, x):
+        mean_x = self.mean_module(x)
+        covar_x = self.covar_module(x)
+        return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
+
+# 初始化似然函数与模型
+likelihood = gpytorch.likelihoods.GaussianLikelihood()
+model = ExactGPModel(train_x, train_y, likelihood)
+
+# 将模型设置为训练模式
+model.train()
+likelihood.train()
+
+# 定义优化器（Adam）以及边缘对数似然损失函数
+optimizer = torch.optim.Adam(model.parameters(), lr=0.1)
+mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model)
+
+# 记录训练过程中的损失
+training_loss = []
+n_iter = 100  # 训练迭代次数
+
+# 训练过程
+for i in range(n_iter):
+    optimizer.zero_grad()
+    output = model(train_x)
+    loss = -mll(output, train_y)  # 我们最小化负对数边缘似然
+    loss.backward()
+    optimizer.step()
+    training_loss.append(loss.item())
+    if (i+1) % 10 == 0:
+        print(f'Iteration {i+1}/{n_iter} - Loss: {loss.item():.3f}')
+
+# 训练完成，切换到评估模式
+model.eval()
+likelihood.eval()
+
+# 预测：在测试数据上计算后验分布
+with torch.no_grad(), gpytorch.settings.fast_pred_var():
+    test_pred = likelihood(model(test_x))
+    pred_mean = test_pred.mean
+    pred_var = test_pred.variance
+    lower, upper = test_pred.confidence_region()
+
+# 绘制图形：4个子图放在一幅图中
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+fig.suptitle('Gaussian Process Regression Example', fontsize=16)
+
+# 子图1：训练数据与真实函数
+axes[0, 0].scatter(train_x.numpy(), train_y.numpy(), color='red', s=50, label='Training Data')
+axes[0, 0].plot(test_x.numpy(), true_function(test_x).numpy(), color='blue', linewidth=2, label='True Function')
+axes[0, 0].set_title('Training Data and True Function', fontsize=12)
+axes[0, 0].set_xlabel('x')
+axes[0, 0].set_ylabel('y')
+axes[0, 0].legend()
+axes[0, 0].grid(True, linestyle='--', alpha=0.6)
+
+# 子图2：GP预测均值与置信区间
+axes[0, 1].plot(test_x.numpy(), pred_mean.numpy(), color='magenta', linewidth=2, label='Predicted Mean')
+axes[0, 1].fill_between(test_x.numpy(), lower.numpy(), upper.numpy(), color='magenta', alpha=0.3, label='95% Confidence Interval')
+axes[0, 1].scatter(train_x.numpy(), train_y.numpy(), color='red', s=40, label='Training Data', zorder=10)
+axes[0, 1].set_title('GP Predicted Mean and Confidence Interval', fontsize=12)
+axes[0, 1].set_xlabel('x')
+axes[0, 1].set_ylabel('y')
+axes[0, 1].legend()
+axes[0, 1].grid(True, linestyle='--', alpha=0.6)
+
+# 子图3：预测方差（不确定性）
+axes[1, 0].plot(test_x.numpy(), pred_var.numpy(), color='green', linewidth=2, label='Predicted Variance')
+axes[1, 0].set_title('Predicted Variance (Uncertainty)', fontsize=12)
+axes[1, 0].set_xlabel('x')
+axes[1, 0].set_ylabel('Variance')
+axes[1, 0].legend()
+axes[1, 0].grid(True, linestyle='--', alpha=0.6)
+
+# 子图4：训练过程中负对数边缘似然损失曲线
+axes[1, 1].plot(range(1, n_iter+1), training_loss, color='orange', linewidth=2, label='Training Loss')
+axes[1, 1].set_title('Negative Log Marginal Likelihood Loss Curve', fontsize=12)
+axes[1, 1].set_xlabel('Iteration')
+axes[1, 1].set_ylabel('Negative Log Marginal Likelihood')
+axes[1, 1].legend()
+axes[1, 1].grid(True, linestyle='--', alpha=0.6)
+
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+plt.show()
 
 
 
