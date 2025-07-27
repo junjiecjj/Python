@@ -218,10 +218,6 @@ plt.title('Decision Boundary')
 plt.show()
 
 
-
-
-
-
 #%% 4. 贝叶斯网络（Bayesian Networks）
 
 
@@ -297,8 +293,6 @@ plt.suptitle('Joint Probability Distribution')
 plt.show()
 
 
-
-
 #%% 5. 马尔可夫链蒙特卡洛（Markov Chain Monte Carlo, MCMC）
 
 import numpy as np
@@ -363,9 +357,6 @@ plt.title('Posterior Predictive Mean and 95% Prediction Interval')
 plt.show()
 
 
-
-
-
 #%% 6. 变分贝叶斯方法（Variational Bayesian Methods）
 
 import numpy as np
@@ -400,8 +391,6 @@ plt.ylabel('Density')
 plt.legend()
 plt.grid(True)
 plt.show()
-
-
 
 # 使用变分贝叶斯高斯混合模型
 bgm = BayesianGaussianMixture(n_components=3, covariance_type='full', max_iter=1000, random_state=42)
@@ -552,10 +541,6 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
-
-
-
-
 
 #%% 9. 贝叶斯优化（Bayesian Optimization）
 

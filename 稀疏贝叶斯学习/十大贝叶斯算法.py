@@ -117,7 +117,7 @@ n_iter = model.n_iter_
 coefs = np.zeros((n_iter, X.shape[1]))
 intercepts = np.zeros(n_iter)
 for i in range(n_iter):
-    model = BayesianRidge(n_iter=i+1)
+    model = BayesianRidge(max_iter=i+1)
     model.fit(X, y)
     coefs[i, :] = model.coef_
     intercepts[i] = model.intercept_

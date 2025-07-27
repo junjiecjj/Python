@@ -120,8 +120,6 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-
-
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 3. 样条插值
 import numpy as np
 import matplotlib.pyplot as plt
@@ -214,7 +212,6 @@ plt.tight_layout()
 plt.show()
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 5. 牛顿插值
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -513,7 +510,6 @@ plt.show()
 
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 10. 双线性/三线性插值
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata

@@ -3,58 +3,6 @@
 
 
 
-#%% 8. 高斯过程（Gaussian Processes）
-
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
-
-# 生成数据
-np.random.seed(1)
-X = np.linspace(0, 10, 100) # (100,)
-y = np.sin(X) + 0.5 * np.random.randn(100) # (100,)
-
-# 训练数据
-X_train = X[::5][:, np.newaxis] # (20, 1)
-y_train = y[::5] #  (20,)
-
-# 定义高斯过程模型
-kernel = C(1.0, (1e-4, 1e1)) * RBF(1, (1e-4, 1e1))
-gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)
-
-# 拟合模型
-gp.fit(X_train, y_train)
-
-# 预测
-X_pred = np.linspace(0, 10, 1000)[:, np.newaxis] # (1000, 1)
-y_pred, sigma = gp.predict(X_pred, return_std=True) # (1000,), (1000,)
-
-# 画图
-plt.figure(figsize=(14, 6))
-
-# 原始数据和训练数据
-plt.subplot(1, 2, 1)
-plt.scatter(X, y, c='k', label='Data')
-plt.scatter(X_train, y_train, c='r', label='Train Data')
-plt.title('Data and Train Data')
-plt.xlabel('X')
-plt.ylabel('y')
-plt.legend()
-
-# 高斯过程回归预测
-plt.subplot(1, 2, 2)
-plt.plot(X_pred, y_pred, 'b-', label='Prediction')
-plt.fill_between(X_pred[:, 0], y_pred - 1.96 * sigma, y_pred + 1.96 * sigma, alpha=0.2, color='k', label='95% Confidence Interval')
-plt.scatter(X_train, y_train, c='r', label='Train Data')
-plt.title('Gaussian Process Regression')
-plt.xlabel('X')
-plt.ylabel('y')
-plt.legend()
-
-plt.tight_layout()
-plt.show()
-
 #%% https://scikit-learn.org/stable/auto_examples/gaussian_process/plot_gpc_iris.html#sphx-glr-auto-examples-gaussian-process-plot-gpc-iris-py
 import matplotlib.pyplot as plt
 import numpy as np
@@ -158,9 +106,63 @@ plt.tight_layout()
 plt.show()
 
 
+#%% 8. 高斯过程（Gaussian Processes）
+# 最强总结，十大贝叶斯算法 ！
+# https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247484679&idx=1&sn=789522244120467c83b298fe90e86b10&exportkey=n_ChQIAhIQitTAf1FLYIHCaVO%2FvI8MPRKfAgIE97dBBAEAAAAAADpwMoVdpJsAAAAOpnltbLcz9gKNyK89dVj0YFO9Qc0gpA4LxgGcaE88syT78YwDmNDQqdGLZfGVFZ3OVCe48BF0RLb7kY0r4WoBkP865X9Kzy5PFgGT9Y7iLzkilHH90wghfq2U8RbFqOXwCahPBLBeSvWDNnLD2hML8Lb773eSBbWJGjR7p8FkD6YZxbLQjtUC67KIhKeVSlYlp2u9kCmcchBnaqBZjaNzm16gpAgc7xYm7xBqzQJTLzm1wKMpCqPf0LV7K%2BqJD0XCMdpZ63Wi2W276hIp0pdM5vS7nKesgW6DqA0yhRZcMVoheT41F53K5hzwWX8zU7qyTDZn9we1UvMJFCGZexidfpxtE8OHpog%2F&acctmode=0&pass_ticket=%2BEMPsVAURy%2F8H628HeinbwUZpzF%2Bic9DzIenzb6U3EsAb3zSE0W6X%2FJDVz793ZD5&wx_header=0
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+
+# 生成数据
+np.random.seed(1)
+X = np.linspace(0, 10, 100) # (100,)
+y = np.sin(X) + 0.5 * np.random.randn(100) # (100,)
+
+# 训练数据
+X_train = X[::5][:, np.newaxis] # (20, 1)
+y_train = y[::5] #  (20,)
+
+# 定义高斯过程模型
+kernel = C(1.0, (1e-4, 1e1)) * RBF(1, (1e-4, 1e1))
+gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)
+
+# 拟合模型
+gp.fit(X_train, y_train)
+
+# 预测
+X_pred = np.linspace(0, 10, 1000)[:, np.newaxis]      # (1000, 1)
+y_pred, sigma = gp.predict(X_pred, return_std=True)   # (1000,), (1000,)
+
+# 画图
+plt.figure(figsize=(14, 6))
+
+# 原始数据和训练数据
+plt.subplot(1, 2, 1)
+plt.scatter(X, y, c='k', label='Data')
+plt.scatter(X_train, y_train, c='r', label='Train Data')
+plt.title('Data and Train Data')
+plt.xlabel('X')
+plt.ylabel('y')
+plt.legend()
+
+# 高斯过程回归预测
+plt.subplot(1, 2, 2)
+plt.plot(X_pred, y_pred, 'b-', label='Prediction')
+plt.fill_between(X_pred[:, 0], y_pred - 1.96 * sigma, y_pred + 1.96 * sigma, alpha=0.2, color='k', label='95% Confidence Interval')
+plt.scatter(X_train, y_train, c='r', label='Train Data')
+plt.title('Gaussian Process Regression')
+plt.xlabel('X')
+plt.ylabel('y')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+plt.close()
+
+
 #%% https://mp.weixin.qq.com/s?__biz=MzAwNTkyNTUxMA==&mid=2247492478&idx=1&sn=4faf3572374c6c8c0274f64c362fc7cd&chksm=9a1df3f99e0b89662f0d93895942f4dde3f61f2ba5435768e98197a41adcd3a10fcccfbb1531&mpshare=1&scene=1&srcid=0224K5QFb3pn7veOQnZZTZVI&sharer_shareinfo=5d89d6fb55da7773bf826f150124b95d&sharer_shareinfo_first=ddb1ad27516d45facaf51e5f1db6dd5c&exportkey=n_ChQIAhIQ7lmrHdoDhCdcqwLSv29ChhKfAgIE97dBBAEAAAAAAEoTB3SByDwAAAAOpnltbLcz9gKNyK89dVj0YAhQdTjX9B2GpdARf28%2F1gEZTPwP6bMMWYyBHvbjN1K2ESBGqF9O1LV9Q6lV0qnNaNCzjYMgvPh6%2BvNYsbxATN%2Bur2xMEaHhU8BW%2FZEVQoKcS39tSZcc2kxhAQHKzQYyfsZB1%2Fwi9tyRNkIdAOQpciGzPlylVfRd0OpHd7%2BhUVxMgLuKqL3mvhVZnPVVPvP1nG7NldaWkB%2BCwIuDL%2BV3TTm3zAGFLZRJcjnQ1%2FPA0VRWuBZn%2Ba9IYYNe3nke2pXWRikj0SZ%2FpcT0Wh%2F6mn%2FN43tByoi95EL6m2AxrDu7N%2BXaf21Ku6nkid6U%2BJ9tOGYlBb8HJaZpIpQ2&acctmode=0&pass_ticket=ysYJxrDKREyWalk6uWKhXi3SKrbRDnwdlYxbl4%2F1Q8svVPKcE2FAuvThE5OjtzpE&wx_header=0#rd
-
-
 
 import torch
 import gpytorch
@@ -238,7 +240,7 @@ with torch.no_grad(), gpytorch.settings.fast_pred_var():
     lower, upper = test_pred.confidence_region()
 
 # 绘制图形：4个子图放在一幅图中
-fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+fig, axes = plt.subplots(2, 2, figsize=(15, 10), constrained_layout = True)
 fig.suptitle('Gaussian Process Regression Example', fontsize=16)
 
 # 子图1：训练数据与真实函数
@@ -276,7 +278,6 @@ axes[1, 1].set_ylabel('Negative Log Marginal Likelihood')
 axes[1, 1].legend()
 axes[1, 1].grid(True, linestyle='--', alpha=0.6)
 
-plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()
 
 
@@ -285,7 +286,61 @@ plt.show()
 
 
 
+#%%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 8. 高斯过程回归插值
+# 十大数据差值方法
+# https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247488088&idx=1&sn=95c453fb33771526bf80adb49115b74a&chksm=c0e5c89ef792418893e3f14de1b2abc7dde28f8c8ea3c5d4e14ab4d177eab7efc0e3434ebc31&cur_album_id=3445855686331105280&scene=190#rd
 
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+
+# 1. 生成虚拟数据
+np.random.seed(42)
+X = np.sort(5 * np.random.rand(30, 1), axis=0)  # 输入数据
+y = np.sin(X).ravel() + np.random.normal(0, 0.2, X.shape[0])  # 真实值 + 噪声
+
+# 测试点
+X_test = np.linspace(0, 5, 1000).reshape(-1, 1)
+
+# 2. 配置高斯过程回归模型
+# 使用常数核和RBF核的乘积
+kernel = C(1.0, (1e-4, 1e1)) * RBF(1.0, (1e-4, 1e1))
+gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=0.1)
+
+# 3. 拟合数据
+gp.fit(X, y)
+
+# 4. 预测
+y_pred, sigma = gp.predict(X_test, return_std=True)
+
+# 5. 计算残差
+y_train_pred, _ = gp.predict(X, return_std=True)
+residuals = y - y_train_pred
+
+# 6. 绘图
+plt.figure(figsize=(12, 8))
+
+# 第一张图：原始数据与预测插值曲线
+plt.subplot(2, 1, 1)
+plt.plot(X_test, y_pred, 'b-', label='Prediction (mean)', lw=2)  # 预测均值曲线
+plt.fill_between(X_test.ravel(), y_pred - 2*sigma, y_pred + 2*sigma, color='lightgray', alpha=0.5, label='Confidence interval (±2σ)')  # 置信区间
+plt.scatter(X, y, c='r', s=50, zorder=10, label='Observed data')  # 真实数据点
+plt.title('Gaussian Process Regression with Confidence Interval')
+plt.xlabel('Input')
+plt.ylabel('Output')
+plt.legend(loc='upper left')
+
+# 第二张图：残差分析
+plt.subplot(2, 1, 2)
+plt.scatter(X, residuals, c='purple', s=50, zorder=10)
+plt.axhline(y=0, color='k', linestyle='--', lw=2)
+plt.title('Residuals Analysis')
+plt.xlabel('Input')
+plt.ylabel('Residuals (True - Predicted)')
+
+plt.tight_layout()
+plt.show()
 
 
 
