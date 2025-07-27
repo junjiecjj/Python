@@ -26,9 +26,9 @@ def plot_surface(xx1, xx2, surface, z_height, title_txt, data = None ):
     ax.set_xlabel('Sepal length, $x_1$')
     ax.set_ylabel('Sepal width, $x_2$')
     ax.set_zlabel('PDF')
-    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
-    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
-    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0)) # 3D坐标区的背景设置为白色
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     ax.set_xticks([4,5,6,7,8])
     ax.set_yticks([1,2,3,4,5])
     ax.set_xlim(x1.min(), x1.max())

@@ -63,13 +63,13 @@ h.set_title('Correlation matrix')
 
 f,(ax1,ax2,ax3) = plt.subplots(1,3,sharey=True)
 
-g1 = sns.heatmap(X_df[y==0].corr(),cmap="rainbow", annot=False,cbar=False,ax=ax1,square=True, vmax = 1, vmin = 0.15)
+g1 = sns.heatmap(X_df[y==0].corr(),cmap="rainbow", annot=False,cbar=False, ax=ax1, square=True, vmax = 1, vmin = 0.15)
 ax1.set_title('Y = 0, setosa')
 
-g2 = sns.heatmap(X_df[y==1].corr(),cmap="rainbow", annot=False,cbar=False,ax=ax2,square=True, vmax = 1, vmin = 0.15)
+g2 = sns.heatmap(X_df[y==1].corr(),cmap="rainbow", annot=False,cbar=False, ax=ax2, square=True, vmax = 1, vmin = 0.15)
 ax2.set_title('Y = 1, versicolor')
 
-g3 = sns.heatmap(X_df[y==2].corr(),cmap="rainbow", annot=False,cbar=False,ax=ax3,square=True, vmax = 1, vmin = 0.15)
+g3 = sns.heatmap(X_df[y==2].corr(),cmap="rainbow", annot=False,cbar=False, ax=ax3, square=True, vmax = 1, vmin = 0.15)
 ax3.set_title('Y = 2, virginica')
 
 
@@ -366,8 +366,6 @@ Lambda_reproduced = S**2/(len(X_df) - 1)
 
 print(f"Σ 特征值分解和对 Xc进行 SVD 分解的关系 = {Lambda_reproduced - LAMBDA}")
  # for test only
-
-
 fig, axs = plt.subplots(1, 7, figsize=(12, 4))
 
 plt.sca(axs[0])

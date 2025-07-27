@@ -34,9 +34,6 @@ for j in [100, 1000, 10000]: # m
     plt.ylim(0, 1)
     plt.grid()
 
-
-
-
 #%% Bk5_Ch16_02
 # 图 9. 随机数分布
 import numpy as np

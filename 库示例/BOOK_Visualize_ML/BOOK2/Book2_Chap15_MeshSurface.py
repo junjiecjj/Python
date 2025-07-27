@@ -506,8 +506,7 @@ if not os.path.isdir("Figures"):
 s_fine = np.linspace(0, 10, 11)
 xx, yy = np.meshgrid(s_fine, s_fine)
 # 生成网格数据
-fig = plt.figure( figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d')
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 # 导入3D轴
 zz = np.zeros_like(xx) + 1
 # numpy.zeros_like(xx) 构造一个形状和 xx 一致的全 0 矩阵
@@ -534,8 +533,7 @@ plt.show()
 # 2. 绘制xy平行面，无网格
 s_coarse = np.linspace(0, 10, 2) # 重点在这行导致无网格
 xx, yy = np.meshgrid(s_coarse,s_coarse)
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d', )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 zz = np.zeros_like(xx) + 1
 ax.plot_surface(xx, yy, zz, color = 'b', alpha = 0.1)
 ax.plot_wireframe(xx, yy, np.zeros_like(xx) + 1)
@@ -553,8 +551,7 @@ ax.grid(False)
 plt.show()
 
 # 3. 绘制xy平行面，若干平行平面
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d' )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 for z_idx in np.arange(10 + 1):
     zz = np.zeros_like(xx) + z_idx
@@ -580,8 +577,7 @@ plt.show()
 s_fine = np.linspace(0, 10, 11)
 xx, zz = np.meshgrid(s_fine, s_fine)
 
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d',  )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 ax.plot_surface(xx, xx*0 + 1, zz, color = 'b', alpha = 0.1)
 ax.plot_wireframe(xx, xx*0 + 1, zz)
 ax.set_proj_type('ortho')
@@ -623,8 +619,7 @@ plt.show()
 # 6. 绘制xz平行面，若干平行平面
 xx, zz = np.meshgrid(s_coarse,s_coarse)
 
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d', )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 for y_idx in np.arange(10):
     ax.plot_surface(xx, xx*0 + y_idx, zz, color = 'b', alpha = 0.1)
@@ -648,8 +643,7 @@ plt.show()
 # 7. 绘制yz平行面，网格
 yy, zz = np.meshgrid(s_fine, s_fine)
 
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d', )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 ax.plot_surface(yy*0 + 1, yy, zz, color = 'b', alpha = 0.1)
 ax.plot_wireframe(yy*0 + 1, yy, zz)
 ax.set_proj_type('ortho')
@@ -668,8 +662,7 @@ plt.show()
 # 8. 绘制yz平行面，无网格
 yy, zz = np.meshgrid(s_coarse,s_coarse)
 
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d', )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 ax.plot_surface(yy*0 + 1, yy, zz, color = 'b', alpha = 0.1)
 ax.plot_wireframe(yy*0 + 1, yy, zz)
@@ -688,8 +681,7 @@ ax.grid(False)
 plt.show()
 
 # 9. 绘制yz平行面，若干平行平面
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d', )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 for x_idx in np.arange(10):
     ax.plot_surface(yy*0 + x_idx, yy, zz, color = 'b', alpha = 0.1)
@@ -712,8 +704,7 @@ plt.show()
 s_coarse = np.linspace(0, 10, 2)
 yy, zz = np.meshgrid(s_coarse,s_coarse)
 
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(111, projection='3d', )
+fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
 
 ax.plot_surface(10 - yy, yy, zz, color = 'b', alpha = 0.1)
 ax.plot_wireframe(10 - yy, yy, zz)
@@ -985,8 +976,7 @@ yy = np.array([rr*np.sin(theta) for rr in r])
 
 def visualize(n = 4, m = 0, title = '4,0'):
     zz = np.array([displacement(n, m, rr, theta) for rr in r])
-    fig = plt.figure( figsize = (8,8))
-    ax = fig.add_subplot(121, projection='3d',  )
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
     surf = ax.plot_wireframe(xx, yy, zz, cstride = 50, rstride = 50, colors = '0.8', linewidth=0.25)
     ax.contour(xx, yy, zz, cmap='RdYlBu_r', levels = 15, linewidths=1)
     ax.set_proj_type('ortho')

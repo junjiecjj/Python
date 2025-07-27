@@ -91,8 +91,6 @@ sns.violinplot(data=iris_sns, x="sepal_length", y="species", inner = 'stick')
 
 
 
-
-
 #%% 蜂群图
 # 绘制花萼长度样本数据，蜂群图
 fig, ax = plt.subplots(figsize = (8,4))
@@ -101,15 +99,12 @@ sns.swarmplot(data=iris_sns, x="sepal_length", ax = ax)
 
 # 绘制花萼长度样本数据，蜂群图，考虑分类
 fig, ax = plt.subplots(figsize = (8,4))
-sns.swarmplot(data=iris_sns, x="sepal_length", y = 'species',
-              hue = 'species', ax = ax)
+sns.swarmplot(data=iris_sns, x="sepal_length", y = 'species', hue = 'species', ax = ax)
 
 # 蜂群图 + 小提琴图，考虑鸢尾花分类
-sns.catplot(data=iris_sns, x="sepal_length", y="species",
-            kind="violin", color=".9", inner=None)
+sns.catplot(data=iris_sns, x="sepal_length", y="species", kind="violin", color=".9", inner=None)
 
-sns.swarmplot(data=iris_sns, x="sepal_length",
-              y="species", size=3)
+sns.swarmplot(data=iris_sns, x="sepal_length", y="species", size=3)
 
 ####################### 箱型图
 # 绘制鸢尾花花萼长度箱型图
@@ -121,10 +116,6 @@ fig, ax = plt.subplots(figsize = (8,3))
 sns.boxplot(data=iris_sns, x="sepal_length", y = 'species', ax = ax)
 
 sns.boxenplot(data=iris_sns, x="sepal_length", y="species", scale="linear")
-
-
-
-
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 二元 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -160,20 +151,17 @@ g.plot_marginals(sns.kdeplot)
 #%% 频率/概率热图
 # 鸢尾花二元频率直方热图
 
-sns.displot(data=iris_sns, x="sepal_length", y="sepal_width",
-            binwidth=(0.2, 0.2), cbar=True)
+sns.displot(data=iris_sns, x="sepal_length", y="sepal_width", binwidth=(0.2, 0.2), cbar=True)
 
 
 
 #%% 二元概率密度估计KDE
 # 联合分布概率密度等高线
-sns.displot(data=iris_sns, x="sepal_length",
-            y="sepal_width", kind="kde")
+sns.displot(data=iris_sns, x="sepal_length",  y="sepal_width", kind="kde")
 
 
 # 联合分布概率密度等高线，考虑分布
-sns.kdeplot(data=iris_sns, x="sepal_length",
-            y="sepal_width", hue = 'species')
+sns.kdeplot(data=iris_sns, x="sepal_length", y="sepal_width", hue = 'species')
 
 
 
@@ -231,7 +219,6 @@ plt.grid()
 
 # 小提琴图
 # 绘制多特征小提琴图
-
 sns.violinplot(
     data=iris_melt, x="value", y="measurement", hue="species",
     dodge=True, alpha=.25, zorder=1, legend=True)
@@ -252,21 +239,15 @@ sns.pairplot(iris_sns, hue = 'species')
 g = sns.pairplot(iris_sns, hue = 'species')
 g.map_lower(sns.kdeplot, levels=8, color=".2")
 
-
-
-
 # 平行坐标图
 from pandas.plotting import parallel_coordinates
 # 可视化函数来自pandas
 parallel_coordinates(iris_sns, 'species', colormap=plt.get_cmap("Set2"))
 plt.show()
 
-
-
 # 安德鲁斯曲线
 from pandas.plotting import andrews_curves
 andrews_curves(iris_sns, 'species', colormap=plt.get_cmap("Set2"))
-
 
 # Radviz雷达图
 from pandas.plotting import radviz

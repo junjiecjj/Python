@@ -363,9 +363,6 @@ for sigma_band_factor in [1, 2]:
 
 plt.close('all')
 
-
-
-
 #%% Bk5_Ch09_05
 # 图 20. 比较概率密度直方图和高斯一元分布 PDF
 import numpy as np

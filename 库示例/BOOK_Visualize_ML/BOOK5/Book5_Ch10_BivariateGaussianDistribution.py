@@ -429,6 +429,7 @@ sigma_Y = 1
 # covariance
 SIGMA = [[sigma_X**2, sigma_X*sigma_Y*rho], [sigma_X*sigma_Y*rho, sigma_Y**2]]
 num = 500
+## 生成数据点
 X, Y = multi_norm(MU, SIGMA, num).T  # (500,)
 
 center_X = np.mean(X)

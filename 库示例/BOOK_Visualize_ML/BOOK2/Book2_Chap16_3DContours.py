@@ -26,7 +26,7 @@ def mesh(num = 101):
     # number of mesh grids
     x_array = np.linspace(-3,3,num)
     y_array = np.linspace(-3,3,num)
-    xx,yy = np.meshgrid(x_array,y_array)
+    xx, yy = np.meshgrid(x_array,y_array)
 
     return xx, yy
 xx, yy = mesh(num = 101)
