@@ -438,25 +438,13 @@ def plot_gpr_samples(gpr_model, n_samples, ax):
     y_samples = gpr_model.sample_y(X, n_samples)
 
     for idx, single_prior in enumerate(y_samples.T):
-        ax.plot(
-            x,
-            single_prior,
-            linestyle="--",
-            alpha=0.7,
-            label=f"Sampled function #{idx + 1}",
-        )
+        ax.plot(x, single_prior, linestyle="--", alpha=0.7, label=f"Sampled function #{idx + 1}",)
     ax.plot(x, y_mean, color="black", label="Mean")
-    ax.fill_between(
-        x,
-        y_mean - y_std,
-        y_mean + y_std,
-        alpha=0.1,
-        color="black",
-        label=r"$\pm$ 1 std. dev.",
-    )
+    ax.fill_between(x, y_mean - y_std, y_mean + y_std, alpha=0.1, color="black", label=r"$\pm$ 1 std. dev.",)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.set_ylim([-3, 3])
+    return
 
 # Dataset and Gaussian process generation
 rng = np.random.RandomState(4)
@@ -471,7 +459,7 @@ from sklearn.gaussian_process.kernels import RBF
 kernel = 1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-1, 10.0))
 gpr = GaussianProcessRegressor(kernel=kernel, random_state=0)
 
-fig, axs = plt.subplots(nrows=2, sharex=True, sharey=True, figsize=(10, 12))
+fig, axs = plt.subplots(nrows=2, sharex=True, sharey=True, constrained_layout = True, figsize=(10, 12))
 
 # plot prior
 plot_gpr_samples(gpr, n_samples=n_samples, ax=axs[0])
@@ -485,13 +473,10 @@ axs[1].legend(bbox_to_anchor=(1.05, 1.5), loc="upper left")
 axs[1].set_title("Samples from posterior distribution")
 
 fig.suptitle("Radial Basis Function kernel", fontsize=18)
-plt.tight_layout()
 
 print(f"Kernel parameters before fit:\n{kernel})")
-print(
-    f"Kernel parameters after fit: \n{gpr.kernel_} \n"
-    f"Log-likelihood: {gpr.log_marginal_likelihood(gpr.kernel_.theta):.3f}"
-)
+print(f"Kernel parameters after fit: \n{gpr.kernel_} \n"
+    f"Log-likelihood: {gpr.log_marginal_likelihood(gpr.kernel_.theta):.3f}")
 
 
 #%% Rational Quadratic kernel

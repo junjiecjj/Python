@@ -7,13 +7,12 @@ Created on Fri Jul 25 10:39:41 2025
 
 https://mp.weixin.qq.com/s?__biz=Mzk0MjUxMzg3OQ==&mid=2247493204&idx=1&sn=37b000a7f8c68c1aec1fa2a3b8e6ce75&chksm=c37e83cf08cd129b8b674f01c41431da93cd2a4dfb44ed1b1ffafb225b34fcd6fa435411807f&mpshare=1&scene=1&srcid=05106BHMf6Jhvz3QvicspgKl&sharer_shareinfo=d822fd0503317c25221bcf9b21ec6047&sharer_shareinfo_first=8f008a34713fa9db007da1d8046dc6bf&exportkey=n_ChQIAhIQblVV69anWwlcgLJ80M9UahKfAgIE97dBBAEAAAAAAEC%2BGmaThOcAAAAOpnltbLcz9gKNyK89dVj0gCogfTG1ikpljA1iqElz9mQb5nFBIP34%2BXW%2BhK0FZm0Bnkt%2FiGby5OF51HaF8hF7VHVp3Fg0JHKS904bBbSc9AeB1jYt0AL3CWxOGW7F9I7WT5OmtQnOX8WzElR2HlB7JI4wz7xZEAbnqicr6YfM1HwRm8QOvHw1h9eR5qVl2%2BcXgHyWIYLYUVUY%2Flng36f30DD5w2te6nXiqnTi1JZsJzU5BWR%2FFBr26UYMpU9EIyPDe65dXzk6lS%2Fiq385nP%2FrtGmT5fLtq7dOMrjpPCmgtZBpPLw32Vvjh2BrZXOjATi3j2yVti3zWHJL0P%2B%2FZep9ihyAuOAwTwwR&acctmode=0&pass_ticket=YyulR25cvACZaaXWRRmONTeEFuC1JLD6qB2xKRV1qGs6KV5eFIIo0gYm62eX54RA&wx_header=0#rd
 
-
 """
 
 import numpy as np
 import pandas as pd
 from sklearn.datasets import load_iris
-
+import matplotlib.pyplot as plt
 
 def entropy(y):
     """计算标签序列 y 的熵值"""
@@ -51,31 +50,32 @@ mapping = {'setosa':'山鸢尾', 'versicolor':'杂色鸢尾', 'virginica':'维�
 df['species_cn'] = df['species'].map(mapping)
 df.head()
 
-import matplotlib.pyplot as plt
-
 # 准备数据
 X = df[iris.feature_names].values
 y = iris.target
 feat_idx = iris.feature_names.index('petal length (cm)')
 values = np.unique(X[:, feat_idx])
-thresholds = (values[:-1] + values[1:]) / 2# 中点作为候选阈值
+thresholds = (values[:-1] + values[1:]) / 2  # 中点作为候选阈值
 
 # 计算信息增益
 ig_list = [information_gain(X, y, feat_idx, t) for t in thresholds]
 
 # 绘制
-plt.figure(figsize=(10,6))
-plt.plot(thresholds, ig_list, marker='o', linewidth=2)
-plt.xlabel('Threshold (cm)')
-plt.ylabel('Information Gain')
-plt.title('Information Gain vs Threshold\non Petal Length')
+fig, axs = plt.subplots( figsize=(10, 6))
+axs.plot(thresholds, ig_list, marker='o', linewidth=2)
+axs.set_xlabel('Threshold (cm)')
+axs.set_ylabel('Information Gain')
+axs.set_title('Information Gain vs Threshold\non Petal Length')
+axs.fill_between(thresholds, ig_list, color='orange', alpha=0.3)
+axs.scatter(thresholds[np.argmax(ig_list)], max(ig_list), s=150, color='red', label='Best Split')
+axs.legend()
 plt.grid(True, linestyle='--', alpha=0.5)
-plt.fill_between(thresholds, ig_list, color='orange', alpha=0.3)
-plt.scatter(thresholds[np.argmax(ig_list)], max(ig_list), s=150, color='red', label='Best Split')
-plt.legend()
 plt.show()
+plt.close()
 
-
+### 在大规模数据或高维情况下，上述逐阈值循环计算会较慢，我们可以做如下优化：
+# 向量化统计：用 np.argsort 对特征排序，一次性计算所有可能的划分点的左右计数。
+# 增量式熵更新：当阈值在排序后依次移动时，只需更新从左到右的一个样本类别计数，无需每次都重新扫描左右子集。
 def fast_best_split(X_col, y):
     """
     向量化求单特征 X_col 最优划分点及对应信息增益
@@ -90,10 +90,12 @@ def fast_best_split(X_col, y):
 
     # 初始化左/右计数
     unique_classes = np.unique(Ys)
-    left_count = np.zeros(unique_classes.max()+1, dtype=int)
-    right_count = np.bincount(Ys, minlength=unique_classes.max()+1)
+    left_count = np.zeros(unique_classes.max()+1, dtype = int)
+    right_count = np.bincount(Ys, minlength = unique_classes.max() + 1)
     best_ig, best_t = 0.0, None
 
+    thresholds = []
+    ig_list = []
     # 遍历可能分割点（跳过相同值）
     for i in range(1, n):
         c = Ys[i-1]
@@ -103,18 +105,31 @@ def fast_best_split(X_col, y):
             continue
         # 当前阈值
         t = (Xs[i] + Xs[i-1]) / 2
+        thresholds.append(t)
         # 计算左右熵（增量式）
         H_left = -np.sum((left_count/ i) * np.log2(left_count/ i + 1e-9) * (left_count>0))
         H_right = -np.sum((right_count/ (n-i)) * np.log2(right_count/ (n-i) + 1e-9) * (right_count>0))
         ig = H_parent - (i/n)*H_left - ((n-i)/n)*H_right
+        ig_list.append(ig)
         if ig > best_ig:
             best_ig, best_t = ig, t
-    return best_t, best_ig
+    return best_t, best_ig, thresholds, ig_list
 
-best_threshold, best_ig = fast_best_split(X[:, feat_idx], y)
+best_threshold, best_ig, thresholds, ig_list = fast_best_split(X[:, feat_idx], y)
 print(f"Optimized Best Threshold: {best_threshold:.3f}, Info Gain: {best_ig:.4f}")
 
-
+# 绘制
+fig, axs = plt.subplots( figsize=(10, 6))
+axs.plot(thresholds, ig_list, marker='o', linewidth=2)
+axs.set_xlabel('Threshold (cm)')
+axs.set_ylabel('Information Gain')
+axs.set_title('Information Gain vs Threshold\non Petal Length')
+axs.fill_between(thresholds, ig_list, color='orange', alpha=0.3)
+axs.scatter(thresholds[np.argmax(ig_list)], max(ig_list), s=150, color='red', label='Best Split')
+axs.legend()
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.show()
+plt.close()
 
 
 
