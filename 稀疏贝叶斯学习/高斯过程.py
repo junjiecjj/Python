@@ -416,26 +416,25 @@ import numpy as np
 
 def plot_gpr_samples(gpr_model, n_samples, ax):
     """Plot samples drawn from the Gaussian process model.
-
     If the Gaussian process model is not trained then the drawn samples are
     drawn from the prior distribution. Otherwise, the samples are drawn from
     the posterior distribution. Be aware that a sample here corresponds to a
     function.
 
     Parameters
-    ----------
-    gpr_model : `GaussianProcessRegressor`
-        A :class:`~sklearn.gaussian_process.GaussianProcessRegressor` model.
-    n_samples : int
-        The number of samples to draw from the Gaussian process distribution.
-    ax : matplotlib axis
-        The matplotlib axis where to plot the samples.
+        ----------
+        gpr_model : `GaussianProcessRegressor`
+            A :class:`~sklearn.gaussian_process.GaussianProcessRegressor` model.
+        n_samples : int
+            The number of samples to draw from the Gaussian process distribution.
+        ax : matplotlib axis
+            The matplotlib axis where to plot the samples.
     """
     x = np.linspace(0, 5, 100)
     X = x.reshape(-1, 1)
 
-    y_mean, y_std = gpr_model.predict(X, return_std=True)
-    y_samples = gpr_model.sample_y(X, n_samples)
+    y_mean, y_std = gpr_model.predict(X, return_std = True) # (100,)
+    y_samples = gpr_model.sample_y(X, n_samples)          # 从高斯过程中抽取样本并在X处评估, (100, 5)
 
     for idx, single_prior in enumerate(y_samples.T):
         ax.plot(x, single_prior, linestyle="--", alpha=0.7, label=f"Sampled function #{idx + 1}",)
@@ -462,7 +461,7 @@ gpr = GaussianProcessRegressor(kernel=kernel, random_state=0)
 fig, axs = plt.subplots(nrows=2, sharex=True, sharey=True, constrained_layout = True, figsize=(10, 12))
 
 # plot prior
-plot_gpr_samples(gpr, n_samples=n_samples, ax=axs[0])
+plot_gpr_samples(gpr, n_samples = n_samples, ax = axs[0])
 axs[0].set_title("Samples from prior distribution")
 
 # plot posterior
@@ -600,7 +599,7 @@ print(
 )
 
 
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

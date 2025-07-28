@@ -3,14 +3,14 @@
 
 
 #%% Bk5_Ch16_01
-# 图 8. 每次抛 n = 20 枚色子
+# 图 8. 每次抛 n = 20 枚色子, 中心极限定理：渐近于正态分布
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 mean_array = []
 num_dices  = 20 # n = 5, 10, 20
-num_trials = 10000
+num_trials = 100000
 
 # each trial: 10 dices and calculate mean
 for i in np.arange(num_trials):
@@ -19,10 +19,10 @@ for i in np.arange(num_trials):
     mean_array.append(mean_i)
 
 # plot the histogram of mean values at 50, 500, 5000 trials
-for j in [100, 1000, 10000]: # m
+for j in [1000, 10000, 100000]: # m
     mean_array_j = mean_array[0:j]
     fig, ax = plt.subplots()
-    sns.histplot(mean_array_j, kde = True, stat="density", binrange = [1,6], binwidth = 0.2)
+    sns.histplot(mean_array_j, kde = True, stat="density", binrange = [1, 6], bins = 100, binwidth = 0.1)
     mean_array_j = np.array(mean_array_j)
     mu_mean_array_j = mean_array_j.mean()
     ax.axvline(x = mu_mean_array_j, color = 'r',linestyle = '--')
@@ -42,10 +42,10 @@ import seaborn as sns
 
 # create a population
 num_population = 100000
-X1 = np.random.normal(loc=-5, scale=1.0, size=int(num_population/2))
-X2 = np.random.normal(loc=5,  scale=3,   size=int(num_population/2))
+X1 = np.random.normal(loc = -5, scale = 1.0, size = int(num_population/2)) # (50000,)
+X2 = np.random.normal(loc = 5,  scale = 3,   size = int(num_population/2)) # (50000,)
 
-X = np.concatenate((X1, X2), axis=None)
+X = np.concatenate((X1, X2), axis = None) # (100000,)
 
 fig, ax = plt.subplots()
 sns.kdeplot(X, fill = True)
@@ -58,12 +58,10 @@ ax.axvline(x = mu_X - sigma_X, color = 'r',linestyle = '--')
 plt.grid()
 
 #%% 图 10. 每次抽取 10 个样本
-
 num_draws  = 10
 num_trials = 5000
 
 mean_array = []
-
 # each trial: 10 dices and calculate mean
 for i in np.arange(num_trials):
     indice_i = np.random.randint(low = 0, high = num_population, size=(num_draws))
@@ -73,11 +71,10 @@ for i in np.arange(num_trials):
     mean_array.append(mean_i)
 
 # plot the histogram of mean values at 50, 500, 5000 trials
-
-for j in [50,500,5000]: # m
+for j in [50, 500, 5000]:
     mean_array_j = mean_array[0:j]
     fig, ax = plt.subplots()
-    sns.histplot(mean_array_j, kde = True, stat="density", binrange = [-10,10], binwidth = 0.5)
+    sns.histplot(mean_array_j, kde = True, stat="density", binrange = [-10,10], binwidth = 0.2)
     mean_array_j = np.array(mean_array_j)
     mu_mean_array_j = mean_array_j.mean()
 
@@ -86,8 +83,8 @@ for j in [50,500,5000]: # m
     ax.axvline(x = mu_mean_array_j + sigma_mean_array_j, color = 'r',linestyle = '--')
     ax.axvline(x = mu_mean_array_j - sigma_mean_array_j, color = 'r',linestyle = '--')
 
-    plt.xlim(-10,10)
-    plt.ylim(0,0.3)
+    plt.xlim(-10, 10)
+    plt.ylim(0, 0.3)
     plt.grid()
 
 
@@ -96,8 +93,7 @@ for j in [50,500,5000]: # m
 num_trials = 5000
 fig, ax = plt.subplots()
 
-#
-for num_draws in [4, 8, 16]:
+for num_draws in [4, 8, 16]: # 每次抽取 n 个样本
     mean_array = []
     for i in np.arange(num_trials):
         indice_i = np.random.randint(low = 0, high = num_population, size=(num_draws))
@@ -105,9 +101,7 @@ for num_draws in [4, 8, 16]:
 
         mean_i   = sample_i.mean()
         mean_array.append(mean_i)
-
         # finishing the generation of mean array
-
     sns.kdeplot(mean_array, fill = True)
 
 plt.xlim(-10,10)
@@ -118,7 +112,7 @@ plt.grid()
 # 图 12. 标准误随 n 变化
 num_trials = 5000
 SE_array = []
-n_array = np.linspace(4,100,25)
+n_array = np.linspace(4, 100, 25)
 for num_draws in n_array:
     mean_array = []
     for i in np.arange(num_trials):
@@ -132,12 +126,12 @@ for num_draws in n_array:
     SE_array.append(SE_i)
 
 fig, ax = plt.subplots()
-
-plt.plot(n_array,SE_array, marker = 'x', markersize = 12)
-plt.xlim(4,100)
-plt.ylim(0,3)
+ax.plot(n_array,SE_array, marker = 'x', markersize = 12)
+ax.set_xlim(4,100)
+ax.set_ylim(0,3)
 plt.grid()
-
+plt.show()
+plt.close()
 
 
 #%% Bk5_Ch16_03
@@ -147,12 +141,10 @@ from sympy import symbols, ln, simplify, lambdify, diff, solve, Float
 import matplotlib.pyplot as plt
 
 theta_1, theta_2 = symbols('theta_1 theta_2')
-
 samples = [-2.5, -5, 1, 3.5, -4, 1.5, 5.5]
 mu = np.mean(samples)
 
 print(mu)
-
 n = len(samples)
 bias_std = np.std(samples)
 bias_var = bias_std**2
@@ -165,22 +157,18 @@ for i in np.arange(n):
 
 A = simplify(A)
 print(A)
-
-lnL = -n/2*np.log(2*np.pi) - n/2*ln(theta_2) - 1/2/theta_2*A
+lnL = -n/2*np.log(2*np.pi) - n/2*ln(theta_2) - A/2/theta_2
 
 ####
 lnL = simplify(lnL)
-
 print(lnL)
 
 theta_1_array = np.linspace(mu-3, mu+3, 40)
 theta_2_array = np.linspace(bias_var*0.8, bias_var*1.2, 40)
 
 theta_11,theta_22 = np.meshgrid(theta_1_array, theta_2_array)
-
-lnL_fcn = lambdify((theta_1,theta_2), lnL)
-
-lnL_matrix = lnL_fcn(theta_11,theta_22)
+lnL_fcn = lambdify((theta_1, theta_2), lnL)
+lnL_matrix = lnL_fcn(theta_11, theta_22)
 
 ####
 # first-order partial differential
@@ -192,7 +180,6 @@ print(df_dtheta_2)
 
 # solution of (theta_1,theta_2)
 sol = solve([df_dtheta_1, df_dtheta_2], [theta_1, theta_2])
-
 print(sol)
 
 theta_1_star = sol[0][0]
@@ -236,8 +223,8 @@ ax.set_ylim(theta_22.min(), theta_22.max())
 ax.set_xlabel('$\\theta_1$, $\\mu$')
 ax.set_ylabel('$\\theta_2$, $\\sigma^2$')
 # plt.gca().set_aspect('equal', adjustable='box')
-
 plt.show()
+plt.close()
 
 
 #%% Bk5_Ch16_04
@@ -253,61 +240,62 @@ alpha = 0.05
 
 ### population standard deviation is known, or large sample size
 ### Get the critical values, two-tailed
-
 crit_value = stats.norm.ppf(q = 1 - alpha/2)
 
 fig, ax = plt.subplots()
 
-plt.plot(x, f_x, color = "#0070C0")
-plt.fill_between(x[np.logical_and(x >= -crit_value, x <= crit_value)], f_x[np.logical_and(x >= -crit_value, x <= crit_value)], color = "#DBEEF3")
+ax.plot(x, f_x, color = "#0070C0")
+ax.fill_between(x[np.logical_and(x >= -crit_value, x <= crit_value)], f_x[np.logical_and(x >= -crit_value, x <= crit_value)], color = "#DBEEF3")
 
 ax.axvline(x = crit_value,  color = 'r', linestyle = '--')
-plt.plot(crit_value, 0, marker = 'x', color = 'k', markersize = 12)
+ax.plot(crit_value, 0, marker = 'x', color = 'k', markersize = 12)
 ax.axvline(x = -crit_value, color = 'r', linestyle = '--')
-plt.plot(-crit_value, 0, marker = 'x', color = 'k', markersize = 12)
+ax.plot(-crit_value, 0, marker = 'x', color = 'k', markersize = 12)
 
-plt.fill_between(x[x <= -crit_value], f_x[x <= -crit_value], color = "#FF9980")
-plt.fill_between(x[x >= crit_value],  f_x[x >= crit_value], color = "#FF9980")
+ax.fill_between(x[x <= -crit_value], f_x[x <= -crit_value], color = "#FF9980")
+ax.fill_between(x[x >= crit_value],  f_x[x >= crit_value], color = "#FF9980")
 
-plt.title("Population sigma known, $\\alpha = 0.05$, two-tailed")
-
+ax.set_title("Population sigma known, $\\alpha = 0.05$, two-tailed")
 ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
+plt.close()
 
 ### left-sided
 crit_value = stats.norm.ppf(q = 1 - alpha)
 fig, ax = plt.subplots()
-plt.plot(x, f_x, color = "#0070C0")
-plt.fill_between(x[x >= -crit_value], f_x[x >= -crit_value], color = "#DBEEF3")
+ax.plot(x, f_x, color = "#0070C0")
+ax.fill_between(x[x >= -crit_value], f_x[x >= -crit_value], color = "#DBEEF3")
 ax.axvline(x = -crit_value, color = 'r', linestyle = '--')
-plt.plot(-crit_value,0,marker = 'x', color = 'k', markersize = 12)
+ax.plot(-crit_value,0,marker = 'x', color = 'k', markersize = 12)
 
-plt.fill_between(x[x <= -crit_value], f_x[x <= -crit_value], color = "#FF9980")
-plt.title("Population sigma known, $\\alpha = 0.05$, left-tailed")
+ax.fill_between(x[x <= -crit_value], f_x[x <= -crit_value], color = "#FF9980")
+ax.set_title("Population sigma known, $\\alpha = 0.05$, left-tailed")
 ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
+plt.close()
 
 ### right-sided
 crit_value = stats.norm.ppf(q = 1 - alpha)
 
 fig, ax = plt.subplots()
-plt.plot(x, f_x, color = "#0070C0")
-plt.fill_between(x[x <= crit_value], f_x[x <= crit_value], color = "#DBEEF3")
+ax.plot(x, f_x, color = "#0070C0")
+ax.fill_between(x[x <= crit_value], f_x[x <= crit_value], color = "#DBEEF3")
 ax.axvline(x = crit_value, color = 'r', linestyle = '--')
-plt.plot(crit_value,0,marker = 'x', color = 'k', markersize = 12)
-plt.fill_between(x[x >= crit_value], f_x[x >= crit_value],  color = "#FF9980")
-plt.title("Population sigma known, $\\alpha = 0.05$, right-tailed")
+ax.plot(crit_value,0,marker = 'x', color = 'k', markersize = 12)
+ax.fill_between(x[x >= crit_value], f_x[x >= crit_value],  color = "#FF9980")
+ax.set_title("Population sigma known, $\\alpha = 0.05$, right-tailed")
 ax.set_xlim(-4,4)
 ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
+plt.close()
 
 
 #%% Bk5_Ch16_05
@@ -350,8 +338,6 @@ ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
-
-
 
 #%% Bk5_Ch16_06
 # 16.8 区间估计：总体均值未知，方差估计
