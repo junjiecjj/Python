@@ -56,24 +56,13 @@ fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 30))
 
 trials_array = np.arange(0,201)+1
 
-axs[0].plot(animal_df['x1_plot'],trials_array,
-               color = 'r', linestyle = None,
-               marker = '.', markersize = 20,
-               label = 'Chicken')
+axs[0].plot(animal_df['x1_plot'], trials_array, color = 'r', linestyle = None, marker = '.', markersize = 20, label = 'Chicken')
 
-axs[0].plot(animal_df['x2_plot'],trials_array,
-               color = 'b', linestyle = None,
-               marker = '.', markersize = 20,
-               label = 'Rabbit')
+axs[0].plot(animal_df['x2_plot'], trials_array, color = 'b', linestyle = None, marker = '.', markersize = 20, label = 'Rabbit')
 
-axs[0].plot(animal_df['x3_plot'],trials_array,
-               color = 'g', linestyle = None,
-               marker = '.', markersize = 20,
-               label = 'Piglet')
+axs[0].plot(animal_df['x3_plot'], trials_array, color = 'g', linestyle = None, marker = '.', markersize = 20, label = 'Piglet')
 
-axs[0].plot(animal_df['total_plot'],
-            trials_array,
-            color = [0.8,0.8,0.8])
+axs[0].plot(animal_df['total_plot'], trials_array, color = [0.8,0.8,0.8])
 
 axs[0].set_ylim(1,200)
 axs[0].set_xlim(-0.5,2.5)
@@ -86,14 +75,11 @@ axs[0].set_xlabel("Result of each trial")
 # axs[0].invert_xaxis()
 axs[0].legend()
 
-axs[1].plot(animal_df['x1_ratio'],trials_array,
-            color = 'r', label = 'Chicken')
+axs[1].plot(animal_df['x1_ratio'],trials_array, color = 'r', label = 'Chicken')
 
-axs[1].plot(animal_df['x2_ratio'],trials_array,
-            color = 'b', label = 'Rabbit')
+axs[1].plot(animal_df['x2_ratio'], trials_array, color = 'b', label = 'Rabbit')
 
-axs[1].plot(animal_df['x3_ratio'],trials_array,
-            color = 'g', label = 'Piglet')
+axs[1].plot(animal_df['x3_ratio'], trials_array, color = 'g', label = 'Piglet')
 
 axs[1].set_ylim(1,200)
 axs[1].set_xlim(0,1)
@@ -106,8 +92,7 @@ axs[1].set_xlabel("Ratio")
 # axs[1].invert_xaxis()
 axs[1].legend()
 
-animal_df[['x2_ratio', 'x1_ratio', 'x3_ratio']].plot.barh(stacked=True,
-                                                          ax = axs[2])
+animal_df[['x2_ratio', 'x1_ratio', 'x3_ratio']].plot.barh(stacked=True, ax = axs[2])
 
 axs[2].set_ylim(1,200)
 axs[2].set_xlim(0,1)
@@ -150,22 +135,15 @@ for ax_idx,alpha_prior_idx,x_idx in zip(axs.ravel(),alphas,x_3_choices):
         # Selected animal
         alpha_idx = alpha_prior_idx + num_chickens_idx
         beta_idx  = alpha_0 + num_animals_idx - alpha_idx
-        posterior_pdf = beta_dist.pdf(
-                          theta_array,
-                          alpha_idx,
-                          beta_idx)
+        posterior_pdf = beta_dist.pdf( theta_array, alpha_idx, beta_idx)
 
         loc_max_1 = theta_array[np.argmax(posterior_pdf)]
         # location of MAP
 
         ratio = 1.2
-        ax_idx.plot(theta_array,
-                posterior_pdf * ratio + height,
-                color = [0.6,0.6,0.6])
+        ax_idx.plot(theta_array, posterior_pdf * ratio + height, color = [0.6,0.6,0.6])
 
-        ax_idx.fill_between(theta_array, height,
-                        posterior_pdf * ratio + height,
-                        color=colors[idx])
+        ax_idx.fill_between(theta_array, height, posterior_pdf * ratio + height, color=colors[idx])
 
     ax_idx.set_xlim(0,1)
     ax_idx.set_xlabel('Posterior')
@@ -190,10 +168,7 @@ for ax_idx, num_animals_idx in zip(axs.ravel(), num_animals_array):
     # Chickens:
     alpha_1_idx = alpha_1 + num_chickens_idx
     beta_1_idx  = alpha_0 + num_animals_idx - alpha_1_idx
-    posterior_pdf_1 = beta_dist.pdf(
-                      theta_array,
-                      alpha_1_idx,
-                      beta_1_idx)
+    posterior_pdf_1 = beta_dist.pdf( theta_array, alpha_1_idx, beta_1_idx)
 
     loc_max_1 = theta_array[np.argmax(posterior_pdf_1)]
     # location of MAP, marginal Beta
@@ -204,10 +179,7 @@ for ax_idx, num_animals_idx in zip(axs.ravel(), num_animals_array):
     # rabbits
     alpha_2_idx = alpha_2 + num_rabbits_idx
     beta_2_idx  = alpha_0 + num_animals_idx - alpha_2_idx
-    posterior_pdf_2 = beta_dist.pdf(
-                      theta_array,
-                      alpha_2_idx,
-                      beta_2_idx)
+    posterior_pdf_2 = beta_dist.pdf( theta_array, alpha_2_idx, beta_2_idx)
 
     loc_max_2 = theta_array[np.argmax(posterior_pdf_2)]
     # location of MAP, marginal Beta
@@ -218,10 +190,7 @@ for ax_idx, num_animals_idx in zip(axs.ravel(), num_animals_array):
     # piglets
     alpha_3_idx = alpha_3 + num_piglets_idx
     beta_3_idx  = alpha_0 + num_animals_idx - alpha_3_idx
-    posterior_pdf_3 = beta_dist.pdf(
-                      theta_array,
-                      alpha_3_idx,
-                      beta_3_idx)
+    posterior_pdf_3 = beta_dist.pdf( theta_array, alpha_3_idx, beta_3_idx)
 
     loc_max_3 = theta_array[np.argmax(posterior_pdf_3)]
     # location of MAP, marginal Beta
@@ -250,9 +219,7 @@ xx3 = 1.0 - xx1 - xx2
 xx3 = np.where(xx3 > 0.0, xx3, np.nan)
 
 fig, axs = plt.subplots(nrows=3, ncols=3, figsize=(20, 20))
-
 for ax_idx, num_animals_idx in zip(axs.ravel(), num_animals_array):
-
     # can be replaced by a nested for loop
     num_chickens_idx = animal_df.iloc[num_animals_idx].x1_cumsum
     num_rabbits_idx  = animal_df.iloc[num_animals_idx].x2_cumsum

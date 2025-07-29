@@ -21,10 +21,7 @@ feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3
 
 X_df = pd.DataFrame(X_1_to_4, columns = feature_names)
 y_df = pd.DataFrame(y, columns=['label'])
-
-y_df[y_df==0] = 'C_1'
-y_df[y_df==1] = 'C_2'
-y_df[y_df==2] = 'C_3'
+y_df = y_df.replace({0: 'C_1', 1: 'C_2', 2: 'C_3'})
 
 X1_df = X_df['Sepal length, $X_1$']
 
@@ -36,6 +33,7 @@ fig, ax = plt.subplots()
 KDE_C1 = sm.nonparametric.KDEUnivariate(X1_df[y==0])
 KDE_C1.fit(bw=0.1)
 f_x1_given_C1 = KDE_C1.evaluate(x1)
+print(f"f_x1_given_C1.sum() * (x1[1] - x1[0]) = {f_x1_given_C1.sum() * (x1[1] - x1[0])}") # 注意，fX|Y(x|Ck) 和横轴包裹的面积为 1
 
 ax.fill_between(x1, f_x1_given_C1, facecolor = '#FF3300',alpha = 0.2)
 ax.plot(x1, f_x1_given_C1,color = '#FF3300', label = '$f_{X1|Y}(x_1|C_1)$, likelihood')
@@ -54,6 +52,8 @@ fig, ax = plt.subplots()
 KDE_C2 = sm.nonparametric.KDEUnivariate(X1_df[y==1])
 KDE_C2.fit(bw=0.1)
 f_x1_given_C2 = KDE_C2.evaluate(x1)
+print(f"f_x1_given_C2.sum() * (x1[1] - x1[0]) = {f_x1_given_C2.sum() * (x1[1] - x1[0])}") # 注意，fX|Y(x|Ck) 和横轴包裹的面积为 1
+
 ax.fill_between(x1, f_x1_given_C2, facecolor = '#0099FF',alpha = 0.2)
 ax.plot(x1, f_x1_given_C2,color = '#0099FF', label = '$f_{X1|Y}(x_1|C_2)$, likelihood')
 
@@ -73,6 +73,8 @@ fig, ax = plt.subplots()
 KDE_C3 = sm.nonparametric.KDEUnivariate(X1_df[y==2])
 KDE_C3.fit(bw=0.1)
 f_x1_given_C3 = KDE_C3.evaluate(x1)
+print(f"f_x1_given_C3.sum() * (x1[1] - x1[0]) = {f_x1_given_C3.sum() * (x1[1] - x1[0])}")
+
 ax.fill_between(x1, f_x1_given_C3, facecolor = '#8A8A8A',alpha = 0.2)
 ax.plot(x1, f_x1_given_C3,color = '#8A8A8A', label = '$f_{X1|Y}(x_1|C_3)$, likelihood')
 
@@ -218,14 +220,11 @@ plt.show()
 
 #%% Evidence fX_1(x_1)
 # 图 5. 叠加联合概率曲线，估算证据因子概率密度函数
-
 f_x1 = f_x1_joint_C1 + f_x1_joint_C2 + f_x1_joint_C3
-
 fig, ax = plt.subplots()
 
 ax.plot(x1, f_x1, color = '#00448A', label = '$f_{X1}(x_1)$, evidence (marginal)')
 ax.fill_between(x1, f_x1, facecolor = '#00448A',alpha = 0.1)
-
 ax.plot(x1, f_x1_joint_C1,color = '#FF3300', label = '$f_{X1,Y}(x_1,C_1)$')
 ax.plot(x1, f_x1_joint_C2,color = '#0099FF', label = '$f_{X1,Y}(x_1,C_2)$')
 ax.plot(x1, f_x1_joint_C3,color = '#8A8A8A', label = '$f_{X1,Y}(x_1,C_3)$')
@@ -371,10 +370,12 @@ ax.set_ylabel('Posterior probability')
 ax.set_xlabel('Sepal length, $x_1$')
 ax.legend()
 plt.show()
+plt.close()
+
 
 #%% compare posterior, likelihood, marginal (evidence), and joint
 # 图 9. 比较后验概率 fY|X(C1 | x)、似然概率 fX|Y(x|C1)、证据因子 fX(x)、联合概率 fX,Y(x,C1)
-# C1
+## C1
 fig, ax = plt.subplots()
 
 # posterior
@@ -398,7 +399,10 @@ ax.set_xlim([4,8])
 ax.set_xlabel('Sepal length, $x_1$')
 ax.legend()
 plt.show()
-# C2
+plt.close()
+
+
+## C2
 # 图 10. 比较后验概率 fY|X(C2 | x)、似然概率 fX|Y(x|C2)、证据因子 fX(x)、联合概率 fX,Y(x,C2)
 fig, ax = plt.subplots()
 
@@ -422,8 +426,10 @@ ax.set_xlim([4,8])
 
 ax.set_xlabel('Sepal length, $x_1$')
 ax.legend()
+plt.show()
+plt.close()
 
-# C3
+## C3
 # 图 11. 比较后验概率 fY|X(C3 | x)、似然概率 fX|Y(x|C3)、证据因子 fX(x)、联合概率 fX,Y(x,C3
 fig, ax = plt.subplots()
 
@@ -447,7 +453,8 @@ ax.set_xlim([4,8])
 
 ax.set_xlabel('Sepal length, $x_1$')
 ax.legend()
-
+plt.show()
+plt.close()
 
 
 

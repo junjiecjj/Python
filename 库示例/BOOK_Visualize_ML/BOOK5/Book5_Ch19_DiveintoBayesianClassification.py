@@ -56,10 +56,11 @@ def plot_surface(xx1, xx2, surface, z_height, title_txt, data = None ):
     plt.gca().set_aspect('equal', adjustable='box')
     ax.set_title(title_txt)
     plt.show()
+    plt.close()
     return
 
 # visualize 2D PDF contour and marginal
-def plot_joint_marginal(xx1, xx2,surface, x1, f_x1, x2, f_x2, x1_s, x2_s, color,title_txt):
+def plot_joint_marginal(xx1, xx2, surface, x1, f_x1, x2, f_x2, x1_s, x2_s, color, title_txt):
     fig = plt.figure(figsize=(7, 7))
     gs = gridspec.GridSpec(2, 2, width_ratios=[3, 1], height_ratios=[3, 1])
 
@@ -106,6 +107,7 @@ def plot_joint_marginal(xx1, xx2,surface, x1, f_x1, x2, f_x2, x1_s, x2_s, color,
     ax4.set_visible(False)
 
     plt.show()
+    plt.close()
     return
 
 # Initialization
@@ -118,15 +120,13 @@ y = iris.target
 feature_names = ['Sepal length, $X_1$','Sepal width, $X_2$', 'Petal length, $X_3$','Petal width, $X_4$']
 X_df = pd.DataFrame(X_1_to_4, columns=feature_names)
 y_df = pd.DataFrame(y, columns=['label'])
-y_df[y_df==0] = 'C_1'
-y_df[y_df==1] = 'C_2'
-y_df[y_df==2] = 'C_3'
+y_df = y_df.replace({0: 'C_1', 1: 'C_2', 2: 'C_3'})
 
 X1_2_df = X_df[['Sepal length, $X_1$','Sepal width, $X_2$']]
-x1 = np.linspace(4,8,161)
-x2 = np.linspace(1,5,161)
-xx1, xx2 = np.meshgrid(x1,x2) #  (161, 161)
-positions = np.vstack([xx1.ravel(), xx2.ravel()]) #  (161, 161, 2)
+x1 = np.linspace(4, 8, 161)
+x2 = np.linspace(1, 5, 161)
+xx1, xx2 = np.meshgrid(x1, x2) #  (161, 161)
+positions = np.vstack([xx1.ravel(), xx2.ravel()]) #   (2, 25921)
 
 
 #%% likelihood PDF, given class Y
@@ -150,7 +150,7 @@ KDE_x2_given_C1.fit(bw=0.1)
 f_x2_given_C1 = KDE_x2_given_C1.evaluate(x2)
 
 title_txt = '$f_{X1,X2|Y}(x_1,x_2|C_1)$'
-plot_joint_marginal(xx1, xx2, f_x1_x2_given_C1, x1, f_x1_given_C1, x2,f_x2_given_C1, x1_s_C1, x2_s_C1, '#FF3300',title_txt)
+plot_joint_marginal(xx1, xx2, f_x1_x2_given_C1, x1, f_x1_given_C1, x2, f_x2_given_C1, x1_s_C1, x2_s_C1, '#FF3300',title_txt)
 
 # given C2 (y = 1)
 # 图 2. 似然概率 PDF 曲面 fX1,X2|Y(x1,x2|C2)
@@ -183,7 +183,6 @@ z_height = 1
 title_txt = '$f_{X1, X2|Y}(x_1, x_2|C_3)$, likelihood'
 plot_surface(xx1, xx2, f_x1_x2_given_C3, z_height, title_txt)
 
-
 x1_s_C3 = X1_2_df['Sepal length, $X_1$'][y==2]
 KDE_x1_given_C3 = sm.nonparametric.KDEUnivariate(x1_s_C3)
 KDE_x1_given_C3.fit(bw=0.1)
@@ -215,7 +214,7 @@ ax.set_ylabel('Sepal width, $x_2$')
 plt.gca().set_aspect('equal', adjustable='box')
 ax.set_title('Compare three likelihood PDF')
 plt.show()
-
+plt.close()
 #%% prior probability
 
 y_counts = y_df.value_counts()
@@ -227,14 +226,14 @@ fig, ax = plt.subplots()
 y_counts.plot.bar(color=my_colors)
 plt.ylabel('Count')
 plt.show()
-
+plt.close()
 
 fig, ax = plt.subplots()
 y_prob = y_counts/y_df.count().values[0]
 y_prob.plot.bar(color=my_colors)
 plt.ylabel('Prior probability')
 plt.show()
-
+plt.close()
 #%% Joint PDF
 
 f_x1_x2_joint_C1 = f_x1_x2_given_C1*y_prob['C_1']
@@ -262,8 +261,6 @@ f_x1_x2 = f_x1_x2_joint_C1 + f_x1_x2_joint_C2 + f_x1_x2_joint_C3
 z_height = 0.5
 title_txt = '$f_{X1, X2}(x_1, x_2)$, evidence'
 plot_surface(xx1, xx2, f_x1_x2, z_height, title_txt, data = iris_sns)
-
-
 
 #%% Posterior
 
@@ -301,7 +298,7 @@ f_x2 = KDE_X2.evaluate(x2)
 f_x1_x2_indp = np.outer(f_x2, f_x1)
 
 title_txt = '$f_{X1,X2}(x_1,x_2)$, independence'
-plot_joint_marginal(xx1,xx2,f_x1_x2_indp, x1,f_x1, x2,f_x2, x1_s,x2_s, '#00448A',title_txt)
+plot_joint_marginal(xx1, xx2, f_x1_x2_indp, x1, f_x1, x2, f_x2, x1_s, x2_s, '#00448A',title_txt)
 
 z_height = 0.8
 title_txt = '$f_{X1, X2}(x_1, x_2)$, independence'
@@ -399,7 +396,7 @@ plot_surface(xx1, xx2, f_x1_x2_condi_indp, z_height, title_txt)
 
 # 图 22. 假设条件独立，证据因子 fX1,X2(x1,x2) 等高线，和边缘概率密度 fX1(x1)、fX2(x2) 曲线关系
 title_txt = '$f_{X1,X2}(x_1,x_2)$, conditional independence'
-plot_joint_marginal(xx1,xx2,f_x1_x2_condi_indp, x1,f_x1, x2,f_x2, x1_s,x2_s, '#00448A',title_txt)
+plot_joint_marginal(xx1, xx2, f_x1_x2_condi_indp, x1,f_x1, x2,f_x2, x1_s,x2_s, '#00448A',title_txt)
 
 
 #%% surface projected along Y to X-Z plane

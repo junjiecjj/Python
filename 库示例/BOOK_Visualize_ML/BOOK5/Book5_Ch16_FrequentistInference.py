@@ -338,6 +338,7 @@ ax.set_ylim(0,0.5)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
+plt.close()
 
 #%% Bk5_Ch16_06
 # 16.8 区间估计：总体均值未知，方差估计
@@ -352,7 +353,7 @@ f_x_chi2 = stats.chi2.pdf(x, df = n-1)
 
 alpha = 0.05
 
-#%% Get the critical values, two-tailed
+### Get the critical values, two-tailed
 crit_value_right = stats.chi2.ppf(q = 1-alpha/2, df = n-1)
 crit_value_left  = stats.chi2.ppf(q = alpha/2, df = n-1)
 
@@ -367,13 +368,14 @@ ax.axvline(x = crit_value_left, color = 'r', linestyle = '--')
 plt.plot(crit_value_left,0,marker = 'x', color = 'k', markersize = 12)
 
 plt.fill_between(x[np.logical_and(x >= 0, x <= crit_value_left)], f_x_chi2[np.logical_and(x >= 0, x <= crit_value_left)], color = "#FF9980")
-
 plt.fill_between(x[np.logical_and(x <= x.max(), x >= crit_value_right)], f_x_chi2[np.logical_and(x <= x.max(), x >= crit_value_right)], color = "#FF9980")
 
 ax.set_xlim(0,16)
 ax.set_ylim(0,0.2)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
+plt.show()
+plt.close()
 
 
 

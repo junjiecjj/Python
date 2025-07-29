@@ -162,34 +162,35 @@ for alpha in alpha_arrays:
     # posterior distribution
     posterior = stats.beta(s + alpha, n - s + beta)
     fig, ax = plt.subplots(figsize = (12,6))
-    plt.plot(theta_array, prior.pdf(theta_array), label='Prior', c='b')
-    plt.plot(theta_array, posterior.pdf(theta_array), label='Posterior', c='r')
+    ax.plot(theta_array, prior.pdf(theta_array), label='Prior', c='b')
+    ax.plot(theta_array, posterior.pdf(theta_array), label='Posterior', c='r')
 
     # factor_normalize = stats.binom(n, theta_array).pmf(s).sum()*1/500
     factor_normalize = 1/(n + 1)
     # note: multiplication factor normalize to
     # normalize likelihood distribution
-    plt.plot(theta_array, stats.binom(n, theta_array).pmf(s)/factor_normalize, label='Likelihood', c='g')
+    ax.plot(theta_array, stats.binom(n, theta_array).pmf(s)/factor_normalize, label='Likelihood', c='g')
 
     # Prior mode
     try:
-        plt.axvline((alpha-1)/(alpha+beta-2), c='b', linestyle='--', label='Prior mode')
+        ax.axvline((alpha-1)/(alpha+beta-2), c='b', linestyle='--', label='Prior mode')
     except:
         pass
 
     # MAP
-    plt.axvline((s+alpha-1)/(n+alpha+beta-2), c='r', linestyle='--', label='MAP')
+    ax.axvline((s+alpha-1)/(n+alpha+beta-2), c='r', linestyle='--', label='MAP')
 
     # MLE
-    plt.axvline(mu/n, c='g', linestyle='--', label='MLE')
+    ax.axvline(mu/n, c='g', linestyle='--', label='MLE')
 
-    plt.xlim([0, 1])
-    plt.ylim([0, 15])
-    plt.yticks([0,5,10,15])
-    plt.xlabel(r'$\theta$')
-    plt.ylabel('Density')
-    plt.legend()
-
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 15])
+    ax.set_yticks([0,5,10,15])
+    ax.set_xlabel(r'$\theta$')
+    ax.set_ylabel('Density')
+    ax.legend()
+    plt.show()
+    plt.close()
 #%% 3D visualizations
 
 #%% Prior distributions
@@ -213,39 +214,41 @@ Prior_PDF_matrix = np.array(Prior_PDF_matrix)
 
 
 fig, ax = plt.subplots(figsize=(10,10))
-plt.contourf(theta_array, a_list, Prior_PDF_matrix, levels = np.linspace(0,Prior_PDF_matrix.max()*1.2,10), cmap = 'Blues')
+ax.contourf(theta_array, a_list, Prior_PDF_matrix, levels = np.linspace(0,Prior_PDF_matrix.max()*1.2,10), cmap = 'Blues')
 
 # plt.plot(theta_MAP,a, color = 'k')
 # plt.axvline(x = theta_MLE, color = 'k')
 # prior mode
-plt.axvline(x = 0.5, color = 'k')
+ax.axvline(x = 0.5, color = 'k')
 
-plt.xlabel('Theta')
-plt.ylabel('Alpha')
-plt.xlim(0,1)
-plt.ylim(1,a_list.max())
-plt.yticks([1,2,8, 16, 32, 64])
-
+ax.set_xlabel('Theta')
+ax.set_ylabel('Alpha')
+ax.set_xlim(0,1)
+ax.set_ylim(1,a_list.max())
+ax.set_yticks([1,2,8, 16, 32, 64])
+plt.show()
+plt.close()
 
 fig, ax = plt.subplots(figsize=(10,10),subplot_kw={'projection': '3d'})
-
-tt,aa = np.meshgrid(theta_array,a_list)
+tt, aa = np.meshgrid(theta_array,a_list)
 ax.plot_wireframe(tt, aa, Prior_PDF_matrix, color = [0,0,0], linewidth = 0.25, rstride=3, cstride=0)
 
 ax.contour(theta_array,a_list, Prior_PDF_matrix, levels = np.linspace(0,Prior_PDF_matrix.max()*1.2,10), cmap = 'Blues')
 
 ax.set_proj_type('ortho')
 
-plt.xlabel('Theta')
-plt.ylabel('Alpha')
-plt.xlim(0,1)
-plt.ylim(1,a_list.max())
-plt.yticks([1,2,8, 16, 32, 64])
+ax.set_xlabel('Theta')
+ax.set_ylabel('Alpha')
+ax.set_xlim(0,1)
+ax.set_ylim(1,a_list.max())
+ax.set_yticks([1,2,8, 16, 32, 64])
 
 ax.set_zlim3d([0,30])
 ax.view_init(azim=-120, elev=30)
 plt.tight_layout()
 ax.grid(False)
+plt.show()
+plt.close()
 
 #%% Posterior distribution
 
@@ -263,40 +266,39 @@ Prior_PDF_matrix = np.array(Prior_PDF_matrix)
 
 
 fig, ax = plt.subplots(figsize=(10,10))
-plt.contourf(theta_array, a_list, Prior_PDF_matrix, levels = np.linspace(0,Prior_PDF_matrix.max()*1.2,10), cmap = 'Blues')
+ax.contourf(theta_array, a_list, Prior_PDF_matrix, levels = np.linspace(0,Prior_PDF_matrix.max()*1.2,10), cmap = 'Blues')
 
-plt.plot(theta_MAP,a_list, color = 'k')
-plt.axvline(x = theta_MLE, color = 'k')
+ax.plot(theta_MAP,a_list, color = 'k')
+ax.axvline(x = theta_MLE, color = 'k')
 # prior mode
-plt.axvline(x = 0.5, color = 'k')
+ax.axvline(x = 0.5, color = 'k')
 
-plt.xlabel('Theta')
-plt.ylabel('Alpha')
-plt.xlim(0,1)
-plt.ylim(1,a_list.max())
-plt.yticks([1,2,8, 16, 32, 64])
+ax.set_xlabel('Theta')
+ax.set_ylabel('Alpha')
+ax.set_xlim(0,1)
+ax.set_ylim(1,a_list.max())
+ax.set_yticks([1,2,8, 16, 32, 64])
+plt.show()
+plt.close()
 
 
 fig, ax = plt.subplots(figsize=(10,10), subplot_kw={'projection': '3d'})
-
-tt,aa = np.meshgrid(theta_array,a_list)
+tt, aa = np.meshgrid(theta_array,a_list)
 ax.plot_wireframe(tt, aa, Prior_PDF_matrix, color = [0,0,0], linewidth = 0.25, rstride=3, cstride=0)
-
 ax.contour(theta_array, a_list, Prior_PDF_matrix, levels = np.linspace(0,Prior_PDF_matrix.max()*1.2,10), cmap = 'Blues')
-
 ax.set_proj_type('ortho')
-
-plt.xlabel('Theta')
-plt.ylabel('Alpha')
-plt.xlim(0,1)
-plt.ylim(1,a_list.max())
-plt.yticks([1,2,8, 16, 32, 64])
+ax.set_xlabel('Theta')
+ax.set_ylabel('Alpha')
+ax.set_xlim(0,1)
+ax.set_ylim(1,a_list.max())
+ax.set_yticks([1,2,8, 16, 32, 64])
 
 ax.set_zlim3d([0,30])
 ax.view_init(azim=-120, elev=30)
 plt.tight_layout()
 ax.grid(False)
-# plt.show()
+plt.show()
+plt.close()
 
 
 
