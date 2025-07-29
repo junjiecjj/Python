@@ -51,9 +51,7 @@ animal_df['x3_ratio'] = animal_df['x3_cumsum']/animal_df['total']
 animal_df[['x1_ratio','x2_ratio','x3_ratio']] = animal_df[['x1_ratio','x2_ratio','x3_ratio']].bfill()
 
 #%% visualize data of trials
-
 fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 30))
-
 trials_array = np.arange(0,201)+1
 
 axs[0].plot(animal_df['x1_plot'], trials_array, color = 'r', linestyle = None, marker = '.', markersize = 20, label = 'Chicken')
@@ -120,10 +118,8 @@ colors = cm.rainbow_r(np.linspace(0, 1, len(num_animals_array)))
 theta_array = np.linspace(0, 1, 500)
 
 fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 30))
-
 alphas = [alpha_1,alpha_2,alpha_3]
 x_3_choices = ['x1_cumsum','x2_cumsum','x3_cumsum']
-
 for ax_idx,alpha_prior_idx,x_idx in zip(axs.ravel(),alphas,x_3_choices):
 
     for idx, num_animals_idx in enumerate(num_animals_array):
@@ -149,21 +145,15 @@ for ax_idx,alpha_prior_idx,x_idx in zip(axs.ravel(),alphas,x_3_choices):
     ax_idx.set_xlabel('Posterior')
     ax_idx.set_ylabel('Number of trials')
 
-
 #%% snapshots of posterior curves
 # locations of snapshots
-
 num_animals_array = [0, 1, 2, 3, 4, 5, 10, 100, 200]
-
 fig, axs = plt.subplots(nrows=3, ncols=3, figsize=(20, 20))
-
 for ax_idx, num_animals_idx in zip(axs.ravel(), num_animals_array):
-
     # can be replaced by a nested for loop
     num_chickens_idx = animal_df.iloc[num_animals_idx].x1_cumsum
     num_rabbits_idx  = animal_df.iloc[num_animals_idx].x2_cumsum
     num_piglets_idx  = animal_df.iloc[num_animals_idx].x3_cumsum
-
 
     # Chickens:
     alpha_1_idx = alpha_1 + num_chickens_idx
@@ -198,18 +188,14 @@ for ax_idx, num_animals_idx in zip(axs.ravel(), num_animals_array):
     ax_idx.plot(theta_array, posterior_pdf_3, color = 'g')
     ax_idx.axvline(x = loc_max_3, color = 'g', linestyle = '--')
 
-
     ax_idx.set_xlabel('$\u03B8$')
     ax_idx.set_xlim(0,1)
     ax_idx.set_yticks([0,5,10,15])
     ax_idx.set_ylim(0,15)
 
-    ax_idx.set_title("animals: %d; chickens: %d; rabbits: %d; piglets: %d;"
-              % (num_animals_idx, num_chickens_idx, num_rabbits_idx, num_piglets_idx))
-
+    ax_idx.set_title("animals: %d; chickens: %d; rabbits: %d; piglets: %d;" % (num_animals_idx, num_chickens_idx, num_rabbits_idx, num_piglets_idx))
 
 #%% snapshots of Dirichlet distribution
-
 x1 = np.linspace(0,1,201)
 x2 = np.linspace(0,1,201)
 
