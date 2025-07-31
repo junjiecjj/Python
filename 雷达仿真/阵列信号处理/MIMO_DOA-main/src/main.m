@@ -1,7 +1,10 @@
 %{
     CBF、Capon、MUSIC、LS-ESPRIT、TLS-ESPRIT、ML法、FOCUSS、OMP、CVX、伪逆和SBL结果比较，
     2024/01/25：第一版
+    https://github.com/highskyno1/MIMO_DOA
 %}
+clear;
+clc;
 close all;
 
 %% 参数定义区

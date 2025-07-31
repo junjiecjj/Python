@@ -3,7 +3,7 @@ function center = MUSIC(Y)
     range   = 1;
     thre    = 1e-12;
     center  = 0;
-    Nit     = 20;
+    Nit     = 30;
     [Ev, ~] = eig(Y*Y');
     En  = Ev(:,1:(end-1));
     while range > thre

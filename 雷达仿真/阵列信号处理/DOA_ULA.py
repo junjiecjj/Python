@@ -129,6 +129,53 @@ def ESPRIT(Rxx, K, N):
     Theta = np.sort(Theta)
     return Theta
 
+# https://github.com/highskyno1/MIMO_DOA
+def DOA_ESPRIT(X, K, N, lamda, d):
+    # DOA_ESPRIT 基于旋转不变子空间法实现DOA
+    #   x_sig       每个阵元接收到的信号矩阵，阵元数*快拍数
+    #   target_len  目标数量
+    #   lamda       载波波长
+    #   d           阵元间隔
+    #   DOA_esp_ml  基于最大似然估计准则得到的估计结果
+    #   DOA_esp_tls 基于最小二乘准则得到的估计结果
+    N = X.shape[0]
+    # 回波子阵列合并
+    x_esp = np.vstack((X[:N-1,:], X[1:N, :]))
+    #  计算协方差
+    R_esp = np.cov(x_esp.conj())
+    # 特征分解
+    D, W = np.linalg.eig(R_esp.T)
+    D1, W1 = np.linalg.eig(R_esp)
+    # 获取信号子空间
+    W = np.fliplr(W)
+    U_s = W[:,:K]
+    # 拆分
+    U_s1 = U_s[:N-1,:]
+    U_s2 = U_s[N-1:,:]
+
+    ## LS-ESPRIT法
+    mat_esp_ml = scipy.linalg.pinv(U_s1) @ U_s2;
+    # 获取对角线元素并解算来向角
+    DOA_esp_ml = -np.angle(np.linalg.eig(mat_esp_ml)[0])
+    DOA_esp_ml = np.arcsin(DOA_esp_ml * lamda / 2 / np.pi / d)
+    DOA_esp_ml = np.rad2deg(DOA_esp_ml)
+
+    ## TLS-ESPRIT
+    Us12 = np.hstack((U_s1, U_s2))
+    U, s, VH = np.linalg.svd(Us12)
+    V = VH.conj().T
+    ## 提取E12和E22
+    E12 = V[:K, K:]
+    E22 = V[K:,K:]
+    mat_esp_tls = - E12 @ scipy.linalg.inv(E22)
+    # 获取对角线元素并解算来向角
+    DOA_esp_tls = -np.angle(np.linalg.eig(mat_esp_tls)[0])
+    DOA_esp_tls = np.arcsin(DOA_esp_tls * lamda / 2 / np.pi / d)
+    DOA_esp_tls = np.rad2deg(DOA_esp_tls);
+
+    return DOA_esp_ml, DOA_esp_tls
+
+
 def CBF(Rxx, K, N):
     Thetalst = np.arange(-90, 90.1, 0.5)
     angle = np.deg2rad(Thetalst)
@@ -298,6 +345,7 @@ def DOA_PINV(Rxx, ):
 
     return Thetalst, s_pinv, angle_est, peaks
 
+# https://github.com/highskyno1/MIMO_DOA
 def DOA_EM_SBL(noisevar, Rxx, Ns, err = 1e-3, timelim = 30):
     # 基于期望最大化-稀疏贝叶斯学习方法实现DOA估计
     #   noisevar    估计的噪声方差
@@ -335,7 +383,7 @@ def DOA_EM_SBL(noisevar, Rxx, Ns, err = 1e-3, timelim = 30):
     angle_est = Thetalst[peaks]
     return Thetalst, s_sbl, angle_est, peaks
 
-
+# 仅使用协方差矩阵 Rxx 的稀疏贝叶斯学习（SBL）DOA估计的完整Python实现, 版本一
 def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
     from scipy.linalg import inv
     from scipy.signal import find_peaks
@@ -355,7 +403,6 @@ def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
     # 输入校验
     assert Rxx.shape[0] == Rxx.shape[1], "Rxx必须是方阵"
     N = Rxx.shape[0]
-
 
     wavelength = 1.0
     array_pos = np.arange(N) * 0.5 * wavelength  # ULA
@@ -392,9 +439,7 @@ def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
             # 收敛检查
             if np.linalg.norm(Gamma_new - Gamma, 'fro') < tol:
                 break
-
             Gamma, noise_var = Gamma_new, noise_var_new
-
         except np.linalg.LinAlgError:
             print(f"Iter {it}: 矩阵求逆失败，增加正则化")
             K = inv(Gamma) + PhiH_Phi/noise_var + 1e-6 * np.eye(M)
