@@ -9,11 +9,11 @@ N               =           64;                % 基站处天线
 fc              =           100e9;              %100GHz
 lambda_c        =           3e8/fc;
 d               =           lambda_c/2;
-T               =           10;
+T               =           100;
 Nit             =           1e2;
 SNRdBs          =           -10:5:20;
 %% 
-theta   = 0.5;%pi/6
+theta   = 0.5;    % pi/6
 H   = genSteerVector(theta, N, d, lambda_c);
 Y   = zeros(N, T);
 A   = eye(N);
@@ -44,13 +44,11 @@ for i_SNR = 1:length(SNRdBs)
         MseESPRIT(i_SNR)    = MseESPRIT(i_SNR) + abs(asin(theta__ESPRIT) - asin(theta))^2;
         
         sigma2  = 10^(-SNRdBs(i_SNR)/10);
-% 这个sigma2和上面的值是渐进一致的
-%         sigma2  = (norm(Y, 'fro')^2-norm(H*X, 'fro')^2)/...
-%                 (size(Y, 1)*size(Y, 2));
-%         X_bar   = kron(X.', eye(N));
-%         y       = reshape(Y,[],1);
-%         CRLB(i_SNR)     = CRLB(i_SNR) + sigma2/2./...
-%                             real(-y'*X_bar*a2 + a2'*(X_bar'*X_bar)*H + a1'*(X_bar'*X_bar)*a1);
+        % 这个sigma2和上面的值是渐进一致的
+        %sigma2  = (norm(Y, 'fro')^2-norm(H*X, 'fro')^2)/ (size(Y, 1)*size(Y, 2));
+        %X_bar   = kron(X.', eye(N));
+        %y       = reshape(Y,[],1);
+        %CRLB(i_SNR)     = CRLB(i_SNR) + sigma2/2./ real(-y'*X_bar*a2 + a2'*(X_bar'*X_bar)*H + a1'*(X_bar'*X_bar)*a1);
         CRLB(i_SNR)     = CRLB(i_SNR) + sigma2/2/real((Cst*(X*X')));
     end
 end

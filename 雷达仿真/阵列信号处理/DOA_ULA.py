@@ -418,8 +418,6 @@ def SBL_DOA_Rxx(Rxx, max_iter=100, tol=1e-4):
     return theta_grid, power_db, angle_est, peaks
     # return theta_grid[peaks], power_db
 
-
-
 import cvxpy as cpy
 def DOA_CVX(Rxx, p_norm, tor_lim = 1e-1):
     Thetalst = np.arange(-90, 90.1, 0.5)
@@ -443,8 +441,6 @@ def DOA_CVX(Rxx, p_norm, tor_lim = 1e-1):
     peaks, _ =  scipy.signal.find_peaks(s_cvx, height = -10, distance = 20)
     angle_est = Thetalst[peaks]
     return Thetalst, s_cvx, angle_est, peaks
-
-
 
 
 derad = np.pi/180             # 角度->弧度
