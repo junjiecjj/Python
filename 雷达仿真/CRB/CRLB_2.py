@@ -195,7 +195,7 @@ H   = genSteerVector(theta, N, d, lambda_c)
 Y   = np.zeros((N, T))
 A   = np.eye(N)
 a1  = genPartialSteerVector(theta, N, d, lambda_c, 1)
-a2  = genPartialSteerVector(theta, N, d, lambda_c, 2);
+a2  = genPartialSteerVector(theta, N, d, lambda_c, 2)
 MseMUSIC  = np.zeros(SNRdBs.size)
 MseESPRIT = np.zeros(SNRdBs.size)
 MseESPRIT_tls = np.zeros(SNRdBs.size)
@@ -229,16 +229,16 @@ for i, snr in enumerate(SNRdBs):
         MseMUSIC[i]     += np.abs(theta_MUISC - theta)**2
 
         Rxx = y @ y.T.conjugate() / T
-        theta_ESPIRT = ESPRIT(Rxx, 1, N)[0]
+        theta_ESPIRT    = ESPRIT(Rxx, 1, N)[0]
         MseESPRIT[i]    += np.abs(theta_ESPIRT - theta)**2
 
-        psi             = TLS_ESPRIT(y, 1);
+        psi                = TLS_ESPRIT(y, 1);
         theta_ESPRIT_tls   = np.log(psi)/(1j * np.pi)
         MseESPRIT_tls[i]   += np.abs(np.arcsin(theta_ESPRIT_tls) - theta)**2
 
         DOA_esp_ml, DOA_esp_tls = DOA_ESPRIT(y, 1, N, lamda = 2, d = 1)
-        MseESPRIT_tls1[i]   += np.abs(DOA_esp_tls[0] - theta)**2
-        MseESPRIT_ml[i]   += np.abs(DOA_esp_ml[0] - theta)**2
+        MseESPRIT_tls1[i]       += np.abs(DOA_esp_tls[0] - theta)**2
+        MseESPRIT_ml[i]         += np.abs(DOA_esp_ml[0] - theta)**2
         sigma2  = 10**(-SNRdBs[i]/10);
         # 这个sigma2和上面的值是渐进一致的
         # sigma2  = (norm(Y, 'fro')^2-norm(H*X, 'fro')^2)/ (size(Y, 1)*size(Y, 2));
@@ -262,7 +262,7 @@ axs.semilogy(SNRdBs, MseESPRIT, linestyle='-', lw = 2, marker = '*', color = col
 axs.semilogy(SNRdBs, MseESPRIT_tls, linestyle='-', lw = 2, marker = 'd', color = colors[2], markersize = 12,  label = "ESPIRT tls",)
 axs.semilogy(SNRdBs, MseESPRIT_ml, linestyle='-', lw = 2, marker = '^', color = colors[3], markersize = 12,  label = "ESPIRT ml",)
 axs.semilogy(SNRdBs, MseESPRIT_tls1, linestyle='-', lw = 2, marker = 'v', color = colors[4], markersize = 12,  label = "ESPIRT tls1",)
-axs.semilogy(SNRdBs, CRLB,      linestyle='--', lw = 2, marker = 'o', color = colors[-1], markersize = 12, label = "CRLB", )
+axs.semilogy(SNRdBs, CRLB,      linestyle='--', lw = 2, marker = 'o', mfc = 'none', color = colors[-1], markersize = 12, label = "CRLB", )
 
 axs.set_xlabel( "SNR/(dB)",)
 axs.set_ylabel('MMSE',)
@@ -270,6 +270,132 @@ axs.legend()
 
 plt.show()
 plt.close('all')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -38,15 +38,25 @@ N = 5
 k = 5
 
 def generateJk(L, N, k):
-    tmp1 = np.zeros((L*N-k, k))
-    tmp2 = np.ones(L*N-k)
-    tmp3 = np.ones(k)
-    tmp4 = np.zeros((k, L*N - k))
-    Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
+    if k == 0:
+        Jk = np.eye(L*N)
+    elif k > 0:
+        tmp1 = np.zeros((k, L*N-k))
+        tmp2 = np.eye(k)
+        tmp3 = np.eye(L*N-k)
+        tmp4 = np.zeros((k, L*N - k))
+        Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
+    elif k < 0:
+        k = L*N-k
+        tmp1 = np.zeros((k, L*N-k))
+        tmp2 = np.eye(k)
+        tmp3 = np.eye(L*N-k)
+        tmp4 = np.zeros((k, L*N - k))
+        Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
 
     return Jk
 
-Jk
+J1 = generateJk(L, N, k)
 
 
 
