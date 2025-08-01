@@ -32,10 +32,10 @@ np.random.seed(42)
 
 
 #%%
-L = 4
-N = 5
+L = 2
+N = 3
 
-k = 5
+k = 4
 
 def generateJk(L, N, k):
     if k == 0:
@@ -44,14 +44,14 @@ def generateJk(L, N, k):
         tmp1 = np.zeros((k, L*N-k))
         tmp2 = np.eye(k)
         tmp3 = np.eye(L*N-k)
-        tmp4 = np.zeros((k, L*N - k))
+        tmp4 = np.zeros((L*N - k, k))
         Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
     elif k < 0:
         k = L*N-k
         tmp1 = np.zeros((k, L*N-k))
         tmp2 = np.eye(k)
         tmp3 = np.eye(L*N-k)
-        tmp4 = np.zeros((k, L*N - k))
+        tmp4 = np.zeros((L*N - k, k))
         Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
 
     return Jk
