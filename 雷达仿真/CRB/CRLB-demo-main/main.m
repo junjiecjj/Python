@@ -9,7 +9,7 @@ N               =           64;                % 基站处天线
 fc              =           100e9;              %100GHz
 lambda_c        =           3e8/fc;
 d               =           lambda_c/2;
-T               =           100;
+T               =           10;
 Nit             =           1e2;
 SNRdBs          =           -10:5:20;
 %% 

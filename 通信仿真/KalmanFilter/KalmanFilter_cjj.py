@@ -261,18 +261,296 @@ plt.close()
 
 
 
+#%% https://mp.weixin.qq.com/s?__biz=MzE5MTA2MjYzNQ==&mid=2247483736&idx=1&sn=a4ac67987f01a7baa88150dfb733c1f6&chksm=970dc060caf402200b11fc2b9c92a8b02563f63e38c7ebe801ceeded8da4b293ae2c9cd22630&mpshare=1&scene=1&srcid=0801oosha62yStaDQ4ScPmre&sharer_shareinfo=9ea083510294f4274298cb74da57918a&sharer_shareinfo_first=b82205342fc71e1a759b98d32523bbaa&exportkey=n_ChQIAhIQegj27IrssjU2amqGdC%2BRYRKfAgIE97dBBAEAAAAAAGXaFMUT%2FNwAAAAOpnltbLcz9gKNyK89dVj0v0PPNBwG6rlY5OJbpiQN4K3zgkojyIhAPm%2FQ4vCXe8xcNOI4s9rqqxvj7M4J8pYk%2FObQnzEfSEHJBxK6tKoP4eGiMC9Ervpysw%2BNoME%2BGBQwCFiiHYUPrAxuH%2BclEZzg%2FyKIabOF5vuz1qGZyfENkDwG9SaVLNGdtrMiA7N6ZmxE5o%2Bxxgx6OwOjLI3tM2TUSHN%2FnM5G9RZbUOldXWlcoi1ZrNHTIXf0YKUY52z91wRzkPHMJPj0ZyFSuO5e3g8%2FXRi5%2FSKsRGll2TeIfw7fmBuxBMzG04o3DfbQx%2BKcybLGKqNA2i6PUv%2BkVs519Xadk0sNrD4qe8NU&acctmode=0&pass_ticket=2SGNrPnbdvuqKkqnHSF%2B%2FE7eNlWfLOSMHS5TD2M1y6Fs8NZbdLn8CnNGfNqrot9j&wx_header=0#rd
+
+#%% 卡尔曼滤波——滤波就是降噪吗？
+
+import numpy as np
+import matplotlib.pyplot as plt
+# 设置支持中文的字体（SimHei 是黑体，Microsoft YaHei 是雅黑）
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 或 ['Microsoft YaHei']
+plt.rcParams['axes.unicode_minus'] = False# 正常显示负号
+
+dt = 0.1# 采样时间10Hz
+
+# 状态转移矩阵
+F = np.array([
+    [1, 0, dt, 0],
+    [0, 1, 0, dt],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]
+])
+
+# 测量矩阵
+H = np.array([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0]
+])
+
+# 过程噪声输入矩阵
+G = np.array([
+    [dt*dt, 0],
+    [0, dt*dt],
+    [dt, 0],
+    [0, dt]
+])
+
+# 加速度噪声标准差 (m/s²)
+accel_noise = 0.2
+# GPS噪声标准差 (m)
+gps_noise = 2
+
+# 过程噪声协方差矩阵
+Q = np.diag([(0.5*dt**2)**2, (0.5*dt**2)**2, dt**2, dt**2]) * accel_noise**2
+# 测量噪声协方差矩阵
+R = np.array([
+    [gps_noise**2, 0],
+    [0, gps_noise**2]
+])
+
+# 初始化真实状态
+true_x = np.array([0, 0, 0.5, 0.5])  # 初始状态 [px, py, vx, vy]
+
+# 初始化卡尔曼滤波器
+x_est = np.array([0, 0, 0.5, 0.5])  # 初始估计状态 [px, py, vx, vy]
+P_est = np.eye(4)  # 初始协方差矩阵
+
+# 存储结果
+true_states, estimates, observations = [], [], []
+
+# 模拟100个时间步
+for t in range(1000):
+    # 1. 生成真实状态 (含过程噪声)
+    true_x = F @ true_x + G @ np.random.normal(0, accel_noise, 2)
+
+    # 2. 生成GPS观测 (含噪声)
+    z = H @ true_x + np.random.normal(0, gps_noise, 2)
+
+    # 3. 卡尔曼预测
+    x_pred = F @ x_est
+    P_pred = F @ P_est @ F.T + Q
+
+    # 4. 卡尔曼更新
+    K = P_pred @ H.T @ np.linalg.inv(H @ P_pred @ H.T + R)
+    x_est = x_pred + K @ (z - H @ x_pred)
+    P_est = (np.eye(4) - K @ H) @ P_pred
+
+    # 存储数据
+    true_states.append(true_x[:2])
+    estimates.append(x_est[:2])
+    observations.append(z)
+
+# 可视化
+plt.figure(figsize=(10, 6))
+plt.plot(*zip(*true_states), 'g-', label="真实轨迹")
+plt.plot(*zip(*observations), 'ro', markersize=3, label="GPS观测")
+plt.plot(*zip(*estimates), 'b--', linewidth=2, label="卡尔曼估计")
+plt.legend()
+plt.title("CV模型下的卡尔曼滤波跟踪")
+plt.xlabel("X位置 (m)")
+plt.ylabel("Y位置 (m)")
+plt.grid(True)
+plt.show()
+
+
+#%% 更通用的卡尔曼滤波方程形式
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 指定默认字体为黑体（SimHei），Windows 上一般预装；macOS 上可用 'Hei'
+plt.rcParams['font.sans-serif'] = ['SimHei']
+# 取消负号“−”显示为方块的问题
+plt.rcParams['axes.unicode_minus'] = False
+from scipy.stats import multivariate_normal
+
+# ————————————— 参数设置 —————————————
+dt = 1.0           # 采样时间间隔
+N = 50             # 总步数
+u = 1.0            # 恒定加速度 (m/s^2)
+
+# 状态转移矩阵 A 和控制输入矩阵 B
+A = np.array([[1, dt],
+              [0, 1]])
+B = np.array([[0.5 * dt**2],
+              [dt]])
+
+# 观测矩阵 H：这里只测位置 p_k
+H = np.array([[1, 0]])
+
+# 过程噪声协方差 Q，观测噪声协方差 R
+Q = 0.01 * np.eye(2)
+R = np.array([[1.0]])
+
+# ————————————— 生成真值和观测 —————————————
+x_true = np.zeros((2, N))
+z = np.zeros(N)
+x = np.zeros((2, 1))
+
+for k in range(N):
+    # 过程噪声 w ~ N(0, Q)
+    w = multivariate_normal.rvs(mean=[0, 0], cov=Q).reshape(2, 1)
+    # 真值演化：匀加速运动 + 过程噪声
+    x = A @ x + B * u + w
+    x_true[:, k] = x.flatten()
+    # 观测：位置 + 观测噪声 v ~ N(0, R)
+    z[k] = (H @ x).item() + np.sqrt(R) * np.random.randn()
+
+# —————— 卡尔曼滤波：不含控制输入 ——————
+x_est_nc = np.zeros((2, N))
+P = np.eye(2)
+x_nc = np.zeros((2, 1))
+
+for k in range(N):
+    # 预测（无 u 项）
+    x_pred = A @ x_nc
+    P_pred = A @ P @ A.T + Q
+
+    # 更新
+    K = P_pred @ H.T @ np.linalg.inv(H @ P_pred @ H.T + R)
+    x_nc = x_pred + K @ (z[k] - H @ x_pred)
+    P = (np.eye(2) - K @ H) @ P_pred
+
+    x_est_nc[:, k] = x_nc.flatten()
+
+# —————— 卡尔曼滤波：含控制输入 ——————
+x_est_wc = np.zeros((2, N))
+P = np.eye(2)
+x_wc = np.zeros((2, 1))
+
+for k in range(N):
+    # 预测（加入 u 项）
+    x_pred = A @ x_wc + B * u
+    P_pred = A @ P @ A.T + Q
+
+    # 更新
+    K = P_pred @ H.T @ np.linalg.inv(H @ P_pred @ H.T + R)
+    x_wc = x_pred + K @ (z[k] - H @ x_pred)
+    P = (np.eye(2) - K @ H) @ P_pred
+
+    x_est_wc[:, k] = x_wc.flatten()
+
+# —————— 误差与 RMSE ——————
+err_nc = x_est_nc[0, :] - x_true[0, :]
+err_wc = x_est_wc[0, :] - x_true[0, :]
+
+rmse_nc = np.sqrt(np.mean(err_nc**2))
+rmse_wc = np.sqrt(np.mean(err_wc**2))
+print(f'RMSE without input: {rmse_nc:.4f}')
+print(f'RMSE with    input: {rmse_wc:.4f}')
+
+# —————— 绘图 ——————
+fig, axes = plt.subplots(2, 1, figsize=(8, 6), tight_layout=True)
+
+# 上图：位置对比
+axes[0].plot(x_true[0, :], 'k-', linewidth=2, label='真实位置')
+axes[0].plot(x_est_nc[0, :], 'r--', linewidth=1.5, label='KF 无输入')
+axes[0].plot(x_est_wc[0, :], 'b-.', linewidth=1.5, label='KF 含输入')
+axes[0].set_ylabel('位置')
+axes[0].set_title('卡尔曼滤波——位置估计对比')
+axes[0].legend(loc='upper left')
+axes[0].grid(True)
+
+# 下图：误差对比
+axes[1].plot(err_nc, 'r--', linewidth=1.5, label='误差：无输入')
+axes[1].plot(err_wc, 'b-.', linewidth=1.5, label='误差：含输入')
+axes[1].set_xlabel('时间步 k')
+axes[1].set_ylabel('位置误差')
+axes[1].set_title('卡尔曼滤波——位置误差对比')
+axes[1].legend(loc='upper left')
+axes[1].grid(True)
+
+plt.show()
 
 
 
+#%% 什么是集合卡尔曼滤波EnKF，如何应用EnKF实现数据同化？
 
+import numpy as np
+from joblib import Parallel, delayed
 
+def run_enkf(A, B, H, Q, R, X0_ens, u_seq, Y):
+    return
 
+# ——————— 参数设定 ———————
+n = 100                     # 状态维度
+Q   = 0.5 * np.eye(n)    # 过程噪声协方差
+R   = 0.01 * np.eye(9)   # 观测噪声协方差
+alpha = 1.0              # 热扩散系数
+dx    = 1.0              # 空间步长
+dt    = 0.2              # 时间步长
+r     = alpha * dt / dx**2
 
+# 构建状态转移矩阵 A（三对角）
+A = (1 - 2*r) * np.eye(n)
+for i in range(n-1):
+    A[i, i+1] = r
+    A[i+1, i] = r
 
+# 构建输入矩阵 B（第33,67节点）
+B = np.zeros((n, 2))
+B[32, 0] = 1
+B[66, 1] = 1
 
+# 构建观测矩阵 H（第10,20,...,90节点）
+H = np.zeros((9, n))
+for i in range(9):
+    H[i, 10*(i+1)-1] = 1
 
+# 时间步数
+K = 1000
 
+# 生成热源输入：两个正弦信号
+t = np.arange(K)
+u1 = 10 * np.sin(2 * np.pi * t / 50)
+u2 = 10 * np.sin(2 * np.pi * t / 80)
+u_seq = np.vstack((u1, u2))  # shape (2, K)
 
+# 生成真值初始状态 (在300K附近随机)
+np.random.seed(0)
+x0_true = 300 + 10 * np.random.randn(n)
+X_true = np.zeros((n, K+1))
+Y      = np.zeros((9, K+1))
+X_true[:, 0] = x0_true - 300# 去掉基线
+
+# 真值状态和观测序列
+for k in range(K):
+    w = np.sqrt(0.5) * np.random.randn(n)
+    X_true[:, k+1] = A @ X_true[:, k] + B @ u_seq[:, k] + w
+    v = 0.1 * np.random.randn(9)
+    Y[:, k] = H @ X_true[:, k] + v
+
+# 最后一时刻观测
+v = 0.1 * np.random.randn(9)
+Y[:, K] = H @ X_true[:, K] + v
+
+# ——————— 标准卡尔曼滤波 ———————
+x_kf = np.zeros((n, K+1))
+P    = 1000 * np.eye(n)        # 初始协方差很大
+x_kf[:, 0] = np.zeros(n)       # 初始估计
+
+for k in range(K):
+    # 预测
+    x_pred = A @ x_kf[:, k] + B @ u_seq[:, k]
+    P_pred = A @ P @ A.T + Q
+    # 卡尔曼增益
+    S      = H @ P_pred @ H.T + R
+    K_gain = P_pred @ H.T @ np.linalg.inv(S)
+    # 更新
+    x_kf[:, k+1] = x_pred + K_gain @ (Y[:, k+1] - H @ x_pred)
+    P           = (np.eye(n) - K_gain @ H) @ P_pred
+
+# 计算 KF MSE
+MSE_kf = np.mean((x_kf - X_true)**2, axis=0)
+
+# ——————— 运行 EnKF ———————
+N_list  = list(range(10, 101, 5))
+MSE_enk = np.zeros((len(N_list), K+1))
+
+for idx, N in enumerate(N_list):
+    np.random.seed(1 + idx)  # 每次不同种子也行
+    X0_ens      = 10 * np.random.randn(n, N)
+    x_mean_enk  = run_enkf(A, B, H, Q, R, X0_ens, u_seq, Y)
+    MSE_enk[idx] = np.mean((x_mean_enk - X_true)**2, axis=0)
 
 
 
