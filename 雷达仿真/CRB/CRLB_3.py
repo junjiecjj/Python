@@ -215,10 +215,12 @@ for i, snr in enumerate(SNRdBs):
         if (it+1) % 10 == 0:
             print(f"{it+1}/{Nit}")
         X = (np.sqrt(1./2) * (np.random.randn(1, T) + 1j * np.random.randn(1, T))).astype(np.complex128)
+        ### 这里不要用这样的信号生成方式，否则出现仿真和理论完全重合，虽然这样是希望的，但是和文献对不上。
         # HX = H @ X
         # sig_power = np.mean(np.abs(HX)**2)
         # noise_var = sig_power * 10**(-snr/10)
         # y = HX + (np.sqrt(noise_var/2) * (np.random.randn(*HX.shape) + 1j * np.random.randn(*HX.shape))).astype(np.complex128)
+        ### 用这样的方式就会出现仿真结果比理论差一点，和大多数文献吻合
         y = np.zeros((N, T), dtype = np.complex128)
         for t in range(T):
             tmp = H * X[0, t]
