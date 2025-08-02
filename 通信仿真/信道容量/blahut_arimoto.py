@@ -4,6 +4,14 @@
 Created on Thu Jul 24 12:20:18 2025
 
 @author: jack
+
+https://github.com/kobybibas/blahut_arimoto_algorithm/blob/master/blahut_arimoto_algorithm.py
+
+https://blog.csdn.net/mrcharles/article/details/92759378
+
+https://www.cnblogs.com/HuangYJ/p/11826777.html
+
+
 """
 
 import numpy as np
@@ -50,8 +58,7 @@ def blahut_arimoto(p_y_x: np.ndarray,  log_base: float = 2, thresh: float = 1e-1
     c = 0
     for i in range(m):
         if r[i] > 0:
-            c += np.sum(r[i] * p_y_x[i, :] *
-                        np.log(q[i, :] / r[i] + 1e-16))
+            c += np.sum(r[i] * p_y_x[i, :] * np.log(q[i, :] / r[i] + 1e-16))
     c = c / np.log(log_base)
     return c, r
 
