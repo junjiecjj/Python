@@ -87,7 +87,6 @@ plt.close()
 #%% 2.6 Generating correlated Gaussian sequences
 #%% 2.6.1 Spectral factorization method
 from Tools import freqDomainView
-
 def Jakes_filter(fd, Ts, N):
     #  FIR channel shaping filter with Jakes doppler spectrum %S(f) = 1/ [sqrt(1-(f/f_max)ˆ2)*pi*f_max]
     # Use impulse response obtained from spectral factorization
@@ -107,38 +106,36 @@ def Jakes_filter(fd, Ts, N):
     hw = J * hamm
     hw = hw / np.sqrt(np.sum(np.abs(hw)**2))
 
-    f, Y, A, Pha, R, I = freqDomainView(hw, 1/Ts, 'double' )
+    f, Y, A, Pha, R, I = freqDomainView(hw.flatten(), int(1/Ts), type = 'double')
     Hw = (Ts / hw.size) * np.abs(Y)**2 * (hw.size**2)
 
     ##### plot
     fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)
 
-    axs[0].plot(np.arange(hw.size), hw.flatten(), lw = 1, color = 'b',  label = ' ')
+    axs[0].plot(np.arange(hw.size), hw.flatten(), lw = 1, color = 'b',  label = '')
     axs[0].set_xlabel('samples(n)',)
     axs[0].set_ylabel(r'$h_w[n]$',)
     axs[0].set_title('Windowed impulse response' )
-    # axs[0].legend()
 
     axs[1].plot(f, Hw.flatten(), color = 'r', lw = 1, label = ' ')
     axs[1].set_xlabel('frequency(Hz)',)
     axs[1].set_ylabel(r'$|H_w(f)|^2$',)
     axs[1].set_title('Jakes Spectrum')
-    axs[1].set_xlim(-20,20)
+    axs[1].set_xlim(-20, 20)
     plt.suptitle(f"Impulse response & spectrum of windowed Jakes filter ( fmax = {fd}Hz, Ts = {Ts}s, N = {N})", fontsize = 22)
     plt.show()
     plt.close()
-
     return hw
 
 fd = 10
 Fs = 100
-N = 512
+N  = 512
 Ts = 1/Fs
 
 h = Jakes_filter(fd, Ts, N)
-x = np.random.randn( 1, 10000)
+x = np.random.randn(1, 10000)
 y = scipy.signal.convolve(x, h, mode = 'valid')
-f, Y, A, Pha, R, I = freqDomainView(y, 1/Ts, 'double' )
+f, Y, A, Pha, R, I = freqDomainView(y, int(1/Ts), type = 'double' )
 Syy = (Ts / y.size) * np.abs(Y)**2 * (y.size)**2
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)

@@ -16,12 +16,9 @@ https://zhuanlan.zhihu.com/p/640245945
 https://www.cnblogs.com/fangying7/p/4049101.html
 """
 
-
-
-
 import numpy as np
 import scipy
-from scipy.signal import butter, filtfilt, lfilter, lfilter_zi
+# from scipy.signal import butter, filtfilt, lfilter, lfilter_zi
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -173,7 +170,6 @@ Raised cosine FIR filter design
     # normalize filter energy
     b = b / np.sqrt(np.sum(np.power(b, 2)))
     return b
-
 
 def srrcFunction(beta, L, span):
     # Function for generating rectangular pulse for the given inputs

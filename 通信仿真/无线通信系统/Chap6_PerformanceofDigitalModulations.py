@@ -53,7 +53,6 @@ colors = ['b', 'g', 'r', 'c', 'm', 'k']
 channelModel = "awgn"
 
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
-
 for m, M in enumerate(arrayOfM):
     k = int(np.log2(M))
     EsN0dB = 10 * np.log10(k) + EbN0dB

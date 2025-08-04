@@ -36,7 +36,7 @@ c = np.convolve([1, 1, 1],[1, 1, 1])
 
 c = scipy.signal.upfirdn([1], [1, 2, 3], 3)  # upsampling with zeros insertion
 # array([ 1.,  0.,  0.,  2.,  0.,  0.,  3.])
-c = np.convolve([1,0,0,2,0,0,3],[1])
+c = np.convolve([1,0,0,2,0,0,3], [1])
 # array([1, 0, 0, 2, 0, 0, 3])
 
 
