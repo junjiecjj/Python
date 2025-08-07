@@ -354,6 +354,8 @@ plt.show()
 
 
 #%% 更通用的卡尔曼滤波方程形式
+# https://mp.weixin.qq.com/s?__biz=MzE5MTA2MjYzNQ==&mid=2247483720&idx=1&sn=ce7bafcbced28d597ac2bff68b29de61&chksm=97d7b4efed4db82930a7aa8be44a69e96f33dd343cbc7ca84599375ca7a5717c887185574807&mpshare=1&scene=1&srcid=0801fMySvTr3CU8YnZxO4q5A&sharer_shareinfo=09fb5b73866e3cb1282823d9cd98c5be&sharer_shareinfo_first=09fb5b73866e3cb1282823d9cd98c5be&exportkey=n_ChQIAhIQ%2Bgn6uCvEz2A5G2TOOlZXiRKfAgIE97dBBAEAAAAAALMEKV5FOIkAAAAOpnltbLcz9gKNyK89dVj0vF1IvpvTlP0i3H0jfAjhTqjmRwvBd5VEMKkIMDC3UApp%2F4z0l4imMGLuoGKvt4TSoNI5OCTQQnugkG4BGpFd3kVUh82trjz4etGhBpzpvmG8wcqCD6gZY8s5T57tqR1B1uVM%2F7ISkz%2FwMO2wHusztRye3wK7OMypBGNFduye4OEXZppbTbmlwzFjxxKopgJrTw9lfeQiTXeanVAT81GnA%2BL5RWddDtwTBj62XTnQdZ0MmhvTKOZSjnatquS%2FqBtexX32djBOU6JJpqwbFKyJ%2BaVTHUAee7hhmluhnvtshVifJqR1AHNgZyf1QLBQorOq%2FJ7ccJcI5w2B&acctmode=0&pass_ticket=wq75DY0B2rbuj8aMm5QCSx9rFyyR5NTg%2BoZj4lvZtcGmnz0iVaOsPq0h6Lc0rx5n&wx_header=0#rd
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -464,98 +466,150 @@ plt.show()
 
 
 #%% 什么是集合卡尔曼滤波EnKF，如何应用EnKF实现数据同化？
-
+# https://mp.weixin.qq.com/s?__biz=MzE5MTA2MjYzNQ==&mid=2247483736&idx=1&sn=a4ac67987f01a7baa88150dfb733c1f6&chksm=979dcea87124240036b6b1f39147744a246d2c9a83aebb00599be6c909abda48508058bd208d&mpshare=1&scene=1&srcid=0801oosha62yStaDQ4ScPmre&sharer_shareinfo=aa7e4a308f213d82406b607992d2042f&sharer_shareinfo_first=b82205342fc71e1a759b98d32523bbaa&exportkey=n_ChQIAhIQc4upmm2qulKLI2xdk2NqPRKfAgIE97dBBAEAAAAAADayM%2FQHy%2FQAAAAOpnltbLcz9gKNyK89dVj0aXQJhlZXR2ny5iQkbttIxI3AtBsKWyzt3Ail%2F0QqafovQXnZjdKa4rf4cObrevd1omtmVqI7APTVxOwW9Je6QU2vajq4H3slU3u%2FFEeaKUgbQZ0TdWUiMV13CEKqOGHHNnjosmsLbSeRHDVtbqBAAsRdx4waQVIXUAb5NdJCV5pzAdEmQ0T6wexz%2B1UTptPqTyUpg5TGZmllejkBzs7qHRxalTROYV31XLX6892YLcyvOGv6AA0GaR3zQ7pP1QnrB7YH62c9HwBhjH8hH9Ht7BSoOWeIfVEE8SmjHXLqCDVZSMV9FV3nPrPjNSFpmuRARuKIvYYUVYMl&acctmode=0&pass_ticket=c2JAUiy1xaSHCdTq0d0aDCW5HCQs%2ByWoJgwZreEbr%2F1CfUSpbA1xzTVftWMFN4Mh&wx_header=0#rd
 import numpy as np
-from joblib import Parallel, delayed
+import matplotlib.pyplot as plt
 
-def run_enkf(A, B, H, Q, R, X0_ens, u_seq, Y):
-    return
+def EnKF_fast(A, B, H, Q, R, X0_ens, u_seq, y_seq):
+    n, N = X0_ens.shape
+    K     = u_seq.shape[1]
 
-# ——————— 参数设定 ———————
-n = 100                     # 状态维度
-Q   = 0.5 * np.eye(n)    # 过程噪声协方差
-R   = 0.01 * np.eye(9)   # 观测噪声协方差
-alpha = 1.0              # 热扩散系数
-dx    = 1.0              # 空间步长
-dt    = 0.2              # 时间步长
-r     = alpha * dt / dx**2
+    # 预分解 Q 和 R
+    Lq = np.linalg.cholesky(Q)
+    Lr = np.linalg.cholesky(R)
 
-# 构建状态转移矩阵 A（三对角）
-A = (1 - 2*r) * np.eye(n)
+    X_est  = np.zeros((n, K+1, N))
+    x_mean = np.zeros((n, K+1))
+    X_est[:, 0, :] = X0_ens
+    x_mean[:, 0]   = X0_ens.mean(axis=1)
+
+    for k in range(K):
+        # —— 向量化预测 ——
+        W = Lq @ np.random.randn(n, N)                           # (n, N)
+        Xf = A @ X_est[:, k, :] + (B @ u_seq[:, k:k+1]) + W      # (n, N)
+
+        # —— 计算增益 ——
+        xf_mean = Xf.mean(axis=1, keepdims=True)                 # (n,1)
+        Exf     = Xf - xf_mean                                   # (n,N)
+        P_f     = Exf @ Exf.T / (N-1)                            # (n,n)
+
+        S       = H @ P_f @ H.T + R                              # (p,p)
+        K_gain  = P_f @ H.T @ np.linalg.inv(S)                    # (n,p)
+
+        # —— 向量化分析 ——
+        V   = Lr @ np.random.randn(R.shape[0], N)                # (p,N) 扰动观测噪声
+        Yp  = y_seq[:, k+1:k+2] + V                              # (p,N)
+        Innov = Yp - H @ Xf                                       # (p,N)
+        Xa    = Xf + K_gain @ Innov                              # (n,N)
+
+        X_est[:, k+1, :] = Xa
+        x_mean[:, k+1]   = Xa.mean(axis=1)
+
+    return X_est, x_mean
+
+# ========== 参数设定 ==========
+n = 100
+Q = 0.5 * np.eye(n)
+R = 0.01 * np.eye(9)
+alpha = 1.0
+dx = 1.0
+dt = 0.2
+r = alpha * dt / dx**2
+
+# 状态转移矩阵A（三对角）
+A = (1 - 2 * r) * np.eye(n)
 for i in range(n-1):
     A[i, i+1] = r
     A[i+1, i] = r
 
-# 构建输入矩阵 B（第33,67节点）
+# 输入矩阵B
 B = np.zeros((n, 2))
-B[32, 0] = 1
+B[32, 0] = 1  # 注意Python下标从0开始
 B[66, 1] = 1
 
-# 构建观测矩阵 H（第10,20,...,90节点）
+# 观测矩阵H
 H = np.zeros((9, n))
 for i in range(9):
-    H[i, 10*(i+1)-1] = 1
+    H[i, 10*(i+1)-1] = 1  # Python下标从0开始
 
-# 时间步数
-K = 1000
+K = 1000  # 时间步数
 
 # 生成热源输入：两个正弦信号
 t = np.arange(K)
 u1 = 10 * np.sin(2 * np.pi * t / 50)
 u2 = 10 * np.sin(2 * np.pi * t / 80)
-u_seq = np.vstack((u1, u2))  # shape (2, K)
+u_seq = np.vstack([u1, u2])
 
-# 生成真值初始状态 (在300K附近随机)
+# 生成真值初始状态
 np.random.seed(0)
+
 x0_true = 300 + 10 * np.random.randn(n)
 X_true = np.zeros((n, K+1))
-Y      = np.zeros((9, K+1))
-X_true[:, 0] = x0_true - 300# 去掉基线
-
-# 真值状态和观测序列
+Y = np.zeros((9, K+1))
+X_true[:, 0] = x0_true - 300  # 状态使用T-300
 for k in range(K):
     w = np.sqrt(0.5) * np.random.randn(n)
     X_true[:, k+1] = A @ X_true[:, k] + B @ u_seq[:, k] + w
     v = 0.1 * np.random.randn(9)
     Y[:, k] = H @ X_true[:, k] + v
-
-# 最后一时刻观测
 v = 0.1 * np.random.randn(9)
 Y[:, K] = H @ X_true[:, K] + v
 
-# ——————— 标准卡尔曼滤波 ———————
+# 标准卡尔曼滤波初始化
 x_kf = np.zeros((n, K+1))
-P    = 1000 * np.eye(n)        # 初始协方差很大
-x_kf[:, 0] = np.zeros(n)       # 初始估计
-
+P = 1000 * np.eye(n)
+x_kf[:, 0] = np.zeros(n)
 for k in range(K):
     # 预测
     x_pred = A @ x_kf[:, k] + B @ u_seq[:, k]
     P_pred = A @ P @ A.T + Q
     # 卡尔曼增益
-    S      = H @ P_pred @ H.T + R
+    S = H @ P_pred @ H.T + R
     K_gain = P_pred @ H.T @ np.linalg.inv(S)
     # 更新
     x_kf[:, k+1] = x_pred + K_gain @ (Y[:, k+1] - H @ x_pred)
-    P           = (np.eye(n) - K_gain @ H) @ P_pred
+    P = (np.eye(n) - K_gain @ H) @ P_pred
 
-# 计算 KF MSE
+# 运行EnKF并计算MSE
+skip1 = 5
+N_list = np.arange(10, 101, skip1)
 MSE_kf = np.mean((x_kf - X_true)**2, axis=0)
-
-# ——————— 运行 EnKF ———————
-N_list  = list(range(10, 101, 5))
 MSE_enk = np.zeros((len(N_list), K+1))
 
 for idx, N in enumerate(N_list):
-    np.random.seed(1 + idx)  # 每次不同种子也行
-    X0_ens      = 10 * np.random.randn(n, N)
-    x_mean_enk  = run_enkf(A, B, H, Q, R, X0_ens, u_seq, Y)
-    MSE_enk[idx] = np.mean((x_mean_enk - X_true)**2, axis=0)
+    np.random.seed(0)
+    X0_ens = 10 * np.random.randn(n, N)
+    _, x_mean_enk = EnKF_fast(A, B, H, Q, R, X0_ens, u_seq, Y)
+    MSE_enk[idx, :] = np.mean((x_mean_enk - X_true)**2, axis=0)
 
+# 绘制图1：时间序列上的MSE曲线（对数坐标）
+plt.figure()
+plt.semilogy(np.arange(K+1), MSE_kf, 'k-', linewidth=1.5, label='KF')
+plt.rcParams['font.sans-serif'] = ['SimHei']          # 用黑体显示中文
+plt.rcParams['axes.unicode_minus'] = False            # 使 “-” 号正常显示
 
+show_list = [10, 20, 100]
+show_list1 = [(N-10)//skip1 for N in show_list]
+colors = ['r--', 'g-.', 'b:']
+for idx, showidex in enumerate(show_list1):
+    plt.semilogy(np.arange(K+1), MSE_enk[showidex, :], colors[idx], linewidth=1.5, label=f'EnKF, N={show_list[idx]}')
+plt.legend(loc='best')
+plt.xlabel('时间步 k')
+plt.ylabel('均方误差 (MSE)')
+plt.title('图1: 不同EnKF集合规模与Kalman滤波的状态估计MSE对比')
+plt.grid(True)
 
+# 绘制图2：MSE随集合规模的变化（取最后时刻的MSE均值）
+plt.figure()
+MSE_final = np.mean(MSE_enk, axis=1)
+plt.semilogy(N_list, MSE_final, 'o-', linewidth=1.5)
+plt.xlabel('集合规模 N')
+plt.ylabel('最终状态估计MSE')
+plt.title('图2: 不同集合规模下的平均MSE(最后时刻)')
+plt.grid(True)
+plt.show()
 
-
+print("EnKF 运行完成，结果已绘制。")
 
 
 

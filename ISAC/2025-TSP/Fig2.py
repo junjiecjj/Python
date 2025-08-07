@@ -3,7 +3,7 @@
 """
 Created on Mon Aug  4 15:18:11 2025
 
-@author: jack
+@author: Junjie Chen,
 """
 
 import numpy as np
@@ -53,6 +53,8 @@ def srrcFunction(beta, L, span):
 M = 16   # 16QAM
 N = 128  # the number of symbols
 L = 8    # oversampling ratio
+alpha = 0.35
+
 
 
 
