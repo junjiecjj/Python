@@ -21,12 +21,12 @@ from DigiCommPy.errorRates import ser_awgn
 #---------Input Fields------------------------
 nSym = 10**6 # Number of symbols to transmit
 EbN0dBs = np.arange(start = -4, stop = 26, step = 2) # Eb/N0 range in dB for simulation
-mod_type = 'PAM' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
+mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
 arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 
-mod_type = 'QAM'
-arrayOfM = [4,16,64,256] # uncomment this line if MOD_TYPE='QAM'
+# mod_type = 'QAM'
+# arrayOfM = [4,16,64,256] # uncomment this line if MOD_TYPE='QAM'
 
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
@@ -41,7 +41,7 @@ for i, M in enumerate(arrayOfM):
     # uniform random symbols from 0 to M-1
 
     if mod_type.lower()=='fsk':
-        modem=modem_dict[mod_type.lower()](M,coherence)#choose modem from dictionary
+        modem=modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
     else: #for all other modulations
         modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
     modulatedSyms = modem.modulate(inputSyms) #modulate
@@ -62,14 +62,14 @@ for i, M in enumerate(arrayOfM):
 ax.set_ylim(1e-6, 1)
 ax.set_xlabel('Eb/N0(dB)')
 ax.set_ylabel('SER ($P_s$)')
-ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over AWGN')
+ax.set_title(f"Symbol Error Rate for M-{mod_type.upper()} over AWGN")
 ax.legend()
 plt.show()
 plt.close()
 
 #%%  Performance in Rayleigh fading
 import sys
-sys.path.append("..")
+# sys.path.append("..")
 import numpy as np #for numerical computing
 import matplotlib.pyplot as plt #for plotting functions
 from matplotlib import cm # colormap for color palette
@@ -81,13 +81,13 @@ from DigiCommPy.errorRates import ser_rayleigh
 #---------Input Fields------------------------
 nSym = 10**6 # Number of symbols to transmit
 EbN0dBs = np.arange(start=-4,stop = 22, step = 2) # Eb/N0 range in dB for simulation
-mod_type = 'PAM' # Set 'PSK' or 'QAM' or 'PAM
+mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM
 arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 
-mod_type = 'QAM'
-arrayOfM=[4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
+# mod_type = 'QAM'
+# arrayOfM=[4, 16, 64, 256] # uncomment this line if MOD_TYPE='QAM'
 
-modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem}
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,}
 colors = plt.cm.jet(np.linspace(0,1,len(arrayOfM))) # colormap
 fig, ax = plt.subplots(nrows=1,ncols = 1)
 
@@ -98,13 +98,19 @@ for i, M in enumerate(arrayOfM):
     # uniform random symbols from 0 to M-1
     inputSyms = np.random.randint(low=0, high = M, size=nSym)
 
-    modem = modem_dict[mod_type.lower()](M) # choose a modem from the dictionary
+    if mod_type.lower()=='fsk':
+        modem=modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
+    else: #for all other modulations
+        modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
     modulatedSyms = modem.modulate(inputSyms) #modulate
 
-    for j,EsN0dB in enumerate(EsN0dBs):
+    # modem = modem_dict[mod_type.lower()](M) # choose a modem from the dictionary
+    # modulatedSyms = modem.modulate(inputSyms) #modulate
+
+    for j, EsN0dB in enumerate(EsN0dBs):
         h_abs = rayleighFading(nSym) #Rayleigh flat fading samples
         hs = h_abs*modulatedSyms #fading effect on modulated symbols
-        receivedSyms = awgn(hs,EsN0dB) #add awgn noise
+        receivedSyms = awgn(hs, EsN0dB) #add awgn noise
 
         y = receivedSyms/h_abs # decision vector
         detectedSyms = modem.demodulate(y) #demodulate (Refer Chapter 3)
@@ -115,7 +121,7 @@ for i, M in enumerate(arrayOfM):
     ax.semilogy(EbN0dBs,SER_theory,color = colors[i], linestyle = '-', lw = 2, label = 'Theory '+str(M)+'-'+mod_type.upper())
 ax.set_ylim(1e-3, 1)
 ax.set_xlabel('Eb/N0(dB)');ax.set_ylabel('SER ($P_s$)')
-ax.set_title('Probability of Symbol Error for M-'+str(mod_type)+' over Rayleigh flat fading channel')
+ax.set_title(f"Symbol Error Rate for M-{mod_type.upper()} over Rayleigh flat fading Channel")
 ax.legend()
 plt.show()
 plt.close()
@@ -135,10 +141,13 @@ from DigiCommPy.errorRates import ser_rician
 nSym = 10**6 # Number of symbols to transmit
 EbN0dBs = np.arange(start = 0, stop = 22, step = 2) # Eb/N0 range in dB for simulation
 K_dBs = [3, 5, 10, 20] # array of K factors for Rician fading in dB
-mod_type = 'PAM' # Set 'PSK' or 'QAM' or 'PAM'
+mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM'
 M = 8 # M value for the modulation to simulate
 
-modem_dict = {'psk': PSKModem, 'qam':QAMModem, 'pam':PAMModem}
+# mod_type = 'QAM'
+# M = 16
+
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,}
 colors = plt.cm.jet(np.linspace(0, 1, len(K_dBs))) # colormap
 fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
@@ -149,9 +158,14 @@ for i, K_dB in enumerate(K_dBs):
     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
     # uniform random symbols from 0 to M-1
     inputSyms = np.random.randint(low=0, high = M, size=nSym)
-
-    modem = modem_dict[mod_type.lower()](M)#choose a modem from the dictionary
+    if mod_type.lower()=='fsk':
+        modem=modem_dict[mod_type.lower()](M, coherence)#choose modem from dictionary
+    else: #for all other modulations
+        modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
     modulatedSyms = modem.modulate(inputSyms) #modulate
+
+    # modem = modem_dict[mod_type.lower()](M)#choose a modem from the dictionary
+    # modulatedSyms = modem.modulate(inputSyms) #modulate
 
     for j,EsN0dB in enumerate(EsN0dBs):
         h_abs = ricianFading(K_dB,nSym) #Rician flat fading samples
@@ -167,7 +181,7 @@ for i, K_dB in enumerate(K_dBs):
 ax.set_ylim(1e-6, 1)
 ax.set_xlabel('Eb/N0(dB)')
 ax.set_ylabel('SER ($P_s$)')
-ax.set_title(f'Probability of Symbol Error for {M}-{mod_type} over Rayleigh flat fading channel')
+ax.set_title(f"Symbol Error Rate for {M}-{mod_type.upper()} over Rician flat fading Channel")
 ax.legend()
 plt.show()
 plt.close()

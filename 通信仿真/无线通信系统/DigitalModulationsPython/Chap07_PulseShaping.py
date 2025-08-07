@@ -33,7 +33,6 @@ plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
-
 #%% Program 7.1: rectFunction.m: Function for generating a rectangular pulse
 # Program 7.2: test rectPulse.m: Rectangular pulse and its manifestation in frequency domain
 from Tools import freqDomainView
@@ -79,10 +78,8 @@ axs[1].set_title("Frequency response")
 plt.show()
 plt.close()
 
-
 #%% Program 7.3: sincFunction.m: Function for generating sinc pulse
 # Program 7.4: test sincPulse.m: Sinc pulse and its manifestation in frequency domain
-
 from Tools import freqDomainView
 
 def sincFunction(L, span):
@@ -97,7 +94,6 @@ def sincFunction(L, span):
     p[np.argwhere(np.isnan(p))] = 1
     filtDelay = (len(p)-1)/2
     return p, t, filtDelay
-
 
 Tsym = 1
 L = 16
@@ -118,7 +114,7 @@ axs[0].set_ylabel('Amplitude',)
 axs[0].set_title("Sinc pulse" )
 axs[0].set_xlim(-10 , 10)  #拉开坐标轴范围显示投影
 
-axs[1].plot(f, abs(A)/np.abs(A[int(len(A)/2+1)]), color = 'r', label = '载波信号')
+axs[1].plot(f, np.abs(A)/np.abs(A[int(len(A)/2+1)]), color = 'r', label = '载波信号')
 axs[1].set_xlabel('Frequency(Hz)',)
 axs[1].set_ylabel('Magnitude',)
 axs[1].set_title("Frequency response")
@@ -142,20 +138,16 @@ for i,k in enumerate(K):
 
     axs.plot(f, 20*np.log10(abs(A)/np.abs(A[int(len(A)/2+1)])), color = colors[i], label = f'k = {k}')
 
-
 axs.set_xlabel('Frequency(Hz)',)
 axs.set_ylabel('20*log10(|S(t)|)',)
 axs.set_title("Frequency response")
 axs.set_xlim(-2 , 2)  #拉开坐标轴范围显示投影
 axs.legend()
 
-
 plt.show()
 plt.close()
 
-
 #%% Program 7.5: raisedCosineFunction.m: Function for generating raised-cosine pulse
-
 def raisedCosineFunction(alpha, L, span):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
@@ -171,7 +163,6 @@ def raisedCosineFunction(alpha, L, span):
     p[np.argwhere(np.isinf(p))] = (alpha/2)*np.sin(np.pi/(2*alpha))
     filtDelay = (len(p)-1)/2
     return p, t, filtDelay
-
 
 # Program 7.6: test RCPulse.m: raised-cosine pulses and their manifestation in frequency domain
 Tsym = 1
@@ -206,7 +197,6 @@ axs[1].legend()
 plt.show()
 plt.close()
 
-
 #%% Program 7.7: srrcFunction.m: Function for generating square-root raised-cosine pulse
 # Program 7.8: test SRRCPulse.m: Square-root raised-cosine pulse characteristics
 def srrcFunction(beta, L, span):
@@ -223,6 +213,7 @@ def srrcFunction(beta, L, span):
     p[np.argwhere(np.isnan(p))] = 1
     p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
     filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2)))
     return p, t, filtDelay
 
 Tsym = 1
@@ -231,18 +222,21 @@ span = 80
 Fs = L/Tsym
 
 colors = ['b', 'r', 'g', 'k', 'c']
-betas = [0.01, 0.22, 0.5, 1]
+betas = [0.01, 0.25, 0.5, 1]
 fig, axs = plt.subplots(1, 2, figsize = (12, 6), constrained_layout = True)
 
 for i, beta in enumerate(betas):
     ptx, t, filtDelay = srrcFunction(beta, L, span)
-    prx = ptx
-    comb_response = scipy.signal.convolve(ptx, prx, 'same')
     t = t*Tsym
     f, Y, A, Pha, R, I = freqDomainView(ptx, Fs, FFTN = 2048, type = 'double')
+
+    prx = ptx
+    comb_response = scipy.signal.convolve(ptx, prx, 'same')
+
     # x
-    axs[0].plot(t,  comb_response/np.max(np.abs(comb_response)), color = colors[i],  label = f'beta = {beta:.2f}')
-    axs[1].plot(f, abs(A)/np.abs(A[int(len(A)/2+1)]), color = colors[i], label = f'beta = {beta:.2f}')
+    # axs[0].plot(t, ptx, color = colors[i],  label = f'beta = {beta:.2f}')
+    axs[0].plot(t, comb_response/np.max(np.abs(comb_response)), color = colors[i],  label = f'beta = {beta:.2f}')
+    axs[1].plot(f, np.abs(A)/np.abs(A[int(len(A)/2+1)]), color = colors[i], label = f'beta = {beta:.2f}')
 
 axs[0].set_xlabel('Time(s)',)
 axs[0].set_ylabel('Amplitude',)
@@ -281,15 +275,24 @@ def plotEyeDiagram(x, L, nSamples, offset, nTraces):
     return t, eyeVals
 
 #%% Program 7.10: MPAM modulation
-from Modulations import modulator
-from ChannelModels import add_awgn_noise
+from scipy.special import erfc
+from DigiCommPy.modem import PSKModem, QAMModem, PAMModem, FSKModem
+from DigiCommPy.channels import awgn
+from DigiCommPy.errorRates import ser_awgn
 # MPAM modulation
 N = 100000
-MOD_TYPE = "pam"
+mod_type = "pam"
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
+
 M = 4
-modem, Es, bps = modulator(MOD_TYPE, M)
+# modem, Es, bps = modulator(MOD_TYPE, M)
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+if mod_type.lower()=='fsk':
+    modem=modem_dict[mod_type.lower()](M,coherence)#choose modem from dictionary
+else: #for all other modulations
+    modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
 d = np.random.randint(0, M, N)
-u = modem.modulate(d, inputtype = 'int')
+u = modem.modulate(d )
 
 ##### plot
 fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
@@ -329,7 +332,7 @@ plt.close()
 # Program 7.13: Adding AWGN noise for given SNR value
 EbN0dB = 100
 snr = 10*np.log10(np.log2(M)) + EbN0dB
-r, _ = add_awgn_noise(s, snr, L)
+r = awgn(s, snr, L)
 ##### plot
 fig, axs = plt.subplots(1, 1, figsize = (6, 4), constrained_layout = True)
 axs.plot(np.real(r), 'r-', )
@@ -360,37 +363,24 @@ axs.set_xlim(0, 20)  #拉开坐标轴范围显示投影
 plt.show()
 plt.close()
 
-dCap = modem.demodulate(uCap, outputtype = 'int',)
+dCap = modem.demodulate(uCap)
 
 #%% Program 7.17: mpam srrc matched filtering.m: Performance simulation of an MPAM modulation based communication system with SRRC transmit and matched filters
 # from Chap6_PerformanceofDigitalModulations import ser_awgn
 def Qfun(x):
     return 0.5 * scipy.special.erfc(x / np.sqrt(2))
 
-def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
-    EbN0 = 10**(EbN0dB/10)
-    EsN0 = np.log2(M) * EbN0
-    SER = np.zeros(EbN0dB.size)
-    if MOD_TYPE.lower() == "bpsk":
-        SER = Qfun(np.sqrt(2 * EbN0))
-    elif MOD_TYPE == "psk":
-        if M == 2:
-            SER = Qfun(np.sqrt(2 * EbN0))
-        else:
-            if M == 4:
-                SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
-            else:
-                SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
-    elif MOD_TYPE.lower() == "qam":
-        SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
-    elif MOD_TYPE.lower() == "pam":
-        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
-    return SER
-
 N = 100000
-MOD_TYPE = 'pam'
+mod_type = "psk"
+coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 M = 4
-modem, Es, bps = modulator(MOD_TYPE, M)
+# modem, Es, bps = modulator(MOD_TYPE, M)
+modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+if mod_type.lower()=='fsk':
+    modem=modem_dict[mod_type.lower()](M,coherence)#choose modem from dictionary
+else: #for all other modulations
+    modem = modem_dict[mod_type.lower()](M)#choose modem from dictionary
+
 EbN0dB = np.arange(-4, 26, 2 )
 beta = 0.3
 span = 8
@@ -402,36 +392,33 @@ snr = 10*np.log10(np.log2(M)) + EbN0dB
 for i, snrdB in enumerate(snr):
     ## transmiter
     d = np.random.randint(0, M, N)
-    u = modem.modulate(d, inputtype = 'int')
+    u = modem.modulate(d )
 
     v = np.vstack((u, np.zeros((L-1, u.size))))
     v = v.T.flatten()
     s = scipy.signal.convolve(v, p, 'full')
     ## channel
-    r, _ = add_awgn_noise(s, snrdB, L)
-
+    r = awgn(s, snrdB, L)
     ## receiver
     vCap = scipy.signal.convolve(r, p, 'full')
     uCap = vCap[int(2 * filtDelay) : int(vCap.size - 2*filtDelay) : L ] /L
-    dCap = modem.demodulate(uCap, outputtype = 'int',)
+    dCap = modem.demodulate(uCap )
     SER_sim[i] = np.sum(dCap != d)/N
-SER_theory = ser_awgn(EbN0dB, MOD_TYPE, M)
+SER_theory = ser_awgn(EbN0dB, mod_type, M)
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 axs.semilogy(EbN0dB, SER_sim, color = 'r', ls = 'none', marker = "o", ms = 12, )
-axs.semilogy(EbN0dB, SER_theory, color = 'b', ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
+axs.semilogy(EbN0dB, SER_theory, color = 'b', ls = '-', label = f'{M}-{mod_type.upper()}' )
 
 axs.set_ylim(1e-6, 1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"Symbol Error Rate for M-{MOD_TYPE.upper()} over AWGN")
+axs.set_title(f"Symbol Error Rate for M-{mod_type.upper()} over AWGN")
 axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
 
-
 #%% Program 7.18: PRSignaling.m: Function to generate PR signals at symbol sampling instants
-
 def PRSignaling(Q, L, span):
     qn = scipy.signal.lfilter(Q, 1.0, [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     q = np.vstack((qn, np.zeros((L-1, qn.size))))

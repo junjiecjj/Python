@@ -46,9 +46,7 @@ from DigiCommPy.errorRates import ser_rayleigh
 nSym = 200000
 N = [1, 2, 20]
 EbN0dBs = np.arange(-20, 38, 2 )
-
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
-
 mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM
 # arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 M = 2
@@ -72,7 +70,6 @@ for m, nrx in enumerate(N):
     ser_MRC = np.zeros(EsN0dBs.size)
     ser_EGC = np.zeros(EsN0dBs.size)
     ser_SC = np.zeros(EsN0dBs.size)
-
     ## Transmitter
     # uu = np.random.randint(0, 2, size = nSym * k).astype(np.int8)
     # s = modem.modulate(uu)
@@ -82,13 +79,11 @@ for m, nrx in enumerate(N):
     for i, EsN0dB in enumerate(EsN0dBs):
         h = (np.random.randn(nrx, nSym) + 1j * np.random.randn(nrx, nSym))/np.sqrt(2)
         signal = h * s_diversity
-
         gamma = 10**(EsN0dB/10)
         P = np.sum(np.abs(signal)**2, axis = 1)/nSym
         N0 = P/gamma
         noise = (np.random.randn(*signal.shape) + 1j * np.random.randn(*signal.shape))*(np.sqrt(N0/2))[:,None]
         r = signal + noise
-
         ## MRC processing assuming perfect channel estimates
         s_MRC = np.sum(h.conjugate() * r, axis = 0)/np.sum(np.abs(h)**2, axis = 0)
         if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
@@ -103,7 +98,6 @@ for m, nrx in enumerate(N):
             d_EGC = modem.demodulate(s_EGC, coherence)
         else: #demodulate (Refer Chapter 3)
             d_EGC = modem.demodulate(s_EGC)
-
         ## SC processing assuming perfect channel estimates
         idx = np.abs(h).argmax(axis = 0)
         h_best = h[idx, np.arange(h.shape[-1])]

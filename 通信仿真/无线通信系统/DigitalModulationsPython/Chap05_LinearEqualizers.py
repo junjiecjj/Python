@@ -4,9 +4,10 @@
 Created on Sun Mar  9 17:39:10 2025
 
 @author: jack
+
+均衡是在奈奎斯特采样依旧解决不了ISI时采用的一种后端技术
+
 """
-
-
 
 #%% Program 69: DigiCommPy\chapter 5\zf equalizer test.py: Simulation of zero-forcing equalizer
 import numpy as np #for numerical computing
@@ -19,16 +20,16 @@ Ts = 1/Fs # Sampling time
 Tsym = nSamp*Ts # symbol time period
 
 #Define transfer function of the channel
-k = 6 # define limits for computing channel response
-N0 = 0.001 # Standard deviation of AWGN channel noise
+k = 6                                   # define limits for computing channel response
+N0 = 0.001                              # Standard deviation of AWGN channel noise
 t = np.arange(start = -k*Tsym, stop = k*Tsym, step = Ts) # time base defined till +/-kTsym
-h_t = 1/(1+(t/Tsym)**2) # channel model, replace with your own model
+h_t = 1/(1+(t/Tsym)**2)                  # channel model, replace with your own model
 h_t = h_t + N0*np.random.randn(len(h_t)) # add Noise to the channel response
-h_k = h_t[0::nSamp] # downsampling to represent symbol rate sampler
-t_inst=t[0::nSamp] # symbol sampling instants
+h_k = h_t[0::nSamp]                      # downsampling to represent symbol rate sampler
+t_inst = t[0::nSamp]                     # symbol sampling instants
 
 fig, ax = plt.subplots(nrows=1, ncols = 1)
-ax.plot(t, h_t, label = 'continuous-time model');#response at sampling instants
+ax.plot(t, h_t, label = 'continuous-time model')     # response at sampling instants
 # channel response at symbol sampling instants
 ax.stem(t_inst, h_k, 'r', label='discrete-time model', )
 ax.legend()
@@ -271,7 +272,6 @@ for idx, channeltype in enumerate(channelTypes):
         SER_mmse[i] = np.sum((u != u_mmse))/N
         # SER when filtered thro ZF eq.
         SER_zf[i] = np.sum((u != u_zf))/N
-
     axs.semilogy(EbN0dBs, SER_zf, color = 'g', ls = '-', marker = markers[idx], ms = 12, label = f'{channeltype}, ZF eq.')
     axs.semilogy(EbN0dBs, SER_mmse, color = 'r', ls = '-', marker = markers[idx], ms = 12, label = f'{channeltype}, MMSE eq.')
 axs.semilogy(EbN0dBs, SER_theory, color = 'k', ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )

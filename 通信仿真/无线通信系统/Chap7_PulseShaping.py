@@ -37,13 +37,11 @@ plt.rcParams['legend.fontsize'] = 22
 #%% Program 7.1: rectFunction.m: Function for generating a rectangular pulse
 # Program 7.2: test rectPulse.m: Rectangular pulse and its manifestation in frequency domain
 from Tools import freqDomainView
-
 def rectFunction(L, span):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
     # span - filter span in symbol durations
     # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
-
     Tsym = 1
     t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
     p = np.logical_and(t > -Tsym/2, t <= Tsym/2).astype(int)
@@ -57,12 +55,10 @@ Fs = L/Tsym
 
 p, t, filtDelay = rectFunction(L, span)
 t = t*Tsym
-
 f, Y, A, Pha, R, I = freqDomainView(p, Fs, type = 'double')
 
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
-
 # x
 axs[0].plot(t, p, color = 'b',  label = '原始波形')
 axs[0].set_xlabel('Time(s)',)
@@ -70,7 +66,7 @@ axs[0].set_ylabel('Amplitude',)
 axs[0].set_title("Rectangular pulse" )
 axs[0].set_xlim(-1.5 , 1.5  )  #拉开坐标轴范围显示投影
 
-axs[1].plot(f, abs(A)/np.abs(A[int(len(A)/2+1)]), color = 'r', label = '载波信号')
+axs[1].plot(f, np.abs(A)/np.abs(A[int(len(A)/2+1)]), color = 'r', label = '载波信号')
 axs[1].set_xlabel('Frequency(Hz)',)
 axs[1].set_ylabel('Magnitude',)
 axs[1].set_title("Frequency response")
@@ -79,10 +75,8 @@ axs[1].set_title("Frequency response")
 plt.show()
 plt.close()
 
-
 #%% Program 7.3: sincFunction.m: Function for generating sinc pulse
 # Program 7.4: test sincPulse.m: Sinc pulse and its manifestation in frequency domain
-
 from Tools import freqDomainView
 
 def sincFunction(L, span):
@@ -90,14 +84,12 @@ def sincFunction(L, span):
     # L - oversampling factor (number of samples per symbol)
     # span - filter span in symbol durations
     # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
-
     Tsym = 1
     t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
     p = np.sin(np.pi*t/Tsym) / (np.pi*t/Tsym)
     p[np.argwhere(np.isnan(p))] = 1
     filtDelay = (len(p)-1)/2
     return p, t, filtDelay
-
 
 Tsym = 1
 L = 16
@@ -107,10 +99,8 @@ Fs = L/Tsym
 p, t, filtDelay = sincFunction(L, span)
 t = t*Tsym
 f, Y, A, Pha, R, I = freqDomainView(p, Fs, type = 'double')
-
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 4), constrained_layout = True)
-
 # x
 axs[0].plot(t, p, color = 'b',  label = '原始波形')
 axs[0].set_xlabel('Time(s)',)
@@ -132,30 +122,25 @@ colors = ['b', 'r', 'k']
 K = [2, 6, 25]
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
-for i,k in enumerate(K):
+for i, k in enumerate(K):
     tmp1 = t - k*Tsym
     h = np.where(tmp1 == np.abs(tmp1).min())[0][0]
     tmp2 = t + k*Tsym
     l = np.where(tmp2 == np.abs(tmp2).min())[0][0]
     ptmp = p[l:h]
     f, Y, A, Pha, R, I = freqDomainView(ptmp, Fs, FFTN = 2048, type = 'double')
-
-    axs.plot(f, 20*np.log10(abs(A)/np.abs(A[int(len(A)/2+1)])), color = colors[i], label = f'k = {k}')
-
+    axs.plot(f, 20*np.log10(np.abs(A)/np.abs(A[int(len(A)/2+1)])), color = colors[i], label = f'k = {k}')
 
 axs.set_xlabel('Frequency(Hz)',)
 axs.set_ylabel('20*log10(|S(t)|)',)
 axs.set_title("Frequency response")
-axs.set_xlim(-2 , 2)  #拉开坐标轴范围显示投影
+axs.set_xlim(-1 , 1)  #拉开坐标轴范围显示投影
 axs.legend()
-
 
 plt.show()
 plt.close()
 
-
 #%% Program 7.5: raisedCosineFunction.m: Function for generating raised-cosine pulse
-
 def raisedCosineFunction(alpha, L, span):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
@@ -171,7 +156,6 @@ def raisedCosineFunction(alpha, L, span):
     p[np.argwhere(np.isinf(p))] = (alpha/2)*np.sin(np.pi/(2*alpha))
     filtDelay = (len(p)-1)/2
     return p, t, filtDelay
-
 
 # Program 7.6: test RCPulse.m: raised-cosine pulses and their manifestation in frequency domain
 Tsym = 1
@@ -313,7 +297,7 @@ plt.show()
 plt.close()
 
 # Program 7.12: SRRC pulse shaping
-beta = 0.3
+beta = 0.5
 span = 8
 L = 4
 p, t, filtDelay = srrcFunction(beta, L, span)
@@ -443,7 +427,6 @@ def PRSignaling(Q, L, span):
     b = scipy.signal.convolve(g, q, 'same')
     return b, t
 
-
 #%% Program 7.19: test PRSignaling.m: PR Signaling schemes and their frequency domain responses
 L = 50
 span = 8
@@ -478,7 +461,6 @@ for i in range(8):
     axs[0].set_title(f"{titles[i]}-b(t)" )
     # axs[0].set_xlim(-4 , 4)  #拉开坐标轴范围显示投影
     # axs[0].legend()
-
     axs[1].plot(norm_freq, norm_response, 'b-', )
     axs[1].set_xlabel('f/$F_{sym}$',)
     axs[1].set_ylabel('|Q(D)|',)

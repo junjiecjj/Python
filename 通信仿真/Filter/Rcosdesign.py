@@ -19,7 +19,6 @@ https://www.cnblogs.com/fangying7/p/4049101.html
 import numpy as np
 import scipy
 # from scipy.signal import butter, filtfilt, lfilter, lfilter_zi
-
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -37,49 +36,40 @@ fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
-
+#%% 根升余弦滚降滤波器
 # https://blog.csdn.net/dreamer_2001/article/details/130505733
-def rcosdesign_srv(rolloff, span, sps):
+def rcosdesign_srv(rolloff, sps , span,):
     # 输入容错
     if rolloff == 0:
-        rolloff = np.finfo(float).tinroll_AM
-
+        rolloff = np.finfo(float).tiny
     # 对sps向下取整
     sps = int(np.floor(sps))
-
     if (sps*span) % 2 == 1:
         raise ValueError('Invalid Input: OddFilterOrder!')
-
     # 初始化
     delaroll_AM = int(span*sps/2)
     t = np.arange(-delaroll_AM, delaroll_AM+1)/sps
-
     # 设计跟升余弦滤波器, 找到中点
     idx1 = np.where(t == 0)[0][0]
     rrc_filter = np.zeros_like(t)
 
     if idx1 is not None:
         rrc_filter[idx1] = -1.0 / (np.pi*sps) * (np.pi*(rolloff-1) - 4*rolloff)
-
     # 查找非零的分母索引
     idx2 = np.where(np.abs(np.abs(4*rolloff*t) - 1.0) < np.sqrt(np.finfo(float).eps))[0]
     if len(idx2) > 0:
         rrc_filter[idx2] = 1.0/(2*np.pi*sps) * (np.pi*(rolloff+1) * np.sin(np.pi*(rolloff+1)/(4*rolloff)) - 4*rolloff*np.sin(np.pi*(rolloff-1)/(4*rolloff)) + np.pi*(rolloff-1) * np.cos(np.pi*(rolloff-1)/(4*rolloff)))
-
     # 计算非零分母索引的值
     ind = np.arange(len(t))
     ind = np.delete(ind, [idx1, *idx2])
     nind = t[ind]
-
     rrc_filter[ind] = -4*rolloff/sps * (np.cos((1+rolloff)*np.pi*nind) + np.sin((1-rolloff)*np.pi*nind) / (4*rolloff*nind)) / (np.pi * ((4*rolloff*nind)**2 - 1))
-
     # 能量归一化
     rrc_filter = rrc_filter / np.sqrt(sum(rrc_filter ** 2))
     return rrc_filter
 
-
 # https://gist.github.com/Dreistein/8d546eab7236876882f08c0b487dad28
-def rcosdesign(beta: float, span: float, sps: float, shape='normal'):
+def rcosdesign(beta: float, sps: float, span: float, shape='normal'):
     """
     %%% b = rcosdesign(beta,span,sps,shape)
     %%% beta：滚降因子
@@ -147,7 +137,6 @@ Raised cosine FIR filter design
         idx2 = np.delete(idx2, idx1)
 
         b[idx2] = beta * np.sin(np.pi/(2*beta)) / (2*sps)
-
     else:
         # design a square root raised cosine filter
         # find mid-point
@@ -193,11 +182,10 @@ span = 6
 L = 4 # L
 shape = 'sqrt'
 
-h1 = rcosdesign_srv(beta, span, L, )
-h2 = rcosdesign(beta, span, L, shape = shape)
+h1 = rcosdesign_srv(beta, L, span, )
+h2 = rcosdesign(beta, L, span, shape = shape)
 h3, t, _ = srrcFunction(beta, L, span)
 # t = np.arange(h2.size)
-
 
 width = 10
 high = 6
@@ -209,7 +197,6 @@ labelsize = 20
 axs.plot(t, h1, ls = '-', color = 'r', marker = 'o', mfc = 'none', label = 'rcosdesign_srv')
 axs.plot(t, h2, ls = '-', color = 'g', marker = '*', mfc = 'none', label = 'rcosdesign')
 axs.plot(t, h3, ls = '-', color = 'b', marker = 'd', mfc = 'none', label = 'srrcFunction')
-
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel('time',fontproperties=font)
@@ -237,7 +224,7 @@ plt.show()
 plt.close()
 
 
-#%%
+#%%  升余弦滚降滤波器
 # https://github.com/Kevin-Vivas/Digital_Modulation_Py/blob/master/QPSK/raisedCosineDesign.py
 def raisedCosineDesign(alpha, span, L):
     """

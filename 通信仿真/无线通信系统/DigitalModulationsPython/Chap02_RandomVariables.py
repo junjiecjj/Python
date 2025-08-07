@@ -107,7 +107,7 @@ def Jakes_filter(fd, Ts, N):
     hw = J * hamm
     hw = hw / np.sqrt(np.sum(np.abs(hw)**2))
 
-    f, Y, A, Pha, R, I = freqDomainView(hw, 1/Ts, 'double' )
+    f, Y, A, Pha, R, I = freqDomainView(hw, 1/Ts, type = 'double' )
     Hw = (Ts / hw.size) * np.abs(Y)**2 * (hw.size**2)
 
     ##### plot
@@ -138,7 +138,7 @@ Ts = 1/Fs
 h = Jakes_filter(fd, Ts, N)
 x = np.random.randn( 1, 10000)
 y = scipy.signal.convolve(x, h, mode = 'valid')
-f, Y, A, Pha, R, I = freqDomainView(y, 1/Ts, 'double' )
+f, Y, A, Pha, R, I = freqDomainView(y, 1/Ts, type = 'double' )
 Syy = (Ts / y.size) * np.abs(Y)**2 * (y.size)**2
 ##### plot
 fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)

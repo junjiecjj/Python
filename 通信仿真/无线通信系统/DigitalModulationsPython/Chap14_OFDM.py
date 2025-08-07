@@ -104,25 +104,25 @@ from DigiCommPy.errorRates import ser_awgn
 def Qfun(x):
     return 0.5 * scipy.special.erfc(x / np.sqrt(2))
 
-def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
-    EbN0 = 10**(EbN0dB/10)
-    EsN0 = np.log2(M) * EbN0
-    SER = np.zeros(EbN0dB.size)
-    if MOD_TYPE.lower() == "bpsk":
-        SER = Qfun(np.sqrt(2 * EbN0))
-    elif MOD_TYPE == "psk":
-        if M == 2:
-            SER = Qfun(np.sqrt(2 * EbN0))
-        else:
-            if M == 4:
-                SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
-            else:
-                SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
-    elif MOD_TYPE.lower() == "qam":
-        SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
-    elif MOD_TYPE.lower() == "pam":
-        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
-    return SER
+# def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
+#     EbN0 = 10**(EbN0dB/10)
+#     EsN0 = np.log2(M) * EbN0
+#     SER = np.zeros(EbN0dB.size)
+#     if MOD_TYPE.lower() == "bpsk":
+#         SER = Qfun(np.sqrt(2 * EbN0))
+#     elif MOD_TYPE == "psk":
+#         if M == 2:
+#             SER = Qfun(np.sqrt(2 * EbN0))
+#         else:
+#             if M == 4:
+#                 SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
+#             else:
+#                 SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
+#     elif MOD_TYPE.lower() == "qam":
+#         SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
+#     elif MOD_TYPE.lower() == "pam":
+#         SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
+#     return SER
 
 nSym = 10000
 EbN0dBs = np.arange(0, 22, 2)
@@ -191,10 +191,8 @@ nSym = 10000
 EbN0dBs = np.arange(-2, 26, 2)
 MOD_TYPE = "psk"    ## "pam" "psk",   "fsk" is not suitable.
 arrayOfM = [2, 4, 8, 16, 32]
-
 # MOD_TYPE = "qam"
 # arrayOfM = [4, 16, 64, 256]
-
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 
@@ -250,34 +248,34 @@ axs.legend(fontsize = 20)
 plt.show()
 plt.close()
 
-
 #%% Program 14.5: ofdm on freq sel chan.m: OFDM on frequency selective Rayleigh fading channel
 from tqdm import tqdm
-def ser_rayleigh(EbN0dB, MOD_TYPE, M):
-    EbN0 = 10**(EbN0dB/10)
-    EsN0 = np.log2(M) * EbN0
-    SER = np.zeros(EbN0dB.size)
-    if MOD_TYPE.lower() == "bpsk":
-        SER = 1/2 * (1 - np.sqrt(EsN0/(1 + EsN0)))
-    elif MOD_TYPE.lower() == "psk":
-        SER = np.zeros(EsN0.size)
-        for i in range(len(EsN0)):
-            g = np.sin(np.pi/M)**2
-            fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/(np.sin(x)**2))
-            SER[i] = 1/np.pi * scipy.integrate.quad(fun, 0, np.pi*(M-1)/M)[0]
-    elif MOD_TYPE.lower() == "qam":
-        SER = np.zeros(EsN0.size)
-        for i in range(len(EsN0)):
-            g = 1.5 / (M-1)
-            fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
-            SER[i] = 4/np.pi * (1 - 1/np.sqrt(M)) * scipy.integrate.quad(fun, 0, np.pi/2)[0] - 4/np.pi * (1 - 1/np.sqrt(M))**2 * scipy.integrate.quad(fun, 0, np.pi/4)[0]
-    elif MOD_TYPE.lower() == "pam":
-        SER = np.zeros(EsN0.size)
-        for i in range(len(EsN0)):
-            g = 3/(M**2 - 1)
-            fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
-            SER[i] = 2*(M-1)/(M*np.pi) * scipy.integrate.quad(fun, 0, np.pi/2)[0]
-    return SER
+from DigiCommPy.errorRates import ser_rayleigh
+# def ser_rayleigh(EbN0dB, MOD_TYPE, M):
+#     EbN0 = 10**(EbN0dB/10)
+#     EsN0 = np.log2(M) * EbN0
+#     SER = np.zeros(EbN0dB.size)
+#     if MOD_TYPE.lower() == "bpsk":
+#         SER = 1/2 * (1 - np.sqrt(EsN0/(1 + EsN0)))
+#     elif MOD_TYPE.lower() == "psk":
+#         SER = np.zeros(EsN0.size)
+#         for i in range(len(EsN0)):
+#             g = np.sin(np.pi/M)**2
+#             fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/(np.sin(x)**2))
+#             SER[i] = 1/np.pi * scipy.integrate.quad(fun, 0, np.pi*(M-1)/M)[0]
+#     elif MOD_TYPE.lower() == "qam":
+#         SER = np.zeros(EsN0.size)
+#         for i in range(len(EsN0)):
+#             g = 1.5 / (M-1)
+#             fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
+#             SER[i] = 4/np.pi * (1 - 1/np.sqrt(M)) * scipy.integrate.quad(fun, 0, np.pi/2)[0] - 4/np.pi * (1 - 1/np.sqrt(M))**2 * scipy.integrate.quad(fun, 0, np.pi/4)[0]
+#     elif MOD_TYPE.lower() == "pam":
+#         SER = np.zeros(EsN0.size)
+#         for i in range(len(EsN0)):
+#             g = 3/(M**2 - 1)
+#             fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
+#             SER[i] = 2*(M-1)/(M*np.pi) * scipy.integrate.quad(fun, 0, np.pi/2)[0]
+#     return SER
 
 L = 10              ## Number of taps for the frequency selective channel model
 
@@ -349,7 +347,6 @@ axs.legend(fontsize = 20)
 
 plt.show()
 plt.close()
-
 
 #%% My OFDM with pilot, 使用导频进行信道估计
 from tqdm import tqdm
@@ -476,7 +473,6 @@ nSym = 20000  # 仿真帧数
 EbN0dBs = np.arange(-2, 34, 4)
 MOD_TYPE = "psk"  ## "pam", "psk",   "fsk" is not suitable.
 # arrayOfM = [2, 4, 8, 16, 32, 64]
-
 # MOD_TYPE = "qam"
 # arrayOfM = [4, 16, 64, 256]
 
@@ -549,7 +545,7 @@ for m, M in enumerate(arrayOfM):
     axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', lw = 2, label = f'{M}-{MOD_TYPE.upper()}' )
 
 # axs.set_ylim(1e-3, 1)
-axs.set_xlabel( 'Eb/N0(dB)',)
+axs.set_xlabel('Eb/N0(dB)',)
 axs.set_ylabel('SER',)
 axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over FreqSelectiveRayleigh with {esti_way.upper()} Channel Estim", fontsize = 18)
 axs.legend(fontsize = 20)

@@ -222,7 +222,7 @@ def doppler_psd_acf(TYPE, T_s, f_max, sigma_0_2, N):
         print('Invalid PSD TYPE specified')
 
     # Power spectral density using FFT of ACF
-    f, Y, _, _, _, _ = freqDomainView(r, 1/T_s, 'double')  #  chapter 1, section 1.3.4
+    f, Y, _, _, _, _ = freqDomainView(r, 1/T_s, type = 'double')  #  chapter 1, section 1.3.4
 
     ##### plot
     fig, axs = plt.subplots(1, 2, figsize = (12, 5), constrained_layout = True)

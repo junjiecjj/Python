@@ -120,7 +120,12 @@ x_up = scipy.signal.upfirdn([1], x, up = L)
 x_up = np.pad(x_up, (0, L-1))
 
 
-
+## Eq.(39)
+pi = np.pi
+m = 2
+N = 12
+A = np.exp(1j * 2*pi * m * np.arange(N) / N)
+A.sum() # 如果 m 是 N 的整数倍 or 0,和为N; 否则=0;
 
 
 

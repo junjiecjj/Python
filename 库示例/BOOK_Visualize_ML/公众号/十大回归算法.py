@@ -316,7 +316,7 @@ plt.xlabel('X')
 plt.ylabel('y')
 plt.show()
 
-
+# https://mp.weixin.qq.com/s?__biz=MzkwNjY5NDU2OQ==&mid=2247485441&idx=1&sn=13fb6ffa27ebe9664d69e21ebfc501eb&chksm=c0e5d2c7f7925bd104a6f0f5fba1899650786cf03eb191c1f5f564caa83d7b96dd7e3b04fd10&mpshare=1&scene=1&srcid=0803j4gftq59jeAxRMjTZi1y&sharer_shareinfo=e1071559ef8088067aa937e834a62074&sharer_shareinfo_first=e1071559ef8088067aa937e834a62074&exportkey=n_ChQIAhIQRd1zR798PYwvTREHaaa9gRKfAgIE97dBBAEAAAAAAG02McEEMIYAAAAOpnltbLcz9gKNyK89dVj0xNwDFBoGNay6B7DGzbeNxBOq7AtPtfNSECwRJ6zi2C7HMVy44UUDB5fXjzkJfpqZD%2F2zzpycZPc%2FU%2FRjfw2dSz9LFpc2pSucgBFx0B5JFrlBh0JareJiIkGUshSKsK7EMooLeulVl7rcG5512qHKUeqOoRHvxeRt5%2BWGoXPLAHbvS7XLlqdOfWjWnEYB940LI2dUpHc1JUlX38ua2wkqmvX4sSfXeBJDbKvUZVNPtwJxjCq46EpD6CXGYIMWS13SxPnlsGNcV1LLKXqfzSb7AQBD9S%2FRZOQ7S4pzNR1GK0gOchSBkrK3aatBxx%2FIZmH%2Bq8RA97M%2B6LID&acctmode=0&pass_ticket=3XOVYBHCqjJTf%2BiHx%2BYcsMq%2BpDBNiF6pJCoeGUGQPaL7s%2FHErxL24DbU6M6ZK%2B2g&wx_header=0#rd
 #%% 1. 线性回归 (Linear Regression)
 import numpy as np
 import pandas as pd
@@ -1075,126 +1075,381 @@ plt.show()
 
 
 
+#%% https://mp.weixin.qq.com/s?__biz=Mzk0MjUxMzg3OQ==&mid=2247486033&idx=1&sn=1c6ad89d9cb7923dfc58554184d7dc1f&chksm=c2c341e9f5b4c8ff84123e2159f8511587cceee966844b48b38c643f70ff3d0c8f47a0ff47a7&mpshare=1&scene=1&srcid=0726ta8LXP8xzLdqpJhhZiB3&sharer_shareinfo=40f1a55d93656485fd0ae74dac3ce470&sharer_shareinfo_first=40f1a55d93656485fd0ae74dac3ce470&exportkey=n_ChQIAhIQJ4ZsK%2FLMOR8wyFoB2fY9hBKQAgIE97dBBAEAAAAAAOGLIrpxJpEAAAAOpnltbLcz9gKNyK89dVj0%2FKyDTcgdn0zuf0vguhOdv6Ib0SELpfWt93ag7x4GLmyW9KX3f2vqQ4OnB3dDaHrrFnT4mBr9UXIjgNuoz6avloTSZKWhzWTTLBxnitGmTu085v7kcF%2FoL4kmYo9R57%2FqXVN6n9V%2FR8HdfLAHvCiF4Pmxoxk4wB92Oe0bvB5kb8rZl3uw4ydATqEUu3Z%2FXEJnxcAWCF8X6TOHp6UbYJjKy2IVmFEoYBSWTze%2F1zIYVg7e%2B8rLuHIoBm9XVjrhpbf8wzXlrM9%2BOQTLVfYSUCb20u3StWnVvTFDRjBnWPOEbA1veLvKdxdDXhTX&acctmode=0&pass_ticket=HClY0DMZAVhWlVUAS38Y60hCN09JIO9gbO83ddMztht%2FwZF3fZtFu1wldf4L6w05&wx_header=0#rd
 
+#%% 1 简单线性回归
 
+import numpy as np
+import matplotlib.pyplot as plt
 
+# 数据
+X = np.array([25, 30, 35, 40, 45, 50, 55])
+Y = np.array([35000, 40000, 45000, 50000, 55000, 60000, 65000])
 
+# 计算X和Y的均值
+x_mean = np.mean(X)
+y_mean = np.mean(Y)
 
-#%%
+# 计算β0和β1
+n = len(X)
+numerator = n * np.sum(X*Y) - np.sum(X) * np.sum(Y)
+denominator = n * np.sum(X**2) - np.sum(X)**2
+beta_1 = numerator / denominator
+beta_0 = y_mean - beta_1 * x_mean
 
+# 构建回归线
+y_pred = beta_0 + beta_1 * X
 
+# 绘制图表
+plt.scatter(X, Y, color='blue', label='actual_data')
+plt.plot(X, y_pred, color='red', label='regression')
+plt.xlabel('age')
+plt.ylabel('income')
+plt.legend()
+plt.show()
 
 
 
 
+#%% 2 多元线性回归
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_boston
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
+# 加载数据集
+boston = load_boston()
+X = pd.DataFrame(boston.data, columns=boston.feature_names)
+y = pd.DataFrame(boston.target, columns=['MEDV'])
 
+# 划分训练集和测试集
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
+# 构建线性回归模型
+model = LinearRegression()
+model.fit(X_train, y_train)
 
+# 进行预测
+y_pred = model.predict(X_test)
 
+# 评估模型
+mse = mean_squared_error(y_test, y_pred)
+print('Mean Squared Error:', mse)
 
+# 绘图展示
+plt.scatter(y_test, y_pred)
+plt.xlabel('actual_price')
+plt.ylabel('predict_price')
+plt.title('Comparison of Actual vs Predicted Housing Prices')
+plt.show()
 
 
 
 
+#%% 3 逻辑回归
+import numpy as np
 
+# Sigmoid函数
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
-#%%
+# 损失函数
+def compute_loss(y, h):
+    return -np.mean(y * np.log(h) + (1 - y) * np.log(1 - h))
 
+# 梯度下降
+def gradient_descent(X, y, theta, learning_rate, iterations):
+    m = len(y)
+    for i in range(iterations):
+        z = np.dot(X, theta)
+        h = sigmoid(z)
+        gradient = np.dot(X.T, (h - y)) / m
+        theta -= learning_rate * gradient
+    return theta
 
+# 数据预处理
+# 这里使用虚拟数据
+X = np.array([[34, 78], [36, 72], [30, 65], [50, 87]])  # 特征
+y = np.array([0, 0, 1, 1])  # 标签
+X = np.insert(X, 0, 1, axis=1)  # 添加截距项
+theta = np.zeros(X.shape[1])  # 初始化权重
 
+# 模型训练
+theta = gradient_descent(X, y, theta, 0.01, 1000)
 
+# 预测
+z = np.dot(X, theta)
+predictions = sigmoid(z) > 0.5
+print(predictions)
 
+import matplotlib.pyplot as plt
 
+# 绘制数据点
+plt.scatter(X[:, 1], X[:, 2], c=y, cmap='winter')
 
+# 计算决策边界
+x_value= np.array([np.min(X[:, 1]), np.max(X[:, 1])])
+y_value=-(theta[0] + theta[1]*x_value)/theta[2]
 
+# 绘制决策边界
+plt.plot(x_value, y_value, label='Decision Boundary')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+plt.show()
 
 
 
+#%% 4 多项式回归
 
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
 
+# 生成虚拟数据集
+np.random.seed(0)
+x = 2 - 3 * np.random.normal(0, 1, 20)
+y = x - 2 * (x ** 2) + 0.5 * (x ** 3) + np.random.normal(-3, 3, 20)
 
+# 将x转换为二维数组用于后续处理
+x = x[:, np.newaxis]
+y = y[:, np.newaxis]
 
+# 创建多项式特征
+polynomial_features = PolynomialFeatures(degree=2)
+x_poly = polynomial_features.fit_transform(x)
 
+# 模型拟合
+model = LinearRegression()
+model.fit(x_poly, y)
+y_poly_pred = model.predict(x_poly)
 
+# 绘制结果
+plt.scatter(x, y, color='red')
+plt.plot(x, y_poly_pred, color='blue')
+plt.title('Polynomial Regression')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
 
 
-#%%
 
 
+#%% 5 Ridge回归
 
 
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.datasets import load_boston
 
+# 加载数据
+boston = load_boston()
+X = boston.data
+y = boston.target
 
+# 划分训练集和测试集
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+# 创建Ridge回归模型
+ridge = Ridge(alpha=1.0)
 
+# 训练模型
+ridge.fit(X_train, y_train)
 
+# 预测
+y_pred = ridge.predict(X_test)
 
+# 计算均方误差
+mse = mean_squared_error(y_test, y_pred)
+print(f'Mean Squared Error: {mse}')
 
+# 可视化预测与实际值
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Prices')
+plt.ylabel('Predicted Prices')
+plt.title('Ridge Regression Predictions')
+plt.show()
 
 
 
 
+#%%6 Lasso回归
 
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import Lasso
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_regression
 
+# 创建虚拟数据集
+X, y = make_regression(n_samples=100, n_features=2, noise=0.1)
 
+# 划分数据集
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-#%%
+# Lasso回归模型
+lasso = Lasso(alpha=0.1)
+lasso.fit(X_train, y_train)
 
+# 预测与评估
+y_pred = lasso.predict(X_test)
 
+# 绘制结果
+plt.scatter(X_test[:, 0], y_test, color='black', label='Actual')
+plt.scatter(X_test[:, 0], y_pred, color='blue', label='Predicted')
+plt.legend()
+plt.show()
 
+#%% 7 弹性网络
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import ElasticNet
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
+# 创建虚拟数据集
+X, y = make_regression(n_samples=1000, n_features=10, noise=0.1)
 
+# 分割数据集
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+# 创建弹性网络回归模型
+model = ElasticNet(alpha=1.0, l1_ratio=0.5)
 
+# 训练模型
+model.fit(X_train, y_train)
 
+# 预测测试集
+y_pred = model.predict(X_test)
 
+# 计算均方误差
+mse = mean_squared_error(y_test, y_pred)
 
+print("均方误差: ", mse)
 
+# 可视化部分系数
+plt.plot(model.coef_)
+plt.title('Elastic Net Coefficients')
+plt.show()
 
 
+#%% 8 决策树回归
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
+# 生成虚拟数据集
+np.random.seed(0)
+X = np.random.rand(1000, 3)  # 三个特征
+Y = X[:, 0] * 200000 + X[:, 1] * -50000 + X[:, 2] * 30000 + 50000  # 假设的价格公式
 
+# 划分训练集和测试集
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3)
 
+# 构建模型并训练
+regressor = DecisionTreeRegressor()
+regressor.fit(X_train, Y_train)
 
+# 预测与评估
+Y_pred = regressor.predict(X_test)
+mse = mean_squared_error(Y_test, Y_pred)
+print(f'MSE: {mse}')
 
+# 绘制决策树的决策路径
+plt.figure(figsize=(12, 8))
+plt.scatter(X_test[:, 0], Y_test, color='blue', label='Actual')
+plt.scatter(X_test[:, 0], Y_pred, color='red', label='Predicted')
+plt.xlabel('Feature 1')
+plt.ylabel('House Price')
+plt.title('Decision Tree Regression')
+plt.legend()
+plt.show()
 
-#%%
 
 
+#%% 9 随机森林回归
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
 
+# 生成虚拟数据
+data = {
+    '面积': np.random.rand(100) * 100,
+    '卧室数': np.random.randint(1, 5, 100),
+    '年龄': np.random.randint(0, 30, 100),
+    '价格': np.random.rand(100) * 500
+}
+df = pd.DataFrame(data)
 
+# 数据拆分
+X = df[['面积', '卧室数', '年龄']]
+y = df['价格']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+# 训练随机森林模型
+regressor = RandomForestRegressor(n_estimators=100)
+regressor.fit(X_train, y_train)
 
+# 预测与可视化
+y_pred = regressor.predict(X_test)
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Price')
+plt.ylabel('Predicted Price')
+plt.title('Random Forest Regression Prediction')
+plt.show()
 
 
+#%% 10 支持向量回归
 
+from sklearn.svm import SVR
+from sklearn.datasets import load_boston
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+import numpy as np
 
+# 加载数据
+boston = load_boston()
+X, y = boston.data, boston.target
 
+# 数据预处理
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 
+# 划分训练集和测试集
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
+# 创建SVR模型
+svr = SVR(kernel='rbf', C=1.0, epsilon=0.1)
 
+# 训练模型
+svr.fit(X_train, y_train)
 
+# 预测和评估
+y_pred = svr.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+print(f'Mean Squared Error: {mse}')
 
-
-
-
-#%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 绘图展示
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Prices')
+plt.ylabel('Predicted Prices')
+plt.title('SVR Predictions')
+plt.show()
 
 
 

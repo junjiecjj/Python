@@ -9,23 +9,14 @@ Created on Thu Mar 21 20:43:25 2024
 import numpy as np
 
 # 产生傅里叶矩阵
-def FFTmatrix(row, col):
-    assert row == col
-    mat = np.zeros((row, col), dtype = complex)
-    for i in range(row):
-         for j in range(col):
-              mat[i, j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row)    # / (np.sqrt(row)*1.0)
-    return mat
-# 产生傅里叶矩阵
-def FFTmatrix1(row, col):
-    assert row == col
-    w = np.exp(-1j*2.0*np.pi/row)
-    mat = np.zeros((row, col), dtype = complex)
-    for i in range(row):
-         for j in range(col):
-              mat[i, j] = 1.0*w**(i*j)    # / (np.sqrt(row)*1.0)
-    return mat
-# 生成循环矩阵
+def FFTmatrix(row,col):
+     mat = np.zeros((row,col),dtype=complex)
+     for i in range(row):
+          for j in range(col):
+               mat[i,j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row)# / (np.sqrt(row)*1.0)
+     return mat
+
+# 生成 循环矩阵
 def CirculantMatric(gen, row):
      if type(gen) == list:
           col = len(gen)
@@ -35,38 +26,34 @@ def CirculantMatric(gen, row):
      mat = np.zeros((row, col), np.complex128)
      mat[0,:] = gen
      for i in range(1,row):
-          mat[i,:] = np.roll(gen, i)
+          mat[i,:] = np.roll(gen,i)
      return mat
 
-X =  np.array([1+1j, 2+2j, 3+3j, 4+1j ])
+generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
+# generateVec =  [1 , 2  , 3 , 4  ]
 
-L = X.size
-A = CirculantMatric(X, L)
+X = np.array(generateVec)
 
-F = FFTmatrix(L, L)  # F = F.T, F^H = F^*
-print(f"F.T - F = \n{F - F.T}, \nF^H - F^* = \n{F.conj().T - F.conj()}")
+L = len(generateVec)
+A = CirculantMatric(generateVec, L)
+
+F = FFTmatrix(L, L)
 FH = F.T.conjugate()/(L*1.0)
 
-
 F_FT = F@FH
-F_FT = np.around(F_FT, decimals = 2)
+F_FT = np.around(F_FT,decimals = 2)
 print(f"傅里叶矩阵自身与其共轭转置的乘积:\n{F_FT} \n")
 
-FT_F = FH@F
-FT_F = np.around(FT_F, decimals = 2)
-print(f"傅里叶矩阵的共轭转置与自身乘积:\n{FT_F} \n")
+# FT_F = FH@F
+# FT_F = np.around(FT_F,decimals = 2)
+# print(f"傅里叶矩阵的共轭转置与自身乘积:\n{FT_F} \n")
 
-## 任意循环矩阵可以被傅里叶变换矩阵对角化, 对角化元素为该循环矩阵第一行的傅里叶变换
+
 FH_A_F = FH@A@F
 FH_A_F = np.around(FH_A_F, decimals = 2)
 print(f"FH_A_F:\n{FH_A_F}")
 print(f"F@X = \n{F@X} ")
 print(f"diag[fft(X)] = \n{np.diag(np.fft.fft(X))} \n")
-
-print(f"np.fft.fft(A[:,0]) = {np.fft.fft(A[:,0])}")
-
-lambdas, V = np.linalg.eig(A)
-print(f"lambdas = \n{lambdas}\nV = \n{V}")
 
 F_A_FH = F@A@FH
 F_A_FH = np.around(F_A_FH, decimals = 2)
@@ -88,6 +75,8 @@ print(f"F@X1 = \n{F@X1} ")
 print(f"diag[fft(X1)] = \n{np.diag(np.fft.fft(X1))} \n")
 #  有一个现象，那就是  F^H*B*H 和F^H*A*H都是对角矩阵, 值一样，但是顺序不同。
 
+eigvalue, eigvec = np.linalg.eig(A)
+print(f"eigvalue = {eigvalue}")
 
 
 
