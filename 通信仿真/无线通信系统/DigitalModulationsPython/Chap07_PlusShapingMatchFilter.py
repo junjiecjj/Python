@@ -221,7 +221,7 @@ for i, M in enumerate(arrayOfM):
         d = np.random.randint(low = 0, high = M, size = nSym) # uniform random symbols from 0 to M-1
         u = modem.modulate(d) #modulate
 
-        ##  脉冲成型 + 上变频-> 基带信号
+        ##  脉冲成型 + 上变频 -> 基带信号
         s = scipy.signal.upfirdn(p, u, L)
         ## channel
         r = awgn(s, EsN0dB, L)
@@ -290,7 +290,7 @@ for i, M in enumerate(arrayOfM):
 
     for j, EsN0dB in enumerate(EsN0dBs):
 
-        d = np.random.randint(low=0, high = M, size=nSym) # uniform random symbols from 0 to M-1
+        d = np.random.randint(low=0, high = M, size = nSym) # uniform random symbols from 0 to M-1
         u = modem.modulate(d) #modulate
         ## Upper sample
         v = np.vstack((u, np.zeros((L-1, u.size))))

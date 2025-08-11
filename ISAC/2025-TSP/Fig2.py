@@ -9,6 +9,8 @@ Created on Mon Aug  4 15:18:11 2025
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
+import commpy
+from Modulations import modulator
 
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
@@ -32,6 +34,40 @@ plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
 #%%
+def generateJk(L, N, k):
+    if k < 0:
+        k = L*N+k
+    if k == 0:
+        Jk = np.eye(L*N)
+    elif k > 0:
+        tmp1 = np.zeros((k, L*N-k))
+        tmp2 = np.eye(k)
+        tmp3 = np.eye(L*N-k)
+        tmp4 = np.zeros((L*N - k, k))
+        Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
+    return Jk
+
+# 产生傅里叶矩阵
+def FFTmatrix(row, col):
+     mat = np.zeros((row, col), dtype = complex)
+     for i in range(row):
+          for j in range(col):
+               mat[i,j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row) / (np.sqrt(row)*1.0)
+     return mat
+
+# 生成 循环矩阵
+def CirculantMatric(gen, row):
+     if type(gen) == list:
+         col = len(gen)
+     elif type(gen) == np.ndarray:
+         col = gen.size
+     row = col
+     mat = np.zeros((row, col), np.complex128)
+     mat[0, :] = gen
+     for i in range(1, row):
+         mat[i, :] = np.roll(gen, i)
+     return mat
+
 def srrcFunction(beta, L, span):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
@@ -55,8 +91,18 @@ N = 128  # the number of symbols
 L = 8    # oversampling ratio
 alpha = 0.35
 
+M_array = [4, 16, 64, 256, 1024]
+for M in M_array:
+    MOD_TYPE = "qam"
+    modem, Es, bps = modulator(MOD_TYPE, M)
+    Constellation = modem.constellation/np.sqrt(Es)
+    kurtosis = np.mean(np.abs(Constellation)**4)
+    print(f"{M}-{MOD_TYPE.upper()}, kurtosis = {kurtosis}")
 
-
+MOD_TYPE = "qam"
+modem, Es, bps = modulator(MOD_TYPE, M)
+Constellation = modem.constellation/np.sqrt(Es)
+AvgEnergy = np.mean(np.abs(Constellation)**2)
 
 
 

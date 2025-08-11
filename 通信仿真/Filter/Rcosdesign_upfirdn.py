@@ -28,30 +28,30 @@ fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 #%%=================================================================================
 ## 上采样
 ##==================================================================================
+# upfirdn(h, x, up=1, down=1, axis=-1, mode='constant', cval=0)
+
 c = scipy.signal.upfirdn([1, 1, 1], [1, 1, 1])   # FIR filter
 # array([1., 2., 3., 2., 1.])
 c = np.convolve([1, 1, 1],[1, 1, 1])
 # array([1, 2, 3, 2, 1])
 
-
 c = scipy.signal.upfirdn([1], [1, 2, 3], 3)  # upsampling with zeros insertion
 # array([ 1.,  0.,  0.,  2.,  0.,  0.,  3.])
-c = np.convolve([1,0,0,2,0,0,3], [1])
+c = np.convolve([1, 0, 0, 2, 0, 0, 3 ], [1])
 # array([1, 0, 0, 2, 0, 0, 3])
-
 
 c = scipy.signal.upfirdn([1, 1, 1], [1, 2, 3], 3)  # upsampling with sample-and-hold
 # array([ 1.,  1.,  1.,  2.,  2.,  2.,  3.,  3.,  3.])
-c = np.convolve([1,0,0,2,0,0,3], [1,1,1])
+c = np.convolve([1, 0, 0, 2, 0, 0, 3], [1,1,1])
 # array([1, 1, 1, 2, 2, 2, 3, 3, 3])
 
-c = scipy.signal.upfirdn([.5, 1, .5], [1, 1, 1], 2)  # linear interpolation
+c = scipy.signal.upfirdn([0.5, 1, 0.5], [1, 1, 1], 2)  # linear interpolation
 # array([ 0.5,  1. ,  1. ,  1. ,  1. ,  1. ,  0.5])
-c = np.convolve([1,0,1,0,1], [.5, 1, .5])
+c = np.convolve([1, 0, 1, 0, 1], [0.5, 1, 0.5])
 # array([0.5, 1. , 1. , 1. , 1. , 1. , 0.5])
 
 ## 从以上结果可以看出，
-# scipy.signal.upfirdn(h, x, up ,  )
+# scipy.signal.upfirdn(h, x, up)
 # 就是先用 up - 1 个0填充x的每两个元素之间，然后与h做卷积
 
 
@@ -156,16 +156,16 @@ def rcosdesign(beta: float, span: float, sps: float, shape='normal'):
 
 #%% ==================== 输入信号  ====================
 x = 2*np.random.randint(0,2,(10,)) - 1
-x = 2 * x
+# x = 2 * x
 # x = np.array([0,0,1,1,1,1,1,1,0,0])
 # ==================== 设置滤波器 ====================
 span = 6
-sps = 4   # L
-h = rcosdesign(0.5, span, sps, 'sqrt')
+L = 4   # L
+h = rcosdesign(0.5, span, L, 'sqrt')
 
 # ==================== 脉冲成型 + 上变频-> 基带信号 ====================
 #对输入信号进行上采样
-y = scipy.signal.upfirdn(h, x, sps)
+y = scipy.signal.upfirdn(h, x, L)
 
 # ==================== 载波 ====================
 fc = 0.1 # Hz
@@ -182,7 +182,7 @@ r = y_fc + 0.01 * ( np.random.normal(size=(y.size,)) + 1j * np.random.normal(siz
 r_coherent = r * np.exp(-1j * 2 * np.pi * fc * t)
 
 #==================== 下采样 + 匹配滤波 -> 恢复的基带信号 ====================
-z = scipy.signal.upfirdn(h, r_coherent, 1, sps)  ## 此时默认上采样为1，即不进行上采样
+z = scipy.signal.upfirdn(h, r_coherent, 1, L)  ## 此时默认上采样为1，即不进行上采样
 
 #%%选取最佳采样点,
 decision_site = int((z.size - x.size) / 2)
