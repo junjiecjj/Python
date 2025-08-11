@@ -612,6 +612,209 @@ plt.show()
 print("EnKF 运行完成，结果已绘制。")
 
 
+#%% 非线性系统如何应用卡尔曼滤波？扩展卡尔曼滤波EKF篇(含原理、案例与代码实现)
+# https://mp.weixin.qq.com/s?__biz=MzE5MTA2MjYzNQ==&mid=2247483746&idx=1&sn=2e9844e7dee0bc83a50bf56dd65e129f&chksm=9727f6794b9e86773e1f02f95c9653f74c82fda2650671f73c42140daa3a88951da695cc9aac&mpshare=1&scene=1&srcid=0811Sts1JIulLacJKFRkt6m6&sharer_shareinfo=61c39115e6b7d0ea6d635f37ad1c9268&sharer_shareinfo_first=61c39115e6b7d0ea6d635f37ad1c9268&exportkey=n_ChQIAhIQB%2BxksmGhwJXMtrP93bGq3xKfAgIE97dBBAEAAAAAAOSSGXW2mkcAAAAOpnltbLcz9gKNyK89dVj0Pzm7G0LXcmL8FkuxDszrh03C6k905YXmvTngyVclcUxOk06%2B3GURloiCz0mSChW5JREgJ9QeYZT5yu5ADj6a89fslW4T4HppGpJuuh8zynBefgl%2Bt5UjNISE3WpdXTlKSaL5rtxcET8Rw7IyVKle08quS4DCbZh34IYDPWRbouzDdJqxif3bKFvTzF%2BrTIgsGt862ZX250oFZyzNgp8zHVfAVMBbijo%2FZP1nMZIF5eWW9zcvKJ1Zhjo%2FnGOVwBJqznbDJFmCOm81HEM6cygxHYbKVFpXqt7%2Bx0uoLjiCpFM3so4F4RKyYIFEEbM9xcyK8PUpJ8t6yGgY&acctmode=0&pass_ticket=4eZfvv6a2DCccxNDcYRMICL%2FcBDHDdX%2F3KvvulbtqBGm7M42EGoFK2IqPV10Kwtl&wx_header=0&poc_token=HMi4mWijMQXs6CamXP5nCaX2SgatQnsl_CMVHnXP
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def wrapToPi(angle):
+    """Wrap angle to [-pi, pi]"""
+    return (angle + np.pi) % (2 * np.pi) - np.pi
+
+# Set simulation parameters
+dt = 0.1           # Time step (s)
+N = 500            # Number of steps
+R = 20             # Circle radius (m)
+omega_true = 0.1   # True angular velocity (rad/s)
+v_true = R * omega_true  # True linear speed (m/s)
+
+# Noise characteristics
+overlay_std = 0.05   # Speed sensor noise (m/s)
+omega_std = 0.005    # Yaw rate noise (rad/s)
+gps_std = 1.0        # GPS position noise (m)
+
+# Preallocate arrays
+true_state = np.zeros((3, N))   # [x; y; theta]
+v_meas = np.zeros(N)
+omega_meas = np.zeros(N)
+gps_meas = np.zeros((2, N))
+
+# Initial condition: start at angle 0
+phi = np.zeros(N)
+phi[0] = 0
+true_state[:, 0] = [R, 0, phi[0] + np.pi/2]  # [x, y, heading]
+
+# Generate true trajectory and measurements
+np.random.seed(0)
+for k in range(1, N):
+    # Update true heading (polar angle)
+    phi[k] = phi[k-1] + omega_true * dt
+    # Compute true position on circle
+    true_state[0, k] = R * np.cos(phi[k])
+    true_state[1, k] = R * np.sin(phi[k])
+    true_state[2, k] = phi[k] + np.pi/2
+    # Odometry measurements: linear speed + yaw rate
+    v_meas[k] = v_true + overlay_std * np.random.randn()
+    omega_meas[k] = omega_true + omega_std * np.random.randn()
+    # GPS measurement: noisy x, y
+    gps_meas[:, k] = true_state[0:2, k] + gps_std * np.random.randn(2)
+
+# EKF initialization
+x_ekf = np.zeros((3, N))
+P = np.eye(3)
+Q = np.diag([0.1**2, 0.1**2, 0.01**2])  # process noise covariance
+Rk = gps_std**2 * np.eye(2)             # measurement noise covariance
+x_ekf[:, 0] = true_state[:, 0]          # initial state estimate
+
+# State transition function
+def motion_model(x, u):
+    return np.array([
+        x[0] + u[0]*dt * np.cos(x[2]),
+        x[1] + u[0]*dt * np.sin(x[2]),
+        x[2] + u[1]*dt
+    ])
+
+# EKF loop
+for k in range(1, N):
+    # Prediction
+    u = np.array([v_meas[k], omega_meas[k]])
+    x_pred = motion_model(x_ekf[:, k-1], u)
+    # Jacobian F
+    theta = x_ekf[2, k-1]
+    F = np.array([
+        [1, 0, -u[0]*dt*np.sin(theta)],
+        [0, 1,  u[0]*dt*np.cos(theta)],
+        [0, 0, 1]
+    ])
+    P_pred = F @ P @ F.T + Q
+
+    # Update with GPS
+    H = np.array([[1, 0, 0], [0, 1, 0]])
+    z = gps_meas[:, k]
+    y = z - H @ x_pred
+    S = H @ P_pred @ H.T + Rk
+    K = P_pred @ H.T @ np.linalg.inv(S)
+    x_ekf[:, k] = x_pred + K @ y
+    P = (np.eye(3) - K @ H) @ P_pred
+
+# Plotting results
+plt.figure()
+plt.plot(true_state[0], true_state[1], 'k-', linewidth=1.5, label='True trajectory')
+plt.plot(gps_meas[0, 1:], gps_meas[1, 1:], 'r.', markersize=4, label='GPS measurements')
+plt.plot(x_ekf[0], x_ekf[1], 'b--', linewidth=1.5, label='EKF estimate')
+plt.legend()
+plt.title('Circular Trajectory: EKF Position Estimation')
+plt.xlabel('X (m)')
+plt.ylabel('Y (m)')
+plt.grid(True)
+plt.axis('equal')
+
+# Error analysis: position and heading errors
+errors_ekf = true_state - x_ekf
+theta_ekf_error = wrapToPi(errors_ekf[2, :])
+
+plt.figure(figsize=(10, 8))
+plt.subplot(3,1,1)
+plt.plot(np.arange(N), errors_ekf[0, :], linewidth=1.2)
+plt.ylabel(r'$\delta X$ (m)'); plt.grid(True)
+
+plt.subplot(3,1,2)
+plt.plot(np.arange(N), errors_ekf[1, :], linewidth=1.2)
+plt.ylabel(r'$\delta Y$ (m)'); plt.grid(True)
+
+plt.subplot(3,1,3)
+plt.plot(np.arange(N), theta_ekf_error, linewidth=1.2)
+plt.ylabel(r'$\delta \theta$ (rad)'); plt.xlabel('Time step'); plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
