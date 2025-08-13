@@ -76,17 +76,16 @@ def rcosdesign(beta: float, L: float, span: float, shape='normal'):
     """
     %%% b = rcosdesign(beta,span,L,shape)
     %%% beta：滚降因子
-    %%% span: 表示截断的符号范围，对滤波器取了几个Ts的长度
     %%% L: 每个符号的采样数, L
+    %%% span: 表示截断的符号范围，对滤波器取了几个Ts的长度
     %%% shape:可选择'normal'或者'sqrt'
-    %%% b:1*L*span）的行向量，升余弦或余弦滤波器的系数
+    %%% b : 1+L*span的行向量，升余弦或余弦滤波器的系数
     在 MATLAB 的 `rcosdesign` 函数中，`span` 参数指的是滤波器脉冲响应（抽头系数）跨越的符号周期数。也就是说，`span` 决定了设计的根升余弦滤波器脉冲响应在时间上的长度。这个长度是以数据传输中的符号周期（即一个数据符号的持续时间）为单位的。
     详细来说：
     - **span**：定义了滤波器的非零脉冲响应覆盖多少个符号周期。例如，如果 `span` 为 6，那么滤波器的脉冲响应将从当前符号的中心开始，并向前后各扩展 3 个符号周期的长度。脉冲响应在这个时域区间之外将为零。
     这意味着，如果你增加 `span` 的值，滤波器的时间响应将会变长，滤波器的频域响应将会相对变得更加平坦（增加了时间长度，减少了频宽）。这可以帮助减少码间干扰（ISI），但是也导致了增加的系统延迟，并且在实际应用中会需要更多的计算资源来处理因响应扩展导致的更多样本。
     具体到 `rcosdesign` 函数的脉冲响应计算，当你提供 `span` 参数时，函数会生成一个长度为 `span * L + 1` 的滤波器脉冲响应，其中 `L` 是每个符号周期的采样点数。`span * L` 确定了响应的总采样数，而 `+1` 是因为滤波器的中心抽头被计算在内。
     理解 `span` 对滤波器设计的影响对于选择满足特定系统要求和约束的滤波器参数至关重要。例如，在一个需要较低延迟的实时系统中，你可能会选择一个较小的 `span` 值。对于一个需要很高码间干扰抑制能力的系统，你可能会选择一个较大的 `span` 值。
-
 
 Raised cosine FIR filter design
     (1) Calculates square root raised cosine FIR filter coefficients with a rolloff factor of `beta`.
@@ -99,46 +98,34 @@ Raised cosine FIR filter design
     sps   -- number of samples per symbol
     shape -- `normal` to design a normal raised cosine FIR filter or `sqrt` to design a sqre root raised cosine filter
     """
-
     if beta < 0 or beta > 1:
         raise ValueError("parameter beta must be float between 0 and 1, got {}".format(beta))
-
     if span < 0:
         raise ValueError("parameter span must be positive, got {}".format(span))
-
     if L < 0:
-        raise ValueError("parameter sps must be positive, got {}".format(span))
-
+        raise ValueError("parameter sps must be positive, got {}".format(L))
     if ((L*span) % 2) == 1:
         raise ValueError("rcosdesign:OddFilterOrder {}, {}".format(L, span))
-
     if shape != 'normal' and shape != 'sqrt':
         raise ValueError("parameter shape must be either 'normal' or 'sqrt'")
-
     eps = np.finfo(float).eps
-
     # design the raised cosine filter
     delay = span*L/2
     t = np.arange(-delay, delay)
-
     if len(t) % 2 == 0:
         t = np.concatenate([t, [delay]])
     t = t / L
     b = np.empty(len(t))
-
     if shape == 'normal':
         # design normal raised cosine filter
         # find non-zero denominator
         denom = (1-np.power(2*beta*t, 2))
         idx1 = np.nonzero(np.fabs(denom) > np.sqrt(eps))[0]
-
         # calculate filter response for non-zero denominator indices
         b[idx1] = np.sinc(t[idx1])*(np.cos(np.pi*beta*t[idx1])/denom[idx1])/L
-
         # fill in the zeros denominator indices
         idx2 = np.arange(len(t))
         idx2 = np.delete(idx2, idx1)
-
         b[idx2] = beta * np.sin(np.pi/(2*beta)) / (2*L)
     else:
         # design a square root raised cosine filter
@@ -150,15 +137,12 @@ Raised cosine FIR filter design
         idx2 = np.nonzero(np.fabs(np.fabs(4*beta*t) - 1) < np.sqrt(eps))[0]
         if idx2.size > 0:
             b[idx2] = 1 / (2*np.pi*L) * (np.pi * (beta+1) * np.sin(np.pi * (beta+1) / (4*beta)) - 4*beta * np.sin(np.pi * (beta-1) / (4*beta)) + np.pi*(beta-1) * np.cos(np.pi * (beta-1) / (4*beta)))
-
         # fill in the zeros denominator indices
         ind = np.arange(len(t))
         idx = np.unique(np.concatenate([idx1, idx2]))
         ind = np.delete(ind, idx)
         nind = t[ind]
-
         b[ind] = -4*beta/L * (np.cos((1+beta)*np.pi*nind) + np.sin((1-beta)*np.pi*nind) / (4*beta*nind)) / (  np.pi * (np.power(4*beta*nind, 2) - 1))
-
     # normalize filter energy
     b = b / np.sqrt(np.sum(np.power(b, 2)))
     filtDelay = (len(b)-1)/2
