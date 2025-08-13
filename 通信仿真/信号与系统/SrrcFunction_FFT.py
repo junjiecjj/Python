@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Aug 13 09:59:40 2025
+Created on Wed Aug 13 10:28:05 2025
 
 @author: jack
 """
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,7 +33,25 @@ plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色
 plt.rcParams['legend.fontsize'] = 18
 
 np.random.seed(42)
-## ======================================================
+
+#%%
+def srrcFunction(beta, L, span):
+    # Function for generating rectangular pulse for the given inputs
+    # L - oversampling factor (number of samples per symbol)
+    # span - filter span in symbol durations
+    # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
+    Tsym = 1
+    t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
+    A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
+    B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
+    p = 1/np.sqrt(Tsym) * A/B
+    p[np.argwhere(np.isnan(p))] = 1
+    p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
+    filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
+    return p, t, filtDelay
+
+#%% ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
 ts = 0.1                          # x(t) = sinc(t/ts), T = 0.1, f = 10 Hz
@@ -48,15 +67,16 @@ t = np.arange(-m*ts, m*ts, Ts)    # 定义信号采样的时间点 t
 x = np.sinc(t/ts)
 N = x.size
 #=====================================================
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-FFTN = 1000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
-## IFFT
-IX = scipy.fftpack.ifft(scipy.fftpack.fft(x))
 
 
 #%%==================================================
 # 半谱图
 #==================================================
+# 对时域采样信号, 执行快速傅里叶变换 FFT
+FFTN = 1024        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+## IFFT
+IX = scipy.fftpack.ifft(scipy.fftpack.fft(x))
+
 # 对时域采样信号, 执行快速傅里叶变换 FFT
 X  = scipy.fftpack.fft(x, n = FFTN)
 # X1 = FFT(x) # 或者用自己编写的
