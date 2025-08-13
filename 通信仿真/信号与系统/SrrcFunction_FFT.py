@@ -35,6 +35,35 @@ plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
 #%%
+def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
+    if FFTN == None:
+        FFTN = 2**int(np.ceil(np.log2(x.size)))
+    X = scipy.fftpack.fft(x, n = FFTN)
+    # 消除相位混乱
+    threshold = np.max(np.abs(X)) / 10000
+    X[np.abs(X) < threshold] = 0
+    # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+    X = X/x.size               # 将频域序列 X 除以序列的长度 N
+    if type == 'single':
+        Y = X[0 : int(FFTN/2)+1].copy()       # 提取 X 里正频率的部分,N为偶数
+        Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
+        f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
+        # 计算频域序列 Y 的幅值和相角
+        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        R = np.real(Y)                    # 计算频域序列 Y 的实部
+        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+    elif type == 'double':
+        f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
+        Y = scipy.fftpack.fftshift(X, )
+        # 计算频域序列 Y 的幅值和相角
+        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        R = np.real(Y)                    # 计算频域序列 Y 的实部
+        I = np.imag(Y)                    # 计算频域序列 Y 的虚部
+
+    return f, Y, A, Pha, R, I
+
 def srrcFunction(beta, L, span):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
@@ -54,18 +83,22 @@ def srrcFunction(beta, L, span):
 #%% ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
-ts = 0.1                          # x(t) = sinc(t/ts), T = 0.1, f = 10 Hz
-B  = 1/(2*ts)                     # Hz
+Tsym = 1                          #
+B0  = 1/(2*Tsym)                  # Hz
+beta = 0.01
+B = (1 + beta) * B0
 # f_max = 2*np.pi*B               # 角频率rad/s,
 f_max = B                         # 画图用的时间频率 Hz
-Fs = 40                           # 信号采样频率
-Ts = 1/Fs                         # 采样时间间隔
-# N = 100                         # 采样信号的长度
 
-m = 20
-t = np.arange(-m*ts, m*ts, Ts)    # 定义信号采样的时间点 t
-x = np.sinc(t/ts)
-N = x.size
+# Fs = 100                          # 信号采样频率
+# Ts = 1/Fs                         # 采样时间间隔
+# N = 100                         # 采样信号的长度
+# m = 30
+# t = np.arange(-m*Tsym, m*Tsym, Ts)    # 定义信号采样的时间点 t
+span = 8
+L = 4
+x, t, filtDelay = srrcFunction(beta, L, span)
+# N = x.size
 #=====================================================
 
 
@@ -75,72 +108,14 @@ N = x.size
 # 对时域采样信号, 执行快速傅里叶变换 FFT
 FFTN = 1024        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 ## IFFT
-IX = scipy.fftpack.ifft(scipy.fftpack.fft(x))
+IX = scipy.fftpack.ifft(scipy.fftpack.fft(x ))
 
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-X  = scipy.fftpack.fft(x, n = FFTN)
-# X1 = FFT(x) # 或者用自己编写的
-# 消除相位混乱
-threshold = np.max(np.abs(X))/10000
-X[np.abs(X) < threshold] = 0     # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
-
-# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X = X/x.size               # 将频域序列 X 除以序列的长度 N
-
-# 提取 X 里正频率的部分, 并且将 X 里负频率的部分合并到正频率
-if FFTN%2 == 0:
-     Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为偶数
-     Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)]   # 将 X 里负频率的部分合并到正频率,N为偶数
-else: #奇数时下面的有问题
-     Y = X[0 : int(FFTN/2)+1]                # 提取 X 里正频率的部分,N为奇数
-     Y[1 : int(FFTN/2)+1] = 2*Y[1:int(FFTN/2)+1]   # 将 X 里负频率的部分合并到正频率,N为奇数
-
-# 计算频域序列 Y 的幅值和相角
-A = np.abs(Y);                       # 计算频域序列 Y 的幅值
-Pha = np.angle(Y, deg=True);       # 计算频域序列 Y 的相角 (弧度制)
-R = np.real(Y)                    # 计算频域序列 Y 的实部
-I = np.imag(Y)                    # 计算频域序列 Y 的虚部
-
-#  定义序列 Y 对应的频率刻度
-df = Fs/FFTN                           # 频率间隔
-if N%2==0:
-       f = np.arange(0, int(FFTN/2)+1)*df      # 频率刻度,N为偶数
-      # f = scipy.fftpack.fftfreq(FFTN, d=1/Fs)[0:int(FFTN/2)+1]
-else:#奇数时下面的有问题
-     f = np.arange(0, int(FFTN/2)+1)*df     # 频率刻度,N为奇数
-
+Fs = L/Tsym
+f, Y, A, Pha, R, I = freqDomainView(x, Fs, FFTN = FFTN, type = 'single')
 #%%==================================================
 # 全谱图
 #==================================================
-# 对时域采样信号, 执行快速傅里叶变换 FFT
-X1  = scipy.fftpack.fft(x, n = FFTN)
-# X1 = FFT(x) # 或者用自己编写的
-
-# 消除相位混乱
-X1[np.abs(X)<1e-8] = 0      # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
-
-# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X1 = X1 / x.size               # 将频域序列 X 除以序列的长度 N
-
-## 方法一，二：将 X 重新排列, 把负频率部分搬移到序列的左边, 把正频率部分搬移到序列的右边
-Y1 = scipy.fftpack.fftshift(X1)      # 新的频域序列 Y
-
-# 计算频域序列 Y 的幅值和相角
-A1 = np.abs(Y1)                        # 计算频域序列 Y 的幅值
-Pha1 = np.angle(Y1, deg = True)     # 计算频域序列 Y 的相角 (弧度制)
-R1 = np.real(Y1)                    # 计算频域序列 Y 的实部
-I1 = np.imag(Y1)                    # 计算频域序列 Y 的虚部
-
-###  定义序列 Y 对应的频率刻度
-df = Fs/FFTN                           # 频率间隔
-if FFTN%2 == 0:
-    # 方法一
-    # f1 = np.arange(-int(FFTN/2),int(FFTN/2))*df      # 频率刻度,N为偶数
-    #或者如下， 方法二：
-    f1 = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
-else:#奇数时下面的有问题
-    f1 = np.arange(-int(FFTN/2),int(FFTN/2)+1)*df      # 频率刻度,N为奇数
-
+f1, Y1, A1, Pha1, R1, I1 = freqDomainView(x, Fs, FFTN = FFTN, type = 'double')
 
 #%%==================================================
 #     频率刻度错位
@@ -151,19 +126,16 @@ X2 = scipy.fftpack.fft(x, n = FFTN)
 X2[np.abs(X2)<1e-8] = 0        # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
-X2 = X2/N             # 将频域序列 X 除以序列的长度 N
+X2 = X2/x.size             # 将频域序列 X 除以序列的长度 N
 
 # 计算频域序列 Y 的幅值和相角
-A2 = abs(X2);                       # 计算频域序列 Y 的幅值
+A2 = np.abs(X2);                       # 计算频域序列 Y 的幅值
 Pha2 = np.angle(X2,deg=True)       # 计算频域序列 Y 的相角 (弧度制)
 R2 = np.real(X2)                   # 计算频域序列 Y 的实部
 I2 = np.imag(X2)                   # 计算频域序列 Y 的虚部
 
-
 df = Fs/FFTN                           # 频率间隔
-if N%2 == 0:
-    # 方法一
-    f2 = np.arange(0, FFTN)*df      # 频率刻度,N为偶数
+f2 = scipy.fftpack.fftfreq(FFTN, 1/Fs)
 
 #%%====================================== 开始画图 ===============================================
 width = 4
@@ -190,7 +162,7 @@ labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
-axs[0,0].set_xlim(-ts*4, ts*4)  #拉开坐标轴范围显示投影
+# axs[0,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
 
 #======================================= 0,1 =========================================
 axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
@@ -287,7 +259,7 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[1,1].tick_params(direction='in', axis='both',top=True, right=True, labelsize=labelsize, width=3,)
+axs[1,1].tick_params(direction='in', axis='both', top=True, right=True, labelsize=labelsize, width=3,)
 labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
