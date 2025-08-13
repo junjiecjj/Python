@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 # from pylab import tick_params
 # import copy
-from matplotlib.pyplot import MultipleLocator
+import commpy
 
 # matplotlib.use('Agg')
 # matplotlib.rcParams['text.usetex'] = True
@@ -181,11 +181,13 @@ beta = 0.25
 span = 6
 L = 4 # L
 shape = 'sqrt'
+Tsym = 1
 
 h1 = rcosdesign_srv(beta, L, span, )
 h2 = rcosdesign(beta, L, span, shape = shape)
 h3, t, _ = srrcFunction(beta, L, span)
-# t = np.arange(h2.size)
+t1, h_rrc = commpy.filters.rrcosfilter(L*span +1, beta, Tsym, L/Tsym)
+h_rrc = h_rrc / np.sqrt(np.sum(np.power(h_rrc, 2)))
 
 width = 10
 high = 6
@@ -197,6 +199,7 @@ labelsize = 20
 axs.plot(t, h1, ls = '-', color = 'r', marker = 'o', mfc = 'none', label = 'rcosdesign_srv')
 axs.plot(t, h2, ls = '-', color = 'g', marker = '*', mfc = 'none', label = 'rcosdesign')
 axs.plot(t, h3, ls = '-', color = 'b', marker = 'd', mfc = 'none', label = 'srrcFunction')
+axs.plot(t1, h_rrc, ls = 'none', color = 'y', marker = 's', ms = 12, mfc = 'none', mew = 2, label = 'commpy')
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
 axs.set_xlabel('time',fontproperties=font)

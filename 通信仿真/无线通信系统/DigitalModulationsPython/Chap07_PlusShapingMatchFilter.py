@@ -29,6 +29,7 @@ import sys
 sys.path.append("..")
 import scipy
 import numpy as np # for numerical computing
+import commpy
 import matplotlib.pyplot as plt # for plotting functions
 from matplotlib import cm # colormap for color palette
 from scipy.special import erfc
@@ -179,9 +180,15 @@ coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 beta = 0.3
 span = 8
 L = 4
+Tsym = 1
 # p, t, filtDelay = rcosdesign_srv(beta, L, span)
 p, t, filtDelay = rcosdesign(beta, L, span, shape = 'sqrt')
 # p, t, filtDelay = srrcFunction(beta, L, span)
+
+# # 下面的有问题，暂时未解决
+# t1, h_rrc = commpy.filters.rrcosfilter(L*span+1, beta, Tsym, L/Tsym)
+# p = h_rrc / np.sqrt(np.sum(np.power(h_rrc, 2)))
+# filtDelay = (len(p)-1)/2
 
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
