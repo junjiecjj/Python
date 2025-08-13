@@ -35,7 +35,7 @@ plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
 #%%
-def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
+def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N 为偶数
     if FFTN == None:
         FFTN = 2**int(np.ceil(np.log2(x.size)))
     X = scipy.fftpack.fft(x, n = FFTN)
@@ -49,7 +49,7 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
         Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
         f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
         # 计算频域序列 Y 的幅值和相角
-        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        A = np.abs(Y)                        # 计算频域序列 Y 的幅值
         Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
         R = np.real(Y)                    # 计算频域序列 Y 的实部
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
@@ -57,7 +57,7 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
         f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
         Y = scipy.fftpack.fftshift(X, )
         # 计算频域序列 Y 的幅值和相角
-        A = abs(Y)                        # 计算频域序列 Y 的幅值
+        A = np.abs(Y)                        # 计算频域序列 Y 的幅值
         Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
         R = np.real(Y)                    # 计算频域序列 Y 的实部
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
@@ -85,22 +85,17 @@ def srrcFunction(beta, L, span):
 ## ======================================================
 Tsym = 1                          #
 B0  = 1/(2*Tsym)                  # Hz
-beta = 0.01
+beta = 0.3
 B = (1 + beta) * B0
 # f_max = 2*np.pi*B               # 角频率rad/s,
 f_max = B                         # 画图用的时间频率 Hz
 
-# Fs = 100                          # 信号采样频率
-# Ts = 1/Fs                         # 采样时间间隔
-# N = 100                         # 采样信号的长度
-# m = 30
-# t = np.arange(-m*Tsym, m*Tsym, Ts)    # 定义信号采样的时间点 t
 span = 8
 L = 4
+Fs = L/Tsym
+
 x, t, filtDelay = srrcFunction(beta, L, span)
 # N = x.size
-#=====================================================
-
 
 #%%==================================================
 # 半谱图
@@ -110,20 +105,19 @@ FFTN = 1024        ## 执行FFT的点数，可以比N_sample大很多，越大�
 ## IFFT
 IX = scipy.fftpack.ifft(scipy.fftpack.fft(x ))
 
-Fs = L/Tsym
-f, Y, A, Pha, R, I = freqDomainView(x, Fs, FFTN = FFTN, type = 'single')
+f, X, A, Pha, R, I = freqDomainView(x, Fs, FFTN = FFTN, type = 'single')
 #%%==================================================
 # 全谱图
 #==================================================
-f1, Y1, A1, Pha1, R1, I1 = freqDomainView(x, Fs, FFTN = FFTN, type = 'double')
+f1, X1, A1, Pha1, R1, I1 = freqDomainView(x, Fs, FFTN = FFTN, type = 'double')
 
 #%%==================================================
 #     频率刻度错位
 #==================================================
 X2 = scipy.fftpack.fft(x, n = FFTN)
-
 # 消除相位混乱
-X2[np.abs(X2)<1e-8] = 0        # 将频域序列 X 中, 幅值小于 1e-8 的数值置零
+threshold = np.max(np.abs(X2)) / 10000
+X2[np.abs(X2) < threshold] = 0
 
 # 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
 X2 = X2/x.size             # 将频域序列 X 除以序列的长度 N
@@ -135,8 +129,8 @@ R2 = np.real(X2)                   # 计算频域序列 Y 的实部
 I2 = np.imag(X2)                   # 计算频域序列 Y 的虚部
 
 df = Fs/FFTN                           # 频率间隔
-f2 = scipy.fftpack.fftfreq(FFTN, 1/Fs)
-
+# f2 = scipy.fftpack.fftfreq(FFTN, 1/Fs)
+f2 = np.arange(-FFTN/2, FFTN/2)*df
 #%%====================================== 开始画图 ===============================================
 width = 4
 high = 3
@@ -157,11 +151,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[0,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 # axs[0,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
 
 #======================================= 0,1 =========================================
@@ -176,12 +165,7 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')                  # 设置图例legend背景透明
 
-axs[0,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
-# axs[0,1].set_xlim(-f_max - 0.2, f_max + 0.2)  # 拉开坐标轴范围显示投影
+axs[0,1].set_xlim(-f_max - 0.2, f_max + 0.2)  # 拉开坐标轴范围显示投影
 #======================================= 0,2 =========================================
 axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
 
@@ -192,11 +176,6 @@ legend1 = axs[0,2].legend(loc='best', borderaxespad=0,  edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,2].get_xticklabels() + axs[0,2].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 0,3 =========================================
 axs[0,3].plot(f, R, color='cyan', linestyle='-', label='实部',)
@@ -209,11 +188,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[0,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,3].get_xticklabels() + axs[0,3].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 #======================================= 0,4 =========================================
 axs[0,4].plot(f, I, color='#FF8C00', linestyle='-', label='虚部',)
 
@@ -224,12 +198,6 @@ legend1 = axs[0,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-
-axs[0,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,4].get_xticklabels() + axs[0,4].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #%% 半谱图
 #======================================= 1,0 =========================================
@@ -243,11 +211,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[1,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 #======================================= 1,1 =========================================
 axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
 
@@ -259,10 +222,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[1,1].tick_params(direction='in', axis='both', top=True, right=True, labelsize=labelsize, width=3,)
-labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 axs[1,1].set_xlim(-f_max - 0.2, f_max + 0.2)  # 拉开坐标轴范围显示投影
 #======================================= 1,2 =========================================
 axs[1,2].plot(f1, Pha1, color='g', linestyle='-', label='相位',)
@@ -275,11 +234,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[1,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,2].get_xticklabels() + axs[1,2].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 #======================================= 1,3 =========================================
 axs[1,3].plot(f1, R1, color='cyan', linestyle='-', label='实部',)
 
@@ -290,11 +244,6 @@ legend1 = axs[1,3].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,3].get_xticklabels() + axs[1,3].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 1,4 =========================================
 axs[1,4].plot(f1, I1, color='#FF8C00', linestyle='-', label='虚部',)
@@ -307,11 +256,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
-axs[1,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,4].get_xticklabels() + axs[1,4].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 
 #%% 频率刻度错位
@@ -328,12 +272,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
-axs[1,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,1].get_xticklabels() + axs[2,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 #======================================= 2,2 =========================================
 axs[2,2].plot(f2, Pha2, color='g', linestyle='-', label='相位',)
 
@@ -344,12 +282,6 @@ legend1 = axs[2,2].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-
-axs[2,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,2].get_xticklabels() + axs[2,2].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 2,3 =========================================
 axs[2,3].plot(f2, R2, color='cyan', linestyle='-', label='实部',)
@@ -362,11 +294,6 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-axs[2,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,3].get_xticklabels() + axs[2,3].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 #======================================= 2,4 =========================================
 axs[2,4].plot(f2, I2, color='#FF8C00', linestyle='-', label='虚部',)
 
@@ -377,12 +304,6 @@ legend1 = axs[2,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[2,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,4].get_xticklabels() + axs[2,4].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #================================= super ===============================================
 out_fig = plt.gcf()

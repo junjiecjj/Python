@@ -49,7 +49,7 @@ x = np.sinc(t/ts)
 N = x.size
 #=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-FFTN = 1000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+FFTN = 1024        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 ## IFFT
 IX = scipy.fftpack.ifft(scipy.fftpack.fft(x))
 

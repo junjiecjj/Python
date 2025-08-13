@@ -186,7 +186,74 @@ plt.show()
 
 #%%
 
+import numpy as np
+from scipy.signal import fftconvolve
+import matplotlib.pyplot as plt
 
+def rrc_filter(alpha, L, span):
+    """改进的根升余弦滤波器生成"""
+    t = np.linspace(-span//2, span//2, span*L+1)
+    h = np.zeros_like(t)
+    for i, ti in enumerate(t):
+        if abs(ti) < 1e-6:  # t=0
+            h[i] = (1 - alpha + 4*alpha/np.pi)
+        elif abs(abs(ti) - 1/(4*alpha)) < 1e-6:  # t=±1/(4α)
+            h[i] = (alpha/np.sqrt(2))*((1+2/np.pi)*np.sin(np.pi/(4*alpha)) +
+                    (1-2/np.pi)*np.cos(np.pi/(4*alpha)))
+        else:
+            num = np.sin(np.pi*ti*(1-alpha)) + 4*alpha*ti*np.cos(np.pi*ti*(1+alpha))
+            den = np.pi*ti*(1 - (4*alpha*ti)**2)
+            h[i] = num / den
+    return h / np.sqrt(np.sum(h**2))  # 严格能量归一化
+
+def accurate_acf(signal, M=1):
+    """精确周期ACF计算"""
+    N = len(signal)
+    acf = np.zeros(N, dtype=complex)
+    for _ in range(M):
+        # 周期自相关计算
+        acf += np.array([np.sum(signal * np.roll(signal, k)) for k in range(N)])
+    return acf / M
+
+# 参数设置
+N = 128       # 符号数
+L = 10        # 过采样率
+alpha = 0.35  # 滚降因子
+span = 12     # 滤波器跨度
+M = 100       # 蒙特卡洛次数
+
+# 1. 生成RRC滤波器
+rrc_pulse = rrc_filter(alpha, L, span)
+
+# 2. 生成随机16-QAM符号
+constellation = np.array([1+1j,1-1j,-1+1j,-1-1j, 1+3j,1-3j,-1+3j,-1-3j,
+                        3+1j,3-1j,-3+1j,-3-1j, 3+3j,3-3j,-3+3j,-3-3j]) / np.sqrt(10)
+symbols = np.random.choice(constellation, N)
+
+# 3. OFDM调制 + 脉冲成形
+time_signal = np.fft.ifft(symbols) * np.sqrt(N)
+upsampled = np.zeros(N*L, dtype=complex)
+upsampled[::L] = time_signal
+pulse_shaped = fftconvolve(upsampled, rrc_pulse, mode='same')
+
+# 4. 计算ACF - 现在返回与输入信号相同长度的ACF
+acf = accurate_acf(pulse_shaped, M)
+
+# 5. 绘图设置
+plt.figure(figsize=(12,6))
+lags = np.arange(-len(pulse_shaped)//2, len(pulse_shaped)//2)  # 修正lags范围
+
+# 添加小量避免log(0)
+acf_power = np.abs(acf)**2 + 1e-12
+acf_db = 10*np.log10(acf_power)
+
+plt.plot(lags, np.fft.fftshift(acf_db), 'b-', linewidth=1.5)
+plt.xlabel('Lag (Samples)')
+plt.ylabel('Squared ACF (dB)')
+plt.title('Auto-correlation Function of Pulse-shaped OFDM Signal')
+plt.grid(True)
+plt.xlim([-50, 50])  # 限制显示范围
+plt.show()
 
 
 
