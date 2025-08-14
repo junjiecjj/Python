@@ -75,7 +75,7 @@ lin_scp = scipy.signal.convolve(h, s_cp)
 r = lin_scp[Ncp:Ncp+N]
 print(f"lin_scp = \n{lin_scp[Ncp:Ncp+N]}\ncir_s_h = \n{cir_s_h}")
 
-
+# 14.2.3 Verifying DFT property
 R = scipy.fft.fft(r, N)
 H = scipy.fft.fft(h, N)
 S = scipy.fft.fft(s, N)
