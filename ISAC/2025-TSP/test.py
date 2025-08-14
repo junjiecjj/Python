@@ -72,84 +72,172 @@ plt.show()
 
 
 #%%
+
+import numpy as np
+from scipy.linalg import circulant
+from scipy.signal import firwin
+import matplotlib.pyplot as plt
+
+def rrc_pulse(L, alpha, span):
+    """生成根升余弦脉冲"""
+    t = np.arange(-span*L//2, span*L//2 + 1) / L
+    p = np.zeros_like(t)
+    for i, tt in enumerate(t):
+        if abs(tt) < 1e-8:  # t=0
+            p[i] = 1.0 - alpha + 4*alpha/np.pi
+        elif abs(abs(tt) - 1/(4*alpha)) < 1e-8:
+            p[i] = (alpha/np.sqrt(2)) * ((1+2/np.pi)*np.sin(np.pi/(4*alpha)) +
+                   (1-2/np.pi)*np.cos(np.pi/(4*alpha)))
+        else:
+            p[i] = (np.sin(np.pi*tt*(1-alpha)) + 4*alpha*tt*np.cos(np.pi*tt*(1+alpha))) / \
+                   (np.pi*tt*(1-(4*alpha*tt)**2))
+    return p / np.sqrt(np.sum(p**2))  # 能量归一化
+
+def discrete_pulse_shaping(x, p, L):
+    """离散脉冲成型，确保维度匹配"""
+    # 上采样
+    x_up = np.zeros(len(x) * L, dtype=complex)
+    x_up[::L] = x
+
+    # 创建合适大小的循环矩阵
+    N = len(x_up)
+    p_pad = np.concatenate([p, np.zeros(N - len(p))])
+    P = circulant(np.roll(p_pad, len(p)//2))[:N, :N]
+
+    return P @ x_up
+
+# 系统参数
+N = 64  # 符号数
+L = 8   # 过采样率
+alpha = 0.35  # 滚降因子
+span = 6      # 脉冲跨度
+
+# 1. 生成调制符号
+F = np.fft.fft(np.eye(N)) / np.sqrt(N)  # 归一化DFT矩阵
+U = F.conj().T  # OFDM调制基
+
+# 生成随机QAM符号
+qam_symbols = np.array([1+1j, 1-1j, -1+1j, -1-1j, 3+3j, 3-3j, -3+3j, -3-3j]) / np.sqrt(10)
+s = np.random.choice(qam_symbols, N)
+
+# 调制到时域
+x = U @ s
+
+# 2. 脉冲成型
+p = rrc_pulse(L, alpha, span)
+x_tilde = discrete_pulse_shaping(x, p, L)
+
+# 3. 计算ACF
+def compute_acf(signal):
+    N = len(signal)
+    acf = np.fft.ifft(np.abs(np.fft.fft(signal))**2)
+    return np.fft.fftshift(acf)
+
+# 绘制结果
+plt.figure(figsize=(12, 8))
+
+plt.subplot(311)
+plt.title("Modulated Symbols (Time Domain)")
+plt.plot(np.real(x), 'b-', label="Real")
+plt.plot(np.imag(x), 'r-', label="Imag")
+plt.legend()
+
+plt.subplot(312)
+plt.title("Pulse-shaped Signal")
+plt.plot(np.real(x_tilde), 'b-', label="Real")
+plt.plot(np.imag(x_tilde), 'r-', label="Imag")
+plt.legend()
+
+plt.subplot(313)
+plt.title("Autocorrelation Function")
+acf = compute_acf(x_tilde)
+delay = np.arange(-len(acf)//2, len(acf)//2) / L
+plt.plot(delay, 10*np.log10(np.abs(acf) + 1e-10))
+plt.xlabel("Delay (T)")
+plt.ylabel("Power (dB)")
+plt.xlim([-5, 5])
+# plt.ylim([-50, 10])
+plt.grid()
+
+plt.tight_layout()
+plt.show()
+
+
+
+#%% Section.II-B最后一段“Towards that end, we consider ISAC signaling with CP, which corre- spond to the periodic convolution processing of the MF at the sensing Rx. Without loss of generality, the CP is assumed to be larger than the maximum delay of the communication paths and sensing targets.”什么意思，能给出代码吗
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import fftconvolve
-from scipy.special import sinc
-from scipy import signal  # 用于窗口函数
+from scipy.fft import fft, ifft
 
-# 系统参数设置
-N = 64           # 减少符号数以加快演示速度
-L = 8            # 降低过采样率
-alpha = 0.35     # 滚降因子
-M = 50           # 减少相干积分次数
-num_realizations = 50  # 减少蒙特卡洛仿真次数
+def add_cp(x, cp_len):
+    """添加循环前缀"""
+    return np.concatenate([x[-cp_len:], x])
 
-# 生成16-QAM符号（简化版）
-qam_symbols = np.array([-3-3j, -3-1j, -3+3j, -3+1j,
-                        -1-3j, -1-1j, -1+3j, -1+1j,
-                        1-3j, 1-1j, 1+3j, 1+1j,
-                        3-3j, 3-1j, 3+3j, 3+1j])
-qam_symbols = qam_symbols / np.sqrt(10)  # 手动归一化功率
+def remove_cp(x, cp_len):
+    """去除循环前缀"""
+    return x[cp_len:]
 
-# 手动实现RRC滤波器（不使用kaiser窗）
-def rrc_filter(num_taps, alpha, L):
-    t = np.linspace(-num_taps//2, num_taps//2, num_taps) / L
-    h = np.zeros_like(t)
+def isac_transceiver_with_cp():
+    # 系统参数
+    N = 128                 # OFDM符号数
+    cp_len = 32             # CP长度(必须大于最大延迟)
+    max_delay = 20          # 最大延迟
 
-    for i, tt in enumerate(t):
-        if tt == 0:
-            h[i] = 1 - alpha + 4*alpha/np.pi
-        elif abs(tt) == 1/(4*alpha):
-            val = alpha/np.sqrt(2)
-            h[i] = val * ((1+2/np.pi)*np.sin(np.pi/(4*alpha)) + (1-2/np.pi)*np.cos(np.pi/(4*alpha)))
-        else:
-            num = np.sin(np.pi*tt*(1-alpha)) + 4*alpha*tt*np.cos(np.pi*tt*(1+alpha))
-            den = np.pi*tt*(1-(4*alpha*tt)**2)
-            h[i] = num / den
+    # 1. 生成OFDM信号
+    s = (np.random.randn(N) + 1j*np.random.randn(N)) / np.sqrt(2)  # 随机QAM符号
+    x = ifft(s) * np.sqrt(N)  # IFFT调制
 
-    # 使用矩形窗替代kaiser窗
-    return h / np.sqrt(np.sum(h**2))  # 能量归一化
+    # 2. 添加CP (发射端)
+    x_cp = add_cp(x, cp_len)
 
-num_taps = 6 * L  # 减少滤波器长度
-rrc_taps = rrc_filter(num_taps, alpha, L)
+    # 3. 模拟信道效应(更明显的多径和目标反射)
+    h = np.zeros(N + cp_len, dtype=complex)
+    h[0] = 1.0                      # 直射路径 (最强)
+    h[8] = 0.6 * np.exp(1j*np.pi/4) # 强多径
+    h[15] = 0.4 * np.exp(1j*np.pi/3) # 目标反射1
+    h[20] = 0.3 * np.exp(1j*np.pi/6) # 目标反射2
 
-# 计算ACF
-rrc_acf = fftconvolve(rrc_taps, rrc_taps[::-1], mode='full')
-rrc_acf_squared = np.abs(rrc_acf)**2
-rrc_acf_squared = rrc_acf_squared / np.max(rrc_acf_squared)
+    # 通过信道 (线性卷积)
+    y = np.convolve(x_cp, h, mode='same')[:len(x_cp)]
+    y += 0.05 * (np.random.randn(len(y)) + 1j*np.random.randn(len(y)))  # 添加噪声
 
-# 初始化存储
-E_Rk_squared = np.zeros(N * L)
-E_Rk_integrated = np.zeros(N * L)
+    # 4. 去除CP (接收端)
+    y_no_cp = remove_cp(y, cp_len)
 
-# 简化的蒙特卡洛仿真
-for _ in range(num_realizations):
-    s = np.random.choice(qam_symbols, N)
-    x = np.fft.ifft(s) * np.sqrt(N)
-    x_up = np.zeros(N * L, dtype=complex)
-    x_up[::L] = x
-    x_tilde = fftconvolve(x_up, rrc_taps, mode='same')
-    R_k = np.fft.ifft(np.fft.fft(x_tilde) * np.conj(np.fft.fft(x_tilde)))
-    R_k = np.fft.fftshift(R_k)
-    E_Rk_squared += np.abs(R_k)**2
-    if _ < M:
-        E_Rk_integrated += np.abs(R_k)**2
+    # 5. 匹配滤波处理(圆卷积)
+    R = fft(y_no_cp) * np.conj(fft(x))
+    r = ifft(R)
 
-E_Rk_squared /= num_realizations
-E_Rk_integrated /= M
+    # 6. 结果可视化
+    delay = np.arange(-N//2, N//2)
+    plt.figure(figsize=(12, 6))
 
-# 绘图
-delay = np.arange(-N*L//2, N*L//2) / L
-plt.figure(figsize=(10, 5))
-plt.plot(delay, 10*np.log10(rrc_acf_squared), 'k--', label='Pulse ACF')
-plt.plot(delay, 10*np.log10(E_Rk_squared), 'b-', label='Avg ACF')
-plt.plot(delay, 10*np.log10(E_Rk_integrated), 'r-', label=f'Integrated (M={M})')
-plt.xlim([-3, 3])
-plt.ylim([-60, 5])
-plt.xlabel('Delay (T)')
-plt.ylabel('Power (dB)')
-plt.title('ACF Comparison')
-plt.legend()
-plt.grid()
-plt.show()
+    # 绘制幅度(dB)
+    plt.plot(delay, 20*np.log10(np.fft.fftshift(np.abs(r)) + 1e-10),
+             'b-', linewidth=1.5, label='MF Output')
+
+    # 标记关键延迟点
+    delays = [0, 8, 15, 20]
+    colors = ['r', 'g', 'm', 'c']
+    labels = ['Direct Path', 'Multipath', 'Target 1', 'Target 2']
+
+    for d, c, lbl in zip(delays, colors, labels):
+        plt.axvline(x=d-N//2, color=c, linestyle='--', alpha=0.7)
+        plt.text(d-N//2+1, -10, lbl, color=c, fontsize=10)
+
+    plt.xlabel('Delay (samples)', fontsize=12)
+    plt.ylabel('Correlation Amplitude (dB)', fontsize=12)
+    plt.title('Matched Filter Output with CP Processing\n(Clearly Showing Multipath and Targets)', fontsize=14)
+    plt.xlim([-N//2, N//2])
+    # plt.ylim([-40, 20])
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+isac_transceiver_with_cp()
+
+
+
+
+

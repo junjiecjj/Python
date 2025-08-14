@@ -73,7 +73,7 @@ axs[1].plot(f, abs(A)/np.abs(A[int(len(A)/2+1)]), color = 'r', label = '载波�
 axs[1].set_xlabel('Frequency(Hz)',)
 axs[1].set_ylabel('Magnitude',)
 axs[1].set_title("Frequency response")
-# axs[1].legend()
+axs[1].set_xlim(-2/Tsym, 2/Tsym)  #拉开坐标轴范围显示投影
 
 plt.show()
 plt.close()
@@ -118,7 +118,7 @@ axs[1].plot(f, np.abs(A)/np.abs(A[int(len(A)/2+1)]), color = 'r', label = '载�
 axs[1].set_xlabel('Frequency(Hz)',)
 axs[1].set_ylabel('Magnitude',)
 axs[1].set_title("Frequency response")
-axs[1].set_xlim(-2 , 2)  #拉开坐标轴范围显示投影
+axs[1].set_xlim(-1/(2 * Tsym) - 0.1, 1/(2 * Tsym) + 0.1)  #拉开坐标轴范围显示投影
 
 plt.show()
 plt.close()

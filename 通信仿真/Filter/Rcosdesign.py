@@ -186,7 +186,7 @@ Tsym = 1
 h1 = rcosdesign_srv(beta, L, span, )
 h2 = rcosdesign(beta, L, span, shape = shape)
 h3, t, _ = srrcFunction(beta, L, span)
-t1, h_rrc = commpy.filters.rrcosfilter(L*span +1, beta, Tsym, L/Tsym)
+t1, h_rrc = commpy.filters.rrcosfilter(L*span , beta, Tsym, L/Tsym)
 h_rrc = h_rrc / np.sqrt(np.sum(np.power(h_rrc, 2)))
 
 width = 10
