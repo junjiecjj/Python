@@ -65,7 +65,119 @@ for i in range(n):
 plt.plot(delta_phi)
 
 #%%
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import butter, lfilter
 
+# 参数设置
+fs = 44100                  # 采样率 (Hz)
+duration = 0.02             # 信号时长 (秒)
+f_carrier = 1000            # 载波频率 (Hz)
+f_mod = 200                 # 调制频率 (Hz)
+beta = 2                    # 调制指数
+A = 1.0                     # 信号幅度
+
+# 锁相环参数
+K_p = 0.5                   # 鉴相器增益
+K_i = 0.05                  # 积分增益
+K_0 = 0.3                   # NCO增益
+
+# 生成时间轴
+t = np.linspace(0, duration, int(fs * duration), endpoint=False)
+
+# 1. 生成FM调制信号
+modulating_signal = A * np.sin(2 * np.pi * f_mod * t)
+fm_signal = A * np.cos(2 * np.pi * f_carrier * t +
+                       beta * np.sin(2 * np.pi * f_mod * t))
+
+# 2. 修正后的PLL实现
+class PLL:
+    def __init__(self, fs, K_p, K_i, K_0, freq_estimate):
+        self.fs = fs
+        self.K_p = K_p
+        self.K_i = K_i
+        self.K_0 = K_0
+        self.vco_phase = 0
+        self.freq_estimate = freq_estimate
+        self.integrator = 0
+        self.t_step = 1/fs
+
+    def update(self, input_signal):
+        # VCO输出
+        vco_out = np.cos(2 * np.pi * self.freq_estimate * self.t_step + self.vco_phase)
+
+        # 鉴相器
+        error = input_signal * vco_out
+
+        # 环路滤波器
+        self.integrator += self.K_i * error
+        filtered_error = self.K_p * error + self.integrator
+
+        # 更新VCO
+        self.freq_estimate += self.K_0 * filtered_error
+        self.vco_phase += 2 * np.pi * self.freq_estimate * self.t_step
+        self.vco_phase %= (2 * np.pi)
+
+        return filtered_error
+
+# 初始化PLL
+pll = PLL(fs, K_p, K_i, K_0, f_carrier)
+
+# 解调过程
+demodulated_signal = np.zeros_like(t)
+for i in range(len(t)):
+    demodulated_signal[i] = pll.update(fm_signal[i])
+
+# 3. 后处理
+demodulated_signal -= np.mean(demodulated_signal)  # 去直流
+
+# 低通滤波
+def butter_lowpass(cutoff, fs, order=5):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    return b, a
+
+def lowpass_filter(data, cutoff, fs, order=5):
+    b, a = butter_lowpass(cutoff, fs, order=order)
+    return lfilter(b, a, data)
+
+filtered_output = lowpass_filter(demodulated_signal, 1.5*f_mod, fs)
+
+# 4. 结果可视化
+plt.figure(figsize=(12, 8))
+
+# 图1: 载波调制信号
+plt.subplot(3, 1, 1)
+plt.plot(t, fm_signal, color='blue', alpha=0.7)
+plt.title('FM Modulated Carrier Signal (Transmitted)')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.grid(True)
+plt.xlim(0, 0.01)
+
+# 图2: 解调对比
+plt.subplot(3, 1, 2)
+plt.plot(t, modulating_signal, label='Original Signal', color='green')
+plt.plot(t, filtered_output, label='Demodulated', color='red', linestyle='--')
+plt.title('Demodulation Comparison')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.legend()
+plt.grid(True)
+plt.xlim(0, 0.01)
+
+# 图3: 解调过程信号
+plt.subplot(3, 1, 3)
+plt.plot(t, demodulated_signal, color='purple')
+plt.title('PLL Error Signal (Before Filtering)')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.grid(True)
+plt.xlim(0, 0.01)
+
+plt.tight_layout()
+plt.show()
 
 
 #%%

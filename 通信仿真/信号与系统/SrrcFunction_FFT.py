@@ -64,13 +64,12 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N 为偶数
 
     return f, Y, A, Pha, R, I
 
-def srrcFunction(beta, L, span):
+def srrcFunction(beta, L, span, Tsym = 1):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
     # span - filter span in symbol durations
     # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
-    Tsym = 1
-    t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
+    t = np.arange(-span*Tsym/2, span*Tsym/2 + 0.5/L, Tsym/L)
     A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
     B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
     p = 1/np.sqrt(Tsym) * A/B
@@ -83,7 +82,7 @@ def srrcFunction(beta, L, span):
 #%% ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
-Tsym = 1                          #
+Tsym = 1                         #
 B0  = 1/(2*Tsym)                  # Hz
 beta = 0.3
 B = (1 + beta) * B0
@@ -94,7 +93,7 @@ span = 8
 L = 4
 Fs = L/Tsym
 
-x, t, filtDelay = srrcFunction(beta, L, span)
+x, t, filtDelay = srrcFunction(beta, L, span, Tsym = Tsym)
 # N = x.size
 
 #%%==================================================
