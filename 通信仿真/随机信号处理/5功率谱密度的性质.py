@@ -191,7 +191,14 @@ window_hann = scipy.signal.windows.hann(N2)   # haning
 window_hamm = scipy.signal.windows.hamming(N2)   # haming
 # f, Pxx = scipy.signal.periodogram(x, fs, ) # window = window_hann, nfft = N2
 
-## 手写
+## 手写:计算周期图法的功率谱密度
+def periodogram_method(signal, fs, N):
+    X = np.fft.fft(signal, n = N)
+    Pxx = np.abs(X)**2/(N * fs)
+    Pxx = Pxx[0:int(N/2) + 1]
+    Pxx[1:int(N/2)] = 2 * Pxx[1:int(N/2)]
+    f = np.arange(0, N/2+1) * (fs/N)
+    return f, Pxx
 # f, Pxx = periodogram_method(x, fs, nfft)
 
 ######% 2 自相关函数法
@@ -202,12 +209,12 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-# f, Pxx = correlogram_method(x, fs, nfft)
+f, Pxx = correlogram_method(x, fs, nfft)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
 D = L//2              # 重叠长度
-f, Pxx = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
+# f, Pxx = scipy.signal.welch(x, fs, window = 'hann', nperseg = L, noverlap = D)
 
 #============= IIR -巴特沃兹低通滤波器  ================
 lf = 100    # 通带截止频率200Hz
@@ -243,12 +250,12 @@ def correlogram_method(signal, fs, N):
     Pxx = np.abs(Rxx[0: int(N/2) + 1])
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
-# fy, Pxxy = correlogram_method(y, fs, y.size)
+fy, Pxxy = correlogram_method(y, fs, y.size)
 
 ######% 3 Welch 方法
 L = 256              # Welch方法中的子段长度
 D = L//2              # 重叠长度
-fy, Pxxy = scipy.signal.welch(y, fs, window = 'hann', nperseg = L, noverlap = D)
+# fy, Pxxy = scipy.signal.welch(y, fs, window = 'hann', nperseg = L, noverlap = D)
 
 ##### plot
 fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)

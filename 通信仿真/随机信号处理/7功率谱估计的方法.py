@@ -4,6 +4,34 @@
 Created on Thu Feb 13 15:14:45 2025
 
 @author: jack
+
+(1) 周期图法（Periodogram Method）/直接傅里叶变换法:该算法首先计算离散傅里叶变换 (DFT) 将信号从时域转换到频域，然后通过计算频域信号的模平方来估计功率谱密度。最后，算法返回功率谱密度的估计值。
+    简单总结： 傅里叶变换：将信号从时域转换到频域，得到不同频率上的复数幅度。
+              模的平方：计算出每个频率上的能量。
+              时间平均：对能量求时间平均，以减少瞬时波动的影响。
+              极限处理：使时间趋于无限大，以得到长期稳定的频率特性。
+(2) 基于自相关函数的方法（Correlogram Method）:首先通过计算自相关函数来为信号的功率谱估计做准备。具体来说，自相关函数是通过对信号在不同的滞后下的点积进行求和得到的. 接下来，算法对计算得到的自相关函数进行快速傅里叶变换 (FFT)，以获得信号的功率谱密度。最后，算法返回估计的功率谱密度。
+            step1. 信号采样和预处理：去除均值，应用窗口函数（如 Hanning 或 Hamming 窗）。
+            step2. 计算自相关函数：对信号进行自相关计算，得到自相关函数 。
+            step3. 傅里叶变换：对自相关函数进行快速傅里叶变换（FFT），获得功率谱密度 。
+            step4. 结果分析：通过功率谱密度分析信号的频率特性，识别主要频率和能量分布。
+
+(3) Welch 方法（Welch's Method）:信号分段, 加窗, 计算每个子段的周期图, 平均多个子段的周期图.
+    Welch 方法的步骤： 信号分段：将输入信号划分为多个长度为L的重叠段。每段之间的重叠率通常为 50% 或更高。
+                     窗口化处理：对每一段信号应用一个窗口函数w(t)，得到窗口化后的信号 X_w(t) = X_m(t)*w(t)
+                     FFT 计算：对每段窗口化后的信号 X_w(t)进行快速傅里叶变换（FFT），得到频谱 X_w(f)。
+                     功率谱密度计算：计算每段信号的功率谱密度 P_m(f) = |X_w(f)|^2/L
+                     功率谱密度平均：将所有段的功率谱密度进行平均，得到最终的功率谱估计 P_{wlech}(f) = \sum_{m=1}^M P_m(f) / M, 其中，M为段的数量。
+(4) 快速傅里叶变换（FFT）法:
+                信号采样和预处理：
+                窗口化处理：
+                FFT 计算：
+                计算功率谱密度（PSD）：
+                结果分析与解释：
+
+Wiener-Khinchin定理: 自相关函数的傅里叶变换正是信号的功率谱密度.
+
+
 """
 
 import scipy
@@ -45,10 +73,10 @@ def correlogram_method(signal, fs, N):
     f = np.arange(0, N/2+1) * (fs/N)
     return f, Pxx
 
-fs = 1000   # 采样频率
-T = 1       # 信号持续时间 (秒)
-t = np.arange(0, T, 1/fs) # 时间向量
-f1 = 50     # 通信信号频率 (Hz)
+fs = 1000                      # 采样频率
+T = 1                          # 信号持续时间 (秒)
+t = np.arange(0, T, 1/fs)      # 时间向量
+f1 = 50                        # 通信信号频率 (Hz)
 f2 = 150
 f3 = 300
 
@@ -84,16 +112,16 @@ axs[0,0].legend()
 axs[0,1].plot(t, x_hamming, color = 'b', label = 'Hamming窗')
 axs[0,1].set_xlabel('时间 (s)',)
 axs[0,1].set_ylabel('幅度',)
-axs[0,1].set_title("滤波后的信号 (时域)")
+axs[0,1].set_title("汉明窗")
 axs[0,1].legend()
 
-axs[0,2].plot(t, x_rect, color = 'b', label = 'Hamming窗')
+axs[0,2].plot(t, x_rect, color = 'b', label = 'rect窗')
 axs[0,2].set_xlabel('时间 (s)',)
 axs[0,2].set_ylabel('幅度',)
 axs[0,2].set_title("矩形窗")
 axs[0,2].legend()
 
-axs[0,3].plot(t, x_blackman, color = 'b', label = 'Hamming窗')
+axs[0,3].plot(t, x_blackman, color = 'b', label = 'blackman窗')
 axs[0,3].set_xlabel('时间 (s)',)
 axs[0,3].set_ylabel('幅度',)
 axs[0,3].set_title("Blackman窗")
@@ -216,8 +244,8 @@ f3 = 300
 x = np.sin(2*np.pi*f1*t) + 0.5 * np.sin(2*np.pi*f2*t) + 0.2 * np.sin(2 * np.pi * f3 * t) # 信号
 x = x - np.mean(x)
 plt.figure(figsize = (18, 12), constrained_layout = True)
-windows = ['Hanning', 'Hamming', 'Blackman']
-windowfs = [scipy.signal.windows.hann, scipy.signal.windows.hamming, scipy.signal.windows.blackman]
+windows = ['Hanning', 'Hamming', 'Blackman', 'rect']
+windowfs = [scipy.signal.windows.hann, scipy.signal.windows.hamming, scipy.signal.windows.blackman, scipy.signal.windows.boxcar]
 for i in range(len(windows)):
     windowsf = windowfs[i](x.size)
     windowed_signal = x * windowsf
@@ -227,25 +255,25 @@ for i in range(len(windows)):
     f = np.arange(0, N/2) * (fs/N)
     Pxx = np.abs(X[:int(N/2)])**2 / (fs * N)
 
-    plt.subplot(3, 4, 1 + i*4)
+    plt.subplot(4, 4, 1 + i*4)
     plt.plot(windowsf, 'r')
     plt.xlabel('样本点')
     plt.ylabel('幅值')
     plt.title(f'{windows[i]}窗函数')
 
-    plt.subplot(3, 4, 2 + i*4)
+    plt.subplot(4, 4, 2 + i*4)
     plt.plot(t, windowed_signal, 'g')
     plt.xlabel('时间 (s)')
     plt.ylabel('幅值')
     plt.title(f'应用{windows[i]}窗后的信号')
 
-    plt.subplot(3, 4, 3 + i*4)
+    plt.subplot(4, 4, 3 + i*4)
     plt.plot(f, X_magnitude, 'k')
     plt.xlabel('频率 (Hz)')
     plt.ylabel('幅值')
     plt.title(f'{windows[i]}窗-FFT')
 
-    plt.subplot(3, 4, 4 + i*4)
+    plt.subplot(4, 4, 4 + i*4)
     plt.plot(f, 10*np.log10(Pxx), 'm')
     plt.xlabel('频率 (Hz)')
     plt.ylabel('功率谱密度 (dB/Hz)')

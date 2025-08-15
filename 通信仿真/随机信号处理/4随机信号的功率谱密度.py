@@ -37,7 +37,6 @@ plt.rcParams['legend.fontsize'] = 12
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%  场景 1: 通信领域的信号分析 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 fs = 10000 # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
@@ -96,26 +95,25 @@ axs[0].legend()
 axs[1].plot(f, 10*np.log10(Pxx_periodogram), color = 'b', label = '周期图法')
 axs[1].set_xlabel('频率 (Hz)',)
 axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].set_title("周期图法-功率谱密度 (dB/Hz)")
 axs[1].legend()
 
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].set_title("自相关函数法-功率谱密度 (dB/Hz)")
 axs[2].legend()
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)
 axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].set_title("Welch 方法-功率谱密度 (dB/Hz)")
 axs[3].legend()
 
 plt.show()
 plt.close()
 
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%  场景 2: 场景 2: 医学图像处理中的噪声抑制  #%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%% 场景 2: 场景 2: 医学图像处理中的噪声抑制 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fs = 1000 # 采样频率
 T = 1       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
@@ -174,19 +172,19 @@ axs[0].legend()
 axs[1].plot(f, 10*np.log10(Pxx_periodogram), color = 'b', label = '周期图法')
 axs[1].set_xlabel('频率 (Hz)',)
 axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].set_title("周期图法-功率谱密度 (dB/Hz)")
 axs[1].legend()
 
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].set_title("自相关函数法-功率谱密度 (dB/Hz)")
 axs[2].legend()
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)
 axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].set_title("Welch 方法-功率谱密度 (dB/Hz)")
 axs[3].legend()
 
 plt.show()
@@ -257,27 +255,25 @@ axs[0].legend()
 axs[1].plot(f, 10*np.log10(Pxx_periodogram), color = 'b', label = '周期图法')
 axs[1].set_xlabel('频率 (Hz)',)
 axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].set_title("周期图法-功率谱密度 (dB/Hz)")
 axs[1].legend()
 
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].set_title("自相关函数法-功率谱密度 (dB/Hz)")
 axs[2].legend()
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)
 axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].set_title("Welch 方法-功率谱密度 (dB/Hz)")
 axs[3].legend()
 
 plt.show()
 plt.close()
 
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%  场景 4: 音频处理和降噪  #%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 fs = 8000 # 采样频率
 T = 2       # 信号持续时间 (秒)
 t = np.arange(0, T, 1/fs) # 时间向量
@@ -335,19 +331,19 @@ axs[0].legend()
 axs[1].plot(f, 10*np.log10(Pxx_periodogram), color = 'b', label = '周期图法')
 axs[1].set_xlabel('频率 (Hz)',)
 axs[1].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[1].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[1].set_title("周期图法-功率谱密度 (dB/Hz)")
 axs[1].legend()
 
 axs[2].plot(f1, 10*np.log10(Pxx_xcorr), color = 'b', label = '自相关函数法')
 axs[2].set_xlabel('频率 (Hz)',)
 axs[2].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[2].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[2].set_title("自相关函数法-功率谱密度 (dB/Hz)")
 axs[2].legend()
 
 axs[3].plot(f2, 10*np.log10(Pxx_welch), color = 'b', label = 'welch方法')
 axs[3].set_xlabel('频率 (Hz)',)
 axs[3].set_ylabel('功率谱密度 (dB/Hz)',)
-axs[3].set_title("通信信号的功率谱密度 (dB/Hz)")
+axs[3].set_title("Welch 方法-功率谱密度 (dB/Hz)")
 axs[3].legend()
 
 plt.show()

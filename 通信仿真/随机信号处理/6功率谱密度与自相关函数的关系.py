@@ -26,7 +26,7 @@ plt.rcParams['ytick.labelsize'] = 12  # 设置 y 轴刻度字体大小
 plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
 plt.rcParams["figure.figsize"] = [8, 6] # 调整生成的图表最大尺寸
 # plt.rcParams['figure.dpi'] = 300 # 每英寸点数
-plt.rcParams['lines.linestyle'] = '--'
+plt.rcParams['lines.linestyle'] = '-'
 plt.rcParams['lines.linewidth'] = 2     # 线条宽度
 plt.rcParams['lines.color'] = 'blue'
 plt.rcParams['lines.markersize'] = 6 # 标记大小
@@ -99,13 +99,13 @@ fig, axs = plt.subplots(3, 1, figsize = (8, 10), constrained_layout = True)
 labelsize = 20
 
 # x
-axs[0].plot(t, x, color = 'b', lw = 0.2, label = '周期图法')
+axs[0].plot(t, x, color = 'b', lw = 1, label = '周期图法')
 axs[0].set_xlabel('时间 (s)',)
 axs[0].set_ylabel('幅度',)
 axs[0].set_title("含噪信号 (时域)")
 axs[0].legend()
 
-axs[1].plot(t, y, color = 'b', label = '周期图法')
+axs[1].plot(t, y, color = 'b', lw = 1, label = '周期图法')
 axs[1].set_xlabel('时间 (s)',)
 axs[1].set_ylabel('幅度',)
 axs[1].set_title("滤波后的信号 (时域)")
