@@ -93,17 +93,14 @@ def cconv(a, b, n=None):
 
     return result
 
-# # generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
-# generateVec =  [1 , 2  , 3 , 4  ]
-# X = np.array(generateVec)
-# L = len(generateVec)
-# A = CirculantMatric(X, L)
+#%%
+generateVec =  [1 , 2  , 3 , 4  ]
+X = np.array(generateVec)
+L = len(generateVec)
+A = CirculantMatric(X, L)
+A1 = scipy.linalg.circulant(X)
 
-# a = np.array([2, 1, 2, 1])
-# b = np.array([1, 2, 3, 4])
-# # c = cconv(a,b,4)
-# # c1 = circularConvolve(a,b,4)
-
+#%%
 h = np.array([-0.4878, -1.5351, 0.2355])
 s = np.array([-0.0155, 2.5770, 1.9238, -0.0629, -0.8105, 0.6727, -1.5924, -0.8007])
 N =  s.size

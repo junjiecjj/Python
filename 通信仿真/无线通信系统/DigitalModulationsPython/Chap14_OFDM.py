@@ -60,11 +60,13 @@ def circularConvolve(h, s, N):
     res = H @ s
     return res
 
-# # generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
 # generateVec =  [1 , 2  , 3 , 4  ]
 # X = np.array(generateVec)
 # L = len(generateVec)
 # A = CirculantMatric(X, L)
+# A1 = scipy.linalg.circulant(X)
+
+
 N = 8
 h = np.array([-0.4878, -1.5351, 0.2355])
 s = np.array([-0.0155, 2.5770, 1.9238, -0.0629, -0.8105, 0.6727, -1.5924, -0.8007])
