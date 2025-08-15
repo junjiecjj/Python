@@ -49,16 +49,16 @@ def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N 为偶数
         Y[1 : int(FFTN/2)] = 2*Y[1 : int(FFTN/2)].copy()
         f = np.arange(0, int(FFTN/2)+1) * (Fs/FFTN)
         # 计算频域序列 Y 的幅值和相角
-        A = np.abs(Y)                        # 计算频域序列 Y 的幅值
-        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg = 1)        # 计算频域序列 Y 的相角 (弧度制)
         R = np.real(Y)                    # 计算频域序列 Y 的实部
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
     elif type == 'double':
         f = scipy.fftpack.fftshift(scipy.fftpack.fftfreq(FFTN, 1/Fs))
         Y = scipy.fftpack.fftshift(X, )
         # 计算频域序列 Y 的幅值和相角
-        A = np.abs(Y)                        # 计算频域序列 Y 的幅值
-        Pha = np.angle(Y, deg=1)          # 计算频域序列 Y 的相角 (弧度制)
+        A = np.abs(Y)                     # 计算频域序列 Y 的幅值
+        Pha = np.angle(Y, deg = 1)        # 计算频域序列 Y 的相角 (弧度制)
         R = np.real(Y)                    # 计算频域序列 Y 的实部
         I = np.imag(Y)                    # 计算频域序列 Y 的虚部
 
@@ -79,15 +79,15 @@ def srrcFunction(beta, L, span, Tsym = 1):
     p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
     return p, t, filtDelay
 
-#%% ======================================================
+#%% =====================================================
 ## ===========  定义时域采样信号
 ## ======================================================
-Tsym = 1                         #
-B0  = 1/(2*Tsym)                  # Hz
+Tsym = 1                        #
+B0  = 1/(2*Tsym)                # Hz
 beta = 0.3
 B = (1 + beta) * B0
-# f_max = 2*np.pi*B               # 角频率rad/s,
-f_max = B                         # 画图用的时间频率 Hz
+# f_max = 2*np.pi*B             # 角频率 rad/s
+f_max = B                       # 画图用的时间频率 Hz
 
 span = 8
 L = 4

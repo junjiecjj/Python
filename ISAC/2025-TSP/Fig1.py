@@ -44,21 +44,19 @@ def generateJk(L, N, k):
         Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
     return Jk
 
-def srrcFunction(beta, L, span):
+def srrcFunction(beta, L, span, Tsym = 1):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
     # span - filter span in symbol durations
     # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
-
-    Tsym = 1
-    t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
+    t = np.arange(-span*Tsym/2, span*Tsym/2 + 0.5/L, Tsym/L)
     A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
     B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
     p = 1/np.sqrt(Tsym) * A/B
     p[np.argwhere(np.isnan(p))] = 1
     p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
     filtDelay = (len(p)-1)/2
-    p = p / np.sqrt(np.sum(np.power(p, 2)))
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
     return p, t, filtDelay
 
 #%% Eq.(12)(13)(14)
@@ -142,7 +140,11 @@ ff1 = FLN @ x_up # Eq.(22) 的sqrt(1/LN)应该是sqrt(1/N)
 ff2 = np.sqrt(1/(L)) * np.tile(x @ FN.T, L)
 
 ## Eq.(23)
-p = srrcFunction(0.35, L, span)
+Tsym = 1
+span = 6
+L = 4
+p = srrcFunction(0.35, L, span, Tsym = Tsym)
+
 
 ## Eq.(39)
 pi = np.pi
