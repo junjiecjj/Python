@@ -68,21 +68,19 @@ def CirculantMatric(gen, row):
          mat[i, :] = np.roll(gen, i)
      return mat
 
-def srrcFunction(beta, L, span):
+def srrcFunction(beta, L, span, Tsym = 1):
     # Function for generating rectangular pulse for the given inputs
     # L - oversampling factor (number of samples per symbol)
     # span - filter span in symbol durations
     # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
-
-    Tsym = 1
-    t = np.arange(-span/2, span/2 + 0.5/L, 1/L)
+    t = np.arange(-span*Tsym/2, span*Tsym/2 + 0.5/L, Tsym/L)
     A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
     B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
     p = 1/np.sqrt(Tsym) * A/B
     p[np.argwhere(np.isnan(p))] = 1
     p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
     filtDelay = (len(p)-1)/2
-    p = p / np.sqrt(np.sum(np.power(p, 2)))
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
     return p, t, filtDelay
 
 #%% Table. I
@@ -106,7 +104,7 @@ Tsym = 1
 pi = np.pi
 N = 128       # 符号数
 L = 10        # 过采样率
-alpha = 0.35  # 滚降因子
+alpha = 0.3  # 滚降因子
 span = 6      # 滤波器跨度（根据旁瓣要求调整）
 
 MOD_TYPE = "qam"
@@ -114,16 +112,23 @@ modem, Es, bps = modulator(MOD_TYPE, M)
 Constellation = modem.constellation/np.sqrt(Es)
 AvgEnergy = np.mean(np.abs(Constellation)**2)
 
+# p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
+# p = np.pad(p, (0, L*N - p.size))
+
 t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
 p = p / np.sqrt(np.sum(np.power(p, 2)))
 
 norm2p = np.linalg.norm(p)
 FLN = FFTmatrix(L*N, L*N)
-
-g = (N * (FLN@p) * (FLN.conj() @ p.conj())).real
+FN = FFTmatrix(N, N)
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
 kappa = 1.32
-
+M = 100
+###>>>>> OFDM
+U = FN.conj().T
+V = U.conj().T @ FN.conj().T
+tilde_V = V * V.conj()
 ExpAveACF = np.zeros(L*N)
 for k in range(L*N):
     fk = FLN[:,k]
@@ -131,8 +136,24 @@ for k in range(L*N):
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
     r1 = L * N * np.abs(tilde_fk.conj().T @ gk)**2
     r2 = np.linalg.norm(gk)**2
-    r3 = (kappa - 2) * L * N * 1
+    r3 = (kappa - 2) * L * N * np.linalg.norm(tilde_V @ (gk * tilde_fk.conj()))
+    ExpAveACF[k] = r1 + (r2 + r3)/M
 
+# ExpAveACF = ExpAveACF/ExpAveACF.max() + 1e-10
+
+fig, axs = plt.subplots(1, 1, figsize=(12, 6), constrained_layout=True)
+# axs.plot(10 * np.log10(ExpAveACF[-200:]), color='b', linestyle='-', label=' ',)
+axs.plot(ExpAveACF, color='b', linestyle='-', label=' ',)
+
+axs.set_xlabel(r'k', )
+axs.set_ylabel(r'ACF', )
+
+out_fig = plt.gcf()
+#out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
+plt.show()
+plt.close()
+
+#%%
 
 
 #%%
