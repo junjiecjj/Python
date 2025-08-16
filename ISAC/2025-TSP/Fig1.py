@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May  9 13:33:56 2025
+Created on Sat Aug 16 00:56:12 2025
 
 @author: jack
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
+import commpy
+
+from Tools import freqDomainView
 
 # 全局设置字体大小
-plt.rcParams["font.family"] = "Times New Roman"
-# plt.rcParams["font.family"] = "SimSun"
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
 plt.rcParams['font.size'] = 18               # 设置全局字体大小
 plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
 plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
@@ -29,6 +33,7 @@ plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
+
 
 #%%
 def generateJk(L, N, k):
@@ -59,19 +64,6 @@ def srrcFunction(beta, L, span, Tsym = 1):
     p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
     return p, t, filtDelay
 
-#%% Eq.(12)(13)(14)
-L = 2
-N = 4
-
-J3 = generateJk(L, N, 3)
-J5 = generateJk(L, N, 5)
-# J_{q-k}  = J_k @ J_q
-
-J_3 = generateJk(L, N, -3)
-J3T = generateJk(L, N, 3).T
-J5 = generateJk(L, N, 5)
-
-#%% Eq.(18)
 # 产生傅里叶矩阵
 def FFTmatrix(row, col):
      mat = np.zeros((row, col), dtype = complex)
@@ -93,219 +85,246 @@ def CirculantMatric(gen, row):
          mat[i, :] = np.roll(gen, i)
      return mat
 
-generateVec =  [1+1j, 2+2j, 3+3j, 4+1j ]
-# generateVec =  [1 , 2  , 3 , 4  ]
-X = np.array(generateVec)
-
-N = len(generateVec)
-C = CirculantMatric(generateVec, N)
-
-F = FFTmatrix(N, N)
-FH = F.T.conjugate() #/ (L * 1.0)
-
-C_hat = np.sqrt(N) * FH @ np.diag(F@C[:,0]) @ F
-print(f"C = {C}\nC_hat = {C_hat}")
-
-#%% Eq.(19)(20)
-L = 2
-N = 4
-k = 3
-F = FFTmatrix(L*N, L*N)
-FH = F.T.conjugate() #/ (L * 1.0)
-
-J_3 = generateJk(L, N, -k)
-J3T = generateJk(L, N, k).T
-J5 = generateJk(L, N, L*N-k)
-
-J5_hat = np.sqrt(L*N) * FH @ np.diag(F@J5[:, 0]) @ F      # Eq.(18)
-J5_hat1 = np.sqrt(L*N) * FH @ np.diag(F[:, L*N-k]) @ F    # Eq.(19)
-
-delta = np.abs(F[:,k].conj().T - F[:,L*N-k]) # f_{LN−k+1} = f_{k+1}^*
-
-## Eq.(21), (F@a)^H = F^* @ a^*
-(F@J5[:,0]).conj() == (F.conj()@J5[:,0].conj())
-
-## Eq.(22)
-N = 5
-L = 3
-x = np.random.randn(N) + 1j * np.random.randn(N)
-# L = 4
-x_up = np.vstack((x, np.zeros((L-1, x.size))))
-x_up = x_up.T.flatten()
-
-FLN = FFTmatrix(L*N, L*N)
-FN = FFTmatrix(N, N)
-
-ff1 = FLN @ x_up # Eq.(22) 的sqrt(1/LN)应该是sqrt(1/N)
-ff2 = np.sqrt(1/(L)) * np.tile(x @ FN.T, L)
-
-## Eq.(23)
+#%% Eq.(23)
+beta = 0.35
 Tsym = 1
-span = 6
-L = 4
-p = srrcFunction(0.35, L, span, Tsym = Tsym)
+N = 64
+L = 6
+Fs = L/Tsym
+B0  = 1/(2*Tsym)                  # Hz
+B = (1 + beta) * B0
+# f_max = 2*np.pi*B               # 角频率rad/s,
+f_max = B                         # 画图用的时间频率 Hz
+
+# p, t, filtDelay = srrcFunction(beta, L, N, Tsym = Tsym)
+t, p = commpy.filters.rrcosfilter(L*N , beta, Tsym, L/Tsym)
+p = p / np.sqrt(np.sum(np.power(p, 2)))
+
+# 对时域采样信号, 执行快速傅里叶变换 FFT
+FFTN =  p.size       ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+## IFFT
+IX = scipy.fftpack.ifft(scipy.fftpack.fft(p))
+
+f, X, A, Pha, R, I = freqDomainView(p, Fs, FFTN = FFTN, type = 'single')
+A[0] = 2*A[0]
+
+f1, X1, A1, Pha1, R1, I1 = freqDomainView(p, Fs, FFTN = FFTN, type = 'double')
+
+##==================================================
+#     频率刻度错位
+#==================================================
+X2 = scipy.fftpack.fft(p, n = FFTN)
+# 消除相位混乱
+threshold = np.max(np.abs(X2)) / 10000
+X2[np.abs(X2) < threshold] = 0
+
+# 修正频域序列的幅值, 使得 FFT 变换的结果有明确的物理意义
+X2 = X2/p.size             # 将频域序列 X 除以序列的长度 N
+
+# 计算频域序列 Y 的幅值和相角
+A2 = np.abs(X2);                       # 计算频域序列 Y 的幅值
+Pha2 = np.angle(X2,deg=True)       # 计算频域序列 Y 的相角 (弧度制)
+R2 = np.real(X2)                   # 计算频域序列 Y 的实部
+I2 = np.imag(X2)                   # 计算频域序列 Y 的虚部
+
+df = Fs/FFTN                           # 频率间隔
+# f2 = scipy.fftpack.fftfreq(FFTN, 1/Fs)
+f2 = np.arange(-FFTN/2, FFTN/2)*df
+
+###============================ 开始画图 ============================
+width = 4
+high = 3
+horvizen = 5
+vertical = 3
+fig, axs = plt.subplots(vertical, horvizen, figsize=(horvizen*width, vertical*high), constrained_layout=True)
+labelsize = 20
+
+##半谱图
+#======================================= 0,0 =========================================
+axs[0,0].plot(t, p, color='b', linestyle='-', label='原始信号值',)
+
+axs[0,0].set_xlabel(r'时间(s)', )
+axs[0,0].set_ylabel(r'原始信号值', )
+
+legend1 = axs[0,0].legend(loc='best', borderaxespad=0,  edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+axs[0,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
+
+#======================================= 0,1 =========================================
+axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
+
+axs[0,1].set_xlabel(r'频率(Hz)', )
+axs[0,1].set_ylabel(r'幅度', )
+#axs[0,0].set_title('信号值', fontproperties=font3)
+
+legend1 = axs[0,1].legend(loc='best', borderaxespad=0,  edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')                  # 设置图例legend背景透明
+
+axs[0,1].set_xlim(-f_max - 0.2, f_max + 0.2)  # 拉开坐标轴范围显示投影
+#======================================= 0,2 =========================================
+axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
+
+axs[0,2].set_xlabel(r'频率(Hz)', )
+axs[0,2].set_ylabel(r'相位', )
+
+legend1 = axs[0,2].legend(loc='best', borderaxespad=0,  edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+#======================================= 0,3 =========================================
+axs[0,3].plot(f, R, color='cyan', linestyle='-', label='实部',)
+
+axs[0,3].set_xlabel(r'频率(Hz)', )
+axs[0,3].set_ylabel(r'实部', )
+
+legend1 = axs[0,3].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+#======================================= 0,4 =========================================
+axs[0,4].plot(f, I, color='#FF8C00', linestyle='-', label='虚部',)
 
+axs[0,4].set_xlabel(r'频率(Hz)', )
+axs[0,4].set_ylabel(r'虚部', )
 
-## Eq.(39)
-pi = np.pi
-m = 2
-N = 12
-A = np.exp(1j * 2*pi * m * np.arange(N) / N)
-A.sum() # 如果 m 是 N 的整数倍 or 0,和为N; 否则=0;
+legend1 = axs[0,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#### 半谱图
+#======================================= 1,0 =========================================
+axs[1,0].plot(t, IX, color='b', linestyle='-', label='恢复的信号值',)
 
-## Eq.(51)
-N = 3
-V = (np.random.randn(N) + 1j * np.random.randn(N))[:,None]
-S = (np.random.randn(N) + 1j * np.random.randn(N))[:,None]
+axs[1,0].set_xlabel(r'时间(s)', )
+axs[1,0].set_ylabel(r'逆傅里叶变换信号值', )
 
-s1 = np.abs(V.conj().T@S)**2
-s2 = V.conj().T @ S @ S.conj().T @ V
-tilde_S = (S @ S.conj().T).T.flatten()[:, None]
-s3 = np.kron(V.T, V.conj().T) @ tilde_S
-s4 = tilde_S.conj().T @ np.kron(V.conj(), V)
+legend1 = axs[1,0].legend(loc='best', borderaxespad=0,  edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+axs[1,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
 
-## Eq.(58)
-N = 4
-F = FFTmatrix(N, N)
-IN2 =  np.eye(N**2)
+#======================================= 1,1 =========================================
+axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
 
-i = 0
-j = 1
-vi = F[:, i][:,None]
-vj = F[:, j][:,None]
-tmp = np.kron(vi.T, vi.conj().T) @ IN2 @ np.kron(vj.conj(), vj)
-## i == j, tmp = 1; i!=j, tmp = 0
+axs[1,1].set_xlabel(r'频率(Hz)', )
+axs[1,1].set_ylabel(r'幅度', )
 
-## validate Eq.(59)
-N = 5
-F = FFTmatrix(N, N)
-i = 0
-j = 1
-vi = F[:, i][:,None]
-vj = F[:, j][:,None]
-kapa = 4
-tmp = np.hstack((np.array(kapa-2), np.zeros(N)))
-S1 = np.tile(tmp, N-1)
-S1 = np.hstack((S1, np.array(kapa -2)))
-S1 = np.diag(S1)
-t1 = np.kron(vi.T, vi.conj().T) @ S1 @ np.kron(vj.conj(), vj)
-t11 = (kapa - 2) * np.linalg.norm(vi*vj)**2
-## np.real(t1) == t11
+legend1 = axs[1,1].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-## validate Eq.(60)
-N = 3
-F = FFTmatrix(N, N)
-i = 1
-j = 2
-vi = F[:, i][:,None]
-vj = F[:, j][:,None]
-tmp = np.hstack((np.array(1), np.zeros(N)))
-c = np.tile(tmp, N-1)
-c = np.hstack((c, np.array(1)))[:,None]
+# axs[1,1].set_xlim(-f_max - 0.2, f_max + 0.2)  # 拉开坐标轴范围显示投影
+#======================================= 1,2 =========================================
+axs[1,2].plot(f1, Pha1, color='g', linestyle='-', label='相位',)
 
-S2 = np.tile(np.hstack((c, np.zeros((N**2, N)))), N-1)
-S2 = np.hstack((S2, c))
+axs[1,2].set_xlabel(r'频率(Hz)', )
+axs[1,2].set_ylabel(r'相位', )
 
-t2 = np.kron(vi.T, vi.conj().T) @ S2 @ np.kron(vj.conj(), vj)
-# t2 == 1
+legend1 = axs[1,2].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#======================================= 1,3 =========================================
+axs[1,3].plot(f1, R1, color='cyan', linestyle='-', label='实部',)
 
+axs[1,3].set_xlabel(r'频率(Hz)', )
+axs[1,3].set_ylabel(r'实部', )
 
+legend1 = axs[1,3].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#======================================= 1,4 =========================================
+axs[1,4].plot(f1, I1, color='#FF8C00', linestyle='-', label='虚部',)
 
+axs[1,4].set_xlabel(r'频率(Hz)', )
+axs[1,4].set_ylabel(r'虚部', )
 
+legend1 = axs[1,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#### 频率刻度错位
+#======================================= 2,0 =========================================
+#======================================= 2,1 =========================================
+axs[2,1].plot(f2, A2, color='r', linestyle='-', label='幅度',)
 
+axs[2,1].set_xlabel(r'频率(Hz)', )
+axs[2,1].set_ylabel(r'幅度', )
 
+legend1 = axs[2,1].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#======================================= 2,2 =========================================
+axs[2,2].plot(f2, Pha2, color='g', linestyle='-', label='相位',)
 
+axs[2,2].set_xlabel(r'频率(Hz)', )
+axs[2,2].set_ylabel(r'相位', )
 
+legend1 = axs[2,2].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#======================================= 2,3 =========================================
+axs[2,3].plot(f2, R2, color='cyan', linestyle='-', label='实部',)
 
+axs[2,3].set_xlabel(r'频率(Hz)',  )
+axs[2,3].set_ylabel(r'实部', )
 
+legend1 = axs[2,3].legend(loc='best', borderaxespad=0,  edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#======================================= 2,4 =========================================
+axs[2,4].plot(f2, I2, color='#FF8C00', linestyle='-', label='虚部',)
 
+axs[2,4].set_xlabel(r'频率(Hz)', )
+axs[2,4].set_ylabel(r'虚部', )
 
+legend1 = axs[2,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
 
+#================================= super ===============================================
+out_fig = plt.gcf()
+#out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
+plt.show()
+plt.close()
 
+#%% Check Eq(23)(25)
+# p, t, filtDelay = srrcFunction(beta, L, N, Tsym = Tsym)
+# p = np.delete(p, p.size//2)
 
+t, p = commpy.filters.rrcosfilter(L*N , beta, Tsym, L/Tsym)
+p = p / np.sqrt(np.sum(np.power(p, 2)))
 
+norm2p = np.linalg.norm(p)
+FLN = FFTmatrix(L*N, L*N)
 
+g = (N * (FLN@p) * (FLN.conj() @ p.conj())).real
 
+g_1N = 1 - g[:N]
+g_lastN = g[-N:]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+np.abs(g_lastN - g_1N) ## ~= 0
 
 
 
