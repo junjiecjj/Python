@@ -285,15 +285,15 @@ for k in range(L*N):
 RkBar = SimAveACF_OFDM_M100.mean(axis = 0)
 RkBar2 = np.abs(RkBar)**2
 
-Sim_M100_avg = RkBar2.mean(axis = 1)
+Sim_M100_avg = RkBar2.mean(axis = 0)
 Sim_M100_avg = Sim_M100_avg/Sim_M100_avg.max() + 1e-10
 Sim_M100_avg = np.fft.fftshift(Sim_M100_avg)
 
-Sim_M100_max = RkBar2.mean(axis = 0)
+Sim_M100_max = RkBar2.max(axis = 0)
 Sim_M100_max = Sim_M100_max/Sim_M100_max.max() + 1e-10
 Sim_M100_max = np.fft.fftshift(Sim_M100_max)
 
-Sim_M100_min = RkBar2.mean(axis = 0)
+Sim_M100_min = RkBar2.min(axis = 0)
 Sim_M100_min = Sim_M100_min/Sim_M100_min.max() + 1e-10
 Sim_M100_min = np.fft.fftshift(Sim_M100_min)
 

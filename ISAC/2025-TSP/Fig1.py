@@ -36,18 +36,6 @@ np.random.seed(42)
 
 
 #%%
-def generateJk(L, N, k):
-    if k < 0:
-        k = L*N+k
-    if k == 0:
-        Jk = np.eye(L*N)
-    elif k > 0:
-        tmp1 = np.zeros((k, L*N-k))
-        tmp2 = np.eye(k)
-        tmp3 = np.eye(L*N-k)
-        tmp4 = np.zeros((L*N - k, k))
-        Jk = np.block([[tmp1, tmp2], [tmp3, tmp4]])
-    return Jk
 
 def srrcFunction(beta, L, span, Tsym = 1):
     # Function for generating rectangular pulse for the given inputs
