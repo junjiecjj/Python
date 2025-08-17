@@ -268,29 +268,32 @@ Sim_M1_min = np.fft.fftshift(Sim_M1_min)
 
 ###>>>>>>>>>>>>>>>>> M = 100
 M = 100
-SimAveACF_OFDM_M100 = np.zeros((M, Iter, L*N))
+SimAveACF_OFDM_M100 = np.zeros((M, Iter, L*N), dtype = complex)
 for k in range(L*N):
     fk = FLN[:,k]
     fk_tilde = fk[:N]
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
-    for m in range(100):
+    for m in range(M):
         for it in range(Iter):
             d = np.random.randint(Order, size = N)
             s = Constellation[d]
             VHs = np.abs(V.conj().T @ s)**2
-            SimAveACF_OFDM_M100[m, it, k] = np.abs((gk * VHs * fk_tilde.conj()).sum())**2
 
-Sim_M100_avg = SimAveACF_OFDM_M100.mean(axis = (0, 1))
+            ##这里注意，一定不要取平方，因为这里需要先对M均值，在对Iter取均值，才是与Eq(33)对得上
+            SimAveACF_OFDM_M100[m, it, k] = (gk * VHs * fk_tilde.conj()).sum()
+## Eq(33)
+RkBar = SimAveACF_OFDM_M100.mean(axis = 0)
+RkBar2 = np.abs(RkBar)**2
+
+Sim_M100_avg = RkBar2.mean(axis = 1)
 Sim_M100_avg = Sim_M100_avg/Sim_M100_avg.max() + 1e-10
 Sim_M100_avg = np.fft.fftshift(Sim_M100_avg)
 
-Sim_M100_max = SimAveACF_OFDM_M100.max(axis = 1)
-Sim_M100_max = SimAveACF_OFDM_M100.mean(axis = 0)
+Sim_M100_max = RkBar2.mean(axis = 0)
 Sim_M100_max = Sim_M100_max/Sim_M100_max.max() + 1e-10
 Sim_M100_max = np.fft.fftshift(Sim_M100_max)
 
-Sim_M100_min = SimAveACF_OFDM_M100.min(axis = 1)
-Sim_M100_min = SimAveACF_OFDM_M100.mean(axis = 0)
+Sim_M100_min = RkBar2.mean(axis = 0)
 Sim_M100_min = Sim_M100_min/Sim_M100_min.max() + 1e-10
 Sim_M100_min = np.fft.fftshift(Sim_M100_min)
 
@@ -308,14 +311,9 @@ axs.fill_between(x, 10 * np.log10(Sim_M1_min), 10 * np.log10(Sim_M1_max), color=
 
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100), color='#F0760A', linestyle='-', label='100 Coherent Integration, Theoretical',)
 axs.plot(x, 10 * np.log10(Sim_M100_avg ), color='#F97213', linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='100 Coherent Integration, Numerical',)
-axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.2)
-
+# axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.2)
 
 legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
-# frame1 = legend1.get_frame()
-# frame1.set_alpha(1)
-# frame1.set_facecolor('none')                  # 设置图例legend背景透明
-
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
 # axs.set_xlim([-300, 300])
