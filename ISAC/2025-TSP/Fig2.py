@@ -268,7 +268,7 @@ Sim_M1_min = np.fft.fftshift(Sim_M1_min)
 
 ###>>>>>>>>>>>>>>>>> M = 100
 M = 100
-SimAveACF_OFDM_M100 = np.zeros((100, Iter, L*N))
+SimAveACF_OFDM_M100 = np.zeros((M, Iter, L*N))
 for k in range(L*N):
     fk = FLN[:,k]
     fk_tilde = fk[:N]
