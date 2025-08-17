@@ -90,15 +90,19 @@ beta = 0.35
 Tsym = 1
 N = 64
 L = 6
+span = 6
 Fs = L/Tsym
 B0  = 1/(2*Tsym)                  # Hz
 B = (1 + beta) * B0
 # f_max = 2*np.pi*B               # 角频率rad/s,
 f_max = B                         # 画图用的时间频率 Hz
 
-# p, t, filtDelay = srrcFunction(beta, L, N, Tsym = Tsym)
+# p, t, filtDelay = srrcFunction(beta, L, span, Tsym = Tsym)
+# p = np.pad(p, (0, L*N - p.size))
+
 t, p = commpy.filters.rrcosfilter(L*N , beta, Tsym, L/Tsym)
 p = p / np.sqrt(np.sum(np.power(p, 2)))
+# t = t[:-1]
 
 # 对时域采样信号, 执行快速傅里叶变换 FFT
 FFTN =  p.size       ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
@@ -210,6 +214,7 @@ legend1 = axs[1,0].legend(loc='best', borderaxespad=0,  edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
+
 axs[1,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
 
 #======================================= 1,1 =========================================

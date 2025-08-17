@@ -48,11 +48,11 @@ def generateJk(L, N, k):
     return Jk
 
 # 产生傅里叶矩阵
-def FFTmatrix(row, col):
-     mat = np.zeros((row, col), dtype = complex)
-     for i in range(row):
-          for j in range(col):
-               mat[i,j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/row) / (np.sqrt(row)*1.0)
+def FFTmatrix(L, ):
+     mat = np.zeros((L, L), dtype = complex)
+     for i in range(L):
+          for j in range(L):
+               mat[i,j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/L) / (np.sqrt(L)*1.0)
      return mat
 
 # 生成 循环矩阵
@@ -99,7 +99,7 @@ for M in M_array:
 
 
 #%% Fig.2
-# 参数设置（与论文Fig.2一致）
+# 参数设置
 Tsym = 1
 pi = np.pi
 N = 128       # 符号数
@@ -107,53 +107,282 @@ L = 10        # 过采样率
 alpha = 0.3  # 滚降因子
 span = 6      # 滤波器跨度（根据旁瓣要求调整）
 
-MOD_TYPE = "qam"
-modem, Es, bps = modulator(MOD_TYPE, M)
-Constellation = modem.constellation/np.sqrt(Es)
-AvgEnergy = np.mean(np.abs(Constellation)**2)
+p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
+p = np.pad(p, (0, L*N - p.size))
 
-# p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
-# p = np.pad(p, (0, L*N - p.size))
-
-t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
-p = p / np.sqrt(np.sum(np.power(p, 2)))
+# t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
+# p = p / np.sqrt(np.sum(np.power(p, 2)))
 
 norm2p = np.linalg.norm(p)
-FLN = FFTmatrix(L*N, L*N)
-FN = FFTmatrix(N, N)
-g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
+FLN = FFTmatrix(L*N )
+FN = FFTmatrix(N )
 
-kappa = 1.32
+###>>>>> OFDM, Eq.(27)
 M = 100
-###>>>>> OFDM
+kappa = 1.32
 U = FN.conj().T
-V = U.conj().T @ FN.conj().T
+V = np.eye(N)  # U.conj().T @ FN.conj().T
 tilde_V = V * V.conj()
-ExpAveACF = np.zeros(L*N)
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
+# g = np.fft.fftshift(g)
+
+TheoAveACF_Iceberg = np.zeros(L*N)
+TheoAveACF_OFDM_M1 = np.zeros(L*N)
+TheoAveACF_OFDM_M100 = np.zeros(L*N)
 for k in range(L*N):
     fk = FLN[:,k]
-    tilde_fk = fk[:N]
+    fk_tilde = fk[:N]
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
-    r1 = L * N * np.abs(tilde_fk.conj().T @ gk)**2
+    r1 = L * N * np.abs(fk_tilde.conj().T @ gk)**2
     r2 = np.linalg.norm(gk)**2
-    r3 = (kappa - 2) * L * N * np.linalg.norm(tilde_V @ (gk * tilde_fk.conj()))
-    ExpAveACF[k] = r1 + (r2 + r3)/M
+    r3 = (kappa - 2) * L * N * np.linalg.norm(tilde_V @ (gk * fk_tilde.conj()))**2
 
-# ExpAveACF = ExpAveACF/ExpAveACF.max() + 1e-10
 
-fig, axs = plt.subplots(1, 1, figsize=(12, 6), constrained_layout=True)
-# axs.plot(10 * np.log10(ExpAveACF[-200:]), color='b', linestyle='-', label=' ',)
-axs.plot(ExpAveACF, color='b', linestyle='-', label=' ',)
+    TheoAveACF_OFDM_M1[k] = r1 + (r2 + r3)/1
+    TheoAveACF_OFDM_M100[k] = r1 + (r2 + r3)/100
+    TheoAveACF_Iceberg[k] = r1
 
-axs.set_xlabel(r'k', )
-axs.set_ylabel(r'ACF', )
+TheoAveACF_OFDM_M1 = TheoAveACF_OFDM_M1/TheoAveACF_OFDM_M1.max() + 1e-10
+# TheoAveACF_OFDM_M1 = np.fft.fftshift(TheoAveACF_OFDM_M1)
 
+TheoAveACF_OFDM_M100 = TheoAveACF_OFDM_M100/TheoAveACF_OFDM_M100.max() + 1e-10
+# TheoAveACF_OFDM_M100 = np.fft.fftshift(TheoAveACF_OFDM_M100)
+
+TheoAveACF_Iceberg = TheoAveACF_Iceberg/TheoAveACF_Iceberg.max() + 1e-10
+# TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
+
+# x = np.arange(-N//2, N//2, 1/((L)))
+x = np.arange(-N*L//2, N*L//2,)
+fig, axs = plt.subplots(1, 1, figsize=(12, 10), constrained_layout=True)
+axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='b', linestyle='-', label='Average Squared ACF, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100), color='r', linestyle='-', label='100 Coherent Integration, Theoretical',)
+
+legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
+# frame1 = legend1.get_frame()
+# frame1.set_alpha(1)
+# frame1.set_facecolor('none')                  # 设置图例legend背景透明
+
+axs.set_xlabel(r'Delay Index', )
+axs.set_ylabel(r'Ambiguity Level (dB)', )
+# axs.set_xlim([-30, 30])
 out_fig = plt.gcf()
-#out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
 
+#%% OFDM, Eq.(36)
+
+TheoAveACF_Iceberg = np.zeros(L*N)
+TheoAveACF_OFDM_M1 = np.zeros(L*N)
+TheoAveACF_OFDM_M100 = np.zeros(L*N)
+
+for k in range(L*N):
+    # fk = FLN[:,k]
+    tilde_fk = fk[:N]
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
+
+    r1 = np.abs(gk @ fk.conj())**2
+    TheoAveACF_Iceberg[k] = r1 #+ r2
+
+    M = 1
+    r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
+    TheoAveACF_OFDM_M1[k] = r1 + r2
+
+    M = 100
+    r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
+    TheoAveACF_OFDM_M100[k] = r1 + r2
+
+TheoAveACF_Iceberg = TheoAveACF_Iceberg/TheoAveACF_Iceberg.max() + 1e-10
+TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
+
+TheoAveACF_OFDM_M1 = TheoAveACF_OFDM_M1/TheoAveACF_OFDM_M1.max() + 1e-10
+TheoAveACF_OFDM_M1 = np.fft.fftshift(TheoAveACF_OFDM_M1)
+
+TheoAveACF_OFDM_M100 = TheoAveACF_OFDM_M100/TheoAveACF_OFDM_M100.max() + 1e-10
+TheoAveACF_OFDM_M100 = np.fft.fftshift(TheoAveACF_OFDM_M100)
+
+
+# x = np.arange(-N//2, N//2, 1/((L)))
+x = np.arange(-N*L//2, N*L//2,)
+fig, axs = plt.subplots(1, 1, figsize=(12, 10), constrained_layout=True)
+axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='b', linestyle='-', label='Average Squared ACF, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100), color='r', linestyle='-', label='100 Coherent Integration, Theoretical',)
+
+legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
+# frame1 = legend1.get_frame()
+# frame1.set_alpha(1)
+# frame1.set_facecolor('none')                  # 设置图例legend背景透明
+
+axs.set_xlabel(r'Delay Index', )
+axs.set_ylabel(r'Ambiguity Level (dB)', )
+axs.set_xlim([-300, 300])
+out_fig = plt.gcf()
+plt.show()
+plt.close()
+
+#%% Average Squared ACF, Numerical / 100 Coherent Integration, Numerical, Eq.(26)
+
+# M = 100
+kappa = 1.32
+U = FN.conj().T
+V = np.eye(N)  # U.conj().T @ FN.conj().T
+tilde_V = V * V.conj()
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
+# g = np.fft.fftshift(g)
+
+MOD_TYPE = "qam"
+Order = 16
+modem, Es, bps = modulator(MOD_TYPE, Order)
+Constellation = modem.constellation/np.sqrt(Es)
+AvgEnergy = np.mean(np.abs(Constellation)**2)
+
+Iter = 1000
+
+###>>>>>>>>>>>>>>>>> M = 1
+M = 1
+SimAveACF_OFDM_M1 = np.zeros((Iter, L*N))
+
+for k in range(L*N):
+    fk = FLN[:,k]
+    fk_tilde = fk[:N]
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    for it in range(Iter):
+        d = np.random.randint(Order, size = N)
+        s = Constellation[d]
+        VHs = np.abs(V.conj().T @ s)**2
+        SimAveACF_OFDM_M1[it, k] = np.abs((gk * VHs * fk_tilde.conj()).sum())**2
+
+Sim_M1_avg = SimAveACF_OFDM_M1.mean(axis = 0)
+Sim_M1_avg = Sim_M1_avg/Sim_M1_avg.max() + 1e-10
+Sim_M1_avg = np.fft.fftshift(Sim_M1_avg)
+
+Sim_M1_max = SimAveACF_OFDM_M1.max(axis = 0)
+Sim_M1_max = Sim_M1_max/Sim_M1_max.max() + 1e-10
+Sim_M1_max = np.fft.fftshift(Sim_M1_max)
+
+Sim_M1_min = SimAveACF_OFDM_M1.min(axis = 0)
+Sim_M1_min = Sim_M1_min/Sim_M1_min.max() + 1e-10
+Sim_M1_min = np.fft.fftshift(Sim_M1_min)
+
+###>>>>>>>>>>>>>>>>> M = 100
+M = 100
+SimAveACF_OFDM_M100 = np.zeros((100, Iter, L*N))
+for k in range(L*N):
+    fk = FLN[:,k]
+    fk_tilde = fk[:N]
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    for m in range(100):
+        for it in range(Iter):
+            d = np.random.randint(Order, size = N)
+            s = Constellation[d]
+            VHs = np.abs(V.conj().T @ s)**2
+            SimAveACF_OFDM_M100[m, it, k] = np.abs((gk * VHs * fk_tilde.conj()).sum())**2
+
+Sim_M100_avg = SimAveACF_OFDM_M100.mean(axis = (0, 1))
+Sim_M100_avg = Sim_M100_avg/Sim_M100_avg.max() + 1e-10
+Sim_M100_avg = np.fft.fftshift(Sim_M100_avg)
+
+Sim_M100_max = SimAveACF_OFDM_M100.max(axis = 1)
+Sim_M100_max = SimAveACF_OFDM_M100.mean(axis = 0)
+Sim_M100_max = Sim_M100_max/Sim_M100_max.max() + 1e-10
+Sim_M100_max = np.fft.fftshift(Sim_M100_max)
+
+Sim_M100_min = SimAveACF_OFDM_M100.min(axis = 1)
+Sim_M100_min = SimAveACF_OFDM_M100.mean(axis = 0)
+Sim_M100_min = Sim_M100_min/Sim_M100_min.max() + 1e-10
+Sim_M100_min = np.fft.fftshift(Sim_M100_min)
+
+
+colors = plt.cm.jet(np.linspace(0, 1, 5))
+# x = np.arange(-N//2, N//2, 1/((L)))
+x = np.arange(-N*L//2, N*L//2,)
+fig, axs = plt.subplots(1, 1, figsize=(15, 10), constrained_layout=True)
+axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='-', lw = 1, label='Squared ACF of the Pulse ("Iceberg")',)
+
+
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='#13A8F9', linestyle='-',  label='Average Squared ACF, Theoretical',)
+axs.plot(x, 10 * np.log10(Sim_M1_avg ), color=colors[1], linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='Average Squared ACF, Simular',)
+axs.fill_between(x, 10 * np.log10(Sim_M1_min), 10 * np.log10(Sim_M1_max), color='#13A8F9', alpha = 0.2)
+
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100), color='#F0760A', linestyle='-', label='100 Coherent Integration, Theoretical',)
+axs.plot(x, 10 * np.log10(Sim_M100_avg ), color='#F97213', linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='100 Coherent Integration, Numerical',)
+axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.2)
+
+
+legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
+# frame1 = legend1.get_frame()
+# frame1.set_alpha(1)
+# frame1.set_facecolor('none')                  # 设置图例legend背景透明
+
+axs.set_xlabel(r'Delay Index', )
+axs.set_ylabel(r'Ambiguity Level (dB)', )
+# axs.set_xlim([-300, 300])
+
+plt.show()
+plt.close()
+
+
 #%%
+
+
+#%%
+
+#%%
+
+
+
+
+
+
+
+#%%
+
+
+
+
+
+
+
+#%%
+
+
+
+
+
+
+
+#%%
+
+
+
+
+
+
+
+#%%
+
+
+
+
+
+
+
+#%%
+
+
+
+
+
+
+
+#%%
+
+
+
+
+
 
 
 #%%
@@ -231,67 +460,6 @@ plt.close()
 # plt.grid(True)
 # plt.legend()
 # plt.show()
-
-#%%
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
 
 
 
