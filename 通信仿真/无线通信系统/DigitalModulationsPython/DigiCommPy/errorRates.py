@@ -38,7 +38,7 @@ def ser_awgn(EbN0dBs,mod_type=None,M=0,coherence=None):
     else:
         return func_dict[mod_type.lower()](M,gamma_s) #call appropriate function
 
-def psk_awgn(M,gamma_s):
+def psk_awgn(M, gamma_s):
     gamma_b = gamma_s/log2(M)
     if (M==2):
         SERs = 0.5*erfc(sqrt(gamma_b))

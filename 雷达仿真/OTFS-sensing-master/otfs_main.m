@@ -1,5 +1,7 @@
 %% OTFS Sensing Simulation
 % Author: Yunbo HU (Email: EdenHu1111@foxmail.com)
+% https://github.com/edenhu1111/OTFS-sensing
+% https://zhuanlan.zhihu.com/p/608867803
 clear;
 clc;
 close all;

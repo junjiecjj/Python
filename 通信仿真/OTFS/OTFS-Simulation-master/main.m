@@ -2,10 +2,8 @@ clear;
 close all;
 % https://github.com/bb16177/OTFS-Simulation
 %--------------------------------------------------------------------------
-%
 % This code forms a simulation of a wideband wireless communications system
 % in multipath fading. It simulates: OFDM,  OTFS, coded-OFDM and coded-OTFS
-% 
 % The following files are required:
 % dataGen.m
 % multipathChannel.m
@@ -15,17 +13,13 @@ close all;
 % SFFT.m
 % equaliser.m
 % plotGraphs.m
-%
 %--------------------------------------------------------------------------
-%
 % Author: Bradley Bates
 % University of Bristol, UK
 % email address: bb16177@bristol.ac.uk
 % May 2020
-%
 % Copyright (c) 2020, Bradley Bates
 %--------------------------------------------------------------------------
-
 %--------------------------------------------------------------------------
 % Define simulation parameters
 %--------------------------------------------------------------------------

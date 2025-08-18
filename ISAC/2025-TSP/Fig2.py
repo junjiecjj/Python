@@ -107,17 +107,17 @@ L = 10        # 过采样率
 alpha = 0.3  # 滚降因子
 span = 6      # 滤波器跨度（根据旁瓣要求调整）
 
-p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
-p = np.pad(p, (0, L*N - p.size))
+# p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
+# p = np.pad(p, (0, L*N - p.size))
 
-# t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
-# p = p / np.sqrt(np.sum(np.power(p, 2)))
+t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
+p = p / np.sqrt(np.sum(np.power(p, 2)))
 
 norm2p = np.linalg.norm(p)
 FLN = FFTmatrix(L*N )
 FN = FFTmatrix(N )
 
-###>>>>> OFDM, Eq.(27)
+###>>>>> OFDM, Eq.(27)(34)
 M = 100
 kappa = 1.32
 U = FN.conj().T
@@ -177,8 +177,7 @@ TheoAveACF_OFDM_M1 = np.zeros(L*N)
 TheoAveACF_OFDM_M100 = np.zeros(L*N)
 
 for k in range(L*N):
-    # fk = FLN[:,k]
-    tilde_fk = fk[:N]
+
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
     fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
 
@@ -310,13 +309,13 @@ axs.plot(x, 10 * np.log10(Sim_M1_avg ), color=colors[1], linestyle='-', lw = 1, 
 axs.fill_between(x, 10 * np.log10(Sim_M1_min), 10 * np.log10(Sim_M1_max), color='#13A8F9', alpha = 0.2)
 
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100), color='#F0760A', linestyle='-', label='100 Coherent Integration, Theoretical',)
-axs.plot(x, 10 * np.log10(Sim_M100_avg ), color='#F97213', linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='100 Coherent Integration, Numerical',)
-# axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.2)
+axs.plot(x, 10 * np.log10(Sim_M100_avg ), color='#F97213', linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='100 Coherent Integration, Simular',)
+axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.2)
 
 legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
-# axs.set_xlim([-300, 300])
+axs.set_xlim([-300, 300])
 
 plt.show()
 plt.close()
@@ -329,57 +328,18 @@ plt.close()
 
 #%%
 
+#%%
 
+#%%
 
-
-
-
+#%%
 
 #%%
 
 
-
-
-
-
-
 #%%
 
-
-
-
-
-
-
 #%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
-
-
-
-#%%
-
-
-
-
 
 
 
