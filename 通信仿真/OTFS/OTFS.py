@@ -90,7 +90,7 @@ def simulate_otfs_awgn(M=32, N=8, snr_db_range=np.arange(0, 21, 2)):
 def plot_ser_comparison():
     """绘制OTFS与理论QPSK的SER对比曲线"""
     M, N = 32, 8
-    snr_db_range = np.arange(0, 21, 2)
+    snr_db_range = np.arange(0, 16, 2)
     ser_otfs, ser_qpsk = simulate_otfs_awgn(M, N, snr_db_range)
 
     plt.figure(figsize=(10, 6))
