@@ -22,7 +22,7 @@ eng_sqrt = (QAM_mod==2)+(QAM_mod~=2)*sqrt((QAM_mod-1)/6*(2^2)); % Average Power 
 SNR_dB = -10:5:20; 
 NFrame = 100;
 
-sigmaSquare = eng_sqrt^2 * power(10, -1*SNR_dB /10);
+sigmaSquare = eng_sqrt^2 * exp(-SNR_dB*log(10)/10);
 
 Nsymbolperframe = M*N; % Number of QAM symbols in a OTFS frame
 Nbitsperframe = Nsymbolperframe * bitPerSymbol; % Number of bits in a OTFS frame
@@ -31,11 +31,9 @@ Nbitsperframe = Nsymbolperframe * bitPerSymbol; % Number of bits in a OTFS frame
 targetRange = 35;
 % targetSpeed = [20,30];%target speed 
 targetSpeed = 30;%target speed 
-delay = 2*targetRange/c;        
-kp = round(delay*M*deltaf);
+delay = 2*targetRange/c;        kp = round(delay*M*deltaf);
 
-doppler = 2*targetSpeed/lambda; 
-lp = (doppler*N*T);
+doppler = 2*targetSpeed/lambda; lp = (doppler*N*T);
 
 % %% basic characters
 % P = eye(M*N);

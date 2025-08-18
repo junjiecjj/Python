@@ -14,9 +14,8 @@ from Modulations import modulator
 
 def otfs_modulation(data, M, N):
     """OTFS调制：DD域 → TF域 → 时域 (修正归一化)"""
-    # ISFFT: (M,N) DD域 → (M,N) TF域
+    # ISFFT: (M, N) DD域 → (M, N) TF域
     X_tf = ifft(fft(data, axis=0), axis=1) / np.sqrt(N)
-
     # 海森堡变换: TF域 → 时域
     s = np.zeros(M*N, dtype=complex)
     for n in range(N):
@@ -31,7 +30,6 @@ def otfs_demodulation(r, M, N):
     for n in range(N):
         for m in range(M):
             Y_tf[m, n] = r[n*M + m] * np.exp(-1j*2*np.pi*m*n/M)
-
     # SFFT: TF域 → DD域
     y_dd = fft(ifft(Y_tf, axis=0), axis=1) * np.sqrt(N)
     return y_dd
@@ -51,8 +49,7 @@ def simulate_otfs_awgn(M=32, N=8, snr_db_range=np.arange(0, 21, 2)):
     for snr_db in snr_db_range:
         errors_otfs = 0
         for _ in range(1000):  # 蒙特卡洛仿真
-            # 生成QPSK符号 (Gray编码)
-            # 发射端
+            # 生成QPSK符号 (Gray编码),发射端
             uu = np.random.randint(0, 2, size = M*N*bps).astype(np.int8)
             qam_symbols = modem.modulate(uu)
             data = np.array([demap_table[sym] for sym in qam_symbols]).reshape(M,N)
@@ -90,7 +87,7 @@ def simulate_otfs_awgn(M=32, N=8, snr_db_range=np.arange(0, 21, 2)):
 def plot_ser_comparison():
     """绘制OTFS与理论QPSK的SER对比曲线"""
     M, N = 32, 8
-    snr_db_range = np.arange(0, 16, 2)
+    snr_db_range = np.arange(0, 18, 2)
     ser_otfs, ser_qpsk = simulate_otfs_awgn(M, N, snr_db_range)
 
     plt.figure(figsize=(10, 6))
