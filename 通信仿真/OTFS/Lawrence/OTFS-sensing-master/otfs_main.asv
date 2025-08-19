@@ -22,7 +22,7 @@ eng_sqrt = (QAM_mod==2)+(QAM_mod~=2)*sqrt((QAM_mod-1)/6*(2^2)); % Average Power 
 SNR_dB = -10:5:20; 
 NFrame = 100;
 
-sigmaSquare = eng_sqrt^2 * exp(-SNR_dB*log(10)/10);
+sigmaSquare = eng_sqrt^2 * power(10, -1*SNR_dB /10);
 
 Nsymbolperframe = M*N; % Number of QAM symbols in a OTFS frame
 Nbitsperframe = Nsymbolperframe * bitPerSymbol; % Number of bits in a OTFS frame
@@ -31,9 +31,11 @@ Nbitsperframe = Nsymbolperframe * bitPerSymbol; % Number of bits in a OTFS frame
 targetRange = 35;
 % targetSpeed = [20,30];%target speed 
 targetSpeed = 30;%target speed 
-delay = 2*targetRange/c;        kp = round(delay*M*deltaf);
+delay = 2*targetRange/c;        
+kp = round(delay*M*deltaf);
 
-doppler = 2*targetSpeed/lambda; lp = (doppler*N*T);
+doppler = 2*targetSpeed/lambda; 
+lp = (doppler*N*T);
 
 % %% basic characters
 % P = eye(M*N);
@@ -75,7 +77,7 @@ for ii = 1:length(SNR_dB)
         r = r + (randn(size(r)) + 1j*randn(size(r)))*sqrt(sigmaSquare(ii)/2);
         %% Wigner Transform
         Y = reshape(r,M,N);
-        y_TF =  fft(Y,M);
+        y_TF =  fft(Y,M); 
         %% Sensing Based on TF domain 
         H_tf = y_TF .* conj(X_TF);
         rdm_tf = fft(ifft(H_tf).',N*10)'*sqrt(M/N);

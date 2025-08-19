@@ -140,6 +140,12 @@ def otfs_simulation(M=128, N=64, EbN0dB=np.arange(0, 17, 2), N_frames=2000):
     modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
     map_table, demap_table = modem.getMappTable()
 
+    # 初始化误差数组
+    errorRange_TF = np.zeros_like(EsN0dB, dtype=float)
+    errorVelo_TF = np.zeros_like(EsN0dB, dtype=float)
+    errorRange_MF = np.zeros_like(EsN0dB, dtype=float)
+    errorVelo_MF = np.zeros_like(EsN0dB, dtype=float)
+
     for idx, snr in enumerate(EsN0dB):
         print(f"{idx+1}/{EsN0dB.size}")
         sigma2 = 10 ** (-snr / 10)  # 噪声方差
@@ -175,7 +181,27 @@ def otfs_simulation(M=128, N=64, EbN0dB=np.arange(0, 17, 2), N_frames=2000):
             # Y_tf = np.fft.fft(r.reshape(M, N), axis=0) # Wigner变换
             ## or
             Y_tf = Wigner(M, N, r)
+
+
+            ## Sensing Based on TF domain
+            # Wigner变换
+            Y = r.reshape(M, N)
+            y_TF = np.fft.fft(Y, axis=0)
+
+            # 基于TF域的感知
+            H_tf = Y_tf * np.conj(X_tf)
+            rdm_tf = np.fft.fft(np.fft.ifft(H_tf, axis=1).T, n=N*10, axis=1).T * np.sqrt(M/N)
+            MM = np.max(np.abs(rdm_tf))
+            I1, I2 = np.where(np.abs(rdm_tf) == MM)
+            rangeEst = (I1[0])/(M*deltaf)*c/2
+            veloEst = (I2[0])/(N*10*T)*lambda_/2
+
+            errorRange_TF[idx] += (rangeEst - targetRange)**2/N_frames
+            errorVelo_TF[idx] += (veloEst - targetSpeed)**2/N_frames
+
+            ## Sensing based on match filtering in DD domain
             Y_dd = SFFT(Y_tf)
+
 
             # === 解调与SER计算 ===
             # QPSK解调 (相位判决)

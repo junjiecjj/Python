@@ -77,7 +77,7 @@ for ii = 1:length(SNR_dB)
         r = r + (randn(size(r)) + 1j*randn(size(r)))*sqrt(sigmaSquare(ii)/2);
         %% Wigner Transform
         Y = reshape(r,M,N);
-        y_TF =  fft(Y,M);
+        y_TF =  fft(Y,M); 
         %% Sensing Based on TF domain 
         H_tf = y_TF .* conj(X_TF);
         rdm_tf = fft(ifft(H_tf).',N*10)'*sqrt(M/N);
