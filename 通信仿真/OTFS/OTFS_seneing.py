@@ -178,19 +178,14 @@ def otfs_simulation(M=128, N=64, EbN0dB=np.arange(0, 17, 2), N_frames=2000):
             r += noise
 
             # === 接收端 ===
-            # Y_tf = np.fft.fft(r.reshape(M, N), axis=0) # Wigner变换
+            Y_tf = np.fft.fft(r.reshape(M, N), axis=0) # Wigner变换
             ## or
-            Y_tf = Wigner(M, N, r)
+            # Y_tf = Wigner(M, N, r)
 
 
-            ## Sensing Based on TF domain
-            # Wigner变换
-            Y = r.reshape(M, N)
-            y_TF = np.fft.fft(Y, axis=0)
-
-            # 基于TF域的感知
+            ## Sensing Based on TF domain, 基于TF域的感知
             H_tf = Y_tf * np.conj(X_tf)
-            rdm_tf = np.fft.fft(np.fft.ifft(H_tf, axis=1).T, n=N*10, axis=1).T * np.sqrt(M/N)
+            rdm_tf = np.fft.fft(np.fft.ifft(H_tf, axis=0), n=N*10, axis=1).T * np.sqrt(M/N)
             MM = np.max(np.abs(rdm_tf))
             I1, I2 = np.where(np.abs(rdm_tf) == MM)
             rangeEst = (I1[0])/(M*deltaf)*c/2
