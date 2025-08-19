@@ -306,21 +306,24 @@ axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='-', lw = 1,
 
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='#13A8F9', linestyle='-',  label='Average Squared ACF, Theoretical',)
 axs.plot(x, 10 * np.log10(Sim_M1_avg ), color=colors[1], linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='Average Squared ACF, Simular',)
-axs.fill_between(x, 10 * np.log10(Sim_M1_min), 10 * np.log10(Sim_M1_max), color='#13A8F9', alpha = 0.2)
+axs.fill_between(x, 10 * np.log10(Sim_M1_min), 10 * np.log10(Sim_M1_max), color='#13A8F9', alpha = 0.4)
 
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100), color='#F0760A', linestyle='-', label='100 Coherent Integration, Theoretical',)
 axs.plot(x, 10 * np.log10(Sim_M100_avg ), color='#F97213', linestyle='-', lw = 1, marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none', label='100 Coherent Integration, Simular',)
-axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.2)
+axs.fill_between(x, 10 * np.log10(Sim_M100_min), 10 * np.log10(Sim_M100_max), color='#F0760A', alpha = 0.4)
 
 legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
 axs.set_xlim([-300, 300])
 
+out_fig = plt.gcf()
+# filepath2 = '/home/jack/snap/'
+out_fig.savefig('Fig2.png',  )
+out_fig.savefig('Fig2.pdf',  )
 plt.show()
 plt.close()
 
-
 #%%
 
 
@@ -344,80 +347,6 @@ plt.close()
 
 
 #%%
-
-# import numpy as np
-# from scipy.signal import firwin, fftconvolve
-# import matplotlib.pyplot as plt
-
-# def generate_rc_pulse(alpha, L, span):
-#     """生成升余弦脉冲"""
-#     t = np.arange(-span*L//2, span*L//2) / L
-#     pulse = np.sinc(t) * np.cos(np.pi*alpha*t) / (1 - (2*alpha*t)**2)
-#     pulse[np.abs(t) == 1/(2*alpha)] = np.pi/4 * np.sinc(1/(2*alpha))  # 处理奇异点
-#     return pulse / np.linalg.norm(pulse)  # 能量归一化
-
-# def build_circulant_matrix(pulse, N, L):
-#     """构建循环矩阵P"""
-#     LN = L * N
-#     P = np.zeros((LN, LN))
-#     pulse_padded = np.pad(pulse, (0, LN - len(pulse)))
-#     for k in range(LN):
-#         P[:, k] = np.roll(pulse_padded, k)
-#     return P
-
-# def ofdm_modulation(symbols, N, L):
-#     """OFDM调制（包含IFFT和上采样）"""
-#     time_domain = np.fft.ifft(symbols) * np.sqrt(N)
-#     upsampled = np.zeros(N*L, dtype=complex)
-#     upsampled[::L] = time_domain  # 插入L-1个零
-#     return upsampled
-
-# def calculate_acf(signal):
-#     """计算周期自相关函数（公式15）"""
-#     N = len(signal)
-#     acf = np.zeros(N, dtype=complex)
-#     for k in range(N):
-#         acf[k] = np.dot(signal.conj(), np.roll(signal, k))
-#     return acf
-
-# # 参数设置（与论文Fig.2一致）
-# N = 128       # 符号数
-# L = 10        # 过采样率
-# alpha = 0.35  # 滚降因子
-# span = 6      # 滤波器跨度（根据旁瓣要求调整）
-
-# # 1. 生成升余弦脉冲
-# rc_pulse = generate_rc_pulse(alpha, L, span)
-
-# # 2. 构建循环矩阵P（公式11）
-# P = build_circulant_matrix(rc_pulse, N, L)
-
-# # 3. 生成随机QAM符号（16-QAM）
-# qam_symbols = np.random.choice([1+1j, 1-1j, -1+1j, -1-1j,
-#                                1+3j, 1-3j, -1+3j, -1-3j,
-#                                3+1j, 3-1j, -3+1j, -3-1j,
-#                                3+3j, 3-3j, -3+3j, -3-3j], N)
-# qam_symbols = qam_symbols / np.sqrt(10)  # 16-QAM能量归一化
-
-# # 4. OFDM调制
-# ofdm_signal = ofdm_modulation(qam_symbols, N, L)
-
-# # 5. 脉冲成形（公式10）
-# pulse_shaped_signal = P @ ofdm_signal
-
-# # 6. 计算ACF（公式15）
-# acf = calculate_acf(pulse_shaped_signal)
-
-# # 7. 绘制结果（对应论文Fig.2）
-# plt.figure(figsize=(10, 6))
-# plt.plot(np.arange(-N*L//2, N*L//2), 10*np.log10(np.abs(np.fft.fftshift(acf))**2),
-#          label='Simulated ACF')
-# plt.xlabel('Lag (samples)')
-# plt.ylabel('Squared ACF (dB)')
-# plt.title('Auto-correlation Function of Pulse-shaped OFDM Signal')
-# plt.grid(True)
-# plt.legend()
-# plt.show()
 
 
 

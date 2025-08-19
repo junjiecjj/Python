@@ -227,12 +227,14 @@ legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize =
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
 axs.set_xlim([-200, 200])
+
+
 out_fig = plt.gcf()
+# filepath2 = '/home/jack/snap/'
+out_fig.savefig('Fig3.png', )
+out_fig.savefig('Fig3.pdf', )
 plt.show()
 plt.close()
-
-
-
 
 
 
