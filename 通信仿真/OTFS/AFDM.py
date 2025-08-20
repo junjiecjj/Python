@@ -143,7 +143,7 @@ def main():
     T = 1/delta_f      # 符号持续时间 (s)
 
     eng_sqrt = 1 if M_mod == 2 else np.sqrt((M_mod-1)/6*4)  # 符号平均功率
-    SNR_dB = np.arange(0, 17, 2)  # SNR范围 (dB)
+    SNR_dB = np.arange(0, 22, 2)  # SNR范围 (dB)
     SNR = 10**(SNR_dB/10)
     sigma_2 = (abs(eng_sqrt)**2)/SNR  # 噪声功率
 
@@ -212,7 +212,6 @@ def main():
                 for l in L_set:
                     if q >= l:
                         r[q] += gs[l, q] * s_cpp[q-l]
-
             # 添加噪声
             w = np.sqrt(sigma_2[iesn0]/2) * (np.random.randn(len(s_cpp)) + 1j*np.random.randn(len(s_cpp)))
             r += w

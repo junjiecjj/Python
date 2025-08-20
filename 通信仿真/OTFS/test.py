@@ -1,152 +1,128 @@
+
+
+# https://zhuanlan.zhihu.com/p/521009340
+
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import erfc
-import scipy
-import commpy
-from Modulations import modulator
+from scipy import signal
+from scipy.constants import c
+import scipy.special as sp
 
-def Qfun(x):
-    return 0.5 * scipy.special.erfc(x / np.sqrt(2))
+# 物理常数和参数设置
+c0 = c  # 光速
+fc = 30e9  # 载波频率
+lambda_ = c0 / fc  # 波长
+N = 64  # 子载波数量
+M = 16  # 符号数量
+delta_f = 15e3 * 2**6  # 子载波间隔
+T = 1 / delta_f  # 符号持续时间
+Tcp = T / 4  # 循环前缀持续时间
+Ts = T + Tcp  # 总符号持续时间
 
-def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
-    EbN0 = 10**(EbN0dB/10)
-    EsN0 = np.log2(M) * EbN0
-    SER = np.zeros(EbN0dB.size)
-    if MOD_TYPE.lower() == "bpsk":
-        SER = Qfun(np.sqrt(2 * EbN0))
-    elif MOD_TYPE == "psk":
-        if M == 2:
-            SER = Qfun(np.sqrt(2 * EbN0))
-        else:
-            if M == 4:
-                SER = 2 * Qfun(np.sqrt(2* EbN0)) - Qfun(np.sqrt(2 * EbN0))**2
-            else:
-                SER = 2 * Qfun(np.sin(np.pi/M) * np.sqrt(2 * EsN0))
-    elif MOD_TYPE.lower() == "qam":
-        SER = 1 - (1 - 2*(1 - 1/np.sqrt(M)) * Qfun(np.sqrt(3 * EsN0/(M - 1))))**2
-    elif MOD_TYPE.lower() == "pam":
-        SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
-    return SER
+qam = 4  # 4-QAM调制
 
-def ISFFT(X):
-    """
-    Inverse Symplectic Finite Fourier Transform
-    Parameters:
-        X : 2D numpy array (m x n)
-    Returns:
-        X_out : 2D numpy array after ISFFT
-    """
-    M, N = X.shape
-    # ISFFT: DFT along rows (delay domain) and IDFT along columns (Doppler domain)
-    X_out = np.fft.ifft(np.fft.fft(X, n=M, axis=0), n=N, axis=1) * np.sqrt(N / M)
-    return X_out
+# 生成传输数据
+data = np.random.randint(0, qam, (N, M))
 
-def SFFT(X):
-    """
-    Symplectic Finite Fourier Transform
-    Parameters:
-        X : 2D numpy array (m x n)
-    Returns:
-        X_out : 2D numpy array after SFFT
-    """
-    M, N = X.shape
-    # SFFT: IDFT along rows (delay domain) and DFT along columns (Doppler domain)
-    X_out = np.fft.fft(np.fft.ifft(X, n=M, axis=0), n=N, axis=1) * np.sqrt(M / N)
-    return X_out
+# QAM调制 - 手动实现4-QAM
+def qammod_4qam(data, unit_avg_power=True):
+    # 4-QAM映射: 0->(1+1j), 1->(1-1j), 2->(-1+1j), 3->(-1-1j)
+    mapping = {
+        0: 1 + 1j,
+        1: 1 - 1j,
+        2: -1 + 1j,
+        3: -1 - 1j
+    }
 
-def Heisenberg(M, N, X_tf):
-    # 海森堡变换: TF域 → 时域
-    s = np.zeros(M*N, dtype=complex)
-    for n in range(N):
-        for m in range(M):
-            s[n*M + m] = X_tf[m, n] * np.exp(1j*2*np.pi*m*n/M)
-    return s
+    modulated = np.vectorize(mapping.get)(data)
 
-def Wigner(M, N, r):
-    # 维格纳变换: 时域 → TF域
-    Y_tf = np.zeros((M, N), dtype=complex)
-    for n in range(N):
-        for m in range(M):
-            Y_tf[m, n] = r[n*M + m] * np.exp(-1j*2*np.pi*m*n/M)
-    return Y_tf
+    if unit_avg_power:
+        # 归一化到单位平均功率
+        modulated = modulated / np.sqrt(2)
 
-def otfs_simulation(M=32, N=16, EbN0dB=np.arange(0, 17, 2), N_frames=2000):
-    """OTFS系统仿真 (修正功率和噪声计算)"""
-    SER_sim = np.zeros_like(EbN0dB, dtype=float)
-    # 创建QAM调制器
-    QAM_mod = 4
-    bps = int(np.log2(QAM_mod))
+    return modulated
 
-    EsN0dB = 10 * np.log10(bps) + EbN0dB
-    MOD_TYPE = "qam"
-    modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
-    map_table, demap_table = modem.getMappTable()
+TxData = qammod_4qam(data, True)
 
-    for idx, snr in enumerate(EsN0dB):
-        print(f"{idx+1}/{EsN0dB.size}")
-        sigma2 = 10 ** (-snr / 10)  # 噪声方差
-        errors = 0
-        total_symbols = 0
+# 目标参数
+target_pos = 60  # 目标距离
+target_delay = 2 * target_pos / c0  # 距离到时延转换
+target_speed = 20  # 目标速度
+# 多普勒频移计算
+target_dop = 2 * target_speed / lambda_
 
-        for _ in range(N_frames):
-            # === 发射端 ===
-            bits = np.random.randint(0, 2, size = M*N*bps).astype(np.int8)
-            X_dd = modem.modulate(bits)
-            d = np.array([demap_table[sym] for sym in X_dd])
-            X_dd = X_dd.reshape(M, N)
+SNR_dB = 5
+SNR = 10**(SNR_dB/10)
 
-            # OTFS调制
-            X_tf = ISFFT(X_dd)
-            # s = np.fft.ifft(X_tf, axis=0).flatten()
-            ## or
-            s = Heisenberg(M, N, X_tf)
-            # === 信道 ===
-            # 多普勒信道 (单径)
-            nu = 0.05  # 归一化多普勒
-            dop = np.exp(1j * 2 * np.pi * nu * np.arange(len(s)) / len(s))
-            r = s * dop  # 忽略时延，仅测试多普勒
+# 接收信号模拟
+RxData = np.zeros((N, M), dtype=complex)
+for kSubcarrier in range(N):
+    for mSymbol in range(M):
+        # 信道效应：时延和多普勒
+        phase_shift = np.exp(-1j * 2 * np.pi * fc * target_delay) * \
+                     np.exp(-1j * 2 * np.pi * kSubcarrier * delta_f * target_delay)
 
-            r = s
-            # 添加噪声 (修正噪声功率)
-            noise_power = np.mean(np.abs(r)**2) * sigma2
-            noise = np.sqrt(noise_power/2) * (np.random.randn(*r.shape) + 1j*np.random.randn(*r.shape))
-            r += noise
+        # 添加高斯噪声
+        noise = np.sqrt(1/2) * (np.random.randn() + 1j * np.random.randn())
 
-            # === 接收端 ===
-            # Y_tf = np.fft.fft(r.reshape(M, N), axis=0)
-            ## or
-            Y_tf = Wigner(M, N, r)
-            Y_dd = SFFT(Y_tf)
+        RxData[kSubcarrier, mSymbol] = np.sqrt(SNR) * TxData[kSubcarrier, mSymbol] * phase_shift + noise
 
-            # === 解调与SER计算 ===
-            # QPSK解调 (相位判决)
-            uu_hat = modem.demodulate(Y_dd.flatten(), 'hard')
-            d_hat = []
-            for j in range(M*N):
-                d_hat.append( int(''.join([str(num) for num in uu_hat[j*bps:(j+1)*bps]]), base = 2) )
-            d_hat = np.array(d_hat)
+# 移除发射数据信息
+dividerArray = RxData / TxData
 
-            errors += np.sum(d != d_hat)
-            total_symbols += d.size
+# MUSIC算法
+nTargets = 1
+Rxxd = dividerArray @ dividerArray.conj().T / M
 
-        SER_sim[idx] = errors / total_symbols
+# 特征值分解
+distanceEigen, Vd = np.linalg.eig(Rxxd)
 
-    # 理论QPSK SER
-    SER_theory = ser_awgn(EbN0dB, MOD_TYPE, QAM_mod)
+# 排序特征值和特征向量
+sorted_indices = np.argsort(distanceEigen)[::-1]
+distanceEigenDiag = distanceEigen[sorted_indices]
+Vd = Vd[:, sorted_indices]
 
-    return  SER_sim, SER_theory
+# 噪声子空间
+distanceEigenMatNoise = Vd[:, nTargets:]
 
-# 运行仿真
-EbN0dB = np.arange(0, 12, 2)
-SER_sim, SER_theory = otfs_simulation(EbN0dB=EbN0dB, N_frames=2000)
+# MUSIC谱估计
+omegaDistance = np.arange(0, 2 * np.pi + np.pi/100, np.pi/100)
+SP = np.zeros(len(omegaDistance), dtype=complex)
+nIndex = np.arange(0, N)
 
-# 绘图
-plt.figure()
-plt.semilogy(EbN0dB, SER_sim, 'bo-', label='OTFS (仿真)')
-plt.semilogy(EbN0dB, SER_theory, 'r--', label='QPSK (理论)')
-plt.xlabel('SNR (dB)')
-plt.ylabel('SER')
+for index, omega in enumerate(omegaDistance):
+    omegaVector = np.exp(-1j * nIndex * omega)
+    denominator = omegaVector.conj().T @ (distanceEigenMatNoise @ distanceEigenMatNoise.conj().T) @ omegaVector
+    SP[index] = (omegaVector.conj().T @ omegaVector) / denominator
+
+SP = np.abs(SP)
+SPmax = np.max(SP)
+SP_dB = 10 * np.log10(SP / SPmax)
+distanceIndex = omegaDistance * c0 / (2 * np.pi * 2 * delta_f)
+
+plt.figure(figsize=(12, 8))
+plt.plot(distanceIndex, SP_dB, label='MUSIC')
+
+# 周期图/FFT估计
+NPer = 16 * N
+normalizedPower = np.abs(np.fft.ifft(dividerArray, NPer, axis=0))
+mean_normalizedPower = np.mean(normalizedPower, axis=1)
+mean_normalizedPower = mean_normalizedPower / np.max(mean_normalizedPower)
+mean_normalizedPower_dB = 10 * np.log10(mean_normalizedPower)
+
+rangeIndex = np.arange(0, NPer) * c0 / (2 * delta_f * NPer)
+
+plt.plot(rangeIndex, mean_normalizedPower_dB, label='periodogram')
 plt.grid(True)
+plt.xlabel('Range [m]')
+plt.ylabel('Normalized Range Profile [dB]')
 plt.legend()
-plt.title('OTFS-QPSK 符号错误率性能')
+plt.title('Range Estimation Comparison')
+plt.tight_layout()
 plt.show()
+
+# 估计距离
+rangeEstimation = np.argmax(mean_normalizedPower_dB)
+distanceE = rangeEstimation * c0 / (2 * delta_f * NPer)
+print(f"Estimated distance: {distanceE:.2f} m")
+print(f"True distance: {target_pos} m")

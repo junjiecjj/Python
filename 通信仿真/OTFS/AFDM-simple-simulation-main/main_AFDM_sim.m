@@ -37,7 +37,7 @@ delta_f = 15*10^3;  % symbol spacing
 T = 1/delta_f;      % symbol duration
 
 eng_sqrt = (M_mod==2)+(M_mod~=2)*sqrt((M_mod-1)/6*(2^2));   % average power per symbol
-SNR_dB = 0:2:16;    % set SNR here
+SNR_dB = 0:2:22;    % set SNR here
 SNR = 10.^(SNR_dB/10);
 sigma_2 = (abs(eng_sqrt)^2)./SNR;   % noise power
 
