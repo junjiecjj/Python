@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Nov 21 21:59:54 2022
+Created on Thu Aug 21 10:21:15 2025
 
 @author: jack
-
-https://blog.csdn.net/qq_37335890/article/details/84922878
-https://blog.csdn.net/wdj_whu/article/details/114740988
-https://blog.csdn.net/weixin_46702338/article/details/113872857
-https://zhuanlan.zhihu.com/p/148484210
-https://zhuanlan.zhihu.com/p/108803395
-https://www.zhihu.com/question/450545552
 """
+
 
 
 import matplotlib.pyplot as plt
@@ -74,7 +68,7 @@ x =  np.exp(1j * 2 * np.pi * f1 * t)
 
 #=====================================================
 # FFTN = N_sample   ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
-FFTN = 2000        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+FFTN = 2*x.size        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 # 对时域采样信号, 执行快速傅里叶变换 FFT
 X = scipy.fftpack.fft(x, n = FFTN)
 # X = FFT(x)  # 或者用自己编写的，与 fft 一致

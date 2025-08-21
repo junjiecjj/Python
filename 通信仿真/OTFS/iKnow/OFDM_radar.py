@@ -4,9 +4,10 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
+# from scipy import signal
 from scipy.constants import c
-import scipy.special as sp
+import commpy
+from Modulations import modulator
 
 # 物理常数和参数设置
 c0 = c  # 光速
@@ -19,30 +20,13 @@ T = 1 / delta_f  # 符号持续时间
 Tcp = T / 4  # 循环前缀持续时间
 Ts = T + Tcp  # 总符号持续时间
 
-qam = 4  # 4-QAM调制
-
 # 生成传输数据
-data = np.random.randint(0, qam, (N, M))
-
-# QAM调制 - 手动实现4-QAM
-def qammod_4qam(data, unit_avg_power=True):
-    # 4-QAM映射: 0->(1+1j), 1->(1-1j), 2->(-1+1j), 3->(-1-1j)
-    mapping = {
-        0: 1 + 1j,
-        1: 1 - 1j,
-        2: -1 + 1j,
-        3: -1 - 1j
-    }
-
-    modulated = np.vectorize(mapping.get)(data)
-
-    if unit_avg_power:
-        # 归一化到单位平均功率
-        modulated = modulated / np.sqrt(2)
-
-    return modulated
-
-TxData = qammod_4qam(data, True)
+QAM_mod = 4
+bps = int(np.log2(QAM_mod))
+MOD_TYPE = "qam"
+modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
+bits = np.random.randint(0, 2, size = M*N*bps).astype(np.int8)
+TxData = modem.modulate(bits).reshape(N, M)
 
 # 目标参数
 target_pos = 60  # 目标距离
@@ -59,29 +43,23 @@ RxData = np.zeros((N, M), dtype=complex)
 for kSubcarrier in range(N):
     for mSymbol in range(M):
         # 信道效应：时延和多普勒
-        phase_shift = np.exp(-1j * 2 * np.pi * fc * target_delay) * \
-                     np.exp(-1j * 2 * np.pi * kSubcarrier * delta_f * target_delay)
-
+        phase_shift = np.exp(-1j * 2 * np.pi * target_dop * target_delay) * np.exp(1j * 2 * np.pi * mSymbol * Ts * target_dop) * np.exp(-1j * 2 * np.pi * kSubcarrier * delta_f * target_delay)
         # 添加高斯噪声
         noise = np.sqrt(1/2) * (np.random.randn() + 1j * np.random.randn())
-
         RxData[kSubcarrier, mSymbol] = np.sqrt(SNR) * TxData[kSubcarrier, mSymbol] * phase_shift + noise
 
 # 移除发射数据信息
 dividerArray = RxData / TxData
 
-# MUSIC算法
+################### MUSIC算法
 nTargets = 1
 Rxxd = dividerArray @ dividerArray.conj().T / M
-
 # 特征值分解
 distanceEigen, Vd = np.linalg.eig(Rxxd)
-
 # 排序特征值和特征向量
 sorted_indices = np.argsort(distanceEigen)[::-1]
 distanceEigenDiag = distanceEigen[sorted_indices]
 Vd = Vd[:, sorted_indices]
-
 # 噪声子空间
 distanceEigenMatNoise = Vd[:, nTargets:]
 
@@ -100,10 +78,7 @@ SPmax = np.max(SP)
 SP_dB = 10 * np.log10(SP / SPmax)
 distanceIndex = omegaDistance * c0 / (2 * np.pi * 2 * delta_f)
 
-plt.figure(figsize=(12, 8))
-plt.plot(distanceIndex, SP_dB, label='MUSIC')
-
-# 周期图/FFT估计
+#################### 周期图/FFT估计
 NPer = 16 * N
 normalizedPower = np.abs(np.fft.ifft(dividerArray, NPer, axis=0))
 mean_normalizedPower = np.mean(normalizedPower, axis=1)
@@ -112,17 +87,27 @@ mean_normalizedPower_dB = 10 * np.log10(mean_normalizedPower)
 
 rangeIndex = np.arange(0, NPer) * c0 / (2 * delta_f * NPer)
 
-plt.plot(rangeIndex, mean_normalizedPower_dB, label='periodogram')
-plt.grid(True)
-plt.xlabel('Range [m]')
-plt.ylabel('Normalized Range Profile [dB]')
-plt.legend()
+################### Plot
+colors = plt.cm.jet(np.linspace(0, 1, 5))
+fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
+axs.plot(distanceIndex, SP_dB, label='MUSIC')
+axs.plot(rangeIndex, mean_normalizedPower_dB, label='periodogram')
+axs.set_xlabel('Range [m]')
+axs.set_ylabel('Normalized Range Profile [dB]')
+axs.legend()
+
 plt.title('Range Estimation Comparison')
-plt.tight_layout()
 plt.show()
+plt.close('all')
+
 
 # 估计距离
 rangeEstimation = np.argmax(mean_normalizedPower_dB)
 distanceE = rangeEstimation * c0 / (2 * delta_f * NPer)
 print(f"Estimated distance: {distanceE:.2f} m")
 print(f"True distance: {target_pos} m")
+
+
+
+
+
