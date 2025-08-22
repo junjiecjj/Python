@@ -4,6 +4,13 @@
 Created on Thu Aug 21 17:30:37 2025
 
 @author: jack
+
+OFDM_radar.py 是雷达感知部分代码，一帧，为了演示感知算法；
+OFDM_ISAC_simulator.py 是通信+感知部分，一帧；
+OFDM_ISAC_simulation.py 是通信+感知部分，蒙特卡洛仿真；
+
+主要看 OFDM_ISAC_simulation.py
+
 """
 import scipy
 import numpy as np
@@ -36,6 +43,7 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
     elif MOD_TYPE.lower() == "pam":
         SER = 2*(1-1/M) * Qfun(np.sqrt(6*EsN0/(M**2-1)))
     return SER
+
 def ser_rayleigh(EbN0dB, MOD_TYPE, M):
     EbN0 = 10**(EbN0dB/10)
     EsN0 = np.log2(M) * EbN0
@@ -140,8 +148,11 @@ for idx, snr in enumerate(EsN0dBs):
         # channel = (np.random.randn(Ntap) + 1j * np.random.randn(Ntap)) * np.sqrt(Power/2)
         # h = np.zeros(Lch, dtype=complex)
         # h[Delay] = channel
+
+        ## 下面这样的简单生成h时仿真性能可以与理论完美对上
         h = (np.random.randn(L) + 1j * np.random.randn(L))/np.sqrt(2)
         # h = h/np.linalg.norm(h)
+
         # Perfect channel estimation
         H_channel = np.fft.fft(h, n = N)
         H_channel = np.tile(H_channel[:, np.newaxis], (1, M))

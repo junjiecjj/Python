@@ -28,6 +28,32 @@ plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色
 plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
+def ser_rayleigh(EbN0dB, MOD_TYPE, M):
+    EbN0 = 10**(EbN0dB/10)
+    EsN0 = np.log2(M) * EbN0
+    SER = np.zeros(EbN0dB.size)
+    if MOD_TYPE.lower() == "bpsk":
+        SER = 1/2 * (1 - np.sqrt(EsN0/(1 + EsN0)))
+    elif MOD_TYPE.lower() == "psk":
+        SER = np.zeros(EsN0.size)
+        for i in range(len(EsN0)):
+            g = np.sin(np.pi/M)**2
+            fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/(np.sin(x)**2))
+            SER[i] = 1/np.pi * scipy.integrate.quad(fun, 0, np.pi*(M-1)/M)[0]
+    elif MOD_TYPE.lower() == "qam":
+        SER = np.zeros(EsN0.size)
+        for i in range(len(EsN0)):
+            g = 1.5 / (M-1)
+            fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
+            SER[i] = 4/np.pi * (1 - 1/np.sqrt(M)) * scipy.integrate.quad(fun, 0, np.pi/2)[0] - 4/np.pi * (1 - 1/np.sqrt(M))**2 * scipy.integrate.quad(fun, 0, np.pi/4)[0]
+    elif MOD_TYPE.lower() == "pam":
+        SER = np.zeros(EsN0.size)
+        for i in range(len(EsN0)):
+            g = 3/(M**2 - 1)
+            fun = lambda x: 1.0 / (1.0 + g * EsN0[i]/np.sin(x)**2)
+            SER[i] = 2*(M-1)/(M*np.pi) * scipy.integrate.quad(fun, 0, np.pi/2)[0]
+    return SER
+
 def AFDM_mod(x, c1, c2):
     """
     AFDM调制函数 - Python版本
@@ -41,8 +67,9 @@ def AFDM_mod(x, c1, c2):
     N = x.shape[0]
 
     # 创建DFT矩阵并归一化
-    F = np.fft.fft(np.eye(N)) / np.sqrt(N)
-
+    F = np.fft.fft(np.eye(N))
+    F = F / np.linalg.norm(F, ord = 2)
+    np.linalg.norm(F)
     # 创建L1和L2对角矩阵
     n = np.arange(N)
     L1 = np.diag(np.exp(-1j * 2 * np.pi * c1 * (n**2)))
@@ -67,7 +94,8 @@ def AFDMdemod(S, c1, c2):
     N = S.shape[0]  # 获取子载波数
 
     # 创建DFT矩阵并归一化
-    F = np.fft.fft(np.eye(N)) / np.sqrt(N)
+    F = np.fft.fft(np.eye(N))
+    F = F / np.linalg.norm(F, ord = 2)
 
     # 创建L1和L2对角矩阵
     n = np.arange(N)
@@ -119,6 +147,20 @@ def Gen_channel_mtx(N, taps, chan_coef, delay_taps, Doppler_freq, c1):
         H += h_i * G_i @ D_i @ Pi_pow
     return H
 
+def awgn(signal, snr_db, measured=True):
+    """添加AWGN噪声"""
+    if measured:
+        signal_power = np.mean(np.abs(signal)**2)
+    else:
+        signal_power = 1.0  # 假设单位功率
+
+    snr_linear = 10**(snr_db / 10)
+    noise_power = signal_power / snr_linear
+
+    noise = np.sqrt(noise_power/2) * (np.random.randn(len(signal)) + 1j*np.random.randn(len(signal)))
+    return signal + noise, noise_power
+
+
 def main():
     np.random.seed(42)  # 固定随机种子
 
@@ -131,11 +173,6 @@ def main():
     car_fre = 4e9      # 载波频率 (Hz)
     delta_f = 15e3     # 子载波间隔 (Hz)
     T = 1/delta_f      # 符号持续时间 (s)
-
-    # eng_sqrt = 1 if M_mod == 2 else np.sqrt((M_mod-1)/6*4)  # 符号平均功率
-    SNR_dB = np.arange(0, 22, 2)  # SNR范围 (dB)
-    SNR = 10**(SNR_dB/10)
-    sigma_2 = (np.abs(Es)**2)/SNR  # 噪声功率
 
     N_frame = 10000    # 仿真帧数
 
@@ -158,6 +195,9 @@ def main():
     CPP_len = max_delay              # CPP长度 >= l_max-1
     N_data = N - CPP_len             # 数据符号长度
 
+    EbN0dBs = np.arange(0, 32, 5)  # SNR范围 (dB)
+    EsN0dBs = 10*np.log10(bps*N_data/N) + EbN0dBs # 10 * np.log10(bps) + EbN0dBs
+
     k_v = 1  # 保护间隔对抗分数多普勒
     if (2*(max_Doppler+k_v)*(max_delay+1)+max_delay) > N_data:
         raise ValueError('子载波正交性不满足条件')
@@ -177,8 +217,9 @@ def main():
     # 生成完整信道矩阵
     H = Gen_channel_mtx(N, taps, chan_coef, delay_taps, Doppler_freq, c1)
     # 主仿真循环
-    SER = np.zeros(len(SNR_dB))
-    for iesn0 in range(len(SNR_dB)):
+    SER_sim = np.zeros(len(EsN0dBs))
+    for idx, snrdB in enumerate(EsN0dBs):
+        print(f"{idx+1}/{EsN0dBs.size}")
         err_count = 0
         for iframe in range(N_frame):
             # 发射端
@@ -201,16 +242,14 @@ def main():
                     if q >= l:
                         r[q] += gs[l, q] * s_cpp[q-l]
             # 添加噪声
-            w = np.sqrt(sigma_2[iesn0]/2) * (np.random.randn(len(s_cpp)) + 1j*np.random.randn(len(s_cpp)))
-            r += w
+            r, sigma2 = awgn(r.copy(), snrdB, measured=True)  # add AWGN
 
             # 接收端处理
             # MMSE均衡 (理想信道估计)
-            x_est = H.conj().T @ np.linalg.inv(H @ H.conj().T + sigma_2[iesn0]*np.eye(N)) @ r
+            x_est = H.conj().T @ np.linalg.inv(H @ H.conj().T + sigma2 * np.eye(N)) @ r
             x_est_no_cpp = x_est[CPP_len:]              # 去除CPP
             y = AFDMdemod(x_est_no_cpp, c1, c2)         # AFDM解调
-            # x_est_bit = qamdemod(y, M_mod)            # QAM解调
-
+            # QAM解调
             sCap = modem.demodulate(y, 'hard')
             x_est_bit = []
             for j in range(N_data):
@@ -220,19 +259,26 @@ def main():
             # 错误计数
             err_count += np.sum(x_est_bit != x)
 
-        SER[iesn0] = err_count / (N_data * N_frame)  # 计算BER
+        SER_sim[idx] = err_count / (N_data * N_frame)  # 计算BER
 
-    print("BER结果:", SER)
+    print("BER结果:", SER_sim)
 
     # 绘制BER曲线
-    plt.figure(figsize=(10, 10))
-    plt.semilogy(SNR_dB, SER, 'b-o', linewidth=2, markersize=8)
-    plt.legend(['MMSE均衡'])
-    plt.xlabel('SNR (dB)')
-    plt.ylabel('BER')
-    plt.title('AFDM系统误码率性能')
-    plt.grid(True, which="both", ls="-")
+    SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M_mod)
+    # colors = plt.cm.jet(np.linspace(0, 1, 5))
+    fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
+
+    axs.semilogy(EbN0dBs, SER_sim, 'bo-', label='AFDM (Smiular)')
+    axs.semilogy(EbN0dBs, SER_theory, 'r*--', label='4QAM Religh (Theory)')
+
+    axs.set_xlabel('Eb/N0 (dB)')
+    axs.set_ylabel('SER')
+    axs.legend()
+
+    plt.title('AFDM-4QAM 符号错误率性能')
     plt.show()
+    plt.close('all')
+
 
 # 需要确保以下函数已在之前定义或导入:
 # AFDM_mod(), AFDMdemod(), Gen_channel_mtx(), qammod(), qamdemod()

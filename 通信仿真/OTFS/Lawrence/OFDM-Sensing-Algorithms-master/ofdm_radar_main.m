@@ -8,9 +8,10 @@
 % https://zhuanlan.zhihu.com/p/617467083
 % Author: Yunbo HU (SIMIT, UCAS)
 % GitHub: https://github.com/edenhu1111
-clc;
 clear;
-addpath('fig');
+clc;
+close all;
+%addpath('fig');
 global c0 fc lambda M N delta_f Ts CPsize
 %% ISAC Transmitter
 % System parameters
@@ -72,7 +73,7 @@ mesh(X,Y,(RDM_2dfft_norm));
 title('2D-FFT based method');
 xlabel('range(m)');
 ylabel('velocity(m/s)');
-savefig('fig/figure1.fig');
+%savefig('fig/figure1.fig');
                                                                                                       
 % 2. CCC-based     (Method proposed by Kai Wu et al.)
 figure(2);
@@ -98,7 +99,7 @@ mesh(X,Y,(RDM_norm)); % plot the range-doppler map
 title('CCC based method');
 xlabel('range(m)');
 ylabel('velocity(m/s)');
-savefig('fig/figure2.fig');
+%savefig('fig/figure2.fig');
 
 % 3. Super resolution sensing method
 % 3.1 MUSIC based (a time consuming but precise method)
@@ -120,7 +121,7 @@ xlabel('velocity(m/s)');
 ylim([10^-3,1]);
 title('MUSIC for velocity estimation');
 
-savefig('fig/figure3.fig');
+%savefig('fig/figure3.fig');
 
 % 3.2 ESPRIT based method
 [range,velocity] = ESPRITforOFDMsensing(CIM,k);
