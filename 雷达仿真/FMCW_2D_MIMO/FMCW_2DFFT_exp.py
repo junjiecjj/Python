@@ -6,7 +6,7 @@ Created on Sat Apr  5 16:16:47 2025
 @author: jack
 
 代码说明：
-(1) FMCW_2DFFT.py是严格按照收发信号建模的理论实现的代码，只有测速测距，信号使用复数域，处理起来简单，参考意义比较大；
+(1) FMCW_2DFFT_exp.py是严格按照收发信号建模的理论实现的代码，只有测速测距，信号使用复数域，处理起来简单，参考意义比较大；
 (2) FWCW_2DFFT_multi.py中(一)(二)是按照等效差频信号实现的，只有测速测距，参考意义其次。
 
 """
@@ -36,6 +36,7 @@ plt.rcParams['figure.facecolor'] = 'white'        # 设置图形背景色为浅�
 plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 12
 
+#%%
 def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
     if FFTN == None:
         FFTN = 2**int(np.ceil(np.log2(x.size)))

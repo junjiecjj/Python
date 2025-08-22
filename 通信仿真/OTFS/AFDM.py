@@ -2,9 +2,8 @@
 # https://github.com/jerryzhang124/AFDM-simple-simulation
 
 import numpy as np
-from scipy.linalg import toeplitz
 import matplotlib.pyplot as plt
-from scipy.linalg import toeplitz
+import scipy
 from scipy.special import erf
 from Modulations import modulator
 
@@ -100,37 +99,28 @@ def Gen_channel_mtx(N, taps, chan_coef, delay_taps, Doppler_freq, c1):
     # 创建Pi矩阵 (方程25)
     Pi_row = np.zeros(N)
     Pi_row[-1] = 1
-    Pi = toeplitz(np.concatenate(([Pi_row[0]], np.flip(Pi_row[1:]))), Pi_row)
-
+    Pi = scipy.linalg.toeplitz(np.concatenate(([Pi_row[0]], np.flip(Pi_row[1:]))), Pi_row)
     H = np.zeros((N, N), dtype=complex)
-
     for i in range(taps):
         h_i = chan_coef[i]
         l_i = delay_taps[i]
         f_i = Doppler_freq[i]
-
         # 创建D_i矩阵 (多普勒)
         D_i = np.diag(np.exp(-1j * 2 * np.pi * f_i * np.arange(N)))
-
         # 创建G_i矩阵 (方程26)
         temp = np.ones(N, dtype=complex)
         for n in range(N):
             if n < l_i:
                 temp[n] = np.exp(-1j * 2 * np.pi * c1 * (N**2 - 2 * N * (l_i - n)))
-
         G_i = np.diag(temp)
-
         # 计算Pi^l_i (矩阵幂)
         Pi_pow = np.linalg.matrix_power(Pi, l_i)
-
         # 累加到信道矩阵
         H += h_i * G_i @ D_i @ Pi_pow
-
     return H
 
-
 def main():
-    np.random.seed(1)  # 固定随机种子
+    np.random.seed(42)  # 固定随机种子
 
     # 系统参数
     M_mod = 4          # QAM调制阶数
@@ -142,10 +132,10 @@ def main():
     delta_f = 15e3     # 子载波间隔 (Hz)
     T = 1/delta_f      # 符号持续时间 (s)
 
-    eng_sqrt = 1 if M_mod == 2 else np.sqrt((M_mod-1)/6*4)  # 符号平均功率
+    # eng_sqrt = 1 if M_mod == 2 else np.sqrt((M_mod-1)/6*4)  # 符号平均功率
     SNR_dB = np.arange(0, 22, 2)  # SNR范围 (dB)
     SNR = 10**(SNR_dB/10)
-    sigma_2 = (abs(eng_sqrt)**2)/SNR  # 噪声功率
+    sigma_2 = (np.abs(Es)**2)/SNR  # 噪声功率
 
     N_frame = 10000    # 仿真帧数
 
@@ -177,8 +167,7 @@ def main():
 
     # 生成信道矩阵 (离散时间)
     L_set = np.unique(delay_taps)
-    gs = np.zeros((max_delay+1, N), dtype=complex)
-
+    gs = np.zeros((max_delay+1, N), dtype = complex)
     for q in range(N):
         for i in range(taps):
             g_i = chan_coef[i]
@@ -188,10 +177,9 @@ def main():
     # 生成完整信道矩阵
     H = Gen_channel_mtx(N, taps, chan_coef, delay_taps, Doppler_freq, c1)
     # 主仿真循环
-    ber = np.zeros(len(SNR_dB))
+    SER = np.zeros(len(SNR_dB))
     for iesn0 in range(len(SNR_dB)):
         err_count = 0
-
         for iframe in range(N_frame):
             # 发射端
             uu = np.random.randint(0, 2, size = N_data * bps).astype(np.int8)
@@ -203,7 +191,7 @@ def main():
 
             # 生成CPP
             cpp_indices = np.arange(N_data-CPP_len, N_data)
-            cpp = s[cpp_indices] * np.exp(-1j*2*np.pi*c1*(N**2 + 2*N*(-CPP_len + np.arange(0, CPP_len))))
+            cpp = s[cpp_indices] * np.exp(-1j*2*np.pi*c1*(N**2 + 2*N*np.arange(-CPP_len,0)))
             s_cpp = np.concatenate([cpp, s])         # 添加CPP
 
             # 信道传输
@@ -219,8 +207,8 @@ def main():
             # 接收端处理
             # MMSE均衡 (理想信道估计)
             x_est = H.conj().T @ np.linalg.inv(H @ H.conj().T + sigma_2[iesn0]*np.eye(N)) @ r
-            x_est_no_cpp = x_est[CPP_len:]           # 去除CPP
-            y = AFDMdemod(x_est_no_cpp, c1, c2)       # AFDM解调
+            x_est_no_cpp = x_est[CPP_len:]              # 去除CPP
+            y = AFDMdemod(x_est_no_cpp, c1, c2)         # AFDM解调
             # x_est_bit = qamdemod(y, M_mod)            # QAM解调
 
             sCap = modem.demodulate(y, 'hard')
@@ -232,13 +220,13 @@ def main():
             # 错误计数
             err_count += np.sum(x_est_bit != x)
 
-        ber[iesn0] = err_count / (N_data * N_frame)  # 计算BER
+        SER[iesn0] = err_count / (N_data * N_frame)  # 计算BER
 
-    print("BER结果:", ber)
+    print("BER结果:", SER)
 
     # 绘制BER曲线
     plt.figure(figsize=(10, 10))
-    plt.semilogy(SNR_dB, ber, 'b-o', linewidth=2, markersize=8)
+    plt.semilogy(SNR_dB, SER, 'b-o', linewidth=2, markersize=8)
     plt.legend(['MMSE均衡'])
     plt.xlabel('SNR (dB)')
     plt.ylabel('BER')
@@ -251,6 +239,22 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

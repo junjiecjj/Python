@@ -4,6 +4,9 @@
 Created on Sun Aug 17 17:46:01 2025
 
 @author: jack
+
+需要安装commpy, 安装命令:  pip install scikit-commpy,
+主要是使用了commpy里面的调制解调函数，也可以用自己写的
 """
 
 import numpy as np
@@ -53,9 +56,10 @@ def srrcFunction(beta, L, span, Tsym = 1):
     p[np.argwhere(np.isnan(p))] = 1
     p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
     filtDelay = (len(p)-1)/2
-    p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # power normaize.
     return p, t, filtDelay
 
+## CDMA, U
 def hadamard_matrix_sylvester(n):
     """Sylvester 构造法生成 Hadamard 矩阵（n 必须是 2 的幂）"""
     if n == 1:
@@ -211,7 +215,7 @@ TheoAveACF_CDMA_M1 = np.abs(TheoAveACF_CDMA_M1)
 TheoAveACF_CDMA_M1 = TheoAveACF_CDMA_M1/TheoAveACF_CDMA_M1.max() + 1e-10
 TheoAveACF_CDMA_M1 = np.fft.fftshift(TheoAveACF_CDMA_M1)
 
-#%%
+#%% plot together
 colors = plt.cm.jet(np.linspace(0, 1, 5))
 # x = np.arange(-N//2, N//2, 1/((L)))
 x = np.arange(-N*L//2, N*L//2,)

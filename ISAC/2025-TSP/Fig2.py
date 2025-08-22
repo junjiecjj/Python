@@ -107,11 +107,11 @@ L = 10        # 过采样率
 alpha = 0.3  # 滚降因子
 span = 6      # 滤波器跨度（根据旁瓣要求调整）
 
-# p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
-# p = np.pad(p, (0, L*N - p.size))
+p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
+p = np.pad(p, (0, L*N - p.size))
 
-t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
-p = p / np.sqrt(np.sum(np.power(p, 2)))
+# t, p = commpy.filters.rrcosfilter(L*N , alpha, Tsym, L/Tsym)
+# p = p / np.sqrt(np.sum(np.power(p, 2)))
 
 norm2p = np.linalg.norm(p)
 FLN = FFTmatrix(L*N )
@@ -319,8 +319,8 @@ axs.set_xlim([-300, 300])
 
 out_fig = plt.gcf()
 # filepath2 = '/home/jack/snap/'
-out_fig.savefig('Fig2.png',  )
-out_fig.savefig('Fig2.pdf',  )
+out_fig.savefig('Fig2_1.png',  )
+out_fig.savefig('Fig2_1.pdf',  )
 plt.show()
 plt.close()
 
