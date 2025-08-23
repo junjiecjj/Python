@@ -71,7 +71,7 @@ def hadamard_matrix_sylvester(n):
 
 
 
-#%% OFDM, Eq.(36)
+#%%
 # 参数设置
 Tsym = 1
 pi = np.pi

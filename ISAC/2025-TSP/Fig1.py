@@ -146,7 +146,7 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 axs[0,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
 
 #======================================= 0,1 =========================================
-axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
+axs[0,1].plot(f, A, color='r', linestyle='-', label='半谱图',)
 
 axs[0,1].set_xlabel(r'频率(Hz)', )
 axs[0,1].set_ylabel(r'幅度', )
@@ -206,7 +206,7 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 axs[1,0].set_xlim(-Tsym*4, Tsym*4)  #拉开坐标轴范围显示投影
 
 #======================================= 1,1 =========================================
-axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
+axs[1,1].plot(f1, A1, color='r', linestyle='-', label='全谱图(fftshift后)',)
 
 axs[1,1].set_xlabel(r'频率(Hz)', )
 axs[1,1].set_ylabel(r'幅度', )
@@ -253,7 +253,7 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 #### 频率刻度错位
 #======================================= 2,0 =========================================
 #======================================= 2,1 =========================================
-axs[2,1].plot(f2, A2, color='r', linestyle='-', label='幅度',)
+axs[2,1].plot(f2, A2, color='r', linestyle='-', label='全谱图(fftshift前)',)
 
 axs[2,1].set_xlabel(r'频率(Hz)', )
 axs[2,1].set_ylabel(r'幅度', )
@@ -298,7 +298,7 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 
 #================================= super ===============================================
 out_fig = plt.gcf()
-#out_fig.savefig(filepath2+'hh.eps',  bbox_inches='tight')
+out_fig.savefig('Fig1.png',  )
 plt.show()
 plt.close()
 

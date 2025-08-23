@@ -145,56 +145,50 @@ def MUSICforOFDMsensing(CIM, k):
     return P_music_range, P_music_velo
 
 def ESPRITforOFDMsensing(CIM, k):
-    """第三个函数：ESPRIT算法"""
+    """第三个函数：ESPRIT算法 - 修正版"""
     global lambd, delta_f, c0, Ts
 
-    M_dim, N_dim = CIM.shape
+    M, N = CIM.shape
 
-    # 范围估计
-    z = np.vstack([CIM[:M_dim-1, :], CIM[1:M_dim, :]])
-    R_zz = z @ z.conj().T / N_dim
+    # 范围估计 - 修正
+    z = np.vstack([CIM[0:M-1, :], CIM[1:M, :]])
+    R_zz = z @ z.conj().T / N
     U, S, Vh = scipy.linalg.svd(R_zz)
-    Es = U[:, :k]
+    Es = U[:, 0:k]
 
-    Esx = Es[:M_dim-1, :]
-    Esy = Es[M_dim-1:, :]
+    Es1 = Es[0:M-1, :]
+    Es2 = Es[1:M, :]
 
-    EE = np.hstack([Esx, Esy])
-    F, _, _ = scipy.linalg.svd(EE.conj().T @ EE)
-    F = F[:, -k:]
-    F1 = F[:k, :]
-    F2 = F[k:, :]
-    psi = -F1 @ np.linalg.inv(F2)
-    D, _ = np.linalg.eig(psi)
+    # TLS-ESPRIT算法
+    Phi = np.linalg.pinv(Es1) @ Es2
+    eigenvalues = np.linalg.eig(Phi)[0]
 
-    phi = np.angle(D)
-    phi[phi > 0] = phi[phi > 0] - 2 * np.pi
-    tau = -phi / (2 * np.pi * delta_f)
+    phi_range = np.angle(eigenvalues)
+    # 相位展开
+    phi_range = np.unwrap(phi_range)
+    tau = -phi_range / (2 * np.pi * delta_f)
     range_est = tau * c0 / 2
 
-    # 多普勒估计
-    z = np.hstack([CIM[:, :N_dim-1], CIM[:, 1:N_dim]])
-    R_zz = z.conj().T @ z / M_dim
-    U, S, Vh = scipy.linalg.svd(R_zz)
-    Es = U[:, :k]
+    # 多普勒估计 - 修正
+    z_doppler = np.hstack([CIM[:, 0:N-1], CIM[:, 1:N]])
+    R_zz_doppler = z_doppler.conj().T @ z_doppler / M
+    U_doppler, S_doppler, Vh_doppler = scipy.linalg.svd(R_zz_doppler)
+    Es_doppler = U_doppler[:, 0:k]
 
-    Esx = Es[:N_dim-1, :]
-    Esy = Es[N_dim-1:, :]
+    Es1_doppler = Es_doppler[0:N-1, :]
+    Es2_doppler = Es_doppler[N-1:2*(N-1), :]
 
-    EE = np.hstack([Esx, Esy])
-    F, _, _ = scipy.linalg.svd(EE.conj().T @ EE)
-    F = F[:, -k:]
-    F1 = F[:k, :]
-    F2 = F[k:, :]
-    psi = -F1 @ np.linalg.inv(F2)
-    D, _ = np.linalg.eig(psi)
+    # TLS-ESPRIT算法
+    Phi_doppler = np.linalg.pinv(Es1_doppler) @ Es2_doppler
+    eigenvalues_doppler = np.linalg.eig(Phi_doppler)[0]
 
-    phi = np.angle(D)
-    phi[phi < 0] = phi[phi < 0] + 2 * np.pi
-    doppler = phi / (2 * np.pi * Ts)
+    phi_doppler = np.angle(eigenvalues_doppler)
+    # 相位展开
+    phi_doppler = np.unwrap(phi_doppler)
+    doppler = phi_doppler / (2 * np.pi * Ts)
     velocity_est = doppler * lambd / 2
 
-    return np.mean(range_est), np.mean(velocity_est)
+    return np.real(range_est[0]), np.real(velocity_est[0])
 
 def cccSensing(RxSignal, TxSignal_cp, mildM, Qbar, mildQ):
     """第四个函数：CCC传感"""
@@ -231,7 +225,7 @@ T = 1 / delta_f  # symbol duration
 Tcp = T / 4  # cyclic prefix duration
 Ts = T + Tcp  # total symbol duration
 
-CPsize = int(N / 4)  # cyclic prefix length
+CPsize = int(M / 4)  # cyclic prefix length
 # bitsPerSymbol = 2  # bits per symbol
 # qam = 2 ** bitsPerSymbol  # 4-QAM modulation
 
