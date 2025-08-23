@@ -11,7 +11,7 @@ import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 # from scipy import signal
-from scipy.constants import speed_of_light as c0
+# from scipy.constants import speed_of_light as c0
 # from scipy.signal import fftconvolve
 # import commpy
 from Modulations import modulator
@@ -86,30 +86,6 @@ def speed2dop(speed, lambda_val):
     """速度转换为多普勒频率"""
     return 2 * speed / lambda_val
 
-# %% ISAC Transmitter
-# System parameters
-c0 = 3e8  # speed of light
-fc = 30e9  # carrier frequency
-lambd = c0 / fc  # wavelength
-M = 1024  # number of subcarriers
-N = 15  # number of symbols
-delta_f = 120e3  # subcarrier spacing
-T = 1 / delta_f  # symbol duration
-Tcp = T / 4  # cyclic prefix duration
-Ts = T + Tcp  # total symbol duration
-L = 10
-CPsize = int(N / 4)  # cyclic prefix length
-# bitsPerSymbol = 2  # bits per symbol
-# qam = 2 ** bitsPerSymbol  # 4-QAM modulation
-
-# Transmit data
-QAM_mod = 4
-bps = int(np.log2(QAM_mod))
-MOD_TYPE = "qam"
-modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
-map_table, demap_table = modem.getMappTable()
-
-
 def sensingSignalGen(TxSignal_cp, range_val, velocity, SNR):
     """第一个函数：生成传感信号"""
     global c0, lambd, M, delta_f
@@ -119,15 +95,12 @@ def sensingSignalGen(TxSignal_cp, range_val, velocity, SNR):
     doppler = 2 * np.array(velocity) / lambd
 
     RxSignal = np.zeros(len(TxSignal_cp), dtype=complex)
-
+    ii = np.arange(len(TxSignal_cp))
     for p in range(len(delay)):
-        ii = np.arange(len(TxSignal_cp))
         d = np.exp(1j * 2 * np.pi * doppler[p] * ii / (delta_f * M))
         tau = np.exp(-1j * 2 * np.pi * delay[p] * delta_f * M / len(TxSignal_cp) * ii)
-
         # 频域处理
         RxSignal += h_gain[p] * np.fft.ifft(np.fft.fft(TxSignal_cp * d) * tau)
-
     # 添加噪声
     noise_power = 10**(-SNR/10)
     noise = np.sqrt(noise_power/2) * (np.random.randn(len(RxSignal)) + 1j * np.random.randn(len(RxSignal)))
@@ -155,7 +128,7 @@ def MUSICforOFDMsensing(CIM, k):
         P_music_range[jj] = 1 / np.abs(a.conj().T @ U_n @ U_n.conj().T @ a)
 
     # 速度估计
-    R_dop = CIM.conj().T @ CIM / M
+    R_dop = CIM.T @ CIM.conj() / M
     D, V = np.linalg.eig(R_dop)
     ind_D = np.argsort(D)[::-1]
     U_n = V[:, ind_D[k:]]
@@ -246,104 +219,125 @@ def cccSensing(RxSignal, TxSignal_cp, mildM, Qbar, mildQ):
 
     return np.argmax(np.max(np.abs(r_cc), axis=1)), RDM
 
+# %% ISAC Transmitter
+# System parameters
+c0 = 3e8  # speed of light
+fc = 30e9  # carrier frequency
+lambd = c0 / fc  # wavelength
+M = 1024  # number of subcarriers
+N = 15  # number of symbols
+delta_f = 120e3  # subcarrier spacing
+T = 1 / delta_f  # symbol duration
+Tcp = T / 4  # cyclic prefix duration
+Ts = T + Tcp  # total symbol duration
+
+CPsize = int(N / 4)  # cyclic prefix length
+# bitsPerSymbol = 2  # bits per symbol
+# qam = 2 ** bitsPerSymbol  # 4-QAM modulation
+
+# Transmit data
+QAM_mod = 4
+bps = int(np.log2(QAM_mod))
+MOD_TYPE = "qam"
+modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
+map_table, demap_table = modem.getMappTable()
+
 # 主函数
-def main():
-    global c0, fc, lambd, M, N, delta_f, Ts, CPsize, bitsPerSymbol, qam
+# def main():
+# global c0, fc, lambd, M, N, delta_f, Ts, CPsize, bps, QAM_mod
 
-    # ISAC Transmitter
-    # 生成数据
-    data = np.random.randint(0, qam, (M, N))
-    TxData = qammod(data, qam)
+# ISAC Transmitter
+# 生成数据
+bits = np.random.randint(0, 2, size = M*N*bps).astype(np.int8)
+TxData = modem.modulate(bits)
+sym_int = np.array([demap_table[sym] for sym in TxData])
+TxData = TxData.reshape(M, N)
 
-    # OFDM调制
-    TxSignal = np.fft.ifft(TxData, axis=0)
-    TxSignal_cp = np.vstack([TxSignal[-CPsize:, :], TxSignal])
-    TxSignal_cp = TxSignal_cp.reshape(-1)
+# OFDM调制
+TxSignal = np.fft.ifft(TxData, axis=0)
+TxSignal_cp = np.vstack([TxSignal[-CPsize:, :], TxSignal])
+TxSignal_cp = TxSignal_cp.T.reshape(-1)
 
-    # 信道
-    SNR = 30
-    r = [30]
-    v = [20]
-    RxSignal = sensingSignalGen(TxSignal_cp, r, v, SNR)
-    k = len(r)
+# 信道
+SNR = 30
+r = [30]
+v = [20]
+RxSignal = sensingSignalGen(TxSignal_cp, r, v, SNR)
+k = len(r)
 
-    # OFDM雷达接收器
-    # 1. 2DFFT基于方法
-    Rx = RxSignal[:len(TxSignal_cp)].reshape(-1, N)
-    Rx = Rx[CPsize:CPsize + M, :]
-    Rx_dem = np.fft.fft(Rx, axis=0)
-    CIM_2dfft = Rx_dem * np.conj(TxData)
+# OFDM雷达接收器
+###>>>>>>>>>>> 1. 基于2DFFT方法
+Rx = RxSignal[:len(TxSignal_cp)].reshape(-1, N, order = 'F')
+Rx = Rx[CPsize:CPsize + M, :]
+Rx_dem = np.fft.fft(Rx, axis=0)
+CIM_2dfft = Rx_dem * np.conj(TxData) # (equals to match filtering)
+RDM_2dfft = np.fft.fft(np.fft.ifft(CIM_2dfft, n = M, axis=0) , n = 10 * N, axis = 1)
 
-    RDM_2dfft = np.fft.fft(np.fft.ifft(CIM_2dfft, axis=0).conj().T, 10 * N, axis=0)
+# 绘制距离多普勒图
+fig, axs = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
+range_2dfft = np.linspace(0, c0/(2*delta_f), M+1)[:M]
+velocity_2dfft = np.linspace(0, lambd/(2*Ts), 10*N+1)[:10*N]
 
-    # 绘制距离多普勒图
-    plt.figure(1)
-    range_2dfft = np.linspace(0, c0/(2*delta_f), M+1)[:M]
-    velocity_2dfft = np.linspace(0, lambd/2/Ts, 10*N+1)[:10*N]
+X, Y = np.meshgrid(range_2dfft, velocity_2dfft)
+RDM_2dfft_norm = 10 * np.log10(np.abs(RDM_2dfft) / np.max(np.abs(RDM_2dfft)))
+# ax = plt.axes(projection='3d')
+axs.plot_surface(X, Y, RDM_2dfft_norm.T, cmap='viridis')
+axs.set_title('2D-FFT based method')
+axs.set_xlabel('range(m)')
+axs.set_ylabel('velocity(m/s)')
+plt.show()
+plt.close('all')
+# 2. CCC-based方法
+mildM = 512
+Qbar = 64
+mildQ = 128
 
-    X, Y = np.meshgrid(range_2dfft, velocity_2dfft)
-    RDM_2dfft_norm = 10 * np.log10(np.abs(RDM_2dfft) / np.max(np.abs(RDM_2dfft)))
+###>>>>>>>>>>> 2. CCC method
+r_cc, RDM = cccSensing(RxSignal, TxSignal_cp, mildM, Qbar, mildQ)
 
-    ax = plt.axes(projection='3d')
-    ax.plot_surface(X, Y, RDM_2dfft_norm, cmap='viridis')
-    plt.title('2D-FFT based method')
-    plt.xlabel('range(m)')
-    plt.ylabel('velocity(m/s)')
-    plt.show()
+Tsa = 1 / delta_f / M
+mildN = int((len(TxSignal_cp) - Qbar - mildQ) / (mildM - Qbar))
+range_ccc = np.linspace(0, c0/2 * Tsa * mildM, mildM+1)[:mildM]
+doppler_ccc = np.linspace(0, lambd/(mildM-Qbar)/Tsa/2, 10*mildN+1)[:10*mildN]
+RDM_norm = 10 * np.log10(np.abs(RDM) / np.max(np.abs(RDM)))
+X, Y = np.meshgrid(range_ccc, doppler_ccc)
 
-    # 2. CCC-based方法
-    plt.figure(2)
-    mildM = 512
-    Qbar = 64
-    mildQ = 128
+fig, axs = plt.subplots(subplot_kw={'projection': '3d'}, figsize = (8,8))
+axs.plot_surface(X, Y, RDM_norm, cmap='viridis')
+axs.set_title('CCC based method')
+axs.set_xlabel('range(m)')
+axs.set_ylabel('velocity(m/s)')
+plt.show()
+plt.close('all')
 
-    r_cc, RDM = cccSensing(RxSignal, TxSignal_cp, mildM, Qbar, mildQ)
+###>>>>>>>>>>> 3. MUSIC based方法
+CIM = Rx_dem * np.conj(TxData)
+P_music_range, P_music_velo = MUSICforOFDMsensing(CIM, k)
 
-    Tsa = 1 / delta_f / M
-    mildN = int((len(TxSignal_cp) - Qbar - mildQ) / (mildM - Qbar))
-    range_ccc = np.linspace(0, c0/2 * Tsa * mildM, mildM+1)[:mildM]
-    doppler_ccc = np.linspace(0, lambd/(mildM-Qbar)/Tsa/2, 10*mildN+1)[:10*mildN]
+fig, axs = plt.subplots(1, 2, figsize = (10, 8), constrained_layout = True)
 
-    RDM_norm = 10 * np.log10(np.abs(RDM) / np.max(np.abs(RDM)))
-    X, Y = np.meshgrid(range_ccc, doppler_ccc)
+axs[0].plot(np.linspace(0, 100, len(P_music_range)), np.abs(P_music_range)/np.max(np.abs(P_music_range)))
+axs[0].set_ylabel('Pmusic')
+axs[0].set_xlabel('range(m)')
+axs[0].set_xlim([25, 35])
+axs[0].set_title('MUSIC for range estimation')
 
-    ax = plt.axes(projection='3d')
-    ax.plot_surface(X, Y, RDM_norm, cmap='viridis')
-    plt.title('CCC based method')
-    plt.xlabel('range(m)')
-    plt.ylabel('velocity(m/s)')
-    plt.show()
+axs[1].plot(np.linspace(0, 100, M), np.abs(P_music_velo)/np.max(np.abs(P_music_velo)))
+axs[1].set_ylabel('Pmusic')
+axs[1].set_xlabel('velocity(m/s)')
+axs[1].set_xlim([10, 30])
+axs[1].set_title('MUSIC for velocity estimation')
+plt.show()
+plt.close('all')
 
-    # 3.1 MUSIC based方法
-    CIM = Rx_dem * np.conj(TxData)
-    P_music_range, P_music_velo = MUSICforOFDMsensing(CIM, k)
+###>>>>>>>>>>> 4. ESPRIT based方法
+range_est, velocity_est = ESPRITforOFDMsensing(CIM, k)
+print('The estimation result of TLS-ESPRIT is :')
+print(f'Range = {range_est}')
+print(f'Velocity = {velocity_est}')
 
-    plt.figure(3)
-    plt.suptitle('MUSIC for OFDM sensing')
-
-    plt.subplot(1, 2, 1)
-    plt.plot(np.linspace(0, 100, len(P_music_range)), np.abs(P_music_range)/np.max(np.abs(P_music_range)))
-    plt.ylabel('Pmusic')
-    plt.xlabel('range(m)')
-    plt.ylim([1e-3, 1])
-    plt.title('MUSIC for range estimation')
-
-    plt.subplot(1, 2, 2)
-    plt.plot(np.linspace(0, 100, M), np.abs(P_music_velo)/np.max(np.abs(P_music_velo)))
-    plt.ylabel('Pmusic')
-    plt.xlabel('velocity(m/s)')
-    plt.ylim([1e-3, 1])
-    plt.title('MUSIC for velocity estimation')
-    plt.show()
-
-    # 3.2 ESPRIT based方法
-    range_est, velocity_est = ESPRITforOFDMsensing(CIM, k)
-    print('The estimation result of TLS-ESPRIT is :')
-    print(f'Range = {range_est}')
-    print(f'Velocity = {velocity_est}')
-
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
 
 
