@@ -56,7 +56,6 @@ def srrcFunction(beta, L, span, Tsym = 1):
     p = p / np.sqrt(np.sum(np.power(p, 2))) # power normaize.
     return p, t, filtDelay
 
-
 #%%
 # 参数设置
 Tsym = 1
@@ -83,7 +82,7 @@ V = np.eye(N)  # U.conj().T @ FN.conj().T
 tilde_V = V * V.conj()
 g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
-TheoAveACF_Iceberg = np.zeros(L*N)
+
 TheoAveACF_OFDM_16QAM_M1 = np.zeros(L*N)
 
 for k in range(L*N):
@@ -92,14 +91,11 @@ for k in range(L*N):
     fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
 
     r1 = np.abs(gk @ fk.conj())**2
-    TheoAveACF_Iceberg[k] = r1 #+ r2
+    # TheoAveACF_Iceberg[k] = r1 #+ r2
 
     M = 1
     r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
     TheoAveACF_OFDM_16QAM_M1[k] = r1 + r2
-
-TheoAveACF_Iceberg = TheoAveACF_Iceberg/TheoAveACF_Iceberg.max() + 1e-10
-TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
 
 TheoAveACF_OFDM_16QAM_M1 = TheoAveACF_OFDM_16QAM_M1/TheoAveACF_OFDM_16QAM_M1.max() + 1e-10
 TheoAveACF_OFDM_16QAM_M1 = np.fft.fftshift(TheoAveACF_OFDM_16QAM_M1)
@@ -119,7 +115,7 @@ for k in range(L*N):
     fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
 
     r1 = np.abs(gk @ fk.conj())**2
-    TheoAveACF_Iceberg[k] = r1 #+ r2
+    # TheoAveACF_Iceberg[k] = r1 #+ r2
 
     M = 1
     r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
@@ -134,7 +130,7 @@ U = FN.conj().T
 V = np.eye(N)  # U.conj().T @ FN.conj().T
 tilde_V = V * V.conj()
 g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
-
+TheoAveACF_Iceberg = np.zeros(L*N)
 TheoAveACF_OFDM_PSK_M1 = np.zeros(L*N)
 
 for k in range(L*N):
@@ -149,23 +145,48 @@ for k in range(L*N):
     r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
     TheoAveACF_OFDM_PSK_M1[k] = r1 + r2
 
+
+TheoAveACF_Iceberg = TheoAveACF_Iceberg/TheoAveACF_Iceberg.max() + 1e-10
+TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
+
+
 TheoAveACF_OFDM_PSK_M1 = TheoAveACF_OFDM_PSK_M1/TheoAveACF_OFDM_PSK_M1.max() + 1e-10
 TheoAveACF_OFDM_PSK_M1 = np.fft.fftshift(TheoAveACF_OFDM_PSK_M1)
 
+###>>>>> OFDM, Gaussian, Eq.(36), 化简后的表达式
+kappa = 2
+U = FN.conj().T
+V = np.eye(N)  # U.conj().T @ FN.conj().T
+tilde_V = V * V.conj()
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
+TheoAveACF_OFDM_Gaussian_M1 = np.zeros(L*N)
 
+for k in range(L*N):
 
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
+
+    r1 = np.abs(gk @ fk.conj())**2
+    # TheoAveACF_Iceberg[k] = r1 #+ r2
+
+    M = 1
+    r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
+    TheoAveACF_OFDM_Gaussian_M1[k] = r1 + r2
+
+TheoAveACF_OFDM_Gaussian_M1 = TheoAveACF_OFDM_Gaussian_M1/TheoAveACF_OFDM_Gaussian_M1.max() + 1e-10
+TheoAveACF_OFDM_Gaussian_M1 = np.fft.fftshift(TheoAveACF_OFDM_Gaussian_M1)
 
 #%% plot together
 colors = plt.cm.jet(np.linspace(0, 1, 5))
 # x = np.arange(-N//2, N//2, 1/((L)))
 x = np.arange(-N*L//2, N*L//2,)
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout=True)
-axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
+# axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_16QAM_M1 ), color='b', linestyle='--', label='OFDM, 16QAM, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='r', linestyle='-', label='OFDM, QAM, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_PSK_M1), color='g', linestyle='--', label='OFDM, PSK, Theoretical',)
-# axs.plot(x, 10 * np.log10(TheoAveACF_SC_M100), color='r', linestyle='-', label='SC, M = 100, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='r', linestyle='-', label='OFDM, 1024QAM, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_PSK_M1), color='k', linestyle='--', label='OFDM, PSK, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_Gaussian_M1), color='g', linestyle='--', label='OFDM, Gaussian, Theoretical',)
 
 legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
 
