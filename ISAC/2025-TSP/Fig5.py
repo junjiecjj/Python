@@ -76,8 +76,7 @@ norm2p = np.linalg.norm(p)
 FLN = FFTmatrix(L*N )
 FN = FFTmatrix(N )
 
-###>>>>> OFDM, Eq.(36), 化简后的表达式
-
+###>>>>> OFDM, 16QAM, Eq.(36), 化简后的表达式
 kappa = 1.32
 U = FN.conj().T
 V = np.eye(N)  # U.conj().T @ FN.conj().T
@@ -85,8 +84,8 @@ tilde_V = V * V.conj()
 g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
 TheoAveACF_Iceberg = np.zeros(L*N)
-TheoAveACF_OFDM_M1 = np.zeros(L*N)
-TheoAveACF_OFDM_M100 = np.zeros(L*N)
+TheoAveACF_OFDM_16QAM_M1 = np.zeros(L*N)
+
 for k in range(L*N):
 
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
@@ -97,49 +96,65 @@ for k in range(L*N):
 
     M = 1
     r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
-    TheoAveACF_OFDM_M1[k] = r1 + r2
-
-    M = 100
-    r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
-    TheoAveACF_OFDM_M100[k] = r1 + r2
+    TheoAveACF_OFDM_16QAM_M1[k] = r1 + r2
 
 TheoAveACF_Iceberg = TheoAveACF_Iceberg/TheoAveACF_Iceberg.max() + 1e-10
 TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
 
-TheoAveACF_OFDM_M1 = TheoAveACF_OFDM_M1/TheoAveACF_OFDM_M1.max() + 1e-10
-TheoAveACF_OFDM_M1 = np.fft.fftshift(TheoAveACF_OFDM_M1)
+TheoAveACF_OFDM_16QAM_M1 = TheoAveACF_OFDM_16QAM_M1/TheoAveACF_OFDM_16QAM_M1.max() + 1e-10
+TheoAveACF_OFDM_16QAM_M1 = np.fft.fftshift(TheoAveACF_OFDM_16QAM_M1)
 
-
-TheoAveACF_OFDM_M100 = TheoAveACF_OFDM_M100/TheoAveACF_OFDM_M100.max() + 1e-10
-TheoAveACF_OFDM_M100 = np.fft.fftshift(TheoAveACF_OFDM_M100)
-
-###>>>>> SC, Eq.(27, 34), 化简前的general表达式
-
-kappa = 1.32
-U = np.eye(N)
-V = U.conj().T @ FN.conj().T
+###>>>>> OFDM, 1024 QAM, Eq.(36), 化简后的表达式
+kappa = 1.3988
+U = FN.conj().T
+V = np.eye(N)  # U.conj().T @ FN.conj().T
 tilde_V = V * V.conj()
 g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
-TheoAveACF_SC_M1 = np.zeros(L*N)
-TheoAveACF_SC_M100 = np.zeros(L*N)
+TheoAveACF_OFDM_1024QAM_M1 = np.zeros(L*N)
+
 for k in range(L*N):
-    fk = FLN[:,k]
-    fk_tilde = fk[:N]
+
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
-    r1 = L * N * np.abs(fk_tilde.conj().T @ gk)**2
-    r2 = np.linalg.norm(gk)**2
-    r3 = (kappa - 2) * L * N * np.linalg.norm(tilde_V @ (gk * fk_tilde.conj()))**2
+    fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
 
-    TheoAveACF_SC_M1[k] = r1 + (r2 + r3)/1
-    TheoAveACF_SC_M100[k] = r1 + (r2 + r3)/100
+    r1 = np.abs(gk @ fk.conj())**2
+    TheoAveACF_Iceberg[k] = r1 #+ r2
+
+    M = 1
+    r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
+    TheoAveACF_OFDM_1024QAM_M1[k] = r1 + r2
+
+TheoAveACF_OFDM_1024QAM_M1 = TheoAveACF_OFDM_1024QAM_M1/TheoAveACF_OFDM_1024QAM_M1.max() + 1e-10
+TheoAveACF_OFDM_1024QAM_M1 = np.fft.fftshift(TheoAveACF_OFDM_1024QAM_M1)
+
+###>>>>> OFDM, PSK, Eq.(36), 化简后的表达式
+kappa = 1
+U = FN.conj().T
+V = np.eye(N)  # U.conj().T @ FN.conj().T
+tilde_V = V * V.conj()
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
+
+TheoAveACF_OFDM_PSK_M1 = np.zeros(L*N)
+
+for k in range(L*N):
+
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
+
+    r1 = np.abs(gk @ fk.conj())**2
+    TheoAveACF_Iceberg[k] = r1 #+ r2
+
+    M = 1
+    r2 = (kappa - 1) / M * (N - 2 *(1-np.cos(2*pi*k/L))*(g[:N] * (1- g[:N])).sum())
+    TheoAveACF_OFDM_PSK_M1[k] = r1 + r2
+
+TheoAveACF_OFDM_PSK_M1 = TheoAveACF_OFDM_PSK_M1/TheoAveACF_OFDM_PSK_M1.max() + 1e-10
+TheoAveACF_OFDM_PSK_M1 = np.fft.fftshift(TheoAveACF_OFDM_PSK_M1)
 
 
-TheoAveACF_SC_M1 = TheoAveACF_SC_M1/TheoAveACF_SC_M1.max() + 1e-10
-TheoAveACF_SC_M1 = np.fft.fftshift(TheoAveACF_SC_M1)
 
-TheoAveACF_SC_M100 = TheoAveACF_SC_M100/TheoAveACF_SC_M100.max() + 1e-10
-TheoAveACF_SC_M100 = np.fft.fftshift(TheoAveACF_SC_M100)
+
 
 #%% plot together
 colors = plt.cm.jet(np.linspace(0, 1, 5))
@@ -147,11 +162,10 @@ colors = plt.cm.jet(np.linspace(0, 1, 5))
 x = np.arange(-N*L//2, N*L//2,)
 fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout=True)
 axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='b', linestyle='--', label='OFDM, M = 1, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M100 ), color='b', linestyle='-', label='OFDM, M = 100, Theoretical',)
-
-axs.plot(x, 10 * np.log10(TheoAveACF_SC_M1), color='r', linestyle='--', label='SC, M = 1, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_SC_M100), color='r', linestyle='-', label='SC, M = 100, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_16QAM_M1 ), color='b', linestyle='--', label='OFDM, 16QAM, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='r', linestyle='-', label='OFDM, QAM, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_PSK_M1), color='g', linestyle='--', label='OFDM, PSK, Theoretical',)
+# axs.plot(x, 10 * np.log10(TheoAveACF_SC_M100), color='r', linestyle='-', label='SC, M = 100, Theoretical',)
 
 legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
 
@@ -161,8 +175,8 @@ axs.set_xlim([-200, 200])
 
 out_fig = plt.gcf()
 # filepath2 = '/home/jack/snap/'
-out_fig.savefig('Fig4.png', )
-out_fig.savefig('Fig4.pdf', )
+out_fig.savefig('Fig5.png', )
+out_fig.savefig('Fig5.pdf', )
 plt.show()
 plt.close()
 
