@@ -4,6 +4,8 @@
 Created on Thu Aug 21 01:23:01 2025
 
 @author: jack
+
+https://github.com/YongzhiWu/OFDM_ISAC_simulator
 """
 
 import numpy as np

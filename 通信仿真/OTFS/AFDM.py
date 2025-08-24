@@ -69,7 +69,7 @@ def AFDM_mod(x, c1, c2):
     # 创建DFT矩阵并归一化
     F = np.fft.fft(np.eye(N))
     F = F / np.linalg.norm(F, ord = 2)
-    np.linalg.norm(F)
+
     # 创建L1和L2对角矩阵
     n = np.arange(N)
     L1 = np.diag(np.exp(-1j * 2 * np.pi * c1 * (n**2)))

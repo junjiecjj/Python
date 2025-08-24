@@ -3,7 +3,7 @@
 """
 Created on Sun Aug 17 17:46:01 2025
 
-@author: jack
+@author: Junjie Chen
 
 需要安装commpy, 安装命令:  pip install scikit-commpy,
 主要是使用了commpy里面的调制解调函数，也可以用自己写的
@@ -69,7 +69,32 @@ def hadamard_matrix_sylvester(n):
         H = np.kron(H_prev, np.array([[1, 1], [1, -1]]))
         return H
 
+# AFDM, U
+def IDAFT(c1, c2, N):
+    """
+    AFDM调制函数
+    参数:
+        x : 输入信号 (Nx1 列向量)
+        c1 : 第一个调频参数
+        c2 : 第二个调频参数
+    返回:
+        out : 调制输出信号
+    """
+    # N = x.shape[0]
 
+    # 创建DFT矩阵并归一化
+    F = np.fft.fft(np.eye(N))
+    F = F / np.linalg.norm(F, ord = 2)
+
+    # 创建L1和L2对角矩阵
+    n = np.arange(N)
+    L1 = np.diag(np.exp(-1j * 2 * np.pi * c1 * (n**2)))
+    L2 = np.diag(np.exp(-1j * 2 * np.pi * c2 * (n**2)))
+
+    # 构建AFDM矩阵
+    A = L2 @ F @ L1
+    # 计算调制输出 (注意MATLAB的'是共轭转置，Python用.conj().T)
+    return A.conj().T
 
 #%%
 # 参数设置
@@ -90,7 +115,7 @@ norm2p = np.linalg.norm(p)
 FLN = FFTmatrix(L*N )
 FN = FFTmatrix(N )
 
-###>>>>> OFDM, Eq.(36)
+###>>>>> OFDM, Eq.(36), 化简后的表达式
 
 kappa = 1.32
 U = FN.conj().T
@@ -119,7 +144,7 @@ TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
 TheoAveACF_OFDM_M1 = TheoAveACF_OFDM_M1/TheoAveACF_OFDM_M1.max() + 1e-10
 TheoAveACF_OFDM_M1 = np.fft.fftshift(TheoAveACF_OFDM_M1)
 
-###>>>>> SC, Eq.(27, 34)
+###>>>>> SC, Eq.(27, 34), 化简前的general表达式
 
 kappa = 1.32
 U = np.eye(N)
@@ -158,7 +183,7 @@ TheoAveACF_SC_M1 = np.fft.fftshift(TheoAveACF_SC_M1)
 # TheoAveACF_SC_M1 = TheoAveACF_SC_M1/TheoAveACF_SC_M1.max() + 1e-10
 # TheoAveACF_SC_M1 = np.fft.fftshift(TheoAveACF_SC_M1)
 
-###>>>>> SC, Eq.(26), 1000 Monte-Carlo
+###>>>>> SC, Eq.(26), 1000 Monte-Carlo, 化简前的general表达式
 kappa = 1.32
 U = np.eye(N)
 V = U.conj().T @ FN.conj().T
@@ -193,7 +218,7 @@ Sim_SC_M1_avg = Sim_SC_M1_avg/Sim_SC_M1_avg.max() + 1e-10
 Sim_SC_M1_avg = np.fft.fftshift(Sim_SC_M1_avg)
 
 
-#%% CDMA, Eq.(27, 34)
+#%% CDMA, Eq.(27, 34), 化简前的general表达式
 kappa = 1.32
 U = hadamard_matrix_sylvester(N)/np.sqrt(N)
 V = U.conj().T @ FN.conj().T
@@ -215,16 +240,72 @@ TheoAveACF_CDMA_M1 = np.abs(TheoAveACF_CDMA_M1)
 TheoAveACF_CDMA_M1 = TheoAveACF_CDMA_M1/TheoAveACF_CDMA_M1.max() + 1e-10
 TheoAveACF_CDMA_M1 = np.fft.fftshift(TheoAveACF_CDMA_M1)
 
+#%% OTFS, (27, 34), 化简前的general表达式
+
+kappa = 1.32
+FFTN = 32
+Neye = int(N/FFTN)
+FFTM = FFTmatrix(FFTN)
+eyeM = np.eye(Neye)
+U = np.kron(FFTM, eyeM)
+V = U.conj().T @ FN.conj().T
+tilde_V = V * V.conj()
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
+
+TheoAveACF_OTFS_M1 = np.zeros(L*N)
+
+for k in range(L*N):
+    fk = FLN[:,k]
+    fk_tilde = fk[:N]
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    r1 = L * N * np.abs(fk_tilde.conj().T @ gk)**2
+    r2 = np.linalg.norm(gk)**2
+    r3 = (kappa - 2) * L * N * np.linalg.norm(tilde_V @ (gk * fk_tilde.conj()))**2
+
+    TheoAveACF_OTFS_M1[k] = r1 + (r2 + r3)/1
+TheoAveACF_OTFS_M1 = np.abs(TheoAveACF_OTFS_M1)
+TheoAveACF_OTFS_M1 = TheoAveACF_OTFS_M1/TheoAveACF_OTFS_M1.max() + 1e-10
+TheoAveACF_OTFS_M1 = np.fft.fftshift(TheoAveACF_OTFS_M1)
+
+#%% AFDM, (27, 34), 化简前的general表达式
+
+c1 = 1/128
+c2 = 4/(3*pi)
+U = IDAFT(c1, c2, N)
+V = U.conj().T @ FN.conj().T
+tilde_V = V * V.conj()
+g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
+
+TheoAveACF_AFDM_M1 = np.zeros(L*N)
+
+for k in range(L*N):
+    fk = FLN[:,k]
+    fk_tilde = fk[:N]
+    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
+    r1 = L * N * np.abs(fk_tilde.conj().T @ gk)**2
+    r2 = np.linalg.norm(gk)**2
+    r3 = (kappa - 2) * L * N * np.linalg.norm(tilde_V @ (gk * fk_tilde.conj()))**2
+
+    TheoAveACF_AFDM_M1[k] = r1 + (r2 + r3)/1
+TheoAveACF_AFDM_M1 = np.abs(TheoAveACF_AFDM_M1)
+TheoAveACF_AFDM_M1 = TheoAveACF_AFDM_M1/TheoAveACF_AFDM_M1.max() + 1e-10
+TheoAveACF_AFDM_M1 = np.fft.fftshift(TheoAveACF_AFDM_M1)
+
 #%% plot together
 colors = plt.cm.jet(np.linspace(0, 1, 5))
 # x = np.arange(-N//2, N//2, 1/((L)))
 x = np.arange(-N*L//2, N*L//2,)
-fig, axs = plt.subplots(1, 1, figsize=(12, 10), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout=True)
 axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='b', linestyle='-', label='OFDM, M = 1, Theoretical',)
 axs.plot(x, 10 * np.log10(TheoAveACF_SC_M1), color='r', linestyle='-', label='SC, M = 1, Theoretical',)
 axs.plot(x, 10 * np.log10(Sim_SC_M1_avg), color='r', linestyle='--', marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none',  lw = 1, label='SC, M = 1, Simulat',)
 axs.plot(x, 10 * np.log10(TheoAveACF_CDMA_M1), color=colors[-3], linestyle='-', label='CDMA, M = 1, Theoretical',)
+
+axs.plot(x, 10 * np.log10(TheoAveACF_OTFS_M1), color=colors[0], linestyle='--', marker = '*', markevery = 20, ms = 12, markerfacecolor = 'none',  lw = 1, label='OTFS, M = 1, Theoretical',)
+
+axs.plot(x, 10 * np.log10(TheoAveACF_AFDM_M1), color='purple', linestyle='--', marker = 's', markevery = 20, ms = 12, markerfacecolor = 'none',  lw = 1, label='AFDM, M = 1, Theoretical',)
+
 
 legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
 

@@ -4,6 +4,7 @@
 Created on Thu Aug 21 17:30:37 2025
 
 @author: jack
+Source code: https://github.com/YongzhiWu/OFDM_ISAC_simulator
 
 OFDM_radar.py 是雷达感知部分代码，一帧，为了演示感知算法；
 OFDM_ISAC_simulator.py 是通信+感知部分，一帧；

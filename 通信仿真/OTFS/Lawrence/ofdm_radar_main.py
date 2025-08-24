@@ -160,35 +160,41 @@ def ESPRITforOFDMsensing(CIM, k):
     Es2 = Es[1:M, :]
 
     # TLS-ESPRIT算法
-    Phi = np.linalg.pinv(Es1) @ Es2
-    eigenvalues = np.linalg.eig(Phi)[0]
+    EE = np.hstack((Es1, Es2))
+    F, _, _ = np.linalg.svd(EE.conj().T @ EE, full_matrices=False)
+    F = F[:, -k:]
+    F1 = F[:k, :]
+    F2 = F[k:2*k, :]
+    psi = -F1 @ np.linalg.inv(F2)
+    D, _ = np.linalg.eig(psi)
 
-    phi_range = np.angle(eigenvalues)
-    # 相位展开
-    phi_range = np.unwrap(phi_range)
-    tau = -phi_range / (2 * np.pi * delta_f)
-    range_est = tau * c0 / 2
+    phi = np.angle(D)
+    phi[phi > 0] = phi[phi > 0] - 2 * np.pi
+    tau = -phi / (2 * np.pi * delta_f)
+    range_ = (tau * c0 / 2).real
 
-    # 多普勒估计 - 修正
-    z_doppler = np.hstack([CIM[:, 0:N-1], CIM[:, 1:N]])
-    R_zz_doppler = z_doppler.conj().T @ z_doppler / M
-    U_doppler, S_doppler, Vh_doppler = scipy.linalg.svd(R_zz_doppler)
-    Es_doppler = U_doppler[:, 0:k]
+    # 多普勒估计
+    z = np.hstack((CIM[:, 0:N-1], CIM[:, 1:N]))
+    R_zz = z.T @ z.conj() / M
+    U, _, _ = np.linalg.svd(R_zz, full_matrices=False)
+    Es = U[:, :k]
+    Esx = Es[0:N-1, :]
+    Esy = Es[N-1:, :]  # 注意索引调整
 
-    Es1_doppler = Es_doppler[0:N-1, :]
-    Es2_doppler = Es_doppler[N-1:2*(N-1), :]
+    EE = np.hstack((Esx, Esy))
+    F, _, _ = np.linalg.svd(EE.conj().T @ EE, )
+    F = F[:, -k:]
+    F1 = F[:k, :]
+    F2 = F[k:2*k, :]
+    psi = -F1 @ np.linalg.inv(F2)
+    D, _ = np.linalg.eig(psi)
 
-    # TLS-ESPRIT算法
-    Phi_doppler = np.linalg.pinv(Es1_doppler) @ Es2_doppler
-    eigenvalues_doppler = np.linalg.eig(Phi_doppler)[0]
+    phi = np.angle(D)
+    phi[phi < 0] = phi[phi < 0] + 2 * np.pi
+    doppler = phi / (2 * np.pi * Ts)
+    velocity = doppler * lambd / 2
 
-    phi_doppler = np.angle(eigenvalues_doppler)
-    # 相位展开
-    phi_doppler = np.unwrap(phi_doppler)
-    doppler = phi_doppler / (2 * np.pi * Ts)
-    velocity_est = doppler * lambd / 2
-
-    return np.real(range_est[0]), np.real(velocity_est[0])
+    return range_, velocity
 
 def cccSensing(RxSignal, TxSignal_cp, mildM, Qbar, mildQ):
     """第四个函数：CCC传感"""
@@ -281,12 +287,11 @@ axs.set_xlabel('range(m)')
 axs.set_ylabel('velocity(m/s)')
 plt.show()
 plt.close('all')
-# 2. CCC-based方法
+
+###>>>>>>>>>>> 2. CCC method
 mildM = 512
 Qbar = 64
 mildQ = 128
-
-###>>>>>>>>>>> 2. CCC method
 r_cc, RDM = cccSensing(RxSignal, TxSignal_cp, mildM, Qbar, mildQ)
 
 Tsa = 1 / delta_f / M
