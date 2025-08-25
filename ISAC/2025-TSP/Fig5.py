@@ -82,11 +82,8 @@ V = np.eye(N)  # U.conj().T @ FN.conj().T
 tilde_V = V * V.conj()
 g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
-
 TheoAveACF_OFDM_16QAM_M1 = np.zeros(L*N)
-
 for k in range(L*N):
-
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
     fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
 
@@ -108,9 +105,7 @@ tilde_V = V * V.conj()
 g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
 
 TheoAveACF_OFDM_1024QAM_M1 = np.zeros(L*N)
-
 for k in range(L*N):
-
     gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
     fk = np.exp(-1j * 2*pi * k * np.arange(N)/(L*N))
 
