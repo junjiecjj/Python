@@ -34,13 +34,27 @@ plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
 #%%
-
-
-
-
-
-
-
+# 产生傅里叶矩阵
+def FFTmatrix(L, ):
+     mat = np.zeros((L, L), dtype = complex)
+     for i in range(L):
+          for j in range(L):
+               mat[i,j] = 1.0*np.exp(-1j*2.0*np.pi*i*j/L) / (np.sqrt(L)*1.0)
+     return mat
+def srrcFunction(beta, L, span, Tsym = 1):
+    # Function for generating rectangular pulse for the given inputs
+    # L - oversampling factor (number of samples per symbol)
+    # span - filter span in symbol durations
+    # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
+    t = np.arange(-span*Tsym/2, span*Tsym/2 + 0.5/L, Tsym/L)
+    A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
+    B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
+    p = 1/np.sqrt(Tsym) * A/B
+    p[np.argwhere(np.isnan(p))] = 1
+    p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
+    filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # power normaize.
+    return p, t, filtDelay
 
 #%%
 
