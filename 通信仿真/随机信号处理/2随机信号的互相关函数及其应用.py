@@ -87,8 +87,76 @@ axs[2].set_ylabel('互相关值')
 plt.show()
 plt.close()
 
+#%% < 深入浅出数字信号处理, page122 >
+import numpy as np
+import matplotlib.pyplot as plt
 
+# 关闭所有图形窗口，清空工作空间
+plt.close('all')
 
+# 参数设置
+c0 = 3e8  # 光速
+fs = 40e6  # 采样频率
+ts = 1 / fs  # 采样周期
+fc = 10e6  # 雷达中频频率
+tr = 1e-4  # 脉冲重复周期
+M = 400
+tao = M * ts  # 脉冲宽度
+D = 1500
+d = D * ts  # 延时时间
+R = 0.5 * c0 * d  # 目标距离
+A = 0.01  # 衰减系数
+
+# 时间序列
+t = np.arange(0, tr, ts)
+N = len(t)
+
+# 发射信号（中频）
+rect1 = np.concatenate([np.ones(M), np.zeros(N - M)])
+st = rect1 * np.cos(2 * np.pi * fc * t)
+
+# 回波信号（中频）
+rect2 = np.concatenate([np.zeros(D), np.ones(M), np.zeros(N - M - D)])
+s = A * rect2 * np.cos(2 * np.pi * fc * (t - d))
+
+# 回波噪声
+v = (A / 2) * np.random.randn(N)
+x = s + v  # 雷达回波
+
+# 绘图：雷达发射信号和接收信号波形
+plt.figure(figsize=(10, 6))
+
+plt.subplot(2, 1, 1)
+plt.plot(st)
+plt.xlabel('Number of samples')
+plt.ylabel('Transmitted signal')
+plt.grid(True)
+
+plt.subplot(2, 1, 2)
+plt.plot(x)
+plt.xlabel('Number of samples')
+plt.ylabel('Received signal')
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# 最佳接收系统的输出（互相关）
+y = np.correlate(x, st, mode='full')
+
+# 绘制相关输出
+plt.figure(figsize=(10, 6))
+m = np.arange(-(N - 1), N)  # 延迟样本数
+plt.plot(m, y)
+plt.xlabel('Delay Samples')
+plt.ylabel('Correlation Output')
+plt.grid(True)
+plt.show()
+
+# 输出目标距离信息
+print(f"目标距离: {R:.2f} 米")
+print(f"延时时间: {d*1e6:.2f} μs")
+print(f"采样点数: {N}")
 
 
 

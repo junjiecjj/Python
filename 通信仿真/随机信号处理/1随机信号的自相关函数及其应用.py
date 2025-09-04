@@ -286,7 +286,7 @@ fs = 1000
 t = np.arange(0, T, 1/fs)
 x_sin = np.sin(2 * np.pi * f0 * t)
 x_rand = np.random.randn(x_sin.size)
-Y = X_sin + x_rand;
+Y = x_sin + x_rand;
 
 ##>>>>>>  method 1
 acf_sin, lag_sin = xcorr(Y, Y, normed = True, detrend = 1, maxlags = x_sin.size - 1)

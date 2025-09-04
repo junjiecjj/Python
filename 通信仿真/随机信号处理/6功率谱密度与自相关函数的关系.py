@@ -4,6 +4,9 @@
 Created on Thu Feb 13 15:13:36 2025
 
 @author: jack
+
+Wiener-Khinchin定理: 自相关函数的傅里叶变换正是信号的功率谱密度.
+Parseval定理:  信号的总功率等于其功率谱密度在整个频域的积分。它本质上是能量守恒定律在信号处理中的体现。
 """
 
 import scipy
