@@ -101,11 +101,11 @@ ts = 1 / fs  # 采样周期
 fc = 10e6  # 雷达中频频率
 tr = 1e-4  # 脉冲重复周期
 M = 400
-tao = M * ts  # 脉冲宽度
+# tao = M * ts  # 脉冲宽度
 D = 1500
 d = D * ts  # 延时时间
-R = 0.5 * c0 * d  # 目标距离
-A = 0.01  # 衰减系数
+R = c0 * d / 2  # 目标距离
+A = 1  # 衰减系数
 
 # 时间序列
 t = np.arange(0, tr, ts)
@@ -123,41 +123,44 @@ s = A * rect2 * np.cos(2 * np.pi * fc * (t - d))
 v = (A / 2) * np.random.randn(N)
 x = s + v  # 雷达回波
 
+
 # 绘图：雷达发射信号和接收信号波形
-plt.figure(figsize=(10, 6))
+f, axs = plt.subplots(2, 1, figsize = (12, 6))
+# plt.figure(figsize=(12, 6))
+# plt.subplot(1, 2, 1)
+axs[0].plot(st)
+axs[0].set_title('Original Signal Spectrum')
+axs[0].set_xlabel('Number of samples')
+axs[0].set_ylabel('Transmitted signal')
 
-plt.subplot(2, 1, 1)
-plt.plot(st)
-plt.xlabel('Number of samples')
-plt.ylabel('Transmitted signal')
-plt.grid(True)
-
-plt.subplot(2, 1, 2)
-plt.plot(x)
-plt.xlabel('Number of samples')
-plt.ylabel('Received signal')
-plt.grid(True)
+# plt.subplot(1, 2, 2)
+axs[1].plot(x)
+axs[1].set_title('Filtered Signal Spectrum')
+axs[1].set_xlabel('Number of samples')
+axs[1].set_ylabel('Received signal')
 
 plt.tight_layout()
 plt.show()
+plt.close()
 
 # 最佳接收系统的输出（互相关）
 y = np.correlate(x, st, mode='full')
+m = np.arange(-(N - 1), N)  # 延迟样本数
+d_est = m[y.argmax()] * ts* c0/2
 
 # 绘制相关输出
-plt.figure(figsize=(10, 6))
-m = np.arange(-(N - 1), N)  # 延迟样本数
-plt.plot(m, y)
-plt.xlabel('Delay Samples')
-plt.ylabel('Correlation Output')
-plt.grid(True)
+f, axs = plt.subplots(1, 1, figsize = (12, 6))
+axs.plot(m, y)
+axs.set_xlabel('Delay Samples')
+axs.set_ylabel('Correlation Output')
+axs.grid(True)
 plt.show()
 
 # 输出目标距离信息
 print(f"目标距离: {R:.2f} 米")
 print(f"延时时间: {d*1e6:.2f} μs")
 print(f"采样点数: {N}")
-
+print(f"估计距离:{d_est} 米")
 
 
 

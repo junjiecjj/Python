@@ -160,11 +160,11 @@ def SISO_2user():
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/2user_joint_wo_fer.pdf")
+        out_fig.savefig("./Figures/2user_joint_wo_fer.eps")
     elif cols == 2:
-        out_fig.savefig( "./Figures/2user_joint_wo_ber.pdf")
+        out_fig.savefig( "./Figures/2user_joint_wo_ber.eps")
     # elif cols == 3:
-        # out_fig.savefig( "./Figures/2user_fast_aggerr.pdf")
+        # out_fig.savefig( "./Figures/2user_fast_aggerr.eps")
     plt.show()
     plt.close()
     return
@@ -278,11 +278,11 @@ def SISO_4user():
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/4user_joint_wo_fer.pdf")
+        out_fig.savefig("./Figures/4user_joint_wo_fer.eps")
     elif cols == 2:
-        out_fig.savefig( "./Figures/4user_joint_wo_ber.pdf")
+        out_fig.savefig( "./Figures/4user_joint_wo_ber.eps")
     elif cols == 3:
-        out_fig.savefig( "./Figures/4user_fast_aggerr.pdf")
+        out_fig.savefig( "./Figures/4user_fast_aggerr.eps")
     plt.show()
     plt.close()
     return
@@ -437,11 +437,11 @@ def SISO_6user():
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/4user_joint_wo_fer.pdf")
+        out_fig.savefig("./Figures/4user_joint_wo_fer.eps")
     elif cols == 2:
-        out_fig.savefig( "./Figures/6user_joint_wo_ber.pdf")
+        out_fig.savefig( "./Figures/6user_joint_wo_ber.eps")
     elif cols == 3:
-        out_fig.savefig( "./Figures/6user_fast_aggerr.pdf")
+        out_fig.savefig( "./Figures/6user_fast_aggerr.eps")
     plt.show()
     plt.close()
     return

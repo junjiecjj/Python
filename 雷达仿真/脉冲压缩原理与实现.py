@@ -169,113 +169,127 @@ plt.close()
 #%% 多目标回波信号的匹配滤波输出(含源码)
 # https://mp.weixin.qq.com/s?__biz=MzAwMDE1ODE5NA==&mid=2652542571&idx=1&sn=0e0eb494ac7ee19d18227a5e96c2b27e&chksm=80065fae159d3dd84e1d9c3a866f126b4b306ec97b1a427b7ff664c0c311286533a276ab7193&mpshare=1&scene=1&srcid=0329Q8dj1B90QMlepVAj2Um9&sharer_shareinfo=38d19dc84b14ff1c2d3b069947b97c9c&sharer_shareinfo_first=38d19dc84b14ff1c2d3b069947b97c9c&exportkey=n_ChQIAhIQFCYeQ%2B6%2BTwh8yNrYRb5RTBKfAgIE97dBBAEAAAAAAFd1FUcF70gAAAAOpnltbLcz9gKNyK89dVj0FDSmEnzfw8MsNY2waUVVqmm5UxZzyDzF5tbZS7E1FJ8ks%2FFLirUTE1wQ2Xr5RMr0LSsVrqypI%2F2aqly%2Fl4uofOZAPvQQjCb4t1wr1bgr1iGp0%2Fja6EufHwe6%2BOtX8Muca1J8F%2F1mtxqFxdDnfAIGnTm7M%2BC2BumNQg1gfrdTl6iuQghRu9X1fqpoRIHk%2BmYl7dtIDNp40mke%2FmuiC%2Fr9RUITAQQShNsr%2FvVz5QleWdVWLSST1uCtkvEuYdurrGkLJZKHLp9gZyOW95cPiUp8bNB0gtT7SOTvU9UrH8Eedr8sQLQBsqwtiKAVKJjgqUj6RjiH3yJWarkT&acctmode=0&pass_ticket=fh8TkWVQ2FSWTxDQvzOQRMqDWhGDthA7I9lYcXveqOdL%2Bq7ha%2FaWBw%2Fse4F%2BIMDs&wx_header=0#rd
 
-##### 1. 参数设置
-T = 20e-6;                                   # 单个脉冲宽度 (s)
-B = 20e6;                                    #  调频带宽 (Hz)
-fs = 10 * B;                                 #  采样率，奈奎斯特采样，取为 2B
-N_pulse = 5;                                 #  脉冲数
-DutyCycle = 0.1;                             #  占空比 (10%)
-PRI = T / DutyCycle;                         #  脉冲重复间隔 (s)
-N_total = int(np.round(PRI * fs * N_pulse)); #  总采样点数
-t = np.arange(N_total) / fs; #  总时间序列
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import convolve
 
-##### 2. 生成单个 LFM 脉冲信号
-alpha = B / T;        #  调频斜率
-samples_pulse = int(np.round(T * fs)) # 单个脉冲的采样点数
-t_pulse = np.arange(samples_pulse) / fs; # 单个脉冲的时间序列
-s_pulse = np.exp(1j * np.pi * alpha * t_pulse**2); # 单个脉冲信号
+### 1，生成多个周期的脉冲信号，脉内调制为线性调频信号。
+# 1. 参数设置
+T = 20e-6  # 单个脉冲宽度 (s)
+B = 20e6  # 调频带宽 (Hz)
+fs = 10 * B  # 采样率，奈奎斯特采样，取为 2B
+N_pulse = 5  # 脉冲数
+DutyCycle = 0.1  # 占空比 (10%)
+PRI = T / DutyCycle  # 脉冲重复间隔 (s)
+N_total = int(round(PRI * fs * N_pulse))  # 总采样点数
+t = np.arange(N_total) / fs  # 总时间序列
 
-##### 3. 生成脉冲列
-s_tx = np.zeros( N_total);
-samples_gap = np.round(PRI * fs) - samples_pulse; #  脉冲间隔的采样点数
+# 2. 生成单个 LFM 脉冲信号
+alpha = B / T  # 调频斜率
+samples_pulse = int(round(T * fs))  # 单个脉冲的采样点数
+t_pulse = np.arange(samples_pulse) / fs  # 单个脉冲的时间序列
+s_pulse = np.exp(1j * np.pi * alpha * t_pulse**2)  # 单个脉冲信号
+
+# 3. 生成脉冲列
+s_tx = np.zeros(N_total, dtype=complex)
+samples_gap = int(round(PRI * fs)) - samples_pulse  # 脉冲间隔的采样点数
 
 if samples_gap < 0:
-    print('占空比过高，导致脉冲间隔为负。请调整占空比或脉冲宽度。');
+    raise ValueError('占空比过高，导致脉冲间隔为负。请调整占空比或脉冲宽度。')
 
 for n in range(N_pulse):
     start_idx = n * (samples_pulse + samples_gap)
-    end_idx = start_idx + samples_pulse ;
+    end_idx = start_idx + samples_pulse
     if end_idx <= N_total:
-        s_tx[int(start_idx):int(end_idx)] = s_pulse;
+        s_tx[start_idx:end_idx] = s_pulse
     else:
-        print(f'脉冲 {n+1} 超出总采样点数范围，未完全生成。')
-
+        print(f'警告: 脉冲 {n+1} 超出总采样点数范围，未完全生成。')
 
 # 可视化发射脉冲列
-fig, axs = plt.subplots(1, 1, figsize = (6, 5), constrained_layout = True)
-
-axs.plot(t*1e6, np.real(s_tx))
-axs.set_title("发射 LFM 脉冲列（实部）")
-axs.set_xlabel("时间 (µs)")
-axs.set_ylabel("幅度 ")
-
+plt.figure(figsize=(12, 6))
+plt.plot(t * 1e6, np.real(s_tx))
+plt.title('发射 LFM 脉冲列（实部）')
+plt.xlabel('时间 (µs)')
+plt.ylabel('幅度')
+plt.xlim(0, PRI * 1e6 * N_pulse)
+plt.ylim(-1.2, 1.2)
+plt.grid(True)
 plt.show()
-plt.close()
 
-
-##### 4. 模拟多个目标的回波
-#定义多个目标，每个目标有时延 Tau 和衰减系数 A
+### 2，根据多个目标的延时生成目标的叠加回波，并添加噪声。
+### 4. 模拟多个目标的回波
+# 定义多个目标，每个目标有时延 Tau 和衰减系数 A
 targets = [
-        {'Tau':5e-6, 'A':1.0},
-        {'Tau':15e-6, 'A':0.8},
-        {'Tau':25e-6, 'A':0.6},
-        ]
+    {'Tau': 5e-6, 'A': 1.0},
+    {'Tau': 15e-6, 'A': 0.8},
+    {'Tau': 25e-6, 'A': 0.6}
+]
 
-rcv_sig = np.zeros(N_total);
+rcv_sig = np.zeros(N_total, dtype=complex)
 
-for k in range(len(targets)):
-    Tau = targets[k]['Tau']
-    A = targets[k]['A']
-    delay_samples = int(np.round(Tau * fs))
+for k, target in enumerate(targets):
+    Tau = target['Tau']
+    A = target['A']
+    delay_samples = int(round(Tau * fs))
 
     if delay_samples >= N_total:
-            print(f'目标 {k} 的时延超过总信号长度，忽略该目标。' )
-    # 将发射信号延时后叠加到接收信号中
-    rcv_sig[delay_samples:] = rcv_sig[delay_samples:] + A * s_tx[0:N_total - delay_samples]
+        print(f'警告: 目标 {k+1} 的时延超过总信号长度，忽略该目标。')
+        continue
 
-# 添加噪声（可选）
-SNR_dB = 20   #  信噪比
-signal_power = np.mean(np.abs(rcv_sig)**2)
-noise_power = signal_power / (10**(SNR_dB/10))
-noise = np.sqrt(noise_power/2) * (np.random.randn( N_total) + 1j*np.random.randn( N_total))
+    # 将发射信号延时后叠加到接收信号中
+    rcv_sig[delay_samples:] += A * s_tx[:N_total - delay_samples]
+
+# 添加噪声
+SNR_dB = 20  # 信噪比
+signal_power = np.sqrt(np.mean(np.abs(rcv_sig)**2))  # RMS功率
+noise_power = signal_power / (10**(SNR_dB / 10))
+noise = np.sqrt(noise_power / 2) * (np.random.randn(N_total) + 1j * np.random.randn(N_total))
 rcv_sig_noisy = rcv_sig + noise
 
-# 可视化发射脉冲列
-fig, axs = plt.subplots(1, 1, figsize = (6, 5), constrained_layout = True)
-
-axs.plot(t*1e6, np.abs(rcv_sig_noisy), c = 'r')
-axs.plot(t*1e6, np.real(rcv_sig_noisy), c = 'b')
-axs.set_title("接收回波幅度（含噪声）")
-axs.set_xlabel("时间 (µs)")
-axs.set_ylabel("幅度 ")
-
+# 绘制接收信号
+plt.figure(figsize=(12, 6))
+plt.plot(t * 1e6, np.abs(rcv_sig_noisy), 'r', label='幅度')
+plt.plot(t * 1e6, np.real(rcv_sig_noisy), 'b', alpha=0.7, label='实部')
+plt.title('接收回波幅度（含噪声）')
+plt.xlabel('时间 (µs)')
+plt.ylabel('幅度')
+plt.legend()
+plt.grid(True)
 plt.show()
-plt.close()
 
+### 3，进行匹配滤波（快速卷积实现）
+# 5. 匹配滤波器
+h = np.conj(s_pulse[::-1])  # 匹配滤波器冲激响应
 
-###### 5. 匹配滤波器
-h = np.conjugate(s_pulse[::-1])
-
-#### 6. 快速卷积实现匹配滤波
+# 6. 快速卷积实现匹配滤波
+# 使用FFT进行快速卷积
 len_fft = 2**int(np.ceil(np.log2(len(rcv_sig_noisy) + len(h) - 1)))
-S_fft = scipy.fft.fft(rcv_sig_noisy, len_fft);
-H_fft = scipy.fft.fft(h, len_fft);
-y_fft = S_fft * H_fft;
-mf_output = scipy.fft.ifft(y_fft);
+S_fft = np.fft.fft(rcv_sig_noisy, len_fft)
+H_fft = np.fft.fft(h, len_fft)
+y_fft = S_fft * H_fft
+mf_output = np.fft.ifft(y_fft)
 
 # 截取有效长度
-mf_output = mf_output[0:len(rcv_sig_noisy)]
+mf_output = mf_output[:len(rcv_sig_noisy)]
 
-# 7. 可视化匹配滤波输出
-fig, axs = plt.subplots(1, 1, figsize = (6, 5), constrained_layout = True)
-
-axs.plot(t*1e6, 20 * np.log10(np.abs(mf_output)), c = 'b')
-axs.set_title("匹配滤波输出幅度")
-axs.set_xlabel("时间 (µs)")
-axs.set_ylabel("幅度 ")
-axs.set_xlim([0, 50])
+### 7. 可视化匹配滤波输出
+plt.figure(figsize=(12, 6))
+plt.plot(t * 1e6, 20 * np.log10(np.abs(mf_output) + 1e-10))  # 加小值避免log(0)
+plt.title('匹配滤波输出幅度')
+plt.xlabel('时间 (µs)')
+plt.ylabel('幅度 (dB)')
+plt.grid(True)
 plt.show()
-plt.close()
+
+# 可选：显示目标位置
+print("目标位置信息:")
+for i, target in enumerate(targets):
+    delay_samples = int(round(target['Tau'] * fs))
+    if delay_samples < len(mf_output):
+        peak_value = 20 * np.log10(np.abs(mf_output[delay_samples]) + 1e-10)
+        print(f"目标 {i+1}: 时延 = {target['Tau']*1e6:.1f} µs, 峰值 = {peak_value:.2f} dB")
+
+
 
 
 #%% 三种不同类型信号的脉冲压缩（一）--------线性调频脉冲信号的压缩处理

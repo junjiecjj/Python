@@ -177,8 +177,8 @@ def MNIST_BatchnonIID_flip_acc():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    ## out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_acc.eps' )
-    out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_acc.pdf' )
+    out_fig.savefig('../Figures/Fig8_a.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_acc.pdf' )
     plt.show()
 
 def MNIST_BatchnonIID_flip_loss():
@@ -237,8 +237,8 @@ def MNIST_BatchnonIID_flip_loss():
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     out_fig = plt.gcf()
-    # out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_loss.eps' )
-    out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_loss.pdf' )
+    out_fig.savefig('../Figures/Fig8_b.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_1bit_bitflip_loss.pdf' )
     plt.show()
 
 def MNIST_BatchnonIID_14bit_erf_acc():
@@ -308,8 +308,8 @@ def MNIST_BatchnonIID_14bit_erf_acc():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    # out_fig.savefig('../Figures/MNIST_nonIID_14bit_erf_acc.eps' )
-    out_fig.savefig('../Figures/MNIST_nonIID_14bit_erf_acc.pdf' )
+    out_fig.savefig('../Figures/Fig6_b.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_14bit_erf_acc.pdf' )
     plt.show()
 
 def MNIST_BatchnonIID_K0_1bit_flip_acc():
@@ -377,17 +377,21 @@ def MNIST_BatchnonIID_K0_1bit_flip_acc():
     # # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    # out_fig.savefig('../Figures/MNIST_IID_1bit_flip_K0_acc.eps' )
-    out_fig.savefig('../Figures/MNIST_nonIID_1bit_flip_K0_acc.pdf' )
+    out_fig.savefig('../Figures/Fig11_b.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_1bit_flip_K0_acc.pdf' )
     plt.show()
 
-
+# Fig8_a
 MNIST_BatchnonIID_flip_acc()
+
+# Fig8_b
 MNIST_BatchnonIID_flip_loss()
 
-MNIST_BatchnonIID_K0_1bit_flip_acc()
+# Fig6_b
 MNIST_BatchnonIID_14bit_erf_acc()
 
+# Fig11_b
+MNIST_BatchnonIID_K0_1bit_flip_acc()
 
 plt.close('all')
 

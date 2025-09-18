@@ -163,8 +163,8 @@ def MNIST_IID_1bit_jointVsTDMA():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/MNIST_IID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_IID_1bit_JointTDMA_acc.pdf' )
+        out_fig.savefig('../Figures/Fig14_a.eps' )
+        # out_fig.savefig('../Figures/MNIST_IID_1bit_JointTDMA_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/MNIST_IID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/MNIST_IID_1bit_JointTDMA_loss.pdf' )
@@ -247,8 +247,8 @@ def MNIST_IID_1bit_jointVsOFDM():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/MNIST_IID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_IID_1bit_JointOFDM_acc.pdf' )
+        out_fig.savefig('../Figures/Fig14_b.eps' )
+        # out_fig.savefig('../Figures/MNIST_IID_1bit_JointOFDM_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/MNIST_IID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/MNIST_IID_1bit_JointOFDM_loss.pdf' )
@@ -334,8 +334,8 @@ def MNIST_nonIID_1bit_jointVsTDMA():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointTDMA_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointTDMA_acc.pdf' )
+        out_fig.savefig('../Figures/Fig14_c.eps' )
+        # out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointTDMA_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointTDMA_loss.eps' )
         out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointTDMA_loss.pdf' )
@@ -422,18 +422,20 @@ def MNIST_nonIID_1bit_jointVsOFDM():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointOFDM_acc.eps' )
-        out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointOFDM_acc.pdf' )
+        out_fig.savefig('../Figures/Fig14_d.eps' )
+        # out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointOFDM_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointOFDM_loss.eps' )
         out_fig.savefig('../Figures/MNIST_nonIID_1bit_JointOFDM_loss.pdf' )
     plt.show()
 
-
+# Fig14_a
 MNIST_IID_1bit_jointVsTDMA()
+# Fig14_b
 MNIST_IID_1bit_jointVsOFDM()
-
+# Fig14_c
 MNIST_nonIID_1bit_jointVsTDMA()
+# Fig14_d
 MNIST_nonIID_1bit_jointVsOFDM()
 
 plt.close('all')

@@ -167,8 +167,8 @@ def CIFAR10_IID_1bit_coding():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_acc.pdf' )
+        out_fig.savefig('../Figures/Fig13_a.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_loss.pdf' )
@@ -256,11 +256,11 @@ def CIFAR10_nonIID_1bit_coding():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_acc.pdf' )
+        out_fig.savefig('../Figures/Fig13_b.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_acc.pdf' )
     elif col == 2:
-        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_loss.eps' )
-        out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_loss.pdf' )
+        out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_loss.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_loss.pdf' )
     plt.show()
 
 

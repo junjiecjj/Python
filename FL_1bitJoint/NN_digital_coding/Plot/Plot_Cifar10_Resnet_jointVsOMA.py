@@ -169,8 +169,8 @@ def CIFAR10_IID_1bit_jointVsTDMA():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/CIFAR10_IID_1bit_JointTDMA_acc.pdf' )
+        out_fig.savefig('../Figures/Fig15_a.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_IID_1bit_JointTDMA_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/CIFAR10_IID_1bit_JointTDMA_loss.pdf' )
@@ -258,8 +258,8 @@ def CIFAR10_IID_1bit_jointVsOFDM():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/CIFAR10_IID_1bit_JointOFDM_acc.pdf' )
+        out_fig.savefig('../Figures/Fig15_b.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_IID_1bit_JointOFDM_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/CIFAR10_IID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/CIFAR10_IID_1bit_JointOFDM_loss.pdf' )
@@ -349,8 +349,8 @@ def CIFAR10_nonIID_1bit_jointVsTDMA():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_JointTDMA_acc.pdf' )
+        out_fig.savefig('../Figures/Fig15_c.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_JointTDMA_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_JointTDMA_loss.pdf' )
@@ -390,7 +390,7 @@ def CIFAR10_nonIID_1bit_jointVsOFDM():
     Y4 = data[:,col]
     # Y4 += 0.006*np.random.randn(Y4.size)
     Y4 = savgol_filter(Y4, 10, 3)
-    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, TDMA',)
+    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, OFDM',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
 
     ###########
@@ -440,18 +440,20 @@ def CIFAR10_nonIID_1bit_jointVsOFDM():
 
     out_fig = plt.gcf()
     if col == 1:
-        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_acc.eps' )
-        out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_JointOFDM_acc.pdf' )
+        out_fig.savefig('../Figures/Fig15_d.eps' )
+        # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_JointOFDM_acc.pdf' )
     elif col == 2:
         # out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_coding_loss.eps' )
         out_fig.savefig('../Figures/CIFAR10_nonIID_1bit_JointOFDM_loss.pdf' )
     plt.show()
 
-
+# Fig15_a
 CIFAR10_IID_1bit_jointVsTDMA()
+# Fig15_b
 CIFAR10_IID_1bit_jointVsOFDM()
-
+# Fig15_c
 CIFAR10_nonIID_1bit_jointVsTDMA()
+# Fig15_d
 CIFAR10_nonIID_1bit_jointVsOFDM()
 
 plt.close('all')

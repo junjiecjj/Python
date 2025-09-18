@@ -14,9 +14,6 @@ Created on Tue Jul  4 14:48:00 2023
     (2) x代表矩阵，ord为范数类型
     (3) axis为处理类型：当 axis=1 时表示按行向量处理，求多个行向量的范数。当 axis=0 时表示按列向量处理，求多个列向量的范数。当axis=None表示矩阵范数
 
-
-
-
 向量范数:
     1-范数： 即向量元素绝对值之和，matlab调用函数norm(x, 1) 。
     2-范数： Euclid范数（欧几里得范数，常用计算向量长度），即向量元素绝对值的平方和再开方，matlab调用函数norm(x, 2)。
@@ -35,7 +32,6 @@ np.linalg.norm(X):
     X为向量时，默认求向量2范数，即求向量元素绝对值的平方和再开方；
     X为矩阵是，默认求的是F范数。矩阵的F范数即：矩阵的各个元素平方之和再开平方根，它通常也叫做矩阵的L2范数，它的有点在它是一个凸函数，可以求导求解，易于计算。
 
-
 =====  ============================  ==========================
 ord    norm for matrices             norm for vectors
 =====  ============================  ==========================
@@ -51,34 +47,24 @@ inf    max(sum(abs(x), axis=1))      max(abs(x))
 -2     smallest singular value       as below
 other  --                            sum(abs(x)**ord)**(1./ord)
 =====  ============================  ==========================
-
 The Frobenius norm is given by [1]_:
-
     :math:`||A||_F = [\\sum_{i,j} abs(a_{i,j})^2]^{1/2}`
-
 The nuclear norm is the sum of the singular values.
-
 Both the Frobenius and nuclear norm orders are only defined for
 matrices and raise a ValueError when ``x.ndim != 2``.
-
 
 但是 torch.norm 却是可以求矩阵的p范数：torch.norm(A, p=2, dim=1, keepdim=True)
     意思就是 A 的一共N维的话对这N个数据求p范数， 接下来还是看具体的代码
     p指的是求p范数的p值，函数默认p=2，那么就是求2范数
     ||x||_{p} = \sqrt[p]{x_{1}^{p} + x_{2}^{p} + \ldots + x_{N}^{p}}
-
 """
 
 #=================================================================================================================
 #                                                      矩阵范数
 #=================================================================================================================
-
 import numpy as np
-
 A = np.array([[3, -4],[-6, 2]])
 print(A)
-
-
 
 # , keepdims = True  注意 keepdims = True 时，输出的是一个二维数组。
 ret_1 = np.linalg.norm(A, ord = 1, axis = None, keepdims = True)         #  列范数，即所有矩阵列向量绝对值之和的最大值，matlab调用函数norm(A, 1)。
@@ -111,7 +97,6 @@ print(ret_2)
 
 ret_nuc = np.linalg.norm(A, ord = 'nuc', axis = None)             # ret_nuc 返回的是 核范数的值; 核范数是矩阵奇异值的和，用于约束矩阵的低秩，
 print(ret_nuc)
-
 
 #=================================================================================================================
 #                                                      向量范数
@@ -539,8 +524,6 @@ print(inputs1)
 #=================================================================================================================
 #                             验证酉空间的定义和性质
 #=================================================================================================================
-
-
 import numpy as np
 np.random.seed(2)
 
@@ -577,24 +560,14 @@ xnorm = np.linalg.norm(x, ord = 2)
 xnorm1 = np.sqrt(np.abs(x.T.conjugate() @ x))
 print(f"xnorm = {xnorm}, xnorm1 = {xnorm1}")
 
-
-
 ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 a = np.random.randint(-10, 10, size = (3, 4))
-
 b = np.random.randint(-10, 10, size = (3, 4))
-
 c = np.append(a.flatten(), b.flatten())
-
-
 
 normab = np.linalg.norm(a, ord = 'fro')**2 + np.linalg.norm(b, ord = 'fro')**2
 normc = np.linalg.norm(c, ord = 2)**2
 print(normab - normc)
-
-
-
-
 
 #=================================================================================================================
 #验证如下定理， 对任意的矩阵A \in C^{m x n}， 任意的U \in C^{m x m}, UU^H = I 和 V \in C^{n x n}, VV^H = I 则:
@@ -617,7 +590,6 @@ V = ortho_group.rvs(dim = n)
 UU = U@U.T.conjugate()
 VV = V@V.T.conjugate()
 
-
 ## 生成酉矩阵，方法二
 tmp1 = np.random.rand(m, m) + 1j * np.random.rand(m, m)
 U, R1 = np.linalg.qr(tmp1)
@@ -625,7 +597,6 @@ tmp2 = np.random.rand(n, n) + 1j * np.random.rand(n, n)
 V, R2 = np.linalg.qr(tmp2)
 UU = U@U.T.conjugate()
 VV = V@V.T.conjugate()
-
 
 UA = U@A
 AV = A@V
@@ -635,19 +606,9 @@ norm_lst = [1, 2, 'fro',]
 for ord in norm_lst:
     print(f"{ord}-norm: A = {np.linalg.norm(A, ord = ord)}, UA = {np.linalg.norm(UA, ord = ord)}, AV = {np.linalg.norm(AV, ord = ord)}, UAV = {np.linalg.norm(UAV, ord = ord)}")
 
-
 U1, S1, VH1 = np.linalg.svd(A)
 U2, S2, VH2 = np.linalg.svd(UAV)
 print(f"S1 = {S1}\nS2 = {S2}")
-
-
-
-
-
-
-
-
-
 
 
 

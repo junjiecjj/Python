@@ -1,6 +1,6 @@
 
 
-
+%% https://mp.weixin.qq.com/s?__biz=MzE5ODQ2NTg0NA==&mid=2247483782&idx=1&sn=d1b3cd0673f441e8ce68d527be1687b0&chksm=97f64c2e57d966b76cf81aec5a898a7cebf8e4d0ad63b481c5df24c35fa4cecbfab063eec589&mpshare=1&scene=1&srcid=0830z0fB6IVOMf14p4zl4IpU&sharer_shareinfo=0406d2f27a255ddf4a1565b44ccff225&sharer_shareinfo_first=5e04cc5c356cdb2493f0c9a1cdf4a8b6&exportkey=n_ChQIAhIQ6hjBpK9EVipqf6FiqdUdQxKfAgIE97dBBAEAAAAAAO7ZIjis4iYAAAAOpnltbLcz9gKNyK89dVj09jquwYvG6nWEszGKi5A7l6cOvXhUxIuG8IvUIoQgryUALKyAf8wTQsJALntAU70Vu%2BjZmNkoHebj%2FF3jR1RrYCDT2C6x3UEDS5Bgt1z9Njceo09QwKuNj5mGoER%2FJhsIvv89357jTasaUPv9HPlHrgcAaBCZdwwZxM%2BLlPwtWJfUNXwVSQtK%2BwOhkLT8ihM7nkR%2Bfj01tWHJLBVPYtwBDIVQFA%2FYve7yxWVPJ3j0shWQ9uChO84mfvd%2FMEbRJwjsgtFnCUwhEQGtC1vq1WBpBR4R06wti6SSkKHEBI%2Ba0vHRdEebCqjDgzDBYYVRvgQpyrfZJKmtG0VS&acctmode=0&pass_ticket=46Bg9VSMcJ4R0QnjAz6W6TqEJQQYqkY7NVGL3UeMPUebB8M5j0MXEJ518wIEkckN&wx_header=0#rd
 %% 系统参数设置
 % 1.0 系统参数
 freq = 77e9;                  % 工作频率 [Hz]
@@ -92,13 +92,13 @@ tx_signal = zeros(1, Samples_per_chirp); % 初始化发射信号
 phase_shift_per_chirp(chirp_idx, tx_idx) = mod(2 * pi * group_idx * (tx_idx - 1) / N_subbands_B, 2*pi);
 tx_signal = exp(1j * 2 * pi * (centerFreq * (t + t_abs) + 0.5 * Slope * t.^2) + 1j * phase_shift);
 phase_if = 2 * pi * ((centerFreq - fd(target_idx)) * (t - tau(target_idx) + t_abs)) + pi * Slope * (t - tau(target_idx)).^2;
-array_phase = (2 * pi / lambda) * (virt_pos_dy * sind(phi_true(target_idx)) * cosd(theta_true(target_idx)) + virt_pos_dz * sind(theta_true(target_idx))); 
+array_phase = (2 * pi / lambda) * (virt_pos_dy * sind(phi_true(target_idx)) * cosd(theta_true(target_idx)) + virt_pos_dz * sind(theta_true(target_idx)));
 % 回波信号合成
 rx_signal = exp(1j * (phase_if - array_phase));
 
 
 %% 3.0 距离维FFT和速度维FFT生成RDM
-win_range = hamming(size(if_signals_Slowchirp, 2), 'periodic')'; 
+win_range = hamming(size(if_signals_Slowchirp, 2), 'periodic')';
 
 if_signals_Slowchirp_windowed = if_signals_Slowchirp.* win_range; % 沿列（第二维）乘窗函数
 if_signals_Fastchirp_windowed = if_signals_Fastchirp.* win_range; % 沿列（第二维）乘窗函数
@@ -108,11 +108,11 @@ range_fft_Slowchirp = fft(if_signals_Slowchirp_windowed, range_fft_bin, 2);
 range_fft_Fastchirp = fft(if_signals_Fastchirp_windowed, range_fft_bin, 2);
 
 % 3.2.1 生成第一维（慢时间）窗函数
-win_velocity = hamming(size(if_signals_Slowchirp, 1), 'periodic'); 
+win_velocity = hamming(size(if_signals_Slowchirp, 1), 'periodic');
 
 % 3.2.2 对第一维加窗（依据if_group维数,自动扩展至三维数组的所有通道）
-range_fft_Slowchirp_windowed = range_fft_Slowchirp.* win_velocity; 
-range_fft_Fastchirp_windowed = range_fft_Fastchirp.* win_velocity; 
+range_fft_Slowchirp_windowed = range_fft_Slowchirp.* win_velocity;
+range_fft_Fastchirp_windowed = range_fft_Fastchirp.* win_velocity;
 % 3.2.3 速度维FFT（慢时间）
 velocity_fft_Slowchirp = fft(range_fft_Slowchirp_windowed, velocity_fft_bin, 1);
 velocity_fft_Fastchirp = fft(range_fft_Fastchirp_windowed, velocity_fft_bin, 1);

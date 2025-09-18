@@ -162,8 +162,8 @@ def MNIST_epoch_nonIID_4bit_flip_acc():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    # out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_acc.eps' )
-    out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_acc.pdf' )
+    out_fig.savefig('../Figures/Fig8_c.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_acc.pdf' )
     plt.show()
 
 def MNIST_epoch_nonIID_4bit_flip_loss():
@@ -212,11 +212,14 @@ def MNIST_epoch_nonIID_4bit_flip_loss():
     axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     out_fig = plt.gcf()
-    # out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_loss.eps' )
-    out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_loss.pdf' )
+    out_fig.savefig('../Figures/Fig8_d.eps' )
+    # out_fig.savefig('../Figures/MNIST_nonIID_4bit_bitflip_loss.pdf' )
     plt.show()
 
+# Fig8_c
 MNIST_epoch_nonIID_4bit_flip_acc()
+
+# Fig8_d
 MNIST_epoch_nonIID_4bit_flip_loss()
 
 plt.close('all')

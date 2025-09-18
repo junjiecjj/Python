@@ -1,4 +1,4 @@
- 
+%% https://zhuanlan.zhihu.com/p/599204238 
 clc; clear;cvx_clear;
 cvx_expert true;
 
@@ -18,11 +18,6 @@ B = 10e6; % 10Mhz
 
 H_gain = channel_generate(U,R,PL,shadowing_std); % 随机产生用户位置，并产生信道增益
 H_gain = db2pow(H_gain - sigma2); % 为了优化方便，将噪声归一化
-
-
-
-
-
 
 % 直接式求解方法
 p_temp = db2pow(P*ones(C,1))/2; % Step 0: 按等功率初始化分配
@@ -116,10 +111,6 @@ grid on
 xlabel('Iteration number')
 ylabel('Sum rate (Mbps)')
 legend('Direct FP','Close-form FP','Location','southeast')
-
-
-
-
 
 
 

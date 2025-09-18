@@ -9,97 +9,92 @@ https://zhuanlan.zhihu.com/p/627524436
 
 """
 
+
 import numpy as np
-import scipy
-import math
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-from matplotlib.pyplot import MultipleLocator
-import scipy.constants as CONSTANTS
+from mpl_toolkits.mplot3d import Axes3D
 
-filepath2 = '/home/jack/snap/'
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 14        # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22   # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22   # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 22  # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 22  # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6] # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300      # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2     # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6 # 标记大小
+plt.rcParams['figure.facecolor'] = 'white'        # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 22
 
+# 指定方向角度
+theta_real = 40 * np.pi / 180
+phi_real = 25 * np.pi / 180
 
-#%% Basic Electromagnetic Parameters
-Frequency = 10e9
-Lightspeed = CONSTANTS.c
-Wavelength = Lightspeed/Frequency
-Wavenumber = 2 * np.pi/Wavelength
+# 离散化相位
+Delta = 0.05
+theta = np.arange(-np.pi/2, np.pi/2 + Delta, Delta)
+phi = np.arange(-np.pi/2, np.pi/2 + Delta, Delta)
 
-#%% Array Parameters
-N = 12
-A = np.ones(N)
-theta_aim = math.radians(30)
-phi_aim = math.radians(45)
-# wt = A * np.ones(N, )   # 权重向量
-wt = A * np.exp(-1j * (np.pi * np.arange(N) * np.sin(theta_aim)) )
-alpha = np.zeros(N, )
+# 天线数量
+Na_vec = [4, 8]
+Nb_vec = [4, 8]
 
+for i in range(2):
+    Na = Na_vec[i]
+    Nb = Nb_vec[i]
 
-#%% cheb array
-## https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.chebwin.html
-# A = np.ones(N)
-# wt = A * scipy.signal.windows.chebwin(N, 46)
+    # 初始化增益矩阵
+    Gain = np.zeros((len(theta), len(phi)))
 
-#%% taylor array
-## https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.taylor.html
-# wt = A * scipy.signal.windows.taylor(N, nbar = 4, sll = 10,)
+    # 遍历各相位，计算与之对应的波束增益
+    for j in range(len(theta)):
+        for k in range(len(phi)):
+            V = np.pi * (np.sin(theta[j]) * np.sin(phi[k]) - np.sin(theta_real) * np.sin(phi_real)) / 2
+            U = np.pi * (np.sin(theta[j]) * np.cos(phi[k]) - np.sin(theta_real) * np.cos(phi_real)) / 2
 
-#%% ArrayFactor Samping
-Ns = 1000                  # Sampling number
-theta = np.linspace(-90, 90, Ns)
-Ptheta = np.zeros(Ns, )
-mini_a = 1e-5
-for num in range(Ns):
-    rad = math.radians(theta[num])
-    Atheta = np.exp(-1j * (np.pi * (np.arange(N) + 1) * np.sin(rad)) + alpha )  # 导向/方向矢量
-    Ptheta[num] = np.abs(wt @ Atheta.T.conjugate()) + mini_a
-    # Ptheta[num] = np.abs(np.sum(wt * Atheta.T.conjugate())) + mini_a
+            # 避免除以0
+            if np.abs(np.sin(V)) < 1e-10:
+                term1 = Nb if np.abs(V) < 1e-10 else np.sin(Nb * V) / np.sin(V)
+            else:
+                term1 = np.sin(Nb * V) / np.sin(V)
 
-dbP = 20 * np.log10(Ptheta)
-peaks, _ =  scipy.signal.find_peaks(dbP)
+            if np.abs(np.sin(U)) < 1e-10:
+                term2 = Na if np.abs(U) < 1e-10 else np.sin(Na * U) / np.sin(U)
+            else:
+                term2 = np.sin(Na * U) / np.sin(U)
 
+            Gain[j, k] = np.abs(term1 * term2) / (Nb * Na)
 
+    # 命令行输出增益最大的方向
+    max_index = np.unravel_index(np.argmax(Gain), Gain.shape)
+    a, b = max_index
+    print(f'增益最大的方向：theta={theta[a]*180/np.pi}°, phi={phi[b]*180/np.pi}°')
 
-# #%% 画图
-# fig, axs = plt.subplots(1, 1, figsize=(10, 8))
-# axs.plot(theta, dbP, color='b', linestyle='-', lw = 3, label='',  )
-# axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+    # 绘图
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection='3d')
 
-# # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
-# font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-# axs.set_xlabel( r"$\theta(^\circ)$", fontproperties=font2,   ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-# axs.set_ylabel('Amplitude(dB)', fontproperties=font2,  )
+    X, Y = np.meshgrid(theta * 180 / np.pi, phi * 180 / np.pi)
+    surf = ax.plot_surface(X, Y, Gain.T, cmap='viridis')
 
-# font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 17}
-# #font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
-# # legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
-# # frame1 = legend1.get_frame()
-# # frame1.set_alpha(1)
-# # frame1.set_facecolor('none')  # 设置图例legend背景透明
+    ax.set_xlabel(r'$\theta$')
+    ax.set_ylabel(r'$\phi$')
+    ax.set_zlabel('Beam Gain')
 
-# x_major_locator = MultipleLocator(20)               #把x轴的刻度间隔设置为1，并存在变量里
-# axs.xaxis.set_major_locator(x_major_locator)  #把x轴的主刻度设置为1的倍数
-# axs.tick_params(direction='in', axis='both', top=True, right=True,labelsize=16, width=3,)
-# labels = axs.get_xticklabels() + axs.get_yticklabels()
-# [label.set_fontname('Times New Roman') for label in labels]
-# [label.set_fontsize(24) for label in labels]  # 刻度值字号
+    plt.title(f'Nx={Na}, Ny={Nb}, ' +
+              r'$\phi$=' + f'{phi_real*180/np.pi}' + r'$^\circ$, ' +
+              r'$\theta$=' + f'{theta_real*180/np.pi}' + r'$^\circ$')
 
-# axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
-# axs.spines['bottom'].set_linewidth(1.5);###设置底部坐标轴的粗细
-# axs.spines['left'].set_linewidth(1.5);####设置左边坐标轴的粗细
-# axs.spines['right'].set_linewidth(1.5);###设置右边坐标轴的粗细
-# axs.spines['top'].set_linewidth(1.5);####设置上部坐标轴的粗细
-
-
-# plt.show()
-
-
-
-
+    plt.colorbar(surf)
+    plt.tight_layout()
+    plt.show()
 
 
 
