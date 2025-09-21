@@ -6,7 +6,9 @@ Created on Mon Sep  8 14:28:43 2025
 @author: jack
 
 https://www.cnblogs.com/longtianbin/p/17124657.html
-
+https://zhuanlan.zhihu.com/p/599204238
+https://www.cnblogs.com/hjd21/p/16608461.html
+https://kaimingshen.github.io/publications.html
 
 """
 

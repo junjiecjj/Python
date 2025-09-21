@@ -24,6 +24,7 @@ https://github.com/guohuayan/WSR_maximization_for_RIS_system?utm_source=catalyze
 #%% https://zhuanlan.zhihu.com/p/599204238
 # https://www.cnblogs.com/hjd21/p/16608461.html
 # https://kaimingshen.github.io/publications.html
+# https://www.cnblogs.com/longtianbin/p/17124657.html
 
 import numpy as np
 import cvxpy as cp
