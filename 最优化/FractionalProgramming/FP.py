@@ -133,7 +133,6 @@ def LFP_Quadratic(K, r, p, p_c, c_1, C_2, r_d, c_3, delta, IterMax):
 
     if prob.status in ['infeasible', 'unbounded']:
         return False, np.nan, np.full(K, np.nan), np.array([])
-
     tau_i = tau.value
     F_i = (r.T @ tau_i) / (p.T @ tau_i + p_c)
     F_log = [F_i]
@@ -141,24 +140,19 @@ def LFP_Quadratic(K, r, p, p_c, c_1, C_2, r_d, c_3, delta, IterMax):
 
     for j in range(IterMax):
         y = np.sqrt(r.T @ tau_i) / (p.T @ tau_i + p_c)
-
         tau_var = cp.Variable(K, nonneg=True)
         objective = cp.Maximize(2 * y * cp.sqrt(r.T @ tau_var) - y**2 * (p.T @ tau_var + p_c))
-
         constraints = [
             tau_var >= c_1,
             C_2 @ tau_var >= 0,
             r_d.T @ tau_var >= c_3,
             cp.sum(tau_var) <= 1
         ]
-
         prob = cp.Problem(objective, constraints)
         prob.solve()
-
         if prob.status in ['infeasible', 'unbounded'] or np.isnan(prob.value) or np.isinf(prob.value):
             isFeasible = False
             break
-
         tau_i_1 = tau_var.value
         F_i_1 = (r.T @ tau_i_1) / (p.T @ tau_i_1 + p_c)
         F_log.append(F_i_1)
