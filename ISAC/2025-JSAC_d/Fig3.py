@@ -47,8 +47,6 @@ x = X.flatten('C')
 
 yhat = Hhat @ x
 
-
-
 #%% 按列展开,对的
 M = 2
 N = 3
