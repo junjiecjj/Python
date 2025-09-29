@@ -22,6 +22,28 @@ from scipy.constants import speed_of_light as c0
 # import commpy
 from Modulations import modulator
 
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
+np.random.seed(42)
+
+#%%
 def Qfun(x):
     return 0.5 * scipy.special.erfc(x / np.sqrt(2))
 
@@ -250,7 +272,7 @@ colors = plt.cm.jet(np.linspace(0, 1, 5))
 fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
 axs.plot(SNRdBs, RmseList, 'bo-', label='RMSE')
 axs.set_xlabel('SNR (dB)')
-axs.set_ylabel('SER')
+axs.set_ylabel('RMSE')
 axs.legend()
 plt.title('RMSE')
 plt.show()
