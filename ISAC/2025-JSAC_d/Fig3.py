@@ -51,17 +51,17 @@ yhat = Hhat @ x
 M = 2
 N = 3
 T = 4
-I = np.eye(T)
-H = np.arange(M*N).reshape(M,N)
-X = np.random.randn(N,T)
-Y = H@X
 
-y = Y.flatten('F')
+Hs = np.random.randn(M, N) + 1j * np.random.randn(M, N)
+Xs = np.random.randn(N, T) + 1j * np.random.randn(N, T)
+Ys = Hs@Xs
 
-Hhat = np.kron(I, H)
-x = X.flatten('F')
+ys = Ys.conj().T.flatten('F')
+I = np.eye(M)
+Xhat = np.kron(I, Xs.conj().T)
+hs = Hs.conj().T.flatten('F')
 
-yhat = Hhat @ x
+yhat = Xhat @ hs
 
 #%%
 
