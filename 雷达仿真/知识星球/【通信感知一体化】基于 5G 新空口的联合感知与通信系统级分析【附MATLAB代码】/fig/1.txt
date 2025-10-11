@@ -1,0 +1,25 @@
+%% 去除冗余目标点
+        temp=toc;
+        Zsort=sortrows(Z,[1,2,-3,-4]);%先按第1列距离r和第二列v升序，然后按相对峰值(第4列)和绝对峰值(第3列)降序排列
+        Zprun=Zsort(1,:);
+        Target_Num=1;
+        [Num0,~]=size(Zsort);
+        delta_v=3*delta_v;
+         for i=2:Num0%遍历所有行
+             if ((Zprun(Target_Num,1)-delta_r<Zsort(i,1))&&(Zprun(Target_Num,1)+delta_r>Zsort(i,1))&&...
+                 (Zprun(Target_Num,2)-delta_v<Zsort(i,2))&&(Zprun(Target_Num,2)+delta_v>Zsort(i,2)) )
+                 if((Zprun(Target_Num,3)-3<Zsort(i,3))&&(Zprun(Target_Num,3)+3>Zsort(i,3))...
+                         &&(Zsort(i,4)>Zprun(Target_Num,4)))
+                     Zprun(Target_Num,:)=Zsort(i,:);
+                 end
+             else
+                 Target_Num=Target_Num+1;
+                 Zprun=[Zprun;Zsort(i,:)];
+             end
+         end
+       
+        fprintf("after pruning, TargetNum=%d\n",Target_Num);
+        prunning_time=toc-temp;
+
+————————————————————————————————————————————————
+RxData_sensing(jjj,iii)=beamforming_sense'*reshape(Rx_sensing(jjj,iii,:),NR_temp,1);

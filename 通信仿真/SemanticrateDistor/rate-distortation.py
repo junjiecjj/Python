@@ -35,7 +35,6 @@ fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 fonte1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=24)
 
-
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=20)
 
@@ -215,7 +214,7 @@ labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
 fig.tight_layout(pad=1, h_pad=1, w_pad=2)
 out_fig = plt.gcf()
 plt.tight_layout()#  使得图像的四周边缘空白最小化
-out_fig.savefig(filepath2+'Figure7.pdf', format='pdf', dpi=1000, bbox_inches='tight')
+# out_fig.savefig(filepath2+'Figure7.pdf', format='pdf', dpi=1000, bbox_inches='tight')
 plt.show()
 
 
@@ -238,8 +237,6 @@ DiagQKxQ = np.real(DiagQKxQ1)
 print(f"矩阵 QKxQ 的秩={np.linalg.matrix_rank(QKxQ)}")
 print(f"矩阵 DiagQKxQ 的秩={np.linalg.matrix_rank(np.diag(DiagQKxQ))}")
 print(f"矩阵 DiagQKxQ1 的秩={np.linalg.matrix_rank(np.diag(DiagQKxQ1))}")
-
-
 
 
 #================================ A1区域的解 ========================================
@@ -668,12 +665,7 @@ p = np.random.choice([0, 1], size=(16,64), p=[0.95, 0.05])
 H = np.multiply(H1,p)
 
 Kz = 1.0*np.eye(16)
-
-
-
 n = Kx.shape[0]
-
-
 
 def gaussRateDistortion(n,Ds, Do, Kx, H, Kz, ):
      # Define and solve the CVXPY problem.
