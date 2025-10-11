@@ -191,7 +191,7 @@ Distor_optim_avg = np.mean(Distor_optimal, axis = (2)) / (Ms * Nt)
 
 colors = plt.cm.jet(np.linspace(0, 1, 5))
 
-fig, axs = plt.subplots(1, 1, figsize=(10, 6))
+fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(SNRsen, Distor_optim_avg[0], '--', lw = 2, marker = '*', color=colors[0], label = "Comm SNR = -5 dB")
 axs.plot(SNRsen, Distor_optim_avg[1], '--', lw = 2, marker = 'd', color=colors[1], label = "Comm SNR = 0 dB")
 axs.plot(SNRsen, Distor_optim_avg[2], '--', lw = 2, marker = 'o', color=colors[2], label = "Comm SNR = 5 dB")
