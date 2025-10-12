@@ -82,6 +82,11 @@ def generate_hermitian_from_eigenvalues(N):
     H = U @ np.diag(eigenvalues) @ U.conj().T
 
     return H
+
+
+
+
+
 #%%
 Nt = 10
 Mc = 5

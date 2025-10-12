@@ -7,7 +7,6 @@ Created on Wed Oct  8 21:50:43 2025
 
 下面有些不对，主要是ambgfun在matlab是自带的，但是python没有，待修正。
 
-
 """
 
 import numpy as np
