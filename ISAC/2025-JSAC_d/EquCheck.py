@@ -188,11 +188,30 @@ M = 4
 T = 100
 N = 4
 PT = 1
+sigma_s2 = 1
 # Sigma_S = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
 
 Sigma_S = generate_psd_hermitian_method1(N, seed=None)
 
+Rs = cp.Variable((N, N), hermitian = True)
 
+constraints = [0 << Rs,
+               cp.trace(Rs) <= PT,
+              ]
+
+prob = cp.Problem(cp.Maximize(cp.trace(Hc@Rc@Hc.conj().T + I_N)), constraints)
+prob.solve()
+
+if prob.status=='optimal':
+     print(f"{prob.value}")
+     print(f"{Rc.value}")
+
+Rc = Rc.value
+Lambda_c_hat, U_c = np.linalg.eig(Sigma_C)
+Lambda_c_hat = np.abs(Lambda_c_hat)
+
+Lambda_c2, Psi_c = np.linalg.eig(Rc)
+Lambda_c2 = np.abs(Lambda_c2)
 
 
 
