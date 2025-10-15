@@ -93,8 +93,8 @@ for ii, snrcom in enumerate(SNRcom):
                 # 计算常数矩阵 P
                 P = inv((1/sigma_s2) * R_x_prev + inv(Sigma_s))
                 # 定义优化变量
-                Rx = cpy.Variable((Nt, Nt), symmetric=True)
-                D = cpy.Variable((Nt, Nt), symmetric=True)
+                Rx = cpy.Variable((Nt, Nt), symmetric = True)
+                D = cpy.Variable((Nt, Nt), symmetric = True)
                 # 计算线性化近似 ~R_s
                 R_s_tilde = Sigma_s - P + (1/sigma_s2) * P @ (Rx - R_x_prev) @ P
 
@@ -108,7 +108,7 @@ for ii, snrcom in enumerate(SNRcom):
                 B = Sigma_s_inv
 
                 # 方法1：使用Schur补引理, 引入辅助变量 Z，约束 [A*R_x + B, I; I, Z] >= 0,然后最小化 trace(Z)
-                Z = cpy.Variable((Nt, Nt), symmetric=True)
+                Z = cpy.Variable((Nt, Nt), symmetric = True)
                 schur_constraint = cpy.bmat([
                                             [A @ Rx + B, I_nt],
                                             [I_nt, Z]

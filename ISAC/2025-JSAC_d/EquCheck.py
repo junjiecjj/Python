@@ -110,18 +110,18 @@ Rc = cp.Variable((N, N), hermitian = True)
 constraints = [0 << Rc,
                cp.trace(Rc) <= PT,
               ]
-
-prob = cp.Problem(cp.Maximize(cp.log_det(Hc@Rc@Hc.conj().T + I_N)), constraints)
+obj = cp.Maximize(cp.log_det(Hc@Rc@Hc.conj().T / sigma_c2 + I_N))
+prob = cp.Problem(obj, constraints)
 prob.solve()
 
 if prob.status=='optimal':
      print(f"{prob.value}")
      print(f"{Rc.value}")
 
-Rc = Rc.value
 Lambda_c_hat, U_c = np.linalg.eig(Sigma_C)
 Lambda_c_hat = np.abs(Lambda_c_hat)
 
+Rc = Rc.value
 Lambda_c2, Psi_c = np.linalg.eig(Rc)
 Lambda_c2 = np.abs(Lambda_c2)
 
@@ -163,8 +163,6 @@ ys = Xhat @ hs  #  Eq.(12), ys == ys1
 
 
 #%% Verified Eq.(12)-(16);
-
-
 C = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
 
 L = np.linalg.cholesky(C)
@@ -180,8 +178,7 @@ Z = Rc[:,2]
 C_hat = np.cov(Rc.T)
 print("相关系数矩阵=\n", C_hat)
 
-
-#%%
+######################## 逆向验证Eq.(16)
 from PSDmatrix import generate_psd_hermitian_method1
 
 M = 4
@@ -189,34 +186,62 @@ T = 100
 N = 4
 PT = 1
 sigma_s2 = 1
-# Sigma_S = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
 
-Sigma_S = generate_psd_hermitian_method1(N, seed=None)
+Sigma_S = generate_psd_hermitian_method1(N, seed=42)
+# Sigma_S = np.real(generate_psd_hermitian_method1(N, seed=42))
+Lambda_s, U_s = np.linalg.eig(Sigma_S)
+Lambda_s = np.abs(Lambda_s)
+Gamma_s, water_level = water_filling(sigma_s2, np.abs(Lambda_s), PT)
 
-Rs = cp.Variable((N, N), hermitian = True)
+Rs = U_s @ np.diag(Gamma_s) @ U_s.conj().T
+print(f"\n {Rs}")
+###>>>>> cvx
+gamma = cp.Variable((N), nonneg =True )
 
-constraints = [0 << Rs,
-               cp.trace(Rs) <= PT,
+constraints = [0 <= gamma,
+                cp.sum(gamma) <= PT,
               ]
 
-prob = cp.Problem(cp.Maximize(cp.trace(Hc@Rc@Hc.conj().T + I_N)), constraints)
+objective = cp.Minimize(cp.sum(cp.inv_pos(gamma/sigma_s2 + 1/Lambda_s)))
+prob = cp.Problem(objective, constraints)
 prob.solve()
-
+gamma = gamma.value
 if prob.status=='optimal':
-     print(f"{prob.value}")
-     print(f"{Rc.value}")
+      # print(f"{prob.value}")
+      print(f"{gamma }")
+      print(f"{Gamma_s}")
+      ## 可以看出，根据(16)求解的结果和利用cvx求解的结果完全一样，但是这里是验证自己写的注水算法和cvx求解的几乎一样，下面直接利用CVX求解问题(14)。
+Rs1 = U_s @ np.diag(gamma) @ U_s.conj().T
+print(f"\n {Rs1}")
+######################## 直接验证Eq.(16)
 
-Rc = Rc.value
-Lambda_c_hat, U_c = np.linalg.eig(Sigma_C)
-Lambda_c_hat = np.abs(Lambda_c_hat)
+Sigma_s_inv = np.linalg.inv(Sigma_S)
+Lambda_s, U_s = np.linalg.eig(Sigma_S)
+Lambda_s = np.abs(Lambda_s)
 
-Lambda_c2, Psi_c = np.linalg.eig(Rc)
-Lambda_c2 = np.abs(Lambda_c2)
+RS = cp.Variable((N, N), hermitian = True )
+objective = cp.Minimize(cp.tr_inv(cp.real(RS/sigma_s2 + Sigma_s_inv)))
 
+# or
+# RS = cp.Variable((N, N), symmetric = True )
+# objective = cp.Minimize(cp.tr_inv(RS/sigma_s2 + Sigma_s_inv))
 
+#### 约束条件
+constraints = [
+                # cp.imag(cp.trace(RS)) == 0,
+                RS >> 0,
+                cp.trace(RS) <= PT,
+                ]
 
-
-
+# 求解问题
+prob = cp.Problem(objective, constraints)
+prob.solve()
+if prob.status=='optimal':
+      # print(f"{prob.value}")
+      print(f"\n {RS.value}")
+      # print(f"\n {Rs}")
+      ## 可以看出，根据(16)求解的结果和利用cvx求解的Rs结果完全一样, 但是这仅仅是当Sigma_S是实矩阵，且RS = cp.Variable((N, N), symmetric = True ) 时;
+      ## 当Rs为复Hermit矩阵，RS = cp.Variable((N, N), hermitian = True ) 时，求解器死活无法工作， 除非在obj中取实部。
 
 
 

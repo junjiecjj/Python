@@ -31,6 +31,8 @@ plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色
 plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
+
+## 注水算法1
 def water_filling(sigma2, lamba,  PT):
     """
     实现注水功率分配算法
@@ -74,6 +76,7 @@ def water_filling(sigma2, lamba,  PT):
 
     return power_allocation, water_level
 
+## 注水算法2
 def waterfilling_manual(sigma2, lamba, PT, tolerance=1e-10, max_iter=2000):
     """
     手动实现注水算法
@@ -118,6 +121,7 @@ def waterfilling_manual(sigma2, lamba, PT, tolerance=1e-10, max_iter=2000):
 
     return optimal_powers, water_level
 
+## 注水算法3
 def waterfilling_cvxpy(sigma2, lamba, total_power):
     """
     使用CVXPY实现注水算法
@@ -239,6 +243,40 @@ def plot_waterfilling(noise_powers, optimal_powers, water_level = 1):
 
 # # 可视化
 # plot_waterfilling(sigma2/lamba, optimal_powers3, water_level3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
