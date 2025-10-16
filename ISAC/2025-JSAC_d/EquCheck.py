@@ -243,11 +243,7 @@ if prob.status=='optimal':
       ## 可以看出，根据(16)求解的结果和利用cvx求解的Rs结果完全一样, 但是这仅仅是当Sigma_S是实矩阵，且RS = cp.Variable((N, N), symmetric = True ) 时;
       ## 当Rs为复Hermit矩阵，RS = cp.Variable((N, N), hermitian = True ) 时，求解器死活无法工作， 除非在obj中取实部。
 
-
-
-
-
-
+#%%
 
 
 

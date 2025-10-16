@@ -6,6 +6,8 @@ Created on Tue Oct 14 10:32:00 2025
 @author: jack
 
 Fig8.py是利用舒尔补转换求解的，这里是直接利用cvx.tr_inv求解的，完全和matlab等价。
+
+但是这里定义cp变量时，只能定义为 symmetric 的(也就是实数)， 当定义为 hermitian 时求解会出错，暂时没解决。
 """
 
 

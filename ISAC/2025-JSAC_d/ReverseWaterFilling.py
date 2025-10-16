@@ -201,7 +201,8 @@ def comprehensive_test():
         # ([10, 8, 6, 4, 2], 30, "大失真情况"),
         # ([10, 8, 6, 4, 2], 5, "小失真情况"),
         # ([5, 5, 5, 5], 10, "均匀方差"),
-        ([100, 10, 10, 10], 50, "高方差差异"),
+        # ([100, 10, 10, 10], 50, "高方差差异"),
+        ([40, 10, 10, 10], 100, "高方差差异"),
     ]
 
     print("=" * 60)
@@ -241,8 +242,56 @@ def comprehensive_test():
 ### 运行综合测试
 # comprehensive_test()
 
-##  反向注水算法计算通信失真
-def reverse_waterfill_D(R, sigma2, tol = 1e-10, max_iter = 1000):
+# ##  反向注水算法计算通信失真, 这是不对的版本，无法处理sigma2中有0的情况。
+# def reverse_waterfill_D(R, sigma2, tol = 1e-10, max_iter = 1000):
+#     """
+#     反向注水算法计算通信失真
+#     Parameters:
+#     R: float, 可用编码率 I_c(p_c)
+#     sigma2: array, 源方差向量 [g_1, g_2, ..., g_N]
+
+#     Returns:
+#     Dc: float, 通信失真
+#     """
+#     # N = len(sigma2)
+#     sigma2 = np.array(sigma2)
+#         # 检查边界情况
+#     if R <= 0:
+#         # R=0时，所有信源用最大失真
+#         return np.sum(sigma2), np.max(sigma2)
+#     # 计算R的最大可能值（当D_i接近0时）
+#     R_max = np.sum(np.log(sigma2 / 1e-15))
+#     if R >= R_max:
+#         # R很大时，所有信源失真接近0
+#         return len(sigma2) * 1e-10, 0
+#     # 设置搜索范围
+#     low = 0
+#     high = np.max(sigma2)
+
+#     for _ in range(max_iter):
+#         xi = (low + high) / 2
+
+#         # 计算当前ξ对应的速率
+#         D_i = np.minimum(xi, sigma2)
+#         current_R = np.sum(np.log(sigma2 / np.maximum(D_i, 1e-15)))
+
+#         if abs(current_R - R) < tol:
+#             break
+#         elif current_R > R:
+#             # 当前速率太大，需要增大ξ来降低速率
+#             low = xi
+#         else:
+#             # 当前速率太小，需要减小ξ来增加速率
+#             high = xi
+
+#     # 计算最终的失真
+#     D_i = np.minimum(xi, sigma2)
+#     Dc = np.sum(D_i)
+
+#     return Dc, xi
+
+##  反向注水算法计算通信失真，这是对的版本，很好的处理sigma2中有0的情况。
+def reverse_waterfill_D(R, sigma2, tol=1e-10, max_iter=1000):
     """
     反向注水算法计算通信失真
     Parameters:
@@ -251,28 +300,48 @@ def reverse_waterfill_D(R, sigma2, tol = 1e-10, max_iter = 1000):
 
     Returns:
     Dc: float, 通信失真
+    xi: float, 对应的λ值
     """
-    # N = len(sigma2)
     sigma2 = np.array(sigma2)
-        # 检查边界情况
+
+    # 处理方差为0的信源
+    zero_variance_indices = np.where(sigma2 == 0)[0]
+    non_zero_indices = np.where(sigma2 > 0)[0]
+
+    # 方差为0的信源失真为0，不消耗码率
+    D_zero = np.zeros(len(zero_variance_indices))
+
+    # 如果没有非零方差的信源
+    if len(non_zero_indices) == 0:
+        return 0.0, 0.0, 0, np.array([]), np.arange(sigma2.size)
+
+    # 只对非零方差的信源进行反注水
+    sigma2_nonzero = sigma2[non_zero_indices]
+
+    # 检查边界情况
     if R <= 0:
-        # R=0时，所有信源用最大失真
-        return np.sum(sigma2), np.max(sigma2)
+        # R=0时，所有非零方差信源用最大失真
+        D_nonzero = sigma2_nonzero
+        Dc = np.sum(D_zero) + np.sum(D_nonzero)
+        return Dc, np.max(sigma2_nonzero), 0, np.array([]), np.arange(sigma2.size)
+
     # 计算R的最大可能值（当D_i接近0时）
-    R_max = np.sum(np.log(sigma2 / 1e-15))
+    R_max = np.sum(np.log(sigma2_nonzero / 1e-15))
     if R >= R_max:
-        # R很大时，所有信源失真接近0
-        return len(sigma2) * 1e-10, 0
+        # R很大时，所有非零方差信源失真接近0
+        D_nonzero = np.full(len(sigma2_nonzero), 1e-10)
+        Dc = np.sum(D_zero) + np.sum(D_nonzero)
+        return Dc, 0, non_zero_indices.size, non_zero_indices, zero_variance_indices
+
     # 设置搜索范围
     low = 0
-    high = np.max(sigma2)
+    high = np.max(sigma2_nonzero)
+    xi = (low + high) / 2  # 初始化xi
 
     for _ in range(max_iter):
         xi = (low + high) / 2
-
-        # 计算当前ξ对应的速率
-        D_i = np.minimum(xi, sigma2)
-        current_R = np.sum(np.log(sigma2 / np.maximum(D_i, 1e-15)))
+        D_i = np.minimum(xi, sigma2_nonzero)
+        current_R = np.sum(np.log(sigma2_nonzero / np.maximum(D_i, 1e-15)))
 
         if abs(current_R - R) < tol:
             break
@@ -284,9 +353,40 @@ def reverse_waterfill_D(R, sigma2, tol = 1e-10, max_iter = 1000):
             high = xi
 
     # 计算最终的失真
-    D_i = np.minimum(xi, sigma2)
-    Dc = np.sum(D_i)
+    D_nonzero = np.minimum(xi, sigma2_nonzero)
+    Dc = np.sum(D_zero) + np.sum(D_nonzero)
+    # 计算有贡献的累加项个数 (ξ < σ_i² 的非零方差信源数量)
+    active_mask = sigma2_nonzero > xi
+    count_active = np.sum(active_mask)
 
-    return Dc, xi
+    # 获取满足条件的原始索引
+    active_indices = non_zero_indices[active_mask]
+
+    # 计算不满足条件的索引
+    # 包括零方差信源和非零方差但不活跃的信源
+    inactive_nonzero_indices = non_zero_indices[~active_mask]
+    inactive_indices = np.concatenate([zero_variance_indices, inactive_nonzero_indices])
+    inactive_indices.sort()  # 排序
+
+    return Dc, xi, count_active, active_indices, inactive_indices
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import scipy
 import cvxpy as cp
 
-from WaterFilling import water_filling, plot_waterfilling
+from WaterFilling import water_filling, plot_waterfilling, waterfilling_manual
 from ReverseWaterFilling import reverse_waterfill_D
 #%%
 # 全局设置字体大小
@@ -34,7 +34,7 @@ plt.rcParams['lines.markersize'] = 6         # 标记大小
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
-np.random.seed(41)
+np.random.seed(42)
 
 #%%
 Ms = 5
@@ -45,10 +45,21 @@ L = 20
 
 Pt = 1
 lamba_s = 1
-Sigma_S = np.eye(N) * lamba_s
+
+K = 100
+delta_k = 1 # np.random.rand(K)
+theta_k_deg = np.random.uniform(-90, 90, K)
+theta_k_rad = np.deg2rad(theta_k_deg)
+# 初始化 Sigma_s
+Sigma_S = np.zeros((N, N), dtype=complex)
+for k in range(K):
+    a_theta =  (1/np.sqrt(N)) * np.exp(1j * np.pi * np.arange(N) * np.sin(theta_k_rad[k]))
+    Sigma_S += delta_k**2 * np.outer(a_theta, a_theta.conj())
+# Sigma_S /= np.sqrt(K)
 Lambda_s, U_s = np.linalg.eig(Sigma_S)
 Lambda_s = np.abs(Lambda_s)
 
+## Sigma_C
 Hc = np.random.randn(Mc, N) + 1j * np.random.randn(Mc, N)
 Sigma_C = Hc.conj().T @ Hc
 Lambda_c, U_c = np.linalg.eig(Sigma_C)
@@ -85,8 +96,8 @@ for snr_s in SNR_s:
             Ps, _ = water_filling(sigma_s2, Lambda_s, ps)                         # Eq.(36)
             Ds = Ms * np.sum(sigma_s2 * Lambda_s / (sigma_s2 + Lambda_s * Ps))    # Eq.(33b)
             lambaR = Ps * Lambda_s**2 / (sigma_s2 + Lambda_s * Ps)                # Eq.(33c)
-            Dc, xi = reverse_waterfill_D(IcPc, lambaR)                                # Eq.(5)
-            Dnow = Ds + Ms * Dc
+            Dc, xi, _, _ ,_ = reverse_waterfill_D(IcPc, lambaR)                            # Eq.(5)
+            Dnow = Ds + Mc * Dc
             D_tol.append(Dnow)
         Dmin = np.min(D_tol)
         D_old = D_new
@@ -123,8 +134,8 @@ for ii, snr_s in enumerate(SNR_s):
         Ps, _ = water_filling(sigma_s2, Lambda_s, ps)                         # Eq.(36)
         Ds = Ms * np.sum(sigma_s2 * Lambda_s / (sigma_s2 + Lambda_s * Ps))    # Eq.(33b)
         lambaR = Ps * Lambda_s**2 / (sigma_s2 + Lambda_s * Ps)                # Eq.(33c)
-        Dc, xi = reverse_waterfill_D(IcPc, lambaR)                                # Eq.(5)
-        Dnow = Ds + Ms * Dc
+        Dc, xi, _, _ ,_ = reverse_waterfill_D(IcPc, lambaR)                            # Eq.(5)
+        Dnow = Ds + Mc * Dc
         Distor_ary[ii, jj] = Dnow
 Distor_ary = Distor_ary/N
 ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -133,13 +144,13 @@ colors = plt.cm.jet(np.linspace(0, 1, 6))
 markers = ['d', 'o', 's', 'v', '^', '+']
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 for jj, snrc in enumerate(SNR_s):
-    axs.plot(Pt - pc_lst, Distor_ary[jj,:], ls = '-', lw = 2, color=colors[jj], label = "$SNR_s = $" + f"{snrc} dB")
+    axs.plot(Pt - pc_lst, Distor_ary[jj,:], ls = '-', lw = 2, color=colors[jj], label = "$SNR_c = $" + f"{snrc} dB")
 axs.scatter(ps_optim_lst, Distor_lst, marker = '*', s = 160, color='red', label = "Optimal One-Dimensional Search ")
 
 axs.set_xlabel('Power alocated for the SP (Ps)', )
 axs.set_ylabel('Average Distortion', )
 
-axs.set_title("Specific case of i.i.d. sensing subchannels", fontsize = 25)
+axs.set_title("The general case", fontsize = 25)
 
 legend1 = plt.legend(loc='best', borderaxespad=0, edgecolor='black',  )
 frame1 = legend1.get_frame()
@@ -153,16 +164,6 @@ plt.show()
 
 
 #%%
-
-
-
-
-
-
-
-
-
-
 
 
 

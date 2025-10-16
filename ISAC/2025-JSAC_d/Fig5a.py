@@ -84,8 +84,8 @@ for snr_c in SNR_c:
             Ps, _ = water_filling(sigma_s2, Lambda_s, ps)                         # Eq.(36)
             Ds = Ms * np.sum(sigma_s2 * Lambda_s / (sigma_s2 + Lambda_s * Ps))    # Eq.(33b)
             lambaR = Ps * Lambda_s**2 / (sigma_s2 + Lambda_s * Ps)                # Eq.(33c)
-            Dc, xi = reverse_waterfill_D(IcPc, lambaR)                                # Eq.(5)
-            Dnow = Ds + Ms * Dc
+            Dc, xi, _, _ , _ = reverse_waterfill_D(IcPc, lambaR)                  # Eq.(5)
+            Dnow = Ds + Mc * Dc
             D_tol.append(Dnow)
         Dmin = np.min(D_tol)
         D_old = D_new
@@ -122,8 +122,8 @@ for ii, snr_c in enumerate(SNR_c):
         Ps, _ = water_filling(sigma_s2, Lambda_s, ps)                         # Eq.(36)
         Ds = Ms * np.sum(sigma_s2 * Lambda_s / (sigma_s2 + Lambda_s * Ps))    # Eq.(33b)
         lambaR = Ps * Lambda_s**2 / (sigma_s2 + Lambda_s * Ps)                # Eq.(33c)
-        Dc, xi = reverse_waterfill_D(IcPc, lambaR)                                # Eq.(5)
-        Dnow = Ds + Ms * Dc
+        Dc, xi, _, _ ,_ = reverse_waterfill_D(IcPc, lambaR)                            # Eq.(5)
+        Dnow = Ds + Mc * Dc
         Distor_ary[ii, jj] = Dnow
 Distor_ary = Distor_ary/N
 ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -152,18 +152,6 @@ plt.show()
 
 
 #%%
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
