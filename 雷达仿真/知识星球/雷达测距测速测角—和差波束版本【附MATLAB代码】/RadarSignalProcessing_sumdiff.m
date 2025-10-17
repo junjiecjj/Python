@@ -17,7 +17,7 @@ t1 = (0:1/fs:(N_sample-1)/fs); % 时间序列
 RangeMax = c*t1(end)/2;% 最大不模糊距离
 Range = c*t1/2; % 距离序列
 Vmax = lamda*PRF/2; % 最大可检测速度
-Velovity = -Vmax/2:Vmax/N_pulse:Vmax/2-Vmax/N_pulse; % 速度序列
+Velocity = -Vmax/2:Vmax/N_pulse:Vmax/2-Vmax/N_pulse; % 速度序列
 searching_doa = -15:0.01:15; % 角度搜索区间
 
 % 阵列参数
