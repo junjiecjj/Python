@@ -98,45 +98,45 @@ def SolverProb45(Hc, Sigma_S, Pt, alpha, sigma_s2, sigma_c2):
 SNR_C = [0, 10, 20]
 SNR_S = np.arange(-10, 20, 5)
 
-# L = 11
-# alpha_lst = np.linspace(0, 1, L)
-# Distor_ary11 = np.zeros((len(SNR_C), SNR_S.size, L))
+L = 11
+alpha_lst = np.linspace(0, 1, L)
+Distor_ary11 = np.zeros((len(SNR_C), SNR_S.size, L))
 
-# for ii, snr_c in enumerate(SNR_C):
-#     sigma_c2 = Pt * 10.0**(-snr_c / 10.0)
-#     for jj, snr_s in enumerate(SNR_S):
-#         sigma_s2 = Pt * 10.0**(-snr_s / 10.0)
-#         for kk, alpha in enumerate(alpha_lst):
-#             R = SolverProb45(Hc, Sigma_S, Pt, alpha, sigma_s2, sigma_c2)               # Solve problem (45) with α(l) and obtain R
-#             Lambda_s2, Psi = np.linalg.eig(R)                                          # Obtain Ψ(l), Λ(l) according to R(l)
-#             Ds = Ms * np.trace(np.linalg.inv(R/sigma_s2 + Sigma_S_inv))                # Compute Ds(R(l)) according to (17b)
-#             IcR = np.log(np.linalg.det(Hc @ R @ Hc.conj().T/sigma_c2 + I_Mc ))         # Compute Ic(R(l)) according to (7)
-#             R_eta = Sigma_S - np.linalg.inv(R/sigma_s2 + Sigma_S_inv)
-#             lambaR, _ = np.linalg.eig(R_eta)
-#             Dc, _,  _, _ ,_ = reverse_waterfill_D(IcR.real, np.abs(lambaR))
-#             D_tol = Ds.real +  Mc * Dc
-#             Distor_ary11[ii, jj, kk] = D_tol
-# Distor_ary1 = np.min(Distor_ary11, axis = -1) / N
+for ii, snr_c in enumerate(SNR_C):
+    sigma_c2 = Pt * 10.0**(-snr_c / 10.0)
+    for jj, snr_s in enumerate(SNR_S):
+        sigma_s2 = Pt * 10.0**(-snr_s / 10.0)
+        for kk, alpha in enumerate(alpha_lst):
+            R = SolverProb45(Hc, Sigma_S, Pt, alpha, sigma_s2, sigma_c2)               # Solve problem (45) with α(l) and obtain R
+            Lambda_s2, Psi = np.linalg.eig(R)                                          # Obtain Ψ(l), Λ(l) according to R(l)
+            Ds = Ms * np.trace(np.linalg.inv(R/sigma_s2 + Sigma_S_inv))                # Compute Ds(R(l)) according to (17b)
+            IcR = np.log(np.linalg.det(Hc @ R @ Hc.conj().T/sigma_c2 + I_Mc ))         # Compute Ic(R(l)) according to (7)
+            R_eta = Sigma_S - np.linalg.inv(R/sigma_s2 + Sigma_S_inv)
+            lambaR, _ = np.linalg.eig(R_eta)
+            Dc, _,  _, _ ,_ = reverse_waterfill_D(IcR.real, np.abs(lambaR))
+            D_tol = Ds.real +  Mc * Dc
+            Distor_ary11[ii, jj, kk] = D_tol
+Distor_ary1 = np.min(Distor_ary11, axis = -1) / N
 
 
-# L = 3
-# alpha_lst = np.linspace(0, 1, L)
-# Distor_ary3 = np.zeros((len(SNR_C), SNR_S.size, L))
-# for ii, snr_c in enumerate(SNR_C):
-#     sigma_c2 = Pt * 10.0**(-snr_c / 10.0)
-#     for jj, snr_s in enumerate(SNR_S):
-#         sigma_s2 = Pt * 10.0**(-snr_s / 10.0)
-#         for kk, alpha in enumerate(alpha_lst):
-#             R = SolverProb45(Hc, Sigma_S, Pt, alpha, sigma_s2, sigma_c2)               # Solve problem (45) with α(l) and obtain R
-#             Lambda_s2, Psi = np.linalg.eig(R)                                          # Obtain Ψ(l), Λ(l) according to R(l)
-#             Ds = Ms * np.trace(np.linalg.inv(R/sigma_s2 + Sigma_S_inv))                # Compute Ds(R(l)) according to (17b)
-#             IcR = np.log(np.linalg.det(Hc @ R @ Hc.conj().T/sigma_c2 + I_Mc ))         # Compute Ic(R(l)) according to (7)
-#             R_eta = Sigma_S - np.linalg.inv(R/sigma_s2 + Sigma_S_inv)
-#             lambaR, _ = np.linalg.eig(R_eta)
-#             Dc, _,  _, _ ,_ = reverse_waterfill_D(IcR.real, np.abs(lambaR))
-#             D_tol = Ds.real +  Mc * Dc
-#             Distor_ary3[ii, jj, kk] = D_tol
-# Distor_ary2 = np.min(Distor_ary3, axis = -1) / N
+L = 3
+alpha_lst = np.linspace(0, 1, L)
+Distor_ary3 = np.zeros((len(SNR_C), SNR_S.size, L))
+for ii, snr_c in enumerate(SNR_C):
+    sigma_c2 = Pt * 10.0**(-snr_c / 10.0)
+    for jj, snr_s in enumerate(SNR_S):
+        sigma_s2 = Pt * 10.0**(-snr_s / 10.0)
+        for kk, alpha in enumerate(alpha_lst):
+            R = SolverProb45(Hc, Sigma_S, Pt, alpha, sigma_s2, sigma_c2)               # Solve problem (45) with α(l) and obtain R
+            Lambda_s2, Psi = np.linalg.eig(R)                                          # Obtain Ψ(l), Λ(l) according to R(l)
+            Ds = Ms * np.trace(np.linalg.inv(R/sigma_s2 + Sigma_S_inv))                # Compute Ds(R(l)) according to (17b)
+            IcR = np.log(np.linalg.det(Hc @ R @ Hc.conj().T/sigma_c2 + I_Mc ))         # Compute Ic(R(l)) according to (7)
+            R_eta = Sigma_S - np.linalg.inv(R/sigma_s2 + Sigma_S_inv)
+            lambaR, _ = np.linalg.eig(R_eta)
+            Dc, _,  _, _ ,_ = reverse_waterfill_D(IcR.real, np.abs(lambaR))
+            D_tol = Ds.real +  Mc * Dc
+            Distor_ary3[ii, jj, kk] = D_tol
+Distor_ary2 = np.min(Distor_ary3, axis = -1) / N
 
 #%% Algorithm 3 Modified Gradient Projection Algorithm
 def GradProject(p_bar, P_T, tol=1e-10, max_iter=1000):
@@ -187,18 +187,31 @@ def GradProject(p_bar, P_T, tol=1e-10, max_iter=1000):
     x = np.maximum(0, a - lambda_val)
     return x, lambda_val
 
+
+def armijo_search( grad_f, x, d, K, nozero_idx, Lambda_c, Lambda_s, sigma_c2, sigma_s2, alpha0 = 1.0, rho = 0.5, c1 = 1e-3, max_iter = 1000):
+
+    alpha = alpha0
+    f_x, _, _ = fun_tildeHp(K, x, nozero_idx, Lambda_c, Lambda_s, sigma_c2, sigma_s2, )
+    gradient_direction = np.dot(grad_f, d)  # 梯度与方向d的内积
+    for i in range(max_iter):
+        x_new = x + alpha * d
+        f_new, _, _ = fun_tildeHp(K, x_new, nozero_idx, Lambda_c, Lambda_s, sigma_c2, sigma_s2, )
+        if f_new <= f_x + c1 * alpha * gradient_direction:
+            return alpha
+        else:
+            alpha = rho * alpha
+
+    return alpha
+
+
 def fun_tildeHp(K, p_new, nozero_idx, Lambda_c, Lambda_s, sigma_c2, sigma_s2, ):
     gip = p_new * Lambda_s**2 / (sigma_s2 + Lambda_s * p_new)
     IcP = np.sum(np.log(Lambda_c * p_new / sigma_c2 + 1))
     tilde_fp = (np.sum(np.log(gip[nozero_idx])) - IcP/Ms) / K
-    tilde_hp = np.sum( gip[nozero_idx]) - K * np.exp(tilde_fp)
+    tilde_hp = K * np.exp(tilde_fp) - np.sum( gip[nozero_idx])
     return tilde_hp, gip, tilde_fp
 
-eps = 1e-6
-
-
-hp_old = -10
-hp_new = 0
+eps = 1e-10
 beta = 0.1
 alpha = 0.1
 Distor_MGP = np.zeros((len(SNR_C), SNR_S.size))
@@ -207,8 +220,14 @@ for ii, snr_c in enumerate(SNR_C):
     sigma_c2 = Pt * 10.0**(-snr_c / 10.0)
     for jj, snr_s in enumerate(SNR_S):
         sigma_s2 = Pt * 10.0**(-snr_s / 10.0)
-        p_old = np.array([Pt/N] * N)
+        p_old = np.random.rand(N)
+        p_old = Pt * p_old/p_old.sum()
+
+        hp_old = -10
+        hp_new = 0
+        count = 0
         while np.abs(hp_new - hp_old) > eps:
+            count += 1
             IcP = np.sum(np.log(Lambda_c * p_old / sigma_c2 + 1))
             gip = p_old * Lambda_s**2 / (sigma_s2 + Lambda_s * p_old)
             Dc, xi, K, nozero_idx, zero_idx = reverse_waterfill_D(IcP/Ms, gip)   # Calculate K^(l), ξ^(l) through reverse water-filling
@@ -216,18 +235,20 @@ for ii, snr_c in enumerate(SNR_C):
             p_nozero = p_old[nozero_idx]
             lamba_s_nozero = Lambda_s[nozero_idx]
             lamba_c_nozero = Lambda_c[nozero_idx]
-            grad_fp_nozero = (sigma_s2/(sigma_s2 * p_nozero + lamba_s_nozero * p_nozero**2) - lamba_c_nozero/Ms * (sigma_c2 + lamba_c_nozero * p_nozero)) / K   # Eq.(50)
-            tilde_fp = (np.sum(np.log(gip[nozero_idx])) - IcP/Ms) / K
-            grad_hp[nozero_idx] = lamba_s_nozero**2 * sigma_s2 / (sigma_s2 + lamba_s_nozero * p_nozero)**2 - K * np.exp(tilde_fp) * grad_fp_nozero              # Eq.(51)
+            grad_fp_nozero = (sigma_s2/(sigma_s2 * p_nozero + lamba_s_nozero * p_nozero**2) - lamba_c_nozero/Ms * (sigma_c2 + lamba_c_nozero * p_nozero)) / K   # Eq.(50.5)
+            tilde_fp = (np.sum(np.log(gip[nozero_idx])) - IcP/Ms) / K                                                                                           # Eq.(48)
+            grad_hp[nozero_idx] = K * np.exp(tilde_fp) * grad_fp_nozero - lamba_s_nozero**2 * sigma_s2 / (sigma_s2 + lamba_s_nozero * p_nozero)**2              # Eq.(51)
             # print(grad_hp)
-            p_now = p_old + beta * grad_hp
+            p_now = p_old - beta * grad_hp
             p_proj, _ = GradProject(p_now, Pt)
+            alpha = armijo_search(grad_hp, p_old, p_proj - p_old,  K, nozero_idx, Lambda_c, Lambda_s, sigma_c2, sigma_s2) # Find stepsize alpha based on the Armijo condition;
             p_new = p_old + alpha * (p_proj - p_old)
             ## update h(p)
             hp_now, gip, tilde_fp = fun_tildeHp(K, p_new, nozero_idx, Lambda_c, Lambda_s, sigma_c2, sigma_s2, )
             hp_old = hp_new
             hp_new = hp_now
             p_old = p_new
+        print(f"{snr_c} -> {snr_s} -> {count}")
         Distor_MGP[ii, jj] = Ms * ( Lambda_s.sum() - gip[nozero_idx].sum() + K * np.exp(tilde_fp) )
 Distor_MGP = Distor_MGP / N
 
