@@ -48,23 +48,23 @@ I_Mc = np.eye(Mc)
 
 
 #### Sigma_S
-# K = 20
-# delta_k = 1 # np.random.rand(K)
-# theta_k_deg = np.random.uniform(-90, 90, K)
-# theta_k_rad = np.deg2rad(theta_k_deg)
-# # 初始化 Sigma_s
-# Sigma_S = np.zeros((N, N), dtype=complex)
-# for k in range(K):
-#     a_theta =  (1/np.sqrt(N)) * np.exp(1j * np.pi * np.arange(N) * np.sin(theta_k_rad[k]))
-#     Sigma_S += delta_k**2 * np.outer(a_theta, a_theta.conj())
-# Lambda_s, U_s = np.linalg.eig(Sigma_S)
-# Sigma_S = np.diag(np.abs(Lambda_s))
-# Sigma_S_inv = np.linalg.inv(Sigma_S)
-
-lamba_s = 1 + np.random.rand(N)
-Sigma_S = np.eye(N) * lamba_s
+K = 20
+delta_k = 1 # np.random.rand(K)
+theta_k_deg = np.random.uniform(-90, 90, K)
+theta_k_rad = np.deg2rad(theta_k_deg)
+# 初始化 Sigma_s
+Sigma_S = np.zeros((N, N), dtype=complex)
+for k in range(K):
+    a_theta =  (1/np.sqrt(N)) * np.exp(1j * np.pi * np.arange(N) * np.sin(theta_k_rad[k]))
+    Sigma_S += delta_k**2 * np.outer(a_theta, a_theta.conj())
 Lambda_s, U_s = np.linalg.eig(Sigma_S)
+Sigma_S = np.diag(np.abs(Lambda_s))
 Sigma_S_inv = np.linalg.inv(Sigma_S)
+
+# lamba_s = 1 + np.random.rand(N)
+# Sigma_S = np.eye(N) * lamba_s
+# Lambda_s, U_s = np.linalg.eig(Sigma_S)
+# Sigma_S_inv = np.linalg.inv(Sigma_S)
 
 #### Sigma_C
 Hc = np.random.randn(Mc, N) + 1j * np.random.randn(Mc, N)
@@ -258,8 +258,8 @@ colors = plt.cm.jet(np.linspace(0, 1, 6))
 markers = ['d', 'o', 's', 'v', '^', '+']
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 for idx, snrc in enumerate(SNR_C):
-    # axs.plot(SNR_S, Distor_ary1[idx,:], ls = '-', lw = 2, marker = markers[idx], color=colors[idx], label = "$SNR_c = $" + f"{snrc} dB, L = 11")
-    # axs.plot(SNR_S, Distor_ary2[idx,:], ls = '--', lw = 2, marker = markers[idx], color=colors[idx], label = "$SNR_c = $" + f"{snrc} dB, L = 3")
+    axs.plot(SNR_S, Distor_ary1[idx,:], ls = '-', lw = 2, marker = markers[idx], color=colors[idx], label = "$SNR_c = $" + f"{snrc} dB, L = 11")
+    axs.plot(SNR_S, Distor_ary2[idx,:], ls = '--', lw = 2, marker = markers[idx], color=colors[idx], label = "$SNR_c = $" + f"{snrc} dB, L = 3")
     axs.plot(SNR_S, Distor_MGP[idx,:], ls = '-.', lw = 2, marker = markers[idx], color=colors[idx], label = "$SNR_c = $" + f"{snrc} dB, MGP")
 
 axs.set_xlabel('Sensing Channel SNR (dB)', )
