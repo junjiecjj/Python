@@ -26,6 +26,5 @@ plot(start_cell:stop_cell, pow2db(threshold), 'linewidth', 1);
 [position, threshold, start_cell, stop_cell] = gocacfar(signal, Pfa, 10, 2);
 plot(start_cell:stop_cell, pow2db(threshold), 'linewidth', 1);
 
-
 grid on;
 legend('信号', 'CA CFAR阈值', 'OS CFAR阈值', 'SOCA CFAR阈值', 'GOCA CFAR阈值');

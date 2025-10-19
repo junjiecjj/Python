@@ -53,7 +53,7 @@ delay = 2*d/c # 实际延迟时间（秒）
 
 
 X = scipy.signal.chirp(t, 0, 1, 100);
-Y = np.hstack((np.zeros(int(np.round(delay*fs))), X[:-int(np.round(delay*fs))])) + 0.5 * np.random.randn(X.size)
+Y = np.hstack((np.zeros(int(np.round(delay*fs))), X[:-int(np.round(delay*fs))])) + 0.01 * np.random.randn(X.size)
 
 ##>>>>>>  method 1
 acf, lag = xcorr(Y, X, normed = True, detrend = True, maxlags = Y.size - 1)

@@ -46,6 +46,8 @@ r_array = 2 + np.sin(6 * theta_array)
 # 可视化
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 ax.plot(theta_array, r_array)
+plt.show()
+plt.close()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  更多极坐标线图
 # 导入包
@@ -64,6 +66,8 @@ ax.set_rmin(0)
 ax.set_rlabel_position(22.5)  # Move radial labels away from plotted line
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 # 阿基米德螺线
 r_array = np.arange(0, 4, 0.01)
@@ -76,6 +80,8 @@ ax.set_rmin(r_array.min())
 ax.set_rlabel_position(22.5)
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 # 心形曲线
 theta_array = np.linspace(0, 2*np.pi, 2000)
@@ -90,6 +96,8 @@ ax.set_rmin(r_array.min())
 ax.set_rlabel_position(22.5)
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 # 椭圆
 theta_array = np.linspace(0,2*np.pi, 2000)
@@ -104,6 +112,8 @@ ax.set_rmin(0)
 ax.set_rlabel_position(22.5)
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 
 # 玫瑰线
@@ -119,6 +129,8 @@ ax.set_rmin(r_array.min())
 ax.set_rlabel_position(22.5)
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 # 玫瑰线，有理数
 theta_array = np.linspace(0,7*np.pi, 2000)
@@ -133,6 +145,8 @@ ax.set_rmin(r_array.min())
 ax.set_rlabel_position(22.5)
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 # 双纽线
 a = 2
@@ -151,6 +165,8 @@ ax.set_rmin(r_array.min())
 ax.set_rlabel_position(22.5)
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 # 蝴蝶翼
 theta_array = np.linspace(0,2*np.pi, 2000)
@@ -164,6 +180,8 @@ ax.set_rlabel_position(22.5)
 ax.set_rmin(r_array.min())
 ax.grid(True)
 ax.set_yticklabels([])
+plt.show()
+plt.close()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 极坐标散点图
 #%% 导入包
@@ -204,6 +222,7 @@ ax.set_rorigin(-2)
 # 例如，如果将 value 设置为负数，那么极坐标轴原点将会移动到图形中心的下方，
 # 而如果将 value 设置为正数，那么极坐标轴原点将会移动到图形中心的上方。
 plt.show()
+plt.close()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 扇形散点图
 import numpy as np
@@ -222,6 +241,7 @@ ax = fig.add_subplot(projection='polar')
 ax.scatter(theta, r, c=colors, s=area, cmap='hsv', alpha=0.75)
 ax.set_thetamin(0)
 ax.set_thetamax(180)
+
 plt.show()
 
 

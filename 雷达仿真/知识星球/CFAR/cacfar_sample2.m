@@ -10,9 +10,8 @@ noise_power_dB = 20;
 Pfa = 1e-5;
 
 % 展示一个目标遮蔽的示例
-echo_power_dB = [noise_power_dB + 12, noise_power_dB + 15];
-signal = generateDataGaussianWhite(num_unit, pos_target, ...
-                                   echo_power_dB, noise_power_dB);
+echo_power_dB = [noise_power_dB + 12, noise_power_dB +  15];
+signal = generateDataGaussianWhite(num_unit, pos_target, echo_power_dB, noise_power_dB);
 [pos, thres, start_cell, stop_cell] = cacfar(signal, Pfa, 10, 2);
 figure;
 hold on;
@@ -37,8 +36,7 @@ for ii = 1:length(SNR_dB)
     fprintf("SNR = %f dB\n", SNR_dB(ii));
     echo_power_dB = [noise_power_dB + SNR_dB(ii), noise_power_dB + 15];
     for mc = 1:MC_num
-        signal = generateDataGaussianWhite(num_unit, pos_target, ...
-                                           echo_power_dB, noise_power_dB);
+        signal = generateDataGaussianWhite(num_unit, pos_target, echo_power_dB, noise_power_dB);
         [pos, thres, start_cell, stop_cell] = cacfar(signal, Pfa, 10, 2);
         if ~isempty(find(pos == 95))
             detection_times_95(ii) = detection_times_95(ii) + 1;

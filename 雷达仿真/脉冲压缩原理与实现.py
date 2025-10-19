@@ -40,38 +40,42 @@ def rectpuls(t, remove, T):
     rect = (t >= -T/2) * (t <= T/2)
     # res = np.zeros(rect.size)
     K = int(remove*fs)
-    rect = np.roll(rect, K)
+    rect = np.roll(rect, K) # 循环左移
 
     # t = t + remove
     return rect
 
 ### parameters
+c = 3e8          # 光速
 f0 = 10e9        # 载波
 Tp = 10e-6       # 脉冲持续时间
 B = 10e6         # 带宽
-fs = 100e6       # 采样频率
-c = 3e8          # 光速
-R0 = 3e3         # 目标距离
 k = B/Tp         # 调频斜率
+fs = 100e6       # 采样频率
+R0 = 3e3         # 目标距离
 
 # signal generation
 N = 1024*4       # 采样点
-n = np.arange(N)
+# n = np.arange(N)
 Ts = 1/fs        # 采样间隔
-t = n*Ts
-f = -fs/2 + n*(fs/N)
+t = np.arange(N)*Ts
+f = -fs/2 + np.arange(N)*(fs/N)
 tau_0 = 2*R0/c   # 时延
 
 st = rectpuls(t, Tp/2, Tp) * np.exp(1j * np.pi * k * (t-Tp/2)**2)    #  参考信号
 #  回波信号
-secho = rectpuls(t, tau_0+Tp/2, Tp) * np.exp(1j * np.pi * k * (t - tau_0 - Tp/2)**2) * np.exp(-1j * 2 * np.pi * f0 * tau_0)
-
+# secho = rectpuls(t, tau_0+Tp/2, Tp) * np.exp(1j * np.pi * k * (t - tau_0 - Tp/2)**2) * np.exp(-1j * 2 * np.pi * f0 * tau_0)
+secho = rectpuls(t, tau_0+Tp/2, Tp) * np.exp(1j * np.pi * (k * (t - tau_0 - Tp/2)**2 + 2 * f0 * tau_0))
 #=============== 频域实现脉冲压缩 ================
 Xs = scipy.fft.fft(st, N);        # 本地副本的FFT
 Xecho = scipy.fft.fft(secho, N);  # 输入信号的FFT
 Y = np.conjugate(Xs)*Xecho;       # 乘法器
 Y = scipy.fft.fftshift(Y);
 y = scipy.fft.ifft(Y,N);          # IFFT
+
+r = t*c/2;
+y = np.abs(y)/max(np.abs(y)) + 1e-10;
+R0_est = r[np.argmax(np.abs(y))]
 
 ##### plot
 fig, axs = plt.subplots(4, 2, figsize = (12, 16), constrained_layout = True)
@@ -112,14 +116,11 @@ axs[3,0].set_xlabel('Frequency/MHz',)
 axs[3,0].set_ylabel('幅值',)
 axs[3,0].set_title("Spectral of the Result of Pulse Compression" )
 
-r = t*c/2;
-y = np.abs(y)/max(np.abs(y)) + 1e-10;
 axs[3,1].plot(r, 20*np.log10(y), color = 'b', label = '')
 axs[3,1].set_xlabel('Range/m',)
 axs[3,1].set_ylabel('幅值',)
 axs[3,1].set_title("Result of Pulse Compression" )
 
-R0_est = r[np.argmax(np.abs(y))]
 print(f"R0 = {R0}, R0_est = {R0_est}")
 plt.show()
 plt.close()

@@ -6,6 +6,9 @@ Created on Thu Aug 21 01:23:01 2025
 @author: jack
 
 https://github.com/YongzhiWu/OFDM_ISAC_simulator
+
+单次仿真，有通信也有感知，感知包括测速测距, 测距只有FFT
+
 """
 
 import numpy as np
@@ -117,7 +120,7 @@ comResult = f'Number of error bits: {errorCount}'
 print(comResult)
 
 #%% Radar channel
-target_pos = 30  # target distance
+target_pos = 60  # target distance
 target_delay = range2time(target_pos, c0_val)
 target_speed = 20  # target velocity
 target_dop = speed2dop(2 * target_speed, lambda_val)

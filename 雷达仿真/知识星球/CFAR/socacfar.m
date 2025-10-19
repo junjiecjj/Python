@@ -26,8 +26,6 @@ function [position, threshold, start_cell, stop_cell] = socacfar(signal, Pfa, re
             position = [position, ii];
         end
     end
-
-
     function alpha = get_alpha(Pfa_set, N)
         % 用中点法求alpha_OS
         left_alpha = 0;

@@ -139,6 +139,12 @@ phase_shift = -1j * 2 * np.pi * (
     kSub * Ts * target_dop
 )
 
+# phase_shift = -1j * 2 * np.pi * (
+#     fc * target_delay -
+#     mSym * Ts * target_dop  -
+#     kSub * delta_f * target_delay
+# )
+
 noise = (np.random.randn(N, M) + 1j*np.random.randn(N, M)) / np.sqrt(2)
 RxData_radar = np.sqrt(RadarSNR) * TxData * np.exp(phase_shift) + noise
 

@@ -166,7 +166,7 @@ for t = 1:nT
     cfar_dopps_A = cfar_dopps_A + 1;
     cfar_dopps_B = cfar_dopps_B + 1;
     TrgtR = Range(cfar_dopps_A);
-    TrftV = Velovity(cfar_ranges_A);
+    TrftV = Velocity(cfar_ranges_A);
 
     % 获取对应目标在波束 A 和 B 中的强度
     intensity_A = abs(FFT_y1out(cfar_ranges_A, cfar_dopps_A));
@@ -175,7 +175,7 @@ for t = 1:nT
     % 计算和（Σ）和差（Δ）
     sum_val = intensity_A + intensity_B;
     diff_val = intensity_A - intensity_B;
-        
+
     % 计算和差比 Δ/Σ
     sum_diff_ratio = diff_val / sum_val;
         
@@ -215,22 +215,22 @@ legend('真实航迹','点迹估计结果','Location','southeast');
 xlabel('X（m)');ylabel('Y（m)');title('航迹放大图');
 
 figure(6);
-mesh(Range,Velovity,abs(FFT_y1out_all(:,:,40)));hold on;
+mesh(Range,Velocity,abs(FFT_y1out_all(:,:,40)));hold on;
 xlabel('距离（m)');ylabel('速度（m/s)');title('MTD-波束A-距离速度检测');
 set(gca, 'YDir', 'reverse');
 
 figure(7);
-mesh(Range,Velovity,abs(FFT_y2out_all(:,:,40)));hold on;
+mesh(Range,Velocity,abs(FFT_y2out_all(:,:,40)));hold on;
 xlabel('距离（m)');ylabel('速度（m/s)');title('MTD-波束B-距离速度检测');
 set(gca, 'YDir', 'reverse');
 
 figure(8);
-mesh(Range,Velovity,abs(RDM_mask_A_all(:,:,40)));hold on;
+mesh(Range,Velocity,abs(RDM_mask_A_all(:,:,40)));hold on;
 xlabel('距离（m)');ylabel('速度（m/s)');title('CFAR-波束A-距离速度检测');
 set(gca, 'YDir', 'reverse');
 
 figure(9);
-mesh(Range,Velovity,abs(RDM_mask_B_all(:,:,40)));hold on;
+mesh(Range,Velocity,abs(RDM_mask_B_all(:,:,40)));hold on;
 xlabel('距离（m)');ylabel('速度（m/s)');title('CFAR-波束B-距离速度检测');
 set(gca, 'YDir', 'reverse');
 

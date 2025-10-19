@@ -12,8 +12,7 @@ pos_target = 50;
 echo_power_dB = 35;
 noise_power_dB = 20;
 Pfa = 1e-3;
-signal = generateDataGaussianWhite(num_unit, pos_target, ...
-                                   echo_power_dB, noise_power_dB);
+signal = generateDataGaussianWhite(num_unit, pos_target, echo_power_dB, noise_power_dB);
 signal_dB = 10 .* log10(signal);
 
 % data2:
@@ -25,8 +24,7 @@ pos_target2 = [50; 58];
 echo_power_dB2 = [35; 40];
 noise_power_dB2 = 20;
 Pfa2 = 1e-3;
-signal2 = generateDataGaussianWhite(num_unit2, pos_target2, ...
-                                   echo_power_dB2, noise_power_dB2);
+signal2 = generateDataGaussianWhite(num_unit2, pos_target2, echo_power_dB2, noise_power_dB2);
 signal2_dB = 10 .* log10(signal2);
 
 % data3:
@@ -38,8 +36,7 @@ pos_target3 = [50; 51; 52];
 echo_power_dB3 = [35; 35; 35];
 noise_power_dB3 = 20;
 Pfa3 = 1e-3;
-signal3 = generateDataGaussianWhite(num_unit3, pos_target3, ...
-                                   echo_power_dB3, noise_power_dB3);
+signal3 = generateDataGaussianWhite(num_unit3, pos_target3, echo_power_dB3, noise_power_dB3);
 signal3_dB = 10 .* log10(signal3);
 
 % data4:
@@ -56,10 +53,8 @@ echo_power_dB4_2 = [];
 noise_power_dB4_1 = 20;
 noise_power_dB4_2 = 30;
 Pfa4 = 1e-3;
-signal4_1 = generateDataGaussianWhite(num_unit4_1, pos_target4_1, ...
-                                   echo_power_dB4_1, noise_power_dB4_1);
-signal4_2 = generateDataGaussianWhite(num_unit4_2, pos_target4_2, ...
-                                   echo_power_dB4_2, noise_power_dB4_2);
+signal4_1 = generateDataGaussianWhite(num_unit4_1, pos_target4_1, echo_power_dB4_1, noise_power_dB4_1);
+signal4_2 = generateDataGaussianWhite(num_unit4_2, pos_target4_2, echo_power_dB4_2, noise_power_dB4_2);
 signal4 = [signal4_1; signal4_2];
 signal4_dB = 10 .* log10(signal4);
 
@@ -77,10 +72,8 @@ echo_power_dB5_2 = [];
 noise_power_dB5_1 = 20;
 noise_power_dB5_2 = 30;
 Pfa5 = 1e-3;
-signal5_1 = generateDataGaussianWhite(num_unit5_1, pos_target5_1, ...
-                                   echo_power_dB5_1, noise_power_dB5_1);
-signal5_2 = generateDataGaussianWhite(num_unit5_2, pos_target5_2, ...
-                                   echo_power_dB5_2, noise_power_dB5_2);
+signal5_1 = generateDataGaussianWhite(num_unit5_1, pos_target5_1, echo_power_dB5_1, noise_power_dB5_1);
+signal5_2 = generateDataGaussianWhite(num_unit5_2, pos_target5_2, echo_power_dB5_2, noise_power_dB5_2);
 signal5 = [signal5_1; signal5_2];
 signal5_dB = 10 .* log10(signal5);
 
@@ -98,10 +91,8 @@ echo_power_dB6_2 = [];
 noise_power_dB6_1 = 20;
 noise_power_dB6_2 = 30;
 Pfa6 = 1e-3;
-signal6_1 = generateDataGaussianWhite(num_unit6_1, pos_target6_1, ...
-                                   echo_power_dB6_1, noise_power_dB6_1);
-signal6_2 = generateDataGaussianWhite(num_unit6_2, pos_target6_2, ...
-                                   echo_power_dB6_2, noise_power_dB6_2);
+signal6_1 = generateDataGaussianWhite(num_unit6_1, pos_target6_1, echo_power_dB6_1, noise_power_dB6_1);
+signal6_2 = generateDataGaussianWhite(num_unit6_2, pos_target6_2,  echo_power_dB6_2, noise_power_dB6_2);
 signal6 = [signal6_1; signal6_2];
 signal6_dB = 10 .* log10(signal6);
 

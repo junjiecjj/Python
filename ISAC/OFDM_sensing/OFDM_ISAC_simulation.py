@@ -6,8 +6,8 @@ Created on Thu Aug 21 17:30:37 2025
 @author: jack
 Source code: https://github.com/YongzhiWu/OFDM_ISAC_simulator
 
-OFDM_radar.py 是雷达感知部分代码，一帧，为了演示感知算法；
-OFDM_ISAC_simulator.py 是通信+感知部分，一帧；
+OFDM_radar.py 是雷达感知部分代码，单次仿真，只有感知，感知包括测距, 测距有FFT和MUSIC;
+OFDM_ISAC_simulator.py 单次仿真，有通信也有感知，感知包括测速测距, 测距只有FFT
 OFDM_ISAC_simulation.py 是通信+感知部分，蒙特卡洛仿真；
 
 主要看 OFDM_ISAC_simulation.py
@@ -114,13 +114,13 @@ def speed2dop(speed, lambda_val):
     """速度转换为多普勒频率"""
     return 2 * speed / lambda_val
 
-# %% ISAC Transmitter
+#%% ISAC Transmitter
 # System parameters
 c0_val = c0  # speed of light
 fc = 30e9  # carrier frequency
 lambda_val = c0_val / fc  # wavelength
-N = 256  # number of subcarriers
-M = 16  # number of symbols
+N = 64  # number of subcarriers
+M = 32  # number of symbols
 delta_f = 15e3 * 2**6  # subcarrier spacing
 T = 1 / delta_f  # symbol duration
 Tcp = T / 4  # cyclic prefix duration
@@ -138,7 +138,7 @@ modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
 map_table, demap_table = modem.getMappTable()
 
 #%% Comm Part
-EbN0dBs = np.arange(0, 30, 5)
+EbN0dBs = np.arange(0, 37, 4)
 EsN0dBs = 10*np.log10(bps*N/(N + CPsize)) + EbN0dBs # 10 * np.log10(bps) + EbN0dBs
 nFrame = 500
 SER_sim = np.zeros(len(EbN0dBs))
@@ -207,7 +207,7 @@ for idx, snr in enumerate(EsN0dBs):
 
 SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, QAM_mod)
 colors = plt.cm.jet(np.linspace(0, 1, 5))
-fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 
 axs.semilogy(EbN0dBs, SER_sim, 'bo-', label='OFDM (仿真)')
 axs.semilogy(EbN0dBs, SER_theory, 'r*--', label='OFDM (理论)')
@@ -216,19 +216,19 @@ axs.set_xlabel('Eb/N0 (dB)')
 axs.set_ylabel('SER')
 axs.legend()
 
-plt.title('OFDM-QPSK 符号错误率性能')
+plt.title('OFDM-4QAM 符号错误率性能')
 plt.show()
 plt.close('all')
 
 #%% Sensing Part
-target_pos = 30  # target distance
+target_pos = 60  # target distance
 target_delay = range2time(target_pos, c0_val)
 target_speed = 20  # target velocity
 target_dop = speed2dop(2 * target_speed, lambda_val)
 RadarSNRdB =  20  # SNR of radar sensing channel
 RadarSNR = 10**(RadarSNRdB/10)
 
-SNRdBs = np.arange(-20, 10, 2)
+SNRdBs = np.arange(-20, 10, 5)
 nFrame = 1000
 RmseList = np.zeros(SNRdBs.size)
 
@@ -245,11 +245,9 @@ for idx, radarsnr in enumerate(SNRdBs):
         RxData_radar = np.zeros((N, M), dtype=complex)
         for kSubcarrier in range(N):
             for mSymbol in range(M):
-                # Radar channel model with delay and Doppler
-                phase_delay = np.exp(-1j * 2 * np.pi * fc * target_delay)
-                phase_doppler = np.exp(1j * 2 * np.pi * mSymbol * Ts * target_dop)
-                phase_subcarrier = np.exp(-1j * 2 * np.pi * kSubcarrier * target_delay * delta_f)
-                signal_component =  TxData[kSubcarrier, mSymbol] * phase_delay * phase_doppler * phase_subcarrier
+
+                phase_shift = np.exp(-1j*2*np.pi*(fc * target_delay - mSymbol * Ts * target_dop + kSubcarrier * target_delay * delta_f))
+                signal_component =  TxData[kSubcarrier, mSymbol] * phase_shift  #  phase_delay * phase_doppler * phase_subcarrier
                 noise_component = np.sqrt(sigma2/2.0) * (np.random.randn() + 1j * np.random.randn())
                 RxData_radar[kSubcarrier, mSymbol] = signal_component + noise_component
 
@@ -262,31 +260,102 @@ for idx, radarsnr in enumerate(SNRdBs):
         mean_normalizedPower = np.mean(normalizedPower, axis=1)
         mean_normalizedPower = mean_normalizedPower / np.max(mean_normalizedPower)
         mean_normalizedPower_dB = 10 * np.log10(mean_normalizedPower + 1e-10)  # Avoid log(0)
-        # range_axis = np.arange(NPer) * c0_val / (2 * delta_f * NPer)
+        # range_axis = np.arange(NPer) * c0 / (2 * delta_f * NPer)
         rangeEstimation = np.argmax(mean_normalizedPower_dB)
         distanceE = rangeEstimation * c0_val / (2 * delta_f * NPer)  # estimated target range
         mse += (target_pos - distanceE)**2
     RmseList[idx] = np.sqrt(mse/nFrame)
 
 colors = plt.cm.jet(np.linspace(0, 1, 5))
-fig, axs = plt.subplots(1, 1, figsize = (10, 8), constrained_layout = True)
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 axs.plot(SNRdBs, RmseList, 'bo-', label='RMSE')
 axs.set_xlabel('SNR (dB)')
 axs.set_ylabel('RMSE')
 axs.legend()
-plt.title('RMSE')
+plt.title('Range MSE')
 plt.show()
 plt.close('all')
 
+###################  周期图/FFT估计（FFT距离估计）
+dividerArray = RxData_radar / TxData  # 抵消发射信号
+NPer = 16 * N                         # 补零点数
+# range_fft = np.fft.ifft(dividerArray, n=NPer, axis=0)  # 距离维FFT
+range_power = np.abs(np.fft.ifft(dividerArray, n=NPer, axis=0))
+mean_range_power = np.mean(range_power, axis=1)  # 沿符号方向平均
+mean_range_power = mean_range_power / np.max(mean_range_power)
+mean_range_power_dB = 10*np.log10(mean_range_power + 1e-12)
+
+# 距离轴计算
+range_axis = np.arange(NPer) * c0 / (2 * NPer * delta_f)
+rangeEst_idx = np.argmax(mean_range_power)
+distanceE = range_axis[rangeEst_idx]
+print(f'目标估计距离: {distanceE:.2f} m (真实距离: {target_pos} m)')
+
+################### MUSIC算法
+# 移除发射数据信息
+dividerArray = RxData_radar / TxData
+
+nTargets = 1
+Rxxd = dividerArray @ dividerArray.conj().T / M
+# 特征值分解
+distanceEigen, Vd = np.linalg.eig(Rxxd)
+# 排序特征值和特征向量
+sorted_indices = np.argsort(distanceEigen)[::-1]
+distanceEigenDiag = distanceEigen[sorted_indices]
+Vd = Vd[:, sorted_indices]
+# 噪声子空间
+distanceEigenMatNoise = Vd[:, nTargets:]
+
+# MUSIC谱估计
+omegaDistance = np.arange(0, 2 * np.pi + np.pi/100, np.pi/100)
+distanceIndex = omegaDistance * c0 / (2 * np.pi * 2 * delta_f)
+
+SP = np.zeros(len(omegaDistance), dtype=complex)
+nIndex = np.arange(0, N)
+
+for index, omega in enumerate(omegaDistance):
+    omegaVector = np.exp(-1j * nIndex * omega)
+    denominator = omegaVector.conj().T @ (distanceEigenMatNoise @ distanceEigenMatNoise.conj().T) @ omegaVector
+    SP[index] = (omegaVector.conj().T @ omegaVector) / denominator
+
+SP_dB = 10 * np.log10(np.abs(SP) / np.abs(SP).max())
+
+###############
+
+fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
+# axs.plot(range_axis, mean_range_power_dB, 'b-', linewidth=1)
+
+axs.plot(distanceIndex, SP_dB, label='MUSIC')
+axs.plot(range_axis, mean_range_power_dB, label='periodogram')
+
+axs.axvline(x=target_pos, color='r', linestyle='-', linewidth=2, label = '真实距离')
+axs.axvline(x=distanceE, color='g',  linestyle='--',   linewidth=1.2, label = '估计距离')
+axs.set_xlabel('距离 (m)');
+axs.set_ylabel('归一化功率 (dB)');
+axs.set_title('雷达目标距离-功率谱')
+axs.legend();
+# axs.grid(True);
+# axs.set_xlim(0, 60)
+plt.show()
+plt.close()
 
 
+#%% 测速
+# Velocity estimation
+MPer = 128 * M
+velocityProfile = np.abs(np.fft.fft(dividerArray, MPer, axis=1))
+mean_velocityProfile = np.mean(velocityProfile, axis=0)
+normalizedVelocityProfile = mean_velocityProfile / np.max(mean_velocityProfile)
+normalizedVelocityProfile_dB = 10 * np.log10(normalizedVelocityProfile + 1e-10)
+# Rearrange for symmetric velocity profile
+velocityIndex = np.arange(-MPer//2, MPer//2) * c0_val / (2 * fc * Ts * 2*MPer)
+velocityProfile_dB = np.concatenate([normalizedVelocityProfile_dB[MPer//2:], normalizedVelocityProfile_dB[:MPer//2]])
+velocityEstimation = np.argmax(velocityProfile_dB)
+velocityE = velocityIndex[velocityEstimation]  # estimated target velocity
 
+# Display results
 
-
-
-
-
-
+print(f'目标估计速度: {velocityE:.2f} m (真实速度: {target_speed} m)')
 
 
 

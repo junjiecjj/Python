@@ -91,15 +91,15 @@ t = np.linspace(-T/2, T/2, int(N))
 St = np.exp(1j * np.pi * K * t**2);       # 线性调频信号
 Ht = np.exp(-1j * np.pi * K * t**2)       # 匹配滤波
 Sot = np.convolve(St, Ht);                # 线性调频信号经过匹配滤波
+Z = np.abs(Sot)
+Z = Z/max(Z)                     # 归一化
+Z = 20 * np.log10(Z + 1e-6)
 
 ##### plot
 fig, axs = plt.subplots(4, 1, figsize = (12, 12), constrained_layout = True)
 
 L = 2 * N - 1
 t1 = np.linspace(-T, T, int(L))
-Z = np.abs(Sot)
-Z = Z/max(Z)                     # 归一化
-Z = 20 * np.log10(Z + 1e-6)
 Z1 = np.abs(np.sinc(B * t1))     # 辛格函数
 Z1 = 20 * np.log10(Z1 + 1e-6)
 t1 = t1*B
@@ -153,6 +153,7 @@ axs[0].legend()
 
 f, Y, A, Pha, R, I = freqDomainView(St, Fs, FFTN = None, type = 'double')
 axs[1].plot(f, A, color = 'b', label = '')
+# axs[1].set_xlim(-20e6, 20e6)  # 拉开坐标轴范围显示投影
 axs[1].set_xlabel('f/Hz',)
 axs[1].set_ylabel('幅度 ',)
 axs[1].set_title(" ")
@@ -189,7 +190,7 @@ echo_signal += noise
 
 ## 脉冲压缩（匹配滤波）
 matched_filter = np.conj(chirp_signal[::-1])  # 匹配滤波器：发射信号的共轭反转
-compressed_signal = np.convolve(echo_signal, matched_filter, mode = 'valid')
+compressed_signal = np.convolve(echo_signal, matched_filter, mode = 'full')
 compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
 # 结果可视化
 plt.figure(figsize=(12, 8))
@@ -210,7 +211,7 @@ plt.xlabel("Time (μs)")
 plt.ylabel("Amplitude")
 
 # 脉冲压缩结果（幅度）
-t_compressed = np.arange(len(compressed_signal)) / fs * 1e6
+t_compressed = (np.arange(len(compressed_signal)) - len(chirp_signal)) / fs * 1e6
 plt.subplot(3, 1, 3)
 plt.plot(t_compressed, 20 * np.log10(np.abs(compressed_signal)))
 plt.title("Pulse Compression Output (dB)")
@@ -219,6 +220,10 @@ plt.ylabel("Amplitude (dB)")
 plt.tight_layout()
 plt.show()
 plt.close()
+
+time_delay = t_compressed[np.argmax(np.abs(compressed_signal))] / 1e6
+print(f"Estimated time delay = {time_delay}")
+
 
 #%% DeepSeek
 import numpy as np
@@ -238,7 +243,7 @@ t = np.arange(-T/2, T/2, 1/fs)
 # 生成线性调频信号(LFM)
 K = B / T  # 调频斜率
 s_t = np.exp(1j * np.pi * K * t**2 + 1j * 2 * np.pi * f0 * t)  # 发射信号(复数形式)
-s_t = np.exp(1j * np.pi * K * t**2 )  # 发射信号(复数形式)
+# s_t = np.exp(1j * np.pi * K * t**2 )  # 发射信号(复数形式)
 
 # 添加噪声模拟接收信号
 noise = 0.1 * (np.random.randn(len(s_t)) + 1j * np.random.randn(len(s_t)))
@@ -279,6 +284,21 @@ plt.show()
 plt.close()
 
 
+#%%
+
+
+
+#%%
+
+
+
+
+#%%
+
+
+
+
+#%%
 
 
 
