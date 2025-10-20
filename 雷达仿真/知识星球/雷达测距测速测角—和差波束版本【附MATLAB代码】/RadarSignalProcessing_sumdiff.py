@@ -39,7 +39,6 @@ def rectpuls(t, width):
     """生成矩形脉冲"""
     return np.where((t >= -width/2) & (t <= width/2), 1, 0)
 
-
 def ca_cfar(RDM_dB, numGuard, numTrain, P_fa, SNR_OFFSET):
     """CA-CFAR检测算法"""
     numTrain2D = numTrain * numTrain - numGuard * numGuard
@@ -122,8 +121,8 @@ def plotTrajectory(Detect_Result, data = 'idea'):
     ax_polar.set_theta_direction(-1)       # 角度顺时针增加
     ax_polar.set_thetamin(0)
     ax_polar.set_thetamax(180)
-    ax_polar.set_ylim(0, np.max(distance) * 1.1)
-    ax_polar.set_title('航迹动态显示 - 极坐标', pad = 10)
+    ax_polar.set_ylim((np.max(distance) - 500)/1000 , (np.max(distance) +500)/1000)
+    ax_polar.set_title('航迹动态显示 - 极坐标', pad = 0)
 
     # 极坐标初始化函数
     def init_polar():
@@ -134,7 +133,7 @@ def plotTrajectory(Detect_Result, data = 'idea'):
     def update_polar(frame):
         # current_angle = angle_polar[frame] * np.pi / 180
         # current_distance = distance[frame]
-        line_polar.set_data(angle_polar[:frame+1] * np.pi / 180, distance[:frame+1])
+        line_polar.set_data(angle_polar[:frame+1] * np.pi / 180, distance[:frame+1]/1000)
         return line_polar,
 
     # 创建极坐标动画
@@ -300,7 +299,6 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-
 #%% 测距、测速、测角
 # 初始化数组
 Detect_Result = np.zeros((3, nT))  # 最终测量结果
@@ -324,7 +322,7 @@ h_w = np.conj(sr[::-1]) * win
 h_w_freq = np.fft.fft(h_w)
 
 # 噪声
-clutter = (np.sqrt(2)/2 * np.random.randn(M, N_sample) + np.sqrt(2)/2 * 1j * np.random.randn(M, N_sample))  # 噪声
+noise = (np.sqrt(2)/2 * np.random.randn(M, N_sample) + np.sqrt(2)/2 * 1j * np.random.randn(M, N_sample))  # 噪声
 
 for t in range(nT):
     print(f"{t+1}/{nT} --> {(t+1)*100/nT}%")
@@ -336,7 +334,7 @@ for t in range(nT):
         tao = 2 * (data[0] - data[1] * (ta + t1)) / c # 顺时位置 = 当前粗粒度的位置 - 当前速度x当前脉冲序号时延
         signal_i[i_n, :] = (SNR * rectpuls(t1 - tao - Tr/2, Tr) * np.exp(1j * 2 * np.pi * Fc * (t1 - tao - Tr/2) + 1j * np.pi * (Br/Tr) * (t1 - tao - Tr/2) ** 2))
 
-        st = a_tar_LinearArray * signal_i[i_n, :] + clutter
+        st = a_tar_LinearArray * signal_i[i_n, :] + noise
 
         y1 = w_1.conj().T @ st  # 波束A回波
         y2 = w_2.conj().T @ st  # 波束B回波
@@ -349,9 +347,9 @@ for t in range(nT):
     FFT_y1out_all[:, :, t] = FFT_y1out
     FFT_y2out_all[:, :, t] = FFT_y2out
     # CA-CFAR
-    numGuard = 2  # # of guard cells
-    numTrain = numGuard * 2  # # of training cells
-    P_fa = 1e-5  # desired false alarm rate
+    numGuard = 2      ## of guard cells
+    numTrain = numGuard * 2  ## of training cells
+    P_fa = 1e-5      # desired false alarm rate
     SNR_OFFSET = -5  # dB
     RDM_dB_y1 = 10 * np.log10(np.abs(FFT_y1out) / np.max(np.abs(FFT_y1out)))
     RDM_dB_y2 = 10 * np.log10(np.abs(FFT_y2out) / np.max(np.abs(FFT_y2out)))

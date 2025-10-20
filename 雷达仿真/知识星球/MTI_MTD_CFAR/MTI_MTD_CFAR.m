@@ -22,7 +22,7 @@ TargetNumber=3;%目标个数
 SigPower(1:TargetNumber)=[1 1 1];                                       %目标功率,无量纲
 TargetDistance(1:TargetNumber)=[5000 15000 20000];                      %目标距离,单位m
 DelayNumber(1:TargetNumber)=fix(Fs*2*TargetDistance(1:TargetNumber)/C); %把目标距离换算成采样点（距离门）
-TargetVelocity(1:TargetNumber)=[0 50 200];                              %目标径向速度 单位m/s
+TargetVelocity(1:TargetNumber)=[20 50 100];                              %目标径向速度 单位m/s
 TargetFd(1:TargetNumber)=2*TargetVelocity(1:TargetNumber)/Lambda;       %计算目标多卜勒
 %% 信号产生
  number=fix(Fs*TimeWidth);%回波的采样点数=脉压系数长度=暂态点数目+1
@@ -74,10 +74,16 @@ for i=1:PulseNumber-1  %滑动对消，少了一个脉冲
    mti(i,:)=pc(i+1,:)-pc(i,:);
 end
 figure;
-  xmti = C/2*(0:1/Fs:PRT-1/Fs);
-  ymti = 1:PulseNumber-1;
+xmti = C/2*(0:1/Fs:PRT-1/Fs);
+ymti = 1:PulseNumber-1;
 mesh(xmti,ymti,abs(mti));title('MTI 结果');
-  xlabel('距离/m');
+xlabel('距离/m');
+
+figure;
+xmti = C/2*(0:1/Fs:PRT-1/Fs);
+ymti = 0:PulseNumber-1;
+mesh(xmti,ymti,abs(pc));title('频域脉压结果');
+xlabel('距离/m');
 
 figure;
 subplot(211)

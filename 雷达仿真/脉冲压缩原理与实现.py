@@ -32,7 +32,7 @@ plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色�
 plt.rcParams['legend.fontsize'] = 22
 
 #%%  https://blog.csdn.net/qq_43485394/article/details/122655901
-
+### 频域实现脉冲压缩
 def rectpuls(t, remove, T):
     Ts = t[1] - t[0]
     fs = 1/Ts
@@ -52,14 +52,14 @@ Tp = 10e-6       # 脉冲持续时间
 B = 10e6         # 带宽
 k = B/Tp         # 调频斜率
 fs = 100e6       # 采样频率
-R0 = 3e3         # 目标距离
+R0 = 3000         # 目标距离
 
 # signal generation
 N = 1024*4       # 采样点
 # n = np.arange(N)
 Ts = 1/fs        # 采样间隔
 t = np.arange(N)*Ts
-f = -fs/2 + np.arange(N)*(fs/N)
+f = np.arange(-N/2, N/2) * fs/N
 tau_0 = 2*R0/c   # 时延
 
 st = rectpuls(t, Tp/2, Tp) * np.exp(1j * np.pi * k * (t-Tp/2)**2)    #  参考信号
@@ -71,11 +71,11 @@ Xs = scipy.fft.fft(st, N);        # 本地副本的FFT
 Xecho = scipy.fft.fft(secho, N);  # 输入信号的FFT
 Y = np.conjugate(Xs)*Xecho;       # 乘法器
 Y = scipy.fft.fftshift(Y);
-y = scipy.fft.ifft(Y,N);          # IFFT
+y = scipy.fft.ifft(Y, N);          # IFFT
 
 r = t*c/2;
 y = np.abs(y)/max(np.abs(y)) + 1e-10;
-R0_est = r[np.argmax(np.abs(y))]
+R0_est = r[np.argmax(y)]
 
 ##### plot
 fig, axs = plt.subplots(4, 2, figsize = (12, 16), constrained_layout = True)
@@ -100,8 +100,8 @@ axs[1,1].set_xlabel('时间/us',)
 axs[1,1].set_ylabel('幅值',)
 axs[1,1].set_title("Imagine Part of Echo Signal" )
 
-X1 = scipy.fft.fftshift(Xs)
-axs[2,0].plot(f/(1e6), np.abs(X1), color = 'b', label = '')
+
+axs[2,0].plot(f/(1e6), np.abs(scipy.fft.fftshift(Xs)), color = 'b', label = '')
 axs[2,0].set_xlabel('Frequency/MHz',)
 axs[2,0].set_ylabel('幅值',)
 axs[2,0].set_title("Spectral of Reference Signal" )
@@ -125,7 +125,7 @@ print(f"R0 = {R0}, R0_est = {R0_est}")
 plt.show()
 plt.close()
 
-#=============== 频域实现脉冲压缩 ================
+#=============== 时域实现脉冲压缩 ================
 matched_filter = np.conj(st[::-1])  # 发射信号的共轭反转
 compressed_signal = np.convolve(secho, matched_filter, mode = 'same')
 # 结果归一化
@@ -153,19 +153,22 @@ axs[2].set_xlabel("Time (μs)")
 axs[2].set_ylabel("Amplitude")
 
 # 脉冲压缩结果（幅度）
-# t_compressed = np.arange(len(compressed_signal)) / fs / 2
-t_compressed = np.linspace(0, t[-1], len(compressed_signal)) / 2
+tmp = int((min(len(secho), len(matched_filter)) - 1) /2)
+t_compressed = (np.arange(len(compressed_signal)) - tmp) / fs
 r = t_compressed * c/2;
 R0_est1 = r[np.argmax(np.abs(compressed_signal))]
 print(f"R0 = {R0}, R0_est1 = {R0_est1}")
 
 axs[3].plot(r, 20 * np.log10(np.abs(compressed_signal) + 1e-10))
 axs[3].set_title("Range/m")
-axs[3].set_xlabel("Time (μs)")
+axs[3].set_xlabel("Range (m)")
 axs[3].set_ylabel("Amplitude (dB)")
 
 plt.show()
 plt.close()
+
+
+
 
 #%% 多目标回波信号的匹配滤波输出(含源码)
 # https://mp.weixin.qq.com/s?__biz=MzAwMDE1ODE5NA==&mid=2652542571&idx=1&sn=0e0eb494ac7ee19d18227a5e96c2b27e&chksm=80065fae159d3dd84e1d9c3a866f126b4b306ec97b1a427b7ff664c0c311286533a276ab7193&mpshare=1&scene=1&srcid=0329Q8dj1B90QMlepVAj2Um9&sharer_shareinfo=38d19dc84b14ff1c2d3b069947b97c9c&sharer_shareinfo_first=38d19dc84b14ff1c2d3b069947b97c9c&exportkey=n_ChQIAhIQFCYeQ%2B6%2BTwh8yNrYRb5RTBKfAgIE97dBBAEAAAAAAFd1FUcF70gAAAAOpnltbLcz9gKNyK89dVj0FDSmEnzfw8MsNY2waUVVqmm5UxZzyDzF5tbZS7E1FJ8ks%2FFLirUTE1wQ2Xr5RMr0LSsVrqypI%2F2aqly%2Fl4uofOZAPvQQjCb4t1wr1bgr1iGp0%2Fja6EufHwe6%2BOtX8Muca1J8F%2F1mtxqFxdDnfAIGnTm7M%2BC2BumNQg1gfrdTl6iuQghRu9X1fqpoRIHk%2BmYl7dtIDNp40mke%2FmuiC%2Fr9RUITAQQShNsr%2FvVz5QleWdVWLSST1uCtkvEuYdurrGkLJZKHLp9gZyOW95cPiUp8bNB0gtT7SOTvU9UrH8Eedr8sQLQBsqwtiKAVKJjgqUj6RjiH3yJWarkT&acctmode=0&pass_ticket=fh8TkWVQ2FSWTxDQvzOQRMqDWhGDthA7I9lYcXveqOdL%2Bq7ha%2FaWBw%2Fse4F%2BIMDs&wx_header=0#rd

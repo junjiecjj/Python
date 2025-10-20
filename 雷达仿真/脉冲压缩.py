@@ -161,7 +161,7 @@ axs[1].set_title(" ")
 plt.show()
 plt.close()
 
-#%%
+#%% 时域脉冲压缩
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -188,9 +188,10 @@ noise_power = 10**(-SNR_dB/10) * np.mean(np.abs(echo_signal)**2)
 noise = np.sqrt(noise_power/2) * (np.random.randn(len(echo_signal)) + 1j * np.random.randn(len(echo_signal)))
 echo_signal += noise
 
+mode = 'same'
 ## 脉冲压缩（匹配滤波）
 matched_filter = np.conj(chirp_signal[::-1])  # 匹配滤波器：发射信号的共轭反转
-compressed_signal = np.convolve(echo_signal, matched_filter, mode = 'full')
+compressed_signal = np.convolve(echo_signal, matched_filter, mode = mode)
 compressed_signal = compressed_signal / np.max(np.abs(compressed_signal))
 # 结果可视化
 plt.figure(figsize=(12, 8))
@@ -211,7 +212,18 @@ plt.xlabel("Time (μs)")
 plt.ylabel("Amplitude")
 
 # 脉冲压缩结果（幅度）
-t_compressed = (np.arange(len(compressed_signal)) - len(chirp_signal)) / fs * 1e6
+if mode == 'full':
+    t_compressed = (np.arange(len(compressed_signal)) - len(chirp_signal)) / fs * 1e6
+    time_delay = t_compressed[np.argmax(np.abs(compressed_signal))] / 1e6
+elif mode == 'same':
+    tmp = int((min(len(echo_signal), len(matched_filter)) - 1) /2)
+    t_compressed = (np.arange(len(compressed_signal)) - tmp) / fs * 1e6
+    time_delay = t_compressed[np.argmax(np.abs(compressed_signal))] / 1e6
+elif mode == 'valid':
+    t_compressed = np.arange(len(compressed_signal)) / fs * 1e6
+    time_delay = t_compressed[np.argmax(np.abs(compressed_signal))] / 1e6
+
+print(f"Estimated time delay = {time_delay}")
 plt.subplot(3, 1, 3)
 plt.plot(t_compressed, 20 * np.log10(np.abs(compressed_signal)))
 plt.title("Pulse Compression Output (dB)")
@@ -221,8 +233,6 @@ plt.tight_layout()
 plt.show()
 plt.close()
 
-time_delay = t_compressed[np.argmax(np.abs(compressed_signal))] / 1e6
-print(f"Estimated time delay = {time_delay}")
 
 
 #%% DeepSeek
