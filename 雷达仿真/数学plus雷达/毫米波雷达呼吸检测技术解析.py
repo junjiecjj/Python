@@ -62,35 +62,36 @@ def bandpower(x, fs, freq_range):
 def mad(data, axis=None):
     return np.median(np.abs(data - np.median(data, axis)), axis)
 
-print("=== 毫米波雷达呼吸检测 - Python版本 ===")
+# %% 优化参数设置
+fs = 100   # 采样频率 (Hz)
+T = 90     # 优化总时间
+t = np.arange(0, T, 1/fs)  # 时间向量
 
-fs = 100
-T = 90
-t = np.arange(0, T, 1/fs)
-
-fc = 60e9
+## 雷达参数
+fc = 60e9  # 使用60GHz频段（更适合生命体征检测）
 c = 3e8
 lambda_val = c/fc
 
-f_breath = 0.25
-A_breath = 0.012
-
-f_heart = 1.2
-A_heart = 0.0005
-
+## 优化呼吸参数
+f_breath = 0.25   # 呼吸频率 15次/分钟
+A_breath = 0.012   #  增加呼吸幅度到12mm
+# 优化心跳参数
+f_heart = 1.2     #
+A_heart = 0.0005   # 增加心跳幅度
+# 显著降低噪声
 noise_level = 0.0003
 
-print('生成优化的生理信号...')
-
+#%% 1. 生成优化的生理信号
+# 基础呼吸信号 + 谐波
 base_breath = A_breath * np.sin(2*np.pi*f_breath*t)
 breath_harmonic = 0.08*A_breath * np.sin(4*np.pi*f_breath*t + np.pi/4)
-
+# 心跳信号与呼吸调制
 heart_signal_base = A_heart * np.sin(2*np.pi*f_heart*t)
 heart_modulation = 0.15 * np.sin(2*np.pi*f_breath*t - np.pi/2)
 heart_signal_modulated = heart_signal_base * (1 + 0.1*heart_modulation)
-
+# 组合信号
 chest_displacement = base_breath + breath_harmonic + heart_signal_modulated
-
+# 最小化体动干扰
 body_motion = np.zeros_like(t)
 motion_times = [30, 60]
 for mt in motion_times:
@@ -98,28 +99,27 @@ for mt in motion_times:
     if len(idx) > 0:
         motion_env = np.hanning(len(idx))
         body_motion[idx] = 0.002 * np.sin(2*np.pi*0.8*(t[idx]-mt)) * motion_env
-
+# 最终位移信号
 total_displacement = chest_displacement + body_motion + noise_level * np.random.randn(len(t))
 
-print('生成优化的雷达信号...')
-
-R0 = 1.0
-
+#%% 2. 优化的雷达信号生成
+R0 = 1.0 # 缩短距离提高信噪比
+# 相位信号生成
 phase_signal = 4*np.pi*(R0 + total_displacement)/lambda_val
-
+# 极低相位噪声
 phase_noise = 0.02 * np.random.randn(len(phase_signal))
 phase_signal_clean = phase_signal + phase_noise
 
 radar_signal = np.exp(1j * phase_signal_clean)
 
-print('进行高级信号处理...')
-
+#%% 3. 高级信号处理
+# 稳健的相位解缠
 unwrapped_phase = np.unwrap(np.angle(radar_signal))
-
+# 多项式去趋势
 p = np.polyfit(t, unwrapped_phase, 2)
 phase_trend = np.polyval(p, t)
 detrended_phase = unwrapped_phase - phase_trend
-
+# 3.3 使用FIR滤波器（更稳定
 breath_filter_coeff = designfilt('bandpassfir',
                                 FilterOrder=80,
                                 CutoffFrequency1=0.18,
@@ -135,14 +135,14 @@ heart_filter_coeff = designfilt('bandpassfir',
 breath_signal = filtfilt(breath_filter_coeff, 1, detrended_phase)
 heart_signal = filtfilt(heart_filter_coeff, 1, detrended_phase)
 
-print('进行精确频率估计...')
+# %% 4. 精确频率估计
 
 N = len(t)
 f = fftfreq(N, 1/fs)
-
+# 使用多窗口频谱估计
 nw = 4
 pxx, f_psd = pmtm(detrended_phase, nw, N, fs)
-
+# 呼吸频带寻找峰值
 breath_mask = (f_psd >= 0.1) & (f_psd <= 0.5)
 if np.sum(breath_mask) > 0:
     breath_idx = np.argmax(pxx[breath_mask])
@@ -150,7 +150,7 @@ if np.sum(breath_mask) > 0:
     detected_breath_freq = f_breath_psd[breath_idx]
 else:
     detected_breath_freq = f_breath
-
+# 心跳频带寻找峰值
 heart_mask = (f_psd >= 0.8) & (f_psd <= 2.0)
 if np.sum(heart_mask) > 0:
     heart_idx = np.argmax(pxx[heart_mask])
@@ -159,8 +159,9 @@ if np.sum(heart_mask) > 0:
 else:
     detected_heart_freq = f_heart
 
+# %% 5. 修正的多方法融合估计
 print('进行修正的多方法融合估计...')
-
+# 方法1: 修正的自相关法
 acf, lags = xcorr(breath_signal, 'coeff')
 positive_lags = lags >= 0
 acf = acf[positive_lags]
@@ -182,7 +183,7 @@ if np.sum(valid_lags) > 0:
         main_peak_idx = np.argmax(peak_heights)
         main_period = valid_lags_sec[peak_indices[main_peak_idx]]
         breath_freq_autocorr = 1 / main_period
-
+# 方法2: 改进的希尔伯特变换瞬时频率
 analytic_signal = hilbert(breath_signal)
 instantaneous_phase = np.unwrap(np.angle(analytic_signal))
 instantaneous_freq = np.diff(instantaneous_phase) * fs / (2*np.pi)
@@ -193,6 +194,7 @@ if np.sum(valid_freq_idx) > 0:
 else:
     breath_freq_hilbert = detected_breath_freq
 
+# 方法3: 改进的零交叉法
 breath_signal_mean = breath_signal - np.mean(breath_signal)
 zero_crossings = np.where(np.diff(np.sign(breath_signal_mean)) != 0)[0]
 
@@ -238,7 +240,7 @@ else:
 
 weights = reliability / np.sum(reliability)
 breath_freq_final = np.sum(weights * freq_estimates)
-
+# %% 6. 信号质量评估
 print('评估信号质量...')
 
 breath_band_power = bandpower(breath_signal, fs, [0.15, 0.35])
@@ -261,7 +263,7 @@ snr_score = min(1, snr_linear / 10) if 'snr_linear' in locals() else 0.5
 consistency_score = 1 - np.std(freq_estimates) / np.mean(freq_estimates) if len(freq_estimates) > 1 else 0.5
 
 signal_quality = (0.4 * periodicity_score + 0.4 * snr_score + 0.2 * consistency_score) * 100
-
+# %% 7. 最终可视化
 print('生成最终可视化...')
 
 plt.figure(figsize=(16, 12))
