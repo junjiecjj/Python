@@ -73,6 +73,48 @@ def ambgfun(x, fs, prf):
 
     return afmag, delays, dopplers
 
+def ambgfun1(x, fs, prf = 1000):
+    if not isinstance(x, np.ndarray):
+        x = np.array(x)
+    Nx = len(x)
+    Ex = np.sum(np.abs(x) ** 2)
+
+    # Auto-ambiguity: N = 2*Nx - 1 delays
+    N_delay = 2 * Nx - 1
+
+    # Number of Doppler frequencies: M = 2^ceil(log2(N))
+    M_doppler = 2 ** int(np.ceil(np.log2(N_delay)))
+
+    # Auto-ambiguity delay vector
+    delay = np.arange(1-Nx, Nx) / fs
+
+    # Create Doppler frequency vector
+    doppler = np.linspace(-fs/2, fs/2 - fs/M_doppler, int(M_doppler))
+
+    # Initialize ambiguity function matrix
+    afmag = np.zeros((len(doppler), len(delay)), dtype=complex)
+
+    # Compute ambiguity function
+    for i, fd in enumerate(doppler):
+        for j, tau in enumerate(delay):
+            # Convert delay to samples
+            tau_samples = int(round(tau * fs))
+
+            # Auto-ambiguity function
+            if 0 <= tau_samples < Nx:
+                # Positive delay
+                u1 = x[tau_samples:] * np.exp(1j * 2 * np.pi * fd *  np.arange(Nx - tau_samples) / fs)
+                u2 = x[:Nx - tau_samples]
+                afmag[i, j] = np.dot(u1, np.conj(u2))
+            elif tau_samples < 0 and tau_samples > -Nx:
+                # Negative delay
+                tau_samples_abs = abs(tau_samples)
+                u1 = x[:Nx - tau_samples_abs] * np.exp(1j * 2 * np.pi * fd *  np.arange(Nx - tau_samples_abs) / fs)
+                u2 = x[tau_samples_abs:]
+                afmag[i, j] = np.dot(u1, np.conj(u2))
+    afmag = np.abs(afmag) / Ex
+    return afmag, delay, doppler
+
 
 # 主程序
 # Hfm参数

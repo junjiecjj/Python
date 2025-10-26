@@ -18,41 +18,49 @@ def nextpow2(n):
     """计算下一个2的幂"""
     return int(np.ceil(np.log2(n)))
 
-def ambgfun(x, fs, PRF):
-    """
-    模糊函数计算
-    """
-    N = len(x)
-    # 时延范围
-    max_delay = int(N / 2)
-    delays = np.arange(-max_delay, max_delay) / fs
 
-    # 多普勒范围
-    max_doppler = PRF / 2
-    dopplers = np.linspace(-max_doppler, max_doppler, 256)
 
-    # 初始化模糊函数矩阵
-    afmag = np.zeros((len(dopplers), len(delays)))
+def ambgfun(x, fs, prf = 1000):
+    if not isinstance(x, np.ndarray):
+        x = np.array(x)
+    Nx = len(x)
+    Ex = np.sum(np.abs(x) ** 2)
 
-    # 计算模糊函数
-    for i, delay in enumerate(delays):
-        delay_samples = int(delay * fs)
-        for j, doppler in enumerate(dopplers):
-            # 时延信号
-            if delay_samples >= 0:
-                x1 = x[:N-delay_samples]
-                x2 = x[delay_samples:] * np.exp(1j * 2 * np.pi * doppler * np.arange(N-delay_samples) / fs)
-            else:
-                x1 = x[-delay_samples:]
-                x2 = x[:N+delay_samples] * np.exp(1j * 2 * np.pi * doppler * np.arange(N+delay_samples) / fs)
+    # Auto-ambiguity: N = 2*Nx - 1 delays
+    N_delay = 2 * Nx - 1
 
-            # 计算互相关
-            afmag[j, i] = np.abs(np.sum(x1 * np.conj(x2)))
+    # Number of Doppler frequencies: M = 2^ceil(log2(N))
+    M_doppler = 2 ** int(np.ceil(np.log2(N_delay)))
 
-    # 归一化
-    afmag = afmag / np.max(afmag)
+    # Auto-ambiguity delay vector
+    delay = np.arange(1-Nx, Nx) / fs
 
-    return afmag, delays, dopplers
+    # Create Doppler frequency vector
+    doppler = np.linspace(-fs/2, fs/2 - fs/M_doppler, int(M_doppler))
+
+    # Initialize ambiguity function matrix
+    afmag = np.zeros((len(doppler), len(delay)), dtype=complex)
+
+    # Compute ambiguity function
+    for i, fd in enumerate(doppler):
+        for j, tau in enumerate(delay):
+            # Convert delay to samples
+            tau_samples = int(round(tau * fs))
+
+            # Auto-ambiguity function
+            if 0 <= tau_samples < Nx:
+                # Positive delay
+                u1 = x[tau_samples:] * np.exp(1j * 2 * np.pi * fd *  np.arange(Nx - tau_samples) / fs)
+                u2 = x[:Nx - tau_samples]
+                afmag[i, j] = np.dot(u1, np.conj(u2))
+            elif tau_samples < 0 and tau_samples > -Nx:
+                # Negative delay
+                tau_samples_abs = abs(tau_samples)
+                u1 = x[:Nx - tau_samples_abs] * np.exp(1j * 2 * np.pi * fd *  np.arange(Nx - tau_samples_abs) / fs)
+                u2 = x[tau_samples_abs:]
+                afmag[i, j] = np.dot(u1, np.conj(u2))
+    afmag = np.abs(afmag) / Ex
+    return afmag, delay, doppler
 
 def plot_signal_analysis(signal, fs, prf, signal_name):
     """绘制信号的完整分析图"""

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from typing import Tuple, Union, Optional
 
-def ambgfun(x: np.ndarray, Fs: float, PRF: float,
+def ambgfun1(x: np.ndarray, Fs: float, PRF: float,
            y: Optional[np.ndarray] = None,
            Cut: str = "2D",
            CutValue: Union[float, np.ndarray] = 0) -> Tuple[np.ndarray, ...]:
@@ -198,12 +198,11 @@ def ambgfun(x, fs, prf = 1000):
             elif tau_samples < 0 and tau_samples > -Nx:
                 # Negative delay
                 tau_samples_abs = abs(tau_samples)
-                u1 = x[:Nx - tau_samples_abs]
-                u2 = x[tau_samples_abs:] * np.exp(1j * 2 * np.pi * fd *  np.arange(Nx - tau_samples_abs) / fs)
+                u1 = x[:Nx - tau_samples_abs] * np.exp(1j * 2 * np.pi * fd *  np.arange(Nx - tau_samples_abs) / fs)
+                u2 = x[tau_samples_abs:]
                 afmag[i, j] = np.dot(u1, np.conj(u2))
-    return
-
-
+    afmag = np.abs(afmag) / Ex
+    return afmag, delay, doppler
 
 
 ##################
