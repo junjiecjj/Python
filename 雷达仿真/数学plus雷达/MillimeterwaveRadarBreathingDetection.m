@@ -54,12 +54,9 @@ total_displacement = chest_displacement + body_motion + noise_level * randn(size
 
 %% 2. 优化的雷达信号生成
 disp('生成优化的雷达信号...');
-
 R0 = 1.0; % 缩短距离提高信噪比
-
 % 相位信号生成
 phase_signal = 4*pi*(R0 + total_displacement)/lambda;
-
 % 极低相位噪声
 phase_noise = 0.02 * randn(size(phase_signal));
 phase_signal_clean = phase_signal + phase_noise;
@@ -78,17 +75,9 @@ phase_trend = polyval(p, t);
 detrended_phase = unwrapped_phase - phase_trend;
 
 % 3.3 使用FIR滤波器（更稳定）
-breath_filter = designfilt('bandpassfir', ...
-                          'FilterOrder', 80, ...
-                          'CutoffFrequency1', 0.18, ...
-                          'CutoffFrequency2', 0.35, ...
-                          'SampleRate', fs);
+breath_filter = designfilt('bandpassfir', 'FilterOrder', 80 'CutoffFrequency1', 0.18, 'CutoffFrequency2', 0.35, 'SampleRate', fs);
 
-heart_filter = designfilt('bandpassfir', ...
-                         'FilterOrder', 100, ...
-                         'CutoffFrequency1', 0.9, ...
-                         'CutoffFrequency2', 1.6, ...
-                         'SampleRate', fs);
+heart_filter = designfilt('bandpassfir', 'FilterOrder', 100, 'CutoffFrequency1', 0.9, 'CutoffFrequency2', 1.6, 'SampleRate', fs);
 
 breath_signal = filtfilt(breath_filter, detrended_phase);
 heart_signal = filtfilt(heart_filter, detrended_phase);
@@ -97,7 +86,6 @@ heart_signal = filtfilt(heart_filter, detrended_phase);
 disp('进行精确频率估计...');
 
 N = length(t);
-f = (0:N-1) * fs / N;
 
 % 使用多窗口频谱估计
 nw = 4; % 时间带宽积

@@ -95,7 +95,7 @@ axs = plt.axes(projection='3d')
 
 # #生成表面， alpha 用于控制透明度
 surf = axs.plot_surface(X, Y, Z,rstride=1, cstride=1, linewidth=1, antialiased=False, alpha=0.8, cmap='viridis')
-C = axs.contour(X,Y,Z,levels=[1, 2, 3, 4, 5,6,7],  zdir='z', offset=-3, cmap="rainbow")  #生成z方向投影，投到x-y平面
+C = axs.contour(X,Y,Z, levels=[1, 2, 3, 4, 5,6, 7],  zdir='z', offset=-3, cmap="rainbow")  #生成z方向投影，投到x-y平面
 plt.clabel(C, inline = True, fontsize = 20)
 
 fig.colorbar(surf, shrink=0.5, aspect=5)

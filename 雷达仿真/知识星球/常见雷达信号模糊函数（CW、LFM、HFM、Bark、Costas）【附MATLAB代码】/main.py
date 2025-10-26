@@ -71,7 +71,7 @@ print(f"alpha数量: {len(alpha)}")
 min_fs = np.min(re_fs)
 N_a = len(signal.resample(x, int(np.ceil(len(x) * fs / min_fs)) ))
 N = N_a + len(x) - 1
-afmag = np.zeros((len(alpha), N))
+afmag = np.zeros((len(alpha), N), dtype = complex)
 
 print(f"N_a: {N_a}, N: {N}")
 tic = time.time()
@@ -112,60 +112,88 @@ print(f"mag1形状: {mag1.shape}")
 row, col = np.where(mag1 < -100)
 mag1[row, col] = -60
 
-# 绘图1 - 修正维度问题
-fig1 = plt.figure(1, figsize=(12, 8))
-ax1 = fig1.add_subplot(111, projection='3d')
-
-# MATLAB: mesh(doppler1,delay1,mag1.')
-# 所以: X=doppler1, Y=delay1, Z=mag1转置
-# 但meshgrid需要维度匹配
+##>>>>>  绘图1
 X, Y = np.meshgrid(doppler1, delay1)  # X形状: (len(delay1), len(doppler1))
 Z = mag1.T  # Z形状: (len(delay1), len(doppler1))
 
-print(f"X形状: {X.shape}, Y形状: {Y.shape}, Z形状: {Z.shape}")
+fig = plt.figure(figsize = (8, 8) , constrained_layout = True)
+ax = fig.add_subplot(111, projection='3d')
 
-surf = ax1.plot_surface(X, Y, Z, cmap='viridis', alpha=0.9)
-fig1.colorbar(surf, ax=ax1, shrink=0.6)
-ax1.set_xlabel('Doppler (Hz)')
-ax1.set_ylabel('Delay (sec)')
-ax1.set_zlabel('Level')
-ax1.set_title(f'WAF of {type_name[type_index-1]} Signal')
-fig1.patch.set_facecolor('white')
-
-# 绘图2 - 等高线图
-fig2 = plt.figure(2, figsize=(10, 10))
-# MATLAB: contour(delay1,doppler1,mag1)
-plt.contour(Y, X, mag1.T)
-plt.grid(True)
-plt.xlabel('Delay (Sec)')
-plt.ylabel('Doppler (Hz)')
-plt.title('Contour of AF')
-
-# 绘图3 - 零延迟和零多普勒切面
-fig3 = plt.figure(3, figsize=(12, 8))
-
-# 零延迟切面
-plt.subplot(211)
-zero_delay_idx = len(indext) // 2
-plt.plot(doppler1, mag1[:, zero_delay_idx], 'b', linewidth=1.5)
-plt.xlabel('Doppler (Hz)')
-plt.ylabel('Amp')
-plt.title('Zero Delay')
-plt.grid(True)
-
-# 零多普勒切面
-plt.subplot(212)
-zero_doppler_idx = len(indexf) // 2
-plt.plot(delay1, mag1[zero_doppler_idx, :], 'b', linewidth=1.5)
-plt.xlabel('Delay (sec)')
-plt.ylabel('Amp')
-plt.title('Zero Doppler')
-plt.grid(True)
-
-plt.tight_layout()
+ax.plot_surface(X, Y, Z, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax.grid(False)
+ax.set_proj_type('ortho')
+ax.view_init(azim=-135,    elev = 30)
+ax.set_xlabel('Doppler (Hz)')
+ax.set_ylabel('Delay (sec)')
+ax.set_zlabel('Level')
+ax.set_title(f'WAF of {type_name[type_index-1]} Signal')
 plt.show()
+plt.close()
+
+
+##>>>>>  绘图2 - 等高线图
+levels = np.arange(0.1, 1.1, 0.1)
+fig, ax = plt.subplots( figsize = (8, 8))
+ax.contour(Y, X, mag1.T, levels = levels, cmap = 'rainbow')
+
+ax.grid(True)
+ax.set_xlabel('Delay (Sec)')
+ax.set_ylabel('Doppler (Hz)')
+ax.set_title('Contour of AF')
+
+plt.show()
+plt.close()
+
+
+##>>>>>  绘图3 - 零延迟和零多普勒切面
+fig, axs = plt.subplots(2, 1, figsize = (8, 8), constrained_layout = True)
+
+zero_delay_idx = len(indext) // 2
+axs[0].plot(doppler1, mag1[:, zero_delay_idx], 'b', linewidth=1.5)
+axs[0].set_xlabel('Doppler (Hz)')
+axs[0].set_ylabel('Amp')
+axs[0].set_title('Zero Delay')
+# axs[0].legend()
+
+zero_doppler_idx = len(indexf) // 2
+axs[1].plot(delay1, mag1[zero_doppler_idx, :], 'b', linewidth=1.5)
+axs[1].set_xlabel('Delay (sec)')
+axs[1].set_ylabel('Amp')
+axs[1].set_title('Zero Doppler')
+# axs[1].legend()
+
+plt.show()
+plt.close()
 
 print("所有图形绘制完成")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

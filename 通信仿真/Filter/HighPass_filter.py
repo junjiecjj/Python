@@ -14,13 +14,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-filepath2 = '/home/jack/snap/'
-font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-
-
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
+np.random.seed(42)
 #%% 信号和采样率
 Fs = 3000 # 采样频率4000Hz
 t = np.arange(0, 0.1, 1/Fs)
@@ -70,14 +83,15 @@ Wn = hf*2/Fs
 ## 方法1
 [Bb, Ba] = scipy.signal.butter(order, Wn, 'high')
 ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
-y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
+# y = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
+y = scipy.signal.filtfilt(Bb, Ba, x )
 
 # ## 方法2
-# h = scipy.signal.firwin(int(31), hf, fs = Fs, pass_zero = "highpass")
+# h = scipy.signal.firwin(int(31), cutoff = hf, fs = Fs, pass_zero = "highpass")
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 ### 方法3
-# h = scipy.signal.firwin(int(31), Wn,  pass_zero = "highpass" )
+# h = scipy.signal.firwin(int(31), cutoff = Wn,  pass_zero = "highpass" )
 # y = scipy.signal.lfilter(h, 1, x) # 进行滤波
 
 #----------------------- 滤波后信号的FFT变换 -----------------------------
@@ -110,113 +124,49 @@ labelsize = 20
 #%%==================== x =================================
 axs[0,0].plot(t, x, label = 'raw')
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs[0,0].set_xlabel('time',fontproperties=font)
-axs[0,0].set_ylabel('x',fontproperties=font)
-#font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[0,0].legend(loc='best',  prop=font1, borderaxespad=0,)
+# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs[0,0].set_xlabel('time', )
+axs[0,0].set_ylabel('x', )
+
+legend1 = axs[0,0].legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[0,0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[0,0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[0,0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs[0,0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
 
 #%%==================== x =================================
 axs[0,1].plot(fx, AX, label = 'FFT(x)', color = 'red')
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs[0,1].set_xlabel('Frequancy(Hz)',fontproperties=font)
-axs[0,1].set_ylabel('FFT(x)',fontproperties=font)
-#font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[0,1].legend(loc='best',  prop=font1, borderaxespad=0,)
+# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs[0,1].set_xlabel('Frequancy(Hz)', )
+axs[0,1].set_ylabel('FFT(x)', )
+
+legend1 = axs[0,1].legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[0,1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[0,1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[0,1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs[0,1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
-
-
-
 
 #%%==================== y =================================
 axs[1,0].plot(t, y, label = 'y')
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs[1,0].set_xlabel('time',fontproperties=font)
-axs[1,0].set_ylabel('y',fontproperties=font)
-#font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[0,0].legend(loc='best',  prop=font1, borderaxespad=0,)
+# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs[1,0].set_xlabel('time', )
+axs[1,0].set_ylabel('y', )
+
+legend1 = axs[0,0].legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[1,0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[1,0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[1,0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs[1,0].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
 
 #%%==================== FFT Y =================================
 axs[1,1].plot(fx, AY, label = 'FFT(y)', color = 'red')
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs[1,1].set_xlabel('Frequancy(Hz)',fontproperties=font)
-axs[1,1].set_ylabel('FFT(y)',fontproperties=font)
-#font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=22)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs[1,1].legend(loc='best',  prop=font1, borderaxespad=0,)
+# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs[1,1].set_xlabel('Frequancy(Hz)', )
+axs[1,1].set_ylabel('FFT(y)', )
+
+legend1 = axs[1,1].legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs[1,1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs[1,1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs[1,1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs[1,1].tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
-
-
-
 
 plt.show()
-
-
-
+plt.close()
 
 
 

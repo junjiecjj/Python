@@ -80,6 +80,28 @@ def ambgfun(x, fs):
 sns.set()
 sns.set_context("paper")
 
+# ##################
+# # Pulse waveform #
+# ##################
+
+fs = 1000000
+ts = 1/fs
+N = 100
+
+t = np.arange(0, N,  ) * ts
+x = np.ones( N)
+ambig, delay, doppler = ambgfun(x, fs)
+
+plt.figure(figsize=(10, 6))
+plt.contour(delay , doppler , np.abs(ambig), levels = 10)
+plt.xlabel('Delay (μs)')
+plt.ylabel('Doppler Shift (kHz)')
+plt.title('Ambiguity Function of Rectangular Pulse')
+plt.colorbar(label='Normalized Magnitude')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+
 ##################
 # Pulse waveform #
 ##################

@@ -30,7 +30,7 @@ def computeAmbiguityFunction(signal, fs, maxDoppler, maxDelay):
     N = len(signal)  # signal length
     dopplerShifts = np.linspace(-maxDoppler, maxDoppler, 2 * N)
     delays = np.arange(0, maxDelay, 1/fs)
-    ambiguity = np.zeros((len(delays), len(dopplerShifts)), dtype=complex)
+    ambiguity = np.zeros((len(delays), len(dopplerShifts)), dtype = complex)
 
     # Calculating the influence of each Doppler shift in advance
     t = np.arange(N) / fs

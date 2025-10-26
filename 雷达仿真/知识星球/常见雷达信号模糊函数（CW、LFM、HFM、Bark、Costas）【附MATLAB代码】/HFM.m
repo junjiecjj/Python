@@ -3,9 +3,8 @@ clc
 clear
 close all
 
-%%Hfm
+%% Hfm
 fc=12.5e3;
-
 fs=5*fc;
 ts=1/fs;
 N=450;

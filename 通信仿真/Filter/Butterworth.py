@@ -14,12 +14,34 @@ https://blog.csdn.net/Simon223/article/details/118758793
 # https://blog.csdn.net/u014033218/article/details/97004609
 #
 from scipy import signal
+import numpy as np
+from scipy.signal import butter, lfilter,filtfilt, freqz, freqs
+import matplotlib.pyplot as plt
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
+np.random.seed(42)
 
 # 1).低通滤波
 # 这里假设采样频率为1000hz,信号本身最大的频率为500hz，要滤除400hz以上频率成分，即截至频率为400hz,则wn=2*400/1000=0.8。Wn=0.8
 # b, a  =   signal.butter( 8 ,  0.8 ,  'lowpass' )    #配置滤波器 8 表示滤波器的阶数
 # filtedData  =   signal.filtfilt(b, a, data)   #data为要过滤的信号
-
 
 # 2).高通滤波
 # 这里假设采样频率为1000hz,信号本身最大的频率为500hz，要滤除100hz以下频率成分，即截至频率为100hz,则wn=2*100/1000=0.2。Wn=0.2
@@ -39,9 +61,6 @@ from scipy import signal
 
 #%%===================================================================================
 # https://www.delftstack.com/zh/howto/python/low-pass-filter-python/
-import numpy as np
-from scipy.signal import butter, lfilter,filtfilt, freqz, freqs
-import matplotlib.pyplot as plt
 
 
 def butter_lowpass(cutoff, fs, order=5):
@@ -144,16 +163,10 @@ import matplotlib
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 
-from matplotlib.font_manager import FontProperties
-from pylab import tick_params
-import copy
+# from matplotlib.font_manager import FontProperties
+# from pylab import tick_params
+# import copy
 from matplotlib.pyplot import MultipleLocator
-
-filepath2 = '/home/jack/snap/'
-font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 #%%======================================================
 ## ===========  定义时域采样信号 x
@@ -205,27 +218,16 @@ axs.plot(t, imu, label = 'raw')
 axs.plot(t, acc_y_filtered, label = 'filtfilt')
 axs.plot(t, acc_y_filtered_2, label = 'lfilter')
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs.set_xlabel('time',fontproperties=font)
-axs.set_ylabel('value',fontproperties=font)
+# font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+axs.set_xlabel('time', )
+axs.set_ylabel('value', )
 #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
+# font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
 #  edgecolor='black',
 # facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs.legend(loc='best',  prop=font1, bbox_to_anchor=(0.5, -0.2), ncol = 3,  borderaxespad=0,)
+legend1 = axs.legend(loc='best', bbox_to_anchor=(0.5, -0.2), ncol = 3,  borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-# frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs.spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs.tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs.get_xticklabels() + axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
 
 plt.show()
 
@@ -268,34 +270,19 @@ for i in xn:
 ##  2: 是filtfilt波形。好像只能多余12个点才能滤波。
 data2 = signal.filtfilt(b, a, xn)
 
-
 fig, axs = plt.subplots(1, 1, figsize=(10, 8))
 axs.plot(t, xn, color ='b', linewidth = 2, label = 'raw',  alpha=0.75)
 axs.plot(t, data, color = 'cyan', ls = '--', linewidth = 2,  marker ='d', ms = 12, label = 'lfilter, all', )
 axs.plot(t, data1, color = 'r',   linewidth = 2, label = 'lfilter, 1by1',)
 axs.plot(t, data2, color = 'g', linewidth = 2, label = 'filtfilt', )
 
-font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
-axs.set_xlabel('time',fontproperties=font)
-axs.set_ylabel('value',fontproperties=font)
-font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 26)
-# font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=12)
-#  edgecolor='black',
-# facecolor = 'y', # none设置图例legend背景透明
-legend1 = axs.legend(loc='best',  prop=font1,   borderaxespad=0,)
+axs.set_xlabel('time', )
+axs.set_ylabel('value', )
+
+legend1 = axs.legend(loc='best', borderaxespad=0,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs.spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-axs.spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-axs.spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-axs.spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-axs.tick_params(direction='in',axis='both',top=True,right=True, labelsize=16, width=6,  )
-labels = axs.get_xticklabels() + axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(20) for label in labels] #刻度值字号
 
 
 axs.grid(True)

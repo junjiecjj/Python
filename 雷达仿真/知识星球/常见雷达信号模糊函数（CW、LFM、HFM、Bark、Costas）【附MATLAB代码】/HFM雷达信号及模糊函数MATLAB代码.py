@@ -38,8 +38,8 @@ plt.rcParams['legend.fontsize'] = 12
 
 def ambgfun(x, fs, prf):
     """
-    计算信号的模糊函数
-    这是一个简化的实现，可能需要根据实际需求调整
+        计算信号的模糊函数
+        这是一个简化的实现，可能需要根据实际需求调整
     """
     N = len(x)
     # 时延范围
@@ -99,13 +99,16 @@ ft = fc / (1 - (m / fc) * t)
 ftr = fc * D / (1 - (m / fc) * D * t)
 
 # 图1: 频率随时间变化
-plt.figure(1)
-plt.plot(t, ft, label='Transmitted')
-plt.plot(t, ftr, label='Received')
-plt.grid(True)
-plt.xlabel('Time (s)')
-plt.ylabel('Frequency (Hz)')
-plt.legend()
+fig, ax = plt.subplots( figsize = (8, 6))
+ax.plot(t, ft, label='Transmitted')
+ax.plot(t, ftr, label='Received')
+ax.grid(True)
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Frequency (Hz)')
+ax.legend()
+plt.show()
+plt.close()
+
 
 # 接收信号
 tr = (np.arange(-(N-1)/2, (N-1)/2 + 1) + 50) * ts
@@ -123,25 +126,32 @@ afmag, delay, doppler = ambgfun(x, fs, prf)
 ambgu = afmag * (afmag > 0.5)
 
 # 图2: 模糊函数3D图
-plt.figure(2)
 X, Y = np.meshgrid(delay, doppler)
-ax = plt.axes(projection='3d')
-ax.plot_surface(X, Y, afmag, cmap='jet')
+
+fig = plt.figure(figsize = (8, 8) , constrained_layout = True)
+ax = fig.add_subplot(111, projection='3d')
+cbar = ax.plot_surface(X, Y, afmag, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+# plt.colorbar(cbar)
 ax.set_xlim([-8e-3, 8e-3])
 ax.set_ylim([-6600, 6600])
 ax.set_xlabel('Delay (second)')
 ax.set_ylabel('Doppler Shift (hertz)')
-plt.colorbar(ax.plot_surface(X, Y, afmag, cmap='jet'))
+ax.grid(False)
+ax.set_proj_type('ortho')
+plt.show()
+plt.close()
 
 # 图3: 模糊函数等高线图
-plt.figure(3)
-plt.contour(delay, doppler, ambgu)
-plt.xlim([-8e-3, 8e-3])
-plt.ylim([-7600, 7600])
-plt.xlabel('Delay (second)')
-plt.ylabel('Doppler Shift (hertz)')
-plt.colorbar()
-plt.grid(True)
+fig, ax = plt.subplots( figsize = (8, 6))
+ax.contour(delay, doppler, ambgu)
+ax.set_xlim([-8e-3, 8e-3])
+ax.set_ylim([-7600, 7600])
+ax.set_xlabel('Delay (second)')
+ax.set_ylabel('Doppler Shift (hertz)')
+
+ax.grid(True)
+plt.show()
+plt.close()
 
 # 提取零多普勒和零时延剖面
 # 注意：这里索引可能需要根据实际数组大小调整

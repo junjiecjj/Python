@@ -1,0 +1,7 @@
+MATLAB R2024b o superior
+
+Toolboxes de MATLAB Requeridos:
+- Phased Array System Toolbox (para la función `shnidman` usada en el cálculo de la SNR requerida).
+- Statistics and Machine Learning Toolbox (para la función `exprnd` usada en la simulación de RCS fluctuante).
+
+Nota: Las funciones gráficas y de cálculo numérico básicas (plot, polarplot, randn, etc.) son parte de MATLAB estándar.

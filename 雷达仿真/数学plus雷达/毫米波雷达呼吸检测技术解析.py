@@ -32,6 +32,7 @@ plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色
 plt.rcParams['legend.fontsize'] = 18
 np.random.seed(42)
 
+#%%
 def designfilt(filter_type, FilterOrder, CutoffFrequency1, CutoffFrequency2, SampleRate):
     if filter_type == 'bandpassfir':
         nyquist = SampleRate / 2
@@ -120,25 +121,15 @@ p = np.polyfit(t, unwrapped_phase, 2)
 phase_trend = np.polyval(p, t)
 detrended_phase = unwrapped_phase - phase_trend
 # 3.3 使用FIR滤波器（更稳定
-breath_filter_coeff = designfilt('bandpassfir',
-                                FilterOrder=80,
-                                CutoffFrequency1=0.18,
-                                CutoffFrequency2=0.35,
-                                SampleRate=fs)
-
-heart_filter_coeff = designfilt('bandpassfir',
-                               FilterOrder=100,
-                               CutoffFrequency1=0.9,
-                               CutoffFrequency2=1.6,
-                               SampleRate=fs)
+breath_filter_coeff = designfilt('bandpassfir', FilterOrder=80, CutoffFrequency1=0.18, CutoffFrequency2=0.35, SampleRate=fs)
+heart_filter_coeff = designfilt('bandpassfir', FilterOrder=100, CutoffFrequency1=0.9, CutoffFrequency2=1.6, SampleRate=fs)
 
 breath_signal = filtfilt(breath_filter_coeff, 1, detrended_phase)
 heart_signal = filtfilt(heart_filter_coeff, 1, detrended_phase)
 
 # %% 4. 精确频率估计
-
 N = len(t)
-f = fftfreq(N, 1/fs)
+
 # 使用多窗口频谱估计
 nw = 4
 pxx, f_psd = pmtm(detrended_phase, nw, N, fs)
@@ -171,7 +162,6 @@ min_period = 1/0.5
 max_period = 1/0.1
 valid_lags = (lags_sec >= min_period) & (lags_sec <= max_period)
 
-breath_freq_autocorr = detected_breath_freq
 if np.sum(valid_lags) > 0:
     valid_acf = acf[valid_lags]
     valid_lags_sec = lags_sec[valid_lags]
@@ -183,6 +173,9 @@ if np.sum(valid_lags) > 0:
         main_peak_idx = np.argmax(peak_heights)
         main_period = valid_lags_sec[peak_indices[main_peak_idx]]
         breath_freq_autocorr = 1 / main_period
+else:
+    breath_freq_autocorr = detected_breath_freq
+
 # 方法2: 改进的希尔伯特变换瞬时频率
 analytic_signal = hilbert(breath_signal)
 instantaneous_phase = np.unwrap(np.angle(analytic_signal))
@@ -210,6 +203,7 @@ if len(zero_crossings) >= 4:
     if len(full_periods) > 0:
         breath_freq_zero = 1 / np.mean(full_periods)
 
+#%% 智能加权融合（基于方法可靠性）
 freq_estimates = np.array([detected_breath_freq, breath_freq_autocorr, breath_freq_hilbert, breath_freq_zero])
 reliability = np.ones(4)
 
@@ -270,7 +264,7 @@ plt.figure(figsize=(16, 12))
 
 plt.subplot(2, 3, 1)
 plt.plot(t, total_displacement * 1000, color=[0.2, 0.2, 0.8], linewidth=1)
-plt.plot(t, base_breath * 1000, 'r', linewidth=2)
+plt.plot(t, base_breath * 1000, 'r', linewidth=1, ls = '--')
 plt.plot(t, heart_signal_modulated * 1000, 'g', linewidth=1.5)
 plt.plot(t, body_motion * 1000, 'm--', linewidth=1)
 plt.xlabel('时间 (秒)')
@@ -281,17 +275,13 @@ plt.grid(True)
 
 plt.subplot(2, 3, 2)
 plt.plot(f_psd, 10*np.log10(pxx), 'k', linewidth=2)
-plt.axvline(x=f_breath, color='r', linestyle='--', linewidth=2,
-            label=f'真实呼吸 {f_breath:.2f}Hz')
-plt.axvline(x=detected_breath_freq, color='r', linestyle='-', linewidth=2,
-            label=f'检测呼吸 {detected_breath_freq:.2f}Hz')
-plt.axvline(x=f_heart, color='g', linestyle='--', linewidth=2,
-            label=f'真实心跳 {f_heart:.2f}Hz')
-plt.axvline(x=detected_heart_freq, color='g', linestyle='-', linewidth=2,
-            label=f'检测心跳 {detected_heart_freq:.2f}Hz')
+plt.axvline(x = f_breath, color = 'r', linestyle = '--', linewidth = 2, label = f'真实呼吸 {f_breath:.2f}Hz')
+plt.axvline(x = detected_breath_freq, color = 'r', linestyle = '-', linewidth = 2, label = f'检测呼吸 {detected_breath_freq:.2f}Hz')
+plt.axvline(x = f_heart, color = 'g', linestyle = '--', linewidth = 2, label = f'真实心跳 {f_heart:.2f}Hz')
+plt.axvline(x = detected_heart_freq, color = 'g', linestyle = '-', linewidth = 2, label = f'检测心跳 {detected_heart_freq:.2f}Hz')
 plt.xlabel('频率 (Hz)')
 plt.ylabel('功率谱密度 (dB/Hz)')
-plt.title('多窗口功率谱估计')
+plt.title('welch功率谱估计')
 plt.xlim([0, 2.5])
 plt.legend()
 plt.grid(True)
@@ -304,10 +294,10 @@ plt.title('提取的呼吸信号')
 plt.grid(True)
 
 plt.subplot(2, 3, 4)
-plt.plot(lags_sec, acf, 'b', linewidth=2)
+plt.plot(lags_sec, acf, 'b', linewidth = 2)
 if 'peak_indices' in locals() and len(peak_indices) > 0:
     peak_positions = valid_lags_sec[peak_indices]
-    plt.plot(peak_positions, peak_heights, 'ro', markersize=8, linewidth=2)
+    plt.plot(peak_positions, peak_heights, 'ro', markersize = 8, linewidth = 2)
 plt.xlabel('延迟 (秒)')
 plt.ylabel('自相关系数')
 plt.title('呼吸信号自相关函数 (修正)')
@@ -320,8 +310,7 @@ freq_values = np.array([detected_breath_freq, breath_freq_autocorr, breath_freq_
 errors = np.abs(freq_values - f_breath) * 60
 
 bars = plt.bar(range(len(freq_values)), freq_values * 60)
-plt.axhline(y=f_breath*60, color='r', linestyle='--', linewidth=3,
-            label=f'真实值: {f_breath*60:.1f}次/分钟')
+plt.axhline(y=f_breath*60, color='r', linestyle='--', linewidth=3, label=f'真实值: {f_breath*60:.1f}次/分钟')
 
 for i in range(len(freq_values)):
     if i < len(weights):
@@ -329,10 +318,9 @@ for i in range(len(freq_values)):
     else:
         weight_text = f'权重: {weights[-1]:.2f}'
 
-    plt.text(i, freq_values[i]*60 + 0.5, f'误差: {errors[i]:.2f}\n{weight_text}',
-             horizontalalignment='center', fontsize=8, fontweight='bold')
+    plt.text(i, freq_values[i]*60 + 0.5, f'误差: {errors[i]:.2f}\n{weight_text}', horizontalalignment='center', fontsize=8, fontweight='bold')
 
-plt.xticks(range(len(methods)), methods)
+plt.xticks(range(len(methods)), methods, fontsize = 10)
 plt.ylabel('呼吸率 (次/分钟)')
 plt.title('多方法检测结果对比 (修正)')
 plt.ylim([0, 20])
@@ -341,9 +329,9 @@ plt.grid(True)
 
 plt.subplot(2, 3, 6)
 performance_metrics = [
-    '频率精度', '信噪比', '周期性',
-    '一致性', '算法可靠性'
-]
+                        '频率精度', '信噪比', '周期性',
+                        '一致性', '算法可靠性'
+                        ]
 
 metric_values = np.array([
     max(0, 100 - errors[-1]*10),
@@ -361,8 +349,7 @@ plt.title('系统性能评估')
 plt.grid(True)
 
 for i, value in enumerate(metric_values):
-    plt.text(value + 2, i, f'{value:.1f}%',
-             verticalalignment='center', fontsize=10)
+    plt.text(value + 2, i, f'{value:.1f}%', verticalalignment='center', fontsize=10)
 
 plt.suptitle('毫米波雷达呼吸检测 - Python版本', fontsize=16, fontweight='bold')
 plt.tight_layout()
@@ -387,3 +374,9 @@ elif errors[4] <= 3.0:
     print('检测结果: ○ 一般 (需进一步优化)')
 else:
     print('检测结果: △ 需要改进')
+
+
+
+
+
+

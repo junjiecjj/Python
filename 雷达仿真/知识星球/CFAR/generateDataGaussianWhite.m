@@ -1,7 +1,4 @@
-function signal = generateDataGaussianWhite(num_cells, ...
-                                            pos_target, ...
-                                            echo_power_dB, ...
-                                            noise_power_dB)
+function signal = generateDataGaussianWhite(num_cells, pos_target, echo_power_dB, noise_power_dB)
     % ======>INPUT:
     %   num_cells: The amount of cells.[DATATYPE: scalar]
     %   pos_target: Range of all targets.[DATATYPE: vector]
@@ -28,3 +25,5 @@ function signal = generateDataGaussianWhite(num_cells, ...
     end
 
 return
+
+
