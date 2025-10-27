@@ -33,7 +33,7 @@ amf = np.abs((np.sin(mul1) / mul1) * tau1)
 # 1. 3D曲面图 - 使用您提供的风格
 fig = plt.figure(figsize=(8, 8), constrained_layout=True)
 ax = fig.add_subplot(111, projection='3d')
-cbar = ax.plot_surface(tau*1e6, fd*1e-6, amf, rstride=5, cstride=5, cmap=plt.get_cmap('jet'))
+cbar = ax.plot_surface(tau*1e6, fd*1e-6, amf, rstride=2, cstride=2, cmap=plt.get_cmap('jet'))
 # plt.colorbar(cbar)
 ax.set_xlabel('时间/us')
 ax.set_ylabel('fd/MHz')

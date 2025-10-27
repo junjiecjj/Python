@@ -191,10 +191,10 @@ from tqdm import tqdm
 
 nSym = 10000
 EbN0dBs = np.arange(-2, 26, 2)
-MOD_TYPE = "psk"    ## "pam" "psk",   "fsk" is not suitable.
-arrayOfM = [2, 4, 8, 16, 32]
-# MOD_TYPE = "qam"
-# arrayOfM = [4, 16, 64, 256]
+# MOD_TYPE = "psk"    ## "pam"  "psk",   "fsk" is not suitable.
+# arrayOfM = [2, 4, 8, 16, 32]
+MOD_TYPE = "qam"
+arrayOfM = [4, 16, 64, 256]
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 
@@ -246,7 +246,8 @@ axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
 axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over AWGN")
 axs.legend(fontsize = 20)
-
+out_fig = plt.gcf()
+# out_fig.savefig('hh.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 
@@ -286,8 +287,8 @@ EbN0dBs = np.arange(-2, 26, 2)
 MOD_TYPE = "psk"    ## "pam" "psk",   "fsk" is not suitable.
 arrayOfM = [2, 4, 8, 16, 32]
 
-# MOD_TYPE = "qam"
-# arrayOfM = [4, 16, 64, 256]
+MOD_TYPE = "qam"
+arrayOfM = [4, 16, 64, 256]
 
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
@@ -346,7 +347,8 @@ axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
 axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
 axs.legend(fontsize = 20)
-
+out_fig = plt.gcf()
+# out_fig.savefig('hh1.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 
@@ -475,7 +477,7 @@ nSym = 20000  # 仿真帧数
 EbN0dBs = np.arange(-2, 34, 4)
 MOD_TYPE = "psk"  ## "pam", "psk",   "fsk" is not suitable.
 # arrayOfM = [2, 4, 8, 16, 32, 64]
-# MOD_TYPE = "qam"
+MOD_TYPE = "qam"
 # arrayOfM = [4, 16, 64, 256]
 
 arrayOfM = [4, 16]
@@ -551,7 +553,8 @@ axs.set_xlabel('Eb/N0(dB)',)
 axs.set_ylabel('SER',)
 axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over FreqSelectiveRayleigh with {esti_way.upper()} Channel Estim", fontsize = 18)
 axs.legend(fontsize = 20)
-
+out_fig = plt.gcf()
+# out_fig.savefig('hh2.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 

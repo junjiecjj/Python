@@ -1,7 +1,8 @@
 """
 Module: DigiCommPy.channels.py
 """
-from numpy import sum,isrealobj,sqrt
+import numpy as np
+from numpy import sum, isrealobj, sqrt
 from numpy.random import standard_normal
 
 def awgn(s, SNRdB, L = 1):
@@ -25,9 +26,9 @@ def awgn(s, SNRdB, L = 1):
     gamma = 10**(SNRdB/10) #SNR to linear scale
 
     if s.ndim == 1:# if s is single dimensional vector
-        P = L*sum(abs(s)**2)/len(s) #Actual power in the vector
+        P = L * np.sum(np.abs(s)**2) / len(s) #Actual power in the vector
     else: # multi-dimensional signals like MFSK
-        P = L*sum(sum(abs(s)**2))/len(s) # if s is a matrix [MxN]
+        P = L * np.sum(np.abs(s)**2) / len(s) # if s is a matrix [MxN]
 
     N0 = P/gamma # Find the noise spectral density
     if isrealobj(s):# check if input is real/complex object type
@@ -47,7 +48,7 @@ def rayleighFading(N):
     """
     # 1 tap complex gaussian filter
     h = 1/sqrt(2)*(standard_normal(N)+1j*standard_normal(N))
-    return abs(h)
+    return h # abs(h)
 
 def ricianFading(K_dB,N):
     """
@@ -62,4 +63,4 @@ def ricianFading(K_dB,N):
     mu = sqrt(K/(2*(K+1))) # mean
     sigma = sqrt(1/(2*(K+1))) # sigma
     h = (sigma*standard_normal(N)+mu)+1j*(sigma*standard_normal(N)+mu)
-    return abs(h)
+    return h # abs(h)

@@ -67,11 +67,9 @@ Modulation_type = 'BPSK'
 savedir = f"./figures/{Modulation_type}/"
 os.makedirs(savedir, exist_ok = True)
 
-
 m_map = {"BPSK": [1,2], "QPSK": [2,4], "8PSK": [3,8], "QAM16": [4,16], "QAM64": [6,64]}
 M = m_map[Modulation_type][1]
 k = m_map[Modulation_type][0]   # 调制阶数 k = log2(M)
-
 
 sps = 16                     # 每个符号的采样点数
 fc = 200000                  # 载波频率, Hz
@@ -429,7 +427,6 @@ if isplot:
     # out_fig.savefig(savedir + 'Carrier.eps', )
     # out_fig.savefig(savedir + 'Carrier.png', dpi = 1000,)
     plt.show()
-
 
 
 #%% 已调信号频谱
@@ -790,7 +787,6 @@ N = 30
 axs.plot(t[:N], x[:N], label = 'transmit', linewidth = 2, color = 'b',  )
 t1 = t[x.size - x_hat.size:]
 axs.plot(t1[:N], x_hat[:N], label = 'receive', linewidth = 2, color = 'r', linestyle = '-' )
-
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 25)
 axs.set_xlabel('Time(s)',fontproperties=font)

@@ -9,12 +9,30 @@ https://mp.weixin.qq.com/s?__biz=MzU0MTAzMjkyMg==&mid=2247498922&idx=1&sn=befd04
 
 理论计算的模糊函数
 """
-
-#%% 绘制三维图
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+# 全局设置字体大小
+plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 16  # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 16  # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 16  # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 16  # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 16  # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6] # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300 # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2     # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6 # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'  # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'  # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'  # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 16
 
+#%% 绘制三维图
 # 创建 x 和 y 的值
 tdivtau = np.linspace(-1, 1, 1000)
 Ftau = np.linspace(-10, 10, 1000)
@@ -28,7 +46,7 @@ fig = plt.figure(figsize=(12,8))
 ax = fig.add_subplot(111, projection='3d')
 
 # 绘制三维曲面
-surf=ax.plot_surface(t, F, Z, cmap='viridis',edgecolor='none',antialiased=True)
+surf=ax.plot_surface(t, F, Z, rstride=2, cstride=2, cmap='jet', edgecolor='none', antialiased=True)
 
 # 翻转 x 轴
 ax.invert_xaxis()
@@ -38,10 +56,10 @@ ax.set_xlabel('t/tau')
 ax.set_ylabel('FD*tau')
 ax.set_zlabel('A(t,FD)')
 # 添加颜色条以显示 Z 值的映射关系
-fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
+# fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
 # 调整视角
 ax.view_init(elev=20, azim=140)  # 改变 elev 和 azim 参数以调整视角
-
+ax.grid(False)
 # 显示图形
 plt.show()
 plt.close()
@@ -122,10 +140,10 @@ Z = np.abs(np.sinc(Ftau*(1-np.abs(t)))*(1-np.abs(t)))
 
 # 绘制二维函数图
 plt.figure(figsize=(8, 6))
-plt.plot(t, Z, label=f'FD*tau = {Ftau}')
+plt.plot(t, Z, label=f'FD = {Ftau}')
 plt.xlabel('t/tau')
 plt.ylabel('A(t,FD)')
-plt.title('Plot of A(t,FD) for FD*tau = 0')
+plt.title('Plot of A(t,FD) for FD= 0')
 
 
 plt.xticks(np.arange(-1,1.1,step=0.2))

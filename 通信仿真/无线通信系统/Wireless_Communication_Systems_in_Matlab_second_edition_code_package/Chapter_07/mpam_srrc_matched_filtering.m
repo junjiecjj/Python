@@ -1,15 +1,15 @@
 %Performance simulation of MPAM with SRRC pulse shaping
-clearvars; clc;
-N = 10^5; %Number of symbols to transmit
-MOD_TYPE = 'PAM'; %modulation type is 'PAM'
-M = 4; %modulation level for the chosen modulation MOD_TYPE
-EbN0dB = -4:2:10; %SNRs for generating AWGN channel noise
+clear; clc; close all;
+N = 10^6; %Number of symbols to transmit
+MOD_TYPE = 'QAM'; %modulation type is 'PAM'
+M = 16; %modulation level for the chosen modulation MOD_TYPE
+EbN0dB = -4:2:16; %SNRs for generating AWGN channel noise
 %----Pulse shaping filter definitions-----
 beta = 0.3;% roll-off factor for SRRC filter
 Nsym = 8;%SRRC filter span in symbol durations
 L = 4; %Oversampling factor (L samples per symbol period)
 [p,t,filtDelay] = srrcFunction(beta,L,Nsym);%SRRC filter
-
+%p = p/norm(p);
 SER=zeros(1,length(EbN0dB)); %Symbol Error Rate place holders
 snr = 10*log10(log2(M))+EbN0dB; %Converting given Eb/N0 dB to SNR
 

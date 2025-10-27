@@ -43,11 +43,11 @@ def ser_awgn(EbN0dB, MOD_TYPE, M, COHERENCE = None):
 # Program 6.3: perf over awgn.m: Performance of various modulations over AWGN channel
 nSym = 100000
 EbN0dB = np.arange(-4, 26, 2 )
-# MOD_TYPE = "qam"
-# arrayOfM = [4, 16, 64, 256]
+MOD_TYPE = "qam"
+arrayOfM = [4, 16, 64, 256]
 
-MOD_TYPE = "pam"    ## "pam"
-arrayOfM = [2, 4, 8, 16, 32]
+# MOD_TYPE = "psk"    ## "pam"
+# arrayOfM = [2, 4, 8, 16, 32]
 
 colors = ['b', 'g', 'r', 'c', 'm', 'k']
 channelModel = "awgn"
@@ -121,10 +121,10 @@ def ser_rayleigh(EbN0dB, MOD_TYPE, M):
 # Program 6.6: perf over rayleigh ﬂat fading.m: Performance of modulations over Rayleigh ﬂat fading
 nSym = 100000
 EbN0dB = np.arange(-10, 26, 2 )
-# MOD_TYPE = "qam"
-# arrayOfM = [4, 16, 64, 256]
+MOD_TYPE = "qam"
+arrayOfM = [4, 16, 64, 256]
 
-MOD_TYPE = "pam"  # pam, psk
+MOD_TYPE = "psk"  # pam, psk
 arrayOfM = [2, 4, 8, 16, 32]
 
 colors = ['b', 'g', 'r', 'c', 'm', 'k']
@@ -205,7 +205,7 @@ EbN0dB = np.arange(0, 24, 2 )
 # MOD_TYPE = "qam"
 M = 8  #  [4, 16, 64, 256]
 
-MOD_TYPE = "pam"  # pam, psk
+MOD_TYPE = "psk"  # pam, psk
 
 K_dB = [3, 5, 10, 20]
 colors = ['b', 'g', 'r', 'c', 'm', 'k']

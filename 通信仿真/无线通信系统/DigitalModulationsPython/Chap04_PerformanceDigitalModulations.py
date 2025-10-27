@@ -25,17 +25,17 @@ mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM' or 'FSK'
 arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 coherence = 'coherent' #'coherent'/'noncoherent'-only for FSK
 
-# mod_type = 'QAM'
-# arrayOfM = [4,16,64,256] # uncomment this line if MOD_TYPE='QAM'
+mod_type = 'QAM'
+arrayOfM = [4, 16, 64, 256] # uncomment this line if MOD_TYPE = 'QAM'
 
-modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
+modem_dict = {'psk': PSKModem, 'qam':QAMModem, 'pam':PAMModem, 'fsk':FSKModem}
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
-fig, ax = plt.subplots(nrows = 1, ncols = 1)
+fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (8, 6), constrained_layout = True)
 
 for i, M in enumerate(arrayOfM):
     #-----Initialization of various parameters----
     k = np.log2(M)
-    EsN0dBs = 10*np.log10(k)+EbN0dBs # EsN0dB calculation
+    EsN0dBs = 10*np.log10(k) + EbN0dBs # EsN0dB calculation
     SER_sim = np.zeros(len(EbN0dBs)) # simulated Symbol error rates
     inputSyms = np.random.randint(low = 0, high = M, size = nSym)
     # uniform random symbols from 0 to M-1
@@ -67,6 +67,8 @@ ax.legend()
 plt.show()
 plt.close()
 
+sys.exit(-1)
+
 #%%  Performance in Rayleigh fading
 import sys
 # sys.path.append("..")
@@ -89,7 +91,7 @@ arrayOfM = [2, 4, 8, 16, 32] # array of M values to simulate
 
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,}
 colors = plt.cm.jet(np.linspace(0,1,len(arrayOfM))) # colormap
-fig, ax = plt.subplots(nrows=1,ncols = 1)
+fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (8, 6), constrained_layout = True)
 
 for i, M in enumerate(arrayOfM):
     k=np.log2(M)
@@ -108,11 +110,11 @@ for i, M in enumerate(arrayOfM):
     # modulatedSyms = modem.modulate(inputSyms) #modulate
 
     for j, EsN0dB in enumerate(EsN0dBs):
-        h_abs = rayleighFading(nSym) #Rayleigh flat fading samples
-        hs = h_abs*modulatedSyms #fading effect on modulated symbols
+        h = rayleighFading(nSym) #Rayleigh flat fading samples
+        hs = h * modulatedSyms #fading effect on modulated symbols
         receivedSyms = awgn(hs, EsN0dB) #add awgn noise
-
-        y = receivedSyms/h_abs # decision vector
+        y = receivedSyms * h.conjugate()/np.abs(h)**2
+        # y = receivedSyms/h_abs # decision vector
         detectedSyms = modem.demodulate(y) #demodulate (Refer Chapter 3)
         SER_sim[j] = np.sum(detectedSyms != inputSyms)/nSym
 
@@ -144,12 +146,12 @@ K_dBs = [3, 5, 10, 20] # array of K factors for Rician fading in dB
 mod_type = 'PSK' # Set 'PSK' or 'QAM' or 'PAM'
 M = 8 # M value for the modulation to simulate
 
-# mod_type = 'QAM'
-# M = 16
+mod_type = 'QAM'
+M = 16
 
 modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,}
 colors = plt.cm.jet(np.linspace(0, 1, len(K_dBs))) # colormap
-fig, ax = plt.subplots(nrows = 1, ncols = 1)
+fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (8, 6), constrained_layout = True)
 
 for i, K_dB in enumerate(K_dBs):
     #-----Initialization of various parameters----
@@ -168,10 +170,11 @@ for i, K_dB in enumerate(K_dBs):
     # modulatedSyms = modem.modulate(inputSyms) #modulate
 
     for j,EsN0dB in enumerate(EsN0dBs):
-        h_abs = ricianFading(K_dB,nSym) #Rician flat fading samples
-        hs = h_abs*modulatedSyms #fading effect on modulated symbols
+        h = ricianFading(K_dB,nSym) #Rician flat fading samples
+        hs = h*modulatedSyms #fading effect on modulated symbols
         receivedSyms = awgn(hs,EsN0dB) #add awgn noise
-        y = receivedSyms/h_abs # decision vector
+        # y = receivedSyms/h_abs # decision vector
+        y = receivedSyms * h.conjugate()/np.abs(h)**2
         detectedSyms = modem.demodulate(y) #demodulate (Refer Chapter 3)
         SER_sim[j] = np.sum(detectedSyms != inputSyms)/nSym
 

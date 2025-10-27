@@ -38,7 +38,7 @@ L=round((1/prf)/ts);
 x=zeros(L,1);
 x(1:1:N,1)=x0;
 [afmag,delay,doppler]=ambgfun(x,fs,prf);
-ambgu=afmag.*(afmag>0.5);
+%ambgu=afmag.*(afmag>0.5);
 figure(2)
 % contour(delay,doppler,afmag,'ShowText','on');
 mesh(delay,doppler,afmag);
@@ -51,7 +51,7 @@ colorbar;
 grid on
 
 figure(3)
-contour(delay,doppler,ambgu);
+contour(delay,doppler,afmag);
 xlim([-8e-3,8e-3]);
 ylim([-7600,7600]);
 xlabel('Delay (second)');
