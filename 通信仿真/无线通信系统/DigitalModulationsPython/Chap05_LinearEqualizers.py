@@ -12,7 +12,7 @@ Created on Sun Mar  9 17:39:10 2025
 #%% Program 69: DigiCommPy\chapter 5\zf equalizer test.py: Simulation of zero-forcing equalizer
 import numpy as np #for numerical computing
 import matplotlib.pyplot as plt #for plotting functions
-from numpy import pi,log,convolve
+from numpy import pi, log, convolve
 from DigiCommPy.equalizers import zeroForcing
 nSamp = 5 #%Number of samples per symbol determines baud rate Tsym
 Fs = 100 # Sampling Frequency of the system
@@ -122,8 +122,7 @@ plt.close()
 # Equalizer Design Parameters
 N = 14 # Desired number of taps for equalizer filter
 
-#design DELAY OPTIMIZED MMSE eq. for given channel, get tap weights and filter
-#the input through the equalizer
+# design DELAY OPTIMIZED MMSE eq. for given channel, get tap weights and filter the input through the equalizer
 
 noiseVariance = N0**2 # noise variance
 snr = 10*np.log10(1/N0) # convert to SNR (assume var(signal) = 1)
@@ -138,6 +137,23 @@ h_sys = mmse_eq.equalize(h_k) # overall effect of channel and equalizer
 
 print('MMSE equalizer design: N={} Delay={} error={}'.format(N, opt_delay, mse))
 print('MMSE equalizer weights:{}'.format(w))
+
+#Frequency response of channel,equalizer & overall system
+from scipy.signal import freqz
+Omega_1, H_F  = freqz(h_k) # frequency response of channel
+Omega_2, W = freqz(w) # frequency response of equalizer
+Omega_3, H_sys = freqz(h_sys) # frequency response of overall system
+
+fig, ax = plt.subplots(nrows = 1, ncols = 1)
+ax.plot(Omega_1/pi, 20*log(abs(H_F)/max(abs(H_F))),'g', label = 'channel')
+ax.plot(Omega_2/pi, 20*log(abs(W)/max(abs(W))),'r', label = 'MMSE equalizer')
+ax.plot(Omega_3/pi, 20*log(abs(H_sys)/max(abs(H_sys))), 'k', label = 'overall system')
+ax.legend()
+ax.set_title('Frequency response');
+ax.set_ylabel('Magnitude(dB)');
+ax.set_xlabel('Normalized frequency(x $\pi$ rad/sample)');
+plt.show()
+plt.close()
 
 #Plot equalizer input and output(time-domain response)
 fig, (ax1,ax2) = plt.subplots(nrows=2, ncols = 1)
@@ -281,7 +297,8 @@ axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER',)
 axs.set_title( "Probability of Symbol Error for BPSK signals")
 axs.legend(fontsize = 20)
-
+out_fig = plt.gcf()
+out_fig.savefig('hh2.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 
