@@ -22,18 +22,18 @@ class Equalizer():
     def design(self): #Abstract method
         "Design the equalizer for the given impulse response and SNR"
 
-    def convMatrix(self, h, p):
+    def convMatrix(self, h, N):
         """
-        Construct the convolution matrix of size (N+p-1)x p from the
-        input matrix h of size N. (see chapter 1)
+        Construct the convolution matrix of size (L+N-1)x N from the
+        input matrix h of size L. (see chapter 1)
         Parameters:
             h : numpy vector of length L
-            p : scalar value
+            N : scalar value
         Returns:
             H : convolution matrix of size (L+p-1)xp
         """
-        col = np.hstack((h, np.zeros(p-1)))
-        row = np.hstack((h[0], np.zeros(p-1)))
+        col = np.hstack((h, np.zeros(N-1)))
+        row = np.hstack((h[0], np.zeros(N-1)))
 
         from scipy.linalg import toeplitz
         H = toeplitz(col, row)
@@ -62,23 +62,23 @@ class zeroForcing(Equalizer): #Class zero-forcing equalizer
         Returns: MSE: Mean Squared Error for the designed equalizer
         """
         L = len(h)
-        H = self.convMatrix(h, self.N) #(L+N-1)xN matrix - see Chapter 1
+        H = self.convMatrix(h, self.N)  # (L+N-1)xN matrix - see Chapter 1
         # compute optimum delay based on MSE
-        Hp = np.linalg.pinv(H) #Moore-Penrose Pseudo inverse
-        #get index of maximum value using argmax, @ for matrix multiply
+        Hp = np.linalg.pinv(H)          # Moore-Penrose Pseudo inverse
+        # get index of maximum value using argmax, @ for matrix multiply
         opt_delay = np.argmax(np.diag(H @ Hp))
-        self.opt_delay = opt_delay #optimized delay
+        self.opt_delay = opt_delay      # optimized delay
 
         if delay==None:
-            delay=opt_delay
-        elif delay >=(L+self.N-1):
+            delay = opt_delay
+        elif delay >=(L + self.N - 1):
             raise ValueError('Given delay is too large delay (should be < L+N-1')
 
         k0 = delay
-        d = np.zeros(self.N+L-1)
-        d[k0] = 1 #optimized position of equalizer delay
-        self.w = Hp @ d # Least Squares solution, @ for matrix multiply
-        MSE = (1-d.T @ H @ Hp @ d) #MSE and err are equivalent,@ for matrix multiply
+        d = np.zeros(self.N + L - 1)
+        d[k0] = 1                  # optimized position of equalizer delay
+        self.w = Hp @ d            # Least Squares solution, @ for matrix multiply
+        MSE = (1-d.T @ H @ Hp @ d) # MSE and err are equivalent,@ for matrix multiply
         return MSE
 
 class MMSEEQ(Equalizer): #Class MMSE Equalizer
@@ -94,14 +94,14 @@ class MMSEEQ(Equalizer): #Class MMSE Equalizer
         Returns: MSE: Mean Squared Error for the designed equalizer
         """
         L = len(h)
-        H = self.convMatrix(h,self.N) #(L+N-1)xN matrix - see Chapter 1
-        gamma = 10**(-snr/10) # inverse of SNR
+        H = self.convMatrix(h, self.N) # (L+N-1)xN matrix - see Chapter 1
+        gamma = 10**(-snr/10)          # inverse of SNR
         # compute optimum delay
-        opt_delay = np.argmax(np.diag(H @ np.linalg.inv(H.T @ H+gamma * np.eye(self.N))@ H.T)) # @ for matrix multiply
-        self.opt_delay = opt_delay #optimized delay
+        opt_delay = np.argmax(np.diag(H @ np.linalg.inv(H.conj().T @ H + gamma * np.eye(self.N))@ H.conj().T)) # @ for matrix multiply
+        self.opt_delay = opt_delay                                    # optimized delay
 
-        if delay==None:
-            delay=opt_delay
+        if delay == None:
+            delay = opt_delay
         if delay >=(L+self.N-1):
             raise ValueError('Given delay is too large delay (should be < L+N-1')
 
@@ -109,9 +109,9 @@ class MMSEEQ(Equalizer): #Class MMSE Equalizer
         d = np.zeros(self.N+L-1)
         d[k0] = 1 # optimized position of equalizer delay
         # Least Squares solution, @ for matrix multiply
-        self.w = np.linalg.inv(H.T @ H+ gamma * np.eye(self.N))@ H.T @ d
+        self.w = np.linalg.inv(H.conj().T @ H + gamma * np.eye(self.N))@ H.conj().T @ d
         # assume var(a)=1, @ for matrix multiply
-        MSE = (1-d.T @ H @ np.linalg.inv(H.T @ H+gamma * np.eye(self.N)) @ H.T @ d)
+        MSE = (1-d.T @ H @ np.linalg.inv(H.conj().T @ H + gamma * np.eye(self.N)) @ H.conj().T @ d)
         return MSE
 
 class LMSEQ(Equalizer): #Class LMS adaptive equalizer
