@@ -236,9 +236,7 @@ def fmcw_radar_demo():
 
     # 2) Range-Doppler map + detections + TRUTH + LEGEND
     plt.figure(figsize=(12, 8))
-    plt.imshow(10 * np.log10(mag / np.max(mag) + 1e-12),
-               extent=[R_hat[0], R_hat[-1], f_doppler[0], f_doppler[-1]],
-               aspect='auto', origin='lower', cmap='viridis')
+    plt.imshow(10 * np.log10(mag / np.max(mag) + 1e-12), extent=[R_hat[0], R_hat[-1], f_doppler[0], f_doppler[-1]], aspect='auto', origin='lower', cmap='viridis')
     plt.colorbar()
     plt.xlabel('Range (m)')
     plt.ylabel('Doppler (Hz)')
@@ -246,15 +244,12 @@ def fmcw_radar_demo():
 
     hDet = None
     if peak_idx.size > 0:
-        hDet = plt.scatter(R_hat[peak_idx[:, 1]], f_doppler[peak_idx[:, 0]],
-                          40, 'white', label='Detections')
+        hDet = plt.scatter(R_hat[peak_idx[:, 1]], f_doppler[peak_idx[:, 0]], 40, 'white', label='Detections')
 
-    hTruth = plt.plot(R_true, fd_true, 'p', markersize=12, markerfacecolor='yellow',
-                     markeredgecolor='black', linewidth=1.5, label='Truth')[0]
+    hTruth = plt.plot(R_true, fd_true, 'p', markersize=12, markerfacecolor='yellow', markeredgecolor='black', linewidth=1.5, label='Truth')[0]
 
     for i in range(len(R_true)):
-        plt.text(R_true[i] + 0.5, fd_true[i], f'T{i+1}',
-                color='black', fontweight='bold', verticalalignment='center')
+        plt.text(R_true[i] + 0.5, fd_true[i], f'T{i+1}', color='black', fontweight='bold', verticalalignment='center')
 
     if hDet is None:
         plt.legend([hTruth], ['Truth'], loc='best')
@@ -309,14 +304,11 @@ def fmcw_radar_demo():
         fd_slice = f_doppler[id_max_per_r[ir0]]     # doppler slice used for this range
         truth_mask[i] = abs(fd_true[i] - fd_slice) <= tol
 
-    hTruthRA = plt.plot(R_true[truth_mask], th_true[truth_mask], 'p', markersize=11,
-                       markeredgecolor='black', markerfacecolor='yellow',
-                       linewidth=1.3, label='Truth near slice')[0]
+    hTruthRA = plt.plot(R_true[truth_mask], th_true[truth_mask], 'p', markersize=11, markeredgecolor='black', markerfacecolor='yellow', linewidth=1.3, label='Truth near slice')[0]
 
     for i in range(len(R_true)):
         if truth_mask[i]:
-            plt.text(R_true[i] + 0.5, th_true[i], f'T{i+1}',
-                    color='black', fontweight='bold', verticalalignment='center')
+            plt.text(R_true[i] + 0.5, th_true[i], f'T{i+1}', color='black', fontweight='bold', verticalalignment='center')
 
     plt.legend([hTruthRA], ['Truth near slice'], loc='best')
     plt.show()
@@ -334,8 +326,7 @@ def fmcw_radar_demo():
         fig = plt.figure(figsize=(12, 8))
         ax = fig.add_subplot(111, projection='3d')
 
-        sc = ax.scatter(est_list[:, 0], est_list[:, 1], ang_use,
-                       s=sz, c=mag_db, cmap='viridis', label='Detections')
+        sc = ax.scatter(est_list[:, 0], est_list[:, 1], ang_use, s=sz, c=mag_db, cmap='viridis', label='Detections')
 
         ax.grid(True)
         ax.set_xlabel('Range (m)')
@@ -349,13 +340,10 @@ def fmcw_radar_demo():
         ax.view_init(elev=25, azim=45)
 
         # Plot truth targets
-        ax.plot(R_true, v_true, th_true, 'p', markersize=12,
-               markerfacecolor='yellow', markeredgecolor='black',
-               linewidth=1.5, label='Truth')
+        ax.plot(R_true, v_true, th_true, 'p', markersize=12, markerfacecolor='yellow', markeredgecolor='black', linewidth=1.5, label='Truth')
 
         for i in range(len(R_true)):
-            ax.text(R_true[i], v_true[i], th_true[i] + 1.0, f'T{i+1}',
-                   color='black', fontweight='bold')
+            ax.text(R_true[i], v_true[i], th_true[i] + 1.0, f'T{i+1}', color='black', fontweight='bold')
 
         ax.legend(['Detections', 'Truth'], loc='best')
         plt.show()

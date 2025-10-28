@@ -98,6 +98,3 @@ plt.colorbar()
 plt.tight_layout()
 plt.show()
 
-    # return data
-
-

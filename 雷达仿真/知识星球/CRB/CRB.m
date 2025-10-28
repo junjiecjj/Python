@@ -1,5 +1,4 @@
-clc
-clear
+close all;clear all;
 index=1;
 m=8; % 阵元数
 p=1; % 信号数
@@ -43,7 +42,7 @@ for snr=snrdata(1) : 1 : snrdata(length(snrdata))
 end
 % 画图
 snr=snrdata(1): 1: snrdata(length(snrdata));
-plot(snr,crb(1:length(snr)), '--rd',  'LineWidth', 1.2, 'MarkerSize', 8);
+semilogy(snr,crb(1:length(snr)), '--rd',  'LineWidth', 1.2, 'MarkerSize', 8);
 legend('CRB'); grid on; 
 % set(gca, 'XLim', [snr(1), snr(length(snr))]);                 
 % set(gca, 'XTick', snr);        

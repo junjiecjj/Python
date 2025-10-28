@@ -10,7 +10,7 @@ for k=1:k0
     t=linspace(-T/2,T/2,N(k));
     St=exp(j*pi*K*t.^2); 
     freq=linspace(-B/2,B/2,N(k));
-    figure;
+    figure(k);
     plot(freq*1e-6,fftshift(abs(fft(St))));
     title(['当采样率为',num2str(a(k)),'B时，线性调频信号的幅频特性']);
     xlabel('Frequency in MHz');
