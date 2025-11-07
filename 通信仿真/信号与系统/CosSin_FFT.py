@@ -100,7 +100,7 @@ def IFFT(XX):
 
 Fs = 10                          # 信号采样频率
 Ts = 1/Fs                        # 采样时间间隔
-N = 100                           # 采样信号的长度
+N = 1000                           # 采样信号的长度
 t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 
 f1 = 2                             # 第一个余弦信号的频率
@@ -212,7 +212,6 @@ Pha2 = np.angle(X2,deg=True)       # 计算频域序列 Y 的相角 (弧度制)
 R2 = np.real(X2)                   # 计算频域序列 Y 的实部
 I2 = np.imag(X2)                   # 计算频域序列 Y 的虚部
 
-
 df = Fs/FFTN                           # 频率间隔
 if N%2 == 0:
     # 方法一
@@ -225,7 +224,6 @@ horvizen = 5
 vertical = 3
 fig, axs = plt.subplots(vertical, horvizen, figsize=(horvizen*width, vertical*high), constrained_layout=True)
 labelsize = 20
-
 
 #%% 半谱图
 #======================================= 0,0 =========================================
@@ -268,12 +266,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[0,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 0,2 =========================================
 axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
@@ -403,12 +399,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,2].get_xticklabels() + axs[1,2].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 1,3 =========================================
 axs[1,3].plot(f1, R1, color='cyan', linestyle='-', label='实部',)
@@ -426,7 +420,6 @@ legend1 = axs[1,3].legend(loc='best', borderaxespad=0, edgecolor='black', prop=f
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
 
 axs[1,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,3].get_xticklabels() + axs[1,3].get_yticklabels()
@@ -449,7 +442,6 @@ legend1 = axs[1,4].legend(loc='best', borderaxespad=0, edgecolor='black', prop=f
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
 
 axs[1,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[1,4].get_xticklabels() + axs[1,4].get_yticklabels()
@@ -476,12 +468,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[1,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[2,1].get_xticklabels() + axs[2,1].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 2,2 =========================================
 axs[2,2].plot(f2, Pha2, color='g', linestyle='-', label='相位',)
@@ -500,12 +490,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[2,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[2,2].get_xticklabels() + axs[2,2].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 2,3 =========================================
 axs[2,3].plot(f2, R2, color='cyan', linestyle='-', label='实部',)
@@ -524,12 +512,10 @@ frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-
 axs[2,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
 labels = axs[2,3].get_xticklabels() + axs[2,3].get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
-
 
 #======================================= 2,4 =========================================
 axs[2,4].plot(f2, I2, color='#FF8C00', linestyle='-', label='虚部',)

@@ -1,0 +1,133 @@
+# FQPSK和SOQPSK信号的通用准最优解调设计
+
+郄志鹏¹，翟海涛¹，钟声²，朱江  
+(1. 国防科技大学 电子科学与工程学院，湖南 长沙 410073；  
+2. 中国工程物理研究院 电子工程研究所，四川 绵阳 621900)
+
+**摘要**  
+FQPSK-JR和SOQPSK-TG是IRIG-106遥测标准中可以互换的两种信号体制，两种信号有着近乎相同的功率效率和带宽效率。尽管两种信号都可以采用常规的OQPSK接收机进行解调，但是基于OQPSK结构的接收机忽略了两种信号固有的记忆特性，其解调性能损失相比最优解调达2dB之多。在遥测链路中，受设备体积及电源限制，2dB的功率损失是至关重要的。虽然基于其调制体制相对应的最优接收机都能提高功率效率，但信号产生体制的不同导致了其对应的最优接收机结构不同。将IRIG-106标准中的用CPM调制来近似表示，将SOQPSK-TG信号的频率成型脉冲进行了截短近似，设计了基于CPM的通用准最优解调器。基于CPM近似设计出的解调器与OQPSK解调器一样无须对两种信号进行识别，CPM设计的通用解调器对两种信号进行解调的渐进损失都很小，对复杂度也进行了分析对比。
+
+**关键词**  
+FQPSK-JR；SOQPSK-TG；IRIG-106；连续相位调制
+
+## I. FQPSK-JR原理
+
+1983年，Kato和Feher提出了FQPSK，其起因是为了将IJF-QPSK(无符号间干扰和抖动四相移键控)信号的包络进一步降低。Kato和Feher降低包络抖动的方法是在I信道和Q信道之间人为引入可控量的互相关。通过此种人为控制的方法虽然得到了准恒包络信号，在非均匀采样点处，基带信号包络的最大抖动只有0.18dB。虽然基于XTCQM(互相关网格编码正交调制)的方法无法进一步往高阶调制扩展，但是FQPSK由于其优异的准恒包络特性、良好的带宽和功率效率，使得其得到了广泛研究和应用。早期的基于OQPSK的接收机或者采用平均匹配滤波器的接收机都忽略了信号固有的记忆性，牺牲了功率效率[1-3]。2000年，Simon用网格编码的方式对FQPSK进行了重新解释，设计出了基于Viterbi的最佳接收机，最佳接收机相比未编码OQPSK性能只差了约 $0.6 dB^{[4]}$。
+
+2000年，Hill提出了SOQPSK，SOQPSK是一种带约束的三进制CPM(连续相位调制)，调制指数 $h=1/2$，其频谱效率和功率效率和FQPSK相当或者更好(取决于具体参数选择) ${}^{[5]}$。继2000年FQPSK及其改进型FQPSK-JR以专利身份入选了IRIG-106遥测标准后，非专利的SOQPSK-TG也于2004年也人选了IRIG-106标准 ${}^{[6]}$。
+
+两种调制体制有着几乎相同的带宽和功率效率，并且都可以采用常规的OQPSK接收机，说明两者有其内在的联系性。文献[7-8]对FQPSK的衍生版本FQPSK-B信号进行了CPM表示，FQPSK-B信号由于有模拟滤波器的影响，与FQPSK-JR信号CPM表示有较大差别。本文在深入分析两种调制方式的基础上，推导出了FQPSK-JR信号基于CPM表示后的频率成型脉冲，调制指数和脉冲响应长度。FQPSK-JR基于CPM表示后就可以采用CPM的接收机结构对信号进行解调。采用CPM表示的FQPSK-JR信号和截短后的SOQPSK-TG信号的相位成型脉冲很接近，因此可以设计基于CPM的通用接收机。仿真结果表明基于CPM的FQPSK-JR信号解调与基于XTCQM的解调两者在 $10^{-5}$ 的误码率时只有0.08dB的性能损失。
+
+FQPSK-JR信号是OQPSK的一种，可以表示如下：
+$s(t) = y_I(t)\cos(2\pi f_c t) - y_Q(t)\sin(2\pi f_c t)$ (1)
+
+FQPSK-JR根据I和Q数据符号序列的跳变特性确定映射函数，该函数用来选择第n个发信间隔内发送的具体波形对 $s_{I, m}\left(t-k T_s\right), s_{Q, m}(t-k T_s)$。定义I路和Q路数据的基带波形如式(2)，式中 $A=1/\sqrt{2}$。
+$s_0(t) = A, s_1(t) = A\cos(\frac{\pi t}{2T_s}), s_2(t) = A\sin(\frac{\pi t}{2T_s}), s_3(t) = 0$ (2)
+
+以I信道基带信号的映射为例，在第n个发信间隔(n-1/2) $T_s\leqslant t\leqslant(n+1/2) T_s$ 内发送的I信道信号选定如表1所示。例如 $d_{I, n}=1, d_{I, n-1}=$ 1(即I序列不发生跳变且两数据比特均为正)，那么当 $d_{Q, n-1}, d_{Q, n-2}$ 和 $d_{Q, n-1}, d_{Q, n}$ 都没有跳变时发送 $y_I(t)=s_0\left(t-n T_s\right)$，当 $d_{Q, n-1}, d_{Q, n-2}$ 没有跳变且 $d_{Q, n-1}, d_{Q, n}$ 有跳变时发送 $y_I(t)=s_1\left(t-n T_s\right)$，当 $d_{Q, n-1}, d_{Q, n-2}$ 跳变且 $d_{Q, n-1}, d_{Q, n}$ 有跳变时发送 $y_I(t)=s_2\left(t-n T_s\right)$，当 $d_{Q, n-1}, d_{Q, n-2}, d_{Q, n-1}, d_{Q, n}$ 都有跳变时发送 $y_I(t)=s_3\left(t-n T_s\right)$。通过类似的方法可以映射出Q路在第n个发送间隔 $n T_s\leqslant t\leqslant$ $(n+1) T_s$ 内基带波形。对比I、Q路的基带波形可能组合发现如下规律：连续的3 bit的二进制数据可以确定8种可能符号中间相位值，相位的可能取值为 $k\cdot\frac{\pi}{4}, k=0,\cdots, 7$；连续的4 bit的二进制数据可以确定一个符号的相位变化，可能取值为 $0,\pm\frac{\pi}{4},\pm\frac{\pi}{2}$；连续的5 bit的二进制数据可以确定两个符号的相位变化。与没有约束关系的随机5 bit二进制数据能产生32种相位变化相比，FQPSK-JR总共有16种相位变化，这种约束关系表明FQPSK-JR信号具有记忆特性 ${}^{[1]}$。
+
+**表 1 I信道基带信号 $s_I(t)$ 的映射**  
+**Tab. 1 Mapping for inphase(I)-channel baseband signal**  
+（表格具体内容在文档中以图片形式存在，文本未提供详细行列数据，故保留引用）
+
+I、Q两路由于码元约束关系，当错开半个码元间隔的时候，I、Q两路基带波形对应关系如表2所示。
+
+**第4期郄志鹏，等：FQPSK和SOQPSK信号的通用准最优解调设计·79·**
+
+**表2 FQPSK-JR基带信号波形对**  
+**Tab. 2 I and Q cross-correlated signal combinations.**  
+（表格具体内容在文档中以图片形式存在，文本未提供详细行列数据，故保留引用）
+
+## II. SOQPSK-TG信号及其截短近似
+
+SOQPSK-TG信号是一种CPM信号，其基带信号模型可以表示如下：
+$s(t) = \exp[j\phi(t,\alpha)]$ (3)
+
+式中，$\phi(t,\alpha)=2\pi h\int_{-\infty}^t\sum_{n=-\infty}^{\infty}\alpha_n g\left(\tau-n T_b\right) d\tau$，其中 $h=1/2$ 是调制指数，$\alpha_n\in\{-1,0,1\}$ 是三进制的符号，与二进制的码元 $b_n$ 的关系如式(4):
+$\alpha_n = (-1)^{n+1} b_{n-1}(b_n - b_{n-2})/2$ (4)
+
+SOQPSK-TG信号的频率响应脉冲由频域升余弦窗和时域升余弦窗相乘得到的，其持续时间为8个符号周期，如图1所示。
+
+**Fig.1 The frequency and phase pulse for SOQPSK-TG and CPM approximation of FQPSK-JR**
+
+观察图1所示的SOQPSK-TG的相位成型脉冲，可以看出只有中间2个符号对相位累积的贡献比较大，考虑其他6个符号对相位累积所做贡献较小，可以将相位响应脉冲截短到2个符号长度。
+
+经过截短的SOQPSK-TG信号，相比其原始的信号有所变化，体现在：(1) SOQPSK-TG信号由于相位响应脉冲截短，其频谱效率会略微降低；(2) SOQPSK-TG信号相位脉冲的截短可以将匹配滤波器数量和网格数量显著降低，而其性能损失仅仅只有0.2dB。
+
+## III. FQPSK-JR的CPM表示
+
+对照SOQPSK-TG的二进制码元与三进制符号可以得出，FQPSK-JR也可以采用类似码元到符号的映射关系。综合考虑FQPSK-JR与基带波形对的映射关系及SOQPSK-TG信号的相位响应脉冲的主要由中间2个符号做出贡献，可以取其响应长度为 $L=2$，调制指数 $h=0.5$。根据表2的分析可知，I、Q路相位变化可以表示为(假设I路为相位取正弦，Q路为相位取余弦):
+$\Delta\phi_{I,n} = \frac{\pi}{4}(\alpha_{I,n} + \alpha_{I,n-1}), \Delta\phi_{Q,n} = \frac{\pi}{4}(\alpha_{Q,n} + \alpha_{Q,n-1})$ (5)
+
+则其频率响应脉冲g(t)可以由相位响应脉冲求导可得：
+$g(t) = \frac{d}{dt}q(t)$ (6)
+
+根据表2中的四种情况分别求得FQPSK-JR的频率响应脉冲为：
+$g_1(t) = \frac{\pi}{4T_s}\sin(\frac{\pi t}{T_s}), g_2(t) = \frac{\pi}{4T_s}\cos(\frac{\pi t}{T_s}), g_3(t) = -\frac{\pi}{4T_s}\sin(\frac{\pi t}{T_s}), g_4(t) = -\frac{\pi}{4T_s}\cos(\frac{\pi t}{T_s})$ (7)
+
+**Fig.2 All possible frequency pulse of FQPSK-JR**
+
+CPM的频率脉冲函数为正值，只取式(7)中正的部分可知FQPSK-JR中可能出现的频率脉冲如图2所示。由于码元 $\alpha_{n}\in\{-1,0,1\}$ 为双极性且脉冲响应长度L=2，可以得出如果取g2(t)作为连续相位表示FQPSK-JR信号的频率成型脉冲。
+
+当符号出现连续两个及以上+1或者-1时，基于CPM表示将变为g(t)的叠加，而基于XTCQM表示却恒定不变。或者说，FQPSK-JR本身就是一种变频率脉冲的连续相位调制，这也解释了两者基带信号惊人相似，并可以采用OQPSK解调的原因。在XTCQM的表示中，符号出现连续两个及以上+1或者-1的情况信号时，频率脉冲为恒定的，而采用 $g_2(t)$ 表示后，频率脉冲将成为 $g_2(t)$ 的时移叠加，具体如图3所示。时移 $g_2$(t)叠加的频率成型脉冲表示与原始的FQPSK-JR信号在相位变化上有所不同，前者相位变化是非线性，而后者相位变化是均匀变化，两者的不同并不会引起信号包络的起伏。
+
+对比如图1所示CPM表示FQPSK-JR的近似频率与相位成型脉冲SOQPSK-TG，可以看到，两者相位成型脉冲非常接近，这就为设计通用的检测器提供了可能。
+
+**Fig. 3 The frequency pulse sequence according symbols**
+
+## IV. 基于CPM的通用检测器
+
+CPM的最优检测器为MLSE(最大似然序列估计)，通常采用如图4所示的检测结构，即匹配滤波器加Viterbi序列检测 ${}^{[9]}$。在设计通用检测器时，选用图1所示的SOQPSK-TG截短为 $L=2$ 的相位脉冲和基于CPM表示的FQPSK-JR相位脉冲的平均。
+
+**Fig.4 Optimal MLSD detector for CPM**
+
+基于平均相位脉冲 $\overline{q(t)} = \frac{q_S(t)+q_F(t)}{2}$ 的检测器相对于两种信号都会有性能损失，但是由于两者相位响应相差很小，因此可以预估其性能相比最优检测损失不大。采用平均相位脉冲对接收机变化最直接的影响体现在匹配滤波器的变化，平均匹配滤波器不能最优的同时对两种信号同时匹配，但这种准最优的检测器却能有效地保证信号功率效率。除此之外，该检测器与OQPSK解调器一样无须对信号进行识别。
+
+## V. 误码性能及复杂度分析
+
+文献[10-12]给出了SOQPSK-TG的最优渐进误码率如式(8)所示。
+$P_b \approx Q(\sqrt{\frac{2E_b}{N_0}})$ (8)
+
+文献[4]中给出了FQPSK-JR的基于XTCQM的最优渐进误码率如式(9)所示。
+$P_b \approx Q(\sqrt{\frac{2.6E_b}{N_0}})$ (9)
+
+仿真中，符号速率设定为5MHz，过采样倍数为8。FQPSK-JR和SOQPSK-TG的理论曲线由式(8)、(9)得出；逐符号解调采用积分判决的方法；通用检测器中Viterbi算法的回溯深度为8；除理论曲线外，其他曲线都是10万次蒙特卡洛的平均值；为了便于对比，图5中还画出了OQPSK的理论误码曲线。
+
+**Fig. 5 Bit error rates for SOQPSK-TG and FQPSK-JR based on different detectors**
+
+根据图5仿真结果可以得出以下几点结论：(1)两种信号的理论误码曲线非常接近，这从式(8)、(9)也可以得出；(2)无论是采用OQPSK接收机还是其各自的最优检测SOQPSK-TG信号的误码特性都略优于FQPSK-JR信号；(3)对于两种调制方式，基于OQPSK的逐符号检测，FQPSK-JR和SOQPSK-TG相比其最优检测分别损失了约2.1dB和2dB；(4)基于上文设计的通用CPM检测对两种信号都十分接近其各自最优检测，其中FQPSK-JR相比其最优检测相差约0.08dB，SOQPSK-TG相比起最优检测相差约0.26dB。表3给出了10⁻⁵误码率时两种信号采用不同解调器所需的 $E_b/N_0$。
+
+**表3 通用检测器的检测效率比较**  
+**Tab.3 Overall comparison of common detectors**  
+（表格具体内容在文档中以图片形式存在，文本未提供详细行列数据，故保留引用）
+
+与基于通用CPM检测器相比，两种信号各自最优检测损失都很小，但是SOQPSK-TG的信号损失更大，根据通用检测器的构造不难发现这是可以解释的。SOQPSK-TG是响应长度为8的CPM，我们将其截短到了2，截短后的信号不能最佳匹配，最终影响了系统性能，但是截短却使得解调器中匹配滤波器的数量显著减少，降低了实现复杂度。为了便于比较，表4中通过长度为T的实值滤波器的数量和网格状态数量来衡量不同解调器的复杂度。
+
+**表4 检测器的实现复杂度比较**  
+**Tab.4 Complexity comparison of detectors**  
+（表格具体内容在文档中以图片形式存在，文本未提供详细行列数据，故保留引用）
+
+FQPSK-JR的CPM检测方式在信号网格没有变化的情况下，匹配滤波时的误差影响了解调性能。但是由于信号只有50%的概率是改进后的CPM表示，并且这种表示误差很小，因此与预期的一致，误码特性较好。0.08dB的差距还是在采用平均匹配滤波的情况下得出的，如果单纯用所构建的FQPSK-JR的CPM检测器对FQPSK-JR信号做检测，其误码特性将会更加接近其最优检测。
+
+## VI. 结束语
+
+本文在分析了IRIG-106标准中可以同时使用的SOQPK-TG和FQPSK-JR信号的基础上，将原本通过XTCQM方式提出的FQPSK-JR信号进行了CPM近似，在对SOQPSK-TG信号也截短近似表示的同时，提出了无须信号识别的通用准最优检测器。对设计的检测器的误码性能及实现复杂度进行了对比。仿真结果表明，该通用检测器在兼顾通用的同时很好地保证了检测效率。虽然通用解调设计性能较好，但是其实现复杂度仍然较高，下一步可以在本文设计的通用解调器的基础上进一步设计基于PAM分解的低复杂度通用接收机。
+
+**参考文献(References)**
+
+[1] Simon M K. Bandwidth-efficient digital modulation with application to deep-space communications[M]. New York: Wiley, 2003.  
+[2] Leung P S, Feher K. F-QPSK- a superior modulation technique for mobile and personal communications[J]. IEEE Transactions on Broadcasting. 1993, 39: 288-294.  
+[3] Feher K. Spectral efficiency of commercial wireless and telemetry systems is doubled with IRIG106-00 standardized FQPSK and is quadrupled with FQAM[C]//Proc. ITC, 2000: 264.  
+[4] Simon M K, Yan T Y. Performance evaluation and interpretation of unfiltered feher-patented quadrature phase-shift keying(FQPSK)[R]. Telecommunications and Mission Operations Progress Report, Jet Propulsion Laboratory, May 1999.  
+[5] Hill T J. An enhanced, constant envelope, interoperable shaped offset QPSK(SOQPSK) waveform for improved spectral efficiency[C]//Proceedings of the International Telemetering Conference, San Diego, CA, October 2000.  
+[6] Range commanders council telemetry group, range commanders council, white sands missile range[S]. New Mexico, IRIG Standard 106-00: Telemetry Standards, 2000.  
+[7] Park H G, Lee K, Feher K. Continuous phase modulation of spectrally efficient FQPSK signals[C]//Proceedings Vehicle Technology Conference, 2003: 692-695.  
+[8] Park H C, Lee K, Feher K. Continuous phase modulation of FQPSK-B signals[J]. IEEE Transaction Vehicle Technology, 2007, 56: 157-172.  
+[9] Anderson J, Aulin T, Sundberg C. Digital phase modulation, ser. Applications of communications theory[M]. Plenum Press, 1986.  
+[10] Geoghegan M. Optimal linear detection of SOQPSK[C]//Proceedings of the International Telemetering Conference, San Diego, CA, October 2002.  
+[11] Geoghegan M. Bandwidth and power efficiency trade-offs of SOQPSK[C]//Proceedings of the International Telemetering Conference, San Diego, CA, October 2002.  
+[12] Geoghegan M. Implementation and performance results for trellis detection of SOQPSK[C]//Proceedings of the International Telemetering Conference, Las Vegas, October 2001.
+
+*收稿日期：2013-10-15  
+基金项目：国家自然科学青年基金项目(61201166)；国家自然科学基金项目(61101097)  
+作者简介：郄志鹏(1984—)，男，山西临汾人，博士研究生，E-mail: xzp_paper@163.com；朱江(通信作者)，男，教授，博士，博士生导师，E-mail: jiangzhu@nudt.edu.cn*

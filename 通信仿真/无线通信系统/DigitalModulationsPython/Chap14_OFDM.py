@@ -491,7 +491,7 @@ pilotIdx = np.hstack([pilotIdx, np.array([allIdx[-1]])]) # 为了方便信道估
 P = P + 1
 dataIdx = np.delete(allIdx, pilotIdx)                    # 数据编号
 plotDataPilot(allIdx, pilotIdx)
-esti_way = 'mmse'
+esti_way = 'ls'
 DFT_CE = True
 colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
@@ -554,7 +554,7 @@ axs.set_ylabel('SER',)
 axs.set_title(f"M{MOD_TYPE.upper()} CP-OFDM over FreqSelectiveRayleigh with {esti_way.upper()} Channel Estim", fontsize = 18)
 axs.legend(fontsize = 20)
 out_fig = plt.gcf()
-# out_fig.savefig('hh2.png',format='png',dpi=1000,)
+out_fig.savefig('hh2.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 

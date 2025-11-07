@@ -118,7 +118,7 @@ for k in range(len(tarR)):
 #                 phase_shift                       # 角度相位
 #             ))
 
-# ### 模拟接收信号, 直接获取差频信号；干货 | 利用MATLAB实现FMCW雷达的距离多普勒估计:
+### 模拟接收信号, 直接获取差频信号；干货 | 利用MATLAB实现FMCW雷达的距离多普勒估计; 雷达信号处理之FMCW 3D-FFT原理（附带MATLAB仿真程序）
 # t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
 # sigReceive = np.zeros((nRx, Nchirp, Ns), dtype = np.complex_)
 # for rx in range(nRx):
@@ -130,12 +130,8 @@ for k in range(len(tarR)):
 #             # 计算当前目标的参数
 #             R = (tarR[k] + tarV[k] * Tc * chirp)
 
-#             # 接收信号模型
-#             sigReceive[rx, chirp, :] += np.exp(1j *  (
-#                 2 * np.pi * (2 * B * R/(c * Tc) + 2 * f0 * tarV[k]/c) * t +
-#                 2 * np.pi * 2 * f0 * R/c +
-#                 phase_shift
-#                 ))
+#             # 接收信号模型,  虽然在FMCW雷达中，通常采用相邻chirp间的相位差来测速，但是本质上相邻chirp间的相位差是由于目标运动引起的多普勒频移造成的，如果目标是静止的，那么多普勒频移为零，根据公式（7），相邻chirp间的相位差也就为零。
+#             sigReceive[rx, chirp, :] += np.exp(1j * (2 * np.pi * (2 * B * R/(c * Tc) + 2 * f0 * tarV[k]/c) * t + 2 * np.pi * 2 * f0 * R/c + phase_shift ))
 
 #### 模拟接收信号, 收发相乘获取差频信号；
 t = np.linspace(0, Tc, Ns)  # 单个chirp的采样时间
@@ -149,7 +145,7 @@ for rx in range(nRx):
             # 计算该天线的相位差
             phase_shift = 2 * np.pi * f0 * rx * d * np.sin(np.deg2rad(tarA[k])) / c
 
-            dtmp = tarR[k] + tarV[k] * (t + chirp * Tc)
+            dtmp = tarR[k] + tarV[k] * (chirp * Tc)
             tau = 2 * dtmp / c                                # 运动目标的时延是动态变化的
             fr = f0 * (t + tau) + S / 2 * (t + tau)**2
             noise = (np.random.randn(*Sx.shape) + 1j * np.random.randn(*Sx.shape)) * np.sqrt(sigma[k])
@@ -269,7 +265,7 @@ print(f'目标速度：{Yscatter} m/s ', )
 fig = plt.figure(figsize=(12, 6), constrained_layout = True)
 ax1 = fig.add_subplot(121, projection='3d')
 # ax1.plot_surface(X, Y, Z, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
-ax1.plot_surface(X, Y, 10*np.log10(Z), rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.plot_surface(X, Y, 10*np.log10(Z), rstride = 2, cstride = 2, cmap = plt.get_cmap('jet'))
 ax1.scatter(Xscatter, Yscatter, Zscatter, s = 20, c = 'r', )
 ax1.grid(False)
 ax1.invert_xaxis()                                    #   x轴反向
@@ -294,7 +290,7 @@ plt.close()
 ##>>>>>>>>>>>> 绝对值
 fig = plt.figure(figsize=(12, 6), constrained_layout = True)
 ax1 = fig.add_subplot(121, projection='3d')
-ax1.plot_surface(X, Y, Z, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.plot_surface(X, Y, Z, rstride = 2, cstride = 2, cmap = plt.get_cmap('jet'))
 # ax1.plot_surface(X, Y, 10*np.log10(Z), rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
 ax1.scatter(Xscatter, Yscatter, Zscatter, s = 20, c = 'r', )
 ax1.grid(False)
@@ -417,7 +413,7 @@ angle_vel = np.abs(doppler_fft[3, :, :NumRangeFFT//2])  # Z
 angle_vel = angle_vel/angle_vel.max()
 tmp = 10*np.log10(angle_vel)
 # ax1.plot_surface(X, Y, angle_range, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
-ax1.plot_surface(X, Y, tmp, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax1.plot_surface(X, Y, tmp, rstride = 2, cstride = 2, cmap = plt.get_cmap('jet'))
 ax1.grid(False)
 ax1.invert_xaxis()                                    #   x轴反向
 ax1.set_proj_type('ortho')
@@ -434,7 +430,7 @@ integrated_angle_range = np.sum(power_spectrum, axis = 1)
 integrated_angle_range = integrated_angle_range/integrated_angle_range.max()
 tmp = 10*np.log10(integrated_angle_range)
 # ax2.plot_surface(X, Angle_bins, integrated_angle_range, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
-ax2.plot_surface(X, Angle_bins, tmp, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax2.plot_surface(X, Angle_bins, tmp, rstride = 2, cstride = 2, cmap = plt.get_cmap('jet'))
 ax2.grid(False)
 ax2.invert_xaxis()                                    #   x轴反向
 ax2.set_proj_type('ortho')
@@ -451,7 +447,7 @@ integrated_angle_vel = np.sum(power_spectrum, axis = 2)
 integrated_angle_vel = integrated_angle_vel/integrated_angle_vel.max()
 tmp = 10*np.log10(integrated_angle_vel)
 # ax3.plot_surface(Angle_bins, Y, integrated_angle_vel, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
-ax3.plot_surface(Angle_bins, Y, tmp, rstride = 5, cstride = 5, cmap = plt.get_cmap('jet'))
+ax3.plot_surface(Angle_bins, Y, tmp, rstride = 2, cstride = 2, cmap = plt.get_cmap('jet'))
 ax3.grid(False)
 ax3.invert_xaxis()                                    #   x轴反向
 ax3.set_proj_type('ortho')

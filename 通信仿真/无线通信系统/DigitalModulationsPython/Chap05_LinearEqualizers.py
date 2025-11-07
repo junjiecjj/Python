@@ -270,20 +270,20 @@ for idx, channeltype in enumerate(channelTypes):
 
         ## Receiver
         ## MMSE equalizer
-        mmse_eq = MMSEEQ(nTaps)       #initialize MMSE equalizer (object) of length nTaps
-        mmse_eq.design(h_c, EbN0dB)   #Design MMSE equalizer
-        optDelay = mmse_eq.opt_delay  #get the optimum delay of the equalizer
+        mmse_eq = MMSEEQ(nTaps)                    # initialize MMSE equalizer (object) of length nTaps
+        mmse_eq.design(h_c, EbN0dB)                # Design MMSE equalizer
+        optDelay = mmse_eq.opt_delay               # get the optimum delay of the equalizer
         #filter received symbols through the designed equalizer
         equalizedSamples = mmse_eq.equalize(r)
         y_mmse = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
         u_mmse = modem.demodulate(y_mmse)
-        #  ZF equalizer
-        zf_eq = zeroForcing(nTaps) #initialize ZF equalizer (object) of length nTaps
-        zf_eq.design(h_c)             # Design ZF equalizer
-        optDelay = zf_eq.opt_delay    # get the optimum delay of the equalizer
+        # ZF equalizer
+        zf_eq = zeroForcing(nTaps)                     # initialize ZF equalizer (object) of length nTaps
+        zf_eq.design(h_c)                              # Design ZF equalizer
+        optDelay = zf_eq.opt_delay                     # get the optimum delay of the equalizer
         #filter received symbols through the designed equalizer
         equalizedSamples = zf_eq.equalize(r)
-        y_zf = equalizedSamples[optDelay:optDelay+N] # samples from optDelay position
+        y_zf = equalizedSamples[optDelay:optDelay+N]   # samples from optDelay position
         u_zf = modem.demodulate(y_zf)
 
         # SER when filtered thro MMSE eq.

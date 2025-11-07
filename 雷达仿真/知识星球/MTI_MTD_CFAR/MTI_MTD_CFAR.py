@@ -146,7 +146,10 @@ plt.show()
 
 ################## MTI: 动目标显示
 mti = np.zeros((PulseNumber-1, SampleNumber), dtype=complex)
-# 静止目标的回波相位前后两次没有任何变化，基于此可以将前后两次回波信号进行相减就可以消除静止目标的回波，保留运动目标的回波。这就是实现MTI滤波器常用的单延迟线对消滤波器。
+"""
+可以看出，与pc的三个峰线相比，mti少了一个峰线，且是第一个与速度为0的目标对应的，如果把第一个目标的速度改为50，则mti也还有三个峰线，思考这是为啥??
+答: 静止目标的回波相位前后两次没有任何变化，基于此可以将前后两次回波信号进行相减就可以消除静止目标的回波，保留运动目标的回波。这就是实现MTI滤波器常用的单延迟线对消滤波器。
+"""
 for i in range(PulseNumber-1):  # 滑动对消，少了一个脉冲
     mti[i, :] = pc[i+1, :] - pc[i, :]
 
@@ -167,9 +170,7 @@ ax.set_xlabel('距离/m')
 ax.set_ylabel('脉冲数')
 plt.show()
 
-"""
-可以看出，与pc的三个峰线相比，mti少了一个峰线，且是第一个与速度为0的目标对应的，如果把第一个目标的速度改为50，则mti也还有三个峰线，思考这是为啥??
-"""
+
 
 # 绘制2D图形
 plt.figure(figsize=(10, 8))
@@ -188,7 +189,7 @@ plt.tight_layout()
 plt.show()
 
 ################## MTD:动目标检测. 如果说MTI滤波器告诉了我们一个目标是否是运动目标，那么MTD则是告诉我们这个动目标的多普勒频率是多少
-mtd = np.zeros((PulseNumber, SampleNumber), dtype=complex)
+mtd = np.zeros((PulseNumber, SampleNumber), dtype = complex)
 for i in range(SampleNumber):
     mtd[:, i] = np.fft.fft(pc[:, i])
 

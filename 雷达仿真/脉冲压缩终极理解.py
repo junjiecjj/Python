@@ -152,18 +152,15 @@ def generate_lfm_pulse(carrier_start_freq, carrier_end_freq, pulse_width, pri, a
     # 仅在脉冲宽度内生成LFM信号
     pulse[:num_samples_pulse] = amplitude * scipy.signal.chirp(t[:num_samples_pulse], f0 = carrier_start_freq, f1 = carrier_end_freq, t1 = pulse_width, method = 'linear')
     return t, pulse
-
 def generate_echo_signals(pulse, amplitude, delay, fs):
     """ 生成具有特定延时的回波信号 """
     num_samples_delay = int(delay * fs)
     echo = np.roll(pulse * amplitude, num_samples_delay)
     return echo
-
 def perform_match_filtering(echo, pulse):
     """ 对回波信号进行匹配滤波处理 """
     matched_signal = scipy.signal.correlate(echo, pulse, mode = 'full')
     return matched_signal
-
 def plot_matched_signals(t, pulse, matched_signal1, matched_signal2, fs):
     """ 绘制匹配滤波后的信号 """
     dt = t[1] - t[0]
@@ -202,52 +199,7 @@ matched_signal2 = perform_match_filtering(echo2, pulse)
 plot_matched_signals(t, pulse, matched_signal1, matched_signal2, fs)
 
 
-#%%  图四：非调制直接进行匹配滤波
-
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import chirp, correlate
-
-def generate_lfm_pulse(carrier_start_freq, carrier_end_freq, pulse_width, pri, amplitude, fs):
-    """生成线性调频脉冲信号和相应的时间向量"""
-    num_samples = int(pri * fs)
-    num_samples_pulse = int(pulse_width * fs)
-
-    t = np.linspace(0, pri, num_samples, endpoint = False)
-    pulse = np.zeros(num_samples)
-    # 仅在脉冲宽度内生成LFM信号
-    pulse[:num_samples_pulse] = amplitude * scipy.signal.chirp(t[:num_samples_pulse], f0 = carrier_start_freq, f1 = carrier_end_freq, t1 = pulse_width, method = 'linear')
-
-    return t, pulse
-
-def generate_echo_signals(pulse, amplitude, delay, fs):
-    """生成具有特定延时的回波信号"""
-    num_samples_delay = int(delay * fs)
-    echo = np.roll(pulse * amplitude, num_samples_delay)
-    return echo
-
-def perform_match_filtering(echo, pulse):
-    """对回波信号进行匹配滤波处理"""
-    matched_signal = scipy.signal.correlate(echo, pulse, mode = 'full')
-    return matched_signal
-
-def plot_matched_signals(t, pulse, matched_signal1, matched_signal2, fs):
-    """绘制匹配滤波后的信号"""
-    dt = t[1] - t[0]
-    offset = (len(matched_signal1) - 1) / 2
-    matched_time = (np.arange(len(matched_signal1)) - offset) * dt
-
-    plt.figure(figsize=(12, 6))
-    plt.plot(matched_time * 1e6, matched_signal1, label = 'Matched Signal 1')
-    plt.plot(matched_time * 1e6, matched_signal2, label = 'Matched Signal 2')
-    plt.title('Matched Filter Output for Echo Signals')
-    plt.xlabel('Time (μs)')
-    plt.ylabel('Amplitude')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-    plt.close()
-    return
+###>>>>>>>>>  图四：非调制直接进行匹配滤波
 
 # 参数设置
 carrier_start_freq = 19e6   # 起始频率 19MHz
@@ -270,7 +222,8 @@ matched_signal2 = perform_match_filtering(echo2, pulse)
 plot_matched_signals(t, pulse, matched_signal1, matched_signal2, fs)
 
 
-
+#  第一段代码的线性调频脉冲的频率范围是从10MHz到20MHz，而第二段代码是从19MHz到20MHz。因此，第一段代码的带宽为10MHz，第二段代码的带宽为1MHz。
+# 带宽的不同会导致匹配滤波后的脉冲压缩结果不同。带宽越大，脉冲压缩后的主瓣越窄，分辨率越高。
 
 
 

@@ -50,6 +50,7 @@ plt.rcParams['figure.facecolor'] = 'white'        # 设置图形背景色为浅�
 plt.rcParams['axes.edgecolor'] = 'black'          # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 22
 
+#%%
 def freqDomainView(x, Fs, FFTN = None, type = 'double'): # N为偶数
     if FFTN == None:
         FFTN = 2**int(np.ceil(np.log2(x.size)))
@@ -166,12 +167,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 参数设置
-T = 10e-6        # 脉冲宽度 10 μs
-B = 10e6         # 带宽 30 MHz
-f0 = 1e6         # 起始频率 1 MHz
+T = 10e-6               # 脉冲宽度 10 μs
+B = 10e6                # 带宽 30 MHz
+f0 = 1e6                # 起始频率 1 MHz
 fs = (f0 + B) * 3       # 采样频率 100 MHz
-SNR_dB = 20      # 信噪比 (dB)
-delay = 5e-6     # 目标时延 5 μs
+SNR_dB = 20             # 信噪比 (dB)
+delay = 5e-6            # 目标时延 5 μs
 
 ## 生成线性调频信号(LFM)
 t = np.arange(0, T, 1/fs)                  # 时间向量

@@ -113,22 +113,26 @@ for m, nrx in enumerate(N):
         ser_EGC[i] = np.sum(d != d_EGC)/nSym
         ser_SC[i] = np.sum(d != d_SC)/nSym
 
-    axs.semilogy(EbN0dBs, ser_MRC, color = 'b', ls = '-', marker = marker[m], ms = 5, label = f"MRC, Nr = {nrx}")
-    axs.semilogy(EbN0dBs, ser_EGC, color = 'r', ls = '--', marker = marker[m], ms = 5, label = f"EGC, Nr = {nrx}")
-    axs.semilogy(EbN0dBs, ser_SC, color = 'g', ls = '-.', marker = marker[m], ms = 5, label = f"SC, Nr = {nrx}")
+    axs.semilogy(EbN0dBs, ser_MRC, color = 'b', ls = '-', marker = marker[m], ms = 12, mfc = 'none', label = f"MRC, Nr = {nrx}")
+    # axs.semilogy(EbN0dBs, ser_EGC, color = 'r', ls = '--', marker = marker[m], ms = 5, label = f"EGC, Nr = {nrx}")
+    # axs.semilogy(EbN0dBs, ser_SC, color = 'g', ls = '-.', marker = marker[m], ms = 5, label = f"SC, Nr = {nrx}")
 
 SER_theory = ser_rayleigh(EbN0dBs, mod_type, M) #theory SER
 axs.semilogy(EbN0dBs, SER_theory, color = 'k', ls = '-.', marker = marker[m+1], ms = 5, label = "Theo, Nr = 1")
-axs.set_ylim(1e-5, 1.1)
+axs.set_ylim(1e-4, 1.1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
 axs.set_title(f"Symbol Error Rate for M-{mod_type.upper()} over Rayleigh flat fading Channel")
 axs.legend(fontsize = 20)
 
+
+out_fig = plt.gcf()
+
+out_fig.savefig('Fig1.png', )
 plt.show()
 plt.close()
 
-#%% Program 12.2: Alamouti.m: Receive diversity error rate performance simulation
+#%% Program 12.2: Alamouti.m: Transmit diversity error rate performance simulation
 nSym = 200000
 # N = [1, 2, 20]
 EbN0dBs = np.arange(-20, 38, 2)
@@ -171,7 +175,7 @@ for i, EsN0dB in enumerate(EsN0dBs):
     # The performance of Alamouti scheme is 3-dB worse than that of MRC scheme.
     # This is because the simulations assume that each transmit antenna radiate symbols with half the energy so that the total combined energy radiated is same as that of a single transmit antenna.
     # In the Alamouti scheme, if each of the transmit antennas radiate same energy as that of the 1 transmit-2 receive antenna configuration used for MRC scheme, their performance curves would match.
-    # N0 = P/gamma/2
+    N0 = P/gamma/2
     noise = np.sqrt(N0/2) * (np.random.randn(*signal.shape) + 1j * np.random.randn(*signal.shape))
 
     r = signal + noise
@@ -209,17 +213,20 @@ for i, EsN0dB in enumerate(EsN0dBs):
         d_MRC = modem.demodulate(s_MRC)
     ser_MRC[i] = np.sum(d != d_MRC)/nSym
 
-axs.semilogy(EbN0dBs, ser_Alamouti, color = 'r', ls = '--', marker = marker[0], ms = 5, label = "Alamouti, Nr = 1, Nt = 2")
-axs.semilogy(EbN0dBs, ser_MRC, color = 'b', ls = '--', marker = marker[1], ms = 5, label = "MRC, Nr = 2, Nt = 1")
+axs.semilogy(EbN0dBs, ser_Alamouti, color = 'r', ls = '--', marker = marker[0],   ms = 12, mfc = 'none', label = "Alamouti, Nr = 1, Nt = 2")
+axs.semilogy(EbN0dBs, ser_MRC, color = 'b', ls = '--', marker = marker[1], ms = 12, mfc = 'none', label = "MRC, Nr = 2, Nt = 1")
 axs.set_ylim(1e-4, 1.1)
 axs.set_xlabel( 'Eb/N0(dB)',)
 axs.set_ylabel('SER (Ps)',)
 axs.set_title("2x1 Transmit diversity - Alamouti coding")
 axs.legend(fontsize = 20)
 
+
+out_fig = plt.gcf()
+
+out_fig.savefig('Fig2.png', )
 plt.show()
 plt.close()
-
 
 
 

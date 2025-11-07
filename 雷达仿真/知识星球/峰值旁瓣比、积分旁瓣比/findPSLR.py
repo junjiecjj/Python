@@ -8,7 +8,26 @@ Created on Tue Oct 28 21:16:47 2025
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
+np.random.seed(42)
 # =============================================================================
 # LFM信号匹配滤波和PSLR计算 - Python版本
 # =============================================================================
@@ -117,9 +136,54 @@ ax.axvline(x=t[M]*1e6, color='g', linestyle='--', linewidth=2, label='第一副�
 ax.plot(t[I]*1e6, maxdata, 'ro', markersize=8, label=f'主瓣峰值: {maxdata:.2f} dB')
 ax.plot(t[M]*1e6, PSLR, 'go', markersize=8, label=f'第一副瓣: {PSLR:.2f} dB')
 
+ax.set_xlim([-0.3, 0.3])
 # 添加文本标注
 ax.text(0.05, 0.15, f'PSLR = {PSLR:.2f} dB\n峰值副瓣比 = {maxdata - PSLR:.2f} dB', transform=ax.transAxes, fontsize=14, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
 
-ax.legend()
+ax.legend(loc = 'lower right')
 plt.show()
 plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

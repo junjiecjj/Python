@@ -40,7 +40,7 @@ def rectpuls(t, remove, T):
     rect = (t >= -T/2) * (t <= T/2)
     # res = np.zeros(rect.size)
     K = int(remove*fs)
-    rect = np.roll(rect, K) # 循环左移
+    rect = np.roll(rect, K)   # 循环右移
 
     # t = t + remove
     return rect

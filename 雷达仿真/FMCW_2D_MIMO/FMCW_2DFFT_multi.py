@@ -138,7 +138,7 @@ plt.show()
 plt.close()
 
 #%% (二) 接收方直接用理论上精确的差频信号(exp形式)做处理，FFT先做距离维再做速度维.
-# 直接用FFT2D替换 “干货 | 利用Python实现FMCW雷达的距离多普勒估计”
+# 直接用FFT2D替换 “干货 | 利用Python实现FMCW雷达的距离多普勒估计”; 雷达信号处理之FMCW 3D-FFT原理（附带MATLAB仿真程序）
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy

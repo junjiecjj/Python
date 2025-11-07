@@ -1,13 +1,15 @@
 %% MIMO-ISAC多目标优化仿真框架
 clear; close all; clc;
-cvx_setup
+addpath('/home/jack/cvx-a64/cvx');
+
+cvx_setup;
 
 %% 全局参数设置
 global PT_global;
 
 % 基本系统参数（与论文完全一致）
-L = 1024;           
-d = 0.5;           
+L = 1024;
+d = 0.5;
 PT_dBm = 40;       
 PT = 10^((PT_dBm)/10) * 1e-3;
 PT_global = PT;
@@ -259,8 +261,7 @@ function run_beampattern_analysis()
             
             try
                 % 获取波束成形解
-                W_opt = solve_method_beamforming(method_name, h, theta_r, ...
-                    Nt, Nr, L, PT_global, C, K, M, sigma2_k, gamma_min, lambda_min);
+                W_opt = solve_method_beamforming(method_name, h, theta_r, Nt, Nr, L, PT_global, C, K, M, sigma2_k, gamma_min, lambda_min);
                 
                 if ~isempty(W_opt)
                     % 计算波束图
@@ -268,16 +269,14 @@ function run_beampattern_analysis()
                     beampatterns.(method_name) = bp;
                     
                     % 计算性能指标
-                    metrics = evaluate_beampattern(bp, scenario.targets_deg, ...
-                        [-45, -15]);  % 用户位置
+                    metrics = evaluate_beampattern(bp, scenario.targets_deg, [-45, -15]);  % 用户位置
                     performance_metrics.(method_name) = metrics;
                     
                     % DoF分析
                     R_total = W_opt * W_opt';
                     actual_dof = rank(R_total, 1e-8);
                     
-                    fprintf('    成功: DoF=%d, 主瓣增益=%.1fdB, 副瓣水平=%.1fdB\n', ...
-                        actual_dof, metrics.peak_gain, metrics.avg_sidelobe);
+                    fprintf('    成功: DoF=%d, 主瓣增益=%.1fdB, 副瓣水平=%.1fdB\n', actual_dof, metrics.peak_gain, metrics.avg_sidelobe);
                 else
                     fprintf('    失败: 无可行解\n');
                 end
@@ -289,8 +288,7 @@ function run_beampattern_analysis()
         
         % 绘制波束图对比（对应论文图3）
         subplot(2, 2, s);
-        plot_beampatterns_comparison(beampatterns, theta_c*180/pi, ...
-            scenario.targets_deg, scenario.name);
+        plot_beampatterns_comparison(beampatterns, theta_c*180/pi, scenario.targets_deg, scenario.name);
         
         % 绘制性能指标对比
         subplot(2, 2, s+2);
@@ -339,8 +337,7 @@ function run_snr_performance_analysis()
     sigma2_k = ones(K,1);  % 归一化值
     
     % 对比方法（与论文一致）
-    methods = {'Proposed', 'Radar_Only', 'Communication_Only', ...
-               'MI_Constrained', 'Sensing_Centric', 'Communication_Centric'};
+    methods = {'Proposed', 'Radar_Only', 'Communication_Only', 'MI_Constrained', 'Sensing_Centric', 'Communication_Centric'};
     
     % 结果存储
     results = struct();
@@ -370,8 +367,7 @@ function run_snr_performance_analysis()
         % 蒙特卡洛仿真
         for mc = 1:num_monte_carlo
             if mod(mc, 20) == 0
-                fprintf('  蒙特卡洛进度: %d/%d (%.1f%%)\n', ...
-                    mc, num_monte_carlo, 100*mc/num_monte_carlo);
+                fprintf('  蒙特卡洛进度: %d/%d (%.1f%%)\n', mc, num_monte_carlo, 100*mc/num_monte_carlo);
             end
             
             % 生成随机莱斯信道
@@ -390,23 +386,17 @@ function run_snr_performance_analysis()
 
                 try
                     % 调用优化求解（传入正确的M值）
-                    [R_opt, ~, ~] = solve_method_optimization(...
-                        method_name, h, theta_r, Nt, Nr, L, PT_global, ...
-                        C, K, M_current, sigma2_k, sigma2_c, sigma2_r, d);
+                    [R_opt, ~, ~] = solve_method_optimization( method_name, h, theta_r, Nt, Nr, L, PT_global,  C, K, M_current, sigma2_k, sigma2_c, sigma2_r, d);
                     
                     if ~isempty(R_opt)
                         % 构造秩一解时也使用正确的M值
-                        [W_opt, ~, success, ~] = construct_rank_one_beamformer(...
-                            R_opt, h, theta_r, Nt, Nr, L, C, K, M_current, ...
-                            sigma2_c, sigma2_r, sigma2_k, d);
+                        [W_opt, ~, success, ~] = construct_rank_one_beamformer( R_opt, h, theta_r, Nt, Nr, L, C, K, M_current, sigma2_c, sigma2_r, sigma2_k, d);
                         
                         if success
                             % 计算性能指标
-                            MI_result = compute_sensing_MI(W_opt, theta_r, K, ...
-                                sigma2_k, sigma2_r, Nr, L);
+                            MI_result = compute_sensing_MI(W_opt, theta_r, K, sigma2_k, sigma2_r, Nr, L);
                             
-                            rate_result = compute_communication_rate_with_noise(...
-                                W_opt, h, C, sigma2_c);
+                            rate_result = compute_communication_rate_with_noise( W_opt, h, C, sigma2_c);
                             
                             results.(method_name).MI(snr_idx, mc) = MI_result;
                             results.(method_name).rate(snr_idx, mc) = rate_result;
@@ -429,8 +419,7 @@ function run_snr_performance_analysis()
             success_rate = mean(results.(methods{m}).success(snr_idx, :)) * 100;
             avg_MI = mean(results.(methods{m}).MI(snr_idx, :));
             avg_rate = mean(results.(methods{m}).rate(snr_idx, :));
-            fprintf('    %s: 成功率=%.1f%%, 平均MI=%.2f, 平均速率=%.2f\n', ...
-                methods{m}, success_rate, avg_MI, avg_rate);
+            fprintf('    %s: 成功率=%.1f%%, 平均MI=%.2f, 平均速率=%.2f\n', methods{m}, success_rate, avg_MI, avg_rate);
         end
     end
     
@@ -499,16 +488,11 @@ function run_pareto_tradeoff_analysis()
             
             try
                 % 使用CVX优化求解
-                [R_opt, r_opt, solve_info] = solve_complex_convex_optimization(...
-                    alpha, omega, xi, h, theta_r, ...
-                    Nt, Nr, L, PT_global, C, K, M, ...
-                    sigma2_c, sigma2_r, sigma2_k, d);
+                [R_opt, r_opt, solve_info] = solve_complex_convex_optimization( alpha, omega, xi, h, theta_r, Nt, Nr, L, PT_global, C, K, M, sigma2_c, sigma2_r, sigma2_k, d);
                 
                 if ~isempty(R_opt)
                     % 构造秩一解 - 正确调用
-                    [W_opt, R_bar, success, info] = construct_rank_one_beamformer(...
-                        R_opt, h, theta_r, Nt, Nr, L, C, K, M, ...
-                        sigma2_c, sigma2_r, sigma2_k, d);
+                    [W_opt, R_bar, success, info] = construct_rank_one_beamformer( R_opt, h, theta_r, Nt, Nr, L, C, K, M,  sigma2_c, sigma2_r, sigma2_k, d);
                     
                     if success
                         % 使用已实现的函数计算性能指标
@@ -532,9 +516,7 @@ function run_pareto_tradeoff_analysis()
         % 绘制Pareto边界
         valid_idx = pareto_points(:,1) > 0 & pareto_points(:,2) > 0;
         if sum(valid_idx) > 0
-            plot(pareto_points(valid_idx,1), pareto_points(valid_idx,2), ...
-                'o-', 'LineWidth', 2, 'MarkerSize', 6, ...
-                'DisplayName', config.name);
+            plot(pareto_points(valid_idx,1), pareto_points(valid_idx,2), 'o-', 'LineWidth', 2, 'MarkerSize', 6, 'DisplayName', config.name);
             hold on;
         else
             fprintf('  警告：没有有效的Pareto点！\n');
@@ -573,10 +555,8 @@ function run_capon_spectrum_analysis()
     
     % 测试场景
     scenarios = {
-        struct('K', 2, 'theta_r', [20, 40] * pi/180, 'targets', [20, 40], ...
-               'name', 'K=2个目标', 'beta', [1, 1]);
-        struct('K', 3, 'theta_r', [0, 5, 40] * pi/180, 'targets', [0, 5, 40], ...
-               'name', 'K=3个目标(近距离)', 'beta', [1, 1, 1]);
+        struct('K', 2, 'theta_r', [20, 40] * pi/180, 'targets', [20, 40], 'name', 'K=2个目标', 'beta', [1, 1]);
+        struct('K', 3, 'theta_r', [0, 5, 40] * pi/180, 'targets', [0, 5, 40], 'name', 'K=3个目标(近距离)', 'beta', [1, 1, 1]);
     };
     
     for s = 1:length(scenarios)
@@ -587,8 +567,7 @@ function run_capon_spectrum_analysis()
         
         fprintf('分析Capon谱: %s\n', scenario.name);
         
-        figure('Name', sprintf('Capon分析 - %s', scenario.name), ...
-               'Position', [100+s*50, 100+s*50, 1200, 800]);
+        figure('Name', sprintf('Capon分析 - %s', scenario.name), 'Position', [100+s*50, 100+s*50, 1200, 800]);
         
         % 生成信道
         h = generate_rician_channel_standard(Nt, C, theta_c, rician_factor);
@@ -602,8 +581,7 @@ function run_capon_spectrum_analysis()
             fprintf('  计算 %s 方法...\n', method_name);
             
             try
-                W_opt = solve_method_beamforming(method_name, h, theta_r, ...
-                    Nt, Nr, L, PT_global, C, K, M, sigma2_k, 5, 10);
+                W_opt = solve_method_beamforming(method_name, h, theta_r, Nt, Nr, L, PT_global, C, K, M, sigma2_k, 5, 10);
                 
                 if ~isempty(W_opt)
                     % 计算Capon空间谱
@@ -684,13 +662,11 @@ function run_rmse_analysis()
                     h = generate_rician_channel_standard(Nt, C, theta_c, rician_factor);
                     
                     % 获取波束成形解
-                    W_opt = solve_method_beamforming(method_name, h, theta_r, ...
-                        Nt, Nr, L, PT_global, C, K, M, sigma2_k, 5, 10);
+                    W_opt = solve_method_beamforming(method_name, h, theta_r, Nt, Nr, L, PT_global, C, K, M, sigma2_k, 5, 10);
                     
                     if ~isempty(W_opt)
                         % 使用Capon方法估计角度
-                        estimated_angles = estimate_angles_capon(W_opt, Nt, Nr, L, ...
-                            true_angles, sigma2_r_current);
+                        estimated_angles = estimate_angles_capon(W_opt, Nt, Nr, L, true_angles, sigma2_r_current);
                         
                         % 计算角度误差
                         if length(estimated_angles) == K
@@ -717,8 +693,7 @@ function run_rmse_analysis()
     % 绘制RMSE结果
     figure('Name', 'RMSE分析', 'Position', [100, 100, 800, 600]);
     for m = 1:length(methods)
-        semilogy(SNR_dB_range, rmse_results(m, :), 'o-', 'LineWidth', 2, ...
-                'DisplayName', strrep(methods{m}, '_', ' '));
+        semilogy(SNR_dB_range, rmse_results(m, :), 'o-', 'LineWidth', 2, 'DisplayName', strrep(methods{m}, '_', ' '));
         hold on;
     end
     
@@ -732,11 +707,7 @@ function run_rmse_analysis()
 end
 
 %% 核心优化求解函数 (修正版)
-function [R_opt, r_opt, solve_info] = solve_complex_convex_optimization(...
-    alpha, omega, xi, h, theta_r, ...
-    Nt, Nr, L, PT, C, K, M, ...
-    sigma2_c, sigma2_r, sigma2_k, d, r_target, ...
-    Gamma_min_linear, Lambda_min) % <-- 新增两个参数
+function [R_opt, r_opt, solve_info] = solve_complex_convex_optimization( alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_c, sigma2_r, sigma2_k, d, r_target, Gamma_min_linear, Lambda_min) % <-- 新增两个参数
 
     % 输入参数验证 (nargin 是输入参数的个数)
     if nargin < 19 % <-- 将这里的数目检查更新为19
@@ -752,11 +723,7 @@ function [R_opt, r_opt, solve_info] = solve_complex_convex_optimization(...
     
     try
         % 调用可行性求解器，并传入所有19个参数
-        [R, feasible, cvx_info] = solve_complex_feasibility(...
-            r_target, alpha, omega, xi, h, theta_r, ...
-            Nt, Nr, L, PT, C, K, M, ...
-            sigma2_c, sigma2_r, sigma2_k, d, ...
-            Gamma_min_linear, Lambda_min); % <-- 将新增的参数传递下去
+        [R, feasible, cvx_info] = solve_complex_feasibility( r_target, alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_c, sigma2_r, sigma2_k, d, Gamma_min_linear, Lambda_min); % <-- 将新增的参数传递下去
         
         if feasible
             R_opt = R;
@@ -775,10 +742,7 @@ function [R_opt, r_opt, solve_info] = solve_complex_convex_optimization(...
 end
 
 
-function [R_out, is_feasible, cvx_status_text] = solve_complex_feasibility(...
-    r, alpha, omega, xi, h, theta_r, ...
-    Nt, Nr, L, PT, C, K, M, ...
-    sigma2_c, sigma2_r, sigma2_k, d, Gamma_min_linear, Lambda_min)
+function [R_out, is_feasible, cvx_status_text] = solve_complex_feasibility( r, alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_c, sigma2_r, sigma2_k, d, Gamma_min_linear, Lambda_min)
 % SOLVE_COMPLEX_FEASIBILITY 解决论文（公式37）中的可行性问题
 % 此版本包含稳健的输入验证，以防止CVX中的数据类型错误
 %
@@ -882,8 +846,7 @@ function [R_out, is_feasible, cvx_status_text] = solve_complex_feasibility(...
                     interference_power = sigma2_c;
                     for j_n = 1:(C+M)
                         if j_n ~= i_c
-                            interference_power = interference_power + ...
-                                real(h(:, i_c)' * R(:, :, j_n) * h(:, i_c));
+                            interference_power = interference_power + real(h(:, i_c)' * R(:, :, j_n) * h(:, i_c));
                         end
                     end
                     
@@ -891,7 +854,6 @@ function [R_out, is_feasible, cvx_status_text] = solve_complex_feasibility(...
                     target_sinr = Gamma_min_linear(i_c) + omega(i_c) * r;
                     signal_power >= target_sinr * interference_power;
                 end
-
                 % d) 感知互信息约束 (论文公式 37b) 
                 % log(1+SINR_k) >= xi_k * (Lambda_min + alpha*r)
                 % CVX的log()是自然对数，所以我们将右侧乘以log(2)
@@ -899,11 +861,9 @@ function [R_out, is_feasible, cvx_status_text] = solve_complex_feasibility(...
                 for k = 1:K
                     beam_gain = real(A_r(:, k)' * R_sum * A_r(:, k));
                     sensing_sinr_k = (Nr * L * sigma2_k(k) / sigma2_r) * beam_gain;
-                    
                     % 这是一个凸约束 log(1+x) >= y
                     log(1 + sensing_sinr_k) >= 1/K * target_mi_val * log(2);
                 end
-
         cvx_end
 
         %% 4. 处理CVX结果
@@ -926,8 +886,6 @@ function [R_out, is_feasible, cvx_status_text] = solve_complex_feasibility(...
     end
 end
 
-
-
 function [W_opt_rank1, R_bar, success_rank1, construction_info] = construct_rank_one_beamformer(R_opt, h, theta_r, Nt, Nr, L, C, K, M, sigma2_c, sigma2_r, sigma2_k, d)
 % CONSTRUCT_PAPER_RANK_ONE_SOLUTION 根据论文Theorem 2构造秩一解
 % 秩一解构造函数，严格按照论文公式实现
@@ -945,12 +903,10 @@ function [W_opt_rank1, R_bar, success_rank1, construction_info] = construct_rank
 %   R_bar: 秩一协方差矩阵 [Nt x Nt x (C+M)]
 %   success_rank1: 构造是否成功
 %   construction_info: 构造过程信息
-
     success_rank1 = false;
     construction_info = '';
     W_opt_rank1 = zeros(Nt, C+M);
     R_bar = zeros(Nt, Nt, C+M);
-    
     try
         if size(R_opt, 3) ~= (C+M)
             error('协方差矩阵维度不匹配: 期望 %d 层，实际 %d 层', C+M, size(R_opt, 3));
@@ -1028,8 +984,7 @@ function [W_opt_rank1, R_bar, success_rank1, construction_info] = construct_rank
             radar_rank = rank(R_radar, 1e-10);
             actual_M = min(M, radar_rank);
             
-            fprintf('    雷达功率矩阵: 秩=%d, 迹=%.4f, 需要构造 %d 个雷达流\n', ...
-                radar_rank, trace(R_radar), actual_M);
+            fprintf('    雷达功率矩阵: 秩=%d, 迹=%.4f, 需要构造 %d 个雷达流\n', radar_rank, trace(R_radar), actual_M);
             
             if actual_M > 0
                 % 方法1：尝试Cholesky分解 (论文推荐)
@@ -1093,8 +1048,7 @@ function [W_opt_rank1, R_bar, success_rank1, construction_info] = construct_rank
         total_power_rank1 = real(trace(sum(R_bar, 3)));
         power_error = abs(total_power_original - total_power_rank1) / total_power_original;
         
-        fprintf('    功率验证: 原始=%.4f, 秩一=%.4f, 相对误差=%.2e\n', ...
-            total_power_original, total_power_rank1, power_error);
+        fprintf('    功率验证: 原始=%.4f, 秩一=%.4f, 相对误差=%.2e\n', total_power_original, total_power_rank1, power_error);
         
         % 验证秩一性质
         all_rank_one = true;
@@ -1153,8 +1107,7 @@ function [W_opt_rank1, R_bar, success_rank1, construction_info] = construct_rank
         end
         
         success_rank1 = true;
-        construction_info = sprintf('成功构造秩一解: 功率误差=%.2e, 最大秩=%d', ...
-            power_error, max_rank);
+        construction_info = sprintf('成功构造秩一解: 功率误差=%.2e, 最大秩=%d', power_error, max_rank);
         
         fprintf('  ✓ 秩一解构造完成！\n');
         
@@ -1220,16 +1173,14 @@ function r_max = estimate_accurate_r_max(h, PT, C, K, Nt, Nr, L, ...
         
         sensing_upper = sensing_upper + MI_upper_k;
         
-        fprintf('  目标%d: 波束增益=%.0f, SINR_max=%.0e, MI_max=%.2f\n', ...
-            k, max_beam_gain, max_SINR_k, MI_upper_k);
+        fprintf('  目标%d: 波束增益=%.0f, SINR_max=%.0e, MI_max=%.2f\n', k, max_beam_gain, max_SINR_k, MI_upper_k);
     end
     sensing_upper = alpha * sensing_upper;
     % 总的理论上界
     r_max = (comm_upper + sensing_upper);
     
     
-    fprintf('    理论上界估计: 通信=%.2f, 感知=%.2f, 总计=%.2f\n', ...
-        comm_upper, sensing_upper, r_max);
+    fprintf('    理论上界估计: 通信=%.2f, 感知=%.2f, 总计=%.2f\n', comm_upper, sensing_upper, r_max);
 end
 
 
@@ -1485,7 +1436,6 @@ function MI_upper = compute_sensing_MI_upper_bound(W_opt, theta_r, K, sigma2_k, 
     end
 end
 
-
 %% 精确的通信速率计算（严格按照论文公式5-6）
 function rate = compute_communication_rate_accurate(W_opt, h, C, sigma2_c)
 % COMPUTE_COMMUNICATION_RATE_ACCURATE 计算平均通信速率
@@ -1573,8 +1523,7 @@ function h = generate_rician_channel_standard(Nt, C, theta_c, rician_factor)
 end
 
 
-function W_opt = solve_method_beamforming(method_name, h, theta_r,...
-    Nt, Nr, L, PT, C, K, M, sigma2_k, gamma_min, lambda_min)
+function W_opt = solve_method_beamforming(method_name, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_k, gamma_min, lambda_min)
     
     % 根据不同方法求解波束成形
     sigma2_c = 10^((0-30)/10);  % 0 dBm = 0.001 W  
@@ -1631,21 +1580,13 @@ function W_opt = solve_method_beamforming(method_name, h, theta_r,...
     
     if strcmp(method_name, 'ZF_Violated')
         % 特殊处理：忽略交叉相关约束
-        [R_opt, ~, ~] = solve_complex_convex_optimization_no_zf(...
-            alpha, omega, xi, h, theta_r, ...
-            Nt, Nr, L, PT, C, K, M, ...
-            sigma2_c, sigma2_r, sigma2_k, d);
+        [R_opt, ~, ~] = solve_complex_convex_optimization_no_zf( alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_c, sigma2_r, sigma2_k, d);
     else
-        [R_opt, ~, ~] = solve_complex_convex_optimization(...
-            alpha, omega, xi, h, theta_r, ...
-            Nt, Nr, L, PT, C, K, M, ...
-            sigma2_c, sigma2_r, sigma2_k, d);
+        [R_opt, ~, ~] = solve_complex_convex_optimization( alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_c, sigma2_r, sigma2_k, d);
     end
 
     if ~isempty(R_opt)
-        [W_opt, ~, success, ~] = construct_rank_one_beamformer(...
-            R_opt, h, theta_r, Nt, Nr, L, C, K, M, ...
-            sigma2_c, sigma2_r, sigma2_k, d);
+        [W_opt, ~, success, ~] = construct_rank_one_beamformer( R_opt, h, theta_r, Nt, Nr, L, C, K, M, sigma2_c, sigma2_r, sigma2_k, d);
         
         if ~success
             W_opt = [];
@@ -1767,8 +1708,7 @@ function plot_beampatterns_comparison(beampatterns, user_angles, target_angles, 
             bp = beampatterns.(method);
             
             line_style = line_styles{mod(m-1, length(line_styles))+1};
-            plot(bp.angles, bp.pattern_dB, 'Color', colors(m,:), ...
-                 'LineWidth', 1.5, 'LineStyle', line_style);
+            plot(bp.angles, bp.pattern_dB, 'Color', colors(m,:), 'LineWidth', 1.5, 'LineStyle', line_style);
             legend_entries{end+1} = strrep(method, '_', ' ');
         end
     end
@@ -1776,15 +1716,13 @@ function plot_beampatterns_comparison(beampatterns, user_angles, target_angles, 
     % 标记用户方向（红色虚线）
     for i = 1:length(user_angles)
         xline(user_angles(i), 'r--', 'LineWidth', 1.5, 'Alpha', 0.7);
-        text(user_angles(i), -35, sprintf('用户%d', i), ...
-             'HorizontalAlignment', 'center', 'Color', 'r', 'FontSize', 10);
+        text(user_angles(i), -35, sprintf('用户%d', i), 'HorizontalAlignment', 'center', 'Color', 'r', 'FontSize', 10);
     end
     
     % 标记目标方向（绿色虚线）
     for k = 1:length(target_angles)
         xline(target_angles(k), 'g--', 'LineWidth', 1.5, 'Alpha', 0.7);
-        text(target_angles(k), -38, sprintf('目标%d', k), ...
-             'HorizontalAlignment', 'center', 'Color', 'g', 'FontSize', 10);
+        text(target_angles(k), -38, sprintf('目标%d', k), 'HorizontalAlignment', 'center', 'Color', 'g', 'FontSize', 10);
     end
     
     xlabel('角度 (度)', 'FontSize', 12);
@@ -1801,8 +1739,7 @@ end
 function plot_performance_metrics_comparison(performance_metrics, title_str)
     methods = fieldnames(performance_metrics);
     if isempty(methods)
-        text(0.5, 0.5, '无有效数据', 'HorizontalAlignment', 'center', ...
-             'Units', 'normalized', 'FontSize', 14);
+        text(0.5, 0.5, '无有效数据', 'HorizontalAlignment', 'center', 'Units', 'normalized', 'FontSize', 14);
         return;
     end
     
@@ -1850,12 +1787,10 @@ function analyze_dof_performance(beampatterns, scenario)
             bp = beampatterns.(method);
             
             % 分析主瓣数量
-            [peaks, locs] = findpeaks(bp.pattern_dB, 'MinPeakHeight', -10, ...
-                                     'MinPeakDistance', 20);
+            [peaks, locs] = findpeaks(bp.pattern_dB, 'MinPeakHeight', -10, 'MinPeakDistance', 20);
             num_peaks = length(peaks);
             
-            fprintf('%s方法: 检测到%d个主瓣 (目标数K=%d)\n', ...
-                strrep(method, '_', ' '), num_peaks, scenario.K);
+            fprintf('%s方法: 检测到%d个主瓣 (目标数K=%d)\n', strrep(method, '_', ' '), num_peaks, scenario.K);
             
             if num_peaks < scenario.K
                 fprintf('  -> DoF不足！无法分辨所有%d个目标\n', scenario.K);
@@ -1887,10 +1822,7 @@ function plot_snr_performance_results(results, SNR_dB_range, methods)
         mi_std = std(mi_data, 0, 2, 'omitnan');
         
         % 绘制均值和误差条
-        errorbar(SNR_dB_range, mi_mean, mi_std, ...
-            ['-' markers{m}], 'Color', colors(m,:), ...
-            'LineWidth', 2, 'MarkerSize', 8, ...
-            'DisplayName', strrep(method_name, '_', ' '));
+        errorbar(SNR_dB_range, mi_mean, mi_std, ['-' markers{m}], 'Color', colors(m,:),  'LineWidth', 2, 'MarkerSize', 8, 'DisplayName', strrep(method_name, '_', ' '));
         hold on;
     end
     xlabel('接收SNR (dB)');
@@ -1973,8 +1905,7 @@ function estimated_angles = estimate_angles_capon(W_opt, Nt, Nr, L, true_angles,
     [spectrum, angles] = compute_capon_spectrum(W_opt, struct(), Nt, Nr, L);
     
     % 寻找峰值
-    [peaks, peak_locs] = findpeaks(spectrum, 'MinPeakHeight', max(spectrum)-15, ...
-                                   'MinPeakDistance', 10, 'SortStr', 'descend');
+    [peaks, peak_locs] = findpeaks(spectrum, 'MinPeakHeight', max(spectrum)-15, 'MinPeakDistance', 10, 'SortStr', 'descend');
     
     if length(peak_locs) >= length(true_angles)
         estimated_angles = angles(peak_locs(1:length(true_angles)));
@@ -1988,10 +1919,7 @@ end
 
 %% 正确的Algorithm 1收敛跟踪函数
 % 负责完整的二分搜索迭代和收敛跟踪
-function [MI_convergence, rate_convergence, iterations] = ...
-    track_bisection_convergence_accurate(...
-        alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, ...
-        C, K, M, sigma2_k, sigma2_c, sigma2_r, d)
+function [MI_convergence, rate_convergence, iterations] = track_bisection_convergence_accurate( alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_k, sigma2_c, sigma2_r, d)
     
     % 为通信和感知定义最低性能门限 (与论文 V.B 节一致)
     Gamma_min_dB = 5;     % 5 dB SINR 约束
@@ -2011,8 +1939,7 @@ function [MI_convergence, rate_convergence, iterations] = ...
     
     % Step 1: 估计搜索上界（只计算一次，符合Algorithm 1）
     r_min = 0;
-    r_max = estimate_accurate_r_max(h, PT, C, K, Nt, Nr, L, ...
-        sigma2_c, sigma2_r, sigma2_k, alpha, omega, xi);
+    r_max = estimate_accurate_r_max(h, PT, C, K, Nt, Nr, L, sigma2_c, sigma2_r, sigma2_k, alpha, omega, xi);
     
     fprintf('  初始搜索区间: [%.6f, %.6f]\n', r_min, r_max);
     fprintf('  收敛条件: |r_max - r_min| ≤ %.6f\n', epsilon);
@@ -2027,8 +1954,7 @@ function [MI_convergence, rate_convergence, iterations] = ...
         
         fprintf('\n--- 迭代 %d ---\n', iter);
         fprintf('  测试点: r = %.6f\n', r_current);
-        fprintf('  当前区间: [%.6f, %.6f] (宽度=%.6f)\n', ...
-            r_min, r_max, r_max - r_min);
+        fprintf('  当前区间: [%.6f, %.6f] (宽度=%.6f)\n', r_min, r_max, r_max - r_min);
         
         % 在调用之前添加调试信息
         fprintf('调用solve_complex_feasibility前的参数检查:\n');
@@ -2038,11 +1964,7 @@ function [MI_convergence, rate_convergence, iterations] = ...
         fprintf('  theta_r长度=%d, sigma2_k长度=%d\n', length(theta_r), length(sigma2_k));
 
         % Step 3: 调用单次可行性求解
-        [R_current, r_solved, solve_info] = solve_complex_convex_optimization(...
-            alpha, omega, xi, h, theta_r, ...
-            Nt, Nr, L, PT, C, K, M, ...
-            sigma2_c, sigma2_r, sigma2_k, d, r_current, ...
-            Gamma_min_linear, Lambda_min);
+        [R_current, r_solved, solve_info] = solve_complex_convex_optimization( alpha, omega, xi, h, theta_r, Nt, Nr, L, PT, C, K, M, sigma2_c, sigma2_r, sigma2_k, d, r_current, Gamma_min_linear, Lambda_min);
         
         % Step 4: 根据可行性更新搜索区间
         if ~isempty(R_current)
@@ -2051,17 +1973,12 @@ function [MI_convergence, rate_convergence, iterations] = ...
             fprintf('  → 可行解，更新下界: r_min = %.6f\n', r_min);
             
             % Step 5: 构造秩一解并计算性能指标
-            [W_current, ~, rank1_success, rank1_info] = ...
-                construct_rank_one_beamformer(...
-                    R_current, h, theta_r, Nt, Nr, L, C, K, M, ...
-                    sigma2_c, sigma2_r, sigma2_k, d);
+            [W_current, ~, rank1_success, rank1_info] =  construct_rank_one_beamformer( R_current, h, theta_r, Nt, Nr, L, C, K, M, sigma2_c, sigma2_r, sigma2_k, d);
             
             if rank1_success
                 % 计算当前性能指标
-                MI_current = compute_sensing_MI(...
-                    W_current, theta_r, K, sigma2_k, sigma2_r, Nr, L, d);
-                rate_current = compute_communication_rate_accurate(...
-                    W_current, h, C, sigma2_c);
+                MI_current = compute_sensing_MI( W_current, theta_r, K, sigma2_k, sigma2_r, Nr, L, d);
+                rate_current = compute_communication_rate_accurate( W_current, h, C, sigma2_c);
                 
                 % 记录收敛轨迹（这是论文图2显示的内容）
                 iterations = [iterations, iter];
@@ -2075,8 +1992,7 @@ function [MI_convergence, rate_convergence, iterations] = ...
                 best_solution.MI = MI_current;
                 best_solution.rate = rate_current;
                 
-                fprintf('  → 秩一解成功: MI=%.3f bits, Rate=%.3f bits/s/Hz\n', ...
-                    MI_current, rate_current);
+                fprintf('  → 秩一解成功: MI=%.3f bits, Rate=%.3f bits/s/Hz\n', MI_current, rate_current);
             else
                 fprintf('  → 秩一解失败: %s\n', rank1_info);
             end
@@ -2103,21 +2019,18 @@ function [MI_convergence, rate_convergence, iterations] = ...
     fprintf('  总迭代次数: %d\n', iter);
     fprintf('  最终搜索区间: [%.6f, %.6f]\n', r_min, r_max);
     fprintf('  最优解: r* = %.6f\n', best_solution.r);
-    fprintf('  最终性能: MI = %.3f bits, Rate = %.3f bits/s/Hz\n', ...
-        best_solution.MI, best_solution.rate);
+    fprintf('  最终性能: MI = %.3f bits, Rate = %.3f bits/s/Hz\n', best_solution.MI, best_solution.rate);
     fprintf('  收敛轨迹点数: %d\n', length(iterations));
     
     % Step 7: 确保收敛数据的完整性
     if isempty(iterations)
         fprintf('警告: 没有收敛数据，生成理论曲线用于可视化...\n');
-        [MI_convergence, rate_convergence, iterations] = ...
-            generate_theoretical_convergence_curve(Nt, C, K);
+        [MI_convergence, rate_convergence, iterations] = generate_theoretical_convergence_curve(Nt, C, K);
     end
 end
 
 
-function [MI_convergence, rate_convergence, iterations] = ...
-    generate_theoretical_convergence_curve(Nt, C, K)
+function [MI_convergence, rate_convergence, iterations] = generate_theoretical_convergence_curve(Nt, C, K)
     
     % 基于论文图2生成理论曲线
     max_iter = min(12, 3 + ceil(Nt/8));
@@ -2125,16 +2038,13 @@ function [MI_convergence, rate_convergence, iterations] = ...
     
     % 感知MI收敛（基于天线数量的理论性能）
     MI_base = 2 + 1.5*log2(Nt/8) + 0.5*K;
-    MI_convergence = MI_base * (1 - exp(-0.5 * (iterations-1))) + ...
-                     0.5 * randn(size(iterations));  % 添加小噪声
+    MI_convergence = MI_base * (1 - exp(-0.5 * (iterations-1))) + 0.5 * randn(size(iterations));  % 添加小噪声
     MI_convergence = max(MI_convergence, 0);  % 确保非负
     
     % 通信速率收敛
     rate_base = 4 + log2(Nt/8) + 0.3*C;
-    rate_convergence = rate_base * (1 - exp(-0.7 * (iterations-1))) + ...
-                       0.3 * randn(size(iterations));
+    rate_convergence = rate_base * (1 - exp(-0.7 * (iterations-1))) + 0.3 * randn(size(iterations));
     rate_convergence = max(rate_convergence, 0);
     
-    fprintf('    使用理论收敛模式: MI_max=%.2f, Rate_max=%.2f\n', ...
-        MI_base, rate_base);
+    fprintf('    使用理论收敛模式: MI_max=%.2f, Rate_max=%.2f\n', MI_base, rate_base);
 end
