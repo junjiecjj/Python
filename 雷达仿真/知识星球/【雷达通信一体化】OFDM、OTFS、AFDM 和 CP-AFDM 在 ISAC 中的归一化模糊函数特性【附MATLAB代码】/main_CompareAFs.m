@@ -8,13 +8,12 @@
 close all; clear; clc;
 % rehash toolboxcache
 addpath "./helperFunctions/" ;
-pwd
 
 %% System Parametrisation
 N  = 144;                   % number of discrete time samples
 OS_dop = 4;                 % smoothing factor in doppler domain
 OS_del = 4;                 % smoothing factor in delay domain
-allones = false;             % If "true", transmit all one symbols, if "false", transmit random QAM symbols
+allones = true;             % If "true", transmit all one symbols, if "false", transmit random QAM symbols
 M = 16;                     % Modulation order for 16-QAM
 %
 params = struct();
