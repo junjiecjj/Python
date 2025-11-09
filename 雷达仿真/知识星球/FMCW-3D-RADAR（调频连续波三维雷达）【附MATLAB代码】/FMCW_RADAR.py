@@ -224,25 +224,25 @@ alpha = ca_cfar_alpha(Nref, Pfa)
 
 det_map = np.zeros((Nd, Nr), dtype = bool)
 
-for id in range(train_d + guard_d, Nd - (train_d + guard_d)):
-    d_idx = list(range(id - (train_d + guard_d), id - guard_d)) + list(range(id + guard_d, id + train_d + guard_d))
+for ii in range(train_d + guard_d, Nd - (train_d + guard_d)):
+    d_idx = list(range(ii - (train_d + guard_d), ii - guard_d)) + list(range(ii + guard_d, ii + train_d + guard_d))
     for ir in range(train_r + guard_r, Nr - (train_r + guard_r)):
         r_idx = list(range(ir - (train_r + guard_r), ir - guard_r)) + list(range(ir + guard_r, ir + train_r + guard_r))
         noise_est = np.mean(mag[np.ix_(d_idx, r_idx)])
-        if mag[id, ir] > alpha * (noise_est + np.finfo(float).eps):
-            det_map[id, ir] = True
-peak_idx = nms_peaks(mag, det_map, (3, 3))   # [id, ir]
+        if mag[ii, ir] > alpha * (noise_est + np.finfo(float).eps):
+            det_map[ii, ir] = True
+peak_idx = nms_peaks(mag, det_map, (3, 3))   # [ii, ir]
 
 est_list = []  # [R, V, AoA_FFT, Mag, AoA_MUSIC]
 for p in range(peak_idx.shape[0]):
-    id = peak_idx[p, 0]   # doppler bin
+    ii = peak_idx[p, 0]   # doppler bin
     ir = peak_idx[p, 1]   # range bin
 
-    fd_hat = f_doppler[id]
+    fd_hat = f_doppler[ii]
     V_est = (lamda / 2) * fd_hat
     R_est = R_hat[ir]
 
-    x_m = X_rd[:, id, ir]                     # Rx x 1 snapshot
+    x_m = X_rd[:, ii, ir]                     # Rx x 1 snapshot
 
     ang_spectrum = np.abs(np.fft.fftshift(np.fft.fft(x_m, Nfft_a)))**2
     ia = np.argmax(ang_spectrum)
