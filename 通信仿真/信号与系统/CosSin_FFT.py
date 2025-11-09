@@ -23,21 +23,28 @@ from matplotlib.font_manager import FontProperties
 # import copy
 # from matplotlib.pyplot import MultipleLocator
 import scipy
-# from scipy.fftpack import fft,ifft,fftshift,fftfreq
 
-filepath2 = '/home/jack/snap/'
-font = FontProperties(fname="/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", size=14)
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 18
 
-fontpath = "/usr/share/fonts/truetype/windows/"
-# fname =  "/usr/share/fonts/truetype/arphic/SimSun.ttf",
-font = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
-
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=20)
-
+np.random.seed(42)
 # FFT变换，慢的版本
 def FFT(xx):
      N = len(xx)
@@ -98,17 +105,23 @@ def IFFT(XX):
 ## ===========  定义时域采样信号 sin(x + np.pi/4)
 ## ======================================================
 
-Fs = 10                          # 信号采样频率
+Fs = 20                          # 信号采样频率
 Ts = 1/Fs                        # 采样时间间隔
-N = 1000                           # 采样信号的长度
+N = 1024                           # 采样信号的长度
 t = np.linspace(0, N-1, N)*Ts    # 定义信号采样的时间点 t
 
-f1 = 2                             # 第一个余弦信号的频率
-x =  4 * np.cos(2*np.pi*f1*t + np.pi/4) # = cos(x) = sin(pi/2 - x)
+# f1 = 2                             # 第一个余弦信号的频率
+# x =  4 * np.cos(2*np.pi*f1*t + np.pi/4) # = cos(x) = sin(pi/2 - x)
+
+f1 = 2
+f2 = 4
+f3 = 6
+x =  7*np.cos(2*np.pi*f1*t + np.pi/4) + 5*np.cos(2*np.pi*f2*t + np.pi/2) + 3*np.cos(2*np.pi*f3*t + np.pi/3) + 4.5 # (4.5是直流)
+
 
 #=====================================================
 # 对时域采样信号, 执行快速傅里叶变换 FFT
-FFTN = 200        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
+FFTN = 1024        ## 执行FFT的点数，可以比N_sample大很多，越大频谱越精细
 X = scipy.fftpack.fft(x, n = FFTN)
 # X = FFT(x, n = FFTN)  # 或者用自己编写的，与 fft 一致
 
@@ -229,224 +242,113 @@ labelsize = 20
 #======================================= 0,0 =========================================
 axs[0,0].plot(t, x, color='b', linestyle='-', label='原始信号值',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[0,0].set_xlabel(r'时间(s)', fontproperties=font3)
-axs[0,0].set_ylabel(r'原始信号值', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[0,0].set_xlabel(r'时间(s)', )
+axs[0,0].set_ylabel(r'原始信号值', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[0,0].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[0,0].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-
-axs[0,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,0].get_xticklabels() + axs[0,0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 0,1 =========================================
 axs[0,1].plot(f, A, color='r', linestyle='-', label='幅度',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[0,1].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[0,1].set_ylabel(r'幅度', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[0,1].set_xlabel(r'频率(Hz)', )
+axs[0,1].set_ylabel(r'幅度', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[0,1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[0,1].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,1].get_xticklabels() + axs[0,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 0,2 =========================================
 axs[0,2].plot(f, Pha, color='g', linestyle='-', label='相位',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[0,2].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[0,2].set_ylabel(r'相位', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[0,2].set_xlabel(r'频率(Hz)', )
+axs[0,2].set_ylabel(r'相位', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[0,2].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[0,2].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,2].get_xticklabels() + axs[0,2].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 0,3 =========================================
 axs[0,3].plot(f, R, color='cyan', linestyle='-', label='实部',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[0,3].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[0,3].set_ylabel(r'实部', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[0,3].set_xlabel(r'频率(Hz)', )
+axs[0,3].set_ylabel(r'实部', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[0,3].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[0,3].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,3].get_xticklabels() + axs[0,3].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 0,4 =========================================
 axs[0,4].plot(f, I, color='#FF8C00', linestyle='-', label='虚部',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[0,4].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[0,4].set_ylabel(r'虚部', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[0,4].set_xlabel(r'频率(Hz)', )
+axs[0,4].set_ylabel(r'虚部', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[0,4].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[0,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[0,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[0,4].get_xticklabels() + axs[0,4].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #%% 全谱图
 #======================================= 1,0 =========================================
 axs[1,0].plot(t, IX, color='b', linestyle='-', label='恢复的信号值',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[1,0].set_xlabel(r'时间(s)', fontproperties=font3)
-axs[1,0].set_ylabel(r'逆傅里叶变换信号值', fontproperties=font3)
+axs[1,0].set_xlabel(r'时间(s)', )
+axs[1,0].set_ylabel(r'逆傅里叶变换信号值', )
 #axs[0,0].set_title('信号值', fontproperties=font3)
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,0].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[1,0].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,0].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,0].get_xticklabels() + axs[1,0].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 1,1 =========================================
 axs[1,1].plot(f1, A1, color='r', linestyle='-', label='幅度',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[1,1].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[1,1].set_ylabel(r'幅度', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[1,1].set_xlabel(r'频率(Hz)', )
+axs[1,1].set_ylabel(r'幅度', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[1,1].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,1].get_xticklabels() + axs[1,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 1,2 =========================================
 axs[1,2].plot(f1, Pha1, color='g', linestyle='-', label='相位',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[1,2].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[1,2].set_ylabel(r'相位', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[1,2].set_xlabel(r'频率(Hz)', )
+axs[1,2].set_ylabel(r'相位', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,2].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[1,2].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
-frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,2].get_xticklabels() + axs[1,2].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 1,3 =========================================
 axs[1,3].plot(f1, R1, color='cyan', linestyle='-', label='实部',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[1,3].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[1,3].set_ylabel(r'实部', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[1,3].set_xlabel(r'频率(Hz)', )
+axs[1,3].set_ylabel(r'实部', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,3].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[1,3].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,3].get_xticklabels() + axs[1,3].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 1,4 =========================================
 axs[1,4].plot(f1, I1, color='#FF8C00', linestyle='-', label='虚部',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[1,4].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[1,4].set_ylabel(r'虚部', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[1,4].set_xlabel(r'频率(Hz)', )
+axs[1,4].set_ylabel(r'虚部', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[1,4].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[1,4].legend(loc='best', borderaxespad=0, edgecolor='black' )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[1,4].get_xticklabels() + axs[1,4].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #%% 频率刻度错位
 #======================================= 2,0 =========================================
@@ -454,90 +356,46 @@ labels = axs[1,4].get_xticklabels() + axs[1,4].get_yticklabels()
 #======================================= 2,1 =========================================
 axs[2,1].plot(f2, A2, color='r', linestyle='-', label='幅度',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[2,1].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[2,1].set_ylabel(r'幅度', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[2,1].set_xlabel(r'频率(Hz)', )
+axs[2,1].set_ylabel(r'幅度', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[2,1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[2,1].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[1,1].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,1].get_xticklabels() + axs[2,1].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 2,2 =========================================
 axs[2,2].plot(f2, Pha2, color='g', linestyle='-', label='相位',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[2,2].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[2,2].set_ylabel(r'相位', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[2,2].set_xlabel(r'频率(Hz)', )
+axs[2,2].set_ylabel(r'相位', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[2,2].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[2,2].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[2,2].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,2].get_xticklabels() + axs[2,2].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 2,3 =========================================
 axs[2,3].plot(f2, R2, color='cyan', linestyle='-', label='实部',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[2,3].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[2,3].set_ylabel(r'实部', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[2,3].set_xlabel(r'频率(Hz)', )
+axs[2,3].set_ylabel(r'实部', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[2,3].legend(loc='best', borderaxespad=0,  edgecolor='black', prop=font2,)
+legend1 = axs[2,3].legend(loc='best', borderaxespad=0,  edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[2,3].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,3].get_xticklabels() + axs[2,3].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #======================================= 2,4 =========================================
 axs[2,4].plot(f2, I2, color='#FF8C00', linestyle='-', label='虚部',)
 
-font3 = FontProperties(fname=fontpath+"simsun.ttf", size=12)
-#font3  = {'family':'Times New Roman','style':'normal','size':22}
-#font3 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-axs[2,4].set_xlabel(r'频率(Hz)', fontproperties=font3)
-axs[2,4].set_ylabel(r'虚部', fontproperties=font3)
-#axs[0,0].set_title('信号值', fontproperties=font3)
+axs[2,4].set_xlabel(r'频率(Hz)', )
+axs[2,4].set_ylabel(r'虚部', )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 12}
-font2 = FontProperties(fname=fontpath+"simsun.ttf", size=16)
-legend1 = axs[2,4].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs[2,4].legend(loc='best', borderaxespad=0, edgecolor='black', )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-axs[2,4].tick_params(direction='in', axis='both',top=True,right=True, labelsize=labelsize, width=3,)
-labels = axs[2,4].get_xticklabels() + axs[2,4].get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(labelsize) for label in labels]  # 刻度值字号
 
 #================================= super ===============================================
 out_fig = plt.gcf()

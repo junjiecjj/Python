@@ -98,18 +98,18 @@ def nms_peaks(mag, det_map, nms_sz):
 
 # ----------------------- User Parameters -----------------------
 # Radar & waveform
-c = 3e8                 # speed of light
-fc = 77e9               # carrier frequency (Hz)
+c = 3e8                  # speed of light
+fc = 77e9                # carrier frequency (Hz)
 lamda = c / fc
-BW = 1e9                # sweep bandwidth (Hz)
-Tc = 40e-6              # chirp duration (s)
-S = BW / Tc             # chirp slope (Hz/s)
-fs = 20e6               # ADC sampling rate (Hz)
+BW = 1e9                 # sweep bandwidth (Hz)
+Tc = 40e-6               # chirp duration (s)
+S = BW / Tc              # chirp slope (Hz/s)
+fs = 20e6                # ADC sampling rate (Hz)
 Ns = int(round(fs * Tc)) # samples per chirp
-Nchirp = 128            # number of chirps (slow-time)
-Tx = 1                  # 1-Tx (TDM off)
-Rx = 8                  # number of Rx (ULA)
-d = lamda / 2           # element spacing
+Nchirp = 128             # number of chirps (slow-time)
+Tx = 1                   # 1-Tx (TDM off)
+Rx = 8                   # number of Rx (ULA)
+d = lamda / 2            # element spacing
 
 # Scene (multi-target): [R(m), v(m/s), azimuth(deg), RCS/amp]
 targets = np.array([
@@ -341,9 +341,9 @@ hTruthRA = plt.plot(R_true[truth_mask], th_true[truth_mask], 'p', markersize=11,
 
 for i in range(len(R_true)):
     if truth_mask[i]:
-        plt.text(R_true[i] + 0.5, th_true[i], f'T{i+1}', color='black', fontweight='bold', verticalalignment='center')
+        plt.text(R_true[i] + 0.5, th_true[i], f'T{i+1}', color = 'black', fontweight = 'bold', verticalalignment='center')
 
-plt.legend([hTruthRA], ['Truth near slice'], loc='best')
+plt.legend([hTruthRA], ['Truth near slice'], loc = 'best')
 plt.show()
 
 # 5) 3D Scatter of Detections in (Range, Velocity, Angle) + TRUTH + LEGEND

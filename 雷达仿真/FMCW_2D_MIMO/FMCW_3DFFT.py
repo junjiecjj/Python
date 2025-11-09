@@ -74,12 +74,12 @@ d = lamba/2       # 天线阵列间距
 NumRangeFFT = Ns                        # Range FFT Length
 NumDopplerFFT = Nchirp                 # Doppler FFT Length
 rangeRes = c/(2*B)                        # 距离分辨率
-maxRange = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
+R_max = rangeRes * Ns                  # 雷达最大探测目标的距离, R_max = c*fs/(2*S) = c*Ns/(2S*Tchirp) = C*Ns/(2*B) = rangeRes * Ns
 velRes = lamba / (2 * Nchirp * Tc)        # 速度分辨率
-maxVel = velRes * Nchirp/2                # 雷达最大检测目标的速度, Vmax = lamba/(4*Tchirp) = lamba/(2*Nchirp*Tchirp) * Nchirp/2 = velRes * Nchirp/2
+V_max = velRes * Nchirp/2                # 雷达最大检测目标的速度, Vmax = lamba/(4*Tchirp) = lamba/(2*Nchirp*Tchirp) * Nchirp/2 = velRes * Nchirp/2
 angRes = 2/Ns
 maxAng = np.arcsin(lamba/(2*d))
-print(f"rangeRes = {rangeRes:.4f}, maxRange = {maxRange:.4f}, velRes = {velRes:.4f}, maxVel = {maxVel:.4f} ")
+print(f"rangeRes = {rangeRes:.4f}, R_max = {R_max:.4f}, velRes = {velRes:.4f}, V_max = {V_max:.4f} ")
 
 # tarR = [100, ]     # 目标距离
 # tarV = [20, ]      # 目标速度
@@ -235,10 +235,10 @@ Q = 128
 angle_fft = np.fft.fftshift(np.fft.fft(doppler_fft, n = Q, axis = 0), axes = 0)
 
 ####>>>>>>>>>>>>>>>>>>>>>
-x = np.arange(int(NumRangeFFT/2)) / NumRangeFFT * maxRange
-# x = np.arange(NumRangeFFT) / NumRangeFFT * maxRange  # 如果使用这行，则注释掉Z = Z[:, 0:int(NumRangeFFT/2)]
+x = np.arange(int(NumRangeFFT/2)) / NumRangeFFT * R_max
+# x = np.arange(NumRangeFFT) / NumRangeFFT * R_max  # 如果使用这行，则注释掉Z = Z[:, 0:int(NumRangeFFT/2)]
 # y = np.arange((-Nchirp/2)*velRes, (Nchirp/2)*velRes, velRes)
-y = np.linspace(-maxVel, maxVel, NumDopplerFFT)
+y = np.linspace(-V_max, V_max, NumDopplerFFT)
 X, Y = np.meshgrid(x, y)
 # 角度坐标
 angle_bins = np.arcsin(np.linspace(-1, 1, Q)) * 180 / np.pi
