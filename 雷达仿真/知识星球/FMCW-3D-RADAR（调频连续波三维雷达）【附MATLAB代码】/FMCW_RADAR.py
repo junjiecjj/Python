@@ -295,9 +295,9 @@ plt.show()
 
 # 3) Angle spectrum for top-1 detection (FFT beamforming)
 if peak_idx.size > 0:
-    id = peak_idx[0, 0]
+    ii = peak_idx[0, 0]
     ir = peak_idx[0, 1]
-    x_m = X_rd[:, id, ir]
+    x_m = X_rd[:, ii, ir]
     ang_spec = np.abs(np.fft.fftshift(np.fft.fft(x_m, Nfft_a)))**2
     ang_spec = ang_spec / (np.max(ang_spec) + 1e-12)
 
