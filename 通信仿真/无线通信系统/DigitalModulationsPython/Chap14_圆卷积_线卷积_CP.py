@@ -158,14 +158,6 @@ print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
 #%%
 
 
-
-
-
-
-
-
-
-
 #%% 验证《从微积分到5G》Chap13.Eq(13.1), Page 247
 
 def genH(h, Nx,):
@@ -240,10 +232,40 @@ y1 = H_tilde @ s # + z_tilde
 ## y1 == r, 这也说明，关于OFDM: (1) 在发送方加CP ; (2) 在接收方做切分然后累加转为圆卷积。两者是等效的。
 
 
+#%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
 
+# 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程
+h = np.array([-0.4878, -1.5351, 0.2355])
+S = np.array([-0.0155, 2.5770, 1.9238, -0.0629, ])
+s = np.fft.ifft(S) # IFFT
+N = s.size
+L = h.size
 
+H = convMatrix(h, N)
+y = H @ s
 
-#%%
+cir_s_h = cconv(h, s, N)
+
+lenCP = L - 1
+Acp = np.block([[np.zeros((lenCP, N-lenCP)), np.eye(lenCP)], [np.eye(N)]])
+
+s_cp = Acp @ s                    # add CP
+
+H_cp = convMatrix(h, s_cp.size)
+y_cp = H_cp @ s_cp                #  pass freq selected channel
+
+y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp
+
+H_cp1 = convMatrix(h, s_cp.size)[lenCP:lenCP + N, :]
+y_remo_cp1 = H_cp1 @ s_cp        #  pass freq selected channel + remove cp
+
+F = scipy.linalg.dft(N)/np.sqrt(N)
+FH = F.conj().T
+
+Diag = F @ H_cp1 @ Acp @ FH  # Eq.(3): F@T(h)@A@FH is diagonal such that the data is parallelly transmitted over different subcarriers, and thus the ISI is avoided.
+
+CirH = H_cp1 @ Acp
+print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
 
 
 
