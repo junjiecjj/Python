@@ -95,37 +95,37 @@ print(f"C3 = {C3}")
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 生成 循环矩阵
-def CirculantMatric(gen, row):
-     if type(gen) == list:
-          col = len(gen)
-     elif type(gen) == np.ndarray:
-          col = gen.size
-     row = col
+# def CirculantMatric(gen, row):
+#      if type(gen) == list:
+#           col = len(gen)
+#      elif type(gen) == np.ndarray:
+#           col = gen.size
+#      row = col
 
-     mat = np.zeros((row, col), dtype = gen.dtype)
-     mat[:, 0] = gen
-     for i in range(1, row):
-          mat[:,i] = np.roll(gen, i)
-     return mat
+#      mat = np.zeros((row, col), dtype = gen.dtype)
+#      mat[:, 0] = gen
+#      for i in range(1, row):
+#           mat[:,i] = np.roll(gen, i)
+#      return mat
 
-def circularConvolve(h, s, N):
-    if h.size < N:
-        h = np.hstack((h, np.zeros(N-h.size)))
-    col = N
-    row = s.size
-    H = np.zeros((row, col), dtype = s.dtype)
-    H[:, 0] = h
-    for i in range(1, row):
-          H[:,i] = np.roll(h, i)
-    res = H @ s
-    return res
+# def circularConvolve(h, s, N):
+#     if h.size < N:
+#         h = np.hstack((h, np.zeros(N-h.size)))
+#     col = N
+#     row = s.size
+#     H = np.zeros((row, col), dtype = s.dtype)
+#     H[:, 0] = h
+#     for i in range(1, row):
+#           H[:,i] = np.roll(h, i)
+#     res = H @ s
+#     return res
 
 ##>>>
-generateVec =  [1 , 2  , 3 , 4  ]
-X = np.array(generateVec)
-L = len(generateVec)
-A = CirculantMatric(X, L)
-A1 = scipy.linalg.circulant(X)
+# generateVec =  [1 , 2  , 3 , 4  ]
+# X = np.array(generateVec)
+# L = len(generateVec)
+# A = CirculantMatric(X, L)
+# A1 = scipy.linalg.circulant(X)
 
 ##>>>
 h = np.array([-0.4878, -1.5351, 0.2355])
@@ -143,9 +143,6 @@ lin_scp = scipy.signal.convolve(h, s_cp)
 r = lin_scp[Ncp:Ncp+N]
 print(f" r = \n    {r}\n cir_s_h = \n    {cir_s_h}")  # cir_s_h == r
 
-##
-
-
 # 14.2.3 Verifying DFT property， 时域的圆卷积等于频域相乘.
 R = scipy.fft.fft(r, N)
 H = scipy.fft.fft(h, N)
@@ -154,24 +151,46 @@ S = scipy.fft.fft(s, N)
 print(f"R = {R}")
 print(f"H*S = {H*S}")
 # r1 == r
-r1 = scipy.fft.ifft(S*H) # 频域相乘后ifft等于r
+r1 = scipy.fft.ifft(S*H)         # 频域相乘后ifft等于r
 print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 《从微积分到5G》
-import numpy as np
-import commpy
-import scipy
+#%%
 
-from Modulations import modulator
+
+
+
+
+
+
+
+
 
 #%% 验证《从微积分到5G》Chap13.Eq(13.1), Page 247
 
-def genH(h, Nx, Nh):
+def genH(h, Nx,):
+    Nh = h.size
     H = np.zeros((Nx+Nh-1, Nx),  dtype= complex )
     h = np.pad(h, (0, Nx - 1))
     for j in range(Nx):
         H[:,j] = np.roll(h, j)
+    return H
+
+def convMatrix(h, N):  #
+    """
+    Construct the convolution matrix of size (L+N-1)x N from the
+    input matrix h of size L. (see chapter 1)
+    Parameters:
+        h : numpy vector of length L
+        N : scalar value
+    Returns:
+        H : convolution matrix of size (L+N-1)xN
+    """
+    col = np.hstack((h, np.zeros(N-1)))
+    row = np.hstack((h[0], np.zeros(N-1)))
+
+    from scipy.linalg import toeplitz
+    H = toeplitz(col, row)
     return H
 
 def CutFoldAdd(x, L):
@@ -188,16 +207,16 @@ def CutFoldAdd(x, L):
         out += np.pad(x[(Int-1)*L:Int*L], (0, pad))
     return out
 
-MOD_TYPE = "qam"
-Order = 16
-modem, Es, bps = modulator(MOD_TYPE, Order)
-Constellation = modem.constellation/np.sqrt(Es)
-AvgEnergy = np.mean(np.abs(Constellation)**2)
+# MOD_TYPE = "qam"
+# Order = 16
+# modem, Es, bps = modulator(MOD_TYPE, Order)
+# Constellation = modem.constellation/np.sqrt(Es)
+# AvgEnergy = np.mean(np.abs(Constellation)**2)
 
 Nh = h.size
 Nx = s.size
 # h = np.sqrt(1/2) * (np.random.randn(Nh) + 1j * np.random.randn(Nh))
-H = genH(h, Nx, Nh)
+H = genH(h, Nx,)
 
 # d = np.random.randint(Order, size = Nx)
 # x = Constellation[d]
@@ -218,7 +237,20 @@ H_tilde = scipy.linalg.circulant(h_tilde)
 ## 圆卷积。 y1 == y_tilde 得到验证, 仔细一想，这是肯定成立的， 因为仅仅只是行之间的线性相加，没有不成立的理由。
 y1 = H_tilde @ s # + z_tilde
 
-## y1 == r, 这也说明，关于OFDM: (1) 在发送方加CP ; (2) 在接收方做切分然后累加转为圆卷积。两者是等效的。杨学智Page247.
+## y1 == r, 这也说明，关于OFDM: (1) 在发送方加CP ; (2) 在接收方做切分然后累加转为圆卷积。两者是等效的。
+
+
+
+
+
+#%%
+
+
+
+
+#%%
+
+
 
 
 #%%
@@ -231,7 +263,21 @@ y1 = H_tilde @ s # + z_tilde
 
 
 
-#%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
