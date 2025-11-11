@@ -226,7 +226,7 @@ y_tilde = CutFoldAdd(y, Nx)
 # z_tilde = CutFoldAdd(z, Nx)
 H_tilde = scipy.linalg.circulant(h_tilde)
 
-## 圆卷积。 y1 == y_tilde 得到验证, 仔细一想，这是肯定成立的， 因为仅仅只是行之间的线性相加，没有不成立的理由。
+## 圆卷积。 y1 == y_tilde 得到验证, 仔细一想，这是肯定成立的， 因为仅仅只是行之间的线性相加，没有理由不成立。
 y1 = H_tilde @ s # + z_tilde
 
 ## y1 == r, 这也说明，关于OFDM: (1) 在发送方加CP ; (2) 在接收方做切分然后累加转为圆卷积。两者是等效的。
