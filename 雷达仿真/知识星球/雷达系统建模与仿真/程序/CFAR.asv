@@ -1,0 +1,6 @@
+function y=CFAR(x)
+%×÷ºãÐé¾¯´¦Àí
+%%%%%%%%%%%%%%%%%%%%%%%
+n=length(x);
+for i=1:n
+    if 

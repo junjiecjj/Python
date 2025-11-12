@@ -1,0 +1,32 @@
+function zhongfang(x)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%中频放大器
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[M,N]=size(s);
+Vgain=6;                                         %中放增益
+w1=(f0-4*f1/3)*2*pi/fs;w3=(f0-f1/3)*2*pi/fs;
+w2=(f0+7*f1/3)*2*pi/fs;w4=(f0+4*f1/3)*2*pi/fs;
+th=min((w3-w1),(w2-w4));
+M1=ceil(6.2*pi/th)+1;
+n=[0:M1-1];
+w5=(w1+w3)/2;w6=(w4+w2)/2;
+h=wide(w6,M1)-wide(w5,M1);
+w=(hamming(M1))';
+h=h.*w;
+L=length(h);
+s=Vgain*s;
+z=zeros(M+L-1,N);
+for i=1:N
+    z(1:M+L-1,i)=conv(h,s(1:M,i)')';
+end
+y=zeros(M,N);
+for i=1:N
+    y(1:M,i)=z(1:M,i);
+end
+w=y(:)';
+subplot(3,1,1);
+i=0:length(w)-1;
+plot(i,w);
+subplot(3,1,2);
+plotpu(w);
+subplot(3,1,3);
+plotpu(h);

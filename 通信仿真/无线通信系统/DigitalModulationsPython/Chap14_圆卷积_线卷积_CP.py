@@ -242,10 +242,8 @@ N = s.size
 L = h.size
 cir_s_h = cconv(h, s, N)  #   circular conv
 
-
 H = convMatrix(h, N)
 y = H @ s                 # linear conv
-
 
 lenCP = L - 1
 Acp = np.block([[np.zeros((lenCP, N-lenCP)), np.eye(lenCP)], [np.eye(N)]])
@@ -268,6 +266,14 @@ CirH = H_cp1 @ Acp
 print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
 
 
+U, s, VH = scipy.linalg.svd(H_cp1)
+
+V = VH.conj().T
+
+Vs = V[:, -lenCP:]
+
+
+H_cp1 @ Vs # Proof of Theorem 1
 
 
 #%%
@@ -281,6 +287,45 @@ print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循�
 
 
 #%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

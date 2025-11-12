@@ -1,0 +1,54 @@
+function [p,q]=leidamubiaohuibo
+%产生目标回波信号x,系统噪声y，地物杂波z以及回波p
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+f0=3*10^7;      %发射信号频率
+g=0;            %发射信号初始相位
+c=3*10^8;       %光速
+l=c/f0;         %雷达信号波长
+R=40000;        %目标范围
+Vd=200;         %目标的运动速度
+fd=2*Vd/l;      %多普勒频率
+Tr=20/f0;       %脉冲重复周期
+N=15;           %雷达脉冲串长度
+f1=f0/10;       %调频带宽是发射信号频率的1/10
+k=5*f1/Tr;
+fs=4*f0;        %仿真采样频率
+Ts=1/fs;
+Tt=2*R/c;
+Btar=4*pi*R/l;  %
+M=floor(Tr*fs); %一个脉冲重复周期内的采样点数
+mt=floor(4*Tr*fs/5);
+Vgain=3;
+Star=zeros(M,N); %回波幅度起伏 
+for m=1:M
+    for n=1:N
+         u(t)=reet(t/Tt)*exp(j*2*pi*(f0*t+k*t*t/2));         %u(t)是发射信号包络
+        Star(m,n)=u(m-mt)*Vgain*cos(2*pi*(f0*m*Ts+k*Ts*m*m/2*Ts)+2*pi*fd*n*Tr-Btar+g);
+        g(m,n)=u(m-mt); 
+    end
+end
+[m,n]=size(Star);
+x=zeros(1,m*n);
+q=zeros(1,m*n);
+for i=1:n
+    for j=1:m
+        x((i-1)*m+j)=Star(j,i);
+        q((i-1)*m+j)=g(j,i);
+    end
+end
+y=gaussian(m*n);               %系统噪声服从高斯分布
+z=duishuzhengtaipu(2,2,m*n);   %地物杂波服从对数正态分布
+p=x+y+z;
+i=0:length(p)-1;
+subplot(4,1,1);
+plot(i,x);          %目标回波信号x
+subplot(4,1,2); 
+l=canshu(x);
+b=x-l(1);
+plotpu(b);          %系统噪声y
+subplot(4,1,3);
+v=canshu(p);
+p1=p-v(1);
+plotpu(p1);         %地物杂波z
+subplot(4,1,4);
+plot(i,p);          %回波p

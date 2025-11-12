@@ -1,0 +1,156 @@
+
+An unexpected exception has been detected in native code outside the VM.
+Unexpected Signal : EXCEPTION_ACCESS_VIOLATION (0xc0000005) occurred at PC=0x79043AA0
+Function=AddHWndToModalStack+0xB0
+Library=D:\MATLAB7.01\bin\win32\uiw.dll
+
+Current Java thread:
+	at com.mathworks.util.NativeJava.createWindowsFileDialogMulti(Native Method)
+	at com.mathworks.mwswing.MJFileChooserPerPlatform$RunnableWindowsDispatch.run(MJFileChooserPerPlatform.java:897)
+	at java.lang.Thread.run(Unknown Source)
+
+Dynamic libraries:
+0x00400000 - 0x004D8000 	D:\MATLAB7.01\bin\win32\MATLAB.exe
+0x7C920000 - 0x7C9B4000 	C:\WINDOWS\system32\ntdll.dll
+0x7C800000 - 0x7C91C000 	C:\WINDOWS\system32\kernel32.dll
+0x787D0000 - 0x787DE000 	D:\MATLAB7.01\bin\win32\libmex.dll
+0x78790000 - 0x787C8000 	D:\MATLAB7.01\bin\win32\libmx.dll
+0x78500000 - 0x78576000 	D:\MATLAB7.01\bin\win32\icuuc24.dll
+0x78430000 - 0x78435000 	D:\MATLAB7.01\bin\win32\icudt24l.dll
+0x7C340000 - 0x7C396000 	D:\MATLAB7.01\bin\win32\MSVCR71.dll
+0x786E0000 - 0x786F2000 	D:\MATLAB7.01\bin\win32\libz.dll
+0x77BE0000 - 0x77C38000 	C:\WINDOWS\system32\MSVCRT.dll
+0x78700000 - 0x7878D000 	D:\MATLAB7.01\bin\win32\libut.dll
+0x76C60000 - 0x76C88000 	C:\WINDOWS\system32\imagehlp.dll
+0x78440000 - 0x784C2000 	D:\MATLAB7.01\bin\win32\icuin24.dll
+0x784D0000 - 0x784DD000 	D:\MATLAB7.01\bin\win32\icuio24.dll
+0x7C3A0000 - 0x7C41B000 	D:\MATLAB7.01\bin\win32\MSVCP71.dll
+0x77DA0000 - 0x77E49000 	C:\WINDOWS\system32\ADVAPI32.dll
+0x77E50000 - 0x77EE1000 	C:\WINDOWS\system32\RPCRT4.dll
+0x76990000 - 0x76ACD000 	C:\WINDOWS\system32\ole32.dll
+0x77EF0000 - 0x77F36000 	C:\WINDOWS\system32\GDI32.dll
+0x77D10000 - 0x77D9F000 	C:\WINDOWS\system32\USER32.dll
+0x770F0000 - 0x7717C000 	C:\WINDOWS\system32\OLEAUT32.dll
+0x78F80000 - 0x78FE7000 	D:\MATLAB7.01\bin\win32\libmwservices.dll
+0x78800000 - 0x78815000 	D:\MATLAB7.01\bin\win32\mpath.dll
+0x78930000 - 0x78996000 	D:\MATLAB7.01\bin\win32\m_dispatcher.dll
+0x78580000 - 0x786D6000 	D:\MATLAB7.01\bin\win32\xerces-c_2_1_0.dll
+0x78F60000 - 0x78F71000 	D:\MATLAB7.01\bin\win32\datasvcs.dll
+0x787F0000 - 0x787FE000 	D:\MATLAB7.01\bin\win32\mvalue.dll
+0x787E0000 - 0x787E9000 	D:\MATLAB7.01\bin\win32\libmat.dll
+0x79300000 - 0x7939E000 	D:\MATLAB7.01\bin\win32\mcr.dll
+0x76320000 - 0x76367000 	C:\WINDOWS\system32\comdlg32.dll
+0x77F40000 - 0x77FB6000 	C:\WINDOWS\system32\SHLWAPI.dll
+0x5D170000 - 0x5D207000 	C:\WINDOWS\system32\COMCTL32.dll
+0x7D590000 - 0x7DD81000 	C:\WINDOWS\system32\SHELL32.dll
+0x79B90000 - 0x79BC6000 	D:\MATLAB7.01\bin\win32\comcli.dll
+0x79030000 - 0x790AB000 	D:\MATLAB7.01\bin\win32\uiw.dll
+0x789A0000 - 0x78C4C000 	D:\MATLAB7.01\bin\win32\m_interpreter.dll
+0x78EC0000 - 0x78ECF000 	D:\MATLAB7.01\bin\win32\m_pcodeio.dll
+0x78EE0000 - 0x78F53000 	D:\MATLAB7.01\bin\win32\mlib.dll
+0x78EA0000 - 0x78EB1000 	D:\MATLAB7.01\bin\win32\m_pcodegen.dll
+0x78E40000 - 0x78E95000 	D:\MATLAB7.01\bin\win32\m_ir.dll
+0x78C50000 - 0x78E3E000 	D:\MATLAB7.01\bin\win32\m_parser.dll
+0x78ED0000 - 0x78EDA000 	D:\MATLAB7.01\bin\win32\ir_xfmr.dll
+0x78820000 - 0x788A7000 	D:\MATLAB7.01\bin\win32\mcos.dll
+0x792D0000 - 0x792FA000 	D:\MATLAB7.01\bin\win32\libmwhardcopy.dll
+0x790E0000 - 0x79156000 	D:\MATLAB7.01\bin\win32\libmwgui.dll
+0x788B0000 - 0x7892E000 	D:\MATLAB7.01\bin\win32\udd.dll
+0x79C10000 - 0x79D38000 	D:\MATLAB7.01\bin\win32\bridge.dll
+0x77BD0000 - 0x77BD8000 	C:\WINDOWS\system32\VERSION.dll
+0x79160000 - 0x792A4000 	D:\MATLAB7.01\bin\win32\hg.dll
+0x793A0000 - 0x794C5000 	D:\MATLAB7.01\bin\win32\numerics.dll
+0x10000000 - 0x10007000 	D:\MATLAB7.01\bin\win32\libmwamd.dll
+0x79510000 - 0x79596000 	D:\MATLAB7.01\bin\win32\libfftw3.dll
+0x795A0000 - 0x79621000 	D:\MATLAB7.01\bin\win32\libfftw3f.dll
+0x794D0000 - 0x794EC000 	D:\MATLAB7.01\bin\win32\libmwlapack.dll
+0x00270000 - 0x002C5000 	D:\MATLAB7.01\bin\win32\libmwumfpackv4.3.dll
+0x790B0000 - 0x790CC000 	D:\MATLAB7.01\bin\win32\libuij.dll
+0x79B60000 - 0x79B8C000 	D:\MATLAB7.01\bin\win32\jmi.dll
+0x7C140000 - 0x7C243000 	D:\MATLAB7.01\bin\win32\MFC71.DLL
+0x72F70000 - 0x72F96000 	C:\WINDOWS\system32\WINSPOOL.DRV
+0x79B00000 - 0x79B52000 	D:\MATLAB7.01\bin\win32\udd_mi.dll
+0x5FDD0000 - 0x5FE24000 	C:\WINDOWS\system32\NETAPI32.dll
+0x71A20000 - 0x71A37000 	C:\WINDOWS\system32\WS2_32.dll
+0x71A10000 - 0x71A18000 	C:\WINDOWS\system32\WS2HELP.dll
+0x790D0000 - 0x790D5000 	D:\MATLAB7.01\bin\win32\uinone.dll
+0x79BD0000 - 0x79BD9000 	D:\MATLAB7.01\bin\win32\mlautoregister.dll
+0x79AE0000 - 0x79AF1000 	D:\MATLAB7.01\bin\win32\mwoles05.dll
+0x76300000 - 0x7631D000 	C:\WINDOWS\system32\IMM32.DLL
+0x62C20000 - 0x62C29000 	C:\WINDOWS\system32\LPK.DLL
+0x73FA0000 - 0x7400B000 	C:\WINDOWS\system32\USP10.dll
+0x77180000 - 0x77282000 	C:\WINDOWS\WinSxS\x86_Microsoft.Windows.Common-Controls_6595b64144ccf1df_6.0.2600.2180_x-ww_a84f1ff9\comctl32.dll
+0x794F0000 - 0x79508000 	D:\MATLAB7.01\bin\win32\mkl.dll
+0x79630000 - 0x79A84000 	D:\MATLAB7.01\bin\win32\lapack.dll
+0x7C040000 - 0x7C0B5000 	D:\MATLAB7.01\bin\win32\DFORRT.dll
+0x7C300000 - 0x7C30A000 	D:\MATLAB7.01\bin\win32\MFC71CHS.DLL
+0x5ADC0000 - 0x5ADF7000 	C:\WINDOWS\system32\uxtheme.dll
+0x02200000 - 0x02214000 	C:\Program Files\CNNIC\Cdn\cdnspie.dll
+0x02330000 - 0x0233D000 	C:\Program Files\CNNIC\Cdn\imaoe.dll
+0x74680000 - 0x746CB000 	C:\WINDOWS\system32\MSCTF.dll
+0x69500000 - 0x6986B000 	C:\WINDOWS\system32\nvoglnt.dll
+0x78100000 - 0x78238000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\client\jvm.dll
+0x76B10000 - 0x76B3A000 	C:\WINDOWS\system32\WINMM.dll
+0x73640000 - 0x7366E000 	C:\WINDOWS\system32\msctfime.ime
+0x78240000 - 0x78247000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\hpi.dll
+0x78250000 - 0x7825E000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\verify.dll
+0x78260000 - 0x78279000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\java.dll
+0x78280000 - 0x7828D000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\zip.dll
+0x78290000 - 0x7839F000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\awt.dll
+0x783E0000 - 0x78430000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\fontmanager.dll
+0x79D40000 - 0x79D52000 	D:\MATLAB7.01\bin\win32\jmi_mi.dll
+0x045E0000 - 0x049DE000 	C:\WINDOWS\resources\Themes\luna\luna.msstyles
+0x04D60000 - 0x04D6A000 	D:\MATLAB7.01\bin\win32\nativejava.dll
+0x7A800000 - 0x7A807000 	D:\MATLAB7.01\bin\win32\nativelex.dll
+0x05080000 - 0x05094000 	C:\Program Files\CNNIC\Cdn\cdndet.dll
+0x76680000 - 0x76722000 	C:\WINDOWS\system32\WININET.dll
+0x765E0000 - 0x76672000 	C:\WINDOWS\system32\CRYPT32.dll
+0x76DB0000 - 0x76DC2000 	C:\WINDOWS\system32\MSASN1.dll
+0x75C60000 - 0x75CFC000 	C:\WINDOWS\system32\urlmon.dll
+0x60800000 - 0x60809000 	C:\WINDOWS\system32\mslbui.dll
+0x03250000 - 0x0325C000 	C:\WINDOWS\System32\spool\DRIVERS\W32X86\3\mdiui.dll
+0x033D0000 - 0x03696000 	C:\WINDOWS\system32\msi.dll
+0x78FF0000 - 0x7902F000 	D:\MATLAB7.01\bin\win32\libmwbuiltins.dll
+0x7B980000 - 0x7BD29000 	D:\MATLAB7.01\bin\win32\mkl_p4.dll
+0x7BD80000 - 0x7BDB3000 	D:\MATLAB7.01\bin\win32\libguide40.dll
+0x76D70000 - 0x76D92000 	C:\WINDOWS\system32\Apphelp.dll
+0x03330000 - 0x0333D000 	C:\Program Files\Tencent\QQ\QQHook.dll
+0x76FA0000 - 0x7701F000 	C:\WINDOWS\system32\CLBCATQ.DLL
+0x77020000 - 0x770BA000 	C:\WINDOWS\system32\COMRes.dll
+0x76060000 - 0x761B6000 	C:\WINDOWS\system32\SETUPAPI.dll
+0x76960000 - 0x76984000 	C:\WINDOWS\system32\ntshrui.dll
+0x76AF0000 - 0x76B01000 	C:\WINDOWS\system32\ATL.DLL
+0x759D0000 - 0x75A7E000 	C:\WINDOWS\system32\USERENV.dll
+0x20000000 - 0x20549000 	C:\WINDOWS\system32\xpsp2res.dll
+0x783B0000 - 0x783D2000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\dcpr.dll
+0x036A0000 - 0x036A5000 	D:\MATLAB7.01\toolbox\matlab\datatypes\cellfun.dll
+0x7A810000 - 0x7A815000 	D:\MATLAB7.01\bin\win32\nativehg.dll
+0x036F0000 - 0x036F8000 	D:\MATLAB7.01\toolbox\matlab\graph2d\private\lineseriesmex.dll
+0x783A0000 - 0x783A5000 	D:\MATLAB7.01\sys\java\jre\win32\jre1.4.2_04\bin\jawt.dll
+0x3B030000 - 0x3B0D9000 	C:\WINDOWS\system32\IMSC40A.IME
+0x75EF0000 - 0x75FED000 	C:\WINDOWS\system32\browseui.dll
+0x76370000 - 0x764DC000 	C:\WINDOWS\system32\shdocvw.dll
+0x75430000 - 0x754A1000 	C:\WINDOWS\system32\CRYPTUI.dll
+0x76C00000 - 0x76C2E000 	C:\WINDOWS\system32\WINTRUST.dll
+0x76F30000 - 0x76F5C000 	C:\WINDOWS\system32\WLDAP32.dll
+0x68D60000 - 0x68E01000 	C:\WINDOWS\system32\DBGHELP.dll
+0x76BC0000 - 0x76BCB000 	C:\WINDOWS\system32\PSAPI.DLL
+
+Heap at VM Abort:
+Heap
+ def new generation   total 3712K, used 212K [0x10010000, 0x10410000, 0x10930000)
+  eden space 3328K,   6% used [0x10010000, 0x10045070, 0x10350000)
+  from space 384K,   0% used [0x10350000, 0x10350000, 0x103b0000)
+  to   space 384K,   0% used [0x103b0000, 0x103b0000, 0x10410000)
+ tenured generation   total 24124K, used 14472K [0x10930000, 0x120bf000, 0x14010000)
+   the space 24124K,  59% used [0x10930000, 0x117523c8, 0x11752400, 0x120bf000)
+ compacting perm gen  total 16384K, used 16070K [0x14010000, 0x15010000, 0x18010000)
+   the space 16384K,  98% used [0x14010000, 0x14fc1800, 0x14fc1800, 0x15010000)
+
+Local Time = Sat Jun 25 16:18:36 2005
+Elapsed Time = 5582
+#
+# The exception above was detected in native code outside the VM
+#
+# Java VM: Java HotSpot(TM) Client VM (1.4.2_04-b05 mixed mode)
+#

@@ -1,0 +1,24 @@
+function y=swerling(n)
+%swelingII·Ö²¼
+%%%%%%%%%%%%%%%%%%%%%%
+r=ones(1,n);
+u1=junyun(n);
+u2=junyun(n);
+for i=1:n
+    if (u1(i)==0)
+        u1(i)=0.0001;
+    else
+        continue
+    end
+end
+for i=1:n
+    if (u1(i)==u2(i))
+        u1(i)=u1(i)+0.0001
+    else continue
+    end
+end    
+t=-2*log(u1);
+h=2*pi*u2;
+q=sqrt(t)*cos(h);
+z=sqrt(t)*sin(h);
+y=r/2*(x.^2+z.^2);

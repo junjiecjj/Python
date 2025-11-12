@@ -1,0 +1,12 @@
+function plotpu(x)
+%绘出随机数的功率谱密度函数频域的图形。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+y=gaussianpu(x);
+r=correlation(y);
+v=fft(r);
+v=abs(v);
+
+%j=2*pi/length(v);
+%i=0:j:2*pi-j;
+plot(i,v);
