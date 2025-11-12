@@ -240,21 +240,21 @@ S = np.array([-0.0155, 2.5770, 1.9238, -0.0629, ])
 s = np.fft.ifft(S) # IFFT
 N = s.size
 L = h.size
+cir_s_h = cconv(h, s, N)  #   circular conv
+
 
 H = convMatrix(h, N)
-y = H @ s
+y = H @ s                 # linear conv
 
-cir_s_h = cconv(h, s, N)
 
 lenCP = L - 1
 Acp = np.block([[np.zeros((lenCP, N-lenCP)), np.eye(lenCP)], [np.eye(N)]])
-
 s_cp = Acp @ s                    # add CP
 
 H_cp = convMatrix(h, s_cp.size)
 y_cp = H_cp @ s_cp                #  pass freq selected channel
 
-y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp
+y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp, == cir_s_h
 
 H_cp1 = convMatrix(h, s_cp.size)[lenCP:lenCP + N, :]
 y_remo_cp1 = H_cp1 @ s_cp        #  pass freq selected channel + remove cp
