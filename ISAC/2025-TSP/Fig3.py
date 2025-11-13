@@ -103,8 +103,8 @@ Tsym = 1
 pi = np.pi
 N = 128       # 符号数
 L = 10        # 过采样率
-alpha = 0.3  # 滚降因子
-# span = 6      # 滤波器跨度（根据旁瓣要求调整）
+alpha = 0.3   # 滚降因子
+# span = 6    # 滤波器跨度（根据旁瓣要求调整）
 
 # p, t, filtDelay = srrcFunction(alpha, L, span, Tsym = Tsym)
 # p = np.pad(p, (0, L*N - p.size))
