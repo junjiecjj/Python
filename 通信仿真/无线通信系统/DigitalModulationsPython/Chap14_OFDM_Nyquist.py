@@ -168,7 +168,7 @@ print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循�
 #%%
 
 
-#%%  Performance of modulations in AWGN
+#%% Performance of modulations in AWGN
 ## 使用upfirdn函数
 #---------Input Fields------------------------
 nSym = 10000
@@ -212,8 +212,8 @@ for m, M in enumerate(arrayOfM):
             d = np.random.randint(low = 0, high = M, size = N) # uniform random symbols from 0 to M-1
             u = modem.modulate(d)
 
-            uu = scipy.fft.ifft(u, N)
-            uu_cp = add_cyclic_prefix(uu, Ncp)
+            uu = scipy.fft.ifft(u, N)             #  IFFT
+            uu_cp = add_cyclic_prefix(uu, Ncp)    #  Add CP
 
             ##  脉冲成型 + 上变频 -> 基带信号
             s = scipy.signal.upfirdn(p, uu_cp, L)
@@ -229,8 +229,8 @@ for m, M in enumerate(arrayOfM):
             uu_hat = s_hat[decision_site:decision_site + uu_cp.size] #/ L    ## Note: 当p归一化时，这里千万别用/L，当p没有归一化时，这里需要/L
             # dCap = modem.demodulate(u_hat, outputtype = 'int',)
 
-            y = remove_cyclic_prefix(uu_hat, Ncp, N)
-            u_hat = scipy.fft.fft(y, N)
+            y = remove_cyclic_prefix(uu_hat, Ncp, N)  # remove CP
+            u_hat = scipy.fft.fft(y, N)               # FFT
 
             if mod_type.lower()=='fsk': #demodulate (Refer Chapter 3)
                 dCap = modem.demodulate(u_hat, coherence)
@@ -254,8 +254,6 @@ out_fig = plt.gcf()
 # out_fig.savefig('hh.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
-
-
 
 
 #%%

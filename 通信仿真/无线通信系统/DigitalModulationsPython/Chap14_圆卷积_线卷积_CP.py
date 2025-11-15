@@ -276,6 +276,31 @@ Vs = V[:, -lenCP:]
 H_cp1 @ Vs # Proof of Theorem 1
 
 
+Vc = V[:, :S.size]
+Vs = V[:, -lenCP:]
+
+Vc @ Vc.conj().T + Vs @ Vs.conj().T  #  == I
+
+x_oc = np.random.randn(H_cp1.shape[1])
+s_os = np.random.randn(h.size - 1)
+x_os = Vs @ s_os
+x = x_oc + x_os  # Eq.(5)
+
+s_s = s_os + Vs.conj().T @ x_oc
+x_s = Vs @ s_s
+x_c = Vc @ Vc.conj().T @ x_oc
+x1 = x_c + x_s    # Eq.(9)
+
+x_c @ x_s.conj().T # == 0,
+
+
+# Eq.(11)
+a = np.linalg.norm(x_oc)**2
+b = np.linalg.norm(x_c)**2 + np.linalg.norm(Vs.conj().T @ x_oc)**2
+
+
+
+
 #%%
 
 

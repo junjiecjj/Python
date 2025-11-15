@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:pPr><w:pStyle w:val="title"/><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>Receiver</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="text"/><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t></w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="code"/></w:pPr><w:r><w:t><![CDATA[
+fc = 62.64e9;        % Center frequency in Hz
+fs = 2e9;            % Sampling frequency in Hz
+Tc = 15.2e-6;        % Chirp duration in seconds
+guard_time = 0.1e-6; % Guard time at the end of each chirp
+
+combinations = int2bit(0:2^13-1,13)';
+bw_values = linspace(400e6, 800e6, 2^7);
+freq_values = linspace(-100e6, 100e6, 2^6);
+selected_bw = bw_values(bit2int(combinations(:,1:7)',7,true) + 1);
+selected_freq = freq_values(bit2int(combinations(:,8:13)',6,true) + 1);
+
+t = linspace(0, Tc, fs * Tc);
+
+pure_chirps = zeros(8192,30400);
+
+for k = 1:8192
+    f0 = selected_freq(k) ; 
+    f1 = f0 + selected_bw(k) ;
+    temp = chirp(t,f0,Tc,f1,'linear',0,'complex');
+    pure_chirps(k, :) = temp/norm(temp);
+end
+]]></w:t></w:r></w:p></w:body></w:document>
