@@ -137,8 +137,8 @@ x = np.random.randn(N) + 1j * np.random.randn(N)
 x_up = np.vstack((x, np.zeros((L-1, x.size))))
 x_up = x_up.T.flatten()
 
-FLN = FFTmatrix(L*N, L*N)
-FN = FFTmatrix(N, N)
+FLN = scipy.linalg.dft(L*N,) / np.sqrt( L*N)
+FN = scipy.linalg.dft(N,) / np.sqrt(N)
 
 ff1 = FLN @ x_up # Eq.(22) 的sqrt(1/LN)应该是sqrt(1/N)
 ff2 = np.sqrt(1/(L)) * np.tile(x @ FN.T, L)
