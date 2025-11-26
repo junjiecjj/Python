@@ -165,11 +165,16 @@ for u in range(N_UE):
         tm = tgrid - tau_m
 
         # 使用线性插值
-        real_interp = interp1d(tgrid, tx.real, kind='linear', bounds_error=False, fill_value=0)
-        imag_interp = interp1d(tgrid, tx.imag, kind='linear', bounds_error=False, fill_value=0)
-        sm_real = real_interp(tm)
-        sm_imag = imag_interp(tm)
-        sm = sm_real + 1j * sm_imag
+        # real_interp = interp1d(tgrid, tx.real, kind='linear', bounds_error=False, fill_value=0)
+        # imag_interp = interp1d(tgrid, tx.imag, kind='linear', bounds_error=False, fill_value=0)
+        # sm_real = real_interp(tm)
+        # sm_imag = imag_interp(tm)
+        # sm = sm_real + 1j * sm_imag
+        interp = interp1d(tgrid, tx.real, kind='linear', bounds_error=False, fill_value=0)
+        # imag_interp = interp1d(tgrid, tx.imag, kind='linear', bounds_error=False, fill_value=0)
+        # sm_real = real_interp(tm)
+        sm = interp(tm)
+        # sm = sm_real + 1j * sm_imag
 
         # 以 amp 缩放，同时统一噪声方差基准（按 amp^2 近似）
         sigPow = np.mean(np.abs(tx) ** 2) * amp ** 2

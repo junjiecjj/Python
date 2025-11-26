@@ -95,9 +95,9 @@ yhat = Xhat @ hs
 
 #%% Verified Eq.(7)-(11);
 
-M = 4
+M = 4  # recv annt
 T = 100
-N = 4
+N = 4  # transmit annt
 PT = 1
 sigma_c2 = 1
 I_N = np.eye(N)

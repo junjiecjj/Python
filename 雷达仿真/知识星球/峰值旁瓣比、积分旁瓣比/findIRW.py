@@ -81,10 +81,7 @@ if len(x1) > 0:
     ax[1, 1].axvline(x=t[x1[-1]]*1e6, color='g', linestyle='--', alpha=0.7, label='-3dB结束点')
 
     # 在图中添加IRW信息
-    ax[1, 1].text(0.05, 0.05, f'IRW = {IRW*1e6:.2f} μs',
-                 transform=ax[1, 1].transAxes, fontsize=12,
-                 bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
-
+    ax[1, 1].text(0.05, 0.05, f'IRW = {IRW*1e6:.2f} μs', transform=ax[1, 1].transAxes, fontsize=12, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
 ax[1, 1].legend()
 
 plt.tight_layout()

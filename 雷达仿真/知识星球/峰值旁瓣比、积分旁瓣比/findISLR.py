@@ -8,7 +8,26 @@ Created on Tue Oct 28 21:09:58 2025
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+# 全局设置字体大小
+# plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.family"] = "SimSun"
+plt.rcParams['font.size'] = 18               # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['lines.linestyle'] = '-'
+plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.color'] = 'blue'
+plt.rcParams['lines.markersize'] = 6         # 标记大小
+# plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
+plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
+plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
+plt.rcParams['legend.fontsize'] = 14
+np.random.seed(42)
 # =============================================================================
 # LFM信号匹配滤波和ISLR计算 - 使用2x2子图形式
 # =============================================================================
@@ -59,7 +78,7 @@ right_idx = min(L, right_idx)
 
 p = np.sum((10**(sout_dB[left_idx:right_idx] / 20))**2 * (1/fs))
 
-# 计算ISLR
+# 计算ISLR, integrated sidelobe level (ISL)
 ISLR = 10 * np.log10((p - p1) / p1)
 
 print(f"ISLR = {ISLR:.2f} dB")
@@ -111,6 +130,26 @@ ax.set_ylabel('幅度 (dB)')
 ax.set_title('LFM信号匹配滤波输出 - 详细视图')
 ax.axvline(x=t[I]*1e6, color='r', linestyle='--', label='峰值位置')
 ax.axvline(x=t[j]*1e6, color='g', linestyle='--', label='第一零点')
+ax.set_xlim([-0.25, 0.25])
 ax.legend()
 plt.show()
 plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

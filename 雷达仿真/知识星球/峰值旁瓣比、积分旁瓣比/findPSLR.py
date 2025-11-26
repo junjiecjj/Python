@@ -26,7 +26,7 @@ plt.rcParams['lines.markersize'] = 6         # 标记大小
 # plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
-plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.fontsize'] = 14
 np.random.seed(42)
 # =============================================================================
 # LFM信号匹配滤波和PSLR计算 - Python版本
@@ -65,7 +65,7 @@ for i in range(I+1, min(I+L, L)):
         j = i
         break
 
-# 寻找第一副瓣的最大值
+# 寻找第一副瓣的最大值, peak sidelobe level (PSL)
 M = j
 for k in range(j, min(j+L, L-1)):
     if sout_dB[k] < sout_dB[k-1]:
@@ -123,7 +123,7 @@ plt.show()
 plt.close()
 
 # 单独绘制详细的匹配滤波结果图，突出显示主瓣和副瓣
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(8, 6))
 ax.plot(t * 1e6, sout_dB, linewidth=2)
 ax.grid(True)
 ax.set_xlabel('时间 (μs)')

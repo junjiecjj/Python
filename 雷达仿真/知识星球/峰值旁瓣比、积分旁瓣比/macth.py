@@ -34,6 +34,7 @@ ht = np.exp(-1j * np.pi * K * (t + tc)**2)        # 匹配滤波器
 # 加窗效应
 M = len(ht)                         # 窗的长度
 w = hann(M)                      # 加的窗函数的类型
+# sout_win = np.convolve(st, ht, mode='same')      # 不加窗后的输出
 sout_win = np.convolve(st, (ht * w), mode='same')  # 加窗后的输出
 sout_dB_win = 20 * np.log10(np.abs(sout_win) / np.max(np.abs(sout_win)))  # 加窗后输出归一化的脉压后的幅度（dB）
 
