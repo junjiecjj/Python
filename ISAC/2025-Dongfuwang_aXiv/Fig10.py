@@ -85,8 +85,6 @@ def generate_hermitian_from_eigenvalues(N):
 
 
 
-
-
 #%%
 Nt = 10
 Mc = 5

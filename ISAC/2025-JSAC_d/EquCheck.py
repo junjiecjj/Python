@@ -95,12 +95,12 @@ yhat = Xhat @ hs
 
 #%% Verified Eq.(7)-(11);
 
-M = 4  # recv annt
+M = 6  # recv annt
 T = 100
-N = 4  # transmit annt
-PT = 1
+N = 6  # transmit annt
+PT = 2
 sigma_c2 = 1
-I_N = np.eye(N)
+I_N = np.eye(M)
 
 Hc = np.random.randn(M, N) + 1j * np.random.randn(M, N)
 Sigma_C = Hc.conj().T @ Hc
@@ -140,6 +140,9 @@ plot_waterfilling(sigma_c2/Lambda_c_hat, optimal_powers, water_level)
 
 print(f"Lambda_C2 = {Lambda_C2}")
 print(f"optimal_powers = {optimal_powers}")
+
+#%%
+
 
 
 #%% Verified Eq.(12);

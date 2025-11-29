@@ -46,12 +46,15 @@ def water_filling(sigma2, lamba,  PT):
     """
     N = len(lamba)
 
-    # 按特征值降序排列
-    idx_sorted = np.argsort(lamba)[::-1]
-    Lambda_sorted = lamba[idx_sorted]
+    # # 按特征值降序排列
+    # idx_sorted = np.argsort(lamba)[::-1]
+    # Lambda_sorted = lamba[idx_sorted]
+    # # 计算每个特征值对应的噪声归一化项
+    # noise_terms = sigma2 / Lambda_sorted
 
-    # 计算每个特征值对应的噪声归一化项
-    noise_terms = sigma2 / Lambda_sorted
+    tmp1 = sigma2 / lamba
+    idx_sorted = np.argsort(tmp1.copy())
+    noise_terms = tmp1[idx_sorted]
 
     # 初始化
     power_allocation = np.zeros(N)
@@ -93,9 +96,13 @@ def waterfilling_manual(sigma2, lamba, PT, tolerance=1e-10, max_iter=2000):
 
     # N = len(lamba)
     # 按特征值降序排列
-    idx_sorted = np.argsort(lamba.copy())[::-1]
-    Lambda_sorted = lamba.copy()[idx_sorted]
-    sorted_noise = sigma2 / Lambda_sorted
+    # idx_sorted = np.argsort(lamba.copy())[::-1]
+    # Lambda_sorted = lamba.copy()[idx_sorted]
+    # sorted_noise = sigma2 / Lambda_sorted
+
+    tmp1 = sigma2 / lamba
+    idx_sorted = np.argsort(tmp1.copy())
+    sorted_noise = tmp1[idx_sorted]
 
     # 使用二分法寻找最优水位线
     low = 0
