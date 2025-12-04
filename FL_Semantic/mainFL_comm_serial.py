@@ -1,3 +1,5 @@
+
+
 # -*- coding: utf-8 -*-
 """
 Created on 2023/06/30
@@ -158,13 +160,9 @@ def FL_Sem_1R_1SNR_NoQuant():
         recorder.plot_inonefig(ckp.savedir, metric_str = ['lr', 'acc', 'psnr01', 'psnr', 'val_mse', 'epochLos'])
         # if (round_idx + 1) % 100 == 0:
             # recorder.save(ckp.savedir)
-
     # server.R_SNR_testdata(ckp, testrecoder, classifier, comrate, Snr, SNRlist = args.SNRtest )
     # server.R_SNR_plotval(ckp.testResdir, classifier, trainR = comrate, tra_snr = Snr, snrlist = args.SNRtest)
-
     return
-
-
 
 ##=========================================  主函数, 多压缩率和信噪比下训练并多信噪比下测试, 传输时精确浮点数, 串行 ==========================================
 def FL_Sem_R_SNR_NotQuant():

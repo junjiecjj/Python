@@ -1,3 +1,5 @@
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
@@ -22,7 +24,7 @@ plt.rcParams['lines.markersize'] = 6         # 标记大小
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
 plt.rcParams['legend.fontsize'] = 18
-np.random.seed(12)
+np.random.seed(42)
 
 
 #%%
@@ -52,7 +54,6 @@ def align_eigenvectors(U_c, Psi_c):
     Psi_c_aligned = Psi_c[:, reorder]
 
     return Psi_c_aligned, reorder
-
 
 #%% 按行展开, 是错的，对不上
 M = 2
@@ -94,27 +95,26 @@ N = 4  # transmit annt
 PT = 1
 sigma_c2 = 1
 
-
 Hc = np.random.randn(M, N) + 1j * np.random.randn(M, N)
 Sigma_H = Hc.conj().T @ Hc
 Lambda_h_hat, V_h = np.linalg.eig(Sigma_H)
-Lambda_h_hat = np.abs(Lambda_h_hat)
+Lambda_h_hat = np.real(Lambda_h_hat)
 
 #%% IID的高斯噪声
-Sigma_W = np.eye(M) * sigma_c2   #  M x M
-Lambda_w = np.array([1]* M) * sigma_c2
+Sigma_Z = np.eye(M) * sigma_c2   #  M x M
+Lambda_z = np.array([1]* M) * sigma_c2
 
 # idx = np.argsort(Lambda_h_hat)  # 从小到大, 对于高斯噪声，排序这步可要可不要
 # Lambda_h_hat = Lambda_h_hat[idx]
-# V_h = V_h[:, idx]
+# U_h = U_h[:, idx]
 
 ## Theoretical solution
 from WaterFilling import water_filling, plot_waterfilling
 
-Lambda_x1, water_level = water_filling(Lambda_w[M-N:], Lambda_h_hat, PT)
+Lambda_x1, water_level = water_filling(Lambda_z[M-N:], Lambda_h_hat, PT)
 print(f"最优功率分配: {Lambda_x1}/{np.sum(Lambda_x1):.4f}")
 
-plot_waterfilling(Lambda_w[M-N:]/Lambda_h_hat, Lambda_x1, water_level)
+plot_waterfilling(Lambda_z[M-N:]/Lambda_h_hat, Lambda_x1, water_level)
 Sigma_X = V_h @ np.diag(Lambda_x1) @ V_h.conj().T
 
 ## Use CVX
@@ -123,7 +123,7 @@ Sigma_x = cp.Variable((N, N), hermitian = True)
 constraints = [0 << Sigma_x,
                cp.trace(Sigma_x) <= PT,
               ]
-obj = cp.Maximize(cp.log_det(Hc@Sigma_x@Hc.conj().T + Sigma_W))
+obj = cp.Maximize(cp.log_det(Hc@Sigma_x@Hc.conj().T + Sigma_Z))
 prob = cp.Problem(obj, constraints)
 prob.solve()
 
@@ -141,21 +141,20 @@ Lambda_x = Lambda_x[reorder]
 
 
 ## Lambda_x == Lambda_x1, Sigma_X == Sigma_x, checked, amazing !!!
-print(f"Lambda_x = {Lambda_x}")
-print(f"Lambda_x1 = {Lambda_x1}")
+print(f"Lambda_x, cvx         = {Lambda_x}")
+print(f"Lambda_x, Theoretical = {Lambda_x1}")
 
 
 #%% Colored 噪声
-W = np.random.randn(M, L) + 1j * np.random.randn(M, L)
-Sigma_W = W @ W.conj().T / L  + np.diag(np.random.randint(10, size  = M))   #  N x N
-Lambda_w, U_w = np.linalg.eig(Sigma_W)
-Lambda_w = np.abs(Lambda_w)
-idx = np.argsort(Lambda_w)[::-1]  # 从大到小
-Lambda_w = Lambda_w[idx]
-U_w = U_w[:, idx]
+Z = np.random.randn(M, L) + 1j * np.random.randn(M, L)
+Sigma_Z = Z @ Z.conj().T / L  #  + np.diag(np.random.randint(10, size  = M))   #  N x N
+Lambda_z, U_z = np.linalg.eig(Sigma_Z)
+Lambda_z = np.abs(Lambda_z)
+idx = np.argsort(Lambda_z)[::-1]  # 从大到小
+Lambda_z = Lambda_z[idx]
+U_z = U_z[:, idx]
 
-
-idx = np.argsort(Lambda_h_hat)  # 从小到大
+idx = np.argsort(Lambda_h_hat)    # 从小到大
 Lambda_h_hat = Lambda_h_hat[idx]
 V_h = V_h[:, idx]
 
@@ -163,11 +162,12 @@ V_h = V_h[:, idx]
 ## Theoretical solution
 from WaterFilling import water_filling, plot_waterfilling
 
-Lambda_x1, water_level = water_filling(Lambda_w[M-N:], Lambda_h_hat, PT)
+Lambda_x1, water_level = water_filling(Lambda_z[M-N:], Lambda_h_hat, PT)
 print(f"最优功率分配: {Lambda_x1}/{np.sum(Lambda_x1):.4f}")
 
-plot_waterfilling(Lambda_w[M-N:]/Lambda_h_hat, Lambda_x1, water_level)
+plot_waterfilling(Lambda_z[M-N:]/Lambda_h_hat, Lambda_x1, water_level)
 Sigma_X = V_h @ np.diag(Lambda_x1) @ V_h.conj().T
+C1 = np.log(np.linalg.det(Hc@Sigma_X@Hc.conj().T + Sigma_Z))
 
 ## Use CVX
 Sigma_x = cp.Variable((N, N), hermitian = True)
@@ -175,7 +175,7 @@ Sigma_x = cp.Variable((N, N), hermitian = True)
 constraints = [0 << Sigma_x,
                cp.trace(Sigma_x) <= PT,
               ]
-obj = cp.Maximize(cp.log_det(Hc@Sigma_x@Hc.conj().T + Sigma_W))
+obj = cp.Maximize(cp.log_det(Hc@Sigma_x@Hc.conj().T + Sigma_Z))
 prob = cp.Problem(obj, constraints)
 prob.solve()
 
@@ -184,27 +184,43 @@ if prob.status=='optimal':
       # print(f"{Rc.value}")
 
 Sigma_x = Sigma_x.value
+C2 = np.log(np.linalg.det(Hc@Sigma_x@Hc.conj().T + Sigma_Z))
 Lambda_x, U_x = np.linalg.eig(Sigma_x)
 Lambda_x = np.abs(Lambda_x)
 
-# U_c 和 Psi_c的列的顺序不同，但是值确实是一样的，也就是列的顺序打乱了
 Psi_c_aligned, reorder = align_eigenvectors(V_h, U_x)
 Lambda_x = Lambda_x[reorder]
 
 
-## Lambda_x == Lambda_x1, checked, amazing !!!
-print(f"Lambda_x = {Lambda_x}")
-print(f"Lambda_x1 = {Lambda_x1}")
+# 好像上面的理论值和CVX仿真的 Lambda_x 结果有出入，
+print(f"Lambda_x, cvx         = {Lambda_x}")
+print(f"Lambda_x, Theoretical = {Lambda_x1}")
+print(f"C1 = {C1}, C2 = {C2}")  # 但是容量是差不多的，因此这里需要确认，到底是python带来的误差还是理论分析有误
+
+####
+N = 3
+L = 4
+X = np.random.randn(N, L) + 1j * np.random.randn(N, L)
+Sigma_X = X @ X.conj().T
+evalue, evec = np.linalg.eig(Sigma_X)
+
+Sigma_X1 = X.conj().T @ X
+evalue1, evec1 = np.linalg.eig(Sigma_X1)
+
+U, S, VH = np.linalg.svd(X)  #  S**2 == evalue
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Radar Capacity maximization %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  MMSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 
 
 
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  MI %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

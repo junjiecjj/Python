@@ -52,7 +52,8 @@ SC = [ areaSize(1)*rand(Nscatter,1), areaSize(2)*rand(Nscatter,1) ]; % Nscatter�
 SC_used_count = zeros(Nscatter,1);        % 记录被选中次数（全部 UE 的所有 NLoS 链路）
 
 %% ======================= 预先生成“探针序列” =========================
-root = 29; Nzc = zcLen;
+root = 29; 
+Nzc = zcLen;
 n = (0:Nzc-1).';
 zc = exp(-1j*pi*root*n.*(n+1)/Nzc);      % ZC 基带复序列（CAZAC）
 tx = [zeros(guardZeros,1); zc; zeros(guardZeros,1)];
