@@ -1055,7 +1055,6 @@ class ResultPlot():
         return
 
 
-
 # def main():
 pl = ResultPlot( ) # 1: '2022-10-12-17:38:12'  2:'2022-10-14-09:56:05'
 

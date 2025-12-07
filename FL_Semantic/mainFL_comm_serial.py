@@ -403,8 +403,8 @@ def FL_Sem_R_SNR_Quant():
     return
 
 
-FL_Sem_1R_1SNR_NoQuant()
-# FL_Sem_1R_1SNR_Quant()
+# FL_Sem_1R_1SNR_NoQuant()
+
 # FL_Sem_R_SNR_NotQuant()
 # FL_Sem_R_SNR_Quant()
 

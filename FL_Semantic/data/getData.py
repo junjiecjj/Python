@@ -94,11 +94,11 @@ class GetDataSet(object):
         train_set = torchvision.datasets.CIFAR10(root = "/home/jack/公共的/MLData/CIFAR10", train = True, download = True, transform = train_transform)
         test_set = torchvision.datasets.CIFAR10(root = "/home/jack/公共的/MLData/CIFAR10", train = False, download = True, transform = test_transform)
 
-        train_data = train_set.data  # (50000, 32, 32, 3)
+        train_data = train_set.data            # (50000, 32, 32, 3)
         train_labels = train_set.targets
         train_labels = np.array(train_labels)  # 将标签转化为
 
-        test_data = test_set.data  # 测试数据
+        test_data = test_set.data              # 测试数据
         test_labels = test_set.targets
         test_labels = np.array(test_labels)
 
@@ -130,8 +130,6 @@ class GetDataSet(object):
         self.test_data = test_images
         self.test_label = test_labels
         return
-
-
 
 # mnistDataSet = GetDataSet('mnist', 0) # test NON-IID
 # print(f"{type(mnistDataSet.train_data)} | {type(mnistDataSet.test_data)} | {type(mnistDataSet.train_label)} | {type(mnistDataSet.test_label)}")

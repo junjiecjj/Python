@@ -12,23 +12,23 @@ https://lulaoshi.info/machine-learning/convolutional/lenet
 
 
 
-import pandas as pd
-import numpy as np
-import torch, torchvision
-from torch import nn, optim
+# import pandas as pd
+# import numpy as np
+# import torch, torchvision
+from torch import nn
 import torch.nn.functional as F
-from torch.autograd import Variable
+# from torch.autograd import Variable
 import os , sys
-from torch.utils.tensorboard import SummaryWriter
-import torch.optim.lr_scheduler as lrs
-import collections
-import matplotlib.pyplot as plt
+# from torch.utils.tensorboard import SummaryWriter
+# import torch.optim.lr_scheduler as lrs
+# import collections
+# import matplotlib.pyplot as plt
 
-import argparse
+# import argparse
 
 
-sys.path.append("..")
-from model  import common
+# sys.path.append("..")
+# from model  import common
 
 
 #==============================================================================================

@@ -258,16 +258,16 @@ def resnet20():
 # data_valum = np.sum([param.numel() for param in model.state_dict().values()])
 # print(f"Data volume = {data_valum} (floating point number) ")
 
-
+## 全部参数
 # for key, var in global_model.state_dict().items():
 #     print(f"{key}, {var.is_leaf}, {var.shape},  " )
-
+## 全部可导参数
 # for name, param in  global_model.named_parameters():
 #     print(f"{name: <25}: size={param.size()}, requires_grad={param.requires_grad} ")
 
 
-
-
+# a = np.sum([p.numel() for  p in model.state_dict().values()])  # 全部参数
+# b = np.sum([p.numel() for p in model.parameters() if p.requires_grad]) # 全部可导参数
 
 
 

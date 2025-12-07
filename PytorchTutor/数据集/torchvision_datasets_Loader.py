@@ -605,7 +605,7 @@ for i,traindata in enumerate(test_loader):
 
 #======================================================================================================
 
-class GaussDataset(Dataset):#这是一个Dataset子类
+class TxtDataset(Dataset):#这是一个Dataset子类
     def __init__(self, mean = 0, std = 1):
         self.Data=np.asarray([[1,2],[3,4],[2,1],[6,4],[4,5]])#特征向量集合,特征是2维表示一段文本
         self.Label=np.asarray([1, 2, 0, 1, 2])#标签是1维,表示文本类别

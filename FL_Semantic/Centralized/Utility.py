@@ -8,37 +8,19 @@ Created on 2023/04/25
 """
 
 import os, sys
-import math
+# import math
 import datetime
-import imageio
-import cv2
-import skimage
-import glob
+# import imageio
+# import cv2
+# import skimage
+# import glob
 import random
 import numpy as np
 import torch
 
 import matplotlib
-# matplotlib.use('TkAgg')
+
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-from matplotlib.pyplot import MultipleLocator
-#内存分析工具
-from memory_profiler import profile
-import objgraph
-import gc
-
-#### 本项目自己编写的库
-# sys.path.append("..")
-from  ColorPrint import ColoPrint
-color =  ColoPrint()
-
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
-
-
 
 # 初始化随机数种子
 def set_random_seed(seed = 10, deterministic = False, benchmark = False):
@@ -67,7 +49,7 @@ def set_printoption(precision = 3):
 # 功能：
 class checkpoint():
     def __init__(self, args ):
-        print(color.fuchsia("\n#================================ checkpoint 开始准备 =======================================\n"))
+        print( "\n#================================ checkpoint 开始准备 =======================================\n")
         self.args = args
         self.ok = True
         self.n_processes = 8
@@ -95,7 +77,7 @@ class checkpoint():
         os.makedirs(self.testResdir, exist_ok=True)
         print(f"测试结果保存目录 = {self.testResdir} \n")
 
-        print(color.fuchsia("\n#================================ checkpoint 准备完毕 =======================================\n"))
+        print( "\n#================================ checkpoint 准备完毕 =======================================\n")
         return
 
 
