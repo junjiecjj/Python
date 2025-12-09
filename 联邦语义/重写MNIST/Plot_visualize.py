@@ -58,6 +58,7 @@ rootdir = f"{home}/FL_Sem2026/"
 central_dir = rootdir + "MNIST_centralized"
 fl_noQ_noniid = rootdir + "MNIST_noIID_noQuant_2025-12-08-13:43:21"
 fl_4bQ_noniid = rootdir + "MNIST_noIID_4Quant_2025-12-08-13:53:58"
+fl_2bQ_noniid = rootdir + "MNIST_noIID_2Quant_2025-12-09-08:48:41"
 
 save_dir = rootdir + 'Figs_plot'
 
@@ -65,8 +66,9 @@ def MNIST_compare( R = 0.5, snrtrain = 10, snrtest = 10, ):
     raw_dir = os.path.join(central_dir, "test_results/raw_image")
     cent_dir = os.path.join(central_dir, f"test_results/Images_compr={R:.1f}_trainSnr={snrtrain}(dB)/testSNR={snrtest}(dB)")
     fl_noquant = os.path.join(fl_noQ_noniid, f"test_results/Images_compr={R:.1f}_trainSnr={snrtrain}(dB)/testSNR={snrtest}(dB)")
-    fl_quant = os.path.join(fl_4bQ_noniid, f"test_results/Images_compr={R:.1f}_trainSnr={snrtrain}(dB)/testSNR={snrtest}(dB)")
-    dirs = [raw_dir, cent_dir, fl_noquant, fl_quant]
+    fl_4quant = os.path.join(fl_4bQ_noniid, f"test_results/Images_compr={R:.1f}_trainSnr={snrtrain}(dB)/testSNR={snrtest}(dB)")
+    fl_2quant = os.path.join(fl_2bQ_noniid, f"test_results/Images_compr={R:.1f}_trainSnr={snrtrain}(dB)/testSNR={snrtest}(dB)")
+    dirs = [raw_dir, cent_dir, fl_noquant, fl_4quant, fl_2quant]
 
     rows = len(dirs)
     cols = 5
@@ -95,6 +97,9 @@ def MNIST_compare( R = 0.5, snrtrain = 10, snrtest = 10, ):
             axs[i,0].set_ylabel(lb, fontproperties = font)
         elif i == 3:
             lb = "FL+4bit"
+            axs[i,0].set_ylabel(lb, fontproperties = font)
+        elif i == 4:
+            lb = "FL+2bit"
             axs[i,0].set_ylabel(lb, fontproperties = font)
         for j in range(cols):
             im = imageio.imread(os.path.join(dirs[i], name[j]))
