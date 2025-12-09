@@ -155,9 +155,9 @@ class BS(object):
                 # 自编码器恢复的图片
                 X_trans = X_trans.detach().cpu()
                 X_trans = data_inv_tf_cnn_mnist_batch_2D(X_trans)
-                for idx, (im, label) in enumerate(zip(X_trans, y)):
+                for idx, (im, yr, yp) in enumerate(zip(X_trans, y, y_hat)):
                     im = PIL.Image.fromarray(im )
-                    im.save(os.path.join(subdir, f"R={trainR:.1f}_trainSnr={tra_snr}(dB)_testSnr={snr}(dB)_{idx}_{label}.png"))
+                    im.save(os.path.join(subdir, f"R={trainR:.1f}_trainSnr={tra_snr}(dB)_testSnr={snr}(dB)_{idx}_{yr}_{yp}.png"))
                 a = r'$\mathrm{{R}}={:.1f},\mathrm{{SNR}}_\mathrm{{train}}={}\mathrm{{(dB)}},\mathrm{{SNR}}_\mathrm{{test}}={}\mathrm{{(dB)}}$'.format(trainR, tra_snr, snr)
                 bs = f"R={trainR:.1f}_trainSnr={tra_snr}(dB)_testSnr={snr}(dB)"
                 grid_imgsave(subdir, X_trans, y, predlabs = y_hat, dim = (rows, cols), suptitle = a, basename = "grid_images_" + bs )

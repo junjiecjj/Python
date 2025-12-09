@@ -222,16 +222,6 @@ class TesRecorder(object):
         frame1.set_alpha(1)
         frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-        # axs[0].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-        # axs[0].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-        # axs[0].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-        # axs[0].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-        # axs[0].tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=3)
-        # labels = axs[0].get_xticklabels() + axs[0].get_yticklabels()
-        # [label.set_fontname('Times New Roman') for label in labels]
-        # [label.set_fontsize(20) for label in labels] #刻度值字号
-
         ## PSNR
         for idx, met in enumerate(metric_str[1:]):
             axs[1].plot(SNRlist, data[:, idx + 2], color = color[idx + 1], linestyle = '-', marker = mark[idx + 1], markersize = 12, label = met,) # marker = 'd', markersize = 12,
@@ -247,16 +237,6 @@ class TesRecorder(object):
         frame1.set_alpha(1)
         frame1.set_facecolor('none')  # 设置图例legend背景透明
 
-        # axs[1].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-        # axs[1].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-        # axs[1].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-        # axs[1].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-        # axs[1].tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 16, width = 3)
-        # labels = axs[1].get_xticklabels() + axs[1].get_yticklabels()
-        # [label.set_fontname('Times New Roman') for label in labels]
-        # [label.set_fontsize(20) for label in labels] #刻度值字号
-
         ## public
         title = r'$\mathrm{{R}}={:.1f},\mathrm{{SNR}}_\mathrm{{train}}={}\mathrm{{(dB)}}$'.format(tra_compr, tra_snr)
         if title != '':
@@ -269,73 +249,6 @@ class TesRecorder(object):
         # plt.show()
         plt.close()
         return
-
-
-    def plot_inonefigx2(self, savepath, metric_str = ['loss','batimg_PSNR', 'imgae_PSNR','acc',],  tra_compr = 0.1, tra_snr = 1,  cols = 2):
-        if len(metric_str) != self.len - 1:
-            print(f"[file:{os.path.realpath(__file__)}, line:{sys._getframe().f_lineno}, fun:{sys._getframe().f_code.co_name} ]")
-            raise ValueError("len is inconsistent")
-
-        tmpS = "TestMetrics:Compr={:.1f},SNRtrain={}(dB)".format(  tra_compr, tra_snr)
-        if tmpS not in self.TeMetricLog.keys():
-            print(f"[file:{os.path.realpath(__file__)}, line:{sys._getframe().f_lineno}, fun:{sys._getframe().f_code.co_name} ]")
-            raise ValueError(f"{tmpS} is nonexistent")
-
-        data = self.TeMetricLog[tmpS]
-        SNRlist = data[:, 0]
-
-        # cols = 2;
-        rows =  math.ceil(len(metric_str) / cols)
-        width = 4*cols;  high = 3*rows
-
-        fig, axs = plt.subplots(rows, cols, figsize = (width, high), constrained_layout=True, sharex = True) # constrained_layout=True
-        # cnt = 0
-        for idx, met in  enumerate(metric_str):
-            i = idx // cols
-            j = idx % cols
-
-            axs[i, j].plot(SNRlist, self.metricLog[:, idx + 1], color = color[idx], linestyle = '-', marker = mark[idx], markersize = 12, label = met,) # marker = 'd', markersize = 12,
-
-            # font = FontProperties(fname=fontpath1 + "Times_New_Roman.ttf", size = 20)
-            font = {'family':'Times New Roman','style':'normal','size':12, }
-            axs[i, j].set_xlabel("Epoch", fontproperties=font)
-
-            if "psnr" in met.lower():
-                axs[i, j].set_ylabel(f"{met} (dB)", fontproperties = font,) #  fontdict = font1
-            else:
-                axs[i, j].set_ylabel(f"{met}", fontproperties = font )# , fontdict = font1
-            #plt.title(label, fontproperties=font)
-
-            #font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
-            # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
-            font1 = {'family':'Times New Roman','style':'normal','size':12, }
-            legend1 = axs[i, j].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font1,)
-            frame1 = legend1.get_frame()
-            frame1.set_alpha(1)
-            frame1.set_facecolor('none')  # 设置图例legend背景透明
-
-            axs[i, j].spines['bottom'].set_linewidth(2);###设置底部坐标轴的粗细
-            axs[i, j].spines['left'].set_linewidth(2);  ###设置左边坐标轴的粗细
-            axs[i, j].spines['right'].set_linewidth(2); ###设置右边坐标轴的粗细
-            axs[i, j].spines['top'].set_linewidth(2);   ###设置上部坐标轴的粗细
-
-            axs[i, j].tick_params(direction = 'in', axis = 'both',top = True, right = True, labelsize = 16, width = 3)
-            labels = axs[i, j].get_xticklabels() + axs[i, j].get_yticklabels()
-            [label.set_fontname('Times New Roman') for label in labels]
-            [label.set_fontsize(12) for label in labels] #刻度值字号
-
-        title = r'$\mathrm{{R}}={:.1f},\mathrm{{SNR}}_\mathrm{{train}}={}\mathrm{{(dB)}}$'.format(tra_compr, tra_snr)
-        if title != '':
-            fontt  = {'family':'Times New Roman','style':'normal','size':22}
-            plt.suptitle(title, fontproperties = fontt, )
-
-        out_fig = plt.gcf()
-        basename = f"compr={tra_compr:.1f}_trainSnr={tra_snr}(dB)"
-        out_fig.savefig( os.path.join(savepath, f"{self.cn}_Plot_{basename}.eps") )
-        # plt.show()
-        plt.close()
-        return
-
 
 
 # ts = TesRecorder(3)

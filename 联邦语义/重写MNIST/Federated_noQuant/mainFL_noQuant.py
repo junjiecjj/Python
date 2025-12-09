@@ -51,10 +51,8 @@ classifier.load_state_dict(torch.load(pretrained_model, map_location = args.devi
 
 
 local_dt_dict, testloader = GetDataSet(args)
-
 raw_dim       = 28 * 28
 for idx, (comrate, Snr) in enumerate(zip(args.CompRate, args.SNRtrain)):
-
     trainrecord = TraRecorder(6, name = "Train", compr = comrate, tra_snr = Snr)
 
     print(f"压缩率:{comrate:.2f}, 信噪比:{Snr} dB,  ({idx+1}/{len(args.CompRate)})")
@@ -84,8 +82,7 @@ for idx, (comrate, Snr) in enumerate(zip(args.CompRate, args.SNRtrain)):
             metric.add(local_los, 1)
 
         global_weight = server.aggregate_diff_erf(message_lst)
-
-        train_loss     = metric[0]/metric[1]
+        train_loss    = metric[0]/metric[1]
 
         run_acc, run_psnr, run_los = server.eval_SemModel(args, classifier )
         trainrecord.assign([lr, train_loss, run_acc, run_psnr, run_los])

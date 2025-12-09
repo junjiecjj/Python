@@ -16,7 +16,7 @@ import torch.nn as nn
 class Client(object):
     def __init__(self, args, data, model, client_name = "clientxx",):
         self.args             = args
-        self.mu               = args.mu
+        # self.mu               = args.mu
         self.device           = args.device
         self.id               = client_name
         self.datasize         = data.dataset.__len__()
@@ -34,7 +34,7 @@ class Client(object):
         init_weight = copy.deepcopy(cur_weight)
 
         self.model.load_state_dict(cur_weight, strict = True)
-        global_model = copy.deepcopy(self.model)
+        # global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
@@ -44,11 +44,11 @@ class Client(object):
                 X_hat = self.model(X)
                 loss = self.los_fn(X_hat, X)
                 # fedprox, add proximal term
-                if not self.args.IID: # self.fedprox:
-                    proximal_term = torch.tensor(0., device = self.device)
-                    for w, w_global in zip(self.model.parameters(), global_model.parameters()):
-                        proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
-                    loss += (self.mu / 2 * proximal_term)
+                # if not self.args.IID: # self.fedprox:
+                #     proximal_term = torch.tensor(0., device = self.device)
+                #     for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+                #         proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
+                #     loss += (self.mu / 2 * proximal_term)
 
                 self.optimizer.zero_grad()
                 loss.backward()

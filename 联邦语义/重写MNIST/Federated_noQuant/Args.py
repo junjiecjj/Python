@@ -26,11 +26,11 @@ def args_parser():
 
     "dataset" : "MNIST",
     "dir_data": home+'/FL_Sem2026/Data',
-    "IID" : False,
+    "IID" : True,
     "Quantization" : False,
 
     ## 联邦学习相关参数
-    "local_bs": 64,
+    "local_bs": 50,
     "test_bs" : 128,
     "num_of_clients" : 100,
     "active_client" : 10,

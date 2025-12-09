@@ -144,7 +144,7 @@ def OneBit_CIFAR10(message_lst, args, rounding = 'sr', err_rate = 0, G = 2**8):
     return mess_recov, err_rate
 
 # 1-bit  transmission, same-G, only-Grad
-def OneBit_Grad_G(message_lst, args, rounding = 'nr', err_rate = 0, key_grad = None, G = 2**8):
+def OneBit_Grad_G(message_lst, args, rounding = 'nr', ber = 0, key_grad = None, G = 2**8):
     key_lst_wo_grad = []
     info_lst = []
     for key, val in message_lst[0].items():
@@ -169,7 +169,7 @@ def OneBit_Grad_G(message_lst, args, rounding = 'nr', err_rate = 0, key_grad = N
         uu = np.where(SS <= 0, 0, 1).astype(np.int8)
 
         ## bit flip, equivalent channel
-        flip_mask = np.random.binomial(n = 1, p = err_rate, size = uu.shape )
+        flip_mask = np.random.binomial(n = 1, p = ber, size = uu.shape )
         uu_flipped = uu ^ flip_mask
         err_rate = (uu_flipped != uu).sum(axis = 1)/uu.shape[-1]
 
@@ -182,7 +182,7 @@ def OneBit_Grad_G(message_lst, args, rounding = 'nr', err_rate = 0, key_grad = N
         uu = Quantization1bits_NP_int(SS, G)
 
         ## bit flip, equivalent channel
-        flip_mask = np.random.binomial(n = 1, p = err_rate, size = uu.shape )
+        flip_mask = np.random.binomial(n = 1, p = ber, size = uu.shape )
         uu_flipped = uu ^ flip_mask
         err_rate = (uu_flipped != uu).sum(axis = 1)/uu.shape[-1]
 

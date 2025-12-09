@@ -78,7 +78,7 @@ class checkpoint():
 
         self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 
-        self.savedir = os.path.join(args.save, f"{self.now}_MNIST")
+        self.savedir =  args.save + f"{self.now}"
         os.makedirs(self.savedir, exist_ok = True)
         print(f"训练结果保存目录 = {self.savedir} \n")
 

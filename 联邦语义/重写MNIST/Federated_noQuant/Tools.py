@@ -110,13 +110,6 @@ def data_inv_tf_cnn_mnist_batch_2D(x):
 #                                                   计算正确率
 #============================================================================================================================
 
-def prepare(device, precision, *Args):
-    def _prepare(tensor):
-        if  precision == 'half': tensor = tensor.half()
-        return tensor.to( device)
-
-    return [_prepare(a) for a in Args]
-
 # 去归一化
 def de_norm(x):
     out = (x + 1) / 2

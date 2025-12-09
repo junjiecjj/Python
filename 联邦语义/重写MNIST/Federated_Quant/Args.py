@@ -30,16 +30,16 @@ def args_parser():
     "Quantization" : True,
 
     ## 联邦学习相关参数
-    "local_bs": 64,
+    "local_bs": 50,
     "test_bs" : 128,
     "num_of_clients" : 100,
     "active_client" : 10,
     "local_epoch": 10,
     "epochs" : 1000,
     "lr" : 0.001,
-    "mu" : 0.1, #  FedProx
+    # "mu" : 0.1, #  FedProx
     "precision":'single',
-    "B" : 4,  # quantization bit-width
+    "B" : 1,  # quantization bit-width
 
     ##
     "save": home + '/FL_Sem2026/',

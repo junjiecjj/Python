@@ -26,13 +26,11 @@ def args_parser():
 
     "dataset" : "MNIST",
     "dir_minst": home+'/FL_Sem2026/Data',
-    "IID" : False,
 
-    ## 联邦学习相关参数
+    ## 学习相关参数
     "batch_size": 128,
     "test_bs" : 128,
-    # "num_of_clients" : 100,
-    # "active_client" : 10,
+
     "epochs" : 1000,
     "lr" : 0.001,
     "mu" : 0.1,
@@ -40,9 +38,9 @@ def args_parser():
 
     ##
     "save": home + '/FL_Sem2026/',
-    "optimizer": "SGD",
+    "optimizer": "Adam",
     "loss_type": "MSE",
-    "loss": '1*MSE',
+
     ##
     "CompRate": [0.2, 0.5, 0.9],
     "SNRtrain": [2, 10, 20],

@@ -12,6 +12,7 @@ import copy
 import torch
 import torch.nn as nn
 
+import Tools
 
 class Client(object):
     def __init__(self, args, data, model, client_name = "clientxx",):
@@ -34,21 +35,23 @@ class Client(object):
         init_weight = copy.deepcopy(cur_weight)
 
         self.model.load_state_dict(cur_weight, strict = True)
-        global_model = copy.deepcopy(self.model)
+        # global_model = copy.deepcopy(self.model)
         self.optimizer.param_groups[0]['lr'] = lr
         self.model.train()
 
         for epoch in range(local_epoch):
             for batch_idx, (X, y) in enumerate(self.trainloader):
-                X, y = X.to(self.device), y.to(self.device)
+                # X, y = X.to(self.device), y.to(self.device)
+                X,    = Tools.prepare(self.args.device, self.args.precision, X)
+                y,    = Tools.prepare(self.args.device, self.args.precision, y)
                 X_hat = self.model(X)
                 loss = self.los_fn(X_hat, X)
                 # fedprox, add proximal term
-                if not self.args.IID: # self.fedprox:
-                    proximal_term = torch.tensor(0., device = self.device)
-                    for w, w_global in zip(self.model.parameters(), global_model.parameters()):
-                        proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
-                    loss += (self.mu / 2 * proximal_term)
+                # if not self.args.IID: # self.fedprox:
+                #     proximal_term = torch.tensor(0., device = self.device)
+                #     for w, w_global in zip(self.model.parameters(), global_model.parameters()):
+                #         proximal_term += torch.pow(torch.norm(w - w_global, 2), 2)
+                #     loss += (self.mu / 2 * proximal_term)
 
                 self.optimizer.zero_grad()
                 loss.backward()

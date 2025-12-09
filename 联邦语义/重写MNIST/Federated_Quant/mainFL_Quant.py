@@ -29,7 +29,7 @@ import Utility
 from Args import args
 from DataLoader import GetDataSet
 from Models import LeNet_3, AED_MNIST
-from Transceiver import B_Bit
+from Transceiver import B_Bit, OneBit_Grad_G
 from Logs import Accumulator, TraRecorder, TesRecorder
 from Clients import GenClientsGroup
 from Server import BS
@@ -83,8 +83,12 @@ for idx, (comrate, Snr) in enumerate(zip(args.CompRate, args.SNRtrain)):
             message_lst.append(message)
             metric.add(local_los, 1)
 
-        ##>>>>>>>>>>>>>>>>>>>>>>> quantization >>>>>>>>>>>
-        mess_recv, err = B_Bit(message_lst, args, rounding = 'sr', ber = 0, B = args.B, key_grad = key_grad)
+        ##>>>>>>>>>>>>>>>>> quantization >>>>>>>>>>>>>>>>>
+        if args.B >= 1:
+            mess_recv, err = B_Bit(message_lst, args, rounding = 'sr', ber = 0, B = args.B, key_grad = key_grad)
+        elif args.B == 1:
+            mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = 'sr', err_rate = 0, key_grad = key_grad, G = args.G)
+
         ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         global_weight = server.aggregate_diff_erf(mess_recv)

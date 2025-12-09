@@ -35,7 +35,7 @@ import Tools
 # 设置随机数种子
 Utility.set_random_seed(42,  deterministic = True, benchmark = True)
 Utility.set_printoption(3)
-
+args.save = args.home + f'/FL_Sem2026/{args.dataset}_centralized_'
 ckp = Utility.checkpoint(args)
 
 testRecoder  = TesRecorder(Len = 3)
@@ -90,22 +90,22 @@ for idx, (comrate, Snr) in enumerate(zip(args.CompRate, args.SNRtrain)):
             if batch % 100 == 0:
                 print(f"    [epoch: {epoch+1:*>5d}/{args.epochs}, batch: {batch+1:*>5d}/{len(loader_train)}]\tLoss: {loss.item()/X.size(0):.4f} \t acc:{acc:.3f} \t batch_avg_psnr: {batch_avg_psnr:.3f}(dB)")
 
-        avg_loss     = metric[0]/metric[4]
-        avg_batch    = metric[1]/metric[3]
-        accuracy     = metric[2]/metric[4]
+        tra_loss     = metric[0]/metric[4]
+        tra_psnr     = metric[1]/metric[3]
+        tra_acc      = metric[2]/metric[4]
 
-        val_batch, val_acc = Tools.validate(args, AutoED, classifier, loader_test)
-        trainrecord.assign([lr, avg_loss, avg_batch, accuracy, val_batch, val_acc])
+        val_psnr, val_acc = Tools.validate(args, AutoED, classifier, loader_test)
+        trainrecord.assign([lr, tra_loss, tra_psnr, tra_acc, val_psnr, val_acc])
         if epoch % 30 == 0 or (epoch + 1) == args.epochs:
-            Tools.R_SNR_epochImgs(args, ckp, AutoED, classifier, loader_test, comrate, Snr, epoch, avg_batch, val_batch, cols = 5, )
+            Tools.R_SNR_epochImgs(args, ckp, AutoED, classifier, loader_test, comrate, Snr, epoch, tra_psnr, val_psnr, cols = 5, )
 
         tmp = tm.toc()
         print("    ******************************************************")
-        print(f"    loss =  {avg_loss:.3f}, PSNR: {avg_batch:.3f}(dB), acc:{accuracy:.3f} | val psnr: {val_batch:.3f}(dB), acc:{val_acc:.3f} | Time {tmp/60.0:.3f}/{tm.hold()/60.0:.3f}(分钟)")
+        print(f"    loss =  {tra_loss:.3f}, PSNR: {tra_psnr:.3f}(dB), acc:{tra_acc:.3f} | val psnr: {val_psnr:.3f}(dB), acc:{val_acc:.3f} | Time {tmp/60.0:.3f}/{tm.hold()/60.0:.3f}(分钟)")
         print("    ******************************************************")
 
     trainrecord.save(ckp.savedir)
-    trainrecord.plot_inonefig(ckp.savedir, metric_str = ['lr', 'train loss', 'batch_PSNR', 'train acc', 'val_batch_PSNR', 'val acc'])
+    trainrecord.plot_inonefig(ckp.savedir, metric_str = ['lr', 'train loss', 'train psnr', 'train acc', 'val PSNR', 'val acc'])
 
     Tools.R_SNR_valImgs(ckp, args, AutoED, classifier, loader_test, trainR = comrate, tra_snr = Snr, snrlist = args.SNRtest)
     Tools.test_R_snr(ckp, testRecoder, args, AutoED, classifier, loader_test, comrate, Snr, SNRlist = args.SNRtest)
