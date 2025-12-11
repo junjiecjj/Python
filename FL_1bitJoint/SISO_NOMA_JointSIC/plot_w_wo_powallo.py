@@ -437,7 +437,7 @@ def SISO_6user():
     out_fig = plt.gcf()
 
     if cols == 1:
-        out_fig.savefig("./Figures/4user_joint_wo_fer.eps")
+        out_fig.savefig("./Figures/6user_joint_wo_fer.eps")
     elif cols == 2:
         out_fig.savefig( "./Figures/6user_joint_wo_ber.eps")
     elif cols == 3:

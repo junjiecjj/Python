@@ -167,7 +167,7 @@ sdr_res = np.array([0.380631, 0.581347, 0.843985, 1.112362, 1.280188, 1.333466, 
 # data = np.load('./fig4.npz')
 
 # %% 画图
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 axs.semilogy(np.array(Klst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',  )
 axs.semilogy(np.array(Klst), sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 12,  label = 'SCA w/o RIS',  )
 axs.semilogy(np.array(Klst), sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
@@ -177,11 +177,12 @@ axs.semilogy(np.array(Klst), dc_wo_res, color = 'olive', lw = 3, linestyle='--',
 
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-axs.set_xlabel( "Number of users "+r"$K$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('MSE', fontproperties=font2, )
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+axs.set_xlabel( "用户数 "+r"$K$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_ylabel('均方误差', fontproperties=font2, )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1 )
+legend1 = axs.legend(loc='lower right', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1 )
 # legend1 = axs.legend(loc='best', prop=font2, bbox_to_anchor = (1.02, 0.8), ncol = 1, borderaxespad=0, borderpad = 0.3, labelspacing = 0  )
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
@@ -201,7 +202,7 @@ axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/fig3_User.eps' )
+# out_fig.savefig('./Figures/fig3_User.eps' )
 out_fig.savefig('./Figures/fig3_User.pdf' )
 plt.show()
 

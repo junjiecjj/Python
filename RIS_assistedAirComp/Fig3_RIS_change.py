@@ -172,7 +172,7 @@ sdr_res = np.array([10.835361,  7.142411,  5.150892,  3.92591 ,  3.479097,  2.57
 # data = np.load('./fig3.npz')
 
 # %% 画图
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 
 axs.semilogy(np.array(L_lst), sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(np.array(L_lst), sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 14, label = 'SCA w/o RIS', )
@@ -183,8 +183,9 @@ axs.semilogy(np.array(L_lst), dc_wo_res, color = 'olive', lw = 3, linestyle='--'
 
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-axs.set_xlabel( "Number of RIS elements "+r"$L$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('MSE', fontproperties=font2, )
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+axs.set_xlabel( "反射单元个数"+r"$L$", fontproperties=font2, )
+axs.set_ylabel('均方误差', fontproperties=font2, )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 22}
 legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
@@ -206,7 +207,7 @@ axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/fig3_RIS.eps' )
+# out_fig.savefig('./Figures/fig3_RIS.eps' )
 out_fig.savefig('./Figures/fig3_RIS.pdf' )
 plt.show()
 

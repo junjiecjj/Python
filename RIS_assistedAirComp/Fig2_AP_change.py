@@ -11,28 +11,28 @@ Created on Wed Sep 25 17:28:33 2024
 
 
 
-import scipy
+# import scipy
 import numpy as np
 # import scipy
-import cvxpy as cp
+# import cvxpy as cp
 import matplotlib.pyplot as plt
 # import math
 # import matplotlib
 from matplotlib.font_manager import FontProperties
 # from pylab import tick_params
-from matplotlib.pyplot import MultipleLocator
+# from matplotlib.pyplot import MultipleLocator
 from sklearn.metrics import pairwise_distances
-from sklearn.metrics.pairwise import euclidean_distances
+# from sklearn.metrics.pairwise import euclidean_distances
 
 from Channel import Generate_hd, Generate_hr, Generate_hAI
 
 
 from DC_Solver import DC_RIS
-from DC_Solver1 import DC_RIS1
-from SCA_solver import SCA_RIS
-from DC_wo_RIS import DC_woRIS
-from DC_randomtheta import DC_random_theta
-from SDR import SDR_RIS
+# from DC_Solver1 import DC_RIS1
+# from SCA_solver import SCA_RIS
+# from DC_wo_RIS import DC_woRIS
+# from DC_randomtheta import DC_random_theta
+# from SDR import SDR_RIS
 from Utility import set_random_seed, set_printoption
 set_random_seed(111)
 
@@ -174,8 +174,8 @@ sdr_res = np. array([2.519111, 2.279083, 2.07526 , 1.888984, 1.33993 , 1.179883]
 # np.savez('./fig2.npz', MSE_sca = MSE_sca, MSE_sca_wo = MSE_sca_wo, MSE_DC = MSE_DC, MSE_wo = MSE_wo )
 # data = np.load('./fig2.npz')
 
-# %% 画图
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+#%%%% 画图
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 
 axs.semilogy(APlst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(APlst, sca_wo_res, color = 'r', lw = 3, linestyle='--',marker = 'd',ms = 14, label = 'SCA w/o RIS', )
@@ -185,8 +185,9 @@ axs.semilogy(APlst, dc_rand_res, color = 'olive', lw = 3, linestyle='--',  marke
 axs.semilogy(APlst, dc_wo_res, color = 'olive', lw = 3, linestyle='--',  marker = '*', ms = 16, label = 'DC w/o RIS',  )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-axs.set_xlabel( "Number of AP antennas " + r"$N$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('MSE', fontproperties=font2, )
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+axs.set_xlabel( "基站天线数" + r"$N$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_ylabel('均方误差', fontproperties=font2, )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 23}
 legend1 = axs.legend(loc='upper right', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
@@ -208,7 +209,7 @@ axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/fig3_AP.eps' )
+# out_fig.savefig('./Figures/fig3_AP.eps' )
 out_fig.savefig('./Figures/fig3_AP.pdf' )
 plt.show()
 

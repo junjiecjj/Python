@@ -143,7 +143,7 @@ dc_res = np.array([2145.243133, 2485.891737, 3639.443304, 4514.805277, 5949.6576
 
 # time_complex = np.
 # %% 画图
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 
 axs.semilogy(APlst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(APlst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
@@ -151,12 +151,13 @@ axs.semilogy(APlst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
-axs.set_xlabel( "Number of BS antennas " + r"$N$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('Computational cost (s)', fontproperties=font2, )
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+axs.set_xlabel( "基站天线数 " + r"$N$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_ylabel('计算时间 (s)', fontproperties=font2, )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
 # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs.legend(bbox_to_anchor = (0.5, 0.5),borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -175,7 +176,7 @@ axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/fig4_complex_AP.eps' )
+# out_fig.savefig('./Figures/fig4_complex_AP.eps' )
 out_fig.savefig('./Figures/fig4_complex_AP.pdf' )
 plt.show()
 

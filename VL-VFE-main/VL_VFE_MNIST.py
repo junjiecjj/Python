@@ -52,7 +52,7 @@ class gamma_function(nn.Module):
         self.f2 = gamma_layer(16,16)
         self.f3 = gamma_layer(16,16)
         self.f4 = gamma_layer(16,args.intermediate_dim)
-        
+
     def forward(self, x):
         x = self.f1(x)
         x = self.f2(x)
@@ -184,7 +184,7 @@ def test(args, model, device, test_loader,noise = 0.2):
 
 def main_train():
     kwargs = {'num_workers': 1, 'pin_memory': True}
-    test_loader = torch.utils.data.DataLoader(datasets.MNIST('./data', train=False, transform=transforms.Compose([
+    test_loader = torch.utils.data.DataLoader(datasets.MNIST('/home/jack/FL_Sem2026/Data/', train=False, transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),
@@ -193,7 +193,7 @@ def main_train():
     model = Net(args).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay = 5e-5)
     scheduler = StepLR(optimizer, step_size=45, gamma=args.gamma)
-    
+
     test_acc = 0
     pruned_dim = 0
     saved_model = {}
@@ -224,12 +224,12 @@ def main_train():
                 pruned_dim = pruned_number
                 saved_model = copy.deepcopy(model.state_dict())
     print('Best Accuray:',test_acc,'pruned_number:',pruned_dim,'activated_dim:',args.intermediate_dim - pruned_dim)
-    torch.save({'model': saved_model}, './MNIST_model_dim:{}_beta:{}_accuracy:{:.4f}_model.pth'.format(args.intermediate_dim - pruned_dim,args.beta, test_acc))
+    # torch.save({'model': saved_model}, './MNIST_model_dim:{}_beta:{}_accuracy:{:.4f}_model.pth'.format(args.intermediate_dim - pruned_dim,args.beta, test_acc))
 
 def main_test():
     kwargs = {'num_workers': 1, 'pin_memory': True}
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('./data', train=False, transform=transforms.Compose([
+        datasets.MNIST('/home/jack/FL_Sem2026/Data/', train=False, transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.1307,), (0.3081,))
                        ])),

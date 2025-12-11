@@ -12,11 +12,8 @@ import numpy as np
 # import scipy
 # import cvxpy as cpy
 import matplotlib.pyplot as plt
-# import math
-# import matplotlib
-# from matplotlib.font_manager import FontProperties
-# from pylab import tick_params
-from matplotlib.pyplot import MultipleLocator
+from matplotlib.font_manager import FontProperties
+# from matplotlib.pyplot import MultipleLocator
 import random
 
 filepath2 = '/home/jack/snap/'
@@ -61,8 +58,9 @@ axs.plot(users_locate_x[deactivate_idx], users_locate_y[deactivate_idx], color='
 
 # 圆心和圆心字母
 font1 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30, }
+font1 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
 # axs.annotate(f'AP({BS_locate[0]},{BS_locate[1]})',xy=(BS_locate[0], BS_locate[1]), xytext=(BS_locate[0],BS_locate[1]-12), textcoords='data', fontproperties = font1, )
-axs.text(BS_locate[0]-12, BS_locate[1]-12, f'BS({BS_locate[0]},{BS_locate[1]})', fontproperties = font1, color= "k" )
+axs.text(BS_locate[0]-12, BS_locate[1]-12, f'基站({BS_locate[0]},{BS_locate[1]})', fontproperties = font1, color= "k" )
 
 ## 圆的半径
 theta1 =  np.radians(60)
@@ -81,7 +79,7 @@ axs.spines['left'].set_visible(False)
 axs.spines['right'].set_visible(False)
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/TopView.pdf' )
+# out_fig.savefig('./Figures/TopView.pdf' )
 plt.show()
 
 

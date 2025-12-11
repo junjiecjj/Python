@@ -3,7 +3,7 @@
 #from __future__ import (absolute_import, division,print_function, unicode_literals)
 import matplotlib
 # matplotlib.get_backend()
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # matplotlib.use('WXagg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -168,8 +168,8 @@ fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=20)
 
-mscale.register_scale(MercatorLatitudeScale)
- 
+# mscale.register_scale(MercatorLatitudeScale)
+
 #===============================================================================
 
 SNRmin = 0.0
@@ -218,15 +218,15 @@ labels = ax.get_xticklabels() + ax.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
- 
+
 
 # plt.subplots_adjust(top=0.86, wspace=0.2, hspace=0.2)#调节两个子图间的距离
 plt.tight_layout(pad=0.5, h_pad=1, w_pad=1)#  使得图像的四周边缘空白最小化
 #plt.subplots_adjust(top=0.89,bottom=0.01, left=0.01, right=0.99, wspace=0.4, hspace=0.2)
 
 out_fig = plt.gcf()
-out_fig.savefig(savepath2+"BER.pdf", bbox_inches = 'tight',pad_inches = 0.2)
- 
+# out_fig.savefig(savepath2+"BER.pdf", bbox_inches = 'tight',pad_inches = 0.2)
+
 plt.show()
 plt.close(fig)
 
@@ -267,15 +267,15 @@ labels = ax.get_xticklabels() + ax.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(20) for label in labels] #刻度值字号
 
- 
+
 
 # plt.subplots_adjust(top=0.86, wspace=0.2, hspace=0.2)#调节两个子图间的距离
 plt.tight_layout(pad=0.5, h_pad=1, w_pad=1)#  使得图像的四周边缘空白最小化
 #plt.subplots_adjust(top=0.89,bottom=0.01, left=0.01, right=0.99, wspace=0.4, hspace=0.2)
 
 out_fig = plt.gcf()
-out_fig.savefig(savepath2+"FER.pdf", bbox_inches = 'tight',pad_inches = 0.2)
- 
+# out_fig.savefig(savepath2+"FER.pdf", bbox_inches = 'tight',pad_inches = 0.2)
+
 plt.show()
 plt.close(fig)
 

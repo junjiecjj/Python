@@ -165,7 +165,7 @@ print(f"MSE = {MSE_sca_wo[-1]}, ||f||_2 = {np.linalg.norm(f_sca_wo)}, |theta| = 
 
 
 # %% 画图
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 axs.semilogy(np.arange(len(MSE_sca )), MSE_sca , color = 'r', lw = 3, linestyle='-',  label = 'Poposed w/ RIS',  )
 # axs.semilogy(np.arange(len(MSE_DC)), MSE_DC, color = 'b', lw = 3,linestyle=(0,(1,1)),  label = 'DC',  )
 # axs.semilogy(np.arange(len(MSE_sdr )), MSE_sdr , color = 'cyan', lw = 3, linestyle='-', label = 'SDR w/ RIS',  )
@@ -176,10 +176,11 @@ axs.semilogy(np.arange(len(MSE_sca_wo )), MSE_sca_wo , color = 'purple', lw = 3,
 
 # font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
-axs.set_xlabel( "Iterations", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('MSE', fontproperties=font2, )
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+axs.set_xlabel( "迭代次数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_ylabel('均方误差', fontproperties=font2, )
 
-font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
+font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
 # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=18)
 legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
 frame1 = legend1.get_frame()
@@ -203,7 +204,7 @@ axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 # axs.set_xlim([0,200])
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/fig3a.eps' )
+# out_fig.savefig('./Figures/fig3a.eps' )
 out_fig.savefig('./Figures/fig3a.pdf' )
 plt.show()
 

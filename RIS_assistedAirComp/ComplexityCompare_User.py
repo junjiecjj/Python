@@ -163,18 +163,19 @@ sdr_res = np.array([113.710196, 124.450519, 146.551457, 154.904889, 176.129778, 
 dc_res = np.array([2951.022294, 2909.446596, 3286.000636, 3263.616659, 3388.828476, 3903.961252, 3657.813388]) * (4514.805277/3657.813388) / 2
 
 # %% 画图
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 
 axs.semilogy(Klst, sca_res, color = 'r', lw = 3, linestyle='-', marker = 'o',ms = 12, label = 'Poposed w/ RIS',)
 axs.semilogy(Klst, sdr_res, color = 'b', lw = 3, linestyle='--',  marker = 'o',ms = 14, label = 'SDR w/ RIS',  )
 axs.semilogy(Klst, dc_res, color = 'olive', lw = 3, linestyle='--', marker = 's',ms = 12, label = 'DC w/ RIS', )
 
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 30)
-axs.set_xlabel( "Number of users "+r"$K$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-axs.set_ylabel('Computational cost (s)', fontproperties=font2, )
+font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+axs.set_xlabel( "用户数 "+r"$K$", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+axs.set_ylabel('计算时间 (s)', fontproperties=font2, )
 
 font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 25}
-legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2,)
+legend1 = axs.legend( bbox_to_anchor = (0.99, 0.5), borderaxespad=0, edgecolor='black', prop=font2,) # loc='best',
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -193,7 +194,7 @@ axs.spines['right'].set_linewidth(1.5)     ### 设置右边坐标轴的粗细
 axs.spines['top'].set_linewidth(1.5)       #### 设置上部坐标轴的粗细
 
 out_fig = plt.gcf()
-out_fig.savefig('./Figures/fig4_complex_user.eps' )
+# out_fig.savefig('./Figures/fig4_complex_user.eps' )
 out_fig.savefig('./Figures/fig4_complex_user.pdf' )
 plt.show()
 

@@ -17,7 +17,7 @@ import torch
 
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
-from Transmit_1bit import OneBit, OneBit_CIFAR10, OneBit_Grad_G, Sign
+from Transmit_1bit import OneBit_Grad_G
 from Transmit_Bbit import B_Bit
 # from Transmit_1bitFlipping import  OneBitNR_flip, OneBitSR_flip
 
@@ -28,7 +28,7 @@ from checkpoints import checkpoint
 import models
 from config import args_parser
 import MetricsLog
-from Channel import  FastFading_scma, FastFading_Mac
+# from Channel import  FastFading_scma, FastFading_Mac
 
 now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 #======================== main ==================================
