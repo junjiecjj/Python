@@ -34,33 +34,46 @@ args.dataset = "MNIST"       #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
 args.save_path = args.home + f'/FL_DQ/{args.dataset}_{datapart}/'
-
+# args.save_path = args.home + '/FL_DQ/test/'
 cur_lr = args.lr = 0.01
 
 args.optimizer = 'adam'      # 'sgd', 'adam'
 
-args.quantize = True       # True, False
-if args.quantize == True:
-    args.rounding = 'sr'       # 'nr', 'sr',
-    args.bitswidth = 4         #  1,  8
-    args.G         = 2**8
-    args.transmitWay = 'flip'    # 'erf', 'flip',
+# args.quantize = True       # True, False
+# if args.quantize == True:
+#     args.rounding = 'sr'       # 'nr', 'sr',
+#     args.bitswidth = 4         #  1,  8
+#     args.G         = 2**8
+#     args.transmitWay = 'flip'    # 'erf', 'flip',
 
-    if args.transmitWay.lower() == 'flip':
-        args.flip_rate = 0.01
-    if args.transmitWay.lower() == 'erf':
-        args.flip_rate = 0
+#     if args.transmitWay.lower() == 'flip':
+#         args.flip_rate = 0.01
+#     if args.transmitWay.lower() == 'erf':
+#         args.flip_rate = 0
 
 if args.IID == True:
     args.diff_case = 'epoch'
-    # args.local_up = 3
     args.local_epoch = 1
     args.local_bs = 64
 elif args.IID == False:
-    # args.lr = 0.001
     args.diff_case = 'epoch'
     args.local_epoch = 1
     args.local_bs = 64
+
+args.quantize = True       # True, False
+if args.quantize == True:
+    args.rounding = 'sr'       # 'nr', 'sr',
+    args.G         = 2**8
+
+    args.quantize_way = 'fixed'   # 'fixed', 'DQ'
+    if args.quantize_way == 'fixed':
+        args.bitswidth = 1
+    args.transmit_way = 'flip'     # 'erf', 'flip'
+    if args.transmit_way.lower() == 'flip':
+        args.flip_rate = 0.4
+    if args.transmit_way.lower() == 'erf':
+        args.flip_rate = 0
+
 
 ## seed
 args.seed = 42
@@ -105,7 +118,7 @@ for comm_round in range(args.num_comm):
             # message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr, args.local_up)
         message_lst.append(message)
     if args.quantize == True:
-        print(f"{args.diff_case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay}")
+        print(f"{args.diff_case} -> {str(args.bitswidth) + "bit-quant" if args.quantize_way == 'fixed' else 'DQ'} -> {args.rounding} -> {'flip'+str(args.flip_rate) if args.transmit_way == 'flip' else 'erf'}")
         if args.bitswidth == 1:
             mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
         elif args.bitswidth > 1:
@@ -119,7 +132,7 @@ for comm_round in range(args.num_comm):
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
     print(f"   [round = {comm_round+1}, lr = {cur_lr:.6f}, train los = {test_los:.3f}, test acc = {acc:.3f}, ber = {err}]")
-    recorder.assign([acc, test_los, cur_lr, ])
+    recorder.assign([acc, test_los, cur_lr, args.bitswidth])
     recorder.save(ckp.savedir, )
     if (comm_round + 1) % 10 == 0:
         recorder.plot(ckp.savedir, )

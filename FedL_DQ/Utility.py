@@ -37,18 +37,50 @@ def set_printoption(precision = 3):
 
 
 
-def BitAcc(acc):
-    if acc <= 0.8:
-        B = 8
-    elif 0.8 < acc <= 0.9:
-        B = 6
-    elif 0.9 < B <= 0.95:
-        B = 4
-    elif 0.95 < B <= 1:
+# def BitAcc(acc):
+#     if acc <= 0.8:
+#         B = 8
+#         lr = 0.01
+#     elif 0.8 < acc <= 0.9:
+#         B = 6
+#         lr = 0.008
+#     elif 0.9 < acc <= 0.95:
+#         B = 4
+#         lr = 0.006
+#     elif 0.95 < acc <= 1:
+#         B = 1
+#         lr = 0.004
+#     return B, lr
+
+def BitAcc(acc, snr = 'good'):
+    if snr == 'good': # ber < 0.1
+        if acc <= 0.9:
+            B = 8
+            lr = 0.01
+        elif 0.9 < acc <= 0.95:
+            B = 6
+            lr = 0.008
+        elif 0.95 < acc <= 0.99:
+            B = 4
+            lr = 0.006
+        elif 0.99 < acc <= 1:
+            B = 1
+            lr = 0.004
+    if snr == 'middle': # 0.1 <= ber <= 0.2
+        if acc <= 0.9:
+            B = 8
+            lr = 0.01
+        elif 0.9 < acc <= 0.95:
+            B = 4
+            lr = 0.006
+        elif 0.95 < acc <= 1:
+            B = 1
+            lr = 0.004
+    if snr == 'bad':   #  0.2 < ber
         B = 1
-    return B
+        lr = 0.01
 
-
+    return B, lr
 
 
 

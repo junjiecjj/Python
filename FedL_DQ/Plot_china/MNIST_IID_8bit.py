@@ -43,7 +43,7 @@ colors = ['#FF0000','#0000FF','#00FF00','#1E90FF','#4ea142','#FF00FF','#FFA500',
 lsty = [(0, (3, 10, 1, 10, 1, 10)), (0, (1, 1)), (0, (1, 2)), (0, (5, 1)), (0, (1, 10)), (0, (1, 2)),  (0, (5, 10)), (0, (5, 5)), (0, (3, 10, 1, 10)), (0, (3, 5, 1, 5)), (0, (3, 5, 1, 5, 1, 5)),  '-', ':', '--', '-.', ]
 alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
-def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_ratio = 0.05, y_ratio = 0.05):
+def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_ratio = 0.1, y_ratio = 0.1):
     """缩放内嵌图形，并且进行连线
     ax:         调用plt.subplots返回的画布。例如： fig,ax = plt.subplots(1,1)
     axins:      内嵌图的画布。 例如 axins = ax.inset_axes((0.4,0.1,0.4,0.3))
@@ -91,9 +91,9 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
 
 def MNIST_IID_8bit():
-    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.5, 0.3, 0.32))
-    L = 400
+    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
+    axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
+    L = 300
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_Perfect_adam_0.01_U100+10_bs64_2025-12-12-11:41:59/TraRecorder.npy"))[:L]
@@ -108,28 +108,34 @@ def MNIST_IID_8bit():
     axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-12-14:30:27/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.01_adam_0.01_U100+10_bs64_2025-12-12-16:50:54/TraRecorder.npy"))[:L]
     Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.1}$',)
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.01}$',)
     axins.plot(data[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-12-14:33:26/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-12-14:30:27/TraRecorder.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.2}$',)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.1}$',)
     axins.plot(data[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-14:33:54/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-12-14:33:26/TraRecorder.npy"))[:L]
     Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.3}$',)
+    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.2}$',)
     axins.plot(data[:,0], Y5, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-12-15:19:23/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-14:33:54/TraRecorder.npy"))[:L]
     Y6 = data[:,1]
-    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.4}$',)
+    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.3}$',)
     axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-12-15:19:23/TraRecorder.npy"))[:L]
+    Y7 = data[:,1]
+    axs.plot(data[:,0], Y7, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.4}$',)
+    axins.plot(data[:,0], Y7, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -161,7 +167,7 @@ def MNIST_IID_8bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-20, L-10, data[:, 0] , [Y1, Y2, Y3, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细

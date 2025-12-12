@@ -10,6 +10,31 @@ import os
 import datetime
 
 # 功能：
+# class checkpoint(object):
+#     def __init__(self, args, now = 'None'):
+#         print("#=================== checkpoint 开始准备 ======================\n")
+#         self.args = args
+#         if now == 'None':
+#             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+#         else:
+#             self.now =  now
+#         tempp = '_' + args.diff_case + str( args.local_up if args.diff_case == 'batchs' else args.local_epoch )
+#         if args.quantize:
+#             if args.transmitWay == 'erf':
+#                 way = 'erf_'
+#             elif args.transmitWay == 'flip':
+#                 way = args.transmitWay + str(args.flip_rate) + '_'
+#             quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
+
+#         tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}{tempp}{quantway if args.quantize else '_Perfect_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
+
+#         self.savedir = os.path.join(args.save_path, tmp)
+#         os.makedirs(self.savedir, exist_ok = True)
+
+#         self.writeArgsLog(self.getSavePath('argsConfig.txt'))
+#         print("#================== checkpoint 准备完毕 =======================\n")
+#         return
+
 class checkpoint(object):
     def __init__(self, args, now = 'None'):
         print("#=================== checkpoint 开始准备 ======================\n")
@@ -20,12 +45,7 @@ class checkpoint(object):
             self.now =  now
         tempp = '_' + args.diff_case + str( args.local_up if args.diff_case == 'batchs' else args.local_epoch )
         if args.quantize:
-            if args.transmitWay == 'erf':
-                way = 'erf_'
-            elif args.transmitWay == 'flip':
-                way = args.transmitWay + str(args.flip_rate) + '_'
-            quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
-
+            quantway = f"_{str(args.bitswidth) + 'bits' if args.quantize_way == 'fixed' else 'DQ'}_{args.rounding}_{'flip' + str(args.flip_rate) if args.transmit_way == 'flip' else 'erf'}_"
         tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}{tempp}{quantway if args.quantize else '_Perfect_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
 
         self.savedir = os.path.join(args.save_path, tmp)
@@ -34,6 +54,7 @@ class checkpoint(object):
         self.writeArgsLog(self.getSavePath('argsConfig.txt'))
         print("#================== checkpoint 准备完毕 =======================\n")
         return
+
 
     def writeArgsLog(self, filename, open_type = 'w'):
         with open(filename, open_type) as f:
@@ -62,39 +83,6 @@ class checkpoint(object):
 
     def get_testSavepath(self, *subdir):
         return os.path.join(self.testResdir, *subdir)
-
-
-
-# 功能：
-class checkpoint1(object):
-    def __init__(self, args, now = 'None'):
-        print("#=================== checkpoint 开始准备 ======================\n")
-        self.args = args
-        if now == 'None':
-            self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-        else:
-            self.now =  now
-        tempp = '_' + args.diff_case + str( args.local_up if args.diff_case == 'batchs' else args.local_epoch )
-        if args.quantize:
-            if args.transmitWay == 'erf':
-                way = 'erf_'
-                quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
-            elif args.transmitWay == 'flip':
-                way = args.transmitWay + str(args.flip_rate) + '_'
-                quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
-            elif args.transmitWay == 'dq':
-                quantway = f"_DQ_" + str(args.flip_rate) + f"{args.rounding}"  + '_'
-
-        tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}{tempp}{quantway if args.quantize else '_Perfect_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
-
-        self.savedir = os.path.join(args.save_path, tmp)
-        os.makedirs(self.savedir, exist_ok = True)
-
-        self.writeArgsLog(self.getSavePath('argsConfig.txt'))
-        print("#================== checkpoint 准备完毕 =======================\n")
-        return
-
-
 
 
 

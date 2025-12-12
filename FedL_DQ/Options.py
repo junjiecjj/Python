@@ -29,7 +29,7 @@ def args_parser():
     ## 联邦学习相关参数
     "local_up": 1,
     "local_epoch": 1,
-    "local_bs": 128,
+    "local_bs": 64,
     "test_bs" : 128,
     "num_of_clients" : 100,
     "active_client" : 10,

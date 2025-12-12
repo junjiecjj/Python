@@ -41,28 +41,35 @@ cur_lr = args.lr = 0.01
 
 args.optimizer = 'adam'      # 'sgd', 'adam'
 
-args.quantize = True       # True, False
-if args.quantize == True:
-    args.rounding = 'sr'       # 'nr', 'sr',
-    # args.bitswidth = 8         #  1,  8
-    args.G         = 2**8
-    args.transmitWay = 'dq'    # 'erf', 'flip', 'dq'
-
-    if args.transmitWay.lower() == 'flip' or args.transmitWay.lower() == 'dq':
-        args.flip_rate = 0.1
-    if args.transmitWay.lower() == 'erf':
-        args.flip_rate = 0
-
 if args.IID == True:
     args.diff_case = 'epoch'
-    # args.local_up = 3
     args.local_epoch = 1
     args.local_bs = 64
 elif args.IID == False:
-    # args.lr = 0.001
     args.diff_case = 'epoch'
     args.local_epoch = 1
     args.local_bs = 64
+
+
+args.quantize = True       # True, False
+if args.quantize == True:
+    args.rounding = 'sr'       # 'nr', 'sr',
+    args.G         = 2**8
+
+    args.quantize_way = 'DQ'   # 'fixed', 'DQ'
+    if args.quantize_way == 'fixed':
+        args.bitswidth = 4
+    args.transmit_way = 'flip'     # 'erf', 'flip'
+    if args.transmit_way.lower() == 'flip':
+        args.flip_rate = 0.3
+        if args.flip_rate < 0.1:
+            SNR = 'good'
+        elif 0.1 <= args.flip_rate <= 0.2:
+            SNR = 'middle'
+        elif 0.2 < args.flip_rate:
+            SNR = 'bad'
+    if args.transmit_way.lower() == 'erf':
+        args.flip_rate = 0
 
 ## seed
 args.seed = 42
@@ -73,7 +80,7 @@ set_printoption(5)
 ckp =  checkpoint(args, now)
 
 ## Log
-recorder = MetricsLog.TraRecorder(3, name = "Train", )
+recorder = MetricsLog.TraRecorder(4, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
 global_model = Models.CNNMnist(1, 10, True).to(args.device)
@@ -107,12 +114,19 @@ for comm_round in range(args.num_comm):
             # message = Users[name].local_update_diff(copy.deepcopy(global_weight), cur_lr, args.local_up)
         message_lst.append(message)
     if args.quantize == True:
-        print(f"{args.diff_case} -> {args.bitswidth}bit-quant -> {args.rounding} -> {args.transmitWay}")
-        bitswidth = BitAcc(acc)
-        if  bitswidth == 1:
-            mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
-        elif bitswidth > 1:
-            mess_recv, err = B_Bit(message_lst, args, rounding = args.rounding, ber = args.flip_rate, B = bitswidth, key_grad = key_grad)
+        print(f"{args.diff_case} -> {str(args.bitswidth) + "bit-quant" if args.quantize_way == 'fixed' else 'DQ'} -> {args.rounding} -> {'flip'+str(args.flip_rate) if args.transmit_way == 'flip' else 'erf'}")
+        if args.quantize_way == 'DQ':
+            bitswidth, cur_lr = BitAcc(acc, snr = SNR)
+            if  bitswidth == 1:
+                mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
+            elif bitswidth > 1:
+                mess_recv, err = B_Bit(message_lst, args, rounding = args.rounding, ber = args.flip_rate, B = bitswidth, key_grad = key_grad)
+        elif args.quantize_way == 'fixed':
+            if args.bitswidth == 1:
+                mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
+            elif args.bitswidth > 1:
+                mess_recv, err = B_Bit(message_lst, args, rounding = args.rounding, ber = args.flip_rate, B = args.bitswidth, key_grad = key_grad)
+
         server.aggregate_diff_erf(mess_recv)
     else:
         print(f"  {args.diff_case} -> error-free")
@@ -121,8 +135,8 @@ for comm_round in range(args.num_comm):
 
     global_weight = copy.deepcopy(server.global_weight)
     acc, test_los = server.model_eval(args.device)
-    print(f"   [round = {comm_round+1}, lr = {cur_lr:.6f}, train los = {test_los:.3f}, test acc = {acc:.3f}, ber = {err}]")
-    recorder.assign([acc, test_los, cur_lr, ])
+    print(f"   [round = {comm_round+1}, {bitswidth} lr = {cur_lr:.6f}, train los = {test_los:.3f}, test acc = {acc:.3f}, ber = {err}]")
+    recorder.assign([acc, test_los, cur_lr, bitswidth])
     recorder.save(ckp.savedir, )
     if (comm_round + 1) % 10 == 0:
         recorder.plot(ckp.savedir, )

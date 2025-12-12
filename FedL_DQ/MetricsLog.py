@@ -101,26 +101,36 @@ class TraRecorder(object):
     def plot(self, path, ):
 
         label = 'train acc'
-        fig, ax = plt.subplots(1, 2, figsize = (10, 4))
+        fig, ax = plt.subplots(2, 2, figsize = (10, 8))
         # colors = plt.cm.cool(np.linspace(0, 1, len(results)))
-        ax[0].plot(self.metricLog[:,0], self.metricLog[:,1], color = colors[0], lw = 3, )
-
+        ax[0, 0].plot(self.metricLog[:,0], self.metricLog[:,1], color = colors[0], lw = 3, )
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,} # 'family':'Times New Roman',
-        ax[0].set_xlabel("Communication Round", fontdict = font, labelpad = 2)
-        ax[0].set_ylabel("Accuracy", fontdict = font, labelpad = 2)
-
-        ax[0].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+        ax[0, 0].set_xlabel("Communication Round", fontdict = font, labelpad = 2)
+        ax[0, 0].set_ylabel("Accuracy", fontdict = font, labelpad = 2)
+        ax[0, 0].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
 
         #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         label = 'train Loss'
-
-        ax[1].plot(self.metricLog[:,0], self.metricLog[:,2], color = colors[0], lw = 3, label = label)
-
+        ax[0, 1].plot(self.metricLog[:,0], self.metricLog[:,2], color = colors[0], lw = 3, label = label)
         font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,} # 'family':'Times New Roman',
-        ax[1].set_xlabel("Communication Round", fontdict = font, labelpad = 2)
-        ax[1].set_ylabel("Loss", fontdict = font, labelpad = 2)
+        ax[0, 1].set_xlabel("Communication Round", fontdict = font, labelpad = 2)
+        ax[0, 1].set_ylabel("Loss", fontdict = font, labelpad = 2)
+        ax[0, 1].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        label = 'lr'
+        ax[1, 0].plot(self.metricLog[:,0], self.metricLog[:,3], color = colors[0], lw = 3, )
+        font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,} # 'family':'Times New Roman',
+        ax[1, 0].set_xlabel("Communication Round", fontdict = font, labelpad = 2)
+        ax[1, 0].set_ylabel("Lr", fontdict = font, labelpad = 2)
+        ax[1, 0].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        label = 'bit width'
+        ax[1, 1].plot(self.metricLog[:,0], self.metricLog[:,4], color = colors[0], lw = 3, label = label)
+        font = {'family':'Times New Roman', 'weight' : 'normal', 'size': 20,} # 'family':'Times New Roman',
+        ax[1, 1].set_xlabel("Communication Round", fontdict = font, labelpad = 2)
+        ax[1, 1].set_ylabel("Bit width", fontdict = font, labelpad = 2)
+        ax[1, 1].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
 
-        ax[1].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
         out_fig = plt.gcf()
         out_fig.savefig(os.path.join(path, "TrainLog.eps"),  )
         # plt.show()

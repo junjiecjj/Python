@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Dec 12 15:58:42 2025
+Created on Fri Dec 12 21:26:42 2025
 
 @author: jack
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 12 14:38:18 2025
 
-@author: jack
-"""
 
 
 import os
@@ -43,10 +37,15 @@ mark  = ['s','v','*', 'o', 'd', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4'
 
 colors = ['#FF0000','#0000FF','#00FF00','#1E90FF','#4ea142','#FF00FF','#FFA500','#800080','#EE82EE','#00FFFF','#9932CC','#FF6347','#00CED1','#CD5C5C',  '#7B68EE','#808000']
 
+# colors = ['#FF7F00', '#9BDCFC', '#CAC8EF', '#8370FE', '#A020EF', '#0000FE', '#01008A', '#1E90FF', '#228B22',  '#C9EFBE', '#F0CFEA', '#FE0000', '#00ADEF', '#63BA45', '#FF0000','#1f77b4', '#2ca02c', '#9467bd', '#4ea142','#1E90FF','#FF00FF','#FFA500','#800080','#EE82EE','#00FFFF','#9932CC','#FF6347','#00CED1','#CD5C5C',  '#7B68EE','#808000']
+
+
+# colors = plt.cm.tab10(np.linspace(0, 1, 6)) # colormap
+
 lsty = [(0, (3, 10, 1, 10, 1, 10)), (0, (1, 1)), (0, (1, 2)), (0, (5, 1)), (0, (1, 10)), (0, (1, 2)),  (0, (5, 10)), (0, (5, 5)), (0, (3, 10, 1, 10)), (0, (3, 5, 1, 5)), (0, (3, 5, 1, 5, 1, 5)),  '-', ':', '--', '-.', ]
 alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
-def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_ratio = 0.05, y_ratio = 0.05):
+def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_ratio = 0.1, y_ratio = 0.1):
     """缩放内嵌图形，并且进行连线
     ax:         调用plt.subplots返回的画布。例如： fig,ax = plt.subplots(1,1)
     axins:      内嵌图的画布。 例如 axins = ax.inset_axes((0.4,0.1,0.4,0.3))
@@ -92,53 +91,54 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-def MNIST_IID_4bit():
+
+def MNIST_IID_1bit():
     fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
+    axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
     L = 300
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_Perfect_adam_0.01_U100+10_bs64_2025-12-12-11:41:59/TraRecorder.npy"))[:L]
     Y1 = data[:,1]
-    axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 3, label = '完美传输',)
+    axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     i=0
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-15:50:46/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-21:20:50/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{4bit}$'+',无错传输',)
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+',无错传输',)
     axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_flip0.01_adam_0.01_U100+10_bs64_2025-12-12-16:51:09/TraRecorder.npy"))[:L]
-    Ya = data[:,1]
-    axs.plot(data[:,0], Ya, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{4bit, BER=0.01}$',)
-    axins.plot(data[:,0], Ya, color = colors[i], linestyle = '-', linewidth = 2)
-    i += 1
+    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.01_adam_0.01_U100+10_bs64_2025-12-12-16:50:54/TraRecorder.npy"))[:L]
+    # Y3 = data[:,1]
+    # axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.01}$',)
+    # axins.plot(data[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
+    # i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-12-15:51:10/TraRecorder.npy"))[:L]
-    Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{4bit, BER=0.1}$',)
-    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
-    i += 1
-
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-12-15:51:19/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-12-21:21:53/TraRecorder.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{4bit, BER=0.2}$',)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.1}$',)
     axins.plot(data[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-15:52:18/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-12-21:23:01/TraRecorder.npy"))[:L]
     Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{4bit, BER=0.3}$',)
+    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.2}$',)
     axins.plot(data[:,0], Y5, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-12-15:19:23/TraRecorder.npy"))[:L]
-    # Y6 = data[:,1]
-    # axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = '8-bit, BER=0.4',)
-    # axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
-    # i += 1
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-21:23:17/TraRecorder.npy"))[:L]
+    Y6 = data[:,1]
+    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.3}$',)
+    axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-12-22:02:23/TraRecorder.npy"))[:L]
+    Y7 = data[:,1]
+    axs.plot(data[:,0], Y7, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.4}$',)
+    axins.plot(data[:,0], Y7, color = colors[i], linestyle = '-', linewidth = 2)
+    i += 1
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
@@ -159,7 +159,7 @@ def MNIST_IID_4bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -169,7 +169,7 @@ def MNIST_IID_4bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Ya, Y3, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y4, Y5, Y6, Y7], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -183,12 +183,12 @@ def MNIST_IID_4bit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/Fig_MNIST_IID_4bit.pdf' )
+    out_fig.savefig('../Fig_china/Fig_MNIST_IID_1bit.pdf' )
     plt.show()
     plt.close()
     return
 
-MNIST_IID_4bit()
+MNIST_IID_1bit()
 
 
 
