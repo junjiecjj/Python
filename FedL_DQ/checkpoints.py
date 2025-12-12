@@ -7,21 +7,13 @@ Created on Sun Aug 18 22:25:47 2024
 """
 
 import os
-import sys
-# import math
 import datetime
-
-
-fontpath = "/usr/share/fonts/truetype/windows/"
-fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
-fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
 
 # 功能：
 class checkpoint(object):
     def __init__(self, args, now = 'None'):
-        # print("#=================== checkpoint 开始准备 ======================\n")
+        print("#=================== checkpoint 开始准备 ======================\n")
         self.args = args
-        self.n_processes = 8
         if now == 'None':
             self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         else:
@@ -32,18 +24,15 @@ class checkpoint(object):
                 way = 'erf_'
             elif args.transmitWay == 'flip':
                 way = args.transmitWay + str(args.flip_rate) + '_'
-            elif args.transmitWay == 'scma' or args.transmitWay == 'sic':
-                way = args.transmitWay + str(args.snr_dB) + '(dB)_'
             quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
-        tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}{quantway if args.quantize else '_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
 
-        # tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}_{args.case}{tempp if args.case == 'diff' else ''}_Air_{args.SNR}(dB)_{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
+        tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}{tempp}{quantway if args.quantize else '_Perfect_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
 
         self.savedir = os.path.join(args.save_path, tmp)
         os.makedirs(self.savedir, exist_ok = True)
 
         self.writeArgsLog(self.getSavePath('argsConfig.txt'))
-        # print("#================== checkpoint 准备完毕 =======================\n")
+        print("#================== checkpoint 准备完毕 =======================\n")
         return
 
     def writeArgsLog(self, filename, open_type = 'w'):
@@ -71,11 +60,59 @@ class checkpoint(object):
             f.write(log + '\n')
         return
 
-# >>> 测试相关函数
-    # 初始化测试结果目录
     def get_testSavepath(self, *subdir):
         return os.path.join(self.testResdir, *subdir)
-# <<< 测试相关函数
+
+
+
+# 功能：
+class checkpoint1(object):
+    def __init__(self, args, now = 'None'):
+        print("#=================== checkpoint 开始准备 ======================\n")
+        self.args = args
+        if now == 'None':
+            self.now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        else:
+            self.now =  now
+        tempp = '_' + args.diff_case + str( args.local_up if args.diff_case == 'batchs' else args.local_epoch )
+        if args.quantize:
+            if args.transmitWay == 'erf':
+                way = 'erf_'
+                quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
+            elif args.transmitWay == 'flip':
+                way = args.transmitWay + str(args.flip_rate) + '_'
+                quantway = f'_{args.bitswidth}bits_' + args.rounding + '_' + way
+            elif args.transmitWay == 'dq':
+                quantway = f"_DQ_" + str(args.flip_rate) + f"{args.rounding}"  + '_'
+
+        tmp = f"{args.dataset}_{"IID" if args.IID else "noIID"}{tempp}{quantway if args.quantize else '_Perfect_'}{args.optimizer}_{args.lr}_U{args.num_of_clients}+{args.active_client}_bs{args.local_bs}_" + self.now
+
+        self.savedir = os.path.join(args.save_path, tmp)
+        os.makedirs(self.savedir, exist_ok = True)
+
+        self.writeArgsLog(self.getSavePath('argsConfig.txt'))
+        print("#================== checkpoint 准备完毕 =======================\n")
+        return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

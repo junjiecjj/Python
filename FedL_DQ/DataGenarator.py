@@ -59,6 +59,41 @@ def mnist_noniid(train_data_size, labels, num_clients):
             dict_users[i] = np.hstack((dict_users[i], sorted_idx[r*shard_size:(r+1)*shard_size]))
     return dict_users
 
+## partial non-IID
+def mnistpart_noniid(train_data_size, labels, num_clients):
+    """
+    Sample non-I.I.D client data from cifar dataset
+    :param dataset:
+    :param num_users:
+    :return:
+    Each device randomly sample
+    """
+    # num_clients = args.num_users
+    lenRandom = 0.1 * train_data_size       ## 随机IID部分
+    num_items = int(lenRandom/num_clients)
+    dict_users, all_idxs = {}, [i for i in range(train_data_size)]
+    for ii in range(num_clients):
+        dict_users[ii] = set(np.random.choice(all_idxs, num_items, replace=False))
+        all_idxs = list(set(all_idxs) - dict_users[ii])
+
+    # labels = np.array(dataset.targets)
+    labels = labels[all_idxs]
+
+    # sort labels
+    # idxs = np.arange(len(labels))
+    # sort labels
+    idxs = np.array(all_idxs)
+    idxs_labels = np.vstack((idxs, labels))
+    idxs_labels = idxs_labels[:,idxs_labels[1,:].argsort()]
+    idxs = idxs_labels[0,:]
+
+    # divide and assign
+    numImage = int(len(idxs)/num_clients)
+    for ii in range(num_clients):
+        temp = idxs[ii*numImage:(ii+1)*numImage]
+        dict_users[ii] = np.concatenate((list(dict_users[ii]), temp), axis=0)
+    return dict_users
+
 def get_MNIST(args):
     train_set = datasets.MNIST(root = args.dir_data, train = True, download = True, transform = data_tf_mnist)
     test_set = datasets.MNIST(root = args.dir_data, train = False, download = True, transform = data_tf_mnist)
@@ -73,7 +108,8 @@ def get_MNIST(args):
         dict_users = mnist_iid(train_data_size, args.num_of_clients)
     else:
         print(">>> [The MNIST Data Partition is non-IID......]")
-        dict_users = mnist_noniid(train_data_size, labels, args.num_of_clients)
+        # dict_users = mnist_noniid(train_data_size, labels, args.num_of_clients)
+        dict_users = mnistpart_noniid(train_data_size, labels, args.num_of_clients)
 
     # ## Train data
     # train_data = ((train_set.data/255.0 - 0.5)/0.5).reshape(-1,1,28,28)
@@ -125,7 +161,7 @@ def cifar10_part_noniid(train_data_size, labels, num_clients):
     Each device randomly sample
     """
     # num_clients = args.num_users
-    lenRandom = 0.65 * train_data_size
+    lenRandom = 0.65 * train_data_size  # 随机IID部分
     num_items = int(lenRandom/num_clients)
     dict_users, all_idxs = {}, [i for i in range(train_data_size)]
     for ii in range(num_clients):
@@ -133,7 +169,7 @@ def cifar10_part_noniid(train_data_size, labels, num_clients):
         all_idxs = list(set(all_idxs) - dict_users[ii])
 
     # labels = np.array(dataset.targets)
-    labels = labels[all_idxs]
+    labels = labels[all_idxs] # non-IID部分
 
     # sort labels
     # idxs = np.arange(len(labels))

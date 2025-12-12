@@ -13,12 +13,8 @@ import os, sys
 import numpy as np
 
 import matplotlib
-matplotlib.use('Agg')
-
 import matplotlib.pyplot as plt
-
-import warnings
-warnings.filterwarnings("ignore")
+matplotlib.use('Agg')
 
 
 # 本项目自己编写的库

@@ -31,6 +31,11 @@ class Mnist_2NN(nn.Module):
         tensor = self.fc3(tensor)
         return tensor
 
+# model = Mnist_2NN()
+# a = np.sum([p.numel() for  p in model.state_dict().values()])  # 全部参数
+# b = np.sum([p.numel() for p in model.parameters() if p.requires_grad]) # 全部可导参数
+# print(f"a = {a}, b = {b}")
+# a = 178110, b = 178110
 
 class Mnist_CNN(nn.Module):
     def __init__(self, input_channels = 1, output_channels = 10):
