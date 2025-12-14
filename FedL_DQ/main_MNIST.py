@@ -70,7 +70,7 @@ if args.quantize == True:
         args.bitswidth = 1
     args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.4
+        args.flip_rate = 0.2513
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
 
@@ -84,7 +84,7 @@ set_printoption(5)
 ckp =  checkpoint(args, now)
 
 ## Log
-recorder = MetricsLog.TraRecorder(3, name = "Train", )
+recorder = MetricsLog.TraRecorder(4, name = "Train", )
 
 local_dt_dict, testloader = GetDataSet(args)
 global_model = Models.CNNMnist(1, 10, True).to(args.device)

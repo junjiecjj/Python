@@ -1,0 +1,21 @@
+# Core Python version
+python>=3.10,<3.13
+
+# Numerical computation
+numpy>=1.23
+scipy>=1.10
+pandas>=1.5
+
+# Machine learning / deep learning
+torch>=2.0
+timm>=0.9.0
+scikit-learn>=1.2
+
+# Visualization
+matplotlib>=3.7
+
+# CSI processing
+csiread>=2.0
+
+# Utilities
+jsonschema>=4.17

@@ -29,7 +29,7 @@ from scipy.signal import savgol_filter
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-
+savedir = home + '/FL_DQ/Figures/MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -183,7 +183,7 @@ def MNIST_IID_1bit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/Fig_MNIST_IID_1bit.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_1bit.pdf' )
     plt.show()
     plt.close()
     return

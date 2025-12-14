@@ -35,7 +35,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-
+savedir = home + '/FL_DQ/Figures/MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -177,7 +177,7 @@ def MNIST_IID_841bit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/Fig_MNIST_IID_DQ841bit.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_DQ841bit.pdf' )
     plt.show()
     plt.close()
     return
@@ -324,7 +324,7 @@ def DynamicBitWidth():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/Fig_MNIST_IID_DQbw.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_DQbw.pdf' )
     plt.show()
     plt.close()
     return
@@ -346,10 +346,15 @@ def CommOverHead():
     axs.plot(data1[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = 'DQ, '+ r'$\mathrm{BER=0.1}$',)
     i += 1
 
-    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-13-00:11:24/TraRecorder.npy"))[:L]
-    # Y1 = np.cumsum(data[:,4]*V)
-    # axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = 'DQ,'+ r'$\mathrm{BER=0.2}$',)
-    # i += 1
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-13-00:39:45/TraRecorder.npy"))[:L]
+    Y1 = np.cumsum(data[:,4]*V)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = 'DQ, '+ r'$\mathrm{BER=0.2}$',)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-13-00:39:55/TraRecorder.npy"))[:L]
+    Y1 = np.cumsum(data[:,4]*V)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = 'DQ, '+ r'$\mathrm{BER=0.2}$',)
+    i += 1
 
     axs.plot(data[:,0], data[:, 0]*V*8, color = colors[i],  ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{8bit}$',)
     i += 1
@@ -359,7 +364,6 @@ def CommOverHead():
 
     axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{1bit}$',)
     i += 1
-
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -392,16 +396,16 @@ def CommOverHead():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/CommOverHead.pdf' )
+    out_fig.savefig(f'{savedir}/CommOverHead.pdf' )
     plt.show()
     plt.close()
     return
 
 
-# MNIST_IID_841bit()
+MNIST_IID_841bit()
 DynamicBitWidth()
-# CommOverHead()
-
+CommOverHead()
+#
 
 
 

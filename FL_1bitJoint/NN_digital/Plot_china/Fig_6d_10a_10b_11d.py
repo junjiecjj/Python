@@ -105,7 +105,7 @@ def CIFAR10_nonIID_14bit_erf_acc():
     up_envelope, lw_envelope = envelope_extraction(data[:, 1])
     up_envelope, lw_envelope = envelope_extraction(up_envelope)
     # Y3 = up_envelope
-    axs.plot(data[:,0], up_envelope, color = 'b' , lw = 2, linestyle='-', label = '4-bit, Error-free',)
+    axs.plot(data[:,0], up_envelope, color = 'b' , lw = 2, linestyle='-', label = '4-bit, 无错传输',)
     # axins.plot(data[:,0], up_envelope, color = 'b', linestyle = '-', linewidth = 2)
 
     ###########

@@ -13,7 +13,7 @@ import copy
 
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
-from Utility import BitAcc
+from Utility import BitAcc_mnist
 from Transmit_1bit import OneBit_Grad_G
 from Transmit_Bbit import B_Bit
 
@@ -61,7 +61,7 @@ if args.quantize == True:
         args.bitswidth = 4
     args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.3
+        args.flip_rate = 0.2513
         if args.flip_rate < 0.1:
             SNR = 'good'
         elif 0.1 <= args.flip_rate <= 0.2:
@@ -116,7 +116,7 @@ for comm_round in range(args.num_comm):
     if args.quantize == True:
         print(f"{args.diff_case} -> {str(args.bitswidth) + "bit-quant" if args.quantize_way == 'fixed' else 'DQ'} -> {args.rounding} -> {'flip'+str(args.flip_rate) if args.transmit_way == 'flip' else 'erf'}")
         if args.quantize_way == 'DQ':
-            bitswidth, cur_lr = BitAcc(acc, snr = SNR)
+            bitswidth, cur_lr = BitAcc_mnist(acc, snr = SNR)
             if  bitswidth == 1:
                 mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
             elif bitswidth > 1:

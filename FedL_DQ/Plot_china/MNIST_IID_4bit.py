@@ -35,7 +35,7 @@ from scipy.signal import savgol_filter
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-
+savedir = home + '/FL_DQ/Figures/MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -159,7 +159,7 @@ def MNIST_IID_4bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.3, 1.01)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -183,7 +183,7 @@ def MNIST_IID_4bit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/Fig_MNIST_IID_4bit.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_4bit.pdf' )
     plt.show()
     plt.close()
     return

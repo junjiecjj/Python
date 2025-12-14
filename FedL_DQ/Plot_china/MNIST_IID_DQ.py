@@ -28,7 +28,7 @@ from scipy.signal import savgol_filter
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-
+savedir = home + '/FL_DQ/Figures/MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -127,17 +127,12 @@ def MNIST_IID_DQbit():
     axins.plot(data[:,0], Y5, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-14:33:54/TraRecorder.npy"))[:L]
-    # Y6 = data[:,1]
-    # axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.3}$',)
-    # axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
-    # i += 1
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-13-14:03:41/TraRecorder.npy"))[:L]
+    Y6 = data[:,1]
+    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{DQ, BER=0.4}$',)
+    axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
+    i += 1
 
-    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-12-15:19:23/TraRecorder.npy"))[:L]
-    # Y7 = data[:,1]
-    # axs.plot(data[:,0], Y7, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{8bit, BER=0.4}$',)
-    # axins.plot(data[:,0], Y7, color = colors[i], linestyle = '-', linewidth = 2)
-    # i += 1
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
@@ -182,7 +177,7 @@ def MNIST_IID_DQbit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig('../Fig_china/Fig_MNIST_IID_DQ.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_DQ.pdf' )
     plt.show()
     plt.close()
     return
