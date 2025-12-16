@@ -24,13 +24,12 @@ import Models
 from Options import args_parser
 import MetricsLog
 
-
 now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 #======================== main ==================================
 
 args = args_parser()
 
-args.IID = True             # True, False
+args.IID = True                # True, False
 args.dataset = "CIFAR10"       #  CIFAR10,
 
 datapart = "IID" if args.IID else "nonIID"
@@ -52,14 +51,14 @@ elif args.IID == False:
 args.quantize = True       # True, False
 if args.quantize == True:
     args.rounding = 'sr'       # 'nr', 'sr',
-    args.G         = 2**7
+    args.G         = 2**6
 
     args.quantize_way = 'fixed'
     if args.quantize_way == 'fixed':
-        args.bitswidth = 1
+        args.bitswidth = 3
     args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.2
+        args.flip_rate = 0.01
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
 else:

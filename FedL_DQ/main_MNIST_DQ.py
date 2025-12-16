@@ -70,6 +70,7 @@ if args.quantize == True:
             SNR = 'bad'
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
+        SNR = 'good'
 
 ## seed
 args.seed = 42

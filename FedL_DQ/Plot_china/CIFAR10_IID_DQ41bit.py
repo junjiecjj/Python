@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Dec 12 21:58:46 2025
+Created on Mon Dec 15 09:32:42 2025
 
 @author: jack
 """
+
 
 import os
 import matplotlib.pyplot as plt
@@ -12,7 +13,7 @@ from matplotlib.patches import ConnectionPatch
 import numpy as np
 # import torch
 from matplotlib.font_manager import FontProperties
-
+from scipy.signal import savgol_filter
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
 # plt.rcParams["font.family"] = "SimSun"
@@ -35,7 +36,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-savedir = home + '/FL_DQ/Figures/MNIST'
+savedir = home + '/FL_DQ/Figures/CIAFR10'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -97,40 +98,38 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-def MNIST_IID_841bit():
+def CIAFR10_IID_DQ41bit():
     fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
-    L = 300
+    L = 1000
 
-    rootdir = f"{home}/FL_DQ/MNIST_IID/"
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_Perfect_adam_0.01_U100+10_bs64_2025-12-12-11:41:59/TraRecorder.npy"))[:L]
+    rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_Perfect_adam_0.01_U100+10_bs64_2025-12-14-14:00:53/TraRecorder.npy"))[:L]
     Y1 = data[:,1]
+    Y1 = savgol_filter(Y1, 20, 5)+ 0.005
     axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     i = 0
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-11:42:20/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-14-14:01:04/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\mathrm{8bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=10, mfc='white', mew = 2,)
+    Y2 = savgol_filter(Y2, 20, 5)
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=100, mfc='white', mew = 2, label = r'$\mathrm{4bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=20, mfc='white', mew = 2,)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-20:06:37/TraRecorder.npy"))[:L]
     Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30, label = r'$\mathrm{DQ}$'+', 无错传输',)
-    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10,  )
+    Y3 = savgol_filter(Y3, 20, 5)
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=100, label = r'$\mathrm{DQ}$'+', 无错传输',)
+    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=20,  )
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-15:50:46/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-14:28:54/TraRecorder.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{4bit}$'+', 无错传输',)
+    Y4 = savgol_filter(Y4, 20, 5)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', 无错传输',)
     axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', linewidth = 2)
-    i += 1
-
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-21:20:50/TraRecorder.npy"))[:L]
-    Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y5, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
     ###########
@@ -153,7 +152,7 @@ def MNIST_IID_841bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -163,7 +162,7 @@ def MNIST_IID_841bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -175,9 +174,9 @@ def MNIST_IID_841bit():
     labels = axins.get_xticklabels() + axins.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
     # [label.set_fontsize(16) for label in labels] #刻度值字号
-
+    axins.set_ylim(0.86, 0.91)  #拉开坐标轴范围显示投影
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_DQ841bit.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQ41bit.pdf' )
     plt.show()
     plt.close()
     return
@@ -324,7 +323,7 @@ def DynamicBitWidth():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_DQbw.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQbw.pdf' )
     plt.show()
     plt.close()
     return
@@ -396,13 +395,13 @@ def CommOverHead():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/CommOverHead.pdf' )
+    out_fig.savefig(f'{savedir}/CIFAR10_CommOverHead.pdf' )
     plt.show()
     plt.close()
     return
 
 
-MNIST_IID_841bit()
+CIAFR10_IID_DQ41bit()
 # DynamicBitWidth()
 # CommOverHead()
 #

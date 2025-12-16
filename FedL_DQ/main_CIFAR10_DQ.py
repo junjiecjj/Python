@@ -33,7 +33,7 @@ now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 args = args_parser()
 
 args.IID = True             # True, False
-args.dataset = "MNIST"       #  MNIST,
+args.dataset = "CIFAR10"       #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
 args.save_path = args.home + f'/FL_DQ/{args.dataset}_{datapart}/'
@@ -55,14 +55,14 @@ elif args.IID == False:
 args.quantize = True       # True, False
 if args.quantize == True:
     args.rounding = 'sr'       # 'nr', 'sr',
-    args.G         = 2**8
+    args.G         = 2**6
 
     args.quantize_way = 'DQ'   # 'fixed', 'DQ'
     if args.quantize_way == 'fixed':
         args.bitswidth = 4
-    args.transmit_way = 'flip'     # 'erf', 'flip'
+    args.transmit_way = 'erf'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.2513
+        args.flip_rate = 0.1
         if args.flip_rate < 0.1:
             SNR = 'good'
         elif 0.1 <= args.flip_rate <= 0.2:
@@ -71,6 +71,7 @@ if args.quantize == True:
             SNR = 'bad'
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
+        SNR = 'good'
 
 ## seed
 args.seed = 42
@@ -101,7 +102,7 @@ server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight),
 acc = -1
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
-    # cur_lr = args.lr/(1 + 0.001 * comm_round)
+
     candidates = np.random.choice(args.num_of_clients, args.active_client, replace = False)
     message_lst = []
 

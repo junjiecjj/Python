@@ -65,30 +65,30 @@ def BitAcc_mnist(acc, snr = 'good'):
     return B, lr
 
 def BitAcc_cifar10(acc, snr = 'good'):
-    if snr == 'good': # ber < 0.1
-        if acc <= 0.9:
-            B = 8
-            lr = 0.01
-        elif 0.9 < acc <= 0.95:
-            B = 6
-            lr = 0.008
-        elif 0.95 < acc <= 0.99:
+    if snr == 'good':     # ber < 0.06
+        if acc <= 0.7:
             B = 4
-            lr = 0.006
-        elif 0.99 < acc <= 1:
-            B = 1
-            lr = 0.004
-    if snr == 'middle': # 0.1 <= ber <= 0.2
-        if acc <= 0.9:
-            B = 8
             lr = 0.01
-        elif 0.9 < acc <= 0.95:
-            B = 4
-            lr = 0.006
-        elif 0.95 < acc <= 1:
+        elif 0.7 < acc <= 0.8:
+            B = 3
+            lr = 0.01
+        elif 0.8 < acc <= 0.85:
+            B = 2
+            lr = 0.01
+        elif 0.85 < acc <= 1:
             B = 1
-            lr = 0.004
-    if snr == 'bad':   #  0.2 < ber
+            lr = 0.01
+    if snr == 'middle':    # 0.06 <= ber <= 0.1
+        if acc <= 0.7:
+            B = 4
+            lr = 0.01
+        elif 0.7 < acc <= 0.8:
+            B = 2
+            lr = 0.01
+        elif 0.8 < acc <= 1:
+            B = 1
+            lr = 0.01
+    if snr == 'bad':   #  0.1 < ber
         B = 1
         lr = 0.01
 
