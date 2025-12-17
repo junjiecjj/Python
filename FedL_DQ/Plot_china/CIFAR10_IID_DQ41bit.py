@@ -105,31 +105,45 @@ def CIAFR10_IID_DQ41bit():
 
     rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_Perfect_adam_0.01_U100+10_bs64_2025-12-14-14:00:53/TraRecorder.npy"))[:L]
-    Y1 = data[:,1]
-    Y1 = savgol_filter(Y1, 20, 5)+ 0.005
-    axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
-    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
+    Yp = data[:,1]
+    Yp = savgol_filter(Yp, 20, 5)+ 0.005
+    axs.plot(data[:,0], Yp , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
+    axins.plot(data[:,0], Yp, color = 'k', linestyle = '-', linewidth = 2)
 
     i = 0
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-14-14:01:04/TraRecorder.npy"))[:L]
+    Y4 = data[:,1]
+    Y4 = savgol_filter(Y4, 20, 5)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 14, markevery=100, mfc='white', mew = 2, label = r'$\mathrm{4bit}$'+', 无错传输', zorder =10)
+    axins.plot(data[:,0], Y4, color = colors[i], ls = '--', lw = 2, marker = '*', ms = 14, markevery=20, mfc='white', mew = 2, zorder =10)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_3bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-16-20:56:42/TraRecorder.npy"))[:L]
+    Y3 = data[:,1]
+    Y3 = savgol_filter(Y3, 20, 5)
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=100, mfc='white', mew = 2, label = r'$\mathrm{3bit}$'+', 无错传输', zorder =1)
+    axins.plot(data[:,0], Y3, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=20, mfc='white', mew = 2, zorder =1)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_2bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-17-09:58:49/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
     Y2 = savgol_filter(Y2, 20, 5)
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=100, mfc='white', mew = 2, label = r'$\mathrm{4bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=20, mfc='white', mew = 2,)
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'd', ms = 12, markevery=100, mfc='white', mew = 2, label = r'$\mathrm{2bit}$'+', 无错传输', zorder =1)
+    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'd', ms = 12, markevery=20, mfc='white', mew = 2, zorder =1)
     i += 1
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-20:06:37/TraRecorder.npy"))[:L]
-    Y3 = data[:,1]
-    Y3 = savgol_filter(Y3, 20, 5)
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=100, label = r'$\mathrm{DQ}$'+', 无错传输',)
-    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=20,  )
-    i += 1
+    Ydq = data[:,1]
+    Ydq = savgol_filter(Ydq, 20, 5)
+    axs.plot(data[:,0], Ydq, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=100, label = r'$\mathrm{DQ}$'+', 无错传输',)
+    axins.plot(data[:,0], Ydq, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=20,  )
+    i += 2
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-14:28:54/TraRecorder.npy"))[:L]
-    Y4 = data[:,1]
-    Y4 = savgol_filter(Y4, 20, 5)
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', linewidth = 2)
+    Y1 = data[:,1]
+    Y1 = savgol_filter(Y1, 20, 5)
+    axs.plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y1, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
     ###########
@@ -162,7 +176,7 @@ def CIAFR10_IID_DQ41bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y4, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Yp, Y4, Y3, Ydq, Y1], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -176,7 +190,7 @@ def CIAFR10_IID_DQ41bit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
     axins.set_ylim(0.86, 0.91)  #拉开坐标轴范围显示投影
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQ41bit.pdf' )
+    # out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQ41bit.pdf' )
     plt.show()
     plt.close()
     return
@@ -323,7 +337,7 @@ def DynamicBitWidth():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQbw.pdf' )
+    # out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQbw.pdf' )
     plt.show()
     plt.close()
     return
@@ -395,7 +409,7 @@ def CommOverHead():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/CIFAR10_CommOverHead.pdf' )
+    # out_fig.savefig(f'{savedir}/CIFAR10_CommOverHead.pdf' )
     plt.show()
     plt.close()
     return
