@@ -79,13 +79,13 @@ def BitAcc_cifar10(acc, snr = 'good'):
             B = 1
             lr = 0.01
     if snr == 'middle':    # 0.02 <= ber <= 0.05
-        if acc <= 0.7:
+        if acc <= 0.75:
             B = 4
             lr = 0.01
-        elif 0.8 < acc <= 1:
+        elif 0.75 < acc <= 1:
             B = 1
             lr = 0.01
-    if snr == 'bad':   #  0.1 < ber
+    if snr == 'bad':   #  0.05 < ber
         B = 1
         lr = 0.01
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec 14 13:42:23 2025
+Created on Thu Dec 18 15:58:59 2025
 
 @author: jack
 """
+
 
 
 import os
@@ -84,7 +85,7 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-def CIFAR10_IID_1bit():
+def CIFAR10_IID_DQbit():
     fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.46, 0.3, 0.32))
     L = 1000
@@ -97,46 +98,34 @@ def CIFAR10_IID_1bit():
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     i=0
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-14:28:54/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-18-10:39:31/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
     Y2 = savgol_filter(Y2, 20, 5)
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit}$'+',无错传输',)
-    axins.plot(data[:,0], Y2, color = colors[i], linestyle = '-', linewidth = 2)
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{DQ}$'+',无错传输',)
+    axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.05_adam_0.01_U100+10_bs64_2025-12-18-22:56:35/TraRecorder.npy"))[:L]
-    Ya = data[:,1]
-    axs.plot(data[:,0], Ya, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.05}$',)
-    axins.plot(data[:,0], Ya, color = colors[i], linestyle = '-', linewidth = 2)
+    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_flip0.01_adam_0.01_U100+10_bs64_2025-12-18-14:31:51/TraRecorder.npy"))[:L]
+    Ya = data1[:,1]
+    Ya = savgol_filter(Ya, 20, 5)
+    axs.plot(data1[:,0], Ya, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{DQ, BER=0.01}$',)
+    axins.plot(data1[:,0], Ya, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-15-16:42:40/TraRecorder.npy"))
+    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_flip0.05_adam_0.01_U100+10_bs64_2025-12-18-21:17:06/TraRecorder.npy"))
     Y3 = data1[:,1]
     Y3 = savgol_filter(Y3, 20, 5)
-    axs.plot(data1[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.1}$',)
+    axs.plot(data1[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{DQ, BER=0.05}$',)
     axins.plot(data1[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-15-16:42:47/TraRecorder.npy"))[:L]
-    Y4 = data[:,1]
+    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-15-16:42:40/TraRecorder.npy"))
+    Y4 = data1[:,1]
     Y4 = savgol_filter(Y4, 20, 5)
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.2}$',)
-    axins.plot(data[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
+    axs.plot(data1[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{DQ, BER=0.1}$',)
+    axins.plot(data1[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-15-22:48:42/TraRecorder.npy"))[:L]
-    Y5 = data[:,1]
-    Y5 = savgol_filter(Y5, 20, 5)
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.3}$',)
-    axins.plot(data[:,0], Y5, color = colors[i], linestyle = '-', linewidth = 2)
-    i += 1
-
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-15-22:48:53/TraRecorder.npy"))[:L]
-    Y6 = data[:,1]
-    Y6 = savgol_filter(Y6, 20, 5)
-    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.4}$',)
-    axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
-    i += 1
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
@@ -167,26 +156,26 @@ def CIFAR10_IID_1bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Ya], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
     axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
     axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
     axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
-
+    axins.set_ylim(0.86, 0.91)  #拉开坐标轴范围显示投影
     axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 22,  width = 1)
     labels = axins.get_xticklabels() + axins.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_1bit.pdf' )
+    # out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQbit.pdf' )
     plt.show()
     plt.close()
     return
 
-CIFAR10_IID_1bit()
+CIFAR10_IID_DQbit()
 
 
 

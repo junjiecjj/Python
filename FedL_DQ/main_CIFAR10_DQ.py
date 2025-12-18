@@ -60,14 +60,14 @@ if args.quantize == True:
     args.quantize_way = 'DQ'   # 'fixed', 'DQ'
     if args.quantize_way == 'fixed':
         args.bitswidth = 4
-    args.transmit_way = 'erf'     # 'erf', 'flip'
+    args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.1
-        if args.flip_rate < 0.1:
+        args.flip_rate = 0.05
+        if args.flip_rate < 0.02:
             SNR = 'good'
-        elif 0.1 <= args.flip_rate <= 0.2:
+        elif 0.02 <= args.flip_rate <= 0.05:
             SNR = 'middle'
-        elif 0.2 < args.flip_rate:
+        elif 0.05 < args.flip_rate:
             SNR = 'bad'
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
