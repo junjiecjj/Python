@@ -132,7 +132,7 @@ def CIAFR10_IID_DQ41bit():
     axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'd', ms = 12, markevery=20, mfc='white', mew = 2, zorder =1)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-20:06:37/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-18-10:39:31/TraRecorder.npy"))[:L]
     Ydq = data[:,1]
     Ydq = savgol_filter(Ydq, 20, 5)
     axs.plot(data[:,0], Ydq, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=100, label = r'$\mathrm{DQ}$'+', 无错传输',)

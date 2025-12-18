@@ -102,7 +102,7 @@ server = Server(args, copy.deepcopy(global_model), copy.deepcopy(global_weight),
 acc = -1
 for comm_round in range(args.num_comm):
     recorder.addlog(comm_round)
-
+    cur_lr = args.lr/(1 + 0.001 * comm_round)
     candidates = np.random.choice(args.num_of_clients, args.active_client, replace = False)
     message_lst = []
 
@@ -115,7 +115,7 @@ for comm_round in range(args.num_comm):
     if args.quantize == True:
         print(f"{args.diff_case} -> {str(args.bitswidth) + "bit-quant" if args.quantize_way == 'fixed' else 'DQ'} -> {args.rounding} -> {'flip'+str(args.flip_rate) if args.transmit_way == 'flip' else 'erf'}")
         if args.quantize_way == 'DQ':
-            bitswidth, cur_lr = BitAcc_cifar10(acc, snr = SNR)
+            bitswidth, _ = BitAcc_cifar10(acc, snr = SNR)
             if  bitswidth == 1:
                 mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
             elif bitswidth > 1:
