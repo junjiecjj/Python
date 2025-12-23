@@ -201,7 +201,12 @@ class ResNet(nn.Module):
 def resnet20():
     return ResNet(BasicBlock, [3, 3, 3])
 
-
+# # # # ## Data volume = 21840 (floating point number)
+# model = resnet20()
+# a = np.sum([p.numel() for  p in model.state_dict().values()])  # 全部参数
+# b = np.sum([p.numel() for p in model.parameters() if p.requires_grad]) # 全部可导参数
+# print(f"a = {a}, b = {b}")
+# # a = 271117, b = 269722
 
 
 

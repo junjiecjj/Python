@@ -170,7 +170,7 @@ def CIFAR10_IID_DQbit():
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    # out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQbit.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_DQbit.pdf' )
     plt.show()
     plt.close()
     return
