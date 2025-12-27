@@ -145,7 +145,7 @@ frame1.set_facecolor('none')  # 设置图例legend背景透明
 font = {'family':'Times New Roman','style':'normal','size':32, }
 axs.set_xlabel("SNR(dB)",   fontproperties=font)
 font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
-axs.set_ylabel( "误帧率", fontproperties=font )# , fontdict = font1
+axs.set_ylabel( "误帧率(FER)", fontproperties=font )# , fontdict = font1
 
 ## xtick
 axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 32, width = 2)

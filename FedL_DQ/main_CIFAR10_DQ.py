@@ -62,7 +62,7 @@ if args.quantize == True:
         args.bitswidth = 4
     args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.05
+        args.flip_rate = 0.16
         if args.flip_rate < 0.02:
             SNR = 'good'
         elif 0.02 <= args.flip_rate <= 0.05:

@@ -28,7 +28,7 @@ from scipy.signal import savgol_filter
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-savedir = home + '/FL_DQ/Figures/CIAFR10'
+savedir = home + '/FL_DQ/Figures/CIFAR10'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 

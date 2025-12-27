@@ -1,0 +1,645 @@
+\documentclass[handout,serif]{beamer}
+%\documentclass [serif,mathserif,professionalfont]{beamer}
+%\usepackage {pxfonts}
+%\usepackage {eulervm}
+%\usepackage{mathpazo}
+
+\usepackage{winsnotation}
+\usepackage{bm}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{multimedia}
+\usepackage{multicol}
+\usepackage[latin1]{inputenc}
+\usepackage{upgreek}
+\usepackage{hyperref}
+%\usetheme{Warsaw}
+\usecolortheme{lily}
+\setbeamercovered{transparent}
+\usepackage{ragged2e}
+\renewcommand{\raggedright}{\leftskip=0pt \rightskip=0pt plus 0cm}
+%\useoutertheme[subsection=false]{smoothbars}
+\setbeamertemplate{footline}[frame number]
+\title[]{Information-Theoretic Limits of ISAC Under Gaussian Channels}
+
+\author{Fan Liu \\ \footnotesize{Department of Electronic and Electrical Engineering\\Southern University of Science and Technology}}
+\institute{\textbf{Collaborators:} Yifeng Xiong, Kai Wan, Yuanhao Cui, Weijie Yuan, \\Tony Xiao Han, and Giuseppe Caire}
+
+\date{\tiny{TII AIDRC Seminar Series\\Oct 3, 2023}}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Background}
+\begin{footnotesize}
+    \begin{itemize}
+        \item ISAC refers to a design paradigm and corresponding enabling technologies, in which sensing and communication systems are integrated to efficiently utilize congested resources, and even to pursue mutual benefits.
+        \item Technological
+        \begin{itemize}
+        \footnotesize
+            \item S\&C go to higher bands, larger antenna arrays, miniaturization
+            \item S\&C converge in \textbf{hardware architecture, channel characteristics, and signal processing} at the mmWave band.
+            \item Emerging B5G/6G and IoT applications require ISAC designs.
+        \end{itemize}
+        \item Commercial
+        \begin{itemize}
+        \footnotesize
+            \item Sensing is well-recognized by the communication industry as a basic service and native capability of next-generation wireless networks, e.g., WiFi 7 and B5G/6G.
+            \item Novel civilian radio sensors, e.g., Soli, face challenges from spectrum regulators worldwide.
+            \item Spectrum congestion problems.
+        \end{itemize}
+    \end{itemize}
+    \end{footnotesize}
+\end{frame}
+
+\begin{frame}{Performance Metrics}
+\footnotesize
+    \begin{itemize}
+        \item Communication Performance Metrics
+        \begin{itemize}
+        \footnotesize
+            \item \textbf{Efficiency} to evaluate how much information is successfully communicated from the Tx to the Rx given limited resources
+            \item \textbf{Reliability} to measure the ability of a comms system to reduce/correct the erroneous symbols in the presence of noise \& interference
+        \end{itemize}
+        \item Sensing Operations
+        \begin{itemize}
+        \footnotesize
+            \item \textbf{Detection} to make decisions on the state of a target
+            \item \textbf{Estimation} to extract useful parameters of the sensed object from the noisy/interfered observations
+            \item \textbf{Recognition} to know what the sensed object is
+        \end{itemize}
+    \end{itemize}
+    \medskip
+    \centering
+    \includegraphics[width=.99\textwidth]{figures/metrics.PNG}
+\end{frame}
+
+\begin{frame}{The Cram\'{e}r-Rao Bound}
+\footnotesize
+    \textbf{Cram\'{e}r-Rao Bound (CRB)}
+    \medskip
+    
+    A measure of how good an unbiased estimator is. More accurately, it is the lower bound of the variance of all the unbiased estimators. CRB is also the inverse of Fisher Information.
+
+    \medskip
+    \begin{center}
+    \includegraphics[width=.65\textwidth]{figures/CRB.PNG}
+    \end{center}
+    \textbf{General Expression (Bayesian)}
+    $$
+    \mathbb{E}\Big\{(\RV{\eta}-\hat{\RV{\eta}})(\RV{\eta}-\hat{\RV{\eta}})^{\rm T}\Big\}
+    \succeq \mathbf{J}^{-1} =\left\{-\mathbb{E}\left[\frac{\partial^2 \ln p(\RM{Y},\RV{\eta})}{\partial\RV{\eta}\partial\RV{\eta}^{\rm T}}\right]\right\}^{-1}
+    $$
+\end{frame}
+
+\begin{frame}{CRB-rate Region}
+\begin{center}
+    \includegraphics[width=.55\textwidth]{figures/region_illustration.PNG}
+\end{center}
+\begin{itemize}
+    \item We use CRB as the metric of sensing performance
+    \begin{itemize}
+        \item We do not use MSE since it is determined by the specific estimator
+    \end{itemize}
+    \item Different Boundaries
+    \begin{itemize}
+        \item A: No integration gain
+        \item B: Idealized scenario - No tradeoff
+        \item C: The actual boundary should be similar to C
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{ISAC Resource Allocation}
+\textbf{Orthogonal Resource Allocation}
+
+\begin{center}
+\includegraphics[width=.23\textwidth]{figures/td.PNG}
+\hspace{1mm}
+\includegraphics[width=.2\textwidth]{figures/fd.PNG}
+\hspace{1mm}
+\includegraphics[width=.2\textwidth]{figures/sd.PNG}
+\end{center}
+\begin{multicols}{2}
+\textbf{Unified Waveform}
+\begin{center}
+\bigskip
+\includegraphics[width=.18\textwidth]{figures/unified.PNG}
+\end{center}
+When wireless resources are shared between S\&C functionalities, performance tradeoff naturally arises due to their contradictory design objectives.
+\end{multicols}
+\end{frame}
+
+\begin{frame}{ISAC Channels: Coupling Strength}
+\begin{itemize}
+    \item \textbf{Strongly Coupled}: The sensing target is the receiver of the dual-functional ISAC signal
+    \item \textbf{Moderately Coupled}: The sensing object is a part of the communication channel
+    \item \textbf{Weakly Coupled}: The sensing target is not directly related to the communication channel
+\end{itemize}
+
+\medskip
+\begin{center}
+\includegraphics[width=.45\textwidth]{figures/strong_weak.PNG}
+\hspace{3mm}
+\includegraphics[width=.45\textwidth]{figures/moderate.PNG}
+\end{center}
+\end{frame}
+
+\begin{frame}{ISAC Gain}
+    The ISAC gain is closedly related to the \textbf{\color{red}coupling strength} between communication and sensing subspaces.
+\begin{center}
+        \includegraphics[width=.95\textwidth]{figures/gain_st.PNG}
+\end{center}
+\medskip
+\begin{center}
+        \includegraphics[width=.4\textwidth]{figures/formula_gain.PNG}
+        \includegraphics[width=.4\textwidth]{figures/gain_region.PNG}
+\end{center}
+\end{frame}
+
+\begin{frame}{ISAC Gain: The Torch Analogy}
+    \begin{itemize}
+        \item An ingenious metaphor from one of our friends:
+        \begin{itemize}
+            \item {\color{red}``The research of ISAC is simply about how we can use a torch more efficiently.''}
+        \end{itemize}
+        \item Well...It is true, but only reveals a half of the full picture.
+        \begin{itemize}
+            \item Indeed, deciding the steering direction is important
+        \end{itemize}
+        \item But as we shall see shortly, another aspect of the ``ISAC torch'' also matters...
+    \end{itemize}
+    \begin{center}
+        \includegraphics[width=.5\textwidth]{figures/torch_1.PNG}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Vector Gaussian System Model}
+\begin{center}
+    \includegraphics[width=.7\textwidth]{figures/scenarios.PNG}
+\end{center}
+\footnotesize{
+\textbf{Signal Model}
+$$\RM{Y}_{\rm c} = \RM{H}_{\rm c}\RM{X}+\RM{Z}_{\rm c},~\RM{Y}_{\rm s} = \RM{H}_{\rm s}(\RV{\eta})\RM{X}+\RM{Z}_{\rm s}$$
+
+\textbf{Parameters}
+\smallskip
+\begin{itemize}
+    \item $\RM{H}_{\rm c}, \RM{H}_{\rm s}$: communication and sensing channels
+    \item $\RV{\eta}$: sensing parameters, e.g., angle, range, velocity, $ {\boldsymbol{{\upeta}}}\sim p_{\boldsymbol{{\upeta}}}\left(\bm{\eta}\right)$
+    \item $\RM{X}$: ISAC signal, ${\mathbf{X}} \sim {{p_{\mathbf{X}}}\left( {\bm{X}} \right)}$
+    \item $\RM{R}_{\RM{X}} = T^{-1}\RM{X}\RM{X}^H$: sample covariance matrix
+    \item $\widetilde{\M{R}}_{\RM{X}} = \mathbb{E}\left(\RM{R}_{\RM{X}}\right)$: statistical covariance matrix
+\end{itemize}
+}
+\end{frame}
+
+\begin{frame}{Vector Gaussian System Model}
+\begin{center}
+    \includegraphics[width=.7\textwidth]{figures/scenarios.PNG}
+\end{center}
+\footnotesize{
+\textbf{Signal Model}
+$$\RM{Y}_{\rm c} = \RM{H}_{\rm c}\RM{X}+\RM{Z}_{\rm c},~\RM{Y}_{\rm s} = \RM{H}_{\rm s}(\RV{\eta})\RM{X}+\RM{Z}_{\rm s}$$
+
+\textbf{Assumptions}
+\begin{itemize}
+	  \item Downlink device-free sensing
+    \item The dual-funcational signal $\RM{X}$ is shared among S\&C
+    \item The signal $\RM{X}$ is known to the sensing Rx, but unknown to the communication Rx
+    \item Sensing parameters randomly changes every $T$ symbols in an i.i.d. manner
+    \item Communication channel randomly changes every $kT$ symbols in an i.i.d. manner, $k \in \mathbb{Z}$.
+\end{itemize}
+}
+\end{frame}
+
+
+
+\begin{frame}{CRB: Random but Known Nuisance Parameters}
+
+\textbf{Parameters}
+\smallskip
+\begin{itemize}
+    \item $\RV{\eta}$: the parameter of interest
+    \item $\RM{X}$: nuisance parameter
+\end{itemize}
+
+\medskip
+\textbf{Possible Approaches}
+\smallskip
+
+\begin{itemize}
+    \item (Hybrid CRB) Treat $\RM{X}$ as a part of an extended parameter
+    \begin{itemize}
+        \item Loose in the case where $\RM{X}$ is known
+    \end{itemize}
+    \item (Marginal CRB) ``Integrate out'' $\RM{X}$ in the likelihood function describing the observations
+    \begin{itemize}
+        \item Cannot adapt to the case where $\RM{X}$ is known
+    \end{itemize}
+    \item (Miller-Chang) {\color{red}Our choice:} Compute the CRB for a given instance of $\RM{X}$, and take the expectation over $\RM{X}$
+    \begin{itemize}
+        \item {\color{red}Drawback:} Typically difficult to be computed
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{CRB-rate Region: Corner Points, Time Sharing}
+\begin{center}
+    \includegraphics[width=.55\textwidth]{figures/boundary_illustration.PNG}
+\end{center}
+\begin{itemize}
+    \item $P_{\rm CS}$: Optimizing the sensing performance when the communication performance is optimal
+    \begin{itemize}
+        \item {\color{red}Known} strategy: Gaussian signaling
+    \end{itemize}
+    \item $P_{\rm SC}$: Optimizing the communication performance when the sensing performance is optimal
+    \begin{itemize}
+        \item {\color{red}Unknown} strategy: What is the sensing-optimal waveform? How do we optimize the communication performance?
+    \end{itemize}
+    \item The line segment $P_{\rm CS}$--$P_{\rm SC}$ may be obtained by applying the simple time-sharing strategy
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Structure of the Fisher Information Matrix}
+\begin{footnotesize}
+\textbf{\color{red}The Miller-Chang type ``Meta'' CRB} 
+$$
+{\rm MSE}_{\RV{\eta}}(\hat{\RV{\eta}})\geq \mathbb{E}\left({\rm tr}\{\RM{J}_{\RV{\eta}|\RM{X}}^{-1}\}\right).
+$$
+\begin{center}
+    \includegraphics[width=.6\textwidth]{figures/blocks_time_average.PNG}
+\end{center}
+\textbf{\underline{Proposition 1}}. The BFIM of $\RV{\eta}$ conditioned on $\RM{X}$ takes the following form
+$$
+\RM{J}_{\RV{\eta}|\RM{X}} =  \frac{T}{\sigma_{\rm s}^2}\M{\Phi}(\RM{R}_{\RM{X}}),
+$$
+where $\M{\Phi}(\cdot)$ is an affine map characterized by
+$$
+\M{\Phi}(\M{A})=\sum_{i=1}^{r_1}\widetilde{\M{F}}_i\M{A}^{\rm T} \widetilde{\M{F}}_i^{\rm H}+\sum_{j=1}^{r_2}\widetilde{\M{G}}_j\M{A}\widetilde{\M{G}}_j^{\rm H} + \widetilde{\M{J}}_{\rm P},
+$$
+where $\widetilde{\M{F}}_i$ and $\widetilde{\M{G}}_j$ are partitioned from the Jacobian matrix $\RM{F}:=\frac{\partial \RV{h}_{\rm s}}{\partial \RV{\eta}}$, and $\widetilde{\M{J}}_{\rm P}$ is contributed by the prior distribution $p_{\RV{\eta}}(\V{\eta})$.
+\end{footnotesize}
+\end{frame}
+
+\begin{frame}{Intuition: Deterministic vs. Random}
+\textbf{Intuition}
+\begin{itemize}
+    \item Communication systems desire {\color{red}random} signals for carrying information
+    \item Sensing systems desire {\color{blue}deterministic} signals for estimating the parameters
+\end{itemize}
+\smallskip
+\textbf{Formal Results}
+\smallskip
+
+\textbf{\underline{Lemma 1}}. When the sensing-optimal {\color{blue}statistical} covariance matrix $\widetilde{\M{R}}_{\RM{X}}$ is unique, the sensing-optimal signals have deterministic {\color{red}sample} covariance matrices.
+
+\begin{center}
+    \includegraphics[width=.99\textwidth]{figures/derivation_lemma.PNG}
+\end{center}
+\end{frame}
+
+\begin{frame}{Deterministic vs. Random: The SISO Case}
+The sensing-optimal signal has {\color{blue}constant amplitude}, while the communication-optimal signal is {\color{red}Gaussian distributed}
+
+\begin{center}
+    \includegraphics[width=.99\textwidth]{figures/SISO.PNG}
+\end{center}
+\end{frame}
+
+\begin{frame}{Deterministic vs. Random: The General Case}
+\textbf{\underline{Lemma 1}}. When the sensing-optimal {\color{blue}statistical} covariance matrix $\widetilde{\M{R}}_{\RM{X}}$ is unique, the sensing-optimal signals have deterministic {\color{red}sample} covariance matrices.
+
+\medskip
+\begin{center}
+\color{red} What does this imply in general?
+\end{center}
+\begin{center}
+    \includegraphics[width=.99\textwidth]{figures/MIMO.PNG}
+\end{center}
+\begin{center}
+{\color{red}How do we design the semi-unitary matrix codebook for maximizing the communication rate (achieving the capacity)?}
+\end{center}
+\end{frame}
+
+\begin{frame}{$P_{\rm SC}$--Achieving Strategy}
+\footnotesize
+\begin{multicols}{2}
+\textbf{\color{red} Answer: The uniform distribution over the set of all $M\times T$ semi-unitary matrices.}
+
+\medskip
+\textbf{Sphere Packing on the Stiefel Manifold}
+$$
+\Set{S}_{T,M}=\big\{\M{Q}\in\mathbb{C}^{M\times T}|\M{Q}\M{Q}^{\rm H}=\M{I}\big\}
+$$
+\begin{center}
+    \includegraphics[width=.45\textwidth]{figures/stiefel.PNG}
+\end{center}
+
+\textbf{Stiefel Manifold Sampling Procedure}
+\begin{enumerate}
+\item Sample matrix $\M{A}$ from the standard complex Gaussian distribution;
+\item Obtain $\M{Q}$ from the LQ decomposition $\M{A} = \M{L}\M{Q}$;
+\item Left-multiple $\M{Q}$ by a precoding matrix depending on the channel and the sensing-optimal covariance matrix.
+\end{enumerate}
+\end{multicols}
+\textbf{\underline{Theorem 2}}. Sensing-limited High-SNR Capacity
+$$
+R_{\rm SC} = \mathbb{E}\Big\{\Big(1-\frac{\rv{M}_{\rm SC}}{2T}\Big)\log |\sigma_{\rm c}^{-2}\RM{H}_{\rm c}\widetilde{\M{R}}_{\RM{X}}^{\rm SC}\RM{H}_{\rm c}^{\rm H}|+\rv{c}_0\Big\} + O(\sigma_{\rm c}^2)
+$$
+\end{frame}
+
+\begin{frame}{$P_{\rm SC}$: Discussions}
+\footnotesize
+What does the $P_{\rm SC}$--achieving strategy imply in general?
+$$
+R_{\rm SC} = \mathbb{E}\Big\{\Big(1-\frac{\rv{M}_{\rm SC}}{2T}\Big)\log |\sigma_{\rm c}^{-2}\RM{H}_{\rm c}\widetilde{\M{R}}_{\RM{X}}^{\rm SC}\RM{H}_{\rm c}^{\rm H}|+\rv{c}_0\Big\} + O(\sigma_{\rm c}^2)
+$$
+\medskip
+\textbf{The sensing-optimal waveform}:
+$$
+\RM{X} = \sqrt{T}(\widetilde{\M{R}}_{\RM{X}}^{\rm SC})^{\frac{1}{2}}\RM{Q}= \sqrt{T}\M{U}_{\rm s}\M{\Lambda}_{\rm s}^{\frac{1}{2}}\RM{Q},
+$$
+where the information carrier $\RM{Q}$ is a semi-unitary matrix.
+
+\medskip
+\textbf{Observations}:
+\begin{itemize}
+\item Signals with deterministic sample covariance incurs performance loss for communication compared to the case with Gaussian signaling
+\item The maximum communication DoF loss is $\rv{M}_{\rm SC}^2/2T$
+\item When $T\rightarrow \infty$, the communication performance is lossless, since even a Gaussian signal matrix $\RM{X}$ would have asymptotically orthogonal rows for $T\rightarrow \infty$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{$P_{\rm CS}$--Achieving Strategy}
+\footnotesize
+For communications, the optimality of Gaussian signaling is well-known...
+\begin{center}
+    \includegraphics[width=.65\textwidth]{figures/Pcs.PNG}
+\end{center}
+{\color{red}What if a Gaussian signal is exploited for sensing?}
+\medskip
+
+\underline{\textbf{Theorem 3}}. When the columns in $\RM{X}$ are independent of one another, and identically follow a circularly symmetric complex Gaussian distribution $\mathcal{CN}(\V{0},\widetilde{\M{R}}_{\RM{X}})$, we may bound the CRB of $\RV{\eta}$ as follows:
+$$
+{\rm tr}\{[\M{\Phi}(\widetilde{\M{R}}_{\RM{X}})]^{-1}\}\leq {\mathbb{E}\{{\rm tr}\{[\M{\Phi}(\RM{R}_{\RM{X}})]^{-1}\}\}}
+\leq \frac{T}{T-\min\{K,{\rm rank}(\widetilde{\M{R}}_{\RM{X}})\}}{\rm tr}\{[\M{\Phi}(\widetilde{\M{R}}_{\RM{X}})]^{-1}\}.
+$$
+\end{frame}
+
+\begin{frame}{$P_{\rm CS}$: Discussions}
+\footnotesize
+When does the {\color{red} Gaussian-signaling CRB} imply in general?
+$$
+{\rm tr}\{[\M{\Phi}(\widetilde{\M{R}}_{\RM{X}})]^{-1}\}\leq {\mathbb{E}\{{\rm tr}\{[\M{\Phi}(\RM{R}_{\RM{X}})]^{-1}\}\}}
+\leq \frac{T}{T-\min\{K,{\rm rank}(\widetilde{\M{R}}_{\RM{X}})\}}{\rm tr}\{[\M{\Phi}(\widetilde{\M{R}}_{\RM{X}})]^{-1}\}.
+$$
+\medskip
+\textbf{The communication-optimal waveform}:
+$$
+\RM{X} = (\widetilde{\M{R}}_{\RM{X}}^{\rm CS})^{\frac{1}{2}}\RM{D}= \M{U}_{\rm c}\M{\Lambda}_{\rm c}^{\frac{1}{2}}\RM{D},
+$$
+where the information carrier $\RM{D}$ contains i.i.d Gaussian entries.
+
+\medskip
+\textbf{Observations}:
+\begin{itemize}
+\item Gaussian signaling incurs performance loss for sensing compared to the case with deterministic sample covariance matrix
+\item The maximum sensing DoF loss is $\min\{K,{\rm rank}(\widetilde{\M{R}}_{\RM{X}}^{\rm CS})\}$
+\item When $T\rightarrow \infty$,  the sensing performance is lossless, since the sample covariance becomes deterministic for $T\rightarrow \infty$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{S\&C Tradeoff as a Two-fold Tradeoff}
+\footnotesize
+As we move from $P_{\rm CS}$ to $P_{\rm SC}$, two things occur.
+$$
+\RM{X} = (\widetilde{\M{R}}_{\RM{X}}^{\rm CS})^{\frac{1}{2}}\RM{D}= {\color{orange}\M{U}_{\rm c}\M{\Lambda}_{\rm c}^{\frac{1}{2}}}{\color{magenta}\RM{D}}~~{\rm v.s.}~~\RM{X} = \sqrt{T}(\widetilde{\M{R}}_{\RM{X}}^{\rm SC})^{\frac{1}{2}}\RM{Q}= \sqrt{T}{\color{orange}\M{U}_{\rm s}\M{\Lambda}_{\rm s}^{\frac{1}{2}}}{\color{magenta}\RM{Q}} 
+$$
+\textbf{\color{magenta} Deterministic-Random Tradeoff (DRT)}: The randomness of the ISAC signal reduces.
+\begin{center}
+\includegraphics[width=.4\textwidth]{figures/DRT.PNG}
+\end{center}
+
+\textbf{\color{orange} Subspace Tradeoff (ST)}: The signal power moves from the comms subspace to the sensing subspace.
+\begin{center}
+\includegraphics[width=.7\textwidth]{figures/gain_st.PNG}
+\end{center}
+\end{frame}
+
+\begin{frame}{Adjusting the Subspace Tradeoff}
+\raggedright
+\textbf{Statistical Covariance Shaping:} An outer bound can be obtained by letting $T \to \infty$ and solving the following Pareto optmization problem, in which case $\widetilde{\M{R}}_{\RM{X}} = \RM{R}_{\RM{X}}$
+$$
+\begin{aligned}
+\min_{\widetilde{\M{R}}_{\RM{X}}}~&(1-\alpha){\rm tr}\Big\{\Big[\M{\Phi}(\widetilde{\M{R}}_{\RM{X}})\Big]^{-1}\Big\}-\alpha\log\Big|\M{I}+\sigma_{\rm c}^{-2}\RM{H}_{\rm c}\widetilde{\M{R}}_{\RM{X}}\RM{H}_{\rm c}^{\rm H}\Big|
+\end{aligned}
+$$
+\begin{center}
+\includegraphics[width=.5\textwidth]{figures/pentagon_inner_bound_alpha.pdf}
+\end{center}
+\footnotesize{*The objective function above forms a CRB-rate {\color{red}outer bound} if omitting the DRT.}
+\end{frame}
+
+\begin{frame}{Adjusting the Deterministic-Random Tradeoff}
+\raggedright
+\footnotesize{
+The general approach for adjusting the DRT remains unknown. However, we may attain various inner bounds by:
+\begin{itemize}
+\item Time-sharing between $P_{\rm CS}$ and $P_{\rm SC}$;
+\item Transmitting Gaussian or semi-unitary random signals over S\&C subspaces;
+\item Time-sharing method between any two signaling strategies.
+\end{itemize}
+}
+\begin{center}
+\includegraphics[width=.55\textwidth]{figures/boundaries.pdf}
+\end{center}
+\scriptsize{
+*Time-sharing attains the {\color{red}convex hull} of the CRB-rate regions of any two strategies.
+
+*Gaussian-Semi-Unitary time-sharing is better than $P_{\rm CS}$--$P_{\rm SC}$ time-sharing.
+} 
+\end{frame}
+
+
+\begin{frame}{Case Study: Target Angle Estimation}
+\footnotesize
+\begin{multicols}{2}
+\textbf{Sensing channel model}
+$$
+\RM{H}_{\rm s}=\sum_{n=1}^{N_{\rm T}} \rv{\alpha}_n \RV{a}(\rv{\theta}_n)\RV{v}^{\rm T}(\rv{\theta}_n).
+$$
+\textbf{Single target case}
+$$
+\RV{\eta}=[\rv{\theta},~{\rm Re}\{\rv{\alpha}\},~{\rm Im}\{\rv{\alpha}\}]^{\rm T}.
+$$
+\begin{center}
+\includegraphics[width=.5\textwidth]{figures/cr_basic.eps}
+\end{center}
+\end{multicols}
+\vspace{-3mm}
+\textbf{Communication DoF loss at $P_{\rm SC}$}
+$$
+R_{\rm SC} = \mathbb{E}\bigg\{\Big(1-{\color{blue}\frac{1}{2T}}\Big)\log |\sigma_{\rm c}^{-2}\RM{H}_{\rm c}\widetilde{\M{R}}_{\RM{X}}^{\rm SC}\RM{H}_{\rm c}^{\rm H}|+\rv{c}_0\bigg\} + O(\sigma_{\rm c}^2)
+$$
+\textbf{Sensing DoF loss at $P_{\rm CS}$}
+$$
+\mathbb{E}\bigg[\Big({\rm tr}\{\overline{\M{M}}\RM{R}_{\RM{X}}^{\rm CS}\}\Big)^{-1}\bigg]= \frac{T}{(T-{\color{red}1}){\rm tr}\{\overline{\M{M}}\widetilde{\M{R}}_{\RM{X}}^{\rm CS}\}}.
+$$
+\end{frame}
+
+\begin{frame}{Case Study: Target Angle Estimation}
+\centering
+\footnotesize
+~~~~~ST~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DRT\\
+\medskip
+\includegraphics[width=.47\textwidth]{figures/cr_rho.eps}
+\hspace{3mm}
+\includegraphics[width=.47\textwidth]{figures/cr_T.eps}\\
+\medskip
+{\scriptsize Subspace correlation brings ISAC gain} ~~~{\scriptsize DRT becomes less prominent as $T\rightarrow \infty$}
+\end{frame}
+
+\begin{frame}{Is DRT Universal?}
+\textbf{\color{magenta} Deterministic-Random Tradeoff (DRT)}: The randomness of the ISAC signal reduces when moving from $P_{\rm CS}$ to $P_{\rm SC}$
+\begin{center}
+\includegraphics[width=.4\textwidth]{figures/DRT.PNG}
+\end{center}
+    \centering
+    \includegraphics[width=.99\textwidth]{figures/metrics.PNG}
+    {\color{red}Is DRT a universal tradeoff for arbitrary sensing metrics, or is it effective only for CRB?}
+\end{frame}
+
+\begin{frame}{Sensing Mutual Information}
+\raggedright
+\begin{itemize}
+\item \textbf{Sensing Signal Model in ISAC Systems}
+$$
+{{\mathbf{Y}}_s} = {{\mathbf{H}}_s}\left( {\boldsymbol{{\upeta}}} \right){\mathbf{X}} + {{\mathbf{Z}}_s}, {\mathbf{X}} \sim {{p_{\mathbf{X}}}\left( {\bm{X}} \right)}, {\boldsymbol{{\upeta}}} \sim p_{\boldsymbol{{\upeta}}}\left(\bm{\eta}\right)
+$$
+\item \textbf{Sensing Mutual Information}
+$$
+I_s = I\left( {{{{\mathbf{Y}}}_s};\boldsymbol{\upeta}\left| {\mathbf{X}} \right.} \right) = I\left( {{{{\mathbf{Y}}}_s};{{{\mathbf{H}}}_s}\left| {\mathbf{X}} \right.} \right), 
+$$
+since ${{{\mathbf{H}}}_s}$ is a deterministic function of ${\boldsymbol{{\upeta}}}$. No closed-form in general unless ${{{\mathbf{H}}}_s}$ is Gaussian.
+\end{itemize}
+$$
+\quad
+$$
+  
+\begin{small}
+\underline{\textbf{Lemma 4}} \textbf{(Concavity of Sensing MI).}  $I\left( {{{\mathbf{Y}}_s};\boldsymbol{\upeta} \left| {\mathbf{X}} \right. = \bm{A}} \right)$ is a {\color{red}concave function} in $\bm{R}_A =  T^{-1} \bm{A}\bm{A}^H$.
+\end{small}
+\end{frame}
+
+\begin{frame}{Sensing Mutual Information}
+\raggedright
+\begin{small}
+\underline{\textbf{Proposition 2}} \textbf{(DRT in Sensing MI).} Let the average transmit power be $P_T$, namely, $\operatorname{tr}\left(\mathbb{E}\left\{\mathbf{R}_X \right\}\right) = P_T$. The sensing MI is maximized if and only if the support of the sample covariance matrix $\mathbf{R}_X =  T^{-1} \mathbf{X}\mathbf{X}^H$ is the solution set of the following deterministic convex optimization problem
+\begin{equation*}\label{eq10}
+\begin{gathered}
+  \mathop {\max }\limits_{{{\bm{R}}_A} \succeq {\mathbf{0}},\;{{\bm{R}}_A} = {\bm{R}}_A^H} \;{I_{\boldsymbol{{\upeta}}} }\left( {{{\bm{R}}_A}} \right)\quad\operatorname{s .t.}\;\;\;\operatorname{tr} \left( {{{\bm{R}}_A}} \right) = {P_T}, \hfill \\ 
+\end{gathered}
+\end{equation*}
+in which case $\mathbf{R}_X$ has a {\color{red}deterministic trace}. In particular, if the above problem has a unique solution, then $\mathbf{R}_X$ {\color{red}itself is deterministic}, i.e., $\mathbf{R}_X = \mathbb{E}\left\{\mathbf{R}_X\right\} = \bm{\tilde R}_X$. 
+\end{small}
+$$
+\quad
+$$
+\footnotesize{*The proof is a straightforward extension of Lemma 4 and Jensen's inequality.}
+\end{frame}
+
+
+\begin{frame}{Distortion Metrics for Sensing}
+\raggedright
+\begin{itemize}
+\item Most sensing performance metrics can be induced from a \textbf{distortion function} $d\left(\boldsymbol{\upeta},\boldsymbol{\hat{\upeta}}\right)$.
+\item MSE can be induced from the \textbf{Euclidean distance} $d\left(\boldsymbol{\upeta},\boldsymbol{\hat{\upeta}}\right) = \left\| {\boldsymbol{\upeta}-\boldsymbol{\hat{\upeta}}} \right\|^2$
+\item $P_D$ can be induced from the \textbf{Hamming distance} $d\left(\upeta, \hat{\upeta}\right) = \upeta\oplus\hat{\upeta}$ by considering $\upeta$ as an indicator $\upeta \in \left\{0,1\right\}$ for the existence of the target, in which case
+\begin{equation*}\label{eq_distortion}
+\begin{gathered}
+  \mathbb{E}\left\{ \upeta\oplus\hat{\upeta} \right\} =  \hfill \\  \left( {1 \oplus 1} \right)\Pr \left( {\hat{\upeta}  = 1\left| {\upeta  = 1} \right.} \right)  + \left( {0 \oplus 0} \right)\Pr \left( {\hat{\upeta}  = 0\left| {\upeta  = 0} \right.} \right) \hfill \\
+   + \left( {1 \oplus 0} \right)\Pr \left( {\hat{\upeta}  = 1\left| {\upeta  = 0} \right.} \right)  + \left( {0 \oplus 1} \right)\Pr \left( {\hat{\upeta}  = 0\left| {\upeta  = 1} \right.} \right) \hfill \\
+= 1 - {P_D} + {P_{FA}}. \hfill \\ 
+\end{gathered}
+\end{equation*}
+That is, under the \textbf{Neyman-Pearson criterion} where $P_{FA}$ is fixed, minimizing the average Hamming distortion yields the maximum $P_D$.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Rate-Distortion Revisit}
+\begin{itemize}
+\item \textbf{Rate-Distortion Function for $\boldsymbol{\upeta}$}
+$$
+R\left( D \right) = \mathop {\min }\limits_{p\left( {\hat{\boldsymbol{\upeta}} \left| \boldsymbol{\upeta}  \right.} \right)} \;I\left( \boldsymbol{\upeta};\hat{\boldsymbol{\upeta}} \right)\;\;\operatorname{s.t.}\;\mathbb{E}\left\{ {d\left(\boldsymbol{\upeta},\hat{\boldsymbol{\upeta}}\right)} \right\}  \le D.
+$$
+\item \textbf{Distortion-Rate Function for $\boldsymbol{\upeta}$}
+$$
+D\left( R \right) = \mathop {\min }\limits_{p\left( {\hat{\boldsymbol{\upeta}} \left| \boldsymbol{\upeta}  \right.} \right)} \;\mathbb{E}\left\{ {d\left(\boldsymbol{\upeta},\hat{\boldsymbol{\upeta}}\right)} \right\}\;\;\operatorname{s.t.}\;I\left( \boldsymbol{\upeta};\hat{\boldsymbol{\upeta}} \right)  \le R.
+$$
+\item \textbf{Useful Properties}
+\begin{itemize}
+\item $R\left( D \right)$ is convex in $D$;
+\item $R\left( D \right)$ is monotonically decreasing in $D$;
+\item $D\left( R \right)$ is the inverse function of $R\left( D \right)$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Distortion Lower-Bound Induced from Sensing MI}
+\raggedright
+\underline{\textbf{Theorem 4}} \textbf{(Distortion Lower Bound).} Let $D\left(R\right)$ be the distortion-rate function for the to-be-sensed i.i.d. random parameter $\boldsymbol{\upeta}\sim p_{\boldsymbol{{\upeta}}}\left(\bm{\eta}\right)$, $\hat{\boldsymbol{\upeta}}$ an estimate of $\boldsymbol{\upeta}$, and $d\left(\boldsymbol{\upeta},\hat{\boldsymbol{\upeta}}\right)$ the corresponding distortion function measuring the sensing performance. The average distortion of recovering $\boldsymbol{\upeta}$ from the noisy observation $\mathbf{Y}_s$ is lower-bounded by 
+\begin{equation*}\label{eq11}
+\mathbb{E}\left\{ {d\left(\boldsymbol{\upeta},\hat{\boldsymbol{\upeta}}\right)} \right\} \mathop  \ge\limits^{\left( a \right)} D\left[ {\mathbb{E}\left\{ {{I_{\boldsymbol{\upeta}} }\left( {{{\mathbf{R}}_X}} \right)} \right\}} \right] \mathop  \ge\limits^{\left( b \right)} D\left( { {{I_{\boldsymbol{\upeta}} }\left( {{{{\bm{\tilde R}}}_X}} \right)} } \right),
+\end{equation*}
+where the equality holds for $\left(b\right)$ if $\mathbf{R}_X$ satisfies the conditions in Proposition 2. In particular, if the solution of the MI maximization problem is unique, then $\mathbf{R}_X$ itself should be deterministic to achieve $\left(b\right)$.
+$$
+\quad
+$$
+\footnotesize{*Theorem 4 is proved by applying the data processing inequality to the Markov chain ${\boldsymbol{\upeta}} \to {{{\mathbf{H}}}_s} \to ({{{\mathbf{Y}}}_s}, \mathbf{X}) \to {\hat{\boldsymbol{\upeta}}}$.}
+\end{frame}
+
+\begin{frame}{Discussions}
+\raggedright
+\begin{footnotesize}
+\begin{itemize}
+\item \textbf{Universal DRT in ISAC Systems:} Theorem 4 does not require a specific distortion function for sensing, which implies that the DRT may hold for a variety of sensing metrics, including the MSE, $P_D$, and negative sensing MI itself.
+\item \textbf{Wireless Sensing as Non-Cooperative Source-Channel Coding}
+
+\begin{center}
+\includegraphics[width=.8\textwidth]{figures/Sensing_as_joint_source_channel_coding_revised.pdf}
+\end{center}
+
+*Theorem 4 is similar to the converse of source-channel separation theorem, in the sense that the target is regarded as a non-cooperative source which communicates the information of ${\boldsymbol{\upeta}}$ to the ISAC receiver through the ``channel'' $\mathbf{X}$.
+\end{itemize}
+\end{footnotesize}
+\end{frame}
+
+
+\begin{frame}{ISAC Projector: The Full Picture of S\&C Tradeoff}
+\begin{multicols}{2}
+\footnotesize
+\includegraphics[width=.5\textwidth]{figures/projector.PNG}
+\begin{itemize}
+\item We wish to simultaneously {\color{blue}illuminate a target} (sensing) and {\color{red}transmit image} (communication) using a {\color{magenta}projector}
+\item The brightness of each pixel may be used to convey information
+\item But dark pixels result in imperfect illumination
+\end{itemize}
+\end{multicols}
+
+\medskip
+$$
+\;
+$$
+\tiny
+[1] Y. Xiong, \textbf{F. Liu}*, Y. Cui, W. Yuan, T. -X. Han, and G. Caire, ``On the Fundamental Tradeoff of Integrated Sensing and Communications Under Gaussian Channels'', \textit{IEEE Trans. Inf. Theory}, Available: {\color{blue}\underline{https://ieeexplore.ieee.org/document/10147248}}
+
+\medskip
+[2] \textbf{F. Liu}, Y. Xiong, K. Wan, T. -X. Han, and G. Caire, ``Deterministic-Random Tradeoff of Integrated Sensing and Communications in Gaussian Channels: A Rate-Distortion Perspective'', in Proc. \textit{IEEE ISIT 2023}, Available: {\color{blue}\underline{https://arxiv.org/abs/2212.10897}}
+\end{frame}
+
+\end{document} 

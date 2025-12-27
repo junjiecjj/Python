@@ -205,7 +205,7 @@ def SNR_berfer( ):  ## E = 10, B = 128
     lw = 2
     width = 10
     high  = 8
-    fig, axs = plt.subplots(1, 1, figsize=(12, high), constrained_layout = True)
+    fig, axs = plt.subplots(1, 1, figsize=(11, 8), constrained_layout = True)
     cols = 1
     ##=============================== LDPC =========================================
     lb = "负载数据, " + r"$\mathrm{5G~LDPC}$"
@@ -234,17 +234,17 @@ def SNR_berfer( ):  ## E = 10, B = 128
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     # label
     font = {'family':'Times New Roman','style':'normal','size':35}
-    # font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
+    font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
     axs.set_xlabel("SNR (dB)", fontproperties=font)
     if cols == 2:
         axs.set_ylabel( "WER",      fontproperties = font )# , fontdict = font1
     elif cols == 1:
-        axs.set_ylabel( "BER",      fontproperties = font )# , fontdict = font1
+        axs.set_ylabel( "误码率(BER)",      fontproperties = font )# , fontdict = font1
 
     # font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 22)
     # font1 = FontProperties(fname=fontpath2+"Caskaydia Cove ExtraLight Nerd Font Complete.otf", size=16)
     font1 = {'family':'Times New Roman','style':'normal','size':22, }
-    font1 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font1 = FontProperties(fname=fontpath+"simsun.ttf", size=32)
     legend1 = axs.legend(loc = 'best', borderaxespad = 0, edgecolor = 'black', prop = font1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)

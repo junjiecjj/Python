@@ -1,0 +1,2 @@
+# INFOCOM2022-SOPIP
+The codes provided here are corresponding to the numerical simulations in our paper, J. Wang, B. Liang, M. Dong, G. Boudreau, and H. Abou-zeid, "Semi-Online Precoding with Information Parsing for Cooperative MIMO Wireless Networks", to appear in Proc. IEEE Conf. Comput. Commun. (INFOCOM), virtual conference, May 2-5, 2022. For any further development, please kindly cite our paper.
