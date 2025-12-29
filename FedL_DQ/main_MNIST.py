@@ -73,7 +73,8 @@ if args.quantize == True:
         args.flip_rate = 0.2513
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
-
+else:
+    args.bitswidth = 32
 
 ## seed
 args.seed = 42
