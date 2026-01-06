@@ -99,7 +99,7 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def CIAFR10_IID_DQ4321bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 6), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
     L = 1000
 
@@ -438,7 +438,7 @@ def DynamicBitWidth():
     return
 
 def CommOverHead():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 6), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     lw = 2
     L = 1000
     V = 269722
@@ -509,12 +509,58 @@ def CommOverHead():
     plt.close()
     return
 
+def Loss():
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    # axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
+    L = 1000
+
+    rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
+    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-14:28:54/TraRecorder.npy"))[:L]
+    Y1 = data[:,2]
+    axs.plot(data[:,0], Y1 , color = 'b', linestyle= '-',lw = 2, label = '完美传输',)
+
+
+    ###########
+    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+    axs.set_ylabel('损失', fontproperties=font2, )
+
+    # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    # legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    # frame1 = legend1.get_frame()
+    # frame1.set_alpha(1)
+    # frame1.set_facecolor('none')                         # 设置图例legend背景透明
+
+    # x_major_locator = MultipleLocator(5)               # 把x轴的刻度间隔设置为1，并存在变量里
+    # axs.xaxis.set_major_locator(x_major_locator)       # 把x轴的主刻度设置为1的倍数
+    axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 25, width=3,)
+    labels = axs.get_xticklabels() + axs.get_yticklabels()
+    [label.set_fontname('Times New Roman') for label in labels]
+    [label.set_fontsize(25) for label in labels]  # 刻度值字号
+
+    # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
+    # axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
+
+    axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+    axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
+    axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
+    axs.spines['right'].set_linewidth(2)     ### 设置右边坐标轴的粗细
+    axs.spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
+
+    out_fig = plt.gcf()
+    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_loss.pdf' )
+    plt.show()
+    plt.close()
+    return
+
+    return
 
 CIAFR10_IID_DQ4321bit()
-CIAFR10_IID_431bit()
-DynamicBitWidth()
-CommOverHead()
-#
+# CIAFR10_IID_431bit()
+# DynamicBitWidth()
+# CommOverHead()
+# Loss()
 
 
 

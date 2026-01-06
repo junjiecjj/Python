@@ -1,0 +1,164 @@
+% close all;
+clear; clc
+addpath('..\')
+addpath('..\Function\')
+
+%% Marker settings (for black-and-white printing)
+N_mark  = 6;                  % Number of markers per CDF curve
+markers = {'o','s','^','d'};  % Marker styles for each data series
+mSize   = 8;                  % Marker size
+
+%% Data Pre-processing for B_640_T_512
+% Load data
+load('..\Data\BER_Hitrate\B_640_T_512.mat')
+% Create parameter object
+Para = ParaClass_640_512();
+% Compute normalized range error (in meters)
+All_RangeError_B_640_T_512 = rng_error(1,:) ...
+    / (4 * Para.fs * Para.TcEff / (3e8 * 2*(Para.Tsen+Para.Tcom)));
+% Compute normalized velocity error (in m/s)
+All_VelError_B_640_T_512 = vel_error(1,:) ...
+    / (2 * Para.N_c * Para.TcAll * Para.fc / 3e8);
+% Take azimuth error (in degrees)
+All_AziError_B_640_T_512 = azi_error(1,:);
+% Remove zero‐error entries (indicates missed detections)
+index_Range = find(All_RangeError_B_640_T_512 ~= 0);
+index_Vel   = find(All_VelError_B_640_T_512   ~= 0);
+index_Azi   = find(All_AziError_B_640_T_512   ~= 0);
+All_RangeError_B_640_T_512 = All_RangeError_B_640_T_512(index_Range);
+All_VelError_B_640_T_512   = All_VelError_B_640_T_512(index_Vel);
+All_AziError_B_640_T_512   = All_AziError_B_640_T_512(index_Azi);
+
+%% Data Pre-processing for B_640_T_256
+load('..\Data\BER_Hitrate\B_640_T_256.mat')
+Para = ParaClass_640_256();
+All_RangeError_B_640_T_256 = rng_error(1,:) ...
+    / (4 * Para.fs * Para.TcEff / (3e8 * 2*(Para.Tsen+Para.Tcom)));
+All_VelError_B_640_T_256 = vel_error(1,:) ...
+    / (2 * Para.N_c * Para.TcAll * Para.fc / 3e8);
+All_AziError_B_640_T_256 = azi_error(1,:);
+index_Range = find(All_RangeError_B_640_T_256 ~= 0);
+index_Vel   = find(All_VelError_B_640_T_256   ~= 0);
+index_Azi   = find(All_AziError_B_640_T_256   ~= 0);
+All_RangeError_B_640_T_256 = All_RangeError_B_640_T_256(index_Range);
+All_VelError_B_640_T_256   = All_VelError_B_640_T_256(index_Vel);
+All_AziError_B_640_T_256   = All_AziError_B_640_T_256(index_Azi);
+
+%% Data Pre-processing for B_320_T_512
+load('..\Data\BER_Hitrate\B_320_T_512.mat')
+Para = ParaClass_320_512();
+All_RangeError_B_320_T_512 = rng_error(1,:) ...
+    / (4 * Para.fs * Para.TcEff / (3e8 * 2*(Para.Tsen+Para.Tcom)));
+All_VelError_B_320_T_512 = vel_error(1,:) ...
+    / (2 * Para.N_c * Para.TcAll * Para.fc / 3e8);
+All_AziError_B_320_T_512 = azi_error(1,:);
+index_Range = find(All_RangeError_B_320_T_512 ~= 0);
+index_Vel   = find(All_VelError_B_320_T_512   ~= 0);
+index_Azi   = find(All_AziError_B_320_T_512   ~= 0);
+All_RangeError_B_320_T_512 = All_RangeError_B_320_T_512(index_Range);
+All_VelError_B_320_T_512   = All_VelError_B_320_T_512(index_Vel);
+All_AziError_B_320_T_512   = All_AziError_B_320_T_512(index_Azi);
+
+%% Data Pre-processing for B_160_T_512
+load('..\Data\BER_Hitrate\B_160_T_512.mat')
+Para = ParaClass_160_512();
+All_RangeError_B_160_T_512 = rng_error(1,:) ...
+    / (4 * Para.fs * Para.TcEff / (3e8 * 2*(Para.Tsen+Para.Tcom)));
+All_VelError_B_160_T_512 = vel_error(1,:) ...
+    / (2 * Para.N_c * Para.TcAll * Para.fc / 3e8);
+All_AziError_B_160_T_512 = azi_error(1,:);
+index_Range = find(All_RangeError_B_160_T_512 ~= 0);
+index_Vel   = find(All_VelError_B_160_T_512   ~= 0);
+index_Azi   = find(All_AziError_B_160_T_512   ~= 0);
+All_RangeError_B_160_T_512 = All_RangeError_B_160_T_512(index_Range);
+All_VelError_B_160_T_512   = All_VelError_B_160_T_512(index_Vel);
+All_AziError_B_160_T_512   = All_AziError_B_160_T_512(index_Azi);
+
+%% Plot CDFs with markers
+set(0,'defaultfigurecolor','w')
+figure;
+
+% 1) Distance Error CDF
+subplot(3,1,1); hold on; box on; grid on;
+set(gca,'FontName','Times New Roman','FontSize',12);
+p1 = cdfplot(abs(All_RangeError_B_640_T_512));
+x1 = get(p1,'XData'); idx1 = round(linspace(1,length(x1),N_mark));
+set(p1, 'LineStyle','-', 'Color','b', 'LineWidth',2, ...
+        'Marker',markers{1}, 'MarkerIndices',idx1, 'MarkerSize',mSize);
+p2 = cdfplot(abs(All_RangeError_B_640_T_256));
+x2 = get(p2,'XData'); idx2 = round(linspace(1,length(x2),N_mark));
+set(p2, 'LineStyle','-', 'Color','r', 'LineWidth',2, ...
+        'Marker',markers{2}, 'MarkerIndices',idx2, 'MarkerSize',mSize);
+p3 = cdfplot(abs(All_RangeError_B_320_T_512));
+x3 = get(p3,'XData'); idx3 = round(linspace(1,length(x3),N_mark));
+set(p3, 'LineStyle','-', 'Color','g', 'LineWidth',2, ...
+        'Marker',markers{3}, 'MarkerIndices',idx3, 'MarkerSize',mSize);
+p4 = cdfplot(abs(All_RangeError_B_160_T_512));
+x4 = get(p4,'XData'); idx4 = round(linspace(1,length(x4),N_mark));
+set(p4, 'LineStyle','-', 'Color','c', 'LineWidth',2, ...
+        'Marker',markers{4}, 'MarkerIndices',idx4, 'MarkerSize',mSize);
+xlabel('Distance Error [m]');
+ylabel('CDF');
+title('')
+xlim([1e-4 1]);
+set(gca,'XScale','log');
+
+% 2) Velocity Error CDF
+subplot(3,1,2); hold on; box on; grid on;
+set(gca,'FontName','Times New Roman','FontSize',12);
+p1 = cdfplot(abs(All_VelError_B_640_T_512));
+x1 = get(p1,'XData'); idx1 = round(linspace(1,length(x1),N_mark));
+set(p1, 'LineStyle','-', 'Color','b', 'LineWidth',2, ...
+        'Marker',markers{1}, 'MarkerIndices',idx1, 'MarkerSize',mSize);
+p2 = cdfplot(abs(All_VelError_B_640_T_256));
+x2 = get(p2,'XData'); idx2 = round(linspace(1,length(x2),N_mark));
+set(p2, 'LineStyle','-', 'Color','r', 'LineWidth',2, ...
+        'Marker',markers{2}, 'MarkerIndices',idx2, 'MarkerSize',mSize);
+p3 = cdfplot(abs(All_VelError_B_320_T_512));
+x3 = get(p3,'XData'); idx3 = round(linspace(1,length(x3),N_mark));
+set(p3, 'LineStyle','-', 'Color','g', 'LineWidth',2, ...
+        'Marker',markers{3}, 'MarkerIndices',idx3, 'MarkerSize',mSize);
+p4 = cdfplot(abs(All_VelError_B_160_T_512));
+x4 = get(p4,'XData'); idx4 = round(linspace(1,length(x4),N_mark));
+set(p4, 'LineStyle','-', 'Color','c', 'LineWidth',2, ...
+        'Marker',markers{4}, 'MarkerIndices',idx4, 'MarkerSize',mSize);
+xlabel('Velocity Error [m/s]');
+ylabel('CDF');
+title('')
+xlim([1e-3 1]);
+set(gca,'XScale','log');
+
+% 3) Azimuth Error CDF
+subplot(3,1,3); hold on; box on; grid on;
+set(gca,'FontName','Times New Roman','FontSize',12);
+p1 = cdfplot(abs(All_AziError_B_640_T_512));
+x1 = get(p1,'XData'); idx1 = round(linspace(1,length(x1),N_mark));
+set(p1, 'LineStyle','-', 'Color','b', 'LineWidth',2, ...
+        'Marker',markers{1}, 'MarkerIndices',idx1, 'MarkerSize',mSize);
+p2 = cdfplot(abs(All_AziError_B_640_T_256));
+x2 = get(p2,'XData'); idx2 = round(linspace(1,length(x2),N_mark));
+set(p2, 'LineStyle','-', 'Color','r', 'LineWidth',2, ...
+        'Marker',markers{2}, 'MarkerIndices',idx2, 'MarkerSize',mSize);
+p3 = cdfplot(abs(All_AziError_B_320_T_512));
+x3 = get(p3,'XData'); idx3 = round(linspace(1,length(x3),N_mark));
+set(p3, 'LineStyle','-', 'Color','g', 'LineWidth',2, ...
+        'Marker',markers{3}, 'MarkerIndices',idx3, 'MarkerSize',mSize);
+p4 = cdfplot(abs(All_AziError_B_160_T_512));
+x4 = get(p4,'XData'); idx4 = round(linspace(1,length(x4),N_mark));
+set(p4, 'LineStyle','-', 'Color','c', 'LineWidth',2, ...
+        'Marker',markers{4}, 'MarkerIndices',idx4, 'MarkerSize',mSize);
+xlabel('Azimuth Error [deg]');
+ylabel('CDF');
+title('')
+xlim([0 1]);
+
+% Add a single legend for all subplots
+ah = axes('position',get(gca,'position'),'visible','off');
+legend(ah, [p1,p2,p3,p4], {
+    'B=640 MHz, T_c=51.2 \mus', ...
+    'B=640 MHz, T_c=25.6 \mus', ...
+    'B=320 MHz, T_c=51.2 \mus', ...
+    'B=160 MHz, T_c=51.2 \mus' }, ...
+    'Interpreter','tex', 'Box','off', ...
+     'NumColumns',2, ...
+    'FontName','Times New Roman', 'FontSize',12);

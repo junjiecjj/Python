@@ -74,18 +74,18 @@ decay_rates = {
 communication_rounds = np.linspace(0, 1000, 1001)
 dataset = "CIFAR10"
 
-# decay_rates = {
-#     'conv1.weight': [3.2, 0.100, 0.005] ,    # 较快衰减
-#     'conv2.weight': [3.7, 0.101, 0.004],    # 中等衰减
-#     'fc1.weight': [3.0, 0.098, 0.002],      # 较慢衰减
-#     'fc2.weight': [2.6, 0.103, 0.001]        # 最慢衰减
-# }
-# communication_rounds = np.linspace(0, 300, 301)
-# dataset = "MNIST"
+decay_rates = {
+    'conv1.weight': [3.2, 0.100, 0.005] ,    # 较快衰减
+    'conv2.weight': [3.7, 0.101, 0.004],    # 中等衰减
+    'fc1.weight': [3.0, 0.098, 0.002],      # 较慢衰减
+    'fc2.weight': [2.6, 0.103, 0.001]        # 最慢衰减
+}
+communication_rounds = np.linspace(0, 300, 301)
+dataset = "MNIST"
 
 
 # key_want = ['conv1.weight', 'conv2.weight', 'fc1.weight', 'fc2.weight']
-fig, axs = plt.subplots(1, 1, figsize=(10, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
 # font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
 # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)

@@ -1,0 +1,75 @@
+function parIn = get_system_parameters()
+
+%% System Parameters
+parIn.numUEs = 500;           % number of potential UEs
+parIn.numActUEs = 50;        % number of active UEs
+parIn.numBSAntennas = 128;   % number of BS antennas for each subarrays
+parIn.numUEAntennas = 1;     % number of UE antennas
+parIn.numOFDMSymbols = 10;
+parIn.lenSprCodes = 80;
+
+% Modulation mode. The QAM has not been supported yet
+parIn.modType = 'QPSK';       % 'PSK' or 'QAM'
+parIn.modOrder = 4;          % modulation order
+parIn.bitsperSymbol = log2(parIn.modOrder);
+parIn.bitsperFrame = parIn.numOFDMSymbols * parIn.bitsperSymbol * parIn.numActUEs;
+
+%% Simulation Parameters
+parIn.snrdB = 10;
+parIn.numSim = 10000;
+parIn.scheme = 0; % 0 for 'single' 1 for 'mimo'
+
+%% Channel Paramters
+parIn.Lp_min = 8;  
+parIn.Lp_max = 20;
+parIn.bandWidth = 1e7;
+parIn.fs = 1e7;
+parIn.lenCP = 16;
+parIn.pathGain = 1;
+parIn.channelTh = 0.5;
+parIn.angleSpread = 7.5;
+parIn.preEqTh = 0.2;
+
+parIn.Ps_dBm = 10;           % transmitted power in dBm, max 23 dBm
+parIn.pathLossEp_dBm = 128.1+ 37.6*(-0.323183);
+parIn.fadingEp = 0.5*(parIn.Lp_min+parIn.Lp_max);
+parIn.psdNoise = -174;       % dBm/Hz
+parIn.PA = 1e5;              % power amplify
+parIn.PowPreEq = 0.2543;
+parIn.Pr = 10^((parIn.Ps_dBm - parIn.pathLossEp_dBm)/10)*1e-3;
+parIn.Ps = 10^(parIn.Ps_dBm/10)*1e-3;
+parIn.zeta = parIn.Pr/(parIn.PowPreEq*parIn.PowSprCodes);
+parIn.PowSprCodes = 1;
+if ~parIn.scheme
+    parIn.Pr = parIn.Pr*parIn.numUEs;
+    parIn.PowSprCodes = 1/parIn.numUEs;
+end
+parIn.varNoise = 10^(parIn.psdNoise/10)*1e-3*parIn.bandWidth;
+
+
+
+%% Algorithm Parameters
+parIn.numAlgIters = 3;
+% MMV-AMP algorithm
+parIn.dampAMPCoarse = 0.3;
+parIn.numAMPItersCoarse = 50;
+parIn.adThAMP = 0.5;
+
+
+% GMMV-AMP algorithm
+parIn.dampAMP = 0.3;         % damping factor
+parIn.numAMPIters = 200;     % number of AMP iterations
+parIn.tolAMP = 1e-4;         % stopping criterion
+parIn.sparseStr = 0;    % 0/1 'structrued'/'clustered'
+
+% OAMP-MMV-SSL algorithm
+parIn.dampOAMP = 0;
+parIn.priorOAMP = 1; %0/1 for Gaussian/MPSK
+parIn.numOAMPIters = 50;
+parIn.adThOAMP = 0.5;
+
+%% Debug Paramters
+parIn.debugChannel = false;
+parIn.debugSNR = true;
+
+

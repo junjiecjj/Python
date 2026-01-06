@@ -161,24 +161,6 @@ def mess_stastic(message_lst, args, savename, key_grad ):
 
 
 def ParamRange(message_lst, key_want, k = 0):
-    # # D = np.sum([param.numel() for param in message_lst[0].values()])
-    # key_lst_wo_grad = []
-    # info_lst = []
-    # ## 分离可导层和不可导层
-    # for key, val in message_lst[0].items():
-    #     if key in key_grad:
-    #         info_lst.append([key, val.size(), val.numel(), val.dtype])
-    #     elif key not in key_grad:
-    #         key_lst_wo_grad.append(key)
-
-    # ## 将可导层转换为数组
-    # D = np.sum([message_lst[0][key].numel() for key in key_grad])
-    # SS = np.zeros((len(message_lst), D))
-    # for k, mess in enumerate(message_lst):
-    #     vec = np.array([], dtype = np.float32)
-    #     for key in key_grad:
-    #         vec = np.hstack((vec, mess[key].detach().cpu().numpy().flatten()))
-    #     SS[k,:] = vec
 
     K = len(message_lst)
     N = len(key_want)

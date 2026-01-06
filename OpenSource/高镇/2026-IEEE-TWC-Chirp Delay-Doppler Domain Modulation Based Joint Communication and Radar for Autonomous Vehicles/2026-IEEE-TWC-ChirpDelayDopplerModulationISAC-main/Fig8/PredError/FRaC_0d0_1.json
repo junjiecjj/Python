@@ -1,0 +1,188 @@
+{
+  "spatial": {
+    "-30": {
+      "BER": 30340,
+      "SER": 9777,
+      "BER_AntSel": 7240,
+      "SER_AntSel": 5319,
+      "BER_QPSK": 20076,
+      "SER_QPSK": 9407,
+      "BER_perm": 3024,
+      "SER_perm": 3024
+    },
+    "-25": {
+      "BER": 26450,
+      "SER": 9622,
+      "BER_AntSel": 4519,
+      "SER_AntSel": 3352,
+      "BER_QPSK": 20076,
+      "SER_QPSK": 9379,
+      "BER_perm": 1855,
+      "SER_perm": 1855
+    },
+    "-20": {
+      "BER": 23482,
+      "SER": 9498,
+      "BER_AntSel": 2519,
+      "SER_AntSel": 1852,
+      "BER_QPSK": 19969,
+      "SER_QPSK": 9364,
+      "BER_perm": 994,
+      "SER_perm": 994
+    },
+    "-15": {
+      "BER": 21827,
+      "SER": 9422,
+      "BER_AntSel": 1349,
+      "SER_AntSel": 1004,
+      "BER_QPSK": 19958,
+      "SER_QPSK": 9350,
+      "BER_perm": 520,
+      "SER_perm": 520
+    },
+    "-10": {
+      "BER": 21087,
+      "SER": 9422,
+      "BER_AntSel": 725,
+      "SER_AntSel": 543,
+      "BER_QPSK": 20064,
+      "SER_QPSK": 9373,
+      "BER_perm": 298,
+      "SER_perm": 298
+    },
+    "-5": {
+      "BER": 20396,
+      "SER": 9376,
+      "BER_AntSel": 419,
+      "SER_AntSel": 311,
+      "BER_QPSK": 19811,
+      "SER_QPSK": 9342,
+      "BER_perm": 166,
+      "SER_perm": 166
+    }
+  },
+  "qpsk": {
+    "-30": {
+      "BER": 24476,
+      "SER": 9559,
+      "BER_AntSel": 10048,
+      "SER_AntSel": 7517,
+      "BER_QPSK": 9469,
+      "SER_QPSK": 6571,
+      "BER_perm": 4959,
+      "SER_perm": 4959
+    },
+    "-25": {
+      "BER": 18909,
+      "SER": 9166,
+      "BER_AntSel": 9960,
+      "SER_AntSel": 7507,
+      "BER_QPSK": 3949,
+      "SER_QPSK": 3354,
+      "BER_perm": 5000,
+      "SER_perm": 5000
+    },
+    "-20": {
+      "BER": 15429,
+      "SER": 8805,
+      "BER_AntSel": 10045,
+      "SER_AntSel": 7498,
+      "BER_QPSK": 447,
+      "SER_QPSK": 440,
+      "BER_perm": 4937,
+      "SER_perm": 4937
+    },
+    "-15": {
+      "BER": 15086,
+      "SER": 8746,
+      "BER_AntSel": 10010,
+      "SER_AntSel": 7494,
+      "BER_QPSK": 0,
+      "SER_QPSK": 0,
+      "BER_perm": 5076,
+      "SER_perm": 5076
+    },
+    "-10": {
+      "BER": 15016,
+      "SER": 8781,
+      "BER_AntSel": 9974,
+      "SER_AntSel": 7505,
+      "BER_QPSK": 0,
+      "SER_QPSK": 0,
+      "BER_perm": 5042,
+      "SER_perm": 5042
+    },
+    "-5": {
+      "BER": 14924,
+      "SER": 8752,
+      "BER_AntSel": 9942,
+      "SER_AntSel": 7498,
+      "BER_QPSK": 0,
+      "SER_QPSK": 0,
+      "BER_perm": 4982,
+      "SER_perm": 4982
+    }
+  },
+  "all": {
+    "-30": {
+      "BER": 32269,
+      "SER": 9489,
+      "BER_AntSel": 9961,
+      "SER_AntSel": 7453,
+      "BER_QPSK": 17298,
+      "SER_QPSK": 8687,
+      "BER_perm": 5010,
+      "SER_perm": 5010
+    },
+    "-25": {
+      "BER": 29232,
+      "SER": 8777,
+      "BER_AntSel": 9646,
+      "SER_AntSel": 7210,
+      "BER_QPSK": 14962,
+      "SER_QPSK": 7677,
+      "BER_perm": 4624,
+      "SER_perm": 4624
+    },
+    "-20": {
+      "BER": 23112,
+      "SER": 7086,
+      "BER_AntSel": 8157,
+      "SER_AntSel": 6046,
+      "BER_QPSK": 11363,
+      "SER_QPSK": 5937,
+      "BER_perm": 3592,
+      "SER_perm": 3592
+    },
+    "-15": {
+      "BER": 14823,
+      "SER": 4801,
+      "BER_AntSel": 5273,
+      "SER_AntSel": 3918,
+      "BER_QPSK": 7349,
+      "SER_QPSK": 3833,
+      "BER_perm": 2201,
+      "SER_perm": 2201
+    },
+    "-10": {
+      "BER": 8820,
+      "SER": 2954,
+      "BER_AntSel": 3171,
+      "SER_AntSel": 2334,
+      "BER_QPSK": 4389,
+      "SER_QPSK": 2350,
+      "BER_perm": 1260,
+      "SER_perm": 1260
+    },
+    "-5": {
+      "BER": 5095,
+      "SER": 1711,
+      "BER_AntSel": 1814,
+      "SER_AntSel": 1320,
+      "BER_QPSK": 2531,
+      "SER_QPSK": 1344,
+      "BER_perm": 750,
+      "SER_perm": 750
+    }
+  }
+}

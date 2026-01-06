@@ -67,10 +67,10 @@ if args.quantize == True:
 
     args.quantize_way = 'fixed'   # 'fixed', 'DQ'
     if args.quantize_way == 'fixed':
-        args.bitswidth = 1
+        args.bitswidth = 6
     args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.2513
+        args.flip_rate = 0.01
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
 else:
