@@ -33,7 +33,7 @@ args.IID = True             # True, False
 args.dataset = "MNIST"       #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
-args.save_path = args.home + f'/FL_DQ/{args.dataset}_{datapart}/'
+args.save_path = args.home + f'/FL_DQ/{args.dataset}_{datapart}1/'
 # args.save_path = args.home + '/FL_DQ/test/'
 cur_lr = args.lr = 0.01
 
@@ -67,10 +67,10 @@ if args.quantize == True:
 
     args.quantize_way = 'fixed'   # 'fixed', 'DQ'
     if args.quantize_way == 'fixed':
-        args.bitswidth = 6
+        args.bitswidth = 2
     args.transmit_way = 'flip'     # 'erf', 'flip'
     if args.transmit_way.lower() == 'flip':
-        args.flip_rate = 0.01
+        args.flip_rate = 0.3
     if args.transmit_way.lower() == 'erf':
         args.flip_rate = 0
 else:

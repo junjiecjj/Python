@@ -13,7 +13,7 @@ import copy
 
 ## 以下是本项目自己编写的库
 from Utility import set_random_seed, set_printoption
-from Utility import BitAcc_mnist
+from Utility import BitAcc_mnist4321
 from Transmit_1bit import OneBit_Grad_G
 from Transmit_Bbit import B_Bit
 
@@ -35,7 +35,7 @@ args.IID = True             # True, False
 args.dataset = "MNIST"       #  MNIST,
 
 datapart = "IID" if args.IID else "nonIID"
-args.save_path = args.home + f'/FL_DQ/{args.dataset}_{datapart}/'
+args.save_path = args.home + f'/FL_DQ/{args.dataset}_{datapart}1/'
 
 cur_lr = args.lr = 0.01
 
@@ -117,7 +117,7 @@ for comm_round in range(args.num_comm):
     if args.quantize == True:
         print(f"{args.diff_case} -> {str(args.bitswidth) + "bit-quant" if args.quantize_way == 'fixed' else 'DQ'} -> {args.rounding} -> {'flip'+str(args.flip_rate) if args.transmit_way == 'flip' else 'erf'}")
         if args.quantize_way == 'DQ':
-            bitswidth, cur_lr = BitAcc_mnist(acc, snr = SNR)
+            bitswidth, cur_lr = BitAcc_mnist4321(acc, snr = SNR)
             if  bitswidth == 1:
                 mess_recv, err = OneBit_Grad_G(message_lst, args, rounding = args.rounding, ber = args.flip_rate, key_grad = key_grad, G = args.G)
             elif bitswidth > 1:

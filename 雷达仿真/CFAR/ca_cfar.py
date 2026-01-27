@@ -48,7 +48,7 @@ def cacfar(signal, Pfa, ref_num, guard_num):
     for ii in range(start_cell, stop_cell + 1 ):
         # Get reference cells (excluding guard cells)
         left_data = signal[ii - left_num - 1 : ii - guard_num - 1]  # Python indexing starts at 0
-        right_data = signal[ii + guard_num : ii + left_num]     # Python indexing starts at 0
+        right_data = signal[ii + guard_num : ii + left_num]         # Python indexing starts at 0
 
         tmp_data = np.concatenate([left_data, right_data])
         tmp = np.mean(tmp_data) * alpha

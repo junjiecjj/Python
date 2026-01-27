@@ -1,0 +1,12 @@
+# Radar Signal Processing Simulator
+# Python 3.8+ required
+
+# Core scientific computing
+numpy>=1.21.0
+scipy>=1.7.0
+
+# Visualization
+matplotlib>=3.5.0
+
+# Type hints (included in Python 3.8+, but pinning for completeness)
+typing-extensions>=4.0.0

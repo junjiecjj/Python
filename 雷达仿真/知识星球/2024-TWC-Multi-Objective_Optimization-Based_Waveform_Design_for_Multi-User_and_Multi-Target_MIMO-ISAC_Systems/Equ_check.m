@@ -1,0 +1,107 @@
+
+
+%%
+clear;
+clc;
+close all;
+
+rng(42);
+
+
+Nt = 5;
+hk = randn(Nt, 1) + 1i * randn(Nt, 1);
+x = randn(Nt, 1) + 1i * randn(Nt, 1);
+
+hk_re = real(hk);
+hk_im = imag(hk);
+
+x_re = real(x);
+x_im = imag(x);
+
+hx = hk'*x                      % Eq.(24)
+
+zk = [hk_re; -hk_im];           % Eq.(25)
+tilde_x = [x_im; x_re];         % Eq.(26)
+
+tilde_zkT = zk.' * [zeros(Nt), eye(Nt); -eye(Nt), zeros(Nt)];
+
+hx_re = tilde_zkT * tilde_x;
+hx_im = zk.' * tilde_x;
+
+hx_norm2 = norm(hx)^2;
+
+HkT = [hk_im.', hk_re.';
+       hk_re.', -hk_im.'];
+
+hx_norm2 = norm(HkT * tilde_x)^2;
+
+
+
+
+
+%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

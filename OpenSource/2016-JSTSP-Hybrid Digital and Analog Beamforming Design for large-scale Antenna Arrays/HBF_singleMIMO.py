@@ -1,3 +1,6 @@
+
+
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -15,9 +18,9 @@ Comments often refer to specific figures and equations from the paper, as "(x)".
 """
 
 
-from typing import Tuple
+# from typing import Tuple
 import numpy as np
-import matplotlib as mpl
+# import matplotlib as mpl
 import matplotlib.pyplot as plt
 import scipy
 # from scipy import linalg as spl
@@ -30,22 +33,21 @@ def alg1(F: np.ndarray, Ns: int, gamma2: float, sigma2: float, epsilon: float = 
     to the number of data streams (Ns).
 
     Parameters
-    ----------
-    F : numpy.ndarray
-        Either F1 or F2 type matrix as explained in the paper near equation (12) and (15).
-    Ns : int
-        Number of data streams.
-    gamma2 : float
-        Signal amplitude squared.
-    sigma2 : float
-        Noise standard deviation squared.
-    epsilon : float
-        Stopping condition. The default is 1e-3.
-
+        ----------
+        F : numpy.ndarray
+            Either F1 or F2 type matrix as explained in the paper near equation (12) and (15).
+        Ns : int
+            Number of data streams.
+        gamma2 : float
+            Signal amplitude squared.
+        sigma2 : float
+            Noise standard deviation squared.
+        epsilon : float
+            Stopping condition. The default is 1e-3.
     Returns
-    -------
-    Vrf : numpy.ndarray
-        Approximation of analog precoder matrix.
+        -------
+        Vrf : numpy.ndarray
+            Approximation of analog precoder matrix.
     """
     Nrf = Ns
     # Initialize Vrf
@@ -85,11 +87,10 @@ def alg1(F: np.ndarray, Ns: int, gamma2: float, sigma2: float, epsilon: float = 
 
 def alg2(H: np.ndarray, Ns: int, P: float, sigma2: float, epsilon: float = 1e-3) -> float:
     """
-    The alg2 function is an implementation of 'Algorithm 2' from the paper.
-    The goal of this algorithm is to incorporate the environment and compute receiving signal matrices.
-    Using the knowledge gained the algorithm computes the spectral efficiency metric,
-    when the number of rf chains (Nrf) is equal to the number of data streams (Ns).
-
+        The alg2 function is an implementation of 'Algorithm 2' from the paper.
+        The goal of this algorithm is to incorporate the environment and compute receiving signal matrices.
+        Using the knowledge gained the algorithm computes the spectral efficiency metric,
+        when the number of rf chains (Nrf) is equal to the number of data streams (Ns).
     Parameters
         H : numpy.ndarray
             Environment matrix.
@@ -101,7 +102,6 @@ def alg2(H: np.ndarray, Ns: int, P: float, sigma2: float, epsilon: float = 1e-3)
             Noise standard deviation squared.
         epsilon : float
             Stopping condition. The default is 1e-3.
-
     Returns
         R : float
             Spectral efficiency (bits/s/Hz)

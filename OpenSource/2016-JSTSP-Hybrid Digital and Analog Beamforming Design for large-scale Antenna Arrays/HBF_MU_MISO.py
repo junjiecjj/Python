@@ -5,7 +5,7 @@ Created on Sun May 18 14:50:44 2025
 
 @author: jack
 
-Implementation of Mulyi-user point-to-point MISO simulation based on paper:
+Implementation of Multi-user MISO simulation based on paper:
 "Sohrabi, F., & Yu, W. (2016). Hybrid Digital and Analog Beamforming Design for Large-Scale Antenna Arrays"
 Implemented algorithms are 'Algorithm 3' from the paper.
 

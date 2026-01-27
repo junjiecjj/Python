@@ -1,0 +1,25 @@
+List of functions:
+
+%Generating data
+gen_lowpass     Generate lowpass signals
+gen_gaussian    Generate gaussian signals
+gen_y_G         Generate A and y by Gaussian model
+gen_y_C         Generate A and y by coded diffraction model
+
+%Initialization
+Ini_G           Initialization for Gaussian model
+Ini_C           Initialization for coded diffraction model
+ 
+%Solvers
+WF_G            Wirtinger flow for Gaussian model
+WF_C            Wirtinger flow for coded diffraction model
+LM_G            LM method for Gaussian model
+LM_C            LM method for coded diffraction model
+Nes_G           Nesterov method for Gaussian model
+Nes_C           Nesterov method for coded diffraction model
+CG_Gauss        Conjugate gradient method for Gaussian model
+CG_CDP          Conjugate gradient method for coded diffraction model
+
+
+%Main
+Run

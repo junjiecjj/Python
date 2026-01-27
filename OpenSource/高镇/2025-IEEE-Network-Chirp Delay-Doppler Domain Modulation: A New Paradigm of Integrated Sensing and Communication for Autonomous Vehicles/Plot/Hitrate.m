@@ -1,0 +1,33 @@
+% close all;
+clear;clc
+
+figure
+set(0,'defaultfigurecolor','w');
+set(gca,'FontName','Times New Roman','FontSize',16);
+box on; grid on;hold on; xlabel('SNR/dB');ylabel('Hitrate')
+load('..\Data\B_640_T_512_SNR_25_35_Nit_1e4_rng_666.mat')
+p1 = plot(SNRdB, [HitRate.RangeVelocityAngle] / (Nit), ...
+    'b->', 'LineWidth', 2, 'MarkerSize', 10);
+
+load('..\Data\B_320_T_512_SNR_25_35_Nit_1e4_rng_666.mat')
+p2 = plot(SNRdB, [HitRate.RangeVelocityAngle] / (Nit), ...
+    'r-o', 'LineWidth', 2, 'MarkerSize', 10);
+
+load('..\Data\B_160_T_512_SNR_25_35_Nit_1e4_rng_666.mat')
+p3 = plot(SNRdB, [HitRate.RangeVelocityAngle] / (Nit), ...
+    'g-<', 'LineWidth', 2, 'MarkerSize', 10);
+
+load('..\Data\B_640_T_256_SNR_25_35_Nit_1e4_rng_666.mat')
+p4 = plot(SNRdB, [HitRate.RangeVelocityAngle] / (Nit), ...
+    'c--<', 'LineWidth', 2, 'MarkerSize', 10);
+
+ah1=axes('position',get(gca,'position'),'visible','off'); 
+l1 = legend(ah1, [p1, p2, p3, p4],...
+    {'B=640 M, T_c=51.2 \mus',...
+     'B=320 M, T_c=51.2 \mus', ...
+     'B=160 M, T_c=51.2 \mus', ...
+     'B=640 M, T_c=25.6 \mus'},...
+    'Box','off', ...
+    'Interpreter','tex');
+l1.FontSize = 16;   
+l1.FontName = 'Times New Roman';
