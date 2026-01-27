@@ -96,7 +96,6 @@ function Rate = Algo2(H, Ns, P, sigma2, epsilon)
 
 end
 
-
 function Vrf = alg1(F, Ns, gamma2, sigma2, epsilon)
     Nrf = Ns;
     N = size(F, 1);

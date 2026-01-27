@@ -111,27 +111,27 @@ def MNIST_IID_DQ4321bit():
     i = 0
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-15:50:46/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=30, mfc='white', mew = 2, label = '4bit, error-free',)
-    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=10, mfc='white', mew = 2,)
-    i += 1
-
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
-    Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30, label = 'DQ, error-free',)
-    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10,  )
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 14, markevery=30, mfc='white', mew = 2, label = '4bit, error-free',)
+    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = '*', ms = 14, markevery=10, mfc='white', mew = 2,)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_3bits_sr_erf_adam_0.01_U100+10_bs64_2026-01-25-15:16:41/Train.npy"))[:L]
     Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30, label = '3bit, error-free',)
-    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10,  )
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 12, markevery=30, mfc='white', mew = 2,label = '3bit, error-free',)
+    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = 'o', ms = 12, markevery=10, mfc='white', mew = 2, )
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_2bits_sr_erf_adam_0.01_U100+10_bs64_2026-01-25-20:42:24/Train.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = '2bit, error-free',)
-    axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', linewidth = 2)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', marker = 'd', ms = 12, markevery=100, mfc='white', mew = 2,label = '2bit, error-free',)
+    axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', marker = 'd', ms = 12, markevery=100, mfc='white', mew = 2, linewidth = 2)
     i += 1
+
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
+    Y3 = data[:,1]
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30,mfc='white', mew = 2, label = 'DQ, error-free',)
+    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10, mfc='white', mew = 2, )
+    i += 2
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-21:20:50/TraRecorder.npy"))[:L]
     Y5 = data[:,1]

@@ -135,14 +135,14 @@ def CIAFR10_IID_DQ4321bit():
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-18-10:39:31/TraRecorder.npy"))[:L]
     Ydq = data[:,1]
     Ydq = savgol_filter(Ydq, 20, 5)
-    axs.plot(data[:,0], Ydq, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=100, label = r'$\mathrm{DQ}$'+', error-free',)
+    axs.plot(data[:,0], Ydq, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=100, label = 'DQ, error-free',)
     axins.plot(data[:,0], Ydq, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=20,  )
     i += 2
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-15-14:28:54/TraRecorder.npy"))[:L]
     Y1 = data[:,1]
     Y1 = savgol_filter(Y1, 20, 5)
-    axs.plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', error-free',)
+    axs.plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='--', label = '1bit, error-free',)
     axins.plot(data[:,0], Y1, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
@@ -343,7 +343,7 @@ def DynamicBitWidth():
     i += 1
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     # axs[1].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[1].set_ylabel('量化比特数', fontproperties=font2, )
 
@@ -403,7 +403,7 @@ def DynamicBitWidth():
     ###########
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-15-16:42:40/TraRecorder.npy"))[:L]
     Y1 = data[:,4]
-    axs[3].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{DQ, BER=0.1}$',)
+    axs[3].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = 'DQ, BER=0.1',)
     i += 1
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
