@@ -4,7 +4,7 @@ clc;
 close all;
 rng(42,'twister');
 
-global N Nrf K Pt;
+%global N Nrf K Pt;
 global Vrf;
 
 % num of BS antennas
@@ -25,7 +25,7 @@ L = 15;
 beta = ones(1,K);
 sigma2 = K;
 % num of iterations for each dB step
-num_iters = 1000;
+num_iters = 10;
 
 SNRdBs = -10:2:10;
 RateLst = zeros(1,length(SNRdBs));

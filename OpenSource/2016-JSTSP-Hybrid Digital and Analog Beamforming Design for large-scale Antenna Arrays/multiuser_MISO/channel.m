@@ -1,9 +1,13 @@
+
+
+
+
 function H = channel(K, N, M, L)
     H = zeros(K, M, N);
     for k = 1:K
         phi_t = 2*pi*rand(L);
         phi_r = 2*pi*rand(L);
-        alphas = randn(L);
+        alphas = (randn(L) + 1j * randn(L))/sqrt(2);
         Hk = zeros(M, N);
         for l = 1:L 
             at = stevec_ULA(phi_t(l), N);

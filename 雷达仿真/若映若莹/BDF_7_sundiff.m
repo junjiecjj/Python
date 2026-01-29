@@ -27,7 +27,7 @@ w_sum = W .* ones(N_elem,N_beam);
 diff_factor = [-3,-2,-1,0,1,2,3];
 w_diff = W.*(diff_factor' * ones(1,N_beam));
 %% 4. 计算阵列流形与波束方向图
-AF_sum = zeros(N_beam,length(theta_range)); % 和波束方向图
+AF_sum = zeros(N_beam,length(theta_range));  % 和波束方向图
 AF_diff = zeros(N_beam,length(theta_range)); % 差波束方向图
 k = 2*pi/lambda;
 for m = 1:N_beam
@@ -58,12 +58,12 @@ for i = 1:N_elem
     xlabel('角度 (°)');ylabel('归一化增益 (dB)');
     grid on;
 end
-figure(4)
+figure(3)
 plot(theta_range,AF_sum(1,:));
 xlabel('角度 (°)');ylabel('增益 (dB)');
 title('单个和波束方向图');
 grid on;
-figure(3)
+figure(4)
 plot(theta_range,AF_diff(1,:));
 xlabel('角度 (°)');ylabel('增益 (dB)');
 title('单个差波束方向图');
@@ -74,7 +74,7 @@ grid on;
 clear; clc; close all;
 %% 1. 系统参数设置
 N = 7;                  % 阵元数
-M = 16;                 % 波束数量
+M = 64;                 % 波束数量
 theta_target = 20.4630; % 目标方位角（度）
 theta_range = linspace(-45, 45, M); % 16个波束指向角度
 lambda = 1;             % 波长（归一化）
@@ -82,7 +82,7 @@ d = lambda/2;           % 阵元间距（半波长）
 s0 = 1;                 % 目标信号复振幅
 %% 2. 构造目标导向向量
 theta0_rad = deg2rad(theta_target);
-a_target = exp(1j * 2*pi*d/lambda * (0:N-1)' * sin(theta0_rad));
+a_target = exp(-1j * 2*pi*d/lambda * (0:N-1)' * sin(theta0_rad));
 %% 3. 构造16个波束的权值矩阵
 W = zeros(N, M);
 for m = 1:M

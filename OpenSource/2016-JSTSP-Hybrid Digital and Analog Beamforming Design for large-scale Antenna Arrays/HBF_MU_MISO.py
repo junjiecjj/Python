@@ -99,28 +99,6 @@ def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
     return VRF
 
 #%%
-def updateP1(Qt, beta, Ps, K, sigma2):
-    lamba = 1
-    qkk = np.real(np.diag(Qt))
-    while 1:
-        initpow = 0
-        posi = 0
-        for k in range(K):
-            tmp = beta[k]/lamba - qkk[k]*sigma2
-            if tmp > 0:
-                initpow += tmp
-                posi +=1
-        if np.abs(initpow - Ps)/Ps < 0.001:
-            break
-        if posi > 0:
-            lamba += 0.5 * (initpow - Ps)/posi
-        else:
-            lamba *= 0.25
-        print(f" lamba = {lamba}")
-    P = np.identity(K)
-    for k in range(K):
-        P[k,k] = np.max(beta[k]/lamba - qkk[k]*sigma2, 0)/qkk[k]
-    return P, initpow, lamba
 
 import cvxpy as cp
 # cp.log 以e为底, updateVRF中it设置为100，

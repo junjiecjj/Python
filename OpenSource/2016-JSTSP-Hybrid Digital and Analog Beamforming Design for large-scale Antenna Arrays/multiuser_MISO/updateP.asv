@@ -30,7 +30,7 @@ function [P, lambda] = updateP(Q_tilde, beta, Pt, K, sigma2)
     
     % λ_max: 至少有一个用户有正功率时的最大值
     % 根据公式：β_k/λ - q_kk*σ² ≥ 0 => λ ≤ β_k/(q_kk*σ²)
-    lambda_max = max(beta ./ (q_kk * sigma2));
+    lambda_max = max(beta ./ (Pt + q_kk * sigma2));
     % 二分法参数
     max_iter = 1000;
     tolerance = 1e-10;
@@ -68,13 +68,25 @@ function [P, lambda] = updateP(Q_tilde, beta, Pt, K, sigma2)
         warning('二分法达到最大迭代次数，可能未完全收敛');
     end
     % 计算最终功率分配
+    p = zeros(1, K);
     p = max(beta/lambda - q_kk * sigma2, 0)./q_kk;
+    for k = 1:K
+        term = beta(k)/lambda - q_kk(k)*sigma2;
+        if term > 0
+            p(k) = term / q_kk(k);
+        else
+            p(k) = 0;
+        end
+    end
     % 验证结果
-    actual_power = sum(p .* q_kk)
-
+    actual_power = sum(p .* q_kk);
+    % if abs(actual_power - Pt) > 1e-6
+    %     % 微调以满足总功率约束
+    %     p = p * (Pt / actual_power);
+    % end
     % 求出P
     P = zeros(K,K);
     for kk = 1:1:K
-        P(kk,kk) = p(kk);
+        P(kk,kk) = max([(beta(kk)/lambda) - Q_tilde(kk,kk)*sigma2, 0]) / Q_tilde(kk,kk);
     end
 end
