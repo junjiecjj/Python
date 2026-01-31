@@ -97,7 +97,6 @@ def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
         print(f"      updateVRF it = {it}, fVRFdiff = {diff}")
         fVrf_old = fVrf_new
     return VRF
-
 #%%
 
 import cvxpy as cp

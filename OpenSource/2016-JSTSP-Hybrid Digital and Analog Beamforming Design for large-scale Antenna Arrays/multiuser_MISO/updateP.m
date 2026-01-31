@@ -1,6 +1,6 @@
 
 
-function [P, lambda] = updateP(Q_tilde, beta, Pt, K, sigma2)
+function [P, p, lambda] = updateP(Q_tilde, beta, Pt, K, sigma2)
     % 水注法功率分配函数（使用二分法）
     % 输入参数：
     %   beta: K×1向量，用户权重系数β_k
