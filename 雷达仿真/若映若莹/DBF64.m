@@ -127,6 +127,22 @@ grid on;
 
 %% 64阵元圆阵3维数字波束形成仿真（多目标场景）
 clear; clc; close all;
+
+%定义导向矢量计算函数
+function a = steering_vector(N,d,lambda,theta)
+    theta_rad = deg2rad(theta);           % 角度转换为弧度
+    m = 0:N-1;                            % 阵元索引
+    phi = 2*pi*d/lambda*sin(theta_rad);   % 阵元间相位差
+    a = exp(1j*m'*phi);                   % 导向矢量 
+end
+%   辅助函数：计算导向矢量
+function a = steering_vector1(theta, phi, pos, lambda)
+    N = size(pos,1);
+    k = 2*pi/lambda;
+    u = [sin(theta)*cos(phi); sin(theta)*sin(phi); cos(theta)];
+    a = exp(-1j * k * pos * u);
+end
+
 %% ===================== 1. 系统参数配置 =====================
 N = 64;          % 阵元数
 R_over_lambda = 5; % R/λ
@@ -183,7 +199,3 @@ view(120, 30);
 % colorbar;
 grid on;
 
-
-function steering_vector1(target1_theta, target1_phi, pos, lambda)
-
-end

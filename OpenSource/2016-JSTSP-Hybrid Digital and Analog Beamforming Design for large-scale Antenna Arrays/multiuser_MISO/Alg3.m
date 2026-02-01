@@ -23,13 +23,13 @@ function Cap = Alg3(H, beta, Nrf, Pt, sigma2)
         % abs(Vrf)
         VDt = Vrf' * H' * pinv(H * Vrf * (Vrf') * H');
         Qt = (VDt') * (Vrf') * Vrf * VDt;
-        [P, p, ~] = updateP(Qt, beta, Pt, K, sigma2);
-        p
+        [P, ~, psum, ~] = updateP(Qt, beta, Pt, K, sigma2);
         Ht = sqrtm(pinv(P)) * H;
         % Ht = P^(-0.5) * H;
-        Cap  = sum(beta .* log2(1 + diag(P)/sigma2));
+        Cap  = sum(beta .* log2(1 + diag(P).'/sigma2));
         diffCap = abs((Cap - lastCap)/Cap);
         lastCap = Cap;
+        fprintf('  Alg3: it = %.6f, Cap = %.6f, diffCap = %.6f\n', it, Cap, diffCap);
     end
 end
 

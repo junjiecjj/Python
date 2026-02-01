@@ -137,16 +137,16 @@ function a = stevec_ULA(theta, M)
     % Generates a steering vector for Uniform Linear Array (ULA)
     % theta: rad
     m = 0:M-1;
-    a = exp(1i * pi * m * sind(theta))/sqrt(M);
+    a = exp(1i * pi * m * sin(theta))/sqrt(M);
     a = a.';
 end
 
 function H = channel(K, N, M, L)
     H = zeros(K, M, N);
     for k = 1:K
-        phi_t = 2*pi*rand(L);
-        phi_r = 2*pi*rand(L);
-        alphas = randn(L);
+        phi_t = (2 * rand(L) - 1)*2*pi;
+        phi_r = (2 * rand(L) - 1)*2*pi;
+        alphas = (randn(L) + 1j * randn(L))/sqrt(2.0);
         Hk = zeros(M, N);
         for l = 1:L 
             at = stevec_ULA(phi_t(l), N);

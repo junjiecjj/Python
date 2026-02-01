@@ -59,10 +59,10 @@ function Vrf = updateVRF(N, Nrf, Ht, Vrf)
                 % 评估两个候选解
                 V_RF1 = exp(-1j * theta_1);
                 V_RF2 = exp(-1j * theta_2);
-                denom1 = 1 + zetaDij + 2 * real(conj(V_RF1) * etaDij);
-                denom2 = 1 + zetaDij + 2 * real(conj(V_RF2) * etaDij);
-                f1 = N * trace(pinv(Aj)) - N * (zetaBij + 2 * real(conj(V_RF1) * etaBij)) / denom1;
-                f2 = N * trace(pinv(Aj)) - N * (zetaBij + 2 * real(conj(V_RF2) * etaBij)) / denom2;
+                %denom1 = 1 + zetaDij + 2 * real(conj(V_RF1) * etaDij);
+                %denom2 = 1 + zetaDij + 2 * real(conj(V_RF2) * etaDij);
+                f1 = N * trace(pinv(Aj)) - N * (zetaBij + 2 * real(conj(V_RF1) * etaBij)) / (1 + zetaDij + 2 * real(conj(V_RF1) * etaDij));
+                f2 = N * trace(pinv(Aj)) - N * (zetaBij + 2 * real(conj(V_RF2) * etaBij)) / (1 + zetaDij + 2 * real(conj(V_RF2) * etaDij));
                 if(f1 <= f2)
                     theta_opt = theta_1; 
                 else
@@ -74,7 +74,7 @@ function Vrf = updateVRF(N, Nrf, Ht, Vrf)
         fVrf_new = N * trace(pinv(Ht * Vrf * (Vrf') * Ht'));
         diff = abs((fVrf_new - fVrf_old)/fVrf_new);
         fVrf_old = fVrf_new;
-        fprintf('   Vrf: Iteration %d, fVrf_new = %.6f, diff = %.6f\n', it, fVrf_new, diff);
+        fprintf('    updateVRF: Iteration %d, fVrf_new = %.6f, diff = %.6f\n', it, fVrf_new, diff);
     end
 end
 

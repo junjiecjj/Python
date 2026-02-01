@@ -47,7 +47,7 @@ def channelGen(N, M,  K, L, d = 0.5):
         for l in range(L):
             at = np.sqrt(1/N) * np.exp(1j * pi * np.arange(N) * np.sin(ang_t[l]))
             ar = np.sqrt(1/M) * np.exp(1j * pi * np.arange(M) * np.sin(ang_r[l]))[:,None]
-            tmp = alpha[l] * np.outer(ar, at)
+            tmp = alpha[l] * np.outer(ar, at.conj())
             Hk += tmp
         H[k,:,:] = Hk
     return (np.sqrt(M*N/L) * H)
@@ -55,7 +55,7 @@ def channelGen(N, M,  K, L, d = 0.5):
 #%%
 def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
     pi = np.pi
-    fVrf_old = N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
+    fVrf_old = np.real(N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T)))
     diff = 1
 
     it = 0
@@ -92,9 +92,9 @@ def updateVRF(N, Nrf, Ht, VRF, epsilon = 0.001):
                 else:
                     theta = theta2
                 VRF[i,j] = np.exp(-1j * theta)
-        fVrf_new = N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T))
+        fVrf_new = np.real(N*np.trace(scipy.linalg.pinv(Ht @ VRF @ VRF.conj().T @ Ht.conj().T)))
         diff = np.abs((fVrf_new - fVrf_old)/fVrf_new)
-        print(f"      updateVRF it = {it}, fVRFdiff = {diff}")
+        print(f"      updateVRF it = {it}, fVrf_new = {fVrf_new}, fVRFdiff = {diff}")
         fVrf_old = fVrf_new
     return VRF
 #%%
@@ -121,34 +121,64 @@ def updateP(Qt, beta, Ps, K, sigma2):
 
     return P, curpow, 1
 
-## 二分法, updateVRF中it设置为2
-def updateP2(Qt, beta, Ps, K, sigma2, epsilon = 1e-8):
-    lamba = 1
-    qkk = np.real(np.diag(Qt))
-    rank = beta/(qkk * sigma2)
-    cur_lamba = np.sum(beta)/(Ps + sigma2 * qkk.sum())
-    if cur_lamba <= rank.min():
-        p = beta/(cur_lamba*qkk) - sigma2
-        curpow = np.sum(np.maximum(beta/cur_lamba - qkk*sigma2, 0))
-    else:
-        gap = 1
-        max_lamba = rank.max()
-        min_lamba = rank.min()
-        while gap > epsilon:
-            cur_lamba = (max_lamba + min_lamba)/2.0
-            curpow = np.sum(np.maximum(beta/cur_lamba - qkk*sigma2, 0))
-            if np.abs((curpow - Ps)/Ps) <= epsilon:
-                break
-            elif curpow > Ps:
-                min_lamba = cur_lamba
-            elif curpow < Ps:
-                max_lamba = cur_lamba
-        p = np.maximum(beta/(qkk*cur_lamba) - sigma2, 0)
-    P = np.identity(K)
-    np.fill_diagonal(P, p)
+# 这两个updateP的结果几乎一致
+def updateP1(Q_tilde, beta, Pt, K, sigma2):
+    """
+    水注法功率分配函数（使用二分法）
+    """
+    # 提取Q_tilde的对角线元素（保持原始顺序）
+    q_kk = np.diag(np.real(Q_tilde))
+    beta = np.real(beta)
+
+    if Pt <= 0:
+        p = np.zeros(K)
+        lambda_val = np.inf
+        P = np.zeros((K, K))
+        return P, 0, lambda_val
+    # 避免除以0，使用非常小的正数
+    lambda_min = 1e-15
+    # λ_max: 至少有一个用户有正功率时的最大值, 根据公式：β_k/λ - q_kk*σ² ≥ 0 => λ ≤ β_k/(q_kk*σ²)
+    lambda_max = np.max(beta / (q_kk * sigma2))
+    # 二分法参数
+    max_iter = 10000
+    tolerance = 1e-10
+
+    # 二分法搜索
+    lambda_val = (lambda_min + lambda_max) / 2  # 初始化lambda为标量
+    for iter_num in range(max_iter):
+        # 计算当前λ对应的总功率
+        total_power = 0
+        for k in range(K):
+            term = beta[k] / lambda_val - q_kk[k] * sigma2
+            if term > 0:
+                total_power += term  # 注意：这里计算的是q_kk * p_k
+        # 检查收敛条件
+        if abs(total_power - Pt) < tolerance:
+            break
+        # 调整搜索区间
+        if total_power < Pt:
+            lambda_max = lambda_val  # λ太大，减少功率
+        else:
+            lambda_min = lambda_val  # λ太小，增加功率
+        # 更新lambda
+        lambda_val = (lambda_min + lambda_max) / 2
+        # 防止lambda过小
+        if lambda_val < 1e-15:
+            lambda_val = 1e-15
+            break
+    # 检查是否收敛
+    if iter_num == max_iter - 1:
+        print('二分法达到最大迭代次数，可能未完全收敛')
+    # 计算最终功率分配
+    p = np.maximum(beta / lambda_val - q_kk * sigma2, 0) / q_kk
+    # 求出P（对角矩阵）
+    P = np.diag(p)
+    # 验证结果
+    curpow = np.sum(p * q_kk)
     Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
-    print(f"      updateP, {curpow}/{Ps}, {cur_lamba}, {p}, {Cap}")
-    return P, curpow, cur_lamba
+    print(f"      updateP, {curpow}/{Ps}, {lambda_val}, {p}, {Cap}")
+    return P, curpow, lambda_val
+
 
 #%% Design of Hybrid Precoders for MU-MISO systems
 def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
@@ -168,11 +198,11 @@ def alg3(H, beta, Nrf, Ps, sigma2, epsilon = 1e-3):
         # 生成功率分配矩阵
         VDt = VRF.conj().T @ H.conj().T @ scipy.linalg.inv(H @ VRF @ VRF.conj().T @ H.conj().T)
         Qt = VDt.conj().T @ VRF.conj().T @ VRF @ VDt
-        P, sumP, lamba = updateP(Qt, beta, Ps, K, sigma2)
+        P, sumP, lamba = updateP1(Qt, beta, Ps, K, sigma2)
         Ht = scipy.linalg.sqrtm(np.linalg.pinv(P)) @ H
         Cap = np.sum(beta * np.log2(1 + np.diag(P)/sigma2))
         diffCap = np.abs((Cap-lastCap)/Cap)
-        print(f"    Cap it = {it}, CapDiff = {diffCap}/{Cap}")
+        print(f"    Cap it = {it}, Cap = {Cap}, CapDiff = {diffCap}")
         lastCap = Cap
     return Cap
 
