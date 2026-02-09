@@ -1,0 +1,168 @@
+# Figure 7
+import random
+import matplotlib.pyplot as plt
+import pandas as pd
+from itertools import product
+from numpy.linalg import norm
+import src*
+
+
+Repeat = 10000 # number of tested samples
+
+# ----------------------------
+#   Arithmatic Mean Function 
+# ----------------------------
+
+Q_mean = 64
+K_mean  = 10 # number of users
+q_mean = int(np.sqrt(Q_mean))
+
+
+phi_mean = [1+n for n in range(Q_mean)]
+
+
+
+# Quantized domian
+P1_mean = (Q_mean**2-1)/12  #norm(rv) PAM formula (Q**2-1)d**2/3 : Meghdadi, Vahid. "BER calculation." Wireless Communications (2008).
+P2_mean = (Q_mean**2-1)/12  #norm(rv) PAM formula (Q**2-1)d**2/3 : Meghdadi, Vahid. "BER calculation." Wireless Communications (2008).
+P3_mean = (Q_mean**2-1)/12
+# QAM power
+P4_mean = (Q_mean-1)/6 # QAM power normalaized one  : Meghdadi, Vahid. "BER calculation." Wireless Communications (2008).
+
+
+P1_mean = P1_mean/q_mean
+P2_mean = P2_mean/q_mean
+P3_mean = P3_mean/q_mean
+P4_mean = P4_mean/q_mean
+
+
+
+
+# ----------------------------
+#   Geometric Mean Function 
+# ----------------------------
+
+
+
+ModVec = np.array([3.4098 - 4.1264j, 0.2021 - 2.7743j,-1.3992 - 1.4617j,-2.7764 - 0.3204j, -2.6599 + 0.7654j,-1.6303 + 1.7480j,0.5336 + 2.6582j,4.3184 + 3.5113j]).astype(complex)
+MeanVec = np.mean(ModVec)
+ModVec = ModVec - MeanVec
+
+
+K_geom = 4 # number of nodes
+Q_geom = 8
+q_geom = int(np.log2(Q_geom))
+
+phi_geom = [1+n for n in range(Q_geom)]
+
+# Generating the Tabluar function  
+A_Df = [ele for ele in product(phi_geom, repeat = K_geom)]
+Rf = np.zeros(Q_geom**K_geom)
+for idx in range(Q_geom**K_geom):
+  Rf[idx] = np.prod(A_Df[idx])
+
+Tab = np.zeros(Q_geom**K_geom,dtype=np.complex_)
+for idx in range(Q_geom**K_geom):
+  temp = EncoderComp(A_Df[idx],ModVec)
+  Tab[idx] = np.sum(temp)
+
+
+
+
+
+P1_geom = norm(ModVec)
+P2_geom = norm(np.log2(phi_geom))
+P3_geom = norm(ModVec)
+P4_geom =  (Q_geom**2-1)/6 # 
+
+
+
+P1_geom = P1_geom/q_geom
+P2_geom = P2_geom/q_geom
+P3_geom = P3_geom/q_geom
+P4_geom = P4_geom/q_geom
+
+
+
+
+
+
+SNR = [2*n -5 for n in range(18)]
+
+ENMSE1 =  np.zeros(len(SNR))
+ENMSE2 =  np.zeros(len(SNR))
+ENMSE3 =  np.zeros(len(SNR))
+ENMSE4 =  np.zeros(len(SNR))
+ENMSE5 =  np.zeros(len(SNR))
+ENMSE6 =  np.zeros(len(SNR))
+ENMSE7 =  np.zeros(len(SNR))
+ENMSE8 =  np.zeros(len(SNR))
+
+nCount = 0
+for snr in SNR:
+
+    sigma1  = P1_mean*10 **(-snr / 20)
+    sigma2  = P2_mean*10 **(-snr / 20)
+    sigma3  = P3_mean*10 **(-snr / 20)
+    sigma4  = P4_mean*10 **(-snr / 20)
+
+    sigma5  = P1_geom *10 **(-snr / 20)
+    sigma6  = P2_geom *10 **(-snr / 20)
+    sigma7  = P3_geom *10 **(-snr / 20)
+    sigma8  = P4_geom *10 **(-snr / 20)
+
+
+    
+    ENMSE1[nCount] = ENMSE(K_mean,Q_mean,sigma1,'ChannelComp',phi_mean,Repeat)
+    ENMSE2[nCount] = ENMSE(K_mean,Q_mean,sigma2,'AirComp',phi_mean,Repeat)
+    ENMSE3[nCount] = ENMSE(K_mean,Q_mean,sigma3,'OFDMA',phi_mean,Repeat)
+    ENMSE4[nCount] = ENMSE(K_mean,Q_mean,sigma4,'SumComp',phi_mean,Repeat)
+
+    
+    ENMSE5[nCount] = ENMSEG(K_geom,Q_geom,sigma5,'ChannelComp',phi_geom,Repeat)
+    ENMSE6[nCount] = ENMSEG(K_geom,Q_geom,sigma6,'AirComp',phi_geom,Repeat)
+    ENMSE7[nCount] = ENMSEG(K_geom,Q_geom,sigma7,'OFDMA',phi_geom,Repeat)
+    ENMSE8[nCount] = ENMSEG(K_geom,Q_geom,sigma8,'SumComp',phi_geom,Repeat)
+
+
+
+    nCount= nCount + 1
+
+
+
+
+
+plt.figure()
+fig, axs = plt.subplots(1, 2,figsize = (14,5))
+
+axs[0].plot(SNR, 10 * np.log10(ENMSE1[:]), '>-')  # convert MSE to dB scale for plot
+axs[0].plot(SNR, 10 * np.log10(ENMSE2[:]), '<-')  # convert MSE to dB scale for plot
+axs[0].plot(SNR, 10 * np.log10(ENMSE3[:]), '*-')  # convert MSE to dB scale for plot
+axs[0].plot(SNR, 10 * np.log10(ENMSE4[:]), 'o-')  # convert MSE to dB scale for plot
+axs[0].set(xlabel='SNR (dB)')
+axs[0].set(ylabel='NMAE (dB)')
+axs[0].grid(True, which='both', axis='both', linestyle='--', linewidth=0.5)
+axs[0].set(title='Arithmatic Mean')
+axs[0].legend(['ChannelComp','AirComp','OFDM','SumComp'])
+
+
+
+
+axs[1].plot(SNR, 10 * np.log10(ENMSE5[:]), '>-')  # convert MSE to dB scale for plot
+axs[1].plot(SNR, 10 * np.log10(ENMSE6[:]), '<-')  # convert MSE to dB scale for plot
+axs[1].plot(SNR, 10 * np.log10(ENMSE7[:]), '*-')  # convert MSE to dB scale for plot
+axs[1].plot(SNR, 10 * np.log10(ENMSE8[:]), 'o-')  # convert MSE to dB scale for plot
+axs[1].set(xlabel='SNR (dB)')
+axs[1].set(ylabel='NMAE (dB)')
+axs[1].grid(True, which='both', axis='both', linestyle='--', linewidth=0.5)
+axs[1].set(title='Geometric Mean')
+axs[1].legend(['ChannelComp','AirComp','OFDM','SumComp'])
+
+
+
+
+
+MSEChannel = pd.DataFrame({'SNR': SNR,'ChannelCompA': ENMSE1,'OATA': ENMSE2,'OFDMA': ENMSE3,'ChannelSumA': ENMSE4,'ChannelCompG': ENMSE5,'OATG': ENMSE6,'OFDMG': ENMSE7,'ChannelSumG': ENMSE8 })
+MSEChannel.set_index('SNR')
+
+MSEChannel.to_csv('NMSEerror.dat',index=False,sep=' ')

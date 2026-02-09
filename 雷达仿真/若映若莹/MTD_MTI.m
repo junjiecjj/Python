@@ -41,7 +41,7 @@ h2 = [1, -2, 1];  % 二次对消器系数
 H2 = fftshift(fft(h2, N_fft));
 mag_H2 = 20*log10(abs(H2));
 %% ===================== 5. 结果可视化 =====================
-figure
+figure(1);
 % 子图1：原始回波（时域）
 subplot(2,2,1);
 plot(t_slow, real(s_total), 'b', 'LineWidth',1.2);
@@ -77,7 +77,7 @@ xlabel('慢时间 (s)','FontSize',11);
 ylabel('对消后幅度（实部）','FontSize',11);
 title('固定二次对消结果','FontSize',13);
 %% ===================== 6. 频域对比（杂波抑制效果） =====================
-figure
+figure(2);
 % 原始回波频谱
 S_total = fftshift(fft(s_total, N_fft));
 mag_total = 20*log10(abs(S_total));

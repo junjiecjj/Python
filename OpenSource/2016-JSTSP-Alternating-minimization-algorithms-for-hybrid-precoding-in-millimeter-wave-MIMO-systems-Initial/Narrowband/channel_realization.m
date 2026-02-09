@@ -1,5 +1,7 @@
 % This code realizes 1000 mmWave channels
-clear,clc
+clear;
+clc;
+close all;
 
 Ns = 4; % # of streams
 

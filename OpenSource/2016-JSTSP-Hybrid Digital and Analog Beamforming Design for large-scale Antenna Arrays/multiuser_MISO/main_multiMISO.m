@@ -29,6 +29,7 @@ num_iters = 100;
 
 SNRdBs = -10:2:10;
 RateLst = zeros(1,length(SNRdBs));
+% parfor i = 1:length(SNRdBs) 
 for i = 1:length(SNRdBs) 
     snrdB = SNRdBs(i);
     Pt = 10^(snrdB / 10) * sigma2;

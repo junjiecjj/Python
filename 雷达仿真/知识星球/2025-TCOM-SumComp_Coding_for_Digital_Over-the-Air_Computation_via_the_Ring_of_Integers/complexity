@@ -1,0 +1,95 @@
+# Computing the complexity  
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# ----------------------------
+# Different number of nodes
+# ----------------------------
+K = 24
+q = 4
+# Diffrent nodes
+Km = [2*n+1 for n in range(K)]
+
+
+# m = q**5*k**2
+# Order of ChannelComp is O(K^3q^{2K+3}})
+# CComp = [(k**3)*q**(2*k+3) for k in Km]
+
+EChannelComp1 = [q**8.5*k**8  for k in Km]
+ESumComp1 = [6*k*q for k in Km]
+
+DChannelComp1 = [q**k  for k in Km]
+DSumComp1 = [6*k for k in Km]
+
+
+
+# ----------------------------
+# Different quantization levels
+# ----------------------------
+K = 10
+Q = 4
+# Diffrent nodes
+Qm = [2**n for n in range(Q)]
+
+
+EChannelComp2 = [q**8.5*K**8  for q in Qm]
+ESumComp2 = [6*K*q for q in Qm]
+
+DChannelComp2 = [q**K  for q in Qm]
+DSumComp2 = [6*K for q in Qm]
+
+
+
+
+fig, axs = plt.subplots(1, 4,figsize = (16,4))
+
+
+axs[0].plot(Km,EChannelComp1,Km,ESumComp1)
+axs[0].set(yscale ="log")
+axs[0].set(title ="Decoder q=4")
+axs[0].set(xlabel = ' K')
+axs[0].set(ylabel ='Computational Compleixty')
+axs[0].grid( linestyle='-', which='major',linewidth=2)
+axs[0].grid( linestyle='--', which='minor',linewidth=2)
+
+
+axs[1].plot(Km,DChannelComp1,Km,DSumComp1)
+axs[1].set(yscale ="log")
+axs[1].set(title = "Decoder K=10")
+axs[1].set(xlabel='q')
+axs[1].grid( linestyle='-', which='major',linewidth=2)
+axs[1].grid( linestyle='--', which='minor',linewidth=2)
+
+
+
+axs[2].plot(Qm,EChannelComp2,Qm,ESumComp2)
+axs[2].set(yscale ="log")
+axs[2].set(xlabel=' K')
+axs[2].set(title="Encoder q=4")
+axs[2].grid( linestyle='-', which='major',linewidth=2)
+axs[2].grid( linestyle='--', which='minor',linewidth=2)
+
+
+
+
+
+axs[3].plot(Qm,DChannelComp2,Qm,DSumComp2)
+axs[3].set(yscale ="log")
+axs[3].set(xlabel= 'q')
+axs[3].set(title= "Decoder K=10")
+axs[3].legend(['ChannelComp','SumComp'])
+axs[3].grid( linestyle='-', which='major',linewidth=2)
+axs[3].grid( linestyle='--', which='minor',linewidth=2)
+
+
+
+
+MSEChannel = pd.DataFrame({'K': Km,'EncodeChannelComp': EChannelComp1,'EncodeSumComp': ESumComp1,'DecodeChannelComp': DChannelComp1,'DecodeSumComp': DSumComp1 })
+MSEChannel.set_index('K')
+
+MSEChannel.to_csv('Complexity.dat',index=False,sep=' ')
+
+MSEChannel = pd.DataFrame({'q': Qm,'EncodeChannelComp': EChannelComp2,'EncodeSumComp': ESumComp2,'DecodeChannelComp': DChannelComp2,'DecodeSumComp': DSumComp2 })
+MSEChannel.set_index('q')
+
+MSEChannel.to_csv('Complexity2.dat',index=False,sep=' ')

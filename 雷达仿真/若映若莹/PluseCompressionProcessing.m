@@ -7,34 +7,36 @@ t = 10e-6;     %脉冲宽度
 fs = 40e6;     %采样率
 ts = 1 / fs;   %采样间隔
 fc = 9e6;      %载频
-f0 =10e6;      
-B=2e6;
-ft=0:1/fs:t-1/fs;
-N=length(ft);
-k=B/fs*2*pi/max(ft);
-y=modulate(ft,fc,fs,'fm',k);
-y_fft_result=fft(y);
+f0 = 10e6;      
+B = 2e6;
+ft = 0:1/fs:t-1/fs;
+N = length(ft);
+k = B/fs*2*pi/max(ft);
+y = modulate(ft, fc, fs,'fm',k );
+y_fft_result = fft(y);
+figure(1);
+plot(ft,y),title('y');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%正交解调%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-n=0:N-1;
-local_oscillator_i=cos(n*f0/fs*2*pi);
-local_oscillator_q=sin(n*f0/fs*2*pi);
-fbb_i=local_oscillator_i.*y;
-fbb_q=local_oscillator_q.*y;
-window=chebwin(51,40);
-[b,a]=fir1(50,2*B/fs,window);
-fbb_i=[fbb_i,zeros(1,25)];
-fbb_q=[fbb_q,zeros(1,25)];
-fbb_i=filter(b,a,fbb_i);
-fbb_q=filter(b,a,fbb_q);
-fbb_i=fbb_i(26:end);
-fbb_q=fbb_q(26:end);
-fbb=fbb_i+j*fbb_q;
+n = 0:N-1;
+local_oscillator_i = cos(n*f0/fs*2*pi);
+local_oscillator_q = sin(n*f0/fs*2*pi);
+fbb_i = local_oscillator_i.*y;
+fbb_q = local_oscillator_q.*y;
+window = chebwin(51,40);
+[b,a] = fir1(50,2*B/fs,window);
+fbb_i = [fbb_i,zeros(1,25)];
+fbb_q = [fbb_q,zeros(1,25)];
+fbb_i = filter(b,a,fbb_i);
+fbb_q = filter(b,a,fbb_q);
+fbb_i = fbb_i(26:end);
+fbb_q = fbb_q(26:end);
+fbb = fbb_i+j*fbb_q;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%产生理想线性调频脉冲压缩系数%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 M=4096;
 D=B*t;
 match_filter=ts*fliplr(conj(fbb))*sqrt(D)*2/t;
 match_filter_fft=fft(match_filter,M);
-figure,
+figure(2);
 subplot(2,1,1),plot(real(match_filter_fft)),title('脉冲压缩系数（实部）');
 subplot(2,1,2),plot(imag(match_filter_fft)),title('脉冲压缩系数（虚部）');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%产生理想回波信号%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,7 +60,7 @@ signal=fbb_i+j*fbb_q;
 signal_fft=fft(signal,M);
 pc_result_fft=signal_fft.*match_filter_fft;
 pc_result=ifft(pc_result_fft,M);
-figure,
+figure(3);
 subplot(2,1,1),plot((0:ts:t1-ts),signal),title('解调后');
 subplot(2,1,2),plot((0:ts:length(signal)*ts-ts),abs(pc_result(1:length(signal)))),
 xlabel('时间，单位：s'),title('回波脉冲压缩处理结果');

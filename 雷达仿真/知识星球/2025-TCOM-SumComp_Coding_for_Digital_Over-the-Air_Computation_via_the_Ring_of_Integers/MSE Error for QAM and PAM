@@ -1,0 +1,145 @@
+# Figure 5 
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import src*
+
+# Define constants
+Q1_QAM = 16  # sample value for q
+Q2_QAM = 64  # sample value for q
+Q3_QAM = 256  # sample value for q
+
+Q1_PAM = 16  # sample value for q
+Q2_PAM = 32  # sample value for q
+Q3_PAM = 64  # sample value for q
+
+
+Repeat = 10000 #100000
+
+# Define SNR range in dB
+SNR_db = np.arange(-15, 20, 1)  # range from -15 dB to 20 dB
+
+# Define K range
+K = 100
+
+# Initialize MSE array
+MSET1 = np.zeros(len(SNR_db))
+MSET2 = np.zeros(len(SNR_db))
+MSET3 = np.zeros(len(SNR_db))
+MSET4 = np.zeros(len(SNR_db))
+MSET5 = np.zeros(len(SNR_db))
+MSET6 = np.zeros(len(SNR_db))
+
+MSES1 = np.zeros(len(SNR_db))
+MSES2 = np.zeros(len(SNR_db))
+MSES3 = np.zeros(len(SNR_db))
+MSES4 = np.zeros(len(SNR_db))
+MSES5 = np.zeros(len(SNR_db))
+MSES6 = np.zeros(len(SNR_db))
+
+# QAM power normalaized one  : Meghdadi, Vahid. "BER calculation." Wireless Communications (2008).
+
+P1 = (Q1_QAM-1)/6
+P2 = (Q2_QAM-1)/6
+P3 = (Q3_QAM-1)/6
+
+# PAM Modulation 
+
+P4 = (Q1_PAM**2-1)/12
+P5 = (Q2_PAM**2-1)/12
+P6 = (Q3_PAM**2-1)/12
+
+
+# Average over constellation points and nodes
+
+P1 =P1/Q1_QAM
+P2 =P2/Q1_QAM
+P3 =P3/Q1_QAM
+
+P4 = P4/Q1_PAM
+P5 = P5/Q2_PAM
+P6 = P6/Q3_PAM
+
+
+
+d = abs(1) /2
+
+nCount = 0
+for snr in SNR_db:
+    
+    sigma1 = P1*10 **(-snr / 20)  # convert SNR to sigma
+    sigma2 = P2*10 **(-snr / 20)  # convert SNR to sigma
+    sigma3 = P3*10 **(-snr / 20)  # convert SNR to sigma
+
+    sigma4 = P4*10 **(-snr / 20)  # convert SNR to sigma
+    sigma5 = P5*10 **(-snr / 20)  # convert SNR to sigma
+    sigma6 = P6*10 **(-snr / 20)  # convert SNR to sigma
+    #---------------------
+    # Emprical bound
+    #---------------------
+    bQam = 1
+    MSES1[nCount] = Emprical_Bound(K,Q1_QAM,sigma1,bQam,0,'MSE',Repeat)
+    MSES2[nCount] = Emprical_Bound(K,Q2_QAM,sigma2,bQam,0,'MSE',Repeat)
+    MSES3[nCount] = Emprical_Bound(K,Q3_QAM,sigma3,bQam,0,'MSE',Repeat)
+
+    bQam = 0
+    MSES4[nCount] = Emprical_Bound(K,Q1_PAM,sigma4,bQam,0,'MSE',Repeat)
+    MSES5[nCount] = Emprical_Bound(K,Q2_PAM,sigma5,bQam,0,'MSE',Repeat)
+    MSES6[nCount] = Emprical_Bound(K,Q3_PAM,sigma6,bQam,0,'MSE',Repeat)
+
+    #---------------------
+    # Theoretical bound
+    #---------------------
+    bQam = 1
+    MSET1[nCount] =ABound(K,Q1_QAM,sigma1,bQam,d,'MSE')
+    MSET2[nCount] =ABound(K,Q2_QAM,sigma2,bQam,d,'MSE')
+    MSET3[nCount] =ABound(K,Q3_QAM,sigma3,bQam,d,'MSE')
+
+    bQam = 0
+    MSET4[nCount] =ABound(K,Q1_PAM,sigma4,bQam,d,'MSE')
+    MSET5[nCount] =ABound(K,Q2_PAM,sigma5,bQam,d,'MSE')
+    MSET6[nCount] =ABound(K,Q3_PAM,sigma6,bQam,d,'MSE')
+
+    nCount = nCount + 1
+
+
+# Plot MSE vs SNR for each K
+plt.figure()
+fig, axs = plt.subplots(1, 2,figsize = (14,5))
+
+
+axs[0].plot(SNR_db, 10 * np.log10(MSES1[:]), '^')  # convert MSE to dB scale for plot
+axs[0].plot(SNR_db, 10 * np.log10(MSET1[:]), '^-')  # convert MSE to dB scale for plot
+axs[0].plot(SNR_db, 10 * np.log10(MSES2[:]), '<')  # convert MSE to dB scale for plot
+axs[0].plot(SNR_db, 10 * np.log10(MSET2[:]), '<-')  # convert MSE to dB scale for plot
+axs[0].plot(SNR_db, 10 * np.log10(MSES3[:]), '>')  # convert MSE to dB scale for plot
+axs[0].plot(SNR_db, 10 * np.log10(MSET3[:]), '>-')  # convert MSE to dB scale for plot
+
+axs[0].set(xlabel='SNR (dB)')
+axs[0].set(ylabel='MSE (dB)')
+axs[0].grid(True, which='both', axis='both', linestyle='--', linewidth=0.5)
+axs[0].set(title='MSE vs SNR for QAM')
+axs[0].legend(['QAM 16 (emperical)','QAM 16 (analytical)','QAM 64 (emperical)','QAM 64 (analytical)','QAM 256 (emperical)','QAM 256 (analytical)'])
+
+
+axs[1].plot(SNR_db, 10 * np.log10(MSES4[:]), 'v')  # convert MSE to dB scale for plot
+axs[1].plot(SNR_db, 10 * np.log10(MSET4[:]), 'v-')  # convert MSE to dB scale for plot
+axs[1].plot(SNR_db, 10 * np.log10(MSES5[:]), '*')  # convert MSE to dB scale for plot
+axs[1].plot(SNR_db, 10 * np.log10(MSET5[:]), '*-')  # convert MSE to dB scale for plot
+axs[1].plot(SNR_db, 10 * np.log10(MSES6[:]), 'o')  # convert MSE to dB scale for plot
+axs[1].plot(SNR_db, 10 * np.log10(MSET6[:]), 'o-')  # convert MSE to dB scale for plot
+
+axs[1].set(xlabel='SNR (dB)')
+axs[1].set(ylabel='MSE (dB)')
+axs[1].grid(True, which='both', axis='both', linestyle='--', linewidth=0.5)
+axs[1].set(title='MSE vs SNR for PAM')
+axs[1].legend(['PAM 16 (emperical)','PAM 16 (analytical)','PAM 32 (emperical)','PAM 32 (analytical)','PAM 64 (emperical)','PAM 64 (analytical)'])
+
+
+
+
+MSEChannel = pd.DataFrame({'SNR': SNR_db,'MSES1': MSES1,'MSET1': MSET1,'MSES2': MSES2,'MSET2': MSET2,'MSES3': MSES3,'MSET3': MSET3, 'MSES4': MSES4,'MSET4': MSET4,'MSES5': MSES5,'MSET5': MSET5,'MSES6': MSES6,'MSET6': MSET6})
+MSEChannel.set_index('SNR')
+
+MSEChannel.to_csv('MSEError.dat',index=False,sep=' ')
