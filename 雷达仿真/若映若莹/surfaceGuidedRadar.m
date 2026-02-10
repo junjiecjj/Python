@@ -16,7 +16,7 @@ F = 10^(6/10);     % 噪声系数（线性值，6dB对应3.9811）
 L = 10^(8/10);     % 损失因子（线性值，8dB对应6.3096）
 Pt = 1858.6e3;     % 单个脉冲峰值功率 (W，1858.6kW)
 M = 7;             % 积累脉冲数
-B=2e6;             %带宽
+B = 2e6;             %带宽
 I_NC = 10^(7.25/10); % 非相干积累改善因子（7.25dB对应线性值≈5.318）
 sigma_m = 0.1;     % 导弹RCS (-10dBsm对应0.1m²)
 sigma_a = 4;       % 飞机RCS (6dBsm对应4m²)
@@ -206,62 +206,63 @@ clear all
 close all
 %**************参数配置*********************
 if 0
-Tp=200e-6;          %发射脉冲宽度s
-B=1e6;           %调频带宽Hz
-Ts=0.5e-6;       %采样时钟s
-R0=[80e3,85e3];      %目标的距离m
-vr=[0,0];            %目标速度
-SNR=[20 20];         %信噪比
-Rmin=20e3;           %采样的最小距离
-Rrec=150e3;          %接收距离窗的大小
-bos=2*pi/0.03;       %波数2*pi/λ。
+    Tp=200e-6;           % 发射脉冲宽度s
+    B=1e6;               % 调频带宽Hz
+    Ts=0.5e-6;           % 采样时钟s
+    R0=[80e3,85e3];      % 目标的距离m
+    vr=[0,0];            % 目标速度
+    SNR=[20 20];         % 信噪比
+    Rmin=20e3;           % 采样的最小距离
+    Rrec=150e3;          % 接收距离窗的大小
+    bos=2*pi/0.03;       % 波数2*pi/λ。
 else
-c = 3e8;               % 光速 (m/s)
-fc = 3e9;              % 载波频率 (3GHz)
-lambda = 0.1;          %波长0.1m
-Tp=80e-6;          %发射脉冲宽度s
-B=2e6;           %调频带宽Hz
-Ts=0.25e-6;       %采样时钟s
-R0=[75e3,75.15e3];      %目标的距离m
-vr=[0,0];            %目标速度
-SNR=[10 10];         %信噪比
-Rmin=30e3;           %采样的最小距离
-Rrec=105e3;          %接收距离窗的大小
-bos=2*pi/lambda;       %波数2*pi/λ。
+    c = 3e8;                % 光速 (m/s)
+    fc = 3e9;               % 载波频率 (3GHz)
+    lambda = 0.1;           % 波长0.1m
+    Tp=80e-6;               % 发射脉冲宽度s
+    B=2e6;                  % 调频带宽Hz
+    Ts=0.25e-6;             % 采样时钟s
+    R0=[75e3,75.15e3];      % 目标的距离m
+    vr=[0,0];               % 目标速度
+    SNR=[10 10];            % 信噪比
+    Rmin=30e3;              % 采样的最小距离
+    Rrec=105e3;             % 接收距离窗的大小
+    bos=2*pi/lambda;        % 波数2*pi/λ。
 end
 %*********************************************
-mu=B/Tp;            %调频率
-c=3e8;              %光速m/s
-M=round(Tp/Ts);
-t1=(-M/2+0.5:M/2-0.5)*Ts;       %时间矢量
-NR0=ceil(log2(2*Rrec/c/Ts));NR1=2^NR0;    %计算FFT的点数
-lfm=exp(j*pi*mu*t1.^2);                   %信号复包络
-lfm_w=lfm.*hanning(M)';
-gama=(1+2*vr./c).^2;                      
-sp=0.707*(randn(1,NR1)+j*randn(1,NR1));        %噪声
-for k= 1:length(R0)
-    NR=fix(2*(R0(k)-Rmin)/c/Ts);
-    spt=(10^(SNR(k)/20)) *exp(-j*bos*R0(k))*exp(j*pi*mu*gama(k)*t1.^2);     %信号
-    sp(NR:NR+M-1)=sp(NR:NR+M-1)+spt;
+mu = B/Tp;            %调频率
+c = 3e8;              %光速m/s
+M = round(Tp/Ts);
+t1 = (-M/2+0.5:M/2-0.5)*Ts;       %时间矢量
+NR0 = ceil(log2(2*Rrec/c/Ts));
+NR1 = 2^NR0;    %计算FFT的点数
+lfm = exp(j*pi*mu*t1.^2);                   %信号复包络
+lfm_w = lfm.*hanning(M)';
+gama = (1+2*vr./c).^2;                      
+sp = 0.707*(randn(1,NR1)+j*randn(1,NR1));        %噪声
+for k = 1:length(R0)
+    NR = fix(2*(R0(k)-Rmin)/c/Ts);
+    spt = (10^(SNR(k)/20)) *exp(-j*bos*R0(k))*exp(j*pi*mu*gama(k)*t1.^2);     %信号
+    sp(NR:NR+M-1) = sp(NR:NR+M-1)+spt;
 end
-spf=fft(sp,NR1);
-lfmf=fft(lfm,NR1);      %未加窗
-lfmf_w=fft(lfm_w,NR1);      %加窗
-y=abs(ifft(spf.*conj(lfmf),NR1)/NR0);
-y1=abs(ifft(spf.*conj(lfmf_w),NR1)/NR0);   %加窗
-figure;
+spf = fft(sp,NR1);
+lfmf = fft(lfm,NR1);      %未加窗
+lfmf_w = fft(lfm_w,NR1);      %加窗
+y = abs(ifft(spf.*conj(lfmf),NR1)/NR0);
+y1 = abs(ifft(spf.*conj(lfmf_w),NR1)/NR0);   %加窗
+figure(1);
 plot(real(sp));grid on;
 xlabel('时域采样点');
-figure;
+figure(2);
 plot(t1*1e6,real(lfm));grid on;
 xlabel('时间/us')
 ylabel('匹配滤波系数实部')
-figure
+figure(3);
 plot((0:NR1-1)*0.0625,20*log10(y));grid on;
 xlabel("距离/km")
 ylabel("脉压输出/dB");
 title("脉冲压缩结果（未加窗）")
-figure
+figure(4);
 plot((0:NR1-1)*0.0625,20*log10(y1));grid on;
 xlabel("距离/km")
 ylabel("脉压输出/dB");

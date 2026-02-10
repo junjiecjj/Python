@@ -5,13 +5,13 @@ close all;
 clear all;
 clc;
 %%%%%%%%%%产生雷达发射信号%%%%%%%%%%
-code=[1,1,1,1,1,-1,-1,1,1,-1,1,-1,1]; %13位巴克码
-tao=10e-6;%脉冲宽度10us
-fc=28e6;%调频信号起始频率
-f0=30e6;
-fs=100e6;  %采样频率100MHz
+code=[1,1,1,1,1,-1,-1,1,1,-1,1,-1,1]; % 13位巴克码
+tao=10e-6; % 脉冲宽度10us
+fc=28e6;   % 调频信号起始频率
+f0=30e6;   % 线性调频中心频率为30MHz
+fs=100e6;  % 采样频率100MHz
 ts=1/fs;
-B=4e6;%调频信号带宽
+B=4e6;     % 调频信号带宽
 t_tao=0:1/fs:tao-1/fs;
 N=length(t_tao);
 k=B/fs*2*pi/max(t_tao);
@@ -26,33 +26,39 @@ for i=1:n;
     s(1,(i-1)*N+1:i*N)=cos(2*pi*fc*t_tao+k*cumsum(t_tao)+pha);
 end
 t=0:1/fs:13*tao-1/fs;
-figure(1),subplot(2,1,1),plot(t,s),xlabel('(单位:s)'),title('混合调制信号(13位巴克码+线性调频)');
+figure(1);
+subplot(2,1,1);
+plot(t,s);
+xlabel('(单位:s)');
+title('混合调制信号(13位巴克码+线性调频)');
 s_fft_result=abs(fft(s(1:N)));
-subplot(2,1,2),plot((0:fs/N:fs/2-fs/N),abs(s_fft_result(1:N/2))),xlabel('频率(单位:Hz)'),
+subplot(2,1,2);
+plot((0:fs/N:fs/2-fs/N),abs(s_fft_result(1:N/2)));
+xlabel('频率(单位:Hz)'),
 title('码内信号频谱');
 %%%%%%%%%%%%%%%生脉冲压缩系数%%%%%%%%%%%%%%%
 %____________正交解调____________%
 N=tao/ts;
 n=0:N-1;
 s1=s(1:N);
-local_oscillator_i=cos(n*f0/fs*2*pi);%i路本振信号
-local_oscillator_q=sin(n*f0/fs*2*pi);%q路本振信号
-fbb_i=local_oscillator_i.*s1;%i路解调
-fbb_q=local_oscillator_q.*s1;%q路解调
-window=chebwin(51,40);
-[b,a]=fir1(50,2*B/fs,window);
-fbb_i=[fbb_i,zeros(1,25)];
-fbb_q=[fbb_q,zeros(1,25)];
-fbb_i=filter(b,a,fbb_i);
-fbb_q=filter(b,a,fbb_q);
-fbb_i=fbb_i(26:end);%截取有效信息
-fbb_q=fbb_q(26:end);%截取有效信息
-fbb=fbb_i+j*fbb_q;
+local_oscillator_i = cos(n*f0/fs*2*pi); % i 路本振信号
+local_oscillator_q = sin(n*f0/fs*2*pi); % q 路本振信号
+fbb_i = local_oscillator_i.*s1; % i 路解调
+fbb_q = local_oscillator_q.*s1; % q 路解调
+window = chebwin(51, 40);
+[b,a] = fir1(50, 2*B/fs, window);
+fbb_i = [fbb_i, zeros(1,25)];
+fbb_q = [fbb_q, zeros(1,25)];
+fbb_i = filter(b,a,fbb_i);
+fbb_q = filter(b,a,fbb_q);
+fbb_i = fbb_i(26:end); % 截取有效信息
+fbb_q = fbb_q(26:end); % 截取有效信息
+fbb = fbb_i+j*fbb_q;
 %--------产生理想线性调频脉冲压缩匹配系数--------%
-M=131072;%因为回波信号数据长度为3600点,所以利用FFT,做4096点FFT
+M=131072;    % 因为回波信号数据长度为3600点,所以利用FFT,做4096点FFT
 D=B*tao;
 match_filter_1=ts*fliplr(conj(fbb))*sqrt(D)*2/tao;
-match_filter_1_fft=fft(match_filter_1,M);%第一次脉冲压缩处理匹配系数
+match_filter_1_fft=fft(match_filter_1,M);  %  第一次脉冲压缩处理匹配系数
 figure(2),
 subplot(2,1,1),plot(real(match_filter_1_fft)),title('脉冲压缩系数(实部)');
 subplot(2,1,2),plot(imag(match_filter_1_fft)),title('脉冲压缩系数(虚部)');
