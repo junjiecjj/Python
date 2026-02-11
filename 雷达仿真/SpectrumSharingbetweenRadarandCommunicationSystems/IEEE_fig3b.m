@@ -35,8 +35,8 @@ P_FA = [10^-5];
 % P_FA = [10^-1, 10^-2];
 %% Monte-Carlo iterations 
 MC_iter = 20; 
-Pd_orthog_cell = cell(1,MC_iter); 
-Pd_NSP_cell = cell(1,MC_iter); 
+Pd_orthog_cell = cell(1, MC_iter); 
+Pd_NSP_cell    = cell(1, MC_iter); 
 for i=1:MC_iter %% Interference channel matrix H generation and null space computation
     % Generate Cellular Channels and Find NS of them and select 
     % Channel with Min NS 
@@ -68,13 +68,13 @@ end
 Pd_orthog_cat_mean = mean(Pd_orthog_cat ,3);
 Pd_NSP_cat_mean = mean(Pd_NSP_cat ,3);
 %% Plots Probability of detection curves for given  Probability of false alarm 
-figure
+figure(1);
 plot(SNR_db',Pd_NSP_cat_mean(:,1),'g','LineWidth',2.5); hold on;
-plot(SNR_db',Pd_NSP_cat_mean(:,2),'b','LineWidth',2.5);
-plot(SNR_db',Pd_NSP_cat_mean(:,3),'r','LineWidth',2.5);
-plot(SNR_db',Pd_NSP_cat_mean(:,4),'m','LineWidth',2.5);
-plot(SNR_db',Pd_NSP_cat_mean(:,5),'y','LineWidth',2.5);
-plot(SNR_db',Pd_orthog_cat_mean(:,1),'k','LineWidth',2.5)
+plot(SNR_db',Pd_NSP_cat_mean(:,2),'b','LineWidth',2.5); hold on;
+plot(SNR_db',Pd_NSP_cat_mean(:,3),'r','LineWidth',2.5); hold on;
+plot(SNR_db',Pd_NSP_cat_mean(:,4),'m','LineWidth',2.5); hold on;
+plot(SNR_db',Pd_NSP_cat_mean(:,5),'y','LineWidth',2.5); hold on;
+plot(SNR_db',Pd_orthog_cat_mean(:,1),'k','LineWidth',2.5); hold on;
 xlabel('SNR','fontsize' ,14);
 ylabel('P_D','fontsize' ,14);
 title('P_D for P_{FA} = 10^{-5}','fontsize' ,14);
