@@ -1,4 +1,6 @@
-clear,clc
+clear;
+clc;
+close all;
 
 addpath(pwd);
 cd manopt;
@@ -9,7 +11,6 @@ cd ..;
 load('Ns=3.mat');
 
 Ns = 3;
-
 NRF = 3;
 
 SNR_dB = -35:5:5;

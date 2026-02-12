@@ -33,14 +33,13 @@ for reali = 1:realization
     for j = 1:Nc*Nray
         At(:,j,reali) = array_response(AoD(1,j),AoD(2,j),Nt); %UPA array response
         Ar(:,j,reali) = array_response(AoA(1,j),AoA(2,j),Nr);
-        alpha(j,reali) = normrnd(0,sqrt(sigma/2)) + normrnd(0,sqrt(sigma/2))*sqrt(-1);
+        alpha(j,reali) = normrnd(0, sqrt(sigma/2)) + 1i*normrnd(0, sqrt(sigma/2));
         H(:,:,reali) = H(:,:,reali) + alpha(j,reali) * Ar(:,j,reali) * At(:,j,reali)';
     end
     H(:,:,reali) = gamma * H(:,:,reali);
     
     if(rank(H(:,:,reali))>=Ns)
         count = count + 1;
-    
         [U,S,V] = svd(H(:,:,reali));
         Fopt(:,:,reali) = V([1:Nt],[1:Ns]);
         Wopt(:,:,reali) = U([1:Nr],[1:Ns]);

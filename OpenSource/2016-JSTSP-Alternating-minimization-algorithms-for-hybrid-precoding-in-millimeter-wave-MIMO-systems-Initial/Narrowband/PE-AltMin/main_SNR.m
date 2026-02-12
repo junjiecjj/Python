@@ -1,4 +1,6 @@
-clear,clc
+clear;
+clc;
+close all;
 
 % load('Ns=4.mat');
 load('Ns=8.mat');
