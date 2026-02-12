@@ -12,7 +12,7 @@ c = 3*10^8;
 % Nr Comm Receivers 
 Nr = 2;
 % Mt Radar Transmiters 
-Mt = 8; 
+Mt = 4; 
 % Mr Radar Receivers
 Mr = Mt; 
 % Radial velocity of 2000 m/s 
@@ -30,13 +30,13 @@ a = [1 exp(1i * pi *(1:Mt-1)* sin(theta))]';
 % Transmit Correlation Matrix (Mt x Mt) for Orthonormal Waveforms
 Rs = eye(Mt);
 %% Define SNR for ROC (Reciever Operating Characteristics)
-SNR_db = -8:1:10; 
+SNR_db = -10:1:30; 
 SNR_mag = 10.^(SNR_db./10); 
 %Probability of false alarm values 
-P_FA = [10^-5];
+P_FA = [10^-1, 10^-3, 10^-5, 10^-7];
 % P_FA = [10^-1, 10^-5];
 %% Monte-Carlo iterations 
-MC_iter = 11; 
+MC_iter = 100; 
 BS = 5;
 
 Pd_orthog_it = zeros(MC_iter, BS, length(SNR_mag), length(P_FA));
@@ -75,7 +75,7 @@ Pd_NSP_mean = mean(Pd_NSP_it ,1);
 colors = ['g', 'b', 'r', 'm', 'y' ];
 for z = 1:length(P_FA)
     figure(z);
-    for b = 1:BS
+    for b = 1:1
         plot(SNR_db',squeeze(Pd_NSP_mean(1, b,:,z)),colors(b),'LineWidth',2.5); hold on;
     end
     plot(SNR_db',squeeze(Pd_orthog_mean(1, 1,:,z)),'k','LineWidth',2.5); hold on;
@@ -83,7 +83,7 @@ for z = 1:length(P_FA)
     ylabel('P_D','fontsize' ,14);
     str = sprintf('P_D for P_{FA} = %.1e',P_FA(z)); 
     title(str,'fontsize' ,14);
-    legend('P_D for NSP Waveforms to BS 1', 'P_D for NSP Waveforms to BS 2', 'P_D for NSP Waveforms to BS 3', 'P_D for NSP Waveforms to BS 4', 'P_D for NSP Waveforms to BS 5', 'P_D for Orthogonal Waveforms')
+    legend('P_D for NSP Waveforms', 'P_D for Orthogonal Waveforms')
 end
 
 

@@ -10,11 +10,10 @@ rng(42,'twister');
 % Speed of light 
 c = 3*10^8; 
 % Nr Comm Receivers 
-Nr = 2;
+Nr = [2, 4, 6, 8];
 % Mt Radar Transmiters 
-Mt = 8; 
-% Mr Radar Receivers
-Mr = Mt; 
+Mt = 100; 
+
 % Radial velocity of 2000 m/s 
 v_r = 2000; 
 % Radar reference point 
@@ -30,22 +29,24 @@ a = [1 exp(1i * pi *(1:Mt-1)* sin(theta))]';
 % Transmit Correlation Matrix (Mt x Mt) for Orthonormal Waveforms
 Rs = eye(Mt);
 %% Define SNR for ROC (Reciever Operating Characteristics)
-SNR_db = -8:1:10; 
+SNR_db = -40:1:1; 
 SNR_mag = 10.^(SNR_db./10); 
 %Probability of false alarm values 
 P_FA = [10^-5];
 % P_FA = [10^-1, 10^-5];
 %% Monte-Carlo iterations 
-MC_iter = 11; 
+MC_iter = 10; 
 BS = 5;
 
-Pd_orthog_it = zeros(MC_iter, BS, length(SNR_mag), length(P_FA));
-Pd_NSP_it = zeros(MC_iter, BS, length(SNR_mag), length(P_FA));
+Pd_orthog_it = zeros(MC_iter, length(Nr), length(SNR_mag), length(P_FA));
+Pd_NSP_it = zeros(MC_iter, length(Nr), length(SNR_mag), length(P_FA));
+
 for i=1:MC_iter
-    Pd_orthog_bs = zeros(BS, length(SNR_mag), length(P_FA));
-    Pd_NSP_bs = zeros(BS, length(SNR_mag), length(P_FA));
-    for b = 1:BS
-        BS_channels = (randn(Nr,Mt)+1i*randn(Nr,Mt)); 
+    Pd_orthog_Nr = zeros(length(Nr), length(SNR_mag), length(P_FA));
+    Pd_NSP_Nr = zeros(length(Nr), length(SNR_mag), length(P_FA));
+    for j = 1:length(Nr)
+        nr = Nr(j);
+        BS_channels = (randn(nr*BS,Mt)+1i*randn(nr*BS,Mt)); 
         Proj_matrix = null(BS_channels) * ctranspose(null(BS_channels)); 
         Rs_null     = Proj_matrix * Rs * Proj_matrix';
         Pd_orthog = zeros(length(SNR_mag), length(P_FA));
@@ -60,11 +61,11 @@ for i=1:MC_iter
             Pd_orthog(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta, repmat(2, 1, length(P_FA)), repmat(rho_orthog, 1, length(P_FA )));
             Pd_NSP(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta,repmat(2, 1, length(P_FA)), repmat(rho_NSP, 1, length(P_FA)));
         end
-        Pd_orthog_bs(b,:,:) = Pd_orthog;
-        Pd_NSP_bs(b,:,:) = Pd_NSP;
+        Pd_orthog_Nr(j,:,:) = Pd_orthog;
+        Pd_NSP_Nr(j,:,:) = Pd_NSP;
     end
-    Pd_orthog_it(i,:,:,:) = Pd_orthog_bs;
-    Pd_NSP_it(i,:,:,:) = Pd_NSP_bs;
+    Pd_orthog_it(i,:,:,:) = Pd_orthog_Nr;
+    Pd_NSP_it(i,:,:,:) = Pd_NSP_Nr;
 end
 
 Pd_orthog_mean = mean(Pd_orthog_it ,1);
@@ -75,15 +76,15 @@ Pd_NSP_mean = mean(Pd_NSP_it ,1);
 colors = ['g', 'b', 'r', 'm', 'y' ];
 for z = 1:length(P_FA)
     figure(z);
-    for b = 1:BS
-        plot(SNR_db',squeeze(Pd_NSP_mean(1, b,:,z)),colors(b),'LineWidth',2.5); hold on;
+    for j = 1:length(Nr)
+        plot(SNR_db',squeeze(Pd_NSP_mean(1, j,:,z)),colors(j),'LineWidth',2.5); hold on;
     end
     plot(SNR_db',squeeze(Pd_orthog_mean(1, 1,:,z)),'k','LineWidth',2.5); hold on;
     xlabel('SNR','fontsize' ,14);
     ylabel('P_D','fontsize' ,14);
     str = sprintf('P_D for P_{FA} = %.1e',P_FA(z)); 
     title(str,'fontsize' ,14);
-    legend('P_D for NSP Waveforms to BS 1', 'P_D for NSP Waveforms to BS 2', 'P_D for NSP Waveforms to BS 3', 'P_D for NSP Waveforms to BS 4', 'P_D for NSP Waveforms to BS 5', 'P_D for Orthogonal Waveforms')
+    legend('P_D for NSP Waveforms N^{BS}=2', 'P_D for NSP Waveforms N^{BS}=4','P_D for NSP Waveforms N^{BS}=6','P_D for NSP Waveforms N^{BS}=8', 'P_D for Orthogonal Waveforms')
 end
 
 
