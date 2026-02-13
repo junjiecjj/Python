@@ -16,9 +16,10 @@ function [FRF_new, cost] = sig_manif(Fopt, FRF, FBB)
     
     % checkgradient(problem);
     warning('off', 'manopt:getHessian:approx');
-    
-    [x,cost, info, options] = conjugategradient(problem, FRF(:));
+    options.verbosity = 1;
+    % [x, cost, info, options] = conjugategradient(problem, FRF(:));
     % [x,cost,info,options] = trustregions(problem, FRF(:));
+    [x,cost,info,options] = steepestdescent(problem, FRF(:));
     % info.iter
     FRF_new = reshape(x, Nt, NRF);
 end

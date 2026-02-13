@@ -254,7 +254,6 @@ while true
         
     end
     
-    
     % Execute line search
     [stepsize newx storedb lsmem lsstats] = options.linesearch(...
                  problem, x, desc_dir, cost, df0, options, storedb, lsmem);
