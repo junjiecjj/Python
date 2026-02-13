@@ -1,6 +1,6 @@
-clear;
-clc;
+clear all;
 close all;
+clc;
 
 % load('Ns=4.mat');
 load('Ns=8.mat');
@@ -21,7 +21,7 @@ for reali = 1:realization
         R(s,reali) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H(:,:,reali) * FRF * FBB * FBB' * FRF' * H(:,:,reali)' * WRF * WBB));
     end
 end
-plot(SNR_dB,sum(R,2)/realization,'g-->','LineWidth',1.5);
+figure(1);
+plot(SNR_dB, sum(R,2)/realization,'g-->','LineWidth',1.5); hold on;
 % plot(SNR_dB,sum(R,2)/realization,'Marker','>','LineWidth',1.5,'Color',[0 0.447058826684952 0.74117648601532]);
 grid on
-hold on

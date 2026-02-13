@@ -6,7 +6,7 @@ close all;
 Nc = 5; % # of clusters
 Nray = 10; % # of rays in each cluster
 
-Ns = 4; % # of streams
+Ns = 8; % # of streams
 Nt = 144; % # of transmit antennas
 Nr = 36; % # of receive antennas
 
@@ -45,3 +45,18 @@ for reali = 1:realization
         Wopt(:,:,reali) = U([1:Nr],[1:Ns]);
     end
 end
+
+savename = sprintf('Ns=%d.mat',Ns); 
+save(savename, 'H', 'Wopt', 'Fopt');
+
+normH = zeros(1, realization);
+for it=1:realization
+    normH(it) = norm(H(:,:,it), 'fro')^2;
+end
+fprintf("F norm of H = %.4f, Nt*Nr = %.4f\n", mean(normH), Nt*Nr);
+
+
+
+
+
+

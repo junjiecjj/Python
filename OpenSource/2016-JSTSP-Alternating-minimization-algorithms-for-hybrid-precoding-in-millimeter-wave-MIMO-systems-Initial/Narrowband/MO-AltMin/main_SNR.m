@@ -1,6 +1,8 @@
-clear;
-clc;
+
+
+clear all;
 close all;
+clc;
 
 addpath(pwd);
 cd manopt;
@@ -8,7 +10,13 @@ addpath(genpath(pwd));
 cd ..;
 
 % load('Ns=3.mat');
-load('Ns=3.mat');
+load('Ns=3.mat', 'H');
+load('Ns=3.mat', 'Wopt');
+load('Ns=3.mat', 'Fopt');
+size(H)
+size(Fopt)
+size(Wopt)
+
 
 Ns = 3;
 NRF = 3;
@@ -27,6 +35,9 @@ for reali = 1:realization
         R(s,reali) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H(:,:,reali) * FRF * FBB * FBB' * FRF' * H(:,:,reali)' * WRF * WBB));
     end
 end
-plot(SNR_dB,sum(R,2)/realization,'k-p','LineWidth',1.5)
-grid on
-hold on
+
+
+figure(1);
+plot(SNR_dB,sum(R,2)/realization,'k-p','LineWidth',1.5); hold on;
+grid on;
+

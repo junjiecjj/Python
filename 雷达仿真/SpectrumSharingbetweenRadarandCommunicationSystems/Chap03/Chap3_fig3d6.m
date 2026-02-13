@@ -1,5 +1,8 @@
 % Figure 3.6 - CRB versus Number of antennas per BS
-clear all; close all; clc;
+
+clear all;
+close all;
+clc;
 
 % Parameters
 K = 3; % No of BS in the cluster
