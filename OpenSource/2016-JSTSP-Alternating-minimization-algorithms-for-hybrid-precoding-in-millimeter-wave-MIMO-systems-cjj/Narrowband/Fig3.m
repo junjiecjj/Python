@@ -21,8 +21,9 @@ SNR_dB = -35:5:5;
 SNR = 10.^(SNR_dB./10);
 Iterations = 100;
 smax = length(SNR);% enable the parallel
-
+count = 0
 for it = 1:Iterations
+    count = count + 1;
     [H, Fopt, Wopt, At, Ar] = channel_realization(5, 10, Ns, 144, 36);
 
     %% proposed MO_AltMin algo.
@@ -78,12 +79,12 @@ markersize = 10;%标记的大小，按照个人喜好设置。
 h = figure(1);
 fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
-plot(SNR_dB, sum(real(R_o),2)/Iterations,'k-o','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(R1),2)/Iterations,'m-*','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(R2),2)/Iterations,'b-s','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(R3),2)/Iterations,'g-^','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(Rsdr),2)/Iterations,'r-d','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(Rsic),2)/Iterations,'c-v','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R_o),2)/count,'k-o','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R1),2)/count,'m-*','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R2),2)/count,'b-s','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R3),2)/count,'g-^','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(Rsdr),2)/count,'r-d','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(Rsic),2)/count,'c-v','LineWidth',1.5, 'markersize',10); hold on;
 grid on;
 
 %set(gca,'XMinorGrid','off'); % 关闭X轴的次网格
