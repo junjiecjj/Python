@@ -1,0 +1,59 @@
+
+
+clear all;
+close all;
+clc;
+
+addpath(pwd);
+cd manopt;
+addpath(genpath(pwd));
+cd ..;
+addpath('./MO_AltMin');
+addpath('./PE_AltMin');
+addpath('./OMP_Algorithm');
+
+
+Ns = 3;
+NRF = 3;
+
+SNR_dB = -35:5:5;
+SNR = 10.^(SNR_dB./10);
+Iterations = 1000;
+smax = length(SNR);% enable the parallel
+
+for it = 1:Iterations
+    [H, Fopt, Wopt, At, Ar] = channel_realization(Nc, Nray, Ns, Nt, Nr);
+
+    %% proposed MO_AltMin algo.
+    [ FRF, FBB ] = MO_AltMin(Fopt, NRF);
+    FBB = sqrt(Ns) * FBB / norm(FRF * FBB,'fro');
+    [ WRF, WBB ] = MO_AltMin(Wopt, NRF);
+    for s = 1:smax
+        R1(s,reali) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H(:,:,reali) * FRF * FBB * FBB' * FRF' * H(:,:,reali)' * WRF * WBB));
+        R_o(s,reali) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(Wopt(:,:,reali)) * H(:,:,reali) * Fopt(:,:,reali) * Fopt(:,:,reali)' * H(:,:,reali)' * Wopt(:,:,reali)));
+    end
+    
+    %% proposed PE_AltMin algo.
+    [ FRF, FBB ] = PE_AltMin( Fopt, NRF);
+    FBB = sqrt(Ns) * FBB / norm(FRF * FBB,'fro');
+    [ WRF, WBB ] = PE_AltMin( Wopt, NRF);
+    for s = 1:smax
+        R2(s,reali) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H(:,:,reali) * FRF * FBB * FBB' * FRF' * H(:,:,reali)' * WRF * WBB));
+    end
+    
+    %% OMP
+    [ FRF, FBB ] = OMP( Fopt(:,:,reali), NRF, At(:,:,reali) );
+    FBB = sqrt(Ns) * FBB / norm(FRF * FBB,'fro');
+    [ WRF, WBB ] = OMP( Wopt(:,:,reali), NRF, Ar(:,:,reali) );
+    for s = 1:smax
+        R3(s,reali) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H(:,:,reali) * FRF * FBB * FBB' * FRF' * H(:,:,reali)' * WRF * WBB));
+    end
+    
+
+end
+
+
+figure(1);
+plot(SNR_dB,sum(R,2)/realization,'k-p','LineWidth',1.5); hold on;
+grid on;
+
