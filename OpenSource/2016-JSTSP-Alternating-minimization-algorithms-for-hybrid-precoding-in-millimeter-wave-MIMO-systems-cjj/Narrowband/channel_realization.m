@@ -39,5 +39,3 @@ function [H, Fopt, Wopt, At, Ar] = channel_realization(Nc, Nray, Ns, Nt, Nr)
         Wopt = U([1:Nr],[1:Ns]);
     end
 end
-
-

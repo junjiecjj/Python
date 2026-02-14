@@ -6,7 +6,7 @@ close all;
 Nc = 5; % # of clusters
 Nray = 10; % # of rays in each cluster
 
-Ns = 8; % # of streams
+Ns = 3; % # of streams
 Nt = 144; % # of transmit antennas
 Nr = 36; % # of receive antennas
 

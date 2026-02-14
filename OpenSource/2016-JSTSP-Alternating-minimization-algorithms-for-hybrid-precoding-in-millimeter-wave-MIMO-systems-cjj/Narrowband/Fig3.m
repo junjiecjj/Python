@@ -11,7 +11,8 @@ cd ..;
 addpath('./MO_AltMin');
 addpath('./PE_AltMin');
 addpath('./OMP_Algorithm');
-
+addpath('./SIC');
+addpath('/home/jack/cvx-a64/cvx')
 
 Ns = 3;
 NRF = 3;
@@ -49,6 +50,21 @@ for it = 1:Iterations
         R3(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H * FRF * FBB * FBB' * FRF' * H' * WRF * WBB));
     end
     
+    %% Partially-connected structure
+    %% SDR
+    [ FRF, FBB ] = SDR_AltMin(Fopt, NRF);
+    [ WRF, WBB ] = Receiver(Wopt, NRF);
+    for s = 1:smax
+        Rsdr(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H * FRF * FBB * FBB' * FRF' * H' * WRF * WBB));
+    end
+
+    %% SIC
+    [ FRF, FBB ] = SDR_AltMin( Fopt, NRF);
+    for s = 1:smax
+        R(s,it)    = log2(det(eye(Ns) + SNR(s)/Ns * pinv(Wopt) * H * FRF * FBB * FBB' * FRF' * H' * Wopt));
+        [ FRFS, FBBS ] = SIC( Fopt, H, NRF, SNR(s) );
+        Rsic(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(Wopt) * H * FRFS * FBBS * FBBS' * FRFS' * H' * Wopt)); 
+    end
 
 end
 
@@ -62,10 +78,12 @@ markersize = 10;%标记的大小，按照个人喜好设置。
 h = figure(1);
 fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
-plot(SNR_dB,sum(R_o,2)/Iterations,'k-o','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB,sum(R1,2)/Iterations,'m-*','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB,sum(R2,2)/Iterations,'b-s','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB,sum(R3,2)/Iterations,'g-^','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R_o),2)/Iterations,'k-o','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R1),2)/Iterations,'m-*','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R2),2)/Iterations,'b-s','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(R3),2)/Iterations,'g-^','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(Rsdr),2)/Iterations,'r-d','LineWidth',1.5, 'markersize',10); hold on;
+plot(SNR_dB, sum(real(Rsic),2)/Iterations,'c-v','LineWidth',1.5, 'markersize',10); hold on;
 grid on;
 
 %set(gca,'XMinorGrid','off'); % 关闭X轴的次网格
@@ -81,7 +99,9 @@ set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 h_legend = legend('Optimal Digital Precoder', ...
                   'MO-AltMin', ...
                   'PE-AltMin', ...
-                  'OMP algo'...
+                  'OMP algo',...
+                  'SDR algo',...
+                  'SIC algo' ...
                   );  %图例，与上面的曲线先后对应
 legendsize = 22;
 set(h_legend,'FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Location','southwest');

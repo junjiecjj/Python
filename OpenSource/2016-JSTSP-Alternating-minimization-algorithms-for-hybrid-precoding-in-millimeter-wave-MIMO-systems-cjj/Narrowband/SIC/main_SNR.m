@@ -1,11 +1,16 @@
-clear,clc
+clear all;
+close all;
+clc;
 
-addpath(pwd);
-cd cvx;
-addpath(genpath(pwd));
-cd ..;
+% addpath(pwd);
+% cd cvx;
+% addpath(genpath(pwd));
+% cd ..;
 
-load('Ns=3.mat');
+load('Ns=3.mat', 'H');
+
+load('Ns=3.mat', 'Fopt');
+load('Ns=3.mat', 'Wopt');
 
 Ns = 3;
 
