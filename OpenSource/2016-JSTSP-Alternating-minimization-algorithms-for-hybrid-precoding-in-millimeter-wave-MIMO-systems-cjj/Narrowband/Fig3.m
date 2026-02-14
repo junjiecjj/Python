@@ -92,4 +92,5 @@ xlabel('SNR(dB)','FontName','Times New Roman','FontSize',fontsize,'FontWeight','
 ylabel('Rate(bit/s/Hz)','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
 %set(get(gca,'XLabel'),'FontSize',14);%图上文字为8 point或小5号
 %set(get(gca,'YLabel'),'FontSize',14);
-
+set(gca,'linewidth',1.5);       % 设置坐标轴粗细
+set(gcf,'color','white');  % 设置背景是白色的 原先是灰色的 论文里面不好看
