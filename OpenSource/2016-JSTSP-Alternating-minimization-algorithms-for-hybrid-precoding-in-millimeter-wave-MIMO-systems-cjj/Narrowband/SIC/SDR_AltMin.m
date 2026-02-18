@@ -14,6 +14,7 @@ function [FRF,FBB] = SDR_AltMin(Fopt,NRF)
     while(isempty(y) || abs(y(1)-y(2))>1e-3)
         % fix FRF, optimize FBB
         A1 = diag([ones(1,Ns*NRF),0]);
+        A2 = zeros(Ns*NRF+1, Ns*NRF+1);
         A2(Ns*NRF+1,Ns*NRF+1) = 1;
         
         temp = kron(eye(Ns),FRF);
@@ -25,7 +26,7 @@ function [FRF,FBB] = SDR_AltMin(Fopt,NRF)
             subject to
                 trace(A1*X) == NRF*Ns;
                 trace(A2*X) == 1;
-            X == hermitian_semidefinite(Ns*NRF+1);
+                X == hermitian_semidefinite(Ns*NRF+1);
         cvx_end
         
         [V,D] = eig(X);

@@ -4,6 +4,7 @@ clear all;
 close all;
 clc;
 
+
 addpath(pwd);
 cd manopt;
 addpath(genpath(pwd));
@@ -11,6 +12,7 @@ cd ..;
 addpath('./MO_AltMin');
 addpath('./PE_AltMin');
 addpath('./OMP_Algorithm');
+addpath('./SDR_AltMin');
 addpath('./SIC');
 addpath('/home/jack/cvx-a64/cvx')
 
@@ -19,9 +21,9 @@ NRF = 3;
 
 SNR_dB = -35:5:5;
 SNR = 10.^(SNR_dB./10);
-Iterations = 100;
+Iterations = 20;
 smax = length(SNR);% enable the parallel
-count = 0
+count = 0;
 for it = 1:Iterations
     count = count + 1;
     [H, Fopt, Wopt, At, Ar] = channel_realization(5, 10, Ns, 144, 36);
@@ -34,7 +36,7 @@ for it = 1:Iterations
         R1(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H * FRF * FBB * FBB' * FRF' * H' * WRF * WBB));
         R_o(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(Wopt) * H * Fopt * Fopt' * H' * Wopt));
     end
-    
+
     %% proposed PE_AltMin algo.
     [ FRF, FBB ] = PE_AltMin( Fopt, NRF);
     FBB = sqrt(Ns) * FBB / norm(FRF * FBB,'fro');
@@ -42,7 +44,7 @@ for it = 1:Iterations
     for s = 1:smax
         R2(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H * FRF * FBB * FBB' * FRF' * H' * WRF * WBB));
     end
-    
+
     %% OMP
     [ FRF, FBB ] = OMP( Fopt, NRF, At);
     FBB = sqrt(Ns) * FBB / norm(FRF * FBB,'fro');
@@ -66,7 +68,7 @@ for it = 1:Iterations
         [ FRFS, FBBS ] = SIC( Fopt, H, NRF, SNR(s) );
         Rsic(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(Wopt) * H * FRFS * FBBS * FBBS' * FRFS' * H' * Wopt)); 
     end
-
+    count
 end
 
 
