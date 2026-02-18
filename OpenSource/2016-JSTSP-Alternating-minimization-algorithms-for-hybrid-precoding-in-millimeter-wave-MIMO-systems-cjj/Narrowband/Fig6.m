@@ -12,13 +12,26 @@ cd ..;
 addpath('./MO_AltMin');
 addpath('./PE_AltMin');
 Ns = 3;
-NRF = 3;
+NRF = [2, 4, 8];
 
 SNR_dB = -35:5:5;
 SNR = 10.^(SNR_dB./10);
 Iterations = 20;
 smax = length(SNR);% enable the parallel
 count = 0;
+
+
+
+width = 7;%设置图宽，这个不用改
+height = 7*0.75;%设置图高，这个不用改
+fontsize = 18;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+
+h = figure(1);
+fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+
 for it = 1:Iterations
     count = count + 1;
     [H, Fopt, Wopt, At, Ar] = channel_realization(5, 10, Ns, 144, 36);
@@ -39,28 +52,17 @@ for it = 1:Iterations
     for s = 1:smax
         R2(s,it) = log2(det(eye(Ns) + SNR(s)/Ns * pinv(WRF * WBB) * H * FRF * FBB * FBB' * FRF' * H' * WRF * WBB));
     end
- 
+    
+    plot(SNR_dB, sum(real(R_o),2)/count,'k-o','LineWidth',1.5, 'markersize',10); hold on;
+    plot(SNR_dB, sum(real(R1),2)/count,'m-*','LineWidth',1.5, 'markersize',10); hold on;
+    plot(SNR_dB, sum(real(R2),2)/count,'b-s','LineWidth',1.5, 'markersize',10); hold on;
+
     count
 end
 
 
-width = 7;%设置图宽，这个不用改
-height = 7*0.75;%设置图高，这个不用改
-fontsize = 18;%设置图中字体大小
-linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
-markersize = 10;%标记的大小，按照个人喜好设置。
 
-h = figure(1);
-fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
-
-plot(SNR_dB, sum(real(R_o),2)/count,'k-o','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(R1),2)/count,'m-*','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(R2),2)/count,'b-s','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(R3),2)/count,'g-^','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(Rsdr),2)/count,'r-d','LineWidth',1.5, 'markersize',10); hold on;
-plot(SNR_dB, sum(real(Rsic),2)/count,'c-v','LineWidth',1.5, 'markersize',10); hold on;
 grid on;
-
 %set(gca,'XMinorGrid','off'); % 关闭X轴的次网格
 %set(gca,'XGrid','off','LineWidth',0.01); % 关闭X轴的网格
 set(gca,'gridlinestyle','--','Gridalpha',0.2,'LineWidth',0.01,'Layer','bottom');

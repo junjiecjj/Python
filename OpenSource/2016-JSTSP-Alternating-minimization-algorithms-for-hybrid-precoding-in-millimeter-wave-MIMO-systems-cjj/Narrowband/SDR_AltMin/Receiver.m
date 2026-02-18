@@ -1,24 +1,27 @@
-function [FRF,FBB] = Receiver(Fopt,NRF)
+
+
+
+function [WRF,WBB] = Receiver(Wopt,NRF)
     % randomly generate FRF
-    [Nt,Ns] = size(Fopt);
-    FRF = [];
+    [Nt,Ns] = size(Wopt);
+    WRF = [];
     for i = 1:NRF
-        FRF = blkdiag(FRF, exp(sqrt(-1) * unifrnd (0,2*pi,[Nt/NRF,1])));
+        WRF = blkdiag(WRF, exp(sqrt(-1) * unifrnd (0,2*pi,[Nt/NRF,1])));
     end
-    FRF = 1/sqrt(Nt)*FRF;
+    WRF = 1/sqrt(Nt)*WRF;
 
     y = [];
     while(isempty(y) || abs(y(1)-y(2))>1e-3)
         % fix FRF, optimize FBB
-        FBB = pinv(FRF) * Fopt;
+        WBB = pinv(WRF) * Wopt;
 
-        y(1) = norm(Fopt-FRF*FBB,'fro')^2;
+        y(1) = norm(Wopt-WRF*WBB,'fro')^2;
 
         % fix FBB, optimize FRF
         for i = 1:Nt
             m = ceil(i*NRF/Nt);
-            FRF(i,m) = 1/sqrt(Nt) * exp( sqrt(-1) * angle( Fopt(i,:)*FBB(m,:)' ) );
+            WRF(i,m) = 1/sqrt(Nt) * exp( sqrt(-1) * angle( Wopt(i,:)*WBB(m,:)' ) );
         end
-        y(2) = norm(Fopt-FRF*FBB,'fro')^2;
+        y(2) = norm(Wopt-WRF*WBB,'fro')^2;
     end
 end
