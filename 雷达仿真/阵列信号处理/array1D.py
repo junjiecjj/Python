@@ -102,19 +102,19 @@ theta0 = math.radians(30)
 
 ### ArrayFactor Samping
 Ns = 1000                  # Sampling number
-theta = np.linspace(-np.pi/2, np.pi/2, Ns)
+theta1 = np.linspace(-np.pi/2, np.pi/2, Ns)
 # theta = np.arange(0, np.pi, 0.001)
-psi = np.pi * (np.sin(theta) - np.sin(theta0))
+psi = np.pi * (np.sin(theta1) - np.sin(theta0))
 
 P = np.abs(np.sin(N * psi/2)/np.sin(psi/2))/N
 
-dbP = 20 * np.log10(P)
-peaks, _ =  scipy.signal.find_peaks(dbP)
+dbP1 = 20 * np.log10(P)
+peaks, _ =  scipy.signal.find_peaks(dbP1)
 
 ### 画图
 fig, axs = plt.subplots(1, 1, figsize=(10, 8), )
-axs.plot(theta*180/np.pi, dbP, color='b', linestyle='-', lw = 3, label = 'Beampattern',  )
-# axs.plot(theta[peaks], dbP[peaks], linestyle='', marker = 'o', color='r', markersize = 12)
+axs.plot(theta1*180/np.pi, dbP1, color='b', linestyle='-', lw = 2, label = 'Beampattern, Theo',  )
+axs.plot(theta, dbP, color='r', linestyle='--', lw = 2, label = 'Beampattern, simu',  )
 
 font1 = { 'style': 'normal', 'size': 22, 'color':'blue',}
 font2 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
