@@ -46,19 +46,19 @@ for i=1:MC_iter
     Pd_NSP_bs = zeros(BS, length(SNR_mag), length(P_FA));
     for b = 1:BS
         BS_channels = (randn(Nr,Mt)+1i*randn(Nr,Mt)); 
-        Proj_matrix = null(BS_channels) * ctranspose(null(BS_channels)); 
-        Rs_null     = Proj_matrix * Rs * Proj_matrix';
+        Proj_matrix = null(BS_channels) * ctranspose(null(BS_channels));  % Eq.15
+        Rs_null     = Proj_matrix * Rs * Proj_matrix';                    % Eq.24
         Pd_orthog = zeros(length(SNR_mag), length(P_FA));
         Pd_NSP    = zeros(length(SNR_mag), length(P_FA));
         % Non-centrality parameter of chi-square
         for z = 1:length(SNR_mag)
             rho_orthog = SNR_mag(z)*(abs(a'*Rs.'*a))^2;
-            rho_NSP    = SNR_mag(z)*(abs(a'*Rs_null.'*a))^2;
+            rho_NSP    = SNR_mag(z)*(abs(a'*Rs_null.'*a))^2;   % Eq.67
             % Creates threshold values for a desired Pfa for an inverse central-chi-square w/2 degrees of freedom
             delta = chi2inv(ones(1, length(P_FA)) - P_FA, repmat(2, 1, length(P_FA)));
             % rows = SNR, cols = P_FA, ncx2cdf = Noncentral chi -square cumulative distribution function
             Pd_orthog(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta, repmat(2, 1, length(P_FA)), repmat(rho_orthog, 1, length(P_FA )));
-            Pd_NSP(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta,repmat(2, 1, length(P_FA)), repmat(rho_NSP, 1, length(P_FA)));
+            Pd_NSP(z,:) = ones(1, length(P_FA)) - ncx2cdf(delta,repmat(2, 1, length(P_FA)), repmat(rho_NSP, 1, length(P_FA))); % Eq.69
         end
         Pd_orthog_bs(b,:,:) = Pd_orthog;
         Pd_NSP_bs(b,:,:) = Pd_NSP;

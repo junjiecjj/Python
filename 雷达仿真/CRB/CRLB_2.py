@@ -195,7 +195,7 @@ H   = genSteerVector(theta, N, d, lambda_c)
 Y   = np.zeros((N, T))
 A   = np.eye(N)
 a1  = genPartialSteerVector(theta, N, d, lambda_c, 1)
-a2  = genPartialSteerVector(theta, N, d, lambda_c, 2)
+
 MseMUSIC  = np.zeros(SNRdBs.size)
 MseESPRIT = np.zeros(SNRdBs.size)
 MseESPRIT_tls = np.zeros(SNRdBs.size)
@@ -211,13 +211,15 @@ for i, snr in enumerate(SNRdBs):
     for it in range(Nit):
         if it % 10 == 0:
             print(f"{it+1}/{Nit}")
-        X = np.sqrt(1./2) * (np.random.randn(1, T) + 1j * np.random.randn(1, T))
-        ### 这里不要用这样的信号生成方式，否则出现仿真和理论完全重合，虽然这样是希望的，但是和文献对不上。
+
+        ### 这里不要用下面这样的信号生成方式，否则出现仿真和理论完全重合，虽然这样是希望的，但是和文献对不上。
+        # X = np.sqrt(1./2) * (np.random.randn(1, T) + 1j * np.random.randn(1, T))
         # HX = H @ X
         # sig_power = np.mean(np.abs(HX)**2)
         # noise_var = sig_power * 10**(-snr/10)
         # y = HX + np.sqrt(noise_var/2) * (np.random.randn(*HX.shape) + 1j * np.random.randn(*HX.shape))
-        ### 用这样的方式就会出现仿真结果比理论差一点，和大多数文献吻合
+        ### 用下面这样的方式就会出现仿真结果比理论差一点，和大多数文献吻合
+        X = np.sqrt(1./2) * (np.random.randn(1, T) + 1j * np.random.randn(1, T))
         y = np.zeros((N, T), dtype = np.complex128)
         for t in range(T):
             tmp = H * X[0, t]

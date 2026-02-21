@@ -6,8 +6,6 @@ clc;
 
 % Parameters
 K = 3; % No of BS in the cluster
-M_k = 8 * ones(1, K); % No of antenna elements at kth transmitter
-N_k = 8 * ones(1, K); % No of antenna elements at kth receiver
 M_R = 100; % No of transmit antenna elements on RADAR
 N_R = 100; % No of receive antenna elements on RADAR
 r_o = 5000; % distance of target to radar array in meter
@@ -41,12 +39,10 @@ Rs = (1/L_b) * s * s';
 for n = 1:8
     d_k = n * ones(1, K); % DoF
     d_ksum = sum(d_k);
-    
     for x = 1:100
         % Training symbol generation
         S = (1/sqrt(2)) * (hadamard(L_t) + 1i * hadamard(L_t)); % L_t>d_ksum
         S = S(1:d_ksum, :);
-        
         % Composite channel generation
         H_bar = zeros(M_R, d_ksum);
         for a = 1:K
@@ -56,25 +52,22 @@ for n = 1:8
             else
                 dim = (sum(d_k(1:a-1))+1):(sum(d_k(1:a)));
             end
-            H_bar(:, dim) = H_KR';
+            H_bar(:, dim) = H_KR';  
         end
-        H_real = H_bar';
-        
+        H_real = H_bar';  % Eq.(3.19)
         % Null-space computation for perfect CSI
         [U_per, B_per, V_per] = svd(H_real); % SVD of H
-        
         % Select eigenvectors corresponding to SVs below threshold sigma
         if n == 1
             B1 = B_per(n, n);
         else
             B1 = diag(B_per)';
         end
-        
         [row1, col1] = find(B1 == 0); % Find cols with SV < threshold
         col = [col1 d_ksum+1:M_R];
-        V_tilda = V_per(:, col); % Pick corresponding cols of V
-        P_R1 = V_tilda * V_tilda';
-        Rs_null_per = P_R1 * P_R1';
+        V_tilda = V_per(:, col);    % Pick corresponding cols of V
+        P_R1 = V_tilda * V_tilda';  % Eq.(3.21) 上面的;
+        Rs_null_per = P_R1 * P_R1'; % Eq.(3.12)
         cb(x) = CRB(Rs, a_t, a_tdiff, a_rdiff, N_R, snr);
         cb_per(x) = CRB(Rs_null_per, a_t, a_tdiff, a_rdiff, N_R, snr);
         
@@ -89,34 +82,28 @@ for n = 1:8
         for r = 1:length(noise_v)
             % AWGN generation
             W = sqrt(noise_v(r)) * (randn(M_R, L_t) + 1i * randn(M_R, L_t));
-            
             % Signal received at radar for the whole training period
             Y = zeros(M_R, L_t);
             for b = 1:L_t
                 Y(:, b) = sqrt(rho_ratio(r)/d_ksum) * H_bar * S(:, b) + W(:, b);
             end
-            
             % ML estimation of composite channel
             H_barest = sqrt(d_ksum/rho_ratio(r)) * Y * S' * inv(S * S');
-            H_est = H_barest';
-            
+            H_est = H_barest';   % Eq.(3.40)
             % Null-space computation for estimated CSI
             [U_es, A_es, V_es] = svd(H_est); % SVD of H
-            
             % Select eigenvectors corresponding to SVs below threshold sigma
             if n == 1
                 A1 = A_es(n, n);
             else
                 A1 = diag(A_es)';
             end
-            
             [row2, col2] = find(A1 == 0); % Find cols with SV < threshold
             co2 = [col2 d_ksum+1:M_R];
             V_tilda2 = V_es(:, co2); % Pick corresponding cols of V
             P_R2 = V_tilda2 * V_tilda2';
             Rs_null_wchest = P_R2 * P_R2';
             cb_wchest(r, x) = CRB(Rs_null_wchest, a_t, a_tdiff, a_rdiff, N_R, snr);
-            
             % SSVSP for estimated CSI
             ss2 = length(A1);
             co2ms = [ss2 d_ksum+1:M_R];
@@ -126,12 +113,11 @@ for n = 1:8
             cb_wchestms(r, x) = CRB(Rs_null_wchestms, a_t, a_tdiff, a_rdiff, N_R, snr);
         end
     end
-    
-    crb(n) = mean(cb);
+    crb(n)              = mean(cb);
+    crb_null_per(n)     = mean(cb_per);
     crb_null_wchest1(n) = mean(cb_wchest(1, :));
-    crb_ms_wchest1s(n) = mean(cb_wchestms(1, :));
-    crb_null_per(n) = mean(cb_per);
-    crb_ms_per(n) = mean(cb_perms);
+    crb_ms_wchest1s(n)  = mean(cb_wchestms(1, :));
+    crb_ms_per(n)       = mean(cb_perms);
 end
 
 % Plot results
@@ -142,10 +128,13 @@ hold on;
 semilogy(DoF, abs(crb_null_wchest1), '-ro', 'LineWidth', 2);
 hold on;
 semilogy(DoF, abs(crb_ms_wchest1s), '-kd', 'LineWidth', 2);
+hold on;
+semilogy(DoF, abs(crb_null_per), '-y*', 'LineWidth', 2);
+hold on;
+semilogy(DoF, abs(crb_ms_per), '-cv', 'LineWidth', 2);
+hold on;
 xlabel('Number of antennas per BS (N_{BS})', 'fontsize', 14);
 ylabel('RMSE (degree)', 'fontsize', 14);
-legend('orthogonal signals', ...
-    'NSP (estimated CSI, SNR=15 dB)', ...
-    'SSVSP (estimated CSI, SNR=15 dB)', ...
-    'Location', 'Best');
+legend('orthogonal signals', 'NSP (estimated CSI, SNR=15 dB)', 'SSVSP (estimated CSI, SNR=15 dB)', 'NSP (perfect CSI)', 'SSVSP (perfect CSI)', 'Location', 'Best');
 hold off;
+

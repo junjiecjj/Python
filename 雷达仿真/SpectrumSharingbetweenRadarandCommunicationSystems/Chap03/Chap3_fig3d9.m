@@ -1,5 +1,7 @@
 % Figure 3.9 - NSP SSVSP best worst versus number of radar antennas (M_R)
-clear all; close all; clc;
+clear all;
+close all;
+clc;
 
 % Parameters
 C = 4; % No of clusters
@@ -39,26 +41,21 @@ for n = 1:length(M_R)
     s = (1/sqrt(2)) * (hadamard(L_b) + 1i * hadamard(L_b));
     s1 = s(1:M_R(n), :);
     Rs = (1/L_b) * s1 * s1';
-    
     % Preallocate arrays for Monte Carlo simulation
     cb_temp = zeros(1, 100);
     cb_best_nsp_temp = zeros(1, 100);
     cb_worst_nsp_temp = zeros(1, 100);
     cb_best_vsp_temp = zeros(1, 100);
     cb_worst_vsp_temp = zeros(1, 100);
-    
     for x = 1:100
         % Initialize memory for all clusters
         H_mem = zeros(K * max(M_k), C * M_R(n));
-        
         % Initialize arrays for metrics
         nltv = zeros(1, C); % Null space dimension for each cluster
         metric = zeros(1, C); % SSVSP metric for each cluster
-        
         for p = 1:C
             d_k = M_k(p) * ones(1, K); % DoF for each BS in this cluster
             d_ksum = sum(d_k);
-            
             % Composite channel generation for this cluster
             H_bar = zeros(M_R(n), d_ksum);
             for a = 1:K
@@ -71,30 +68,24 @@ for n = 1:length(M_R)
                 H_bar(:, dim) = H_kR';
             end
             H_real = H_bar';
-            
             % Store in memory
-            H_mem(1:K*M_k(p), (p-1)*M_R(n)+1:p*M_R(n)) = H_bar';
-            
+            H_mem(1:K*M_k(p), (p-1)*M_R(n)+1:p*M_R(n)) = H_real;
             % Null-space computation for perfect CSI (NSP)
             [U_per, B_per, V_per] = svd(H_real); % SVD of H
-            
             % Select eigenvectors corresponding to SVs below threshold sigma
             if d_ksum == 1
                 B1 = B_per(d_ksum, d_ksum);
             else
                 B1 = diag(B_per)';
             end
-            
             [row1, col1] = find(B1 == 0); % Find cols with SV < threshold
             col = [col1 d_ksum+1:M_R(n)];
             nltv(p) = length(col); % Store null space dimension
-            
             % SSVSP computation
             ss1 = length(B1);
             colms = [ss1 d_ksum+1:M_R(n)];
             V_tildalms = V_per(:, colms); % Pick corresponding cols of V
             P_rlms = V_tildalms * V_tildalms';
-            
             % Compute SSVSP metric
             sig_rad = s(1:M_R(n), 1);
             diff = P_rlms * sig_rad - sig_rad;
@@ -118,7 +109,7 @@ for n = 1:length(M_R)
         H_worst_vsp = H_mem(1:K*M_k(I_worst_vsp), (I_worst_vsp-1)*M_R(n)+1:I_worst_vsp*M_R(n));
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % NSP - Best case
+        %  NSP - Best case
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         d_k_best_nsp = M_k(I_best_nsp) * ones(1, K); % DoF
         d_ksum_best_nsp = sum(d_k_best_nsp);
@@ -141,7 +132,7 @@ for n = 1:length(M_R)
         cb_best_nsp_temp(x) = CRB(Rs_bn, a_t, a_tdiff, a_rdiff, M_R(n), snr);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % NSP - Worst case
+        %  NSP - Worst case
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         d_k_worst_nsp = M_k(I_worst_nsp) * ones(1, K); % DoF
         d_ksum_worst_nsp = sum(d_k_worst_nsp);
@@ -163,7 +154,7 @@ for n = 1:length(M_R)
         cb_worst_nsp_temp(x) = CRB(Rs_wn, a_t, a_tdiff, a_rdiff, M_R(n), snr);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % SSVSP - Best case
+        %  SSVSP - Best case
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         d_k_best_vsp = M_k(I_best_vsp) * ones(1, K); % DoF
         d_ksum_best_vsp = sum(d_k_best_vsp);
@@ -181,32 +172,26 @@ for n = 1:length(M_R)
         V_tildabv = V_bv(:, covb); % Pick corresponding cols of V
         P_Rbv = V_tildabv * V_tildabv';
         Rs_bv = P_Rbv * P_Rbv';
-        
         cb_best_vsp_temp(x) = CRB(Rs_bv, a_t, a_tdiff, a_rdiff, M_R(n), snr);
-        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % SSVSP - Worst case
+        %  SSVSP - Worst case
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         d_k_worst_vsp = M_k(I_worst_vsp) * ones(1, K); % DoF
         d_ksum_worst_vsp = sum(d_k_worst_vsp);
         
         [U_wv, B_wv, V_wv] = svd(H_worst_vsp); % SVD of H
-        
         if d_ksum_worst_vsp == 1
             B1_wv = B_wv(d_ksum_worst_vsp, d_ksum_worst_vsp);
         else
             B1_wv = diag(B_wv)';
         end
-        
         ss1_wv = length(B1_wv);
         covw = [ss1_wv d_ksum_worst_vsp+1:M_R(n)];
         V_tildawv = V_wv(:, covw); % Pick corresponding cols of V
         P_Rvw = V_tildawv * V_tildawv';
         Rs_wv = P_Rvw * P_Rvw';
-        
         cb_worst_vsp_temp(x) = CRB(Rs_wv, a_t, a_tdiff, a_rdiff, M_R(n), snr);
     end
-    
     % Calculate average values for this M_R value
     crb(n) = mean(cb_temp);
     crb_null_best(n) = mean(cb_best_nsp_temp);
@@ -228,9 +213,7 @@ hold on
 semilogy(M_R, abs(crb_ssvsp_worst), '-cd', 'LineWidth', 2)
 xlabel('Number of radar antennas (M_R)', 'fontsize', 14)
 ylabel('RMSE (degree)', 'fontsize', 14)
-legend('orthogonal signals', 'NSP best', ...
-    'NSP worst', 'SSVSP best', 'SSVSP worst',...
-    'Location', 'Best')
+legend('orthogonal signals', 'NSP best', 'NSP worst', 'SSVSP best', 'SSVSP worst', 'Location', 'Best')
 grid on;
 title('NSP and SSVSP Performance vs Number of Radar Antennas');
 hold off;

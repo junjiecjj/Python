@@ -8,7 +8,7 @@ Created on Thu Jul 17 15:28:29 2025
 
 https://github.com/LiZhuoRan0/CRLB-demo
 
-
+CRLB_2是以弧度为最后的测角结果,CRLB_3是以sin值为最后的测角结果,需要arcsin转为弧度再计算CRB
 """
 
 
@@ -198,7 +198,7 @@ H   = genSteerVector(theta, N, d, lambda_c)
 Y   = np.zeros((N, T))
 A   = np.eye(N)
 a1  = genPartialSteerVector(theta, N, d, lambda_c, 1)
-a2  = genPartialSteerVector(theta, N, d, lambda_c, 2);
+
 MseMUSIC  = np.zeros(SNRdBs.size)
 MseESPRIT = np.zeros(SNRdBs.size)
 MseESPRIT_tls = np.zeros(SNRdBs.size)

@@ -1,0 +1,108 @@
+clc;
+clear;
+close all;
+tic;
+%% Parameters
+MonteCarlo = 1000;
+M = 2;                  % Number of sources
+Mx = 6; My = 6;         % URA: Mx rows, My columns
+L = Mx * My;            % Total number of elements
+d = 0.5;                % Element spacing (in lambda units)
+SNR_dB = 10;            % SNR in dB
+SNR = 10^(SNR_dB/10);   % Linear SNR
+lambda = 1;
+K = 200;                % Snapshots
+sigma2 = 1/SNR;
+
+% True DOAs
+az_true = [-40, 45];    % degrees
+el_true = [30, 40];     % degrees
+
+% Scanning grid
+az_scan = -90:1:90;
+el_scan = 0:1:90;
+
+% Preallocation
+est_az_all = zeros(MonteCarlo, M);
+est_el_all = zeros(MonteCarlo, M);
+
+% Sensor positions
+[mx, my] = meshgrid(0:Mx-1, 0:My-1);
+mx = mx(:); my = my(:);
+sum=zeros(length(el_scan), length(az_scan));
+for trial = 1:MonteCarlo
+    %% Generate array manifold matrix A
+    A = zeros(L, M);
+    for k = 1:M
+        az = deg2rad(az_true(k));
+        el = deg2rad(el_true(k));
+        ux = sin(el) * cos(az);
+        uy = sin(el) * sin(az);
+        A(:,k) = exp(1j * 2*pi*d * (mx*ux + my*uy));
+    end
+
+    %% Generate signal and noise
+    S = (randn(M, K) + 1j*randn(M, K)) / sqrt(2);
+    W = sqrt(sigma2) * (randn(L, K) + 1j*randn(L, K)) / sqrt(2);
+    X = A * S + W;
+
+   % Estimate covariance matrix
+    R = (X * X') / K;
+
+    % Eigen-decomposition
+    [E, D] = eig(R);
+    [~, idx] = sort(diag(D), 'descend');
+    En = E(:, idx(M+1:end)); % Noise subspace
+
+
+    %% MUSIC Spectrum Calculation (2D)
+    Pmusic = zeros(length(el_scan), length(az_scan));
+    for i = 1:length(el_scan)
+        for j = 1:length(az_scan)
+            az = deg2rad(az_scan(j));
+            el = deg2rad(el_scan(i));
+            ux = sin(el) * cos(az);
+            uy = sin(el) * sin(az);
+            a = exp(1j * 2*pi*d * (mx*ux + my*uy));
+            Pmusic(i,j) = real(1 / (a' * (En * En') * a));
+        end
+    end
+     sum=sum+Pmusic;
+end
+Pmusic=sum;
+% Normalize spectrum
+Pmusic_dB = 10 * log10(abs(Pmusic) / max(abs(Pmusic(:))));
+
+% Detect local maxima
+[rowMax, colMax] = findTopTwoLocalMaxima(Pmusic);
+numPeaks = length(rowMax);
+
+% Collect (azimuth, elevation) coords of peaks
+peak_coords = zeros(numPeaks, 2);
+for k = 1:numPeaks
+    peak_coords(k, :) = [az_scan(colMax(k)), el_scan(rowMax(k))];
+end
+   est_az = zeros(1, M);
+   est_el = zeros(1, M);
+for i=1:M
+   est_az(i)=peak_coords(i,1);
+   est_el(i)=peak_coords(i,2);
+end
+figure;
+contour(az_scan, el_scan, Pmusic_dB, 30);
+xlabel('Azimuth (degrees)');
+ylabel('Elevation (degrees)');
+title('2D MUSIC Spectrum (Contour)');
+colorbar;
+hold on;
+plot(az_true, el_true, 'rx', 'MarkerSize', 10, 'LineWidth', 2); % True DOAs
+plot(est_az, est_el, 'bo', 'MarkerSize', 10, 'LineWidth', 2); % Estimated DOAs
+legend('Spectrum', 'True DOAs', 'Estimated DOAs');
+grid on;
+
+% Sort the estimates
+disp("Estimated Azimuth Angles:");
+disp(est_az);
+disp("Estimated Elevation Angles:");
+disp(est_el);
+toc;

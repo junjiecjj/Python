@@ -1,5 +1,7 @@
 % Figure 3.10 - BER versus SNR in cooperation mode with channel estimation
-clear all; close all; clc;
+clear all;
+close all;
+clc;
 
 % Parameters
 K = 4; % No of transmitter-receiver pair in the comm system
@@ -24,7 +26,7 @@ snr = 10^(SNR/10);
 rho_dB = (0:15);
 rho_ratio = 10.^(rho_dB/10);
 noise_v = sqrt(1./rho_ratio);
-noit = 1e4; % 修正：原代码是10^4，改为1e4
+noit = 1e4;  
 
 % Preallocate BER arrays
 BER_ZF = zeros(1, length(rho_dB));
