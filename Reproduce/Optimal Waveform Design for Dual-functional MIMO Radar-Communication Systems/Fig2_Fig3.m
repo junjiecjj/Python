@@ -2,8 +2,10 @@
 clc;
 clear all;
 close all;
-% Figure 2, 3
 
+
+
+% Figure 2, 3
 % Parameter Settings
 % Communication Settings
 p.K = 4;                            % # of Users
@@ -116,7 +118,6 @@ for idx = 1 : p.montecarlo
             DirectTradeoffCapacityArray(idx, jdx) = DirectTradeoffCapacityArray(idx, jdx) + log2(1 + DirectgammaTradeoff(kdx));            
         end
     end
-    
     % Radar Beampattern
     for jdx = 1 : length(p.theta)
         a = zeros(p.N, 1);
@@ -133,7 +134,6 @@ for idx = 1 : p.montecarlo
     clc;
     disp(['Progress - ',num2str(idx),'/',num2str(p.montecarlo)]);
 end
-
 % Communication Plot
 AWGNCapacity = p.K * log(1 + p.SNR) / log(2);
 OmniStrictCapacity = mean(OmniStrictCapacityArray);
@@ -161,7 +161,6 @@ DirectStrictBP = real(DirectStrictBPArray(1,:));
 DirectStrictBP = 10 .* log10(DirectStrictBP);
 DirectTradeoffBP = real(DirectTradeoffBPArray(1,:));
 DirectTradeoffBP = 10 .* log10(DirectTradeoffBP);
-
 p.theta_deg = p.theta * (180/pi);
 
 figure(2);

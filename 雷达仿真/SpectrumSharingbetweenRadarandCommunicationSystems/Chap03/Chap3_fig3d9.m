@@ -1,3 +1,6 @@
+
+
+
 % Figure 3.9 - NSP SSVSP best worst versus number of radar antennas (M_R)
 clear all;
 close all;
@@ -8,16 +11,16 @@ C = 4; % No of clusters
 K = 3; % No of BS in the cluster
 M_k = [6 5 4 3]; % Different antenna configurations for different clusters
 N_k = [6 5 4 3]; % Different antenna configurations for different clusters
-M_R = 20:30; % No of transmit antenna elements on RADAR
-N_R = 20:30; % No of receive antenna elements on RADAR
-L_b = 512; % block length
+M_R = 20:30;     % No of transmit antenna elements on RADAR
+N_R = 20:30;     % No of receive antenna elements on RADAR
+L_b = 512;       % block length
 L_t = 256;
-theta = 0; % target direction in degrees
-fc = 3.5e9; % frequency of operation in Hz
-c = 3e8; % speed of light in m/s
+theta = 0;         % target direction in degrees
+fc = 3.5e9;        % frequency of operation in Hz
+c = 3e8;           % speed of light in m/s
 lambda = c / fc;
 d = 3 * lambda / 4; % inter-element spacing on radar
-SNR = 20; % SNR of received radar signal from target in dB
+SNR = 20;           % SNR of received radar signal from target in dB
 snr = 10^(SNR/10);
 DoF = 1:max(M_k);
 rho_db = 15;

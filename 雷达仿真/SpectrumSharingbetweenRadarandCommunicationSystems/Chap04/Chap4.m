@@ -23,7 +23,7 @@ Rx_pattern_conv = [];
 % Overall beampattern w/ projection
 Rx_pattern_conv_proj = [];
 
-for ksub = 1:length(no_subarrays);
+for ksub = 1:length(no_subarrays)
     % Number of antennas in each subarray
     K_sub = no_subarrays(ksub);
     M_sub = M - K_sub + 1;
