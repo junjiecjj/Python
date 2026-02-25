@@ -1,0 +1,15 @@
+matlab/images/*
+.DS_Store
+.DS_Store
+matlab/*.asv
+matlab/eval/*.mat
+matlab/eval2/*.mat
+matlab/*/*.asv
+archives/
+
+ml/.ruff_cache
+ml/*/__pycache__
+ml/*/*/__pycache__
+ml/.env
+ml/.vscode
+ml/results/

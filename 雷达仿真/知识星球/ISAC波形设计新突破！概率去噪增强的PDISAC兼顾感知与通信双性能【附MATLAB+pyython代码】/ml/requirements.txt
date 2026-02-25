@@ -1,0 +1,9 @@
+torch
+torchvision
+torchsummary
+
+tqdm==4.67.1
+scikit-learn==1.6.1
+matplotlib==3.10.3
+scikit-image==0.25.2
+geopy==2.4.1
