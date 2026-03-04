@@ -1,9 +1,10 @@
 % Simulating the DFRC Beamformer presented in 
-%   "Joint Radar and Communication Design: Applications, State-of-the-art,
-%    and the Road Ahead" - Fan Liu et. al. 2019
+%   "Joint Radar and Communication Design: Applications, State-of-the-art, and the Road Ahead" - Fan Liu et. al. 2019
 
 % Nate Raymondi, 1/23/2020
-
+clc;
+clear all;
+close all;
 % Assign frequencies and propagation speed
 Nt = 64;             % number of transmit antennas (BS)
 Nr = 10;             % number of receiver antennas (UE)
@@ -41,7 +42,7 @@ RxSteerVec = phased.SteeringVector('SensorArray',RxArray);
 % a(\theta) - all K targets
 A_K = zeros(Nt,K); 
 for k = 1:K
-    A_K(:,k) = TxSteerVec(fc,Kangles(:,k));
+    A_K(:,k) = TxSteerVec(fc, Kangles(:,k));
 end
 
 % a(\psi) - only AoDs
@@ -108,18 +109,16 @@ end
 tgts_plot = targets(1,:);           % quick fix to deal with some annoying 
 L_angles_plot = Langles(1,:);       % matrix dimensions
 
-figure
+figure(1);
 p = plot(angleSpaceDeg, mag2db(abs(dZF)), 'LineWidth', 2);
 hold on
 for i = 1:length(tgts_plot)
-    p_tgt = line([tgts_plot(i) tgts_plot(i)], [min(mag2db(abs(dZF)))...
-        max(mag2db(abs(dZF)))], 'Color', 'black', 'LineStyle', '--');
+    p_tgt = line([tgts_plot(i) tgts_plot(i)], [min(mag2db(abs(dZF)))  max(mag2db(abs(dZF)))], 'Color', 'black', 'LineStyle', '--');
     hold on
 end
 hold on
 for i = 1:length(L_angles_plot)
-    p_c = line([L_angles_plot(i) L_angles_plot(i)], [min(mag2db(abs(dZF)))...
-        max(mag2db(abs(dZF)))], 'Color', 'magenta', 'LineStyle', '--');
+    p_c = line([L_angles_plot(i) L_angles_plot(i)], [min(mag2db(abs(dZF))) max(mag2db(abs(dZF)))], 'Color', 'magenta', 'LineStyle', '--');
     hold on
 end
 xlabel('Angle Space [-90^\circ,90^\circ]'); ylabel('Magnitude (dB)')
@@ -127,18 +126,16 @@ title('BS ZF Transmit Beampattern'); grid on; axis tight
 set(gcf,'color','w'); set(gcf, 'Position',  [50, 100, 1000, 400])
 legend([p,p_tgt,p_c],'ZF Beampattern','Radar Directions','Comms Directions');
 
-figure
+figure(2);
 p = plot(angleSpaceDeg, mag2db(abs(d)), 'LineWidth', 2);
 hold on
 for i = 1:length(tgts_plot)
-    p_tgt = line([tgts_plot(i) tgts_plot(i)], [min(mag2db(abs(d)))...
-        max(mag2db(abs(d)))], 'Color', 'black', 'LineStyle', '--');
+    p_tgt = line([tgts_plot(i) tgts_plot(i)], [min(mag2db(abs(d))) max(mag2db(abs(d)))], 'Color', 'black', 'LineStyle', '--');
     hold on
 end
 hold on
 for i = 1:length(L_angles_plot)
-    p_c = line([L_angles_plot(i) L_angles_plot(i)], [min(mag2db(abs(d)))...
-        max(mag2db(abs(d)))], 'Color', 'magenta', 'LineStyle', '--');
+    p_c = line([L_angles_plot(i) L_angles_plot(i)], [min(mag2db(abs(d))) max(mag2db(abs(d)))], 'Color', 'magenta', 'LineStyle', '--');
     hold on
 end
 xlabel('Angle Space [-90^\circ,90^\circ]'); ylabel('Magnitude (dB)')

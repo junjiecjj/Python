@@ -102,23 +102,23 @@ def MNIST_IID_1bit_jointVsTDMA():
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:27/TraRecorder.npy")[:L]
     Y2 = data[:,col]
-    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--',  label = '1-bit, 无错传输',)
+    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--',  label = r'$\mathrm{1bit},$'+'无错传输')
     # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs128_2025-02-27-09:54:42/TraRecorder.npy")[:L]
     Y3 = data[:,col]
-    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '1-bit, 联合译码',)
+    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = r'$\mathrm{1bit},$'+'联合译码',)
     # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
 
     K = 3
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_TDMA-140(dBm)_sgd_0.01_U100+6_bs128_2025-07-01-11:41:34/TraRecorder.npy")[:int(L/K)]
     Y4 = data[:,col]
-    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, TDMA')
+    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = r'$\mathrm{1bit, TDMA}$',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信时长(h)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     if col == 1:
         axs.set_ylabel('学习精度', fontproperties=font2, )
@@ -127,7 +127,7 @@ def MNIST_IID_1bit_jointVsTDMA():
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 28}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -186,23 +186,23 @@ def MNIST_IID_1bit_jointVsOFDM():
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:27/TraRecorder.npy")[:L]
     Y2 = data[:,col]
-    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--',  label = '1-bit, 无错传输',)
+    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--',  label = r'$\mathrm{1bit},$'+'无错传输')
     # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs128_2025-02-27-09:54:42/TraRecorder.npy")[:L]
     Y3 = data[:,col]
-    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '1-bit, 联合译码',)
+    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = r'$\mathrm{1bit},$'+'联合译码',)
     # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
 
     K = 3
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_OFDM-140(dBm)_sgd_0.01_U100+6_bs128_2025-07-01-11:42:24/TraRecorder.npy")[:int(L/K)]
     Y4 = data[:,col]
-    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, OFDMA')
+    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = r'$\mathrm{1bit, OFDMA}$',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信时长(h)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     if col == 1:
         axs.set_ylabel('学习精度', fontproperties=font2, )
@@ -211,7 +211,7 @@ def MNIST_IID_1bit_jointVsOFDM():
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 28}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -271,25 +271,25 @@ def MNIST_nonIID_1bit_jointVsTDMA():
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:38/TraRecorder.npy")[:L]
     Y2 = data[:,col]
     Y2 = savgol_filter(Y2, 10, 3)
-    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--', label = r'$\mathrm{1bit},$'+'无错传输')
     # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs64_2025-02-28-09:50:27/TraRecorder.npy")[:L]
     Y3 = data[:,col]
     Y3 = savgol_filter(Y3, 10, 3)
-    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '1-bit, 联合译码',)
+    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = r'$\mathrm{1bit},$'+'联合译码',)
     # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
 
     K = 3
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_TDMA-140(dBm)_sgd_0.01_U100+6_bs64_2025-07-01-11:43:07/TraRecorder.npy")[:int(L/K)]
     Y4 = data[:,col]
     Y4 = savgol_filter(Y4, 10, 3)
-    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, TDMA',)
+    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = r'$\mathrm{1bit, TDMA}$',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信时长(h)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     if col == 1:
         axs.set_ylabel('学习精度', fontproperties=font2, )
@@ -298,7 +298,7 @@ def MNIST_nonIID_1bit_jointVsTDMA():
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 28}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=28)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -359,25 +359,25 @@ def MNIST_nonIID_1bit_jointVsOFDM():
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:38/TraRecorder.npy")[:L]
     Y2 = data[:,col]
     Y2 = savgol_filter(Y2, 10, 3)
-    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0]*TperRound, Y2, color = '#FE2701', lw = 2, linestyle='--', label = r'$\mathrm{1bit},$'+'无错传输')
     # axins.plot(data[:,0], Y2, color = '#FE2701', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_proposed-140(dBm)_sgd_0.01_U100+6_bs64_2025-02-28-09:50:27/TraRecorder.npy")[:L]
     Y3 = data[:,col]
     Y3 = savgol_filter(Y3, 10, 3)
-    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = '1-bit, 联合译码',)
+    axs.plot(data[:,0]*TperRound, Y3, color = '#0D95CE' , lw = 2, linestyle='--', marker = '*', ms = 14, mfc = 'white',mew = 2, markevery = 50, label = r'$\mathrm{1bit},$'+'联合译码',)
     # axins.plot(data[:,0], Y3, color = '#0D95CE', linestyle = '--', linewidth = 2)
 
     K = 3
     data = np.load("/home/jack/FL_1bitJoint/Code_MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_1bits_sr_OFDM-140(dBm)_sgd_0.01_U100+6_bs64_2025-07-01-11:49:31/TraRecorder.npy")[:int(L/K)]
     Y4 = data[:,col]
     Y4 = savgol_filter(Y4, 10, 3)
-    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = '1-bit, OFDMA',)
+    axs.plot(data[:,0]*K*TperRound, Y4, color = '#FBCB1F' , lw = 2, linestyle='--', label = r'$\mathrm{1bit, OFDMA}$',)
     # axins.plot(data[:,0], Y4, color = '#FBCB1F', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信时长(h)", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     if col == 1:
         axs.set_ylabel('学习精度', fontproperties=font2, )
@@ -386,7 +386,7 @@ def MNIST_nonIID_1bit_jointVsOFDM():
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 28}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=28)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)

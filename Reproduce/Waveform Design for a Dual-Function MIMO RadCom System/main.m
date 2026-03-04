@@ -42,11 +42,12 @@ Bdes = zeros(size(ang));
 Bdes(idx) = 1;
 
 figure(1);
-plot(ang, Bdes, 'LineWidth', 2)
-xlabel('Azimuth (deg)')
-title('Desired Beam Pattern')
-grid on
-ylim([0 1.1])
+plot(ang, Bdes, 'LineWidth', 2);
+xlabel('Azimuth (deg)');
+ylabel('Desired Beam Pattern');
+title('Desired Beam Pattern');
+grid on;
+ylim([0 1.1]);
 
 %% Objective of the Communication Component
 
@@ -63,7 +64,7 @@ txpos = [rand(1, K)*1.5e3; rand(1, K)*2.4e3 - 1.2e3; zeros(1, K)];
 % Create a scattering channel matrix assuming 100 independent scatterers
 numscat = 100;
 rxpos = array.getElementPosition();    
-H = scatteringchanmtx(rxpos, txpos, numscat).'
+H = scatteringchanmtx(rxpos, txpos, numscat).';
 
 % Normalize the antenna element positions by the wavelength
 normalizedPos = rxpos/lambda;

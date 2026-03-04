@@ -183,7 +183,7 @@ def MNIST_IID_DQ841bit():
     return
 
 def MNIST_IID_841bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 6), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
     L = 300
 
@@ -531,10 +531,10 @@ def Loss():
     return
 
 
-# MNIST_IID_841bit()
+MNIST_IID_841bit()
 # MNIST_IID_DQ841bit()
-DynamicBitWidth()
-CommOverHead()
+# DynamicBitWidth()
+# CommOverHead()
 
 # Loss()
 

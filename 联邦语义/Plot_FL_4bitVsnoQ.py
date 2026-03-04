@@ -278,7 +278,7 @@ def accVSround():
     # font = {'family':'Times New Roman','style':'normal','size':35 }
     font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
     axs.set_xlabel("通信轮数",   fontproperties=font)
-    axs.set_ylabel( "学习精度", fontproperties=font)# , fontdict = font1
+    axs.set_ylabel( "分类准确率", fontproperties=font)# , fontdict = font1
 
     ## legend
     # font1 = {'family':'Times New Roman','style':'normal','size':20, }
@@ -553,7 +553,7 @@ def accvsTestSNR( ):
     font = {'family':'Times New Roman','style':'normal','size':32 }
     axs.set_xlabel(r'$\mathrm{{SNR}}_\mathrm{{test}}\mathrm{{(dB)}}$', fontproperties=font)  #  fontproperties=font
     font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
-    axs.set_ylabel( "测试精度", fontproperties=font)# , fontproperties = font fontdict = font1
+    axs.set_ylabel( "分类准确率", fontproperties=font)# , fontproperties = font fontdict = font1
 
     font1 = {'family':'Times New Roman','style':'normal','size':20, }
     font1 = FontProperties(fname=fontpath+"simsun.ttf", size=25)

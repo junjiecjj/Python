@@ -743,6 +743,37 @@ labels = axs[4,4].get_xticklabels() + axs[4,4].get_yticklabels()
 
 #%%================================= super ===============================================
 out_fig = plt.gcf()
-out_fig.savefig('sample_recover.eps',  bbox_inches='tight')
+# out_fig.savefig('sample_recover.eps',  bbox_inches='tight')
 plt.show()
 plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

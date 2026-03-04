@@ -41,8 +41,6 @@ plt.rcParams['legend.fontsize'] = 24
 
 # 本项目自己编写的库
 
-
-
 fontpath = "/usr/share/fonts/truetype/windows/"
 mark  = ['s','v','*', 'o', 'd', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4', '8', 'H', '+', 'x', 'D', '_',  ]
 color = ['#1E90FF','#FF6347','#00FF00','#0000FF','#4ea142','#FF00FF','#FFA500','#800080','#FF0000','#EE82EE','#00FFFF','#9932CC','#00CED1','#CD5C5C', '#7B68EE','#808000']
@@ -51,7 +49,7 @@ compressrate = [0.2, 0.5, 0.9]
 snrtrain = [2, 10, 20]
 snrtest = np.arange(-5, 36, 1)
 
-r02_2db_dir = "2023-12-01-09:19:20_FLSemantic"
+r02_2db_dir  = "2023-12-01-09:19:20_FLSemantic"
 r05_10db_dir = "2023-11-30-21:34:56_FLSemantic"
 r09_20db_dir = "2023-11-30-19:35:46_FLSemantic"
 
@@ -232,7 +230,7 @@ def accVSround( ):
     # font = {'family':'Times New Roman','style':'normal','size':35 }
     font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
     axs.set_xlabel("通信轮数",   fontproperties=font)
-    axs.set_ylabel( "学习精度", fontproperties=font)# , fontdict = font1
+    axs.set_ylabel( "分类准确率", fontproperties=font)# , fontdict = font1
 
     ## legend
     # font1 = {'family':'Times New Roman','style':'normal','size':20, }
@@ -455,7 +453,7 @@ def accvsTestSNR( ):
     font = {'family':'Times New Roman','style':'normal','size':32 }
     axs.set_xlabel(r'$\mathrm{{SNR}}_\mathrm{{test}}\mathrm{{(dB)}}$', fontproperties=font)  #  fontproperties=font
     font = FontProperties(fname=fontpath+"simsun.ttf", size=32)
-    axs.set_ylabel( "学习精度", fontproperties=font)# , fontproperties = font fontdict = font1
+    axs.set_ylabel( "分类准确率", fontproperties=font)# , fontproperties = font fontdict = font1
 
     legend1 = axs.legend(loc='best',  borderaxespad = 0, edgecolor = 'black', facecolor = 'none',labelspacing = 0.2) ## loc = 'lower left',
     frame1 = legend1.get_frame()

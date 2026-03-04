@@ -100,49 +100,49 @@ def MNIST_BatchIID_flip_acc():
     ## 1-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:27/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = r'$\mathrm{1bit},$'+'无错传输',)
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     ## 1-bit, 0.1ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-16-13:36:08/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
-    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label = '1-bit, BER=0.1',)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label = r'$\mathrm{1bit, BER=0.1}$', )
     axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.2ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-16-13:36:13/TraRecorder.npy")[:L]
     Y4 = data[:, 1]
-    axs.plot(data[:,0], Y4, color = 'g', lw = 3, linestyle='--', label = '1-bit, BER=0.2',)
+    axs.plot(data[:,0], Y4, color = 'g', lw = 3, linestyle='--', label = r'$\mathrm{1bit, BER=0.2}$', )
     axins.plot(data[:,0], Y4, color = 'g', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.3ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-16-13:55:59/TraRecorder.npy")[:L]
     Y5 = data[:, 1]
-    axs.plot(data[:,0], Y5, color = '#CD853F', lw = 3, linestyle='--',  label = '1-bit, BER=0.3',)
+    axs.plot(data[:,0], Y5, color = '#CD853F', lw = 3, linestyle='--',  label = r'$\mathrm{1bit, BER=0.3}$', )
     axins.plot(data[:,0], Y5, color = '#CD853F', linestyle = '--', linewidth = 2)
 
     ## 1-bit 0.4ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2025-01-16-14:18:18/TraRecorder.npy")[:L]
     Y6 = data[:, 1]
-    axs.plot(data[:,0], Y6, color = '#00BFFF', lw = 3, linestyle='--',  label = '1-bit, BER=0.4',)
+    axs.plot(data[:,0], Y6, color = '#00BFFF', lw = 3, linestyle='--',  label = r'$\mathrm{1bit, BER=0.4}$', )
     axins.plot(data[:,0], Y6, color = '#00BFFF', linestyle = '--', linewidth = 2)
 
     ## 1-bit 0.5ber
     data1 = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.5_sgd_0.01_U100+6_bs128_2025-01-16-14:18:27/TraRecorder.npy")
     Y7 = data[:, 1]
-    axs.plot(data1[:,0], Y7, color = '#778899', lw = 3, linestyle='--',  label = '1-bit, BER=0.5',)
+    axs.plot(data1[:,0], Y7, color = '#778899', lw = 3, linestyle='--',  label = r'$\mathrm{1bit, BER=0.5}$',  )
     # axins.plot(data1[:,0], data1[:,1], color = '#778899', linestyle = '--', linewidth = 2)
 
     ###########
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=29)
+    # font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size = 25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
-    legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.1, 0.15), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.1, 0.1), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -193,31 +193,31 @@ def MNIST_BatchIID_flip_loss():
 
     ## 1-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:27/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 3, linestyle='--', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 3, linestyle='--', label = r'$\mathrm{1bit},$'+'无错传输',)
 
     ## 1-bit, 0.1ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-16-13:36:08/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'b' , lw = 3, linestyle='--', label = '1-bit, BER=0.1',)
+    axs.plot(data[:,0], data[:,2], color = 'b' , lw = 3, linestyle='--', label = r'$\mathrm{1bit, BER=0.1}$', )
 
     # ## 1-bit 0.2ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.2_sgd_0.01_U100+6_bs128_2025-01-16-13:36:13/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = 'g', lw = 3, linestyle='--', label = '1-bit, BER=0.2',)
+    axs.plot(data[:,0], data[:,2], color = 'g', lw = 3, linestyle='--', label = r'$\mathrm{1bit, BER=0.2}$',)
 
     # ## 1-bit 0.3ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.3_sgd_0.01_U100+6_bs128_2025-01-16-13:55:59/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#CD853F', lw = 3, linestyle='--',  label = '1-bit, BER=0.3',)
+    axs.plot(data[:,0], data[:,2], color = '#CD853F', lw = 3, linestyle='--',  label = r'$\mathrm{1bit, BER=0.3}$')
 
     ## 1-bit 0.4ber
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.4_sgd_0.01_U100+6_bs128_2025-01-16-14:18:18/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], data[:,2], color = '#00BFFF', lw = 3, linestyle='--',  label = '1-bit, BER=0.4',)
+    axs.plot(data[:,0], data[:,2], color = '#00BFFF', lw = 3, linestyle='--',  label = r'$\mathrm{1bit, BER=0.4}$')
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('损失', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
+    # font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
@@ -254,22 +254,22 @@ def MNIST_BatchIID_K0_1bit_flip_acc():
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+2_bs128_2025-01-16-16:07:08/TraRecorder.npy")[:L]
     Y1 = data[:, 1]
-    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 2,   label = r'$\mathrm{1bit, BER=0.1, K_0=2}$', )
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+6_bs128_2025-01-16-13:36:08/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=6',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = r'$\mathrm{1bit, BER=0.1, K_0=6}$',)
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_flip0.1_sgd_0.01_U100+12_bs128_2025-01-16-16:07:12/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
-    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=12',)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label = r'$\mathrm{1bit, BER=0.1, K_0=12}$',)
     axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
@@ -331,17 +331,17 @@ def MNIST_BatchIID_14bit_erf_acc():
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_1bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:27/TraRecorder.npy")[:L]
     Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit,无错传输',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label =  r'$\mathrm{1bit},$'+'无错传输' )
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_IID/MNIST_IID_diff_batchs3_4bits_sr_erf_sgd_0.01_U100+6_bs128_2025-01-16-13:31:33/TraRecorder.npy")[:L]
     Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='-', label = '4-bit,无错传输',)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='-', label = r'$\mathrm{4bit},$'+'无错传输')
     axins.plot(data[:,0], Y3, color = 'b', linestyle = '-', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)

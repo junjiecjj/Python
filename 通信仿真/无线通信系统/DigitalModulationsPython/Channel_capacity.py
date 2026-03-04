@@ -73,6 +73,26 @@ pi = np.pi
 
 
 #%%
+
+def awgn_capacity(SNRdB):
+    SNR_D = 10**(0.1*SNRdB)
+    cap = np.log2(1 + SNR_D)
+    return cap
+
+
+def ralychannel(SNRdB):
+    # snrdB = np.arange(-10, 30, 1/2)
+    h = (np.random.randn(1, 10000) + 1j * np.random.randn(1, 10000))/np.sqrt(2)
+    sigma_z = 1
+    snr = 10**(SNRdB/10)
+    P = (sigma_z**2) * snr / np.mean(np.abs(h)**2)
+
+    # C_awgn = np.log2(1 + np.mean(np.abs(h)**2) * P / (sigma_z**2))
+    C_fading = np.mean(np.log2(1 + (np.abs(h)**2).T @ P.reshape(1, -1) / sigma_z**2 ), axis = 0)
+    return C_fading[0]
+
+
+
 ## 发射端未知CSI时信道容量
 def mimo_capacity_noCIS(Nr, Nt, SNR, trail = 3000):
     SNR_D = 10**(SNR/10.0) # SNR in decimal
@@ -95,55 +115,29 @@ def mimo_capacity_noCIS(Nr, Nt, SNR, trail = 3000):
 def mimo_capacity_wCIS(Nr, Nt, SNR, trail = 3000):
     return
 
-def awgn_capacity(SNRdB):
-    SNR_D = 10**(0.1*SNRdB)
-    cap = np.log2(1 + SNR_D)
-    return cap
-
-def ralychannel(SNRdB):
-    # snrdB = np.arange(-10, 30, 1/2)
-    h = (np.random.randn(1, 10000) + 1j * np.random.randn(1, 10000))/np.sqrt(2)
-    sigma_z = 1
-    snr = 10**(SNRdB/10)
-    P = (sigma_z**2) * snr / np.mean(np.abs(h)**2)
-
-    # C_awgn = np.log2(1 + np.mean(np.abs(h)**2) * P / (sigma_z**2))
-    C_fading = np.mean(np.log2(1 + (np.abs(h)**2).T @ P.reshape(1, -1) / sigma_z**2 ), axis = 0)
-    return C_fading[0]
 
 #%% AWGN SISO信道
 SNRs = np.arange(0, 30)
 cap_awgn = np.zeros(SNRs.size)
-for i, SNR in enumerate(SNRs):
-    cap_awgn[i] = awgn_capacity(SNR)
-
-fig, ax = plt.subplots(nrows = 1, ncols = 1)
-ax.plot(SNRs, cap_awgn, color = 'r', marker = 'o', linestyle = '--', lw = 1, label = f"SNR = {SNR}")
-
-# ax.set_ylim(1e-6, 1)
-ax.set_xlabel('SNR in dB')
-ax.set_ylabel('信道容量 bits/s/Hz')
-ax.set_title('awgn信道容量')
-# ax.legend()
-plt.show()
-plt.close()
-
-#%% Raly SISO信道
-SNRs = np.arange(0, 30)
 cap_raly = np.zeros(SNRs.size)
 for i, SNR in enumerate(SNRs):
+    cap_awgn[i] = awgn_capacity(SNR)
     cap_raly[i] = ralychannel(SNR)
 
 fig, ax = plt.subplots(nrows = 1, ncols = 1)
-ax.plot(SNRs, cap_raly, color = 'r', marker = 'o', linestyle = '--', lw = 1, label = f"SNR = {SNR}")
+ax.plot(SNRs, cap_awgn, color = 'r', marker = 'o', linestyle = '--', lw = 1, label = f"awgn cap")
+ax.plot(SNRs, cap_raly, color = 'b', marker = '*', linestyle = '--', lw = 1, label = f"raly cap")
+
+ax.legend()
 
 # ax.set_ylim(1e-6, 1)
 ax.set_xlabel('SNR in dB')
 ax.set_ylabel('信道容量 bits/s/Hz')
-ax.set_title('raly 信道容量')
+ax.set_title('信道容量')
 # ax.legend()
 plt.show()
 plt.close()
+
 
 #%% 接收天线变化
 Nt = 4
@@ -248,7 +242,7 @@ for i, (Nr, Nt) in enumerate(CASEs):
     C = np.zeros(N_iter)
     for it in range(N_iter):
         H = sq2 * (np.random.randn(Nr, Nt) + 1j * np.random.randn(Nr, Nt))
-        C[it] = np.log2(np.abs(np.linalg.det(I + SNR/Nt * H.conjugate().T @ H)))
+        C[it] = np.log2(np.abs(np.linalg.det(I + SNR/Nt * H @ H.conjugate().T)))
     cdf = axs.hist(C, bins = N, density = True, histtype = 'step',color = colors[i], alpha = 0.75, cumulative = True, rwidth = 0.8, label = f'Nt = {Nt}, Nr = {Nr}')
     CDF[i] = cdf[0]
     Bins[i] = cdf[1][:-1]
@@ -263,15 +257,15 @@ fig, axs = plt.subplots(nrows = 1, ncols = 1)
 colors = plt.cm.jet(np.linspace(0, 1, len(CASEs))) # colormap
 for i, (Nr, Nt) in enumerate(CASEs):
     axs.plot(Bins[i], CDF[i], color = colors[i], label = f'Nt = {Nt}, Nr = {Nr}' )
-axs.set_xlabel('CDF')
-axs.set_ylabel('Rate[bps/Hz]')
+axs.set_xlabel('Rate[bps/Hz]')
+axs.set_ylabel('CDF')
 # ax.set_title('raly 信道容量')
 axs.grid()
 axs.legend()
 plt.show()
 plt.close()
 
-#%% Program 9.2 “Ergodic_Capacity_vs_SNR.m” for ergodic channel capacity vs. SNR in Figure 9.6.
+#%% Program 9.2 “Ergodic_Capacity_vs_SNR.m” for ergodic channel capacity vs. SNR in Figure 9.6. 发射端未知CSI
 SNR_dB = np.arange(0, 22, 2)
 SNR = 10**(SNR_dB/10.0)
 N_iter = 5000
@@ -310,7 +304,7 @@ def Water_Filling(snr, s, Nt):
     x = cp.Variable(shape=n)
     alpha = cp.Parameter(n, nonneg = True)
     alpha.value = snr*s/Nt
-    obj = cp.Maximize(cp.sum(cp.log(1 + cp.multiply(alpha, x))))
+    obj = cp.Maximize(cp.sum(cp.log(1 + cp.multiply(alpha, x))))  # 以e为底的
     constraints = [x >= 0, cp.sum(x) - Nt == 0]
     prob = cp.Problem(obj, constraints)
     prob.solve()
@@ -353,7 +347,7 @@ for it in range(N_iter):
         C_OL[i] += np.log2(np.real(np.linalg.det(I + snr * tmp)))
         C_OL1[i] += np.sum([np.log2(1 + snr/Nt * lamba) for lamba in list(s)]) # equivalent with C_OL
         status, value, sol = Water_Filling(snr, s, Nt)
-        C_CL[i] += value
+        C_CL[i] += value*np.log2(np.e) # 转为以2为底
         C_CL1[i] += np.log2(np.abs(np.linalg.det(I + np.diag(sol)@np.diag(s) * snr/Nt)))
 C_OL /= N_iter
 C_CL /= N_iter
@@ -362,9 +356,9 @@ C_CL1 /= N_iter
 
 fig, axs = plt.subplots(nrows = 1, ncols = 1)
 colors = plt.cm.jet(np.linspace(0, 1, 2)) # colormap
-# axs.plot(SNR_dB, C_OL, color = 'r', marker = 'o', linestyle = '--', lw = 1, label = "Channel Unknown")
+axs.plot(SNR_dB, C_OL, color = 'r', marker = 'o', linestyle = '--', lw = 1, label = "Channel Unknown")
+# axs.plot(SNR_dB, C_OL1, color = 'g', marker = '*', linestyle = '-', lw = 1, label = "Channel Unknown1")
 # axs.plot(SNR_dB, C_CL, color = 'b', marker = 'o', linestyle = '--', lw = 1, label = "Channel Known")
-axs.plot(SNR_dB, C_OL1, color = 'r', marker = '*', linestyle = '-', lw = 1, label = "Channel Unknown1")
 axs.plot(SNR_dB, C_CL1, color = 'b', marker = '*', linestyle = '-', lw = 1, label = "Channel Known1")
 
 axs.set_xlabel('SNR[dB]')

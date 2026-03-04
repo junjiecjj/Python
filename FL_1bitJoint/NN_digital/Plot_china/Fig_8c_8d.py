@@ -100,27 +100,27 @@ def MNIST_epoch_nonIID_4bit_flip_acc():
     ## 4-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:23/TraRecorder.npy")[:L]
     Y2 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '4-bit, 无错传输',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = r'$\mathrm{4bit},$'+'无错传输',)
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.001_sgd_0.01_U100+6_bs64_2025-01-17-14:32:20/TraRecorder.npy")[:L]
     Y3 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-3}$',)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = r'$\mathrm{4bit, BER=10^{-3}}$',)
     axins.plot(data[:,0], Y3, color = 'b', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.01_sgd_0.01_U100+6_bs64_2025-01-17-14:31:54/TraRecorder.npy")[:L]
     Y4 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y4, color = 'g' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-2}$',)
+    axs.plot(data[:,0], Y4, color = 'g' , lw = 2, linestyle='--', label = r'$\mathrm{4bit, BER=10^{-2}}$',)
     axins.plot(data[:,0], Y4, color = 'g', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-17-13:00:02/TraRecorder.npy")[:L]
     Y5 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y5, color = '#CD853F' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-1}$',)
+    axs.plot(data[:,0], Y5, color = '#CD853F' , lw = 2, linestyle='--', label = r'$\mathrm{4bit, BER=10^{-1}}$',)
     axins.plot(data[:,0], Y5, color = '#CD853F', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
@@ -178,16 +178,16 @@ def MNIST_epoch_nonIID_4bit_flip_loss():
 
     ## 4-bit erf
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-16-22:01:23/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = '4-bit, 无错传输',)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = '#E918B5', lw = 2, linestyle='--', label = r'$\mathrm{4bit},$'+'无错传输',)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.001_sgd_0.01_U100+6_bs64_2025-01-17-14:32:20/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'b' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-3}$',)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'b' , lw = 2, linestyle='--', label = r'$\mathrm{4bit, BER=10^{-3}}$',)
 
     data = np.load("/home/jack/FL_1bitJoint/MNIST_CNN_nonIID/MNIST_noIID_diff_epoch1_4bits_sr_flip0.01_sgd_0.01_U100+6_bs64_2025-01-17-14:31:54/TraRecorder.npy")[:L]
-    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'g' , lw = 2, linestyle='--', label = '4-bit, BER=10$^{-2}$',)
+    axs.plot(data[:,0], savgol_filter(data[:,2], 10, 3), color = 'g' , lw = 2, linestyle='--', label = r'$\mathrm{4bit, BER=10^{-2}}$',)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('损失', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)

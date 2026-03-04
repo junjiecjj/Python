@@ -196,7 +196,7 @@ def CIAFR10_IID_DQ4321bit():
     return
 
 def CIAFR10_IID_431bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 6), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
     L = 1000
 
@@ -556,8 +556,8 @@ def Loss():
 
     return
 
-CIAFR10_IID_DQ4321bit()
-# CIAFR10_IID_431bit()
+# CIAFR10_IID_DQ4321bit()
+CIAFR10_IID_431bit()
 # DynamicBitWidth()
 # CommOverHead()
 # Loss()

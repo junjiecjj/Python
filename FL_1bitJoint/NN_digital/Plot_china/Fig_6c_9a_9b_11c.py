@@ -94,23 +94,23 @@ def CIFAR10_IID_14bit_erf_acc():
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-22:30:24/TraRecorder.npy")[:L]
     Y2 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = r'$\mathrm{1bit},$'+'无错传输',)
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_4bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-15:40:27/TraRecorder.npy")[:L]
     Y3 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = '4-bit, 无错传输',)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 2, linestyle='--', label = r'$\mathrm{4bit},$'+'无错传输',)
     axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -167,53 +167,53 @@ def Cifar10_IID_1bit_flip_acc():
     ## 1-bit erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-22:30:24/TraRecorder.npy")[:L]
     Y2 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 2, linestyle='--', label = r'$\mathrm{1bit},$'+'无错传输',)
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     ## 1-bit, 0.01ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.001_sgd_0.01_U100+6_bs64_2025-01-21-20:19:27/TraRecorder.npy")[:L]
     Y3 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y3, color = '#556B2F', lw = 2, linestyle='-', label = '1-bit, BER=10$^{-2}$',)
+    axs.plot(data[:,0], Y3, color = '#556B2F', lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=10^{-2}}$', )
     axins.plot(data[:,0], Y3, color = '#556B2F', linestyle = '-', linewidth = 2)
 
     ## 1-bit, 0.1ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-15-09:44:54/TraRecorder.npy")[:L]
     Y4 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y4, color = 'b', lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
+    axs.plot(data[:,0], Y4, color = 'b', lw = 2, linestyle='--', label = r'$\mathrm{1bit, BER=0.1}$')
     axins.plot(data[:,0], Y4, color = 'b', linestyle = '--', linewidth = 2)
 
     ## 1-bit, 0.2ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.2_sgd_0.01_U100+6_bs64_2025-01-15-09:44:58/TraRecorder.npy")[:L]
     Y5 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y5, color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
+    axs.plot(data[:,0], Y5, color = 'g', lw = 2, linestyle='--', label = r'$\mathrm{1bit, BER=0.2}$')
     axins.plot(data[:,0], Y5, color = 'g', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.3ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.3_sgd_0.01_U100+6_bs64_2025-01-15-11:20:42/TraRecorder.npy")[:L]
     Y6 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y6, color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
+    axs.plot(data[:,0], Y6, color = '#CD853F', lw = 2, linestyle='--',  label = r'$\mathrm{1bit, BER=0.3}$')
     axins.plot(data[:,0], Y6, color = '#CD853F', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.4ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.4_sgd_0.01_U100+6_bs64_2025-01-15-11:21:01/TraRecorder.npy")[:L]
     Y7 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y7, color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
+    axs.plot(data[:,0], Y7, color = '#00BFFF', lw = 2, linestyle='--',  label = r'$\mathrm{1bit, BER=0.5}$')
     axins.plot(data[:,0], Y7, color = '#00BFFF', linestyle = '--', linewidth = 2)
 
     # ## 1-bit 0.5ber
     data1 = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.5_sgd_0.01_U100+6_bs64_2025-01-15-13:30:37/TraRecorder.npy")[:500]
     Y8 = savgol_filter(data1[:,1], 10, 3)
-    axs.plot(data1[:,0], Y8, color = '#778899', lw = 2, linestyle='--',  label = '1-bit, BER=0.5',)
+    axs.plot(data1[:,0], Y8, color = '#778899', lw = 2, linestyle='--',  label = r'$\mathrm{1bit, BER=0.5}$')
     # axins.plot(data[:,0], data[:,1], color = '#778899', linestyle = '--', linewidth = 2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 21}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=21)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=20)
     legend1 = axs.legend(loc='lower left', bbox_to_anchor=(0.15, 0.06), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -268,36 +268,36 @@ def Cifar10_IID_1bit_flip_loss():
     ## 1-bit erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_erf_sgd_0.01_U100+6_bs64_2025-01-14-22:30:24/TraRecorder.npy")[:L]
     Y2 = data[:, 1]
-    axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 2, linestyle='-', label = '1-bit, 无错传输',)
+    axs.plot(data[:,0], data[:,2], color = '#E918B5', lw = 2, linestyle='-', label = r'$\mathrm{1bit},$'+'无错传输',)
 
     ## 1-bit, 0.1ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-15-09:44:54/TraRecorder.npy")[:L]
     Y3 = data[:, 1]
-    axs.plot(data[:,0], data[:,2], color = 'b', lw = 2, linestyle='--', label = '1-bit, BER=0.1',)
+    axs.plot(data[:,0], data[:,2], color = 'b', lw = 2, linestyle='--', label = r'$\mathrm{1bit, BER=0.1}$')
 
     ## 1-bit, 0.2ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.2_sgd_0.01_U100+6_bs64_2025-01-15-09:44:58/TraRecorder.npy")[:L]
     Y4 = data[:, 1]
-    axs.plot(data[:,0], data[:,2], color = 'g', lw = 2, linestyle='--', label = '1-bit, BER=0.2',)
+    axs.plot(data[:,0], data[:,2], color = 'g', lw = 2, linestyle='--', label = r'$\mathrm{1bit, BER=0.2}$')
 
     # ## 1-bit 0.3ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.3_sgd_0.01_U100+6_bs64_2025-01-15-11:20:42/TraRecorder.npy")[:L]
     Y5 = data[:, 1]
-    axs.plot(data[:,0], data[:,2], color = '#CD853F', lw = 2, linestyle='--',  label = '1-bit, BER=0.3',)
+    axs.plot(data[:,0], data[:,2], color = '#CD853F', lw = 2, linestyle='--',  label = r'$\mathrm{1bit, BER=0.3}$')
 
     # ## 1-bit 0.4ber
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.4_sgd_0.01_U100+6_bs64_2025-01-15-11:21:01/TraRecorder.npy")[:L]
     Y6 = data[:, 1]
-    axs.plot(data[:,0], data[:,2], color = '#00BFFF', lw = 2, linestyle='--',  label = '1-bit, BER=0.4',)
+    axs.plot(data[:,0], data[:,2], color = '#00BFFF', lw = 2, linestyle='--',  label = r'$\mathrm{1bit, BER=0.4}$')
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('损失', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -333,28 +333,28 @@ def Cifar10_BatchIID_K0_1bit_flip_acc():
     ## erf
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+2_bs64_2025-01-15-22:02:03/TraRecorder.npy")[:L]
     Y1 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 2,   label = r'1-bit, BER=0.1, K$_0$=2',)
+    axs.plot(data[:,0], Y1, color = 'k', linestyle= '-',lw = 2,   label = r'$\mathrm{1bit, BER=0.1, K_0=2}$',)
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+6_bs64_2025-01-15-09:44:54/TraRecorder.npy")[:L]
     Y2 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=6',)
+    axs.plot(data[:,0], Y2, color = '#E918B5', lw = 3, linestyle='--', label =  r'$\mathrm{1bit, BER=0.1, K_0=6}$',)
     axins.plot(data[:,0], Y2, color = '#E918B5', linestyle = '--', linewidth = 2)
 
     data = np.load("/home/jack/FL_1bitJoint/CIFAR10_resnet20_IID/CIFAR10_IID_diff_epoch2_1bits_sr_flip0.1_sgd_0.01_U100+12_bs64_2025-01-15-22:02:17/TraRecorder.npy")[:L]
     Y3 = savgol_filter(data[:,1], 10, 3)
-    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label = r'1-bit, BER=0.1, K$_0$=12',)
+    axs.plot(data[:,0], Y3, color = 'b' , lw = 3, linestyle='--', label =  r'$\mathrm{1bit, BER=0.1, K_0=12}$',)
     axins.plot(data[:,0], Y3, color = 'b', linestyle = '--', linewidth = 2)
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=30)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
     # axs.set_title("CNN, IID", fontproperties=font2)
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
