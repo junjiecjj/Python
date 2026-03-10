@@ -203,6 +203,7 @@ plt.close()
 
 
 #%% 利用sinc函数展示采样定理, 并还原信号
+# https://blog.csdn.net/weixin_50345615/article/details/127416572
 ## ======================================================
 ## ===========  定义时域采样信号
 ## ======================================================
@@ -210,7 +211,7 @@ ts = 0.1                          # x(t) = sinc(t/ts), T = 0.1, f = 10 Hz
 B  = 1/(2*ts)                     # Hz
 # f_max = 2*np.pi*B               # 角频率rad/s,
 f_max = B                         # 画图用的时间频率 Hz
-Fs = 400                           # 信号采样频率
+Fs = 400                          # 信号采样频率
 Ts = 1/Fs                         # 采样时间间隔
 # N = 100                         # 采样信号的长度
 
@@ -220,7 +221,7 @@ x = np.sinc(t/ts)
 x_len = x.size
 
 ## 采样脉冲序列
-fs = 20                          # 冲击采样脉冲的频率
+fs = 10                          # 冲击采样脉冲的频率
 p = int(Fs/fs)
 bplus = [0]*p
 bplus[0] = 1
@@ -229,11 +230,10 @@ plus = np.array(bplus*int(x.size/p))
 ## 采样后的信号
 x_sample = x * plus
 
-
 #%%============================== 时域低通滤波，信号恢复 ======================================
 #%%================================ IIR -巴特沃兹 带阻 滤波器  =====================================
-lf = 20    # 通带截止频率200Hz
-hf = 100
+lf = fs/2    # 通带截止频率200Hz
+hf = fs
 Fc = 200   # 阻带截止频率1000Hz
 Rp = 1      # 通带波纹最大衰减为1dB
 Rs = 40     # 阻带衰减为40dB
@@ -242,13 +242,13 @@ na = np.sqrt(10**(0.1*Rp)-1)
 ea = np.sqrt(10**(0.1*Rs)-1)
 order  = np.ceil(np.log10(ea/na)/np.log10(Fc/lf))  #巴特沃兹阶数
 
-# order = 2
-Wn = 20 / Fs
+# order = 4
+Wn = lf / Fs
 [Bb, Ba] = scipy.signal.butter(order, Wn, 'low')
 # ## [BW, BH] = scipy.signal.freqz(Bb, Ba)
 # x_recov = scipy.signal.lfilter(Bb, Ba, x) # 进行滤波
 x_recov = scipy.signal.lfilter(Bb, Ba, x_sample) # 进行滤波
-
+x_recov = x_recov/np.max(np.abs(x_recov))
 
 
 #%%==========================================================================================
@@ -300,7 +300,7 @@ axs[0,0].spines['left'].set_position(('data',0.0))
 # axs[0,0].set_yticks([])
 
 
-axs[0,1].stem(t[::4], plus[::4], linefmt='r--', markerfmt='gD', basefmt='b--', bottom=0)
+axs[0,1].stem(t[::p], plus[::p], linefmt='r--', markerfmt='gD', basefmt='b--', bottom=0)
 axs[0,1].set_xlabel(r't', )
 axs[0,1].set_title(r'p(t)', )
 
@@ -316,7 +316,7 @@ axs[0,1].spines['left'].set_position(('data',0.0))
 axs[0,1].set_xlim(-ts, ts)  #拉开坐标轴范围显示投影
 
 
-axs[0,2].plot(t[::4], x_sample[::4], marker = 'o', ms = 2, mec = 'r', ls = '--',  lw = 1, c='b')
+axs[0,2].plot(t[::p], x_sample[::p], marker = 'o', ms = 2, mec = 'r', ls = '--',  lw = 1, c='b')
 axs[0,2].set_xlabel(r't', )
 axs[0,2].set_title(r'$x_s(t)$', )
 

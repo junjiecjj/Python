@@ -90,7 +90,7 @@ for i = 1:length(Rho)
     theta_hat2 = -30 * pi/ 180;
     at_hat2 = exp(1i * pi * Nlst * sin(theta_hat2));
 
-    R_hat = R .* (at_hat1 * at_hat1' + at_hat2 * at_hat2');
+    R_hat = R .* (at_hat1 * at_hat1' + at_hat2 * at_hat2'); % Eq.(17)
     sum = 0;
     for j = 1:length(Theta)
         theta = Theta(j);

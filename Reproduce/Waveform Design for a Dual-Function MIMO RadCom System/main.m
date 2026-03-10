@@ -7,9 +7,7 @@
 clc;
 clear all;
 close all;
-
-addpath('./functions')
-
+addpath('./functions');
 
 rng('default');                     % Set random number generator for reproducibility
 
@@ -23,7 +21,6 @@ d = 0.5*lambda;                     % Array element spacing (m)
 % Use isotropic antenna elements
 element = phased.IsotropicAntennaElement('BackBaffled', true);
 array = phased.ULA('Element', element, 'NumElements', N, 'ElementSpacing', d, 'ArrayAxis', 'y');
-
 
 % Three targets of interest
 tgtAz = [-60 10 45];                % Azimuths of the targets of interest
@@ -50,7 +47,6 @@ grid on;
 ylim([0 1.1]);
 
 %% Objective of the Communication Component
-
 K = 4;                              % Number of communication users
 M = 30;                             % Number of communication symbols
 
@@ -90,10 +86,10 @@ plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2)
 
 grid on
 xlabel('Azimuth (deg)')
-ylabel('(dB)')
-legend('Desired', 'MMSE Covariance', 'Location', 'southoutside', 'Orientation', 'horizontal')
-ylim([-30 1])
-title('Transmit Beam Pattern')
+ylabel('(dB)');
+legend('Desired', 'MMSE Covariance', 'Location', 'southoutside', 'Orientation', 'horizontal');
+ylim([-30 1]);
+title('Transmit Beam Pattern');
 
 
 %% From Covariance Matrix to Waveform
