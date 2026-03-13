@@ -1,3 +1,9 @@
+
+
+
+
+
+
 function F = constrainedCovariance(x, N)
     % Reconstruct the covariance matrix from a vector x of above diagonal
     % values. The diagonal elements are all equal to 1.
@@ -12,3 +18,19 @@ function F = constrainedCovariance(x, N)
     F = eye(N, N);
     F = F + Re + Re.' + 1i*Im - 1i*Im.';
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

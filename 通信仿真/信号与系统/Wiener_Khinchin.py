@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.fft import fft, fftshift, ifft
-
+import scipy
 
 # 全局设置字体大小
 # plt.rcParams["font.family"] = "Times New Roman"
@@ -162,3 +162,158 @@ if correlation > 0.95 and relative_error < 0.1:
 else:
     print("❌ 验证结果不理想，可能存在数值误差")
 print("=" * 50)
+
+
+#%%
+# 生成 循环矩阵
+def CirculantMatric(gen, row):
+     if type(gen) == list:
+          col = len(gen)
+     elif type(gen) == np.ndarray:
+          col = gen.size
+     row = col
+
+     mat = np.zeros((row, col), dtype = gen.dtype)
+     mat[:, 0] = gen
+     for i in range(1, row):
+          mat[:,i] = np.roll(gen, i)
+     return mat
+
+def circularConvolve(h, s, N):
+    if h.size < N:
+        h = np.hstack((h, np.zeros(N-h.size)))
+    col = N
+    row = s.size
+    H = np.zeros((row, col), dtype = s.dtype)
+    H[:, 0] = h
+    for i in range(1, row):
+          H[:,i] = np.roll(h, i)
+    res = H @ s
+    return res
+
+# generateVec =  [1 , 2  , 3 , 4  ]
+# X = np.array(generateVec)
+# L = len(generateVec)
+# A = CirculantMatric(X, L)
+# A1 = scipy.linalg.circulant(X)
+
+
+N = 8
+h = np.array([-0.4878, -1.5351, 0.2355])
+s = np.array([-0.0155, 2.5770, 1.9238, -0.0629, -0.8105, 0.6727, -1.5924, -0.8007])
+
+lin_s_h = scipy.signal.convolve(h, s)
+cir_s_h = circularConvolve(h, s, N)
+
+Ncp = 2
+s_cp = np.hstack((s[-Ncp:], s))
+lin_scp = scipy.signal.convolve(h, s_cp)
+r = lin_scp[Ncp:Ncp+N]
+print(f"lin_scp = \n{lin_scp[Ncp:Ncp+N]}\ncir_s_h = \n{cir_s_h}")
+
+
+R = scipy.fft.fft(r, N)
+H = scipy.fft.fft(h, N)
+S = scipy.fft.fft(s, N)
+
+r1 = scipy.fft.ifft(S*H)
+print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
+
+#%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
+
+
+
+#%%
+# 实现与MATLAB cconv完全一致的圆卷积
+def cconv(a, b, n=None):
+    """
+    实现与MATLAB cconv完全一致的圆卷积
+    参数:
+        a, b: 输入复数数组
+        n: 输出长度 (None表示默认长度len(a)+len(b)-1)
+    返回:
+        圆卷积结果 (复数数组)
+    """
+    a = np.asarray(a, dtype=complex)
+    b = np.asarray(b, dtype=complex)
+    # 默认输出长度
+    if n is None:
+        n = len(a) + len(b) - 1
+    # 线性卷积
+    linear_conv = np.convolve(a, b, mode='full')
+    # 处理不同n的情况
+    if n <= 0:
+        return np.array([], dtype=complex)
+    result = np.zeros(n, dtype=complex)
+    if n <= len(linear_conv):
+        # n <= M+N-1: 重叠相加
+        for k in range(n):
+            # 收集所有k + m*n位置的元素
+            idx = np.arange(k, len(linear_conv), n)
+            result[k] = np.sum(linear_conv[idx])
+    else:
+        # n > M+N-1: 补零
+        result[:len(linear_conv)] = linear_conv
+
+    return result
+
+
+def convMatrix(h, N):  #
+    """
+    Construct the convolution matrix of size (L+N-1)x N from the
+    input matrix h of size L. (see chapter 1)
+    Parameters:
+        h : numpy vector of length L
+        N : scalar value
+    Returns:
+        H : convolution matrix of size (L+N-1)xN
+    """
+    col = np.hstack((h, np.zeros(N-1)))
+    row = np.hstack((h[0], np.zeros(N-1)))
+
+    from scipy.linalg import toeplitz
+    H = toeplitz(col, row)
+    return H
+
+
+# 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程
+h = np.array([-0.4878, -1.5351, 0.2355])
+S = np.array([-0.0155, 2.5770, 1.9238, -0.0629, ])
+s = np.fft.ifft(S) # IFFT
+N = s.size
+L = h.size
+
+H = convMatrix(h, N)
+y = H @ s
+
+cir_s_h = cconv(h, s, N)
+
+lenCP = L - 1
+Acp = np.block([[np.zeros((lenCP, N-lenCP)), np.eye(lenCP)], [np.eye(N)]])
+
+s_cp = Acp @ s                    # add CP
+
+H_cp = convMatrix(h, s_cp.size)
+y_cp = H_cp @ s_cp                #  pass freq selected channel
+
+y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp
+
+H_cp1 = convMatrix(h, s_cp.size)[lenCP:lenCP + N, :]
+y_remo_cp1 = H_cp1 @ s_cp        #  pass freq selected channel + remove cp
+
+F = scipy.linalg.dft(N)/np.sqrt(N)
+FH = F.conj().T
+
+Diag = F @ H_cp1 @ Acp @ FH  # F@T(h)@A@FH is diagonal such that the data is parallelly transmitted over different subcarriers, and thus the ISI is avoided.
+
+CirH = H_cp1 @ Acp
+print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
+
+
+
+
+
+
+
+
+

@@ -1,3 +1,5 @@
+
+
 % Nearest vector algorithm, pages 70-71
 function z = nearestVector(z, gamma, rho)
     M = numel(z);

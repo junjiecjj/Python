@@ -93,7 +93,6 @@ title('Transmit Beam Pattern');
 
 
 %% From Covariance Matrix to Waveform
-
 eta = 1.1;                          % Parameter that controls low PAR constraint
 
 % Find a set of waveform with the covariance equal to Rmmse using the
@@ -107,17 +106,17 @@ Rca = Xca*Xca'/M;
 Bca = abs(diag(A'*Rca*A))/(4*pi);
 
 figure(3);
-hold on
-plot(ang, pow2db(Bdes + eps), 'LineWidth', 2)
-plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2)
-plot(ang, pow2db(Bca/max(Bca)), 'LineWidth', 2)
+hold on;
+plot(ang, pow2db(Bdes + eps), 'LineWidth', 2);
+plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2);
+plot(ang, pow2db(Bca/max(Bca)), 'LineWidth', 2);
 
-grid on
-xlabel('Azimuth (deg)')
-ylabel('(dB)')
+grid on;
+xlabel('Azimuth (deg)');
+ylabel('(dB)');
 legend('Desired', 'MMSE Covariance', 'Radar Waveforms', 'Location', 'southoutside', 'Orientation', 'horizontal')
-ylim([-30 1])
-title('Transmit Beam Pattern')
+ylim([-30 1]);
+title('Transmit Beam Pattern');
 
 % Average power
 Pn = diag(Rca);
@@ -136,19 +135,16 @@ psl_ca = sidelobelevel(acmag_ca_db);
 figure(4);
 ax = gca;
 colors = ax.ColorOrder;
-plot(delay, acmag_ca_db, 'Color', colors(3, :), 'Linewidth', 2)
-yline(psl_ca,'Label',sprintf('Sidelobe Level (%.2f dB)', psl_ca))
-xlabel('Lag (subpulses)')
-ylabel('(dB)')
-title(sprintf('Autocorrelation Function for Waveform #%d', n))
+plot(delay, acmag_ca_db, 'Color', colors(3, :), 'Linewidth', 2);
+yline(psl_ca,'Label',sprintf('Sidelobe Level (%.2f dB)', psl_ca));
+xlabel('Lag (subpulses)');
+ylabel('(dB)');
+title(sprintf('Autocorrelation Function for Waveform #%d', n));
 grid on;
 ylim([-45 0]);
 
 
-
-
 %% Radar-Communication Waveform Synthesis
-
 % Radar-communication tradeoff parameter
 rho = 0.4;
 
@@ -196,8 +192,6 @@ ylim([-30 0]);
 
 legend('Radar Waveform', 'RadCom Waveform');
 
-
-
 %% Joint Radar-Communication Simulation
 tau = 5e-7;                         % Subpulse duration
 B = 1/tau;                          % Bandwidth
@@ -222,7 +216,6 @@ end
 % Positions of the targets of interest in Cartesian coordinates
 [x, y, z] = sph2cart(deg2rad(tgtAz), zeros(size(tgtAz)), tgtRng);
 tgtpos = [x; y; z];
-
 % Assume the targets are static
 tgtvel = zeros(3, numel(tgtAz));
 
@@ -255,9 +248,7 @@ rngangresp = phased.RangeAngleResponse(...
     'SampleRate',fs,'PropagationSpeed',collector.PropagationSpeed);
 
 resp = zeros(numel(t), rngangresp.NumAngleSamples, N);
-
-% Apply matched filter N times. One time for each waveform. Then integrate
-% the results.
+% Apply matched filter N times. One time for each waveform. Then integrate the results.
 for i = 1:N
     [resp(:, :, i), rng_grid, ang_grid] = rngangresp(rxsig, flipud(Xradcom(i, :).'));
 end
@@ -275,11 +266,12 @@ title('Range-Angle Response')
 cbar = colorbar;
 cbar.Label.String = '(dB)';
 
+%% transmit the dual-function waveforms through the MIMO scattering channel H and compute the resulting error rate.
 rd = pskdemod(H*Xradcom, Q, pi/Q);
 [numErr, errRatio] = symerr(data, rd)
 
 % Vary the radar-communication tradeoff parameter from 0 to 1
-rho = 0.0:0.1:1;
+rho = 0.0 : 0.1 : 1;
 
 er = zeros(size(rho));
 psl_ca = zeros(size(rho));
@@ -288,8 +280,7 @@ bpse = zeros(size(rho));
 for i = 1:numel(rho)
     Xrc = helperRadComWaveform(H, S, Xca, Pt, rho(i));
 
-    % Transmit through the communication channel and compute the error
-    % rate
+    % Transmit through the communication channel and compute the error rate
     rd = pskdemod(H*Xrc, Q, pi/Q);
     [~, er(i)] = symerr(data, rd);
 
@@ -298,13 +289,13 @@ for i = 1:numel(rho)
     
     % Compute the beam pattern
     Rrc = Xrc*Xrc'/M;
-    Brc = abs(diag(A'*Rrc*A))/(4*pi);
+    Brc = abs(diag(A'*Rrc*A).')/(4*pi);
 
     % Squared error between the desired beam pattern and the beam pattern produced by the RadCom waveforms Xrc
-    bpse(i) = trapz(deg2rad(ang), (Bdes.' - Brc/max(Brc)).^2.*cosd(ang).');
+    bpse(i) = trapz(deg2rad(ang), (Bdes - Brc/max(Brc)).^2.*cosd(ang));
 end
 
-figure;
+figure(8);
 tiledlayout(3, 1);
 
 ax = nexttile;

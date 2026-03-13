@@ -129,6 +129,8 @@ def srrcFunction(beta, L, span):
     return p, t, filtDelay
 
 
+
+
 #%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
 
 # 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程

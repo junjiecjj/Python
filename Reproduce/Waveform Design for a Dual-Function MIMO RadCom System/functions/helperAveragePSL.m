@@ -1,3 +1,5 @@
+
+
 function avpsl = helperAveragePSL(X)
     [n, m] = size(X);
     psl = zeros(n, 1);

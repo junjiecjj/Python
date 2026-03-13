@@ -13,14 +13,14 @@ function [WRF,WBB] = Receiver(Wopt,NRF)
     y = [];
     while(isempty(y) || abs(y(1)-y(2))>1e-3)
         % fix FRF, optimize FBB
-        WBB = pinv(WRF) * Wopt;
+        WBB = pinv(WRF) * Wopt; % Eq.(7)
 
         y(1) = norm(Wopt-WRF*WBB,'fro')^2;
 
         % fix FBB, optimize FRF
         for i = 1:Nt
             m = ceil(i*NRF/Nt);
-            WRF(i,m) = 1/sqrt(Nt) * exp( sqrt(-1) * angle( Wopt(i,:)*WBB(m,:)' ) );
+            WRF(i,m) = 1/sqrt(Nt) * exp( sqrt(-1) * angle( Wopt(i,:)*WBB(m,:)' ) ); % Eq.(33)
         end
         y(2) = norm(Wopt-WRF*WBB,'fro')^2;
     end
