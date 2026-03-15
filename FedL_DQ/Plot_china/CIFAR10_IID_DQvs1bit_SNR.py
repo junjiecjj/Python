@@ -85,8 +85,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def CIFAR10_IID_DQvs1bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.6, 0.55, 0.3, 0.32))
     L = 1000
 
     rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
@@ -121,21 +121,21 @@ def CIFAR10_IID_DQvs1bit():
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.0115_adam_0.01_U100+10_bs64_2025-12-24-09:51:40/TraRecorder.npy"))[:L]
     Y4_1 = data[:,1]
     Y4_1 = savgol_filter(Y4_1, 20, 5)
-    axs.plot(data[:,0], Y4_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\mathrm{1bit+LDPC, SNR=1dB}$',)
+    axs.plot(data[:,0], Y4_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\text{1bit+LDPC, SNR=1dB}$',)
     axins.plot(data[:,0], Y4_1, color = '#1E90FF', linestyle = '--', linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.03898_adam_0.01_U100+10_bs64_2025-12-24-00:05:35/TraRecorder.npy"))[:L]
     Y4_2 = data[:,1]
     Y4_2 = savgol_filter(Y4_2, 20, 5)
-    axs.plot(data[:,0], Y4_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\mathrm{1bit+LDPC, SNR=0.75dB}$',)
+    axs.plot(data[:,0], Y4_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\text{1bit+LDPC, SNR=0.75dB}$',)
     axins.plot(data[:,0], Y4_2, color = '#1E90FF', linestyle = (0,(3,1,1,1)), linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_1bits_sr_flip0.16_adam_0.01_U100+10_bs64_2025-12-23-21:09:05/TraRecorder.npy"))[:L]
     Y4_3 = data[:,1]
     Y4_3 = savgol_filter(Y4_3, 20, 5)
-    axs.plot(data[:,0], Y4_3, color = '#1E90FF', lw = 2, ls=':', marker = 'o', mfc='white', mew = 2, ms = 10, markevery=50, zorder = 1, label = r'$\mathrm{1bit+LDPC, SNR=0dB}$',)
+    axs.plot(data[:,0], Y4_3, color = '#1E90FF', lw = 2, ls=':', marker = 'o', mfc='white', mew = 2, ms = 10, markevery=50, zorder = 1, label = r'$\text{1bit+LDPC, SNR=0dB}$',)
     axins.plot(data[:,0], Y4_3, color = '#1E90FF', ls = ':',  marker = 'o', mfc='white', mew = 2, ms = 10, markevery=50, zorder = 1, lw = 2)
     i += 1
 
@@ -169,7 +169,7 @@ def CIFAR10_IID_DQvs1bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-500, L-450, data[:, 0] , [Y1, Ydq1, Ydq2, Ydq3, Y4_1, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-200, L-150, data[:, 0] , [Y1, Ydq1, Ydq2, Ydq3, Y4_1, ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细

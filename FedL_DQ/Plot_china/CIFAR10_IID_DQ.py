@@ -86,7 +86,7 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def CIFAR10_IID_DQbit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     axins = axs.inset_axes((0.62, 0.46, 0.3, 0.32))
     L = 1000
 
@@ -191,10 +191,10 @@ def DynamicBitWidth():
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
-    # axs[0].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
+    axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[0].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -263,7 +263,7 @@ def CommOverHead():
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('累计通信负载(bits)', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=24)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -294,10 +294,10 @@ def CommOverHead():
     return
 
 
-# CIFAR10_IID_DQbit()
+CIFAR10_IID_DQbit()
 
-DynamicBitWidth()
-CommOverHead()
+# DynamicBitWidth()
+# CommOverHead()
 
 
 

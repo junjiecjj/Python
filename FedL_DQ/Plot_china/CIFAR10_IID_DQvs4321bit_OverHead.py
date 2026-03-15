@@ -52,7 +52,7 @@ alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
 
 def DynamicBitWidth():
-    fig, axs = plt.subplots(4, 1, figsize=(8, 10), constrained_layout=True, sharex=True, sharey=True)
+    fig, axs = plt.subplots(4, 1, figsize=(8, 8), constrained_layout=True, sharex=True, sharey=True)
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     fig.text(-0.04, 0.5, '量化比特数', va = 'center', rotation = 'vertical', fontproperties=font2,)
     L = 1000
@@ -69,7 +69,7 @@ def DynamicBitWidth():
     # axs[0].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[0].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[0].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -101,7 +101,7 @@ def DynamicBitWidth():
     # axs[1].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[1].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -133,7 +133,7 @@ def DynamicBitWidth():
     # axs[2].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[2].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[2].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -165,7 +165,7 @@ def DynamicBitWidth():
     axs[3].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[3].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[3].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -195,7 +195,7 @@ def DynamicBitWidth():
     return
 
 def CommOverHead():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
     lw = 2
     L = 1000
     V = 269722

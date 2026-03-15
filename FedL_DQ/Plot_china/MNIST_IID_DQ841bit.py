@@ -104,33 +104,39 @@ def MNIST_IID_DQ841bit():
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_Perfect_adam_0.01_U100+10_bs64_2025-12-12-11:41:59/TraRecorder.npy"))[:L]
-    Y1 = data[:,1]
-    axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
-    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
+    Yp = data[:,1]
+    axs.plot(data[:,0], Yp , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
+    axins.plot(data[:,0], Yp, color = 'k', linestyle = '-', linewidth = 2)
 
     i = 0
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-11:42:20/TraRecorder.npy"))[:L]
-    Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\mathrm{8bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=10, mfc='white', mew = 2,)
+    Y8 = data[:,1]
+    axs.plot(data[:,0], Y8, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\text{8bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y8, color = colors[i], ls = '--', lw = 2, marker = '*', ms = 14, markevery=10, mfc='white', mew = 2,)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
-    Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30, label = r'$\mathrm{DQ}$'+', 无错传输',)
-    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10,  )
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_6bits_sr_erf_adam_0.01_U100+10_bs64_2026-01-03-22:18:41/Train.npy"))[:L]
+    Y6 = data[:,1]
+    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\text{6bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y6, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=10, mfc='white', mew = 2,)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-15:50:46/TraRecorder.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{4bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', linewidth = 2)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--',marker = 'd', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\text{4bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', lw = 2, marker = 'd', ms = 14, markevery=30, mfc='white', mew = 2, )
     i += 1
 
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    Ydq = data[:,1]
+    axs.plot(data[:,0], Ydq, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30, label = r'$\text{DQ}$'+', 无错传输',)
+    axins.plot(data[:,0], Ydq, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10,  )
+    i += 2
+
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-21:20:50/TraRecorder.npy"))[:L]
-    Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y5, color = colors[i], linestyle = '--', linewidth = 2)
+    Y1 = data[:,1]
+    axs.plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='--', label = r'$\text{1bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y1, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
     ###########
@@ -140,7 +146,7 @@ def MNIST_IID_DQ841bit():
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    legend1 = axs.legend(bbox_to_anchor = (0.5, 0.4), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(bbox_to_anchor = (0.5, 0.5), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -163,7 +169,7 @@ def MNIST_IID_DQ841bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Y3, Y4, Y5], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Yp, Y8, Y6, Y4, Y1], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
@@ -196,25 +202,25 @@ def MNIST_IID_841bit():
     i = 0
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-11:42:20/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\mathrm{8bit}$'+', 无错传输',)
-    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = 'o', ms = 14, markevery=10, mfc='white', mew = 2,)
-    i += 2
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 14, markevery=30, mfc='white', mew = 2, label = r'$\text{8bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y2, color = colors[i], ls = '--', lw = 2, marker = '*', ms = 14, markevery=10, mfc='white', mew = 2,)
+    i += 1
 
-    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
-    # Y3 = data[:,1]
-    # axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = '*', ms = 12, markevery=30, label = r'$\mathrm{DQ}$'+', 无错传输',)
-    # axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = '*', ms = 12, markevery=10,  )
-    # i += 1
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_6bits_sr_erf_adam_0.01_U100+10_bs64_2026-01-03-22:18:41/Train.npy"))[:L]
+    Y3 = data[:,1]
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='--', marker = 'o', ms = 12, markevery=30, mfc='white', mew = 2, label = r'$\text{6bit}$'+', 无错传输',)
+    axins.plot(data[:,0], Y3, color = colors[i], linestyle = '--', linewidth = 2, marker = 'o', ms = 12, mfc='white', mew = 2,  markevery=10,  )
+    i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-15:50:46/TraRecorder.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{4bit}$'+', 无错传输',)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='--', label = r'$\text{4bit}$'+', 无错传输',)
     axins.plot(data[:,0], Y4, color = colors[i], linestyle = '--', linewidth = 2)
-    i += 1
+    i += 3
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-21:20:50/TraRecorder.npy"))[:L]
     Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+', 无错传输',)
+    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='--', label = r'$\text{1bit}$'+', 无错传输',)
     axins.plot(data[:,0], Y5, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
@@ -224,8 +230,8 @@ def MNIST_IID_841bit():
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=24)
+    legend1 = axs.legend(bbox_to_anchor = (0.1, 0.4), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -268,7 +274,7 @@ def MNIST_IID_841bit():
     return
 
 def DynamicBitWidth():
-    fig, axs = plt.subplots(4, 1, figsize=(8, 10), constrained_layout=True, sharex=True, sharey=True)
+    fig, axs = plt.subplots(4, 1, figsize=(8, 8), constrained_layout=True, sharex=True, sharey=True)
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     fig.text(-0.04, 0.5, '量化比特数', va = 'center', rotation = 'vertical', fontproperties=font2,)
     L = 300
@@ -277,7 +283,7 @@ def DynamicBitWidth():
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
     Y1 = data[:,4]
-    axs[0].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{DQ}$'+',无错传输',)
+    axs[0].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ}$'+',无错传输',)
     i += 1
 
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -285,7 +291,7 @@ def DynamicBitWidth():
     # axs[0].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[0].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[0].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -349,7 +355,7 @@ def DynamicBitWidth():
     # axs[2].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[2].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[2].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -381,7 +387,7 @@ def DynamicBitWidth():
     axs[3].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     # axs[3].set_ylabel('量化比特数', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[3].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -411,39 +417,39 @@ def DynamicBitWidth():
     return
 
 def CommOverHead():
-    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
     lw = 2
-    L = 500
+    L = 300
     V = 21880
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
     i = 0
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
-    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{DQ, }$'+'无错传输',)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\text{DQ, }$'+'无错传输',)
     i += 1
 
     data1 = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-13-00:11:24/TraRecorder.npy"))[:L]
     Y1 = np.cumsum(data1[:,4]*V)
-    axs.plot(data1[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{DQ, BER=0.1}$',)
+    axs.plot(data1[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\text{DQ, BER=0.1}$',)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-13-00:39:45/TraRecorder.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
-    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{DQ, BER=0.2}$',)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\text{DQ, BER=0.2}$',)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-13-00:39:55/TraRecorder.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
-    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{DQ, BER=0.3}$',)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\text{DQ, BER=0.3}$',)
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*8, color = colors[i],  ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{8bit}$',)
+    axs.plot(data[:,0], data[:, 0]*V*8, color = colors[i],  ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\text{8bit}$',)
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*4, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{4bit}$',)
+    axs.plot(data[:,0], data[:, 0]*V*4, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\text{4bit}$',)
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{1bit}$',)
+    axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\text{1bit}$',)
     i += 1
 
     ###########
@@ -532,11 +538,13 @@ def Loss():
 
 
 MNIST_IID_841bit()
-# MNIST_IID_DQ841bit()
-# DynamicBitWidth()
-# CommOverHead()
+MNIST_IID_DQ841bit()
+Loss()
 
-# Loss()
+DynamicBitWidth()
+CommOverHead()
+
+
 
 
 

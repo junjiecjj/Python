@@ -85,8 +85,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def CIFAR10_IID_2bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.46, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.68, 0.55, 0.3, 0.32))
     L = 1000
 
     rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
@@ -100,28 +100,28 @@ def CIFAR10_IID_2bit():
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_2bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-17-09:58:49/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
     Y2 = savgol_filter(Y2, 20, 5)
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{2bit}$'+',无错传输',)
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\text{2bit}$'+',无错传输',)
     axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
     data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_2bits_sr_flip0.01_adam_0.01_U100+10_bs64_2025-12-17-15:58:53/TraRecorder.npy"))[:L]
     Ya = data1[:,1]
     Ya = savgol_filter(Ya, 20, 5)
-    axs.plot(data1[:,0], Ya, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{2bit, BER=0.01}$',)
+    axs.plot(data1[:,0], Ya, color = colors[i], lw = 2, linestyle='-', label = r'$\text{2bit, BER=0.01}$',)
     axins.plot(data1[:,0], Ya, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
     data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_2bits_sr_flip0.05_adam_0.01_U100+10_bs64_2025-12-17-23:03:19/TraRecorder.npy"))
     Y3 = data1[:,1]
     Y3 = savgol_filter(Y3, 20, 5)
-    axs.plot(data1[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{2bit, BER=0.05}$',)
+    axs.plot(data1[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\text{2bit, BER=0.05}$',)
     axins.plot(data1[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
     data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_2bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-17-15:58:41/TraRecorder.npy"))[:200]
     Y4 = data1[:,1]
     Y4 = savgol_filter(Y4, 20, 5)
-    axs.plot(data1[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{2bit, BER=0.1}$',)
+    axs.plot(data1[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\text{2bit, BER=0.1}$',)
     axins.plot(data1[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
@@ -132,7 +132,7 @@ def CIFAR10_IID_2bit():
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    legend1 = axs.legend(bbox_to_anchor = (0.6, 0.15), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(bbox_to_anchor = (0.5, 0.12), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明

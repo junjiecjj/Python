@@ -85,8 +85,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def MNIST_IID_DQvs8bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.6, 0.53, 0.3, 0.32))
     L = 300
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
@@ -122,19 +122,19 @@ def MNIST_IID_DQvs8bit():
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.0115_adam_0.01_U100+10_bs64_2025-12-13-15:58:57/TraRecorder.npy"))[:L]
     Y8_1 = data[:,1]
-    axs.plot(data[:,0], Y8_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\mathrm{8bit+LDPC, SNR=1dB}$',)
+    axs.plot(data[:,0], Y8_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\text{8bit+LDPC, SNR=1dB}$',)
     axins.plot(data[:,0], Y8_1, color = '#1E90FF', linestyle = '--', linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.16_adam_0.01_U100+10_bs64_2025-12-13-15:59:20/TraRecorder.npy"))[:L]
     Y8_2 = data[:,1]
-    axs.plot(data[:,0], Y8_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\mathrm{8bit+LDPC, SNR=0dB}$',)
+    axs.plot(data[:,0], Y8_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\text{8bit+LDPC, SNR=0dB}$',)
     axins.plot(data[:,0], Y8_2, color = '#1E90FF', linestyle = (0,(3,1,1,1)), linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_8bits_sr_flip0.2513_adam_0.01_U100+10_bs64_2025-12-13-15:59:32/TraRecorder.npy"))[:L]
     Y8_3 = data[:,1]
-    axs.plot(data[:,0], Y8_3, color = '#1E90FF', lw = 2, linestyle=':', label = r'$\mathrm{8bit+LDPC, SNR=-2dB}$',)
+    axs.plot(data[:,0], Y8_3, color = '#1E90FF', lw = 2, linestyle=':', label = r'$\text{8bit+LDPC, SNR=-2dB}$',)
     axins.plot(data[:,0], Y8_3, color = '#1E90FF', linestyle = ':', linewidth = 2)
     i += 1
 

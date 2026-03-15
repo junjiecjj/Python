@@ -28,7 +28,7 @@ from scipy.signal import savgol_filter
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-savedir = home + '/FL_DQ/Figures/MNIST'
+savedir = './MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -93,45 +93,45 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
 def MNIST_IID_DQbit():
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.55, 0.3, 0.32))
+    axins = axs.inset_axes((0.62, 0.53, 0.3, 0.32))
     L = 300
 
-    rootdir = f"{home}/FL_DQ/MNIST_IID/"
+    rootdir = f"{home}/FL_DQ/MNIST_IID1/"
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_Perfect_adam_0.01_U100+10_bs64_2025-12-12-11:41:59/TraRecorder.npy"))[:L]
     Y1 = data[:,1]
     axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 2, label = '完美传输',)
     axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
 
     i=0
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
     Y2 = data[:,1]
     axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\text{DQ}$'+',无错传输',)
     axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-13-00:11:24/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.1_adam_0.01_U100+10_bs64_2026-01-26-16:42:54/Train.npy"))[:L]
     Y3 = data[:,1]
-    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.1}$',)
+    axs.plot(data[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.1}$')
     axins.plot(data[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-13-00:39:45/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2_adam_0.01_U100+10_bs64_2026-01-26-16:42:58/Train.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.2}$',)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.2}$')
     axins.plot(data[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-13-00:39:55/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.3_adam_0.01_U100+10_bs64_2026-01-26-16:43:03/Train.npy"))[:L]
     Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.3}$',)
+    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.3}$')
     axins.plot(data[:,0], Y5, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-13-14:03:41/TraRecorder.npy"))[:L]
-    Y6 = data[:,1]
-    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ, BER=0.4}$',)
-    axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
-    i += 1
+    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-13-14:03:41/TraRecorder.npy"))[:L]
+    # Y6 = data[:,1]
+    # axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = "DQ, BER=0.4",)
+    # axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
+    # i += 1
 
     ###########
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
@@ -184,13 +184,14 @@ def MNIST_IID_DQbit():
 
 def DynamicBitWidth():
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True, sharex=True, sharey=True)
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
-    fig.text(-0.04, 0.5, '量化比特数', va = 'center', rotation = 'vertical', fontproperties=font2,)
+    # font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
+    # font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 26}
+    # fig.text(-0.04, 0.5, '量化比特数', va = 'center', rotation = 'vertical', fontproperties=font2,)
     L = 300
     i = 0
-    rootdir = f"{home}/FL_DQ/MNIST_IID/"
+    rootdir = f"{home}/FL_DQ/MNIST_IID1/"
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
     Y1 = data[:,4]
     axs.plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ}$'+',无错传输',)
     i += 1
@@ -198,7 +199,7 @@ def DynamicBitWidth():
     font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    # axs[0].set_ylabel('量化比特数', fontproperties=font2, )
+    axs.set_ylabel('量化比特数', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
@@ -213,7 +214,7 @@ def DynamicBitWidth():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
-    axs.set_yticks([1,4,6,8,], [1,4,6,8,])
+    axs.set_yticks([1,2,3,4,], [1,2,3,4,])
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -232,11 +233,11 @@ def CommOverHead():
     lw = 2
     L = 300
     V = 21880
-    rootdir = f"{home}/FL_DQ/MNIST_IID/"
+    rootdir = f"{home}/FL_DQ/MNIST_IID1/"
     i = 0
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
-    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\text{DQ, }$'+'无错传输',)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=50, label = r'$\text{DQ, }$'+'无错传输',)
     i += 1
 
     # data1 = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-13-00:11:24/TraRecorder.npy"))[:L]
@@ -254,13 +255,16 @@ def CommOverHead():
     # axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], markersize = 10, markevery=100, label = r'$\mathrm{DQ, BER=0.3}$',)
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*8, color = colors[i],  ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\text{8bit}$',)
+    axs.plot(data[:,0], data[:, 0]*V*4, color = colors[i],  ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=50, label = r'$\text{4bit}$',)
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*4, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\text{4bit}$',)
+    axs.plot(data[:,0], data[:, 0]*V*3, color = colors[i],  ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=50, label = r'$\text{3bit}$',)
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=100, label = r'$\text{1bit}$',)
+    axs.plot(data[:,0], data[:, 0]*V*2, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, mew = 4, markevery=50, label = r'$\text{2bit}$',)
+    i += 1
+
+    axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], markersize = 10, markevery=50, label = r'$\text{1bit}$',)
     i += 1
 
     ###########

@@ -93,8 +93,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def MNIST_IID_4bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.52, 0.5, 0.3, 0.32))
     L = 300
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
@@ -146,7 +146,7 @@ def MNIST_IID_4bit():
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(bbox_to_anchor = (0.52, 0.41), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明

@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec 14 13:03:45 2025
+Created on Sat Dec 27 21:06:44 2025
 
 @author: jack
 """
 
 
-
 import os
 import sys
-
-
 import matplotlib
 # matplotlib.use('TkAgg')
 # matplotlib.use('Agg')
@@ -28,7 +25,7 @@ from scipy.signal import savgol_filter
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-savedir = home + '/FL_DQ/Figures/CIFAR10'
+savedir = './MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -85,45 +82,58 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
     return
 
-def CIFAR10_IID_4bit():
+def MNIST_IID_DQvs1bit_BER():
     fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.55, 0.3, 0.32))
-    L = 1000
+    axins = axs.inset_axes((0.52, 0.54, 0.3, 0.32))
+    L = 300
 
-    rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_Perfect_adam_0.01_U100+10_bs64_2025-12-14-14:00:53/TraRecorder.npy"))[:L]
+    rootdir = f"{home}/FL_DQ/MNIST_IID1/"
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_Perfect_adam_0.01_U100+10_bs64_2025-12-12-11:41:59/TraRecorder.npy"))[:L]
     Y1 = data[:,1]
-    Y1 = savgol_filter(Y1, 20, 5) + 0.005
-    axs.plot(data[:,0], Y1 , color = 'k', linestyle= '-',lw = 3, label = '完美传输',)
-    axins.plot(data[:,0], Y1, color = 'k', linestyle = '-', linewidth = 2)
+    axs.plot(data[:,0], Y1 , color = 'gray', linestyle= '-',lw = 3, label = '完美传输',)
+    axins.plot(data[:,0], Y1, color = 'gray', linestyle = '-', linewidth = 2)
 
     i=0
-    data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-14-14:01:04/TraRecorder.npy"))[:L]
-    Y2 = data[:,1]
-    Y2 = savgol_filter(Y2, 20, 5)
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\text{4bit}$'+',无错传输',)
-    axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.1_adam_0.01_U100+10_bs64_2026-01-26-16:42:54/Train.npy"))[:L]
+    Ydq1 = data[:,1]
+    axs.plot(data[:,0], Ydq1, color='#FF6347', lw = 2, linestyle='--' , label = r'$\text{DQ, BER=0.1}$')
+    axins.plot(data[:,0], Ydq1, color='#FF6347', linestyle = '--' , linewidth = 2)
     i += 1
 
-    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_flip0.01_adam_0.01_U100+10_bs64_2025-12-14-21:29:50/TraRecorder.npy"))[:L]
-    Ya = data1[:,1]
-    Ya = savgol_filter(Ya, 20, 5)
-    axs.plot(data1[:,0], Ya, color = colors[i], lw = 2, linestyle='-', label = r'$\text{4bit, BER=0.01}$',)
-    axins.plot(data1[:,0], Ya, color = colors[i], linestyle = '-', linewidth = 2)
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2_adam_0.01_U100+10_bs64_2026-01-26-16:42:58/Train.npy"))[:L]
+    Ydq2 = data[:,1]
+    axs.plot(data[:,0], Ydq2, color='#FF6347', lw = 2, linestyle=(0,(3,1,1,1)) , label = r'$\text{DQ, BER=0.2}$')
+    axins.plot(data[:,0], Ydq2, color='#FF6347', linestyle =(0,(3,1,1,1)), linewidth = 2)
     i += 1
 
-    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_flip0.05_adam_0.01_U100+10_bs64_2025-12-16-10:42:21/TraRecorder.npy"))
-    Y3 = data1[:,1]
-    Y3 = savgol_filter(Y3, 20, 5)
-    axs.plot(data1[:,0], Y3, color = colors[i], lw = 2, linestyle='-', label = r'$\text{4bit, BER=0.05}$',)
-    axins.plot(data1[:,0], Y3, color = colors[i], linestyle = '-', linewidth = 2)
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.3_adam_0.01_U100+10_bs64_2026-01-26-16:43:03/Train.npy"))[:L]
+    Ydq3 = data[:,1]
+    axs.plot(data[:,0], Ydq3, color='#FF6347', lw = 2, linestyle=':', marker = '*',ms = 10, markevery=20, zorder = 11, label = r'$\text{DQ, BER=0.3}$')
+    axins.plot(data[:,0], Ydq3, color='#FF6347', linestyle = ':', marker = '*', ms = 10, markevery=20, zorder = 11, linewidth = 2)
     i += 1
 
-    data1 = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-14-16:17:36/TraRecorder.npy"))[:500]
-    Y4 = data1[:,1]
-    Y4 = savgol_filter(Y4, 20, 5)
-    axs.plot(data1[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\text{4bit, BER=0.1}$',)
-    axins.plot(data1[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
+    # data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_4bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-15:50:46/TraRecorder.npy"))[:L]
+    # Y2 = data[:,1]
+    # axs.plot(data[:,0], Y2, color = 'm', lw = 2, linestyle='-' , label = r'$\mathrm{8bit,}$'+'无错传输',)
+    # axins.plot(data[:,0], Y2, color = 'm', linestyle = '-' , linewidth = 2)
+    # i += 1
+    rootdir = f"{home}/FL_DQ/MNIST_IID/"
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-12-21:21:53/TraRecorder.npy"))[:L]
+    Y8_1 = data[:,1]
+    axs.plot(data[:,0], Y8_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\mathrm{1bit, BER=0.1}$')
+    axins.plot(data[:,0], Y8_1, color = '#1E90FF', linestyle = '--', linewidth = 2)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-12-21:23:01/TraRecorder.npy"))[:L]
+    Y8_2 = data[:,1]
+    axs.plot(data[:,0], Y8_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\mathrm{1bit, BER=0.2}$')
+    axins.plot(data[:,0], Y8_2, color = '#1E90FF', linestyle = (0,(3,1,1,1)), linewidth = 2)
+    i += 1
+
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-21:23:17/TraRecorder.npy"))[:L]
+    Y8_3 = data[:,1]
+    axs.plot(data[:,0], Y8_3, color = '#1E90FF', lw = 2, linestyle=':', marker = 'o', mfc='white', mew = 2, ms = 10, markevery=20, zorder = 1, label = r'$\mathrm{1bit, BER=0.3}$')
+    axins.plot(data[:,0], Y8_3, color = '#1E90FF', linestyle = ':', marker = 'o', mfc='white', mew = 2, ms = 10, markevery=20, zorder = 1, linewidth = 2)
     i += 1
 
     ###########
@@ -133,7 +143,7 @@ def CIFAR10_IID_4bit():
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    legend1 = axs.legend(bbox_to_anchor = (0.5, 0.34), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -146,7 +156,7 @@ def CIFAR10_IID_4bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.3, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.6, 1.01)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -156,26 +166,26 @@ def CIFAR10_IID_4bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,方法3
-    zone_and_linked(axs, axins, L-50, L-20, data[:, 0] , [Y1, Y2, Ya], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-120, L-100, data[:, 0] , [Y1,Ydq1, Ydq2, Ydq3, Y8_1,Y8_2, Y8_3 ], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
     axins.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
     axins.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
     axins.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
-    axins.set_ylim(0.86, 0.91)  #拉开坐标轴范围显示投影
+
     axins.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 22,  width = 1)
     labels = axins.get_xticklabels() + axins.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
     # [label.set_fontsize(16) for label in labels] #刻度值字号
 
     out_fig = plt.gcf()
-    out_fig.savefig(f'{savedir}/Fig_CIFAR10_IID_4bit.pdf' )
+    out_fig.savefig(f'{savedir}/Fig_MNIST_IID_DQvs1bit_BER.pdf' )
     plt.show()
     plt.close()
     return
 
-CIFAR10_IID_4bit()
+MNIST_IID_DQvs1bit_BER()
 
 
 

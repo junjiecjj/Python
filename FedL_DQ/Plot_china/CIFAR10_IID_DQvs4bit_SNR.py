@@ -85,8 +85,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def CIFAR10_IID_DQvs4bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.52, 0.55, 0.3, 0.32))
     L = 1000
 
     rootdir = f"{home}/FL_DQ/CIFAR10_IID/"
@@ -121,21 +121,21 @@ def CIFAR10_IID_DQvs4bit():
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_flip0.0115_adam_0.01_U100+10_bs64_2025-12-23-14:55:09/TraRecorder.npy"))[:L]
     Y4_1 = data[:,1]
     Y4_1 = savgol_filter(Y4_1, 20, 5)
-    axs.plot(data[:,0], Y4_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\mathrm{4bit+LDPC, SNR=1dB}$',)
+    axs.plot(data[:,0], Y4_1, color = '#1E90FF', lw = 2, linestyle='--', label = r'$\text{4bit+LDPC, SNR=1dB}$',)
     axins.plot(data[:,0], Y4_1, color = '#1E90FF', linestyle = '--', linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_flip0.03898_adam_0.01_U100+10_bs64_2025-12-23-14:55:27/TraRecorder.npy"))[:L]
     Y4_2 = data[:,1]
     Y4_2 = savgol_filter(Y4_2, 20, 5)
-    axs.plot(data[:,0], Y4_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\mathrm{4bit+LDPC, SNR=0.75dB}$',)
+    axs.plot(data[:,0], Y4_2, color = '#1E90FF', lw = 2, linestyle=(0,(3,1,1,1)), label = r'$\text{4bit+LDPC, SNR=0.75dB}$',)
     axins.plot(data[:,0], Y4_2, color = '#1E90FF', linestyle = (0,(3,1,1,1)), linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "CIFAR10_IID_epoch2_4bits_sr_flip0.16_adam_0.01_U100+10_bs64_2025-12-23-21:08:52/TraRecorder.npy"))[:L]
     Y4_3 = data[:,1]
     Y4_3 = savgol_filter(Y4_3, 20, 5)
-    axs.plot(data[:,0], Y4_3, color = '#1E90FF', lw = 2, linestyle=':', label = r'$\mathrm{4bit+LDPC, SNR=0dB}$',)
+    axs.plot(data[:,0], Y4_3, color = '#1E90FF', lw = 2, linestyle=':', label = r'$\text{4bit+LDPC, SNR=0dB}$',)
     axins.plot(data[:,0], Y4_3, color = '#1E90FF', linestyle = ':', linewidth = 2)
     i += 1
 
@@ -145,8 +145,8 @@ def CIFAR10_IID_DQvs4bit():
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=20)
-    legend1 = axs.legend(bbox_to_anchor = (0.4, 0.1), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=17)
+    legend1 = axs.legend( bbox_to_anchor = (0.4, 0.1, 0.1, 0.1), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -169,7 +169,7 @@ def CIFAR10_IID_DQvs4bit():
 
     ###==================== mother and son ==================================
     ### 局部显示并且进行连线,
-    zone_and_linked(axs, axins, L-500, L-450, data[:, 0] , [Y1, Ydq1, Ydq2, Ydq3, Y4_1, Y4_2,], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
+    zone_and_linked(axs, axins, L-200, L-150, data[:, 0] , [Y1, Ydq1, Ydq2, Ydq3, Y4_1, Y4_2,], 'bottom', x_ratio = 0.3, y_ratio = 0.2)
     ## linewidth
     bw = 1
     axins.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细

@@ -35,7 +35,7 @@ plt.rcParams['legend.fontsize'] = 22
 
 # 获取当前系统用户目录
 home = os.path.expanduser('~')
-savedir = home + '/FL_DQ/Figures/MNIST'
+savedir = './MNIST'
 
 fontpath = "/usr/share/fonts/truetype/windows/"
 
@@ -57,37 +57,37 @@ alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 def CommOverHead():
     fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
     lw = 2
-    L = 500
+    L = 300
     V = 21880
-    rootdir = f"{home}/FL_DQ/MNIST_IID/"
+    rootdir = f"{home}/FL_DQ/MNIST_IID1/"
     i = 0
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
-    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{DQ, }$'+'无错传输',)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{DQ, }$'+'无错传输')
     i += 1
 
-    data1 = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.0115_adam_0.01_U100+10_bs64_2025-12-13-17:14:21/TraRecorder.npy"))[:L]
+    data1 = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.0115_adam_0.01_U100+10_bs64_2026-01-26-17:28:57/Train.npy"))[:L]
     Y1 = np.cumsum(data1[:,4]*V)
-    axs.plot(data1[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, label = r'$\text{DQ+Free-Ride, SNR=1dB}$',)
+    axs.plot(data1[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, label = r'$\text{DQ+Free-Ride, SNR=1dB}$')
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.16_adam_0.01_U100+10_bs64_2025-12-13-17:14:36/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.16_adam_0.01_U100+10_bs64_2026-01-26-17:29:08/Train.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
     axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, zorder = 10, label = r'$\text{DQ+Free-Ride, SNR=0dB}$',)
     i += 1
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2513_adam_0.01_U100+10_bs64_2025-12-13-17:14:54/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2513_adam_0.01_U100+10_bs64_2026-01-26-17:29:21/Train.npy"))[:L]
     Y1 = np.cumsum(data[:,4]*V)
-    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, mfc='white', mew = 2, label = r'$\text{DQ+Free-Ride, SNR=-2dB}$',)
+    axs.plot(data[:,0], Y1, color = colors[i],  ls='-', lw = lw,  marker = mark[i], ms = 10, markevery=100, mfc='white', mew = 2, label = r'$\text{DQ+Free-Ride, SNR=-2dB}$')
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*8, color = colors[i],  ls='-', lw = 2, marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{8bit+LDPC}$',)
+    axs.plot(data[:,0], data[:, 0]*V*4, color = colors[i],  ls='-', lw = 2, marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{4bit+LDPC}$')
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*4, color = colors[i], ls='-', lw = 2, marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{4bit+LDPC}$',)
+    axs.plot(data[:,0], data[:, 0]*V*3, color = colors[i], ls='-', lw = 2, marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{3bit+LDPC}$')
     i += 1
 
-    axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{1bit+LDPC}$',)
+    axs.plot(data[:,0], data[:, 0]*V*1, color = colors[i], ls='-', lw = 2, marker = mark[i], ms = 10, markevery=100, label = r'$\mathrm{1bit+LDPC}$')
     i += 1
 
     ###########
@@ -134,17 +134,12 @@ def DynamicBitWidth():
     fig.text(-0.04, 0.5, '量化比特数', va = 'center', rotation = 'vertical', fontproperties=font2,)
     L = 300
     i = 0
-    rootdir = f"{home}/FL_DQ/MNIST_IID/"
+    rootdir = f"{home}/FL_DQ/MNIST_IID1/"
 
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-23:16:04/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_erf_adam_0.01_U100+10_bs64_2026-01-26-16:42:48/Train.npy"))[:L]
     Y1 = data[:,4]
-    axs[0].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ}$'+',无错传输',)
+    axs[0].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ}$'+',无错传输')
     i += 1
-
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
-    # axs[0].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    # axs[0].set_ylabel('量化比特数', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[0].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
@@ -169,15 +164,10 @@ def DynamicBitWidth():
     axs[0].spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     #########
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.0115_adam_0.01_U100+10_bs64_2025-12-13-17:14:21/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.0115_adam_0.01_U100+10_bs64_2026-01-26-17:28:57/Train.npy"))[:L]
     Y1 = data[:,4]
     axs[1].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ+Free-Ride, SNR=1dB}$',)
     i += 1
-
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
-    # axs[1].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    # axs[1].set_ylabel('量化比特数', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[1].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
@@ -192,7 +182,7 @@ def DynamicBitWidth():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
-    axs[1].set_yticks([1,4,6,8,], [1,4,6,8,])
+    axs[1].set_yticks([1,2,3,4], [1,2,3,4])
 
     axs[1].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs[1].spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -201,15 +191,10 @@ def DynamicBitWidth():
     axs[1].spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     ##########
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.16_adam_0.01_U100+10_bs64_2025-12-13-17:14:36/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.16_adam_0.01_U100+10_bs64_2026-01-26-17:29:08/Train.npy"))[:L]
     Y1 = data[:,4]
     axs[2].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ+Free-Ride, SNR=0dB}$',)
     i += 1
-
-    font2 = {'family': 'Times New Roman', 'style': 'normal', 'size': 30}
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
-    # axs[2].set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
-    # axs[2].set_ylabel('量化比特数', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=26)
     legend1 = axs[2].legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
@@ -224,7 +209,7 @@ def DynamicBitWidth():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
-    axs[2].set_yticks([1,4,6,8,], [1,4,6,8,])
+    axs[1].set_yticks([1,2,3,4], [1,2,3,4])
 
     axs[2].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs[2].spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -233,7 +218,7 @@ def DynamicBitWidth():
     axs[2].spines['top'].set_linewidth(2)       #### 设置上部坐标轴的粗细
 
     ###########
-    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2513_adam_0.01_U100+10_bs64_2025-12-13-17:14:54/TraRecorder.npy"))[:L]
+    data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_DQ_sr_flip0.2513_adam_0.01_U100+10_bs64_2026-01-26-17:29:21/Train.npy"))[:L]
     Y1 = data[:,4]
     axs[3].plot(data[:,0], Y1, color = colors[i], lw = 2, linestyle='-', label = r'$\text{DQ+Free-Ride, SNR=-2dB}$',)
     i += 1
@@ -256,7 +241,7 @@ def DynamicBitWidth():
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
-    axs[3].set_yticks([1,4,6,8,], [1,4,6,8,])
+    axs[1].set_yticks([1,2,3,4], [1,2,3,4])
 
     axs[3].grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs[3].spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细

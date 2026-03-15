@@ -93,8 +93,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
 
 
 def MNIST_IID_1bit():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.62, 0.4, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.62, 0.55, 0.3, 0.32))
     L = 300
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"
@@ -106,7 +106,7 @@ def MNIST_IID_1bit():
     i=0
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_erf_adam_0.01_U100+10_bs64_2025-12-12-21:20:50/TraRecorder.npy"))[:L]
     Y2 = data[:,1]
-    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\mathrm{1bit}$'+',无错传输',)
+    axs.plot(data[:,0], Y2, color = colors[i], lw = 2, linestyle='--', label = r'$\text{1bit}$'+',无错传输',)
     axins.plot(data[:,0], Y2, color = colors[i], linestyle = '--', linewidth = 2)
     i += 1
 
@@ -118,25 +118,25 @@ def MNIST_IID_1bit():
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.1_adam_0.01_U100+10_bs64_2025-12-12-21:21:53/TraRecorder.npy"))[:L]
     Y4 = data[:,1]
-    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.1}$',)
+    axs.plot(data[:,0], Y4, color = colors[i], lw = 2, linestyle='-', label = r'$\text{1bit, BER=0.1}$',)
     axins.plot(data[:,0], Y4, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.2_adam_0.01_U100+10_bs64_2025-12-12-21:23:01/TraRecorder.npy"))[:L]
     Y5 = data[:,1]
-    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.2}$',)
+    axs.plot(data[:,0], Y5, color = colors[i], lw = 2, linestyle='-', label = r'$\text{1bit, BER=0.2}$',)
     axins.plot(data[:,0], Y5, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.3_adam_0.01_U100+10_bs64_2025-12-12-21:23:17/TraRecorder.npy"))[:L]
     Y6 = data[:,1]
-    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.3}$',)
+    axs.plot(data[:,0], Y6, color = colors[i], lw = 2, linestyle='-', label = r'$\text{1bit, BER=0.3}$',)
     axins.plot(data[:,0], Y6, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
 
     data = np.load(os.path.join(rootdir, "MNIST_IID_epoch1_1bits_sr_flip0.4_adam_0.01_U100+10_bs64_2025-12-12-22:02:23/TraRecorder.npy"))[:L]
     Y7 = data[:,1]
-    axs.plot(data[:,0], Y7, color = colors[i], lw = 2, linestyle='-', label = r'$\mathrm{1bit, BER=0.4}$',)
+    axs.plot(data[:,0], Y7, color = colors[i], lw = 2, linestyle='-', label = r'$\text{1bit, BER=0.4}$',)
     axins.plot(data[:,0], Y7, color = colors[i], linestyle = '-', linewidth = 2)
     i += 1
     ###########
@@ -146,7 +146,7 @@ def MNIST_IID_1bit():
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
-    legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(bbox_to_anchor = (0.52, 0.41), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明

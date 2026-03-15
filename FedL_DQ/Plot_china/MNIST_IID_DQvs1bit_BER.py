@@ -83,8 +83,8 @@ def zone_and_linked(ax, axins, zone_left, zone_right, x, y, linked='bottom', x_r
     return
 
 def MNIST_IID_DQvs1bit_BER():
-    fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
-    axins = axs.inset_axes((0.52, 0.46, 0.3, 0.32))
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+    axins = axs.inset_axes((0.52, 0.55, 0.3, 0.32))
     L = 300
 
     rootdir = f"{home}/FL_DQ/MNIST_IID/"

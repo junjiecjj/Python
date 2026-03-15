@@ -22,7 +22,7 @@ array = phased.ULA('Element', element, 'NumElements', N, 'ElementSpacing', d, 'A
 
 
 % Three targets of interest
-tgtAz = [0];                % Azimuths of the targets of interest
+tgtAz = [20];                % Azimuths of the targets of interest
 
 ang = linspace(-90, 90, 200);       % Grid of azimuth angles
 beamwidth = 34;                     % Desired beamwidth
@@ -53,7 +53,7 @@ rxpos = array.getElementPosition();
 normalizedPos = rxpos/lambda;
 
 % Solve the optimization problem to find the covariance matrix
-Rmmse = helperMMSECovariance(normalizedPos, Bdes, ang);
+Rmmse = helperMMSECovariance(normalizedPos, Bdes, ang); % Eq.(24)
 
 Rmmse = Rmmse*Pt/N;
 
@@ -79,7 +79,28 @@ title('Transmit Beam Pattern');
 %%  B. Maximum Error Optimization
 
 
+% Solve the optimization problem to find the covariance matrix
+Rminmax = helperMinMaxCovariance(normalizedPos, Bdes, ang);
 
+Rminmax = Rminmax*Pt/N;
+
+% Matrix of steering vectors corresponding to the angles in the grid ang
+A = steervec(normalizedPos, [ang; zeros(size(ang))]);
+
+% Compute the resulting beam pattern given the found covariance matrix
+Bminmax = abs(diag(A'*Rminmax*A))/(4*pi);
+
+figure(3);
+hold on
+plot(ang, pow2db(Bdes + eps), 'LineWidth', 2)
+plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineWidth', 2)
+
+grid on;
+xlabel('Azimuth (deg)');
+ylabel('(dB)');
+legend('Desired', 'MMSE Covariance');
+ylim([-40 1]);
+title('Transmit Beam Pattern');
 
 
 
