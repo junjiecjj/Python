@@ -25,7 +25,7 @@ function R = helperMinMaxCovariance(elPos, Pdesired, ang)
     Pdesired = Pdesired * 4 * pi;  % Eq.(15)
     A = steervec(elPos, [ang; zeros(size(ang))]);
     
-    epsilon = 1e-2;
+    epsilon = 1e-4;
     stopCriteriaMet = false;
 
     M1 = MM/2;

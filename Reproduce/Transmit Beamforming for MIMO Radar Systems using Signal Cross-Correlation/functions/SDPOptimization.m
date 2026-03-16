@@ -2,19 +2,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0)
-    epsilon = 1e-3;
+function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0) 
     A0 = steervec(elPos, [Theta0; zeros(size(Theta0))]);
     N = size(A0, 1);
     NN_1 = N*(N-1);
@@ -62,19 +50,17 @@ function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0)
             top_left = top_left + x(k) * (-diag(A(:,k)));   % 对应 -diag(A_k)
         end
         top_left = top_left + z * eye(2*M);                 % 对应 -z * (-I) = +zI
-    
         % 右下块：G + sum_k x_k * F_k
         bottom_right = eye(N);
         for k = 1:NN_1
             bottom_right = bottom_right + x(k) * Fk(:,:,k);
         end
-    
         % 组装整体 LMI
         LMI = [ top_left, zeros(2*M, N);
                 zeros(N, 2*M), bottom_right ];
-        LMI >= 0;                % 半正定约束
-    
-        minimize z
+        LMI >= 0;               % 半正定约束
+        minimize (z);
+
     cvx_end
 
 end
