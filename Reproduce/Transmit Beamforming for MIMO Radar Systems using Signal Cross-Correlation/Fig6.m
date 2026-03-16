@@ -22,10 +22,10 @@ array = phased.ULA('Element', element, 'NumElements', N, 'ElementSpacing', d, 'A
 
 
 % Three targets of interest
-tgtAz = [20];                % Azimuths of the targets of interest
+tgtAz = [0];                % Azimuths of the targets of interest
 
 ang = linspace(-90, 90, 200);       % Grid of azimuth angles
-beamwidth = 34;                     % Desired beamwidth
+beamwidth = 36;                     % Desired beamwidth
 
 % Desired beam pattern
 idx = false(size(ang));
@@ -62,23 +62,21 @@ A = steervec(normalizedPos, [ang; zeros(size(ang))]);
 
 % Compute the resulting beam pattern given the found covariance matrix
 Bmmse = abs(diag(A'*Rmmse*A))/(4*pi);
-
-figure(2);
-hold on
-plot(ang, pow2db(Bdes + eps), 'LineWidth', 2)
-plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2)
-
-grid on
-xlabel('Azimuth (deg)')
-ylabel('(dB)');
-legend('Desired', 'MMSE Covariance');
-ylim([-40 1]);
-title('Transmit Beam Pattern');
+% 
+% figure(2);
+% hold on
+% plot(ang, pow2db(Bdes + eps), 'LineWidth', 2)
+% plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2)
+% 
+% grid on
+% xlabel('Azimuth (deg)')
+% ylabel('(dB)');
+% legend('Desired', 'MMSE Covariance');
+% ylim([-40 1]);
+% title('Transmit Beam Pattern');
 
 
 %%  B. Maximum Error Optimization
-
-
 % Solve the optimization problem to find the covariance matrix
 Rminmax = helperMinMaxCovariance(normalizedPos, Bdes, ang);
 
@@ -90,15 +88,16 @@ A = steervec(normalizedPos, [ang; zeros(size(ang))]);
 % Compute the resulting beam pattern given the found covariance matrix
 Bminmax = abs(diag(A'*Rminmax*A))/(4*pi);
 
-figure(3);
+figure(2);
 hold on
-plot(ang, pow2db(Bdes + eps), 'LineWidth', 2)
-plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineWidth', 2)
+plot(ang, pow2db(Bdes + eps), 'LineWidth', 2, 'Color','k'); hold on;
+plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2, 'Color','r'); hold on;
+plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineWidth', 2, 'Color','b'); hold on;
 
 grid on;
 xlabel('Azimuth (deg)');
 ylabel('(dB)');
-legend('Desired', 'MMSE Covariance');
+legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
 ylim([-40 1]);
 title('Transmit Beam Pattern');
 

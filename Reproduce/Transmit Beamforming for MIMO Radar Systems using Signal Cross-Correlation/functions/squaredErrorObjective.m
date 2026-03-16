@@ -1,3 +1,6 @@
+
+
+
 function J = squaredErrorObjective(x, t, A, Pdesired, ang)
     % Squared error between the desired beam pattern in Pdesired and the
     % beam pattern formed by a covariance matrix defined by the vector x
@@ -20,7 +23,10 @@ function J = squaredErrorObjective(x, t, A, Pdesired, ang)
         phi = -log(prod(d));
     else
         phi = Inf;
-    end 
-
+    end
     J = J + (1/t)*phi;
 end
+
+
+
+

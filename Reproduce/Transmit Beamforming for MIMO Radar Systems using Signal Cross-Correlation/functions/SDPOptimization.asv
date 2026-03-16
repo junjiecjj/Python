@@ -29,17 +29,11 @@ function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0)
     for i = 1:NN_1/2
         % Eq. (29)
         Alpha(i, :) = 2*real(conj(A0(r(i), :)) .* A0(c(i), :));
-        Alpha(i + NN_1/2, :) = -2*imag(conj(A0(r(i), :)) .* A0(c(i), :));
-
+        Alpha(i + M/2, :) = -2*imag(conj(A0(r(i), :)) .* A0(c(i), :));
         tmp = zeros(N);
         tmp(r(i), c(i)) = 1;
         tmp(c(i), r(i)) = 1;
-        Fk(:, :, i) = tmp;
-        
-        tmp = zeros(N);
-        tmp(r(i), c(i)) = 1j;
-        tmp(c(i), r(i)) = -1j;
-        Fk(:, :, i+NN_1/2) = tmp;
+        Fk(:, :, )
     end
     A1 = Alpha.';
     A(1:2:end, 1:NN_1) = -A1;   % 奇数行取负
@@ -65,7 +59,7 @@ function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0)
     
         % 右下块：G + sum_k x_k * F_k
         bottom_right = eye(N);
-        for k = 1:NN_1
+        for k = 1:K
             bottom_right = bottom_right + x(k) * Fk(:,:,k);
         end
     

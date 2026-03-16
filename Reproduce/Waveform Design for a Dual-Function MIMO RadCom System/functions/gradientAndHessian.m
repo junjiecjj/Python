@@ -1,10 +1,17 @@
 
 
 
+
+
+
+
+
+
+
+
 function [G, H] = gradientAndHessian(x, t, A, Pdesired, ang)
     N = size(A, 1);
     M = N*(N-1);
-    
     F = constrainedCovariance(x, N);
     numAng = numel(ang);
     FinvFi = zeros(N, N, M);
@@ -36,6 +43,14 @@ function [G, H] = gradientAndHessian(x, t, A, Pdesired, ang)
     % 上面得到的H是上三角矩阵，j是从i-M, 这里要相当小心。
     H = H + triu(H, 1)';  
 end
+
+
+
+
+
+
+
+
 
 
 

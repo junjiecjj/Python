@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 
-locs = ['upper right', 'lower left', 'center left', 'lower center', 'center',
-        'right']
+locs = ['upper right', 'lower left', 'center left', 'lower center', 'center', 'right']
 
 x0, y0, width, height = 0.5, 0.5, 0.1, 0.4
 x1, y1, width1, height1 = 0.5, 0.5, 0, 0

@@ -1,6 +1,9 @@
 
 
 
+
+
+
 function x = newtonOptimization(x_, t, A, Pdesired, ang)
     epsilon = 1e-3;
 

@@ -14,13 +14,17 @@ function R = helperMinMaxCovariance(elPos, Pdesired, ang)
     % wavelength. Pdesired is the desired beam pattern evaluated at the angles
     % specified in ang.
 
-    % elPos = normalizedPos;
-    % Pdesired = Bdes;
-    % 
+    elPos = normalizedPos;
+    Pdesired = Bdes;
+
 
     MM = numel(ang);
-    N = size(elPos, 2); 
-    x_ = initialCovariance(N); 
+    N = size(elPos, 2);
+    % Initial covariance is random. x_ is a vector of all elements that are
+    % in the upper triangular part of the matrix above the main diagonal.
+    x_ = initialCovariance(N);
+    % Normalized the desired beam pattern such that the total transmit power is
+    % equal to the number of array elements N.
     Pdesired = N * Pdesired / (2*pi*trapz(deg2rad(ang), Pdesired.*cosd(ang))); % Eq.(16)
     Pdesired = Pdesired * 4 * pi;  % Eq.(15)
     A = steervec(elPos, [ang; zeros(size(ang))]);
@@ -28,33 +32,33 @@ function R = helperMinMaxCovariance(elPos, Pdesired, ang)
     epsilon = 1e-2;
     stopCriteriaMet = false;
 
-    M1 = MM/2;
+    M1 = MM/4;
     Theta0idx = sort(randperm(MM, M1));
     Theta0 = ang(Theta0idx);
-    Ptheta0 = Pdesired(Theta0idx);
     % Matrix of steering vectors corresponding to angles in ang
-    
+    A0 = steervec(elPos, [Theta0; zeros(size(Theta0))]);
     lmax = 10;
     z0 = inf;
     it = 0;
-    maxIter = 1e2;
-    while ~stopCriteriaMet & it < maxIter
-        it = it + 1
-        [x, z] = SDPOptimization(elPos, Theta0, Ptheta0);
-        abs(z - z0)
-        if abs(z - z0) < epsilon
-            stopCriteriaMet = true;
-        end
-        z0 = z;
-        F = constrainedCovariance(x, N);
+    while ~stopCriteriaMet
+        it = it + 1;
+        [x, z] = SDPOptimization(Theta0, A0, x_, Pdesired);
+        F = constrainedCovariance(x_, N);
         P_ = real(diag(A'*F*A).');
         % Squared error weighted by angle
         Err = abs(Pdesired - P_);
-        [~, indices] = maxk(Err, lmax);
-        Theta0idx = union(Theta0idx, indices);
-
-        Theta0 = ang(Theta0idx);
-        Ptheta0 = Pdesired(Theta0idx);
+        [values, indices] = maxk(Err, lmax);
+        Thetaidx = union(Theta0idx, indices);
+        x_ = x;
+        if abs(z - z0) < epsilon
+            stopCriteriaMet = true;
+            
+            
+        else
+            % Increased t by too much, step back a little.
+            t = t / mu;
+            mu = max(mu * 0.8, 1.01);
+        end
     end
  
     R = constrainedCovariance(x, N);
