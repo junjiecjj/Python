@@ -1,0 +1,5 @@
+Load LDPC Matrix success, simulation starts!
+
+SNRdB = 3 dB, current_frame = 1 
+
+SNRdB = 3 dB, current_frame = 2 

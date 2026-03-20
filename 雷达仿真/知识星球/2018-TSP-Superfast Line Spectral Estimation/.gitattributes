@@ -1,0 +1,4 @@
+# This file tells github to ignore the nufft folder when detecting repository
+# language
+
+nufft/* linguist-vendored

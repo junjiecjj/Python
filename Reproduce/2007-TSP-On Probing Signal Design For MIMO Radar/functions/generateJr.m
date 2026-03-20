@@ -1,23 +1,22 @@
 
 
+
+
+
+
+
 function [J, r] = generateJr(M, R)
-    % 计算 r 的长度
-    n_diag = M;
-    n_upper = M*(M-1)/2;
-    len_r = n_diag + 2*n_upper; % 应该等于 M^2
-    
+
     % 初始化 r 和 J
-    r = zeros(len_r, 1);
-    J = zeros(M^2, len_r); % 复数矩阵
+    r = zeros(M^2, 1);
+    J = zeros(M^2, M^2); % 复数矩阵
     
     % 填充 r 并记录上三角元素的索引映射
     % 先填对角线
     for i = 1:M
         r(i) = real(R(i,i));
     end
-    
-    % 填上三角，同时记录每个 (i,j) 对应的实部和虚部在 r 中的位置
-    % 使用两个矩阵 real_idx 和 imag_idx 来存储映射，方便后续填充 J
+    % 填上三角，同时记录每个 (i,j) 对应的实部和虚部在 r 中的位置,使用两个矩阵 real_idx 和 imag_idx 来存储映射，方便后续填充 J
     real_idx = zeros(M, M);
     imag_idx = zeros(M, M);
     idx = M; % 当前 r 的索引，从对角线之后开始
@@ -32,8 +31,7 @@ function [J, r] = generateJr(M, R)
         end
     end
     
-    % 现在填充 J
-    % 遍历所有 (i,j) 位置，构造 vec(R) 的对应行
+    % 现在填充 J,遍历所有 (i,j) 位置，构造 vec(R) 的对应行
     for i = 1:M
         for j = 1:M
             row = (j-1)*M + i; % vec(R) 的索引（列堆叠）
@@ -57,3 +55,10 @@ function [J, r] = generateJr(M, R)
         end
     end
 end
+
+
+
+
+
+
+
