@@ -22,6 +22,11 @@ R = (A + A')/2; % 保证 Hermitian
 
 [J, r] = generateJr(size(R,1), R);
 Rhat = recover_R_from_r(r, M);
+% 
+% r1 = R2r(R);
+% Rhat1 = r2R(r, M);
+
+
 % 验证 vec(R) = J * r
 vec_R = R(:); % 列堆叠
 J_r = J * r;

@@ -94,7 +94,6 @@ for idx = 1:L
     denom_GLRT = a' / Q * a;
 
     GLRT(idx) = 1 - num / denom_GLRT;
-
     % ========== Capon 谱 ==========
     Capon(idx) = 1 / (a.'/ Ryy * ac);
 
