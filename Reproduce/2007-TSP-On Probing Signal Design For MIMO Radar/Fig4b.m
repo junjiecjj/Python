@@ -1,7 +1,5 @@
 
 
-
-%% 问题(19)的SOCP求解 
 clc;
 clear all;
 close all;
@@ -36,7 +34,9 @@ wc = 1;                    % 交叉项权重（可调）
 
 Rsqrt =  sqrtm(R); % R^(0.5);
 
-N = 256;
+Nlst = logspace(1, 5, 12);
+Iters = 1000;
+
 
 w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
 x = Rsqrt * w;

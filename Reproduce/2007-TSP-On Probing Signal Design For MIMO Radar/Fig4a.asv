@@ -34,7 +34,7 @@ w_l = ones(L, 1);           % 所有网格点权重相同
 wc = 1;                    % 交叉项权重（可调）
 [R, alpha, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
 
-Rsqrt =  sqrtm(R); % R^(0.5);
+Rsqrt = R^(0.5);
 
 N = 256;
 
@@ -50,10 +50,10 @@ for i = 1:length(theta_plot)
     a_theta = a(theta_plot(i));
 
     beamdiff(i) = abs(a_theta' * (Rxx - R) * a_theta ) / abs(a_theta' * R * a_theta);
-    P_opt(i)    = (a_theta' * R * a_theta);
-    P_optxx(i)  = (a_theta' * Rxx * a_theta);
+    P_opt(i) = abs(a_theta' * R * a_theta);
+    P_optxx(i) = abs(a_theta' * Rxx * a_theta);
 end
-
+ 
 
 %% 可选：绘制发射波束图对比
 figure(1);
@@ -64,10 +64,12 @@ ylabel('Beampattern diff');
 title('Transmit Beampattern');
 grid on;
 
+
+
 figure(2);
 plot(theta_plot, P_opt, 'b-', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_optxx, 'r--', 'LineWidth', 1.5); hold on;
 xlabel('\theta (degrees)');
 ylabel('Beampattern');
-legend('P_{opt}', 'P_{opt} X');
+title('Transmit Beampattern');
 grid on;
