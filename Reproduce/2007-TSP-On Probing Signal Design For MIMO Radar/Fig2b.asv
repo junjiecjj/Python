@@ -1,7 +1,7 @@
 
 
 
-%% 问题(19)的SOCP求解（CVX实现）
+%% 问题(19)的SOCP求解 
 clc;
 clear all;
 close all;
@@ -9,204 +9,82 @@ close all;
 rng(42); 
 addpath('./functions');
 
-
-%% 问题(19)的SOCP求解（CVX实现）
-clear; clc;
-
 %% 1. 参数设置（示例，可修改）
 M = 10;                     % 天线数
 c = 1;                      % 对角元固定值
-theta_est = [-30, 0, 30];   % 目标角度估计（度）
-K = length(theta_est);      % 目标个数
+theta_est = [-40, 0, 40];   % 目标角度估计（度）
 
-% 网格参数（覆盖感兴趣的区域）
-theta_grid = -90:0.1:90;      % 度，网格点
-L = length(theta_grid);
+K = length(theta_est);      % 目标个数
+a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
+
+% 网格参数（仅覆盖目标附近区域）
+Delta = 100;   % 半宽度（度），可根据波束宽度调整
+% 生成每个目标周围的子区间
+intervals = [];
+for k = 1:length(theta_est)
+    intervals = [intervals, theta_est(k)-Delta : 0.1 : theta_est(k)+Delta];
+end
+% 合并、去重、排序
+mu_l = unique(sort(intervals));
+% % 期望波束图 P_des(theta)（示例：主瓣在0°，宽度约20°的sinc平方形状）
+PhiMul = zeros(size(mu_l));
+% Desired beam pattern
+idx = false(size(mu_l));
+for i = 1:numel(theta_est)
+    idx = idx | mu_l >= theta_est(i)-beamwidth/2 & mu_l <= theta_est(i)+beamwidth/2;
+end
+PhiMul(idx) = 1;
+
+mu_l = = -90:0.1:90;
+L = length(mu_l);
+
+
+
+
 
 % 权重
 w_l = ones(L, 1);           % 所有网格点权重相同
+
 w_c = 1;                    % 交叉项权重（可调）
+[R_opt1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, mu_l, PhiMul);
+w_c = 0;
+[R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, mu_l, PhiMul);
 
-% 期望波束图 phi(theta)（示例：主瓣在0°，宽度约20°的sinc平方形状）
-phi_func = @(theta) sinc( theta / 20 ).^2;   % sinc(x)=sin(pi*x)/(pi*x)
-phi = phi_func(theta_grid)';                 % 列向量
 
 
-beamwidth = 10;                     % Desired beamwidth
+% 网格参数（覆盖感兴趣的区域）
+theta_plot = -90:0.1:90;      % 度，网格点
+Delta = 10;             % Desired beamwidth
+% % 期望波束图 P_des(theta)（示例：主瓣在0°，宽度约20°的sinc平方形状）
+P_des = zeros(size(theta_plot));
 % Desired beam pattern
-idx = false(size(theta_grid));
+idx = false(size(theta_plot));
 for i = 1:numel(theta_est)
-    idx = idx | theta_grid(i) >= theta_est(i)-beamwidth/2 & theta_grid(i) <= theta_est(i)+beamwidth/2;
+    idx = idx | theta_plot >= theta_est(i)-Delta & theta_plot <= theta_est(i)+Delta;
 end
-phi = zeros(size(theta_grid));
-phi(idx) = 1;
+P_des(idx) = 1;
 
-
-
-
-
-% 导向矢量函数（均匀线阵，半波长间距）
-a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
-
-%% 2. 构建从R到实向量r的线性映射（这里只需知道r的长度）
-% r 包含：M个对角元 + 2 * (M*(M-1)/2) 个上三角实部虚部
-n_r = M + M*(M-1);   % 实向量 r 的长度
-
-%% 3. 构建系数向量 g_l 和 d_{k,p}（数值计算，不涉及CVX变量）
-% 先计算每个网格点的导向矢量
-a_grid = zeros(M, L);
-for l = 1:L
-    a_grid(:,l) = a(theta_grid(l));
-end
-
-% 辅助函数：从实向量 r_unit 构建 Hermitian 矩阵 R（数值，用于计算系数）
-function R = buildR_from_r(r_unit, M)
-    R = zeros(M, M);
-    idx = 1;
-    for i = 1:M
-        R(i,i) = r_unit(idx);
-        idx = idx + 1;
-    end
-    for i = 1:M-1
-        for j = i+1:M
-            R(i,j) = r_unit(idx) + 1j * r_unit(idx+1);
-            R(j,i) = conj(R(i,j));
-            idx = idx + 2;
-        end
-    end
-end
-
-% 构建 g_l 矩阵（L行，每行是 1×n_r 的系数向量）
-g = zeros(L, n_r);
-for l = 1:L
-    al = a_grid(:,l);
-    for j = 1:n_r
-        r_unit = zeros(n_r, 1);
-        r_unit(j) = 1;
-        Rj = buildR_from_r(r_unit, M);
-        val = al' * Rj * al;
-        g(l, j) = real(val);
-    end
-end
-
-% 构建 d_{k,p} 矩阵（K×K 元胞，存储每个对的系数向量）
-d = cell(K, K);
-for k = 1:K
-    ak = a(theta_est(k));
-    for p = k+1:K
-        ap = a(theta_est(p));
-        d_kp = zeros(n_r, 1);
-        for j = 1:n_r
-            r_unit = zeros(n_r, 1);
-            r_unit(j) = 1;
-            Rj = buildR_from_r(r_unit, M);
-            val = ak' * Rj * ap;
-            d_kp(j) = val;
-        end
-        d{k,p} = d_kp;
-    end
-end
-
-%% 4. 构建二次型矩阵 Gamma（数值矩阵）
-% 第一项：来自 beampattern 匹配
-Q1 = zeros(n_r+1, n_r+1);
-for l = 1:L
-    x = [phi(l); g(l,:)'];
-    Q1 = Q1 + w_l(l) * (x * x');
-end
-Q1 = Q1 / L;
-
-% 第二项：来自交叉项抑制
-Q2 = zeros(n_r+1, n_r+1);
-n_pairs = 0;
-for k = 1:K
-    for p = k+1:K
-        n_pairs = n_pairs + 1;
-        M_real = real(d{k,p} * d{k,p}');
-        M_ext = zeros(n_r+1, n_r+1);
-        M_ext(2:end, 2:end) = M_real;
-        Q2 = Q2 + M_ext;
-    end
-end
-if n_pairs > 0
-    Q2 = (2 * w_c / (K^2 - K)) * Q2;
-end
-
-Gamma = Q1 + Q2;
-Gamma = (Gamma + Gamma')/2;
-
-% 计算 Gamma 的平方根
-[V, D] = eig(Gamma);
-D = max(D, 0);
-sqrt_Gamma = V * sqrt(D) * V';
-
-%% 5. 求解 SOCP（使用 CVX）
-% 定义变量：R (Hermitian), r (实向量), alpha_, delta
-cvx_begin quiet
-    variable R(M,M) hermitian
-    variable r(n_r)
-    variable alpha1
-    variable delta1
-
-    % 构建 rho = [alpha_; r]
-    rho = [alpha1; r];
-
-    % 目标：min delta
-    minimize delta1
-
-    subject to
-        % SOCP 约束
-        norm( sqrt_Gamma * rho ) <= delta1;
-
-        % 将 r 与 R 的线性关系约束
-        idx = 1;
-        % 对角线
-        for i = 1:M
-            R(i,i) == r(idx);
-            idx = idx + 1;
-        end
-        % 上三角的实部虚部
-        for i = 1:M-1
-            for j = i+1:M
-                real(R(i,j)) == r(idx);
-                imag(R(i,j)) == r(idx+1);
-                idx = idx + 2;
-            end
-        end
-
-        % 对角元固定
-        for i = 1:M
-            R(i,i) == c / M;
-        end
-
-        % 半正定约束
-        R == hermitian_semidefinite(M);
-cvx_end
-
-%% 6. 输出结果
-if strcmp(cvx_status, 'Solved')
-    fprintf('求解成功，最优目标值 delta = %f\n', delta1);
-    fprintf('最优 alpha_ = %f\n', alpha1);
-    R_opt = R;  % 直接使用 R
-    disp('最优协方差矩阵 R:');
-    disp(R_opt);
-else
-    fprintf('求解失败: %s\n', cvx_status);
-end
-
-% 可选：绘制发射波束图对比
-
-P_des = phi;
-P_opt = zeros(size(theta_plot));
+P_opt1 = zeros(size(theta_plot));
+P_opt0 = zeros(size(theta_plot));
 for i = 1:length(theta_plot)
-    a_theta = a(theta_plot(i));
-    P_opt(i) = real(a_theta' * R_opt * a_theta);
+    a_theta = a(theta_grid(i));
+    P_opt1(i) = real(a_theta' * R_opt1 * a_theta);
+    P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
 end
-figure;
-plot(theta_plot, 10*log10(P_des), 'r--', 'LineWidth', 1.5); hold on;
-plot(theta_plot, 10*log10(P_opt), 'b-', 'LineWidth', 1.5);
+
+
+%% 可选：绘制发射波束图对比
+figure(1);
+plot(theta_plot, abs(P_des ), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, P_opt1, 'r--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, pow2db(P_des + 1e-3), 'k--', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, pow2db(P_opt1/max(P_opt1)), 'r--', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, pow2db(P_opt0/max(P_opt0)), 'b-', 'LineWidth', 1.5); hold on;
+% ylim([-30 0]);
+
 xlabel('\theta (degrees)');
 ylabel('Power (dB)');
-legend('Desired', 'Optimized');
+legend('Desired', 'Optimized,w_c=1', 'Optimized,w_c=0');
 title('Transmit Beampattern');
 grid on;

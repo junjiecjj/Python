@@ -32,38 +32,30 @@ L = length(theta_grid);
 % 权重
 w_l = ones(L, 1);           % 所有网格点权重相同
 
-% wc = 1;                    % 交叉项权重（可调）
-% [R_opt1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
-wc = 0;
-[R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
+CorreCoeff = zeros(3, 7);
 
-
-
-% 网格参数（覆盖感兴趣的区域）
-theta_plot = -90:0.1:90;      % 度，网格点
-% Delta = 10;             % Desired beamwidth
-% % 期望波束图 P_des(theta)（示例：主瓣在0°，宽度约20°的sinc平方形状）
-P_des = zeros(size(theta_plot));
-% Desired beam pattern
-idx = false(size(theta_plot));
-for i = 1:numel(theta_est)
-    idx = idx | theta_plot >= theta_est(i)-Delta & theta_plot <= theta_est(i)+Delta;
+wc_lst = logspace((-3), 3, 7);                    % 交叉项权重（可调）
+for j = 1:length(wc_lst)
+    wc = wc_lst(j);
+    [R_opt, alpha, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
+    cross_terms = 0;
+    idx = 0;
+    for k=1:K-1
+        for p=k+1:K
+            idx = idx + 1;
+            CorreCoeff[idx, j] = CorreCoeff[idx, j] + abs( a(theta_est(k))' * R_opt * a(theta_est(p)) );
+        end
+    end
 end
-P_des(idx) = 1;
 
-P_opt1 = zeros(size(theta_plot));
-P_opt0 = zeros(size(theta_plot));
-for i = 1:length(theta_plot)
-    a_theta = a(theta_plot(i));
-    % P_opt1(i) = real(a_theta' * R_opt1 * a_theta);
-    P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
-end
+
 
 
 %% 可选：绘制发射波束图对比
 figure(1);
-plot(theta_plot, abs(P_des * alpha0), 'k--', 'LineWidth', 1.5); hold on;
-% plot(theta_plot, P_opt1, 'r-', 'LineWidth', 1.5); hold on;
+for 
+plot(theta_plot, abs(CorreCoeff), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, P_opt1, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
 
 % plot(theta_grid, pow2db(P_des + 1e-3), 'k--', 'LineWidth', 1.5); hold on;
@@ -72,7 +64,7 @@ plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
 % ylim([-30 0]);
 
 xlabel('\theta (degrees)');
-ylabel('Beampattern');
-legend('Desired', 'Optimized,w_c=0');
+ylabel('Power (dB)');
+legend('Desired', 'Optimized,w_c=1', 'Optimized,w_c=0');
 title('Transmit Beampattern');
 grid on;

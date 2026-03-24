@@ -12,12 +12,12 @@ addpath('./functions');
 %% 1. 参数设置（示例，可修改）
 M = 10;                     % 天线数
 c = 1;                      % 对角元固定值
-theta_est = [-40, 0, 40];   % 目标角度估计（度）
+theta_est = [0];   % 目标角度估计（度）
 
 K = length(theta_est);      % 目标个数
 a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
 
-Delta = 10;
+Delta = 30;
 theta_grid = -90:0.1:90;
 P_des = zeros(size(theta_grid));
 % Desired beam pattern
@@ -32,8 +32,6 @@ L = length(theta_grid);
 % 权重
 w_l = ones(L, 1);           % 所有网格点权重相同
 
-% wc = 1;                    % 交叉项权重（可调）
-% [R_opt1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
 wc = 0;
 [R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
 
@@ -51,11 +49,9 @@ for i = 1:numel(theta_est)
 end
 P_des(idx) = 1;
 
-P_opt1 = zeros(size(theta_plot));
 P_opt0 = zeros(size(theta_plot));
 for i = 1:length(theta_plot)
     a_theta = a(theta_plot(i));
-    % P_opt1(i) = real(a_theta' * R_opt1 * a_theta);
     P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
 end
 
@@ -63,7 +59,6 @@ end
 %% 可选：绘制发射波束图对比
 figure(1);
 plot(theta_plot, abs(P_des * alpha0), 'k--', 'LineWidth', 1.5); hold on;
-% plot(theta_plot, P_opt1, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
 
 % plot(theta_grid, pow2db(P_des + 1e-3), 'k--', 'LineWidth', 1.5); hold on;
@@ -72,7 +67,7 @@ plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
 % ylim([-30 0]);
 
 xlabel('\theta (degrees)');
-ylabel('Beampattern');
-legend('Desired', 'Optimized,w_c=0');
+ylabel('Power (dB)');
+legend('Desired',  'Optimized,w_c=0');
 title('Transmit Beampattern');
 grid on;
