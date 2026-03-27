@@ -34,16 +34,17 @@ fprintf('奇异值：\n'); disp(svd(X)');
 
 
 %% Algorithm 4
-c = 0.75^2; 
+c = 3^2; 
 
 d = 4;
 z = [zeros(2,1); randn(d,1) + 1i*randn(d,1); zeros(2,1) ; 3+4j; 3+4j];
 d = d + 6
 
-% z = randn(d,1) + 1i*randn(d,1);
-% d
+d = 20
+z = randn(d,1) + 1i*randn(d,1);
+d
 
-rho = 2;
+rho = 1.5;
 s = nearestVectorAlgorithm4(z, c, rho);
 disp(['Norm squared: ', num2str(norm(s)^2)]);
 disp(['PAR: ', num2str(max(abs(s).^2) / (norm(s)^2/d))]);
