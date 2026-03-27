@@ -1,6 +1,6 @@
 
 
-function [X, alpha] = build_low_par_tight_frame(M, N, col_norms, rho, X0)
+function [X, alpha] = AlternatingProjection(M, N, col_norms, rho, X0)
     % 输入：
     %   M         - 行数（波形长度）
     %   N         - 列数（用户数）

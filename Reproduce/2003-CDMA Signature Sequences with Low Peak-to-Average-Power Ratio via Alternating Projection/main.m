@@ -26,7 +26,7 @@ X0 = [0.0748+0.3609i,  0.0392+0.4558i, 0.5648+0.3635i, -0.2567+0.4463i, 0.7064+0
 
 parX0 = PAR_cols(X0)
 
-[X, alpha] = build_low_par_tight_frame(M, N, col_norms, par, X0);
+[X, alpha] = AlternatingProjection(M, N, col_norms, par, X0);
 
 fprintf('列范数：\n'); disp(sqrt(sum(abs(X).^2,1))');
 fprintf('PAR：\n'); disp(PAR_cols(X));
