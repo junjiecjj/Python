@@ -30,44 +30,43 @@ L = length(theta_grid);
 w_l = ones(L, 1);           % 所有网格点权重相同
 
 wc = 1;                    % 交叉项权重（可调）
-[R, alpha, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
+[R, alpha, ~ ] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
 
 Rsqrt =  sqrtm(R); % R^(0.5);
-
-Nlst = logspace(1, 5, 12);
-Iters = 1000;
-
-
-w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
-x = Rsqrt * w;
-Rxx = x*x'/N;
 % 网格参数（覆盖感兴趣的区域）
 theta_plot = -90:0.1:90;      % 度，网格点
-beamdiff = zeros(size(theta_plot));
-P_opt = zeros(size(theta_plot));
-P_optxx = zeros(size(theta_plot));
-for i = 1:length(theta_plot)
-    a_theta = a(theta_plot(i));
+Nlst = floor(logspace(1, 5, 12));
+Iters = 100;
 
-    beamdiff(i) = abs(a_theta' * (Rxx - R) * a_theta ) / abs(a_theta' * R * a_theta);
-    P_opt(i)    = (a_theta' * R * a_theta);
-    P_optxx(i)  = (a_theta' * Rxx * a_theta);
+res = zeros(1, length(Nlst));
+
+for i = 1:length(Nlst)
+    N = Nlst(i);
+    
+    for it = 1:Iters
+        w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
+        x = Rsqrt * w;
+        Rxx = x*x'/N;
+        beamdiff = zeros(size(theta_plot));
+
+        for j = 1:length(theta_plot)
+            a_theta = a(theta_plot(j));
+            beamdiff(j) = abs(a_theta' * (Rxx - R) * a_theta ) / abs(a_theta' * R * a_theta);
+        end
+        res(i) = res(i) + mean(beamdiff);
+    end
+    
 end
+res = res/Iters;
 
 
 %% 可选：绘制发射波束图对比
 figure(1);
-plot(theta_plot, beamdiff, 'k--', 'LineWidth', 1.5); hold on;
+loglog(Nlst, res, 'k--', 'LineWidth', 1.5, 'marker','d'); hold on;
  
-xlabel('\theta (degrees)');
-ylabel('Beampattern diff');
+xlabel('Sample Number');
+ylabel('MSE');
 title('Transmit Beampattern');
 grid on;
 
-figure(2);
-plot(theta_plot, P_opt, 'b-', 'LineWidth', 1.5); hold on;
-plot(theta_plot, P_optxx, 'r--', 'LineWidth', 1.5); hold on;
-xlabel('\theta (degrees)');
-ylabel('Beampattern');
-legend('P_{opt}', 'P_{opt} X');
-grid on;
+

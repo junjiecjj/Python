@@ -32,9 +32,9 @@ L = length(theta_grid);
 w_l = ones(L, 1);           % 所有网格点权重相同
 
 wc = 1;                    % 交叉项权重（可调）
-[R_opt1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
+[R_opt1, alpha1, ~ ] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
 wc = 0;
-[R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
+[R_opt0, alpha0, ~ ] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
  
 % 网格参数（覆盖感兴趣的区域）
 theta_plot = -90:0.1:90;      % 度，网格点

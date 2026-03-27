@@ -62,7 +62,7 @@ end
 
 %% 可选：绘制发射波束图对比
 figure(1);
-plot(theta_plot, abs(P_des * alpha0), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, abs(P_des * alpha0), 'r--', 'LineWidth', 1.5); hold on;
 % plot(theta_plot, P_opt1, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
 

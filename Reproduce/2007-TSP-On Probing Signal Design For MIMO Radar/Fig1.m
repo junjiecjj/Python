@@ -11,15 +11,15 @@ addpath('./functions');
 clear; clc; close all;
 
 %% 参数设置（与论文一致，但提高分辨率）
-M = 20;                     % 天线数（提高分辨率，使三峰分离）
+M = 10;                     % 天线数（提高分辨率，使三峰分离）
 N = 256;                    % 快拍数
 c = 1;                      % 发射功率常数
 sigma2_dB = -10;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
-jammer_power = 1e6;         % 干扰功率 (60 dB)
-
+jammer_power = 40;         % 干扰功率 (60 dB)
+jammer_power = 10^(jammer_power/10);
 % 目标
-theta_targets = [-60, 0, 60];   % 度
+theta_targets = [-30, 0, 60];   % 度
 beta = [1, 1, 1];
 
 % 干扰
@@ -41,13 +41,12 @@ x = sqrt(c/M) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 y_target = zeros(M, N);
 for k = 1:length(theta_targets)
     a = a_func(theta_targets(k));
-    ac = ac_func(theta_targets(k));
-    y_target = y_target + beta(k) * conj(a) * (a' * x);
+    y_target = y_target + beta(k) * a * (a.' * x);
 end
 
 %% 生成干扰回波
 jam = sqrt(jammer_power) * (randn(1, N) + 1j*randn(1, N)) / sqrt(2);
-ac_jammer = ac_func(-theta_jammer);
+ac_jammer = a_func(theta_jammer);
 y_jammer = ac_jammer * jam;
 
 %% 生成噪声
@@ -95,22 +94,27 @@ for idx = 1:L
 
     GLRT(idx) = 1 - num / denom_GLRT;
     % ========== Capon 谱 ==========
-    Capon(idx) = 1 / (a.'/ Ryy * ac);
+    % Capon(idx) = real(1 / (a.'/ Ryy * ac));
 
-    % % ========== Capon 空间谱 —— 严格按照公式(36) ==========
-    % % 分子: a^* Ryy^{-1} Ryx ac
-    % num_capon = a' / Ryy * Ryx * ac;   % 标量
-    % % 分母: a^* Ryy^{-1} a  *  a^T Rxx ac
-    % denom_capon = (a' / Ryy * a) * (a.' * Rxx * ac);
-    % % Capon 谱值
-    % Capon(idx) = abs(num_capon) / denom_capon;   % 通常取模平方，保证为正
+    % ========== Capon 空间谱 —— 严格按照公式(36) ==========
+    % 分子: a^* Ryy^{-1} Ryx ac
+    num_capon = a' / Ryy * Ryx * ac;   % 标量
+    % 分母: a^* Ryy^{-1} a  *  a^T Rxx ac
+    denom_capon = (a' / Ryy * a) * (a.' * Rxx * ac);
+    % Capon 谱值
+    Capon(idx) = abs(num_capon) / denom_capon;   % 通常取模平方，保证为正
 
 end
+Capon_norm = Capon / max(Capon);
 
+[peaks, locs] = findpeaks(abs(Capon_norm), theta_scan, ...
+    'MinPeakHeight', 0.1*max(Capon_norm), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('Capon 峰值角度：');
+disp(locs);
 
 %% 绘图
 % figure(1);
-% 
 % plot(theta_scan,  pow2db(Capon/max(Capon)) , 'b-', 'LineWidth', 1.5); hold on;
 % plot(theta_scan, pow2db(abs(GLRT)/max(abs(GLRT))) , 'r--', 'LineWidth', 1.5); hold on;
 % xlabel('\theta (degrees)');
@@ -119,11 +123,11 @@ end
 % xlim([-90, 90]);
 % legend('Capon spectrum (dB)', 'GLRT spectrum (dB)' );
 
-
 figure(2);
 % (a) Capon 空间谱 (dB)
 subplot(1,2,1);
-plot(theta_scan, pow2db(Capon/max(Capon)), 'b-', 'LineWidth', 1.5);
+plot(theta_scan, (Capon/max(Capon)), 'b-', 'LineWidth', 1.5); hold on;
+plot(locs, peaks, 'ro', 'MarkerSize', 8); hold on;
 xlabel('\theta (degrees)');
 ylabel('Capon spectrum (dB)');
 title('(a) Capon');
@@ -131,7 +135,7 @@ grid on; xlim([-90, 90]);
 
 % (b) GLRT 伪谱
 subplot(1,2,2);
-plot(theta_scan, pow2db(abs(GLRT)/max(abs(GLRT))), 'r-', 'LineWidth', 1.5);
+plot(theta_scan, (abs(GLRT)), 'r-', 'LineWidth', 1.5);
 xlabel('\theta (degrees)');
 ylabel('\tilde{\phi}(\theta)');
 title('(b) GLRT');

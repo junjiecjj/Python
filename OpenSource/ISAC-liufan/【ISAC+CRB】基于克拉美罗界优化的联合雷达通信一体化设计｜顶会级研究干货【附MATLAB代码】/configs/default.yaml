@@ -1,0 +1,38 @@
+# Default parameters — aligned with paper Section VII
+# "Cramer-Rao Bound Optimization for Joint Radar-Communication Design"
+# Fan Liu et al., IEEE TSP 2022
+
+system:
+  N_t: 16        # Number of transmit antennas
+  N_p: 20        # Number of receive antennas
+  K: 4           # Number of communication users
+  L: 30          # Frame length (fast-time snapshots)
+
+power:
+  P_dBm: 30.0   # Total transmit power budget (dBm)
+  sigma2_dBm: 0.0  # Noise variance (dBm)
+
+radar:
+  target_angle_deg: 0  # Target DOA for beampattern
+  alpha2: 1.0     # Target reflection coefficient |α|²
+
+communication:
+  gamma_dB: 15.0  # Per-user SINR threshold (dB)
+
+solver:
+  method: "SDR"   # "SDR" | "closed-form"
+  solver: "SCS"   # CVXPY solver: SCS | ECOS | MOSEK
+  rank_one: true  # Extract rank-one solution from SDR
+
+simulation:
+  n_monte_carlo: 500  # Number of MC runs for RMSE/MSE
+  n_angle_points: 361  # Beampattern angular resolution
+
+figures:
+  fig2:
+    sinr_range_db: [0, 40]
+    sinr_n_points: 20
+    description: "Root-CRB and MSE vs SINR threshold (single user)"
+  fig3:
+    description: "Beampattern comparison (K=4, SINR=15dB)"
+    user_angles_deg: [20, -30, 50, -60]  # User DOAs

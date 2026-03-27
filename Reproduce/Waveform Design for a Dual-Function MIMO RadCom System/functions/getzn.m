@@ -1,3 +1,6 @@
+
+
+
 function zn = getzn(Z, M, P, n)
     zn = zeros(M, P);
     for i = 1:P

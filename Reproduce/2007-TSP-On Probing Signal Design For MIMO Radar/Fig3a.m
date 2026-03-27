@@ -34,7 +34,7 @@ wc_lst = logspace((-3), 3, 7);    % 交叉项权重
 for j = 1:length(wc_lst)
     j
     wc = wc_lst(j);
-    [R_opt, alpha, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
+    [R_opt, alpha, ~ ] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
     cross_terms = 0;
     idx = 0;
     for k=1:K-1

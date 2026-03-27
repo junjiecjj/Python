@@ -1,0 +1,14 @@
+beampattern:
+  design1_at_0deg_dbi: -12.041199826558996
+  design2_at_0deg_dbi: -0.5929276460762551
+  proposed_at_0deg_dbi: 0.0
+  proposed_sidelobe_max_dbi: -13.146902450239585
+params:
+  K: 4
+  L: 30
+  N_t: 16
+  P_dBm: 30.0
+  gamma_dB: 15.0
+  sigma2_dBm: 0.0
+trend_verification: "PASS \u2014 Proposed\u65B9\u6CD5\u5728\u76EE\u6807\u65B9\u5411\
+  \u589E\u76CA\u6700\u9AD8\uFF0C\u4E0E\u8BBA\u6587Fig.3\u4E00\u81F4"

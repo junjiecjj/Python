@@ -8,7 +8,6 @@ clc;
 clear all;
 close all;
 addpath('./functions');
-
 rng('default');                     % Set random number generator for reproducibility
 
 fc = 6e9;                           % Carrier frequency (Hz)

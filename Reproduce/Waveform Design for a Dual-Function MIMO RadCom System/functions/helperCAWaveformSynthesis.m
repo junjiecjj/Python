@@ -4,9 +4,9 @@
 
 
 function X = helperCAWaveformSynthesis(R, M, rho)
-    % This function generates a set of waveforms that form the desired
-    % covariance matrix R. M is the number of waveform samples and rho is a
-    % parameter controlling the resulting peak-to-average power ratio (PAR).
+    % This function generates a set of waveforms that form the desired covariance matrix R. 
+    % M is the number of waveform samples and 
+    % rho is a parameter controlling the resulting peak-to-average power ratio (PAR).
     % This algorithm is described in the chapter 14 of
     %
     % He, Hao, Jian Li, and Petre Stoica. Waveform design for active sensing

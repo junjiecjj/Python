@@ -1,0 +1,9 @@
+fig: fig2
+params:
+  L: 30
+  N_p: 20
+  N_t: 16
+  P_total_ratio_dB: 30.0
+trend_verification:
+  closed_form_mc_correlation: 0.9999856550470501
+  sinr_below_30db_stable: true
