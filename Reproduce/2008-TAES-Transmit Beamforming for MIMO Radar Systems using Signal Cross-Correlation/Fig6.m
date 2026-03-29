@@ -85,19 +85,18 @@ A = steervec(normalizedPos, [ang; zeros(size(ang))]);
 % Compute the resulting beam pattern given the found covariance matrix
 Bminmax = abs(diag(A'*Rminmax*A))/(4*pi);
 
-figure(2);
-hold on
-plot(ang, pow2db(Bdes + eps), 'LineWidth', 2, 'Color','k'); hold on;
-plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2, 'Color','r'); hold on;
-plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineWidth', 2, 'Color','b'); hold on;
+figure(1);
+plot(ang, pow2db(Bdes + eps), 'LineStyle','-', 'LineWidth', 2, 'Color','k'); hold on;
+plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineStyle','-', 'LineWidth', 2, 'Color','r'); hold on;
+plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineStyle','-', 'LineWidth', 2, 'Color','b');
 
-grid on;
+
 xlabel('Azimuth (deg)');
 ylabel('(dB)');
 legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
 ylim([-40 1]);
 title('Transmit Beam Pattern');
-
+grid on;
 
 
 

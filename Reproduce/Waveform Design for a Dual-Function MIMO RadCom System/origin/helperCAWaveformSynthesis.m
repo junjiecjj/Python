@@ -54,7 +54,7 @@ function X = helperCAWaveformSynthesis(R, M, rho)
         end
         % Recompute U. Eq. (5) and (11) in the paper
         [Ubar, ~, Utilde] = svd(sqrt(M)*Rexp_sr*Xexp', 'econ');
-        U_ = Utilde * Ubar';  % Eq. (4)
+        U_ = Utilde * Ubar';
     
         numIter = numIter + 1;
         if norm(U-U_) < epsilon || numIter > maxNumIter
