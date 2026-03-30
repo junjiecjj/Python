@@ -1,22 +1,31 @@
 function z = nearestVector(z, gamma, rho)
-% 削峰算法：将列向量 z 投影到 PAR ≤ rho 且能量 = M*gamma 的集合
-    M = numel(z);
-    S = z' * z;
-    z = sqrt(M * gamma / S) * z;      % 缩放至能量 M*gamma
-    beta = gamma * rho;                % 每个分量模平方的上限
+    M = length(z);
+    % 输入为行向量
+    norm2 = z * z';          % 行向量点积
+    if norm2 == 0
+        z = sqrt(gamma) * exp(1i * angle(z));
+        return;
+    end
+    z = sqrt(M*gamma / norm2) * z;
+    beta = gamma * rho;
     if all(abs(z).^2 <= beta)
         return;
     end
-    ind = true(M, 1);                  % 标记未固定的分量
+    ind = true(1, M);        % 逻辑索引，标记未固定的分量
     for i = 1:M
-        [~, j] = max(abs(z).^2);       % 找到当前幅度最大的分量
-        z(j) = sqrt(beta) * exp(1i * angle(z(j))); % 截断
+        [~, j] = max(abs(z).^2);
+        z(j) = sqrt(beta) * exp(1i * angle(z(j)));
         ind(j) = false;
-        S = z(ind)' * z(ind);          % 剩余分量当前能量
-        % 重新缩放剩余分量，使其总能量 = (M - i*rho)*gamma
-        z(ind) = sqrt((M - i*rho) * gamma / S) * z(ind);
-        if all(abs(z(ind)).^2 <= beta + eps)
-            return;
+        if any(ind)
+            S_rem = z(ind) * z(ind)';
+            if S_rem > 0
+                z(ind) = sqrt((M - i*rho) * gamma / S_rem) * z(ind);
+            else
+                z(ind) = sqrt((M - i*rho) * gamma / sum(ind)) * exp(1i * angle(z(ind)));
+            end
+        end
+        if all(abs(z(ind)).^2 <= beta + 1e-12)
+            break;
         end
     end
 end

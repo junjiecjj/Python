@@ -1,11 +1,9 @@
 
 
-
 function zn = getzn(Z, M, P, n)
-    zn = zeros(M, P);
-    for i = 1:P
-        zn(:, i) = Z(i:i+M-1, (n-1)*P + i);
+    zn = zeros(M, 1);
+    for p = 1:P
+        zn = zn + Z(p:p+M-1, (n-1)*P + p);
     end
-
-    zn = mean(zn, 2);
+    zn = zn / P;
 end

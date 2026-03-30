@@ -28,6 +28,7 @@ function z = nearestVector(z, gamma, rho)
             end
         end
     end
+
 end
 
 

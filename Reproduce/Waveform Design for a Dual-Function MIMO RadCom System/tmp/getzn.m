@@ -1,9 +1,9 @@
+
 function zn = getzn(Z, M, P, n)
-% 从扩展矩阵 Z 中提取第 n 个波形的估计（列向量）
-% Z: (P+M-1) × (N*P)
-    zn = zeros(M, 1);
+    zn = zeros(1, M);
     for p = 1:P
-        zn = zn + Z(p:p+M-1, (n-1)*P + p);
+        zn = zn + Z(p:p+M-1, (n-1)*P + p).';   % 非共轭转置 -> 行向量
     end
     zn = zn / P;
 end
+
