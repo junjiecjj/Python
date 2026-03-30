@@ -32,35 +32,36 @@ function X = helperCAWaveformSynthesis(R, M, rho)
     end
 end
 
-function X = helperCAWaveformSynthesis(R, M, rho)
-    N = size(R, 1);
-    epsilon = 0.1;
-    P = M;
-    U = (randn(N*P, P+M-1) + 1i*randn(N*P, P+M-1)) / sqrt(2);
-    Rexp = kron(R, eye(P));
-    [L, D] = ldl(Rexp);
-    Rexp_sr =  L * sqrt(D);
-    maxNumIter = 1000;
-    for iter = 1:maxNumIter
-        Z = sqrt(M) * Rexp_sr * U;
-        X = zeros(N, M);
-        Xexp = zeros(N*P, P+M-1);
-        for n = 1:N
-            zn = getzn(Z, M, P, n);          % 列向量
-            gamma = R(n, n);
-            xn = nearestVector(zn.', gamma, rho); % 列向量
-            X(n, :) = xn.';                   % 共軛轉置存入行
-            for p = 1:P
-                Xexp((n-1)*P + p, p:p+M-1) = xn.';
-            end
-        end
-        [Ubar, ~, Utilde] = svd(sqrt(M) * Xexp' * Rexp_sr, 'econ');
-        U_ = Utilde * Ubar';
-        if norm(U_ - U) < epsilon
-            break;
-        else
-            U = U_;
-        end
-    end
-end
+
+% function X = helperCAWaveformSynthesis(R, M, rho)
+%     N = size(R, 1);
+%     epsilon = 0.1;
+%     P = M;
+%     U = (randn(N*P, P+M-1) + 1i*randn(N*P, P+M-1)) / sqrt(2);
+%     Rexp = kron(R, eye(P));
+%     [L, D] = ldl(Rexp);
+%     Rexp_sr =  L * sqrt(D);
+%     maxNumIter = 1000;
+%     for iter = 1:maxNumIter
+%         Z = sqrt(M) * Rexp_sr * U;
+%         X = zeros(N, M);
+%         Xexp = zeros(N*P, P+M-1);
+%         for n = 1:N
+%             zn = getzn(Z, M, P, n);          % 列向量
+%             gamma = R(n, n);
+%             xn = nearestVector(zn.', gamma, rho); % 列向量
+%             X(n, :) = xn.';                   % 共軛轉置存入行
+%             for p = 1:P
+%                 Xexp((n-1)*P + p, p:p+M-1) = xn.';
+%             end
+%         end
+%         [Ubar, ~, Utilde] = svd(sqrt(M) * Xexp' * Rexp_sr, 'econ');
+%         U_ = Utilde * Ubar';
+%         if norm(U_ - U) < epsilon
+%             break;
+%         else
+%             U = U_;
+%         end
+%     end
+% end
 
