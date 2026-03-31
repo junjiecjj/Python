@@ -7,8 +7,8 @@
 clc;
 clear all;
 close all;
+rng(42);  
 addpath('./functions');
-rng(42);                     % Set random number generator for reproducibility
 
 fc = 6e9;                           % Carrier frequency (Hz)
 Pt = 0.5e6;                         % Peak transmit power (W)
