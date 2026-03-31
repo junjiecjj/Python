@@ -22,7 +22,6 @@ function X  = AlternatingProjection(M, N, col_norms, rho, X0)
     for n = 1:N
         X(:,n) = X(:,n) / norm(X(:,n)) * col_norms(n);
     end
-    
     % 交替投影
     max_iter = 2000;
     tol = 1e-12;
