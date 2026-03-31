@@ -99,8 +99,7 @@ h_legend = legend('Desired', ...
                   'CA:PAR = 1'...
                   );  %图例，与上面的曲线先后对应
 
-set(h_legend,'FontName','Times New Roman','FontSize',12,'FontWeight','normal','LineWidth',1,'Location','northeast');
-
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 set(h_legend,'Interpreter','latex'); %  'box','off');
 
 xlabel('$\theta$ (degrees)','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
@@ -120,7 +119,7 @@ grid on;
 % ==============================================
 set(gcf, 'PaperUnits', 'centimeters');
 set(gcf, 'PaperSize', [16 12]);       % 图片大小：宽12cm × 高8cm（可改）
-set(gcf, 'PaperPosition', [0 0 16 12]); 
+set(gcf, 'PaperPosition', [0 0 22 16]); 
 set(gcf,'color','white');  % 设置背景是白色的 原先是灰色的 论文里面不好看
 
 % 去除四周空白（关键！）
