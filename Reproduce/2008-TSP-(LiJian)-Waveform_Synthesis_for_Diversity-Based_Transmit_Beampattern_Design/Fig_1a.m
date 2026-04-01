@@ -83,12 +83,10 @@ ColorSet = [...
 ];%颜色集合，这是默认的八种颜色，颜色的数量可以更改
 set(gcf, 'DefaultAxesColorOrder', ColorSet);%设置循环使用的颜色集合
 
-
 plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt1, 'b--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt2, 'c--', 'LineWidth', 1.5); hold on;
-
 
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
@@ -100,7 +98,6 @@ h_legend = legend('Desired', ...
                   );  %图例，与上面的曲线先后对应
 
 set(h_legend,'FontName','Times New Roman','FontSize',12,'FontWeight','normal','LineWidth',1,'Location','northeast');
-
 set(h_legend,'Interpreter','latex'); %  'box','off');
 
 xlabel('$\theta$ (degrees)','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
