@@ -31,3 +31,8 @@ A = randn(3, 4) + 1i * randn(3, 4);
 
 [U1, S1, V1] = svd(A, 'econ');
 
+% 生成随机矩阵，取 SVD 的前 M 列作为正交基
+X = randn(M, N) + 1j*randn(M, N);
+R = X*X'/N;
+
+L_chol = chol(R, 'lower');

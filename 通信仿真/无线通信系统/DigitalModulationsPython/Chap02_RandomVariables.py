@@ -38,13 +38,13 @@ plt.rcParams['legend.fontsize'] = 22
 
 #%% 2.5 Generating correlated random variables
 # 2.5.2 Generating multiple sequences of correlated random variables using Cholesky decomposition
-C = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
+Rxx = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
 
-L = np.linalg.cholesky(C)
+L = np.linalg.cholesky(Rxx)
 U = L.T
 
-R = np.random.randn(100000, 3)
-Rc = R@U
+s = np.random.randn(100000, 3)
+Rc = s@U
 
 X = Rc[:,0]
 Y = Rc[:,1]
@@ -52,7 +52,7 @@ Z = Rc[:,2]
 
 C_hat = np.cov(Rc.T)
 print("相关系数矩阵=\n", C_hat)
-corr = np.corrcoef(Rc.T,Rc.T)
+corr = np.corrcoef(Rc.T, Rc.T)
 print("相关系数矩阵=\n", corr)
 
 
@@ -60,21 +60,21 @@ print("相关系数矩阵=\n", corr)
 fig, axs = plt.subplots(1, 3, figsize = (12, 4), constrained_layout = True)
 
 # x
-axs[0].scatter(X, X, color = 'b',  label = '原始波形')
+axs[0].scatter(X, X, color = 'b',  label = '')
 axs[0].set_xlabel('X',)
 axs[0].set_ylabel('X',)
 lb = 'X and X, ' + r'$\rho = {:.2f}$'.format(C_hat[0,0])
 axs[0].set_title(lb )
 # axs[0].legend()
 
-axs[1].scatter(X, Y, color = 'r', label = '载波信号')
+axs[1].scatter(X, Y, color = 'r', label = '')
 axs[1].set_xlabel('X',)
 axs[1].set_ylabel('Y',)
 lb = 'X and Y, ' + r'$\rho = {:.2f}$'.format(C_hat[0,1])
 axs[1].set_title(lb)
 # axs[1].legend()
 
-axs[2].scatter(X, Z, color = 'gray', label = '幅度调制信号')
+axs[2].scatter(X, Z, color = 'gray', label = '')
 axs[2].set_xlabel('X',)
 axs[2].set_ylabel('Z',)
 lb = 'X and Z, ' + r'$\rho = {:.2f}$'.format(C_hat[0,2])
@@ -83,6 +83,55 @@ axs[2].set_title(lb )
 
 plt.show()
 plt.close()
+
+
+# 2.5.2 Generating multiple sequences of correlated random variables using Cholesky decomposition
+Rxx = np.array([[1,0.5,0.3],[0.5,1,0.3],[0.3,0.3,1]])
+
+L = np.linalg.cholesky(Rxx)
+R = L.T
+
+s = np.random.randn(3, 100000)
+S = L@s
+
+X = S[0,:]
+Y = S[1,:]
+Z = S[2,:]
+
+C_hat = np.cov(S)
+print("相关系数矩阵=\n", C_hat)
+corr = np.corrcoef(S, S)
+print("相关系数矩阵=\n", corr)
+
+
+##### plot
+fig, axs = plt.subplots(1, 3, figsize = (12, 4), constrained_layout = True)
+
+# x
+axs[0].scatter(X, X, color = 'b',  label = '')
+axs[0].set_xlabel('X',)
+axs[0].set_ylabel('X',)
+lb = 'X and X, ' + r'$\rho = {:.2f}$'.format(C_hat[0,0])
+axs[0].set_title(lb )
+# axs[0].legend()
+
+axs[1].scatter(X, Y, color = 'r', label = '')
+axs[1].set_xlabel('X',)
+axs[1].set_ylabel('Y',)
+lb = 'X and Y, ' + r'$\rho = {:.2f}$'.format(C_hat[0,1])
+axs[1].set_title(lb)
+# axs[1].legend()
+
+axs[2].scatter(X, Z, color = 'gray', label = '')
+axs[2].set_xlabel('X',)
+axs[2].set_ylabel('Z',)
+lb = 'X and Z, ' + r'$\rho = {:.2f}$'.format(C_hat[0,2])
+axs[2].set_title(lb )
+# axs[2].legend()
+
+plt.show()
+plt.close()
+
 
 #%% 2.6 Generating correlated Gaussian sequences
 #%% 2.6.1 Spectral factorization method
