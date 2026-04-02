@@ -46,8 +46,8 @@ for i = 1:length(Nlst)
         w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
         x = Rsqrt * w;
         Rxx = x*x'/N;
+        
         beamdiff = zeros(size(theta_plot));
-
         for j = 1:length(theta_plot)
             a_theta = a(theta_plot(j));
             beamdiff(j) = abs(a_theta' * (Rxx - R) * a_theta ) / abs(a_theta' * R * a_theta);

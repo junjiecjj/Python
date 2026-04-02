@@ -94,7 +94,7 @@ for i = 1:length(sigma2_dB)
         res(1, i) = res(1, i) + (theta_targets(1) - locs(1))^2;
 
         %% AML MSE with probing using the beampattern matching design
-        %% 1 生成发射信号 
+        %% 1 生成发射信号
         w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
         x = Rsqrt * w;
         %% 生成目标回波
