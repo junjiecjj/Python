@@ -14,8 +14,6 @@ fprintf('===== 示例 1 =====\n');
 M = 3; 
 N = 5; 
 
-
-
 S = randn(M, N) + 1i*randn(M, N);
 
 [U, s, V] = svd(S, 'econ');

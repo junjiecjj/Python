@@ -16,14 +16,9 @@ rng(42);  % 固定种子
 X = randn(M, N) + 1j*randn(M, N);
 R = X*X'/N;
 
-
-
 Rsqrt = R^(0.5);
-
 [L, D] = ldl(R);
 R_sr = sqrt(D) * L';
-
-
 
 A = randn(3, 4) + 1i * randn(3, 4);
 

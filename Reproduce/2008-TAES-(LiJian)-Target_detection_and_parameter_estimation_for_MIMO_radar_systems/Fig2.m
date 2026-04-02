@@ -9,8 +9,8 @@ N = 256;                    % 快拍数
 c = 1;                      % 发射功率常数
 sigma2_dB = -10;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
-jammer_power = 60;         
-jammer_power = 10^(jammer_power/20); % 干扰功率 (60 dB)
+jammer_power = 40;         
+jammer_power = 10^(jammer_power/10); % 干扰功率 (60 dB)
 % 目标
 theta_targets = [-40, -25, -10];   % 度
 beta = [4, 3, 1];
@@ -73,6 +73,7 @@ Ryx = (y * x') / N;
 inv_Ryy = inv(Ryy);
 
 % 存储结果
+LS = zeros(L, 1);
 GLRT = zeros(L, 1);
 Capon = zeros(L, 1);
 APES = zeros(L, 1);
@@ -81,6 +82,10 @@ for idx = 1:L
     theta = theta_scan(idx);
     at = a_func(theta);       % 发射导向矢量 M×1
     ar = a_func(theta);     % 接收导向矢量 M×1
+
+    % ========== LS  ==========
+    LS(idx) = (ar' * Ryx * conj(at)) / (norm(ar)^2 * at.' * Rxx * conj(at));
+
 
     % ========== GLRT 严格按公式(16)计算 ==========
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
@@ -93,7 +98,7 @@ for idx = 1:L
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
     Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
 
-    APES(idx) = ar'/Q * Ryx * conj(at) / (() * ())
+    APES(idx) = ar'/Q * Ryx * conj(at) / ((ar' /Q * ar) * (at.' * Rxx * conj(at)));
 
 
     % ========== Capon 空间谱 —— 严格按照公式(5) ==========
@@ -102,41 +107,75 @@ for idx = 1:L
     % 分母: a^* Ryy^{-1} a  *  a^T Rxx ac
     denom_capon = (ar' / Ryy * ar) * (at.' * Rxx * conj(at));
     % Capon 谱值
-    Capon(idx) = abs(num_capon) / denom_capon;   % 通常取模平方，保证为正
+    Capon(idx) = (num_capon) / denom_capon;   % 通常取模平方，保证为正
 
 end
-Capon_norm = Capon / max(Capon);
 
+% ========== CAML 空间谱 公式(16-21) ========== 
+[~, theta_est] = findpeaks(abs(GLRT), theta_scan, ...
+    'MinPeakHeight', 0.1*max(abs(GLRT)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('GLRT 峰值角度：');
+disp(theta_est);
+
+
+CAML = AML_estimator(y, x, theta_est);
+
+%% 绘图
+
+figure(1);
+% (a) LS 空间谱 (dB)
+subplot(3,2,1);
+plot(theta_scan, abs(LS), 'b-', 'LineWidth', 1.5); hold on;
+xlabel('\theta (degrees)');
+ylabel('LS spectrum');
+grid on; xlim([-90, 90]);
+
+
+% (b) Capon 空间谱 (dB)
 [peaks, locs] = findpeaks(abs(Capon), theta_scan, ...
     'MinPeakHeight', 0.1*max(abs(Capon)), ...   % 峰高为最大值的 10% 以上
     'MinPeakDistance', 5);
 disp('Capon 峰值角度：');
 disp(locs);
 
-%% 绘图
-% figure(1);
-% plot(theta_scan,  pow2db(Capon/max(Capon)) , 'b-', 'LineWidth', 1.5); hold on;
-% plot(theta_scan, pow2db(abs(GLRT)/max(abs(GLRT))) , 'r--', 'LineWidth', 1.5); hold on;
-% xlabel('\theta (degrees)');
-% ylabel('spectrum (dB)');
-% grid on; 
-% xlim([-90, 90]);
-% legend('Capon spectrum (dB)', 'GLRT spectrum (dB)' );
-
-figure(2);
-% (a) Capon 空间谱 (dB)
-subplot(2,2,2);
-plot(theta_scan, Capon, 'b-', 'LineWidth', 1.5); hold on;
+subplot(3,2,2);
+plot(theta_scan, abs(Capon), 'b-', 'LineWidth', 1.5); hold on;
 plot(locs, peaks, 'ro', 'MarkerSize', 8); hold on;
 xlabel('\theta (degrees)');
-ylabel('Capon spectrum (dB)');
-title('(a) Capon');
+ylabel('Capon spectrum');
 grid on; xlim([-90, 90]);
 
-% (b) GLRT 伪谱
-subplot(2,2,4);
+% (c) APES 空间谱 (dB)
+[peaks, locs] = findpeaks(abs(APES), theta_scan, ...
+    'MinPeakHeight', 0.1*max(abs(APES)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('APES 峰值角度：');
+disp(locs);
+subplot(3,2,3);
+plot(theta_scan, abs(APES), 'b-', 'LineWidth', 1.5); hold on;
+plot(locs, peaks, 'ro', 'MarkerSize', 8); hold on;
+xlabel('\theta (degrees)');
+ylabel('APES spectrum');
+grid on; xlim([-90, 90]);
+
+
+% (d) GLRT 伪谱
+[~, locs] = findpeaks(abs(GLRT), theta_scan, ...
+    'MinPeakHeight', 0.1*max(abs(GLRT)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('GLRT 峰值角度：');
+disp(locs);
+subplot(3,2,4);
 plot(theta_scan, abs(GLRT), 'r-', 'LineWidth', 1.5);
 xlabel('\theta (degrees)');
-ylabel('\tilde{\phi}(\theta)');
-title('(b) GLRT');
+ylabel('GLRT spectrum');
+grid on; xlim([-90, 90]);
+
+% (f) CAML 伪谱
+
+subplot(3,2,6);
+stem(theta_est, abs(CAML), 'r-', 'LineWidth', 1.5);
+xlabel('\theta (degrees)');
+ylabel('CAML spectrum');
 grid on; xlim([-90, 90]);

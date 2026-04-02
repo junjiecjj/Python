@@ -12,8 +12,8 @@ sigma2 = 10^(sigma2_dB/10);
 jammer_power = 40;         
 jammer_power = 10^(jammer_power/10); % 干扰功率 (60 dB)
 % 目标
-theta_targets = [-40, -25, -10];   % 度
-beta = [4, 3, 1];
+theta_targets = [-40, -25, -21];   % 度
+beta = [4, 4, 1];
 
 % 干扰
 theta_jammer = 0;              % 度
@@ -111,50 +111,71 @@ for idx = 1:L
 
 end
 
-[peaks, locs] = findpeaks(abs(Capon), theta_scan, ...
-    'MinPeakHeight', 0.1*max(abs(Capon)), ...   % 峰高为最大值的 10% 以上
-    'MinPeakDistance', 5);
-disp('Capon 峰值角度：');
-disp(locs);
+% ========== CAML 空间谱 公式(16-21) ========== 
+[~, theta_est] = findpeaks(abs(GLRT), theta_scan, ...
+    'MinPeakHeight', 0.6*max(abs(GLRT)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 1);
+disp('GLRT 峰值角度：');
+disp(theta_est);
+
+CAML = AML_estimator(y, x, theta_targets);
 
 %% 绘图
-% figure(1);
-% plot(theta_scan,  pow2db(Capon/max(Capon)) , 'b-', 'LineWidth', 1.5); hold on;
-% plot(theta_scan, pow2db(abs(GLRT)/max(abs(GLRT))) , 'r--', 'LineWidth', 1.5); hold on;
-% xlabel('\theta (degrees)');
-% ylabel('spectrum (dB)');
-% grid on; 
-% xlim([-90, 90]);
-% legend('Capon spectrum (dB)', 'GLRT spectrum (dB)' );
 
 figure(1);
 % (a) LS 空间谱 (dB)
-subplot(2,2,1);
-plot(theta_scan, (LS), 'b-', 'LineWidth', 1.5); hold on;
+subplot(3,2,1);
+plot(theta_scan, abs(LS), 'b-', 'LineWidth', 1.5); hold on;
 xlabel('\theta (degrees)');
 ylabel('LS spectrum');
 grid on; xlim([-90, 90]);
 
 
 % (b) Capon 空间谱 (dB)
-subplot(2,2,2);
-plot(theta_scan, (Capon), 'b-', 'LineWidth', 1.5); hold on;
+[peaks, locs] = findpeaks(abs(Capon), theta_scan, ...
+    'MinPeakHeight', 0.1*max(abs(Capon)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('Capon 峰值角度：');
+disp(locs);
+
+subplot(3,2,2);
+plot(theta_scan, abs(Capon), 'b-', 'LineWidth', 1.5); hold on;
 plot(locs, peaks, 'ro', 'MarkerSize', 8); hold on;
 xlabel('\theta (degrees)');
 ylabel('Capon spectrum');
 grid on; xlim([-90, 90]);
 
 % (c) APES 空间谱 (dB)
-subplot(2,2,3);
-plot(theta_scan, (APES), 'b-', 'LineWidth', 1.5); hold on;
+[peaks, locs] = findpeaks(abs(APES), theta_scan, ...
+    'MinPeakHeight', 0.1*max(abs(APES)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('APES 峰值角度：');
+disp(locs);
+subplot(3,2,3);
+plot(theta_scan, abs(APES), 'b-', 'LineWidth', 1.5); hold on;
+plot(locs, peaks, 'ro', 'MarkerSize', 8); hold on;
 xlabel('\theta (degrees)');
 ylabel('APES spectrum');
 grid on; xlim([-90, 90]);
 
 
 % (d) GLRT 伪谱
-subplot(2,2,4);
-plot(theta_scan, (GLRT), 'r-', 'LineWidth', 1.5);
+[peaks, locs] = findpeaks(abs(GLRT), theta_scan, ...
+    'MinPeakHeight', 0.1*max(abs(GLRT)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakDistance', 5);
+disp('GLRT 峰值角度：');
+disp(locs);
+subplot(3,2,4);
+plot(theta_scan, abs(GLRT), 'b-', 'LineWidth', 1.5); hold on;
+plot(locs, peaks, 'ro', 'MarkerSize', 8); hold on;
 xlabel('\theta (degrees)');
 ylabel('GLRT spectrum');
+grid on; xlim([-90, 90]);
+
+% (f) CAML 伪谱
+
+subplot(3,2,6);
+stem(theta_targets, abs(CAML), 'r-', 'LineWidth', 1.5);
+xlabel('\theta (degrees)');
+ylabel('CAML spectrum');
 grid on; xlim([-90, 90]);

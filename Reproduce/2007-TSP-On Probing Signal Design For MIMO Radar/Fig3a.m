@@ -46,7 +46,7 @@ for j = 1:length(wc_lst)
 end
 
 %% 绘图对比
-colors = colormap(jet(3));
+colors = colormap(jet(5));
 markers = {'o', 's', '^', '*', 'd', 'v', '<', '>'};
 lstys = {'-', '--', ':', '-.', };
 

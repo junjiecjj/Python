@@ -42,7 +42,6 @@ res = zeros(1, length(Nlst));
 
 for i = 1:length(Nlst)
     N = Nlst(i);
-    
     for it = 1:Iters
         w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
         x = Rsqrt * w;
@@ -55,7 +54,6 @@ for i = 1:length(Nlst)
         end
         res(i) = res(i) + mean(beamdiff);
     end
-    
 end
 res = res/Iters;
 
@@ -68,5 +66,11 @@ xlabel('Sample Number');
 ylabel('MSE');
 title('Transmit Beampattern');
 grid on;
+
+
+
+
+
+
 
 

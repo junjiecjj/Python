@@ -48,8 +48,7 @@ P_opt = zeros(size(theta_plot));
 P_optxx = zeros(size(theta_plot));
 for i = 1:length(theta_plot)
     a_theta = a(theta_plot(i));
-
-    beamdiff(i) = abs(a_theta' * (Rxx - R) * a_theta ) / abs(a_theta' * R * a_theta);
+    beamdiff(i) = (abs(a_theta' * Rxx * a_theta) - abs(a_theta' * R * a_theta )) / abs(a_theta' * R * a_theta);
     P_opt(i)    = (a_theta' * R * a_theta);
     P_optxx(i)  = (a_theta' * Rxx * a_theta);
 end

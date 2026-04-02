@@ -52,13 +52,13 @@ end
 
 sigma2_dB = -20:5:20;               % 噪声功率 (dB)
 res = zeros(2, length(sigma2_dB));
-Iters = 500;
+Iters = 100;
 for i = 1:length(sigma2_dB)
     sigma2 = 10^(-sigma2_dB(i)/10);
     for it = 1:Iters
         %%  Capon MSE with initial omnidirectional probing
         %% 1 生成发射信号 x(n) ~ CN(0, (c/M)*I)
-        x = sqrt(c/M) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+        x = sqrt(c/M) .* (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
         %% 生成目标回波
         y_target = zeros(M, N);
         for k = 1:length(theta_targets)
