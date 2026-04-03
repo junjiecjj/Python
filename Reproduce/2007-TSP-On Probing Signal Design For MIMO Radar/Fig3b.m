@@ -11,7 +11,7 @@ addpath('./functions');
 
 %% 1. 参数设置（示例，可修改）
 M = 10;                     % 天线数
-c = ones(M,1);                      % 对角元固定值
+c = ones(M,1) * 1/M;                      % 对角元固定值
 theta_est = [-40, 0, 40];   % 目标角度估计（度）
 
 K = length(theta_est);      % 目标个数
@@ -58,7 +58,7 @@ end
 
 %% 可选：绘制发射波束图对比
 figure(1);
-plot(theta_plot, abs(P_des * alpha0), 'k-', 'LineWidth', 1.5); hold on;
+plot(theta_plot, abs(P_des * alpha0), 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_opt1, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_opt0, 'b-', 'LineWidth', 1.5); hold on;
  

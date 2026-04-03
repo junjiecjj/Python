@@ -39,7 +39,7 @@ function  R = MinimumSidelobeBeampatternDesignFloatSidelobe(c, M, theta0, theta1
             
             % 阵元功率固定为 c/M
             for m = 1:M
-                R(m,m) == c/M;
+                R(m,m) == c(m)/M;
             end
     cvx_end
     

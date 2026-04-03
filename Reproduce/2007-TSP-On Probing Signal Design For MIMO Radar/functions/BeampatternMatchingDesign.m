@@ -113,7 +113,7 @@ function [R_opt, alpha, r_opt] = BeampatternMatchingDesign(c, M, w_l, w_c, theta
             end
             % 对角元固定
             for i = 1:M
-                R(i,i) == c(i) / M;
+                R(i,i) == c(i);
             end
             % 半正定约束
             R == hermitian_semidefinite(M);

@@ -85,18 +85,33 @@ A = steervec(normalizedPos, [ang; zeros(size(ang))]);
 % Compute the resulting beam pattern given the found covariance matrix
 Bminmax = abs(diag(A'*Rminmax*A))/(4*pi);
 
+
 figure(1);
-plot(ang, pow2db(Bdes + eps), 'LineStyle','-', 'LineWidth', 2, 'Color','k'); hold on;
+plot(ang, pow2db(Bdes/max(Bdes)+eps), 'LineStyle','-', 'LineWidth', 2, 'Color','k'); hold on;
 plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineStyle','-', 'LineWidth', 2, 'Color','r'); hold on;
 plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineStyle','-', 'LineWidth', 2, 'Color','b');
 
+xlabel('Azimuth (deg)');
+ylabel('Normalized (dB)');
+legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
+ylim([-40 5]);
+title('Transmit Beam Pattern');
+grid on;
+
+
+figure(2);
+plot(ang, pow2db(Bdes + eps), 'LineStyle','-', 'LineWidth', 2, 'Color','k'); hold on;
+plot(ang, pow2db(Bmmse), 'LineStyle','-', 'LineWidth', 2, 'Color','r'); hold on;
+plot(ang, pow2db(Bminmax), 'LineStyle','-', 'LineWidth', 2, 'Color','b');
 
 xlabel('Azimuth (deg)');
 ylabel('(dB)');
 legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
-ylim([-40 1]);
+ylim([-40 5]);
 title('Transmit Beam Pattern');
 grid on;
+
+
 
 
 

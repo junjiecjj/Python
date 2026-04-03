@@ -36,8 +36,8 @@ function  R = MinimumSidelobeBeampatternDesignFloatPow(c, M, theta0, theta1, the
             sum(diag(R)) == c;
             % 阵元功率上下界
             for m = 1:M
-                R(m,m) >= 0.8 * c/M;
-                R(m,m) <= 1.2 * c/M;
+                R(m,m) >= 0.8 * c(m)/M;
+                R(m,m) <= 1.2 * c(m)/M;
             end
     cvx_end
     

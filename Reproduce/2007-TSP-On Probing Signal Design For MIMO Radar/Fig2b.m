@@ -11,7 +11,8 @@ addpath('./functions');
 
 %% 1. 参数设置（示例，可修改）
 M = 10;                     % 天线数
-c = ones(M,1);                      % 对角元固定值
+c = ones(M,1) * 1/M;        % 对角元固定值
+% c = rand(M, 1)
 theta_est = [-40, 0, 40];   % 目标角度估计（度）
 
 K = length(theta_est);      % 目标个数
@@ -31,7 +32,7 @@ L = length(theta_grid);
 
 % 权重
 w_l = ones(L, 1);           % 所有网格点权重相同
-c = rand(M, 1)
+
 % wc = 1;                    % 交叉项权重（可调）
 % [R_opt1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
 wc = 0;

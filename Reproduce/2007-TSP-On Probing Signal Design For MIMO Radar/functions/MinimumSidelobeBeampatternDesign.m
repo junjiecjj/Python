@@ -33,7 +33,7 @@ function  R = MinimumSidelobeBeampatternDesign(c, M, theta0, theta1, theta2, Ome
             R >= 0;
             % 对角元固定
             for m = 1:M
-                R(m,m) == c/M;
+                R(m,m) == c(m)/M;
             end
     cvx_end
     

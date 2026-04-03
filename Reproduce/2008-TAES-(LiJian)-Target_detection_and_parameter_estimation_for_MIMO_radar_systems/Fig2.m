@@ -39,30 +39,30 @@ for k = 1:length(theta_targets)
     y_target = y_target + beta(k) * ar * (at.' * x);
 end
 
-%生成干扰回波
+% 生成干扰回波
 jam = sqrt(jammer_power) * (randn(1, N) + 1j*randn(1, N)) / sqrt(2);
 ac_jammer = a_func(theta_jammer);
 y_jammer = ac_jammer * jam;
 
-%生成噪声
-w = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+% 生成噪声
+% noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 SNR_lin = 10;
 SNR_lin = 10^(SNR_lin/10);
 Rw = zeros(M, M);
 for p = 1:M
     for q = 1:M
         exponent = (p - q) / 2;          % 注意：这里是 (p-q)/2
-        Rw(p,q) = (1/SNR_lin) * 0.9^(abs(p-q)) * exp(1j * exponent * pi);
+        Rw(p, q) = (1/SNR_lin) * 0.9^(abs(p-q)) * exp(1j * exponent * pi);
     end
 end
 % 确保 Hermitian 对称（数值上可能略有误差）
 Rw = (Rw + Rw') / 2;
 % 生成 L 个独立同分布的复高斯快拍（零均值，协方差矩阵 R_n）
 L_chol = chol(Rw, 'lower');   % 下三角 Cholesky 因子
-w = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+noise = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 
 %总接收信号
-y = y_target + y_jammer + w;
+y = y_target + y_jammer + noise;
 
 %样本协方差矩阵
 Rxx = (x * x') / N;
@@ -86,7 +86,6 @@ for idx = 1:L
     % ========== LS  ==========
     LS(idx) = (ar' * Ryx * conj(at)) / (norm(ar)^2 * at.' * Rxx * conj(at));
 
-
     % ========== GLRT 严格按公式(16)计算 ==========
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
     Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
@@ -97,9 +96,7 @@ for idx = 1:L
     % ========== APES 严格按公式(7)计算 ==========
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
     Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
-
     APES(idx) = ar'/Q * Ryx * conj(at) / ((ar' /Q * ar) * (at.' * Rxx * conj(at)));
-
 
     % ========== Capon 空间谱 —— 严格按照公式(5) ==========
     % 分子: a^* Ryy^{-1} Ryx ac
@@ -108,7 +105,6 @@ for idx = 1:L
     denom_capon = (ar' / Ryy * ar) * (at.' * Rxx * conj(at));
     % Capon 谱值
     Capon(idx) = (num_capon) / denom_capon;   % 通常取模平方，保证为正
-
 end
 
 % ========== CAML 空间谱 公式(16-21) ========== 
@@ -117,7 +113,6 @@ end
     'MinPeakDistance', 5);
 disp('GLRT 峰值角度：');
 disp(theta_est);
-
 
 CAML = AML_estimator(y, x, theta_est);
 
