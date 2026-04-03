@@ -5,8 +5,7 @@ close all;
 
 %% 参数设置（与论文一致，但提高分辨率）
 M = 10;                     % 天线数（提高分辨率，使三峰分离）
-N = 256;                    % 快拍数
-c = 1;                      % 发射功率常数
+N = 1280;                    % 快拍数
 sigma2_dB = -10;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
 jammer_power = 50;         
@@ -18,9 +17,6 @@ beta = [4, 3, 1];
 % 干扰
 theta_jammer = 0;              % 度
 
-% 角度扫描
-theta_scan = -90:0.1:90;
-L = length(theta_scan);
 
 % 导向矢量函数 (均匀线阵，半波长间距)
 a_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
@@ -28,9 +24,8 @@ ac_func = @(theta) conj(a_func(theta));
 
 %% 生成发射信号 x(n) ~ CN(0, (c/M)*I)
 data = randi([0 3], M, N); % 生成 0~3 的随机整数
-x = qammod(data, 4, 'UnitAveragePower', true);
-% x = sqrt(c/M) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
-
+% x = qammod(data, 4, 'UnitAveragePower', true);
+x = (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 % 生成目标回波
 y_target = zeros(M, N);
 for k = 1:length(theta_targets)
@@ -38,6 +33,20 @@ for k = 1:length(theta_targets)
     ar = a_func(theta_targets(k));
     y_target = y_target + beta(k) * ar * (at.' * x);
 end
+
+% f0 = 1e6;
+% f = [0.1, 0.2, 0.3] * f0;   % 各信号频率（保证正交）
+% fs = 1e8;                   % 采样频率 (Hz)
+% Ts = 1/fs;
+% t = (0:N-1) * Ts;
+% y_target = zeros(M, N);
+% for i = 1:length(theta_targets)
+%     a_k = a_func(theta_targets(k));
+%     s = exp(1j * 2 * pi * f(i) * t);        % 信号波形
+%     % s = randn(1, Ns);
+%     y_target = y_target + a_k * s;          % 外积相加
+% end
+
 
 % 生成干扰回波
 jam = sqrt(jammer_power) * (randn(1, N) + 1j*randn(1, N)) / sqrt(2);
@@ -62,7 +71,7 @@ L_chol = chol(Rw, 'lower');   % 下三角 Cholesky 因子
 noise = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 
 %总接收信号
-y = y_target + y_jammer + noise;
+y = y_target + noise + y_jammer;
 
 %样本协方差矩阵
 Rxx = (x * x') / N;
@@ -71,6 +80,10 @@ Ryx = (y * x') / N;
 
 %预计算 Ryy 的逆（用于 GLRT 分子和 Capon）
 inv_Ryy = inv(Ryy);
+
+% 角度扫描
+theta_scan = -90:0.1:90;
+L = length(theta_scan);
 
 % 存储结果
 LS = zeros(L, 1);
@@ -113,8 +126,12 @@ end
     'MinPeakDistance', 5);
 disp('GLRT 峰值角度：');
 disp(theta_est);
-
 CAML = AML_estimator(y, x, theta_est);
+
+% ========== MUSIC 空间谱 ========== 
+[Pmusic, angle_est, ~] = MUSIC(Ryy, theta_scan, length(theta_targets), M);
+
+
 
 %% 绘图
 
@@ -167,8 +184,15 @@ xlabel('\theta (degrees)');
 ylabel('GLRT spectrum');
 grid on; xlim([-90, 90]);
 
-% (f) CAML 伪谱
+% (f) MUSIC 伪谱
 
+subplot(3,2,5);
+stem(theta_scan, Pmusic, 'r-', 'LineWidth', 1.5);
+xlabel('\theta (degrees)');
+ylabel('MUSIC spectrum');
+grid on; xlim([-90, 90]);
+
+% (f) CAML 伪谱
 subplot(3,2,6);
 stem(theta_est, abs(CAML), 'r-', 'LineWidth', 1.5);
 xlabel('\theta (degrees)');

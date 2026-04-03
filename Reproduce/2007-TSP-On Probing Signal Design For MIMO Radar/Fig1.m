@@ -34,7 +34,6 @@ a_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
 ac_func = @(theta) conj(a_func(theta));
 
 %% 生成发射信号 x(n) ~ CN(0, (c/M)*I)
-
 x = sqrt(c/M) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 
 %% 生成目标回波

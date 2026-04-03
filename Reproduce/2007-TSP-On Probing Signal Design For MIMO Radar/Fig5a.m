@@ -23,6 +23,11 @@ L = length(theta_grid);
 % 导向矢量函数 (均匀线阵，半波长间距)
 a_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
 
+A = zeros(M, length(theta_targets));
+for k = 1:length(theta_targets)
+    A(:,k) = a_func(theta_targets(k));
+end
+
 % Desired beam pattern
 Delta = 5;
 P_des = zeros(size(theta_grid));
@@ -40,7 +45,7 @@ Rsqrt =  sqrtm(R_opt);     % R^(0.5);
 
 sigma2_dB = -20:5:20;               % 噪声功率 (dB)
 res = zeros(2, length(sigma2_dB));
-Iters = 500;
+Iters = 100;
 for i = 1:length(sigma2_dB)
     sigma2_dB(i)
     sigma2 = 10^(-sigma2_dB(i)/10);
@@ -49,7 +54,7 @@ for i = 1:length(sigma2_dB)
         noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
         %%  Capon MSE with initial omnidirectional probing
         %% 1 生成发射信号 x(n) ~ CN(0, (c/M)*I)
-        x = sqrt(c/M) .* (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+        x = sqrt(1/M) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
         %% 生成目标回波
         y_target = zeros(M, N);
         for k = 1:length(theta_targets)
@@ -118,7 +123,7 @@ res = res/Iters;
 figure(1);
 % (a) Capon 空间谱 (dB)
 subplot(1,2,1);
-plot(theta_grid, Capon_omni_norm, 'b-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, Capon_omni, 'b-', 'LineWidth', 1.5); hold on;
 xlabel('\theta (degrees)');
 ylabel('Capon spectrum (dB)');
 legend('omnidirectional beampattern');
@@ -126,11 +131,13 @@ grid on;
 xlim([-90, 90]);
 % (b) Capon 空间谱 (dB)
 subplot(1,2,2);
-plot(theta_grid, Capon_optim_norm, 'r-', 'LineWidth', 1.5);
+plot(theta_grid, Capon_optim, 'r-', 'LineWidth', 1.5);
 xlabel('\theta (degrees)');
 ylabel('Capon spectrum (dB)');
 legend('Optimized beampattern');
-grid on; xlim([-90, 90]);
+grid on; 
+% xlim([-90, 90]);
+% ylim([-90, 90]);
 
 figure(2);
 semilogy(sigma2_dB, res(1,:), 'b-', 'LineWidth', 1.5); hold on;
@@ -140,7 +147,6 @@ ylabel('MSE');
 legend('omnidirectional beampattern', 'Optimized beampattern');
 grid on;
 
-ylim([-90, 90]);
 
 
 
