@@ -60,7 +60,6 @@ function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0)
                 zeros(N, 2*M), bottom_right ];
         LMI >= 0;               % 半正定约束
         minimize (z);
-
     cvx_end
 
 end

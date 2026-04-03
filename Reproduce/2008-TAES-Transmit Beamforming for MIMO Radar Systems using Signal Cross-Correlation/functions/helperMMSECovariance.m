@@ -20,7 +20,7 @@ function R = helperMMSECovariance(elPos, Pdesired, ang)
     % Normalized the desired beam pattern such that the total transmit power is
     % equal to the number of array elements N.
     Pdesired = N * Pdesired / (2*pi*trapz(deg2rad(ang), Pdesired.*cosd(ang))); % Eq.(16)
-    Pdesired = Pdesired * 4 * pi;                                          % Eq.(15)
+    Pdesired = Pdesired * 4 * pi;                                              % Eq.(15)
     % Matrix of steering vectors corresponding to angles in ang
     A = steervec(elPos, [ang; zeros(size(ang))]);
     % Parameters of the barrier method

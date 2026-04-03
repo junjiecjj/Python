@@ -5,7 +5,6 @@ clear all;
 close all;
 addpath('./functions');
 
-
 rng('default');                     % Set random number generator for reproducibility
 
 
@@ -17,12 +16,11 @@ lambda = 2*d;
 element = phased.IsotropicAntennaElement('BackBaffled', true);
 array = phased.ULA('Element', element, 'NumElements', N, 'ElementSpacing', d, 'ArrayAxis', 'y');
 
-
 % Three targets of interest
-tgtAz = [0];                % Azimuths of the targets of interest
+tgtAz = [-40 0 40];                % Azimuths of the targets of interest
 
 ang = linspace(-90, 90, 200);       % Grid of azimuth angles
-beamwidth = 35;                     % Desired beamwidth
+beamwidth = 10;                     % Desired beamwidth
 
 % Desired beam pattern
 Bdes = zeros(size(ang));
@@ -57,19 +55,6 @@ A = steervec(normalizedPos, [ang; zeros(size(ang))]);
 
 % Compute the resulting beam pattern given the found covariance matrix
 Bmmse = abs(diag(A'*Rmmse*A))/(4*pi);
-% 
-% figure(2);
-% hold on
-% plot(ang, pow2db(Bdes + eps), 'LineWidth', 2)
-% plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineWidth', 2)
-% 
-% grid on
-% xlabel('Azimuth (deg)')
-% ylabel('(dB)');
-% legend('Desired', 'MMSE Covariance');
-% ylim([-40 1]);
-% title('Transmit Beam Pattern');
-
 
 %%  B. Maximum Error Optimization
 % Solve the optimization problem to find the covariance matrix
@@ -108,94 +93,4 @@ legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
 ylim([-40 5]);
 title('Transmit Beam Pattern');
 grid on;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

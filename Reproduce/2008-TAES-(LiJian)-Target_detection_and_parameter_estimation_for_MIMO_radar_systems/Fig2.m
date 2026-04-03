@@ -9,7 +9,7 @@ N = 256;                    % 快拍数
 c = 1;                      % 发射功率常数
 sigma2_dB = -10;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
-jammer_power = 40;         
+jammer_power = 50;         
 jammer_power = 10^(jammer_power/10); % 干扰功率 (60 dB)
 % 目标
 theta_targets = [-40, -25, -10];   % 度

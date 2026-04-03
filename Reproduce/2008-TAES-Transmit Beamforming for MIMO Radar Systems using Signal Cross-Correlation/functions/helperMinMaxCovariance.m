@@ -28,7 +28,7 @@ function R = helperMinMaxCovariance(elPos, Pdesired, ang)
     epsilon = 1e-4;
     stopCriteriaMet = false;
 
-    M1 = MM/2;
+    M1 = floor(MM/2);
     Theta0idx = sort(randperm(MM, M1));
     Theta0 = ang(Theta0idx);
     Ptheta0 = Pdesired(Theta0idx);
