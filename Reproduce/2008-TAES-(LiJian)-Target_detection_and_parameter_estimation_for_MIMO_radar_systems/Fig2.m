@@ -5,7 +5,7 @@ close all;
 
 %% 参数设置（与论文一致，但提高分辨率）
 M = 10;                     % 天线数（提高分辨率，使三峰分离）
-N = 1280;                    % 快拍数
+N = 2000;                    % 快拍数
 sigma2_dB = -10;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
 jammer_power = 50;         
@@ -17,36 +17,28 @@ beta = [4, 3, 1];
 % 干扰
 theta_jammer = 0;              % 度
 
-
 % 导向矢量函数 (均匀线阵，半波长间距)
 a_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
-ac_func = @(theta) conj(a_func(theta));
+
+A = zeros(M, length(theta_targets));
+for k = 1:length(theta_targets)
+    A(:,k) = a_func(theta_targets(k));
+end
 
 %% 生成发射信号 x(n) ~ CN(0, (c/M)*I)
-data = randi([0 3], M, N); % 生成 0~3 的随机整数
+% data = randi([0 3], M, N); % 生成 0~3 的随机整数
 % x = qammod(data, 4, 'UnitAveragePower', true);
 x = (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 % 生成目标回波
-y_target = zeros(M, N);
+X = zeros(M, N);
 for k = 1:length(theta_targets)
     at = a_func(theta_targets(k));
     ar = a_func(theta_targets(k));
-    y_target = y_target + beta(k) * ar * (at.' * x);
+    X = X + beta(k) * ar * (at.' * x);
+    % X = X + beta(k) * conj(ar) * (at' * x); % 这种也是对的
 end
-
-% f0 = 1e6;
-% f = [0.1, 0.2, 0.3] * f0;   % 各信号频率（保证正交）
-% fs = 1e8;                   % 采样频率 (Hz)
-% Ts = 1/fs;
-% t = (0:N-1) * Ts;
-% y_target = zeros(M, N);
-% for i = 1:length(theta_targets)
-%     a_k = a_func(theta_targets(k));
-%     s = exp(1j * 2 * pi * f(i) * t);        % 信号波形
-%     % s = randn(1, Ns);
-%     y_target = y_target + a_k * s;          % 外积相加
-% end
-
+% 以上过程等效为
+X = A * diag(beta) * A.' * x;
 
 % 生成干扰回波
 jam = sqrt(jammer_power) * (randn(1, N) + 1j*randn(1, N)) / sqrt(2);
@@ -54,24 +46,24 @@ ac_jammer = a_func(theta_jammer);
 y_jammer = ac_jammer * jam;
 
 % 生成噪声
-% noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
-SNR_lin = 10;
-SNR_lin = 10^(SNR_lin/10);
-Rw = zeros(M, M);
-for p = 1:M
-    for q = 1:M
-        exponent = (p - q) / 2;          % 注意：这里是 (p-q)/2
-        Rw(p, q) = (1/SNR_lin) * 0.9^(abs(p-q)) * exp(1j * exponent * pi);
-    end
-end
-% 确保 Hermitian 对称（数值上可能略有误差）
-Rw = (Rw + Rw') / 2;
-% 生成 L 个独立同分布的复高斯快拍（零均值，协方差矩阵 R_n）
-L_chol = chol(Rw, 'lower');   % 下三角 Cholesky 因子
-noise = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+% SNR_lin = 10;
+% SNR_lin = 10^(SNR_lin/10);
+% Rw = zeros(M, M);
+% for p = 1:M
+%     for q = 1:M
+%         exponent = (p - q) / 2;          % 注意：这里是 (p-q)/2
+%         Rw(p, q) = (1/SNR_lin) * 0.9^(abs(p-q)) * exp(1j * exponent * pi);
+%     end
+% end
+% % 确保 Hermitian 对称（数值上可能略有误差）
+% Rw = (Rw + Rw') / 2;
+% % 生成 L 个独立同分布的复高斯快拍（零均值，协方差矩阵 R_n）
+% L_chol = chol(Rw, 'lower');   % 下三角 Cholesky 因子
+% noise = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 
 %总接收信号
-y = y_target + noise + y_jammer;
+y = X + noise + y_jammer * 0;
 
 %样本协方差矩阵
 Rxx = (x * x') / N;
@@ -108,7 +100,7 @@ for idx = 1:L
 
     % ========== APES 严格按公式(7)计算 ==========
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
-    Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
+    % Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
     APES(idx) = ar'/Q * Ryx * conj(at) / ((ar' /Q * ar) * (at.' * Rxx * conj(at)));
 
     % ========== Capon 空间谱 —— 严格按照公式(5) ==========
@@ -129,8 +121,9 @@ disp(theta_est);
 CAML = AML_estimator(y, x, theta_est);
 
 % ========== MUSIC 空间谱 ========== 
-[Pmusic, angle_est, ~] = MUSIC(Ryy, theta_scan, length(theta_targets), M);
-
+[Pmusic, music_est, music_peak] = MUSIC(Ryy, theta_scan, length(theta_targets), M);
+disp('MUSIC 峰值角度：');
+disp(music_est);
 
 
 %% 绘图
@@ -146,7 +139,7 @@ grid on; xlim([-90, 90]);
 
 % (b) Capon 空间谱 (dB)
 [peaks, locs] = findpeaks(abs(Capon), theta_scan, ...
-    'MinPeakHeight', 0.1*max(abs(Capon)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakHeight', 0.2*max(abs(Capon)), ...   % 峰高为最大值的 10% 以上
     'MinPeakDistance', 5);
 disp('Capon 峰值角度：');
 disp(locs);
@@ -160,7 +153,7 @@ grid on; xlim([-90, 90]);
 
 % (c) APES 空间谱 (dB)
 [peaks, locs] = findpeaks(abs(APES), theta_scan, ...
-    'MinPeakHeight', 0.1*max(abs(APES)), ...   % 峰高为最大值的 10% 以上
+    'MinPeakHeight', 0.2*max(abs(APES)), ...   % 峰高为最大值的 10% 以上
     'MinPeakDistance', 5);
 disp('APES 峰值角度：');
 disp(locs);
@@ -173,21 +166,22 @@ grid on; xlim([-90, 90]);
 
 
 % (d) GLRT 伪谱
-[~, locs] = findpeaks(abs(GLRT), theta_scan, ...
-    'MinPeakHeight', 0.1*max(abs(GLRT)), ...   % 峰高为最大值的 10% 以上
+[peaks, locs] = findpeaks(abs(GLRT), theta_scan, ...
+    'MinPeakHeight', 0.2*max(abs(GLRT)), ...   % 峰高为最大值的 10% 以上
     'MinPeakDistance', 5);
 disp('GLRT 峰值角度：');
 disp(locs);
 subplot(3,2,4);
-plot(theta_scan, abs(GLRT), 'r-', 'LineWidth', 1.5);
+plot(theta_scan, abs(GLRT), 'r-', 'LineWidth', 1.5);hold on;
+plot(locs, peaks, 'ro', 'MarkerSize', 8); 
 xlabel('\theta (degrees)');
 ylabel('GLRT spectrum');
 grid on; xlim([-90, 90]);
 
 % (f) MUSIC 伪谱
-
 subplot(3,2,5);
-stem(theta_scan, Pmusic, 'r-', 'LineWidth', 1.5);
+plot(theta_scan, Pmusic, 'r-', 'LineWidth', 1.5);hold on;
+plot(music_est, music_peak, 'bo', 'MarkerSize', 8); 
 xlabel('\theta (degrees)');
 ylabel('MUSIC spectrum');
 grid on; xlim([-90, 90]);

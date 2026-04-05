@@ -15,7 +15,7 @@ c = ones(M,1) * 1/M;                      % 对角元固定值
 theta_est = [-40, 0, 40];   % 目标角度估计（度）
 
 K = length(theta_est);      % 目标个数
-a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
+afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
 
 Delta = 5;
 theta_grid = -90:0.1:90;
@@ -51,7 +51,7 @@ P_des(idx) = 1;
 P_opt1 = zeros(size(theta_plot));
 P_opt0 = zeros(size(theta_plot));
 for i = 1:length(theta_plot)
-    a_theta = a(theta_plot(i));
+    a_theta = afun(theta_plot(i));
     P_opt1(i) = real(a_theta' * R_opt1 * a_theta);
     P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
 end

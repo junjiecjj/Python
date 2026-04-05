@@ -23,18 +23,18 @@ function [Pcapon, angle_est, peaks] = Capon(Rxx, Thetalst, N)
 
     for i = 1:length(Thetalst)
         ang = Thetalst(i);
-        a = exp(-1j * pi * d * sind(ang));        % 导向矢量（列向量）
+        a = exp(1j * pi * d * sind(ang));        % 导向矢量（列向量）
         denom = real(a' / Rxx * a);          % 分母取实部
         Pcapon(i) = 1 / denom;                   % Capon 谱值
     end
 
     % 归一化并转换到 dB
     Pcapon = abs(Pcapon) / max(abs(Pcapon));
+    [~, locs] = findpeaks(Pcapon, 'MinPeakHeight', 0.1*max(Pcapon), 'MinPeakDistance', 5);
     Pcapon = 10 * log10(Pcapon);
 
     % 峰值检测（需要 Signal Processing Toolbox）
     % 高度阈值 -2 dB，最小间隔 10 个采样点（对应 5°）
-    [~, locs] = findpeaks(Pcapon, 'MinPeakHeight', -2, 'MinPeakDistance', 10);
-    peaks = locs;                                % 1‑based 索引
-    angle_est = Thetalst(peaks);
+    peaks = Pcapon(locs);                            
+    angle_est = Thetalst(locs); 
 end
