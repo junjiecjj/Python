@@ -1,0 +1,3 @@
+IEEE JOURNAL ON SELECTED AREAS IN COMMUNICATIONS, VOL. 43, NO. 4, APRIL 2025 1371
+
+Communication-Assisted Sensing in 6G Networks

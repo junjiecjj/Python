@@ -55,7 +55,7 @@ alabo = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)']
 
 
 def CommOverHead():
-    fig, axs = plt.subplots(1, 1, figsize=(8, 8), constrained_layout=True)
+    fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
     lw = 2
     L = 300
     V = 21880
@@ -259,7 +259,7 @@ def DynamicBitWidth():
 
 
 CommOverHead()
-DynamicBitWidth()
+# DynamicBitWidth()
 
 
 
