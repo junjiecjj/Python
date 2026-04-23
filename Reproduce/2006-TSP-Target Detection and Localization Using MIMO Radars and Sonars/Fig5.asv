@@ -26,20 +26,19 @@ Gtr0 = zeros(1, length(theta_grid));
 for k = 1:length(theta_grid)
     ak = afun(theta_grid(k));
     Gtr1(k) = N * abs(a0' * ones(M, 1))^2 * abs(ak' * a0)^2 / M;
-    Gtr0(k) = N * abs(ak' * a0)^4 / M;
+    Gtr0(k) = N * abs(a0' * ones(M, 1))^4 / M;
 end
 
 %% 
 figure(1);
-plot(theta_grid, pow2db(Gtr0/max(Gtr0)+eps), 'r-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, pow2db(Gtr1/max(Gtr1)+eps), 'b--', 'LineWidth', 1.5); hold on;
-
+plot(theta_grid, Gtr1, 'b-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, Gtr0, 'r--', 'LineWidth', 1.5); hold on;
 xlabel('\theta (degrees)');
-ylabel('G(\theta) (dB)');
-legend('\beta = 0', '\beta = 1');
+ylabel('Capon spectrum (dB)');
+legend('\beta = 1');
 grid on; 
-xlim([-40, 40]);
-ylim([-60, 0]);
+xlim([-90, 90]);
+
 
 
 
