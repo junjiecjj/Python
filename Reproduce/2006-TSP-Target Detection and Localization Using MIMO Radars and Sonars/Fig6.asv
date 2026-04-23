@@ -9,7 +9,7 @@ rng(42);
 
 
 M = 10;
-theta0 = 0;
+Theta0 = [0, 5, 10];
 N = 256;
 
 % 角度扫描
@@ -19,14 +19,17 @@ afun = @(theta) exp(-1j * pi * (0:M-1)' * sind(theta));
 
 a0 = afun(theta0);
 
+Gtr1 = zeros(3, length(theta_grid));
+Gtr0 = zeros(3, length(theta_grid));
 
-Rs = ones(M, M);
-Gtr1 = zeros(1, length(theta_grid));
-Gtr0 = zeros(1, length(theta_grid));
-for k = 1:length(theta_grid)
-    ak = afun(theta_grid(k));
-    Gtr1(k) = N * abs(a0' * ones(M, 1))^2 * abs(ak' * a0)^2 / M;
-    Gtr0(k) = N * abs(ak' * a0)^4 / M;
+for i = 1:length(Theta0)
+    theta0 = Th
+    a0 = afun(theta0);
+    for k = 1:length(theta_grid)
+        ak = afun(theta_grid(k));
+        Gtr1(k) = N * abs(a0' * ones(M, 1))^2 * abs(ak' * a0)^2 / M;
+        Gtr0(k) = N * abs(ak' * a0)^4 / M;
+    end
 end
 
 %% 
