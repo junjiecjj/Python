@@ -1,4 +1,4 @@
-%% 复现 Bekkerman & Tabrikian (2006) Figure 9
+%% 复现 Bekkerman & Tabrikian (2006) Figure 9 - 完整版（修正投影矩阵错误）
 % M=10 阵元，双目标：θ1=0° 固定，θ2 从 0° 到 2° 变化，SNR=0dB
 % 相干信号: 发射波束固定指向 0° (R_s = a(0°)a^H(0°))
 % 正交信号: 全向发射 (R_s = I)，TOT 补偿使有效 SNR 提高 M 倍
@@ -11,7 +11,7 @@ M = 10;                     % 阵元数
 d_lambda = 0.5;             % 半波长间距
 SNR_dB = 0;                 % 基础信噪比 (0 dB)
 SNR_lin = 10^(SNR_dB/10);   % 线性值
-N = 1;                      % 快拍数（可任意，CRB 与 N 成反比，这里取 1）
+N = 1;                      % 快拍数（为简化取1，CRB与N成反比）
 alpha1 = 1;                 % 目标1复振幅
 alpha2 = 1;                 % 目标2复振幅
 
@@ -50,7 +50,7 @@ d_beta_deriv = @(theta_deg, U_sqrtL) reshape( sqrt(N) * ( (da_dtheta_deg(theta_d
                                                          a(theta_deg) * da_dtheta_deg(theta_deg).') * U_sqrtL ), [], 1);
 
 %% 计算 CRB (解析)
-theta2_deg_vec = linspace(0.1, 2, 20);   % 0~2度，避开0度奇异
+theta2_deg_vec = linspace(0.1, 2, 30);   % 0~2度，避开0度奇异
 CRB_coherent = zeros(size(theta2_deg_vec));
 CRB_orth = zeros(size(theta2_deg_vec));
 
@@ -109,8 +109,7 @@ RMSE_orth = zeros(size(theta2_ml_vec));
 
 % 二维网格搜索参数（角度范围覆盖真实值附近）
 grid_res = 0.02;                    % 度
-theta1_grid = -1:grid_res:1;        % 目标1可能范围（真实0°附近）
-theta2_grid = @(true_theta2) true_theta2 + (-1:grid_res:1);  % 目标2范围随真实值变化
+theta1_grid = -0.8:grid_res:0.8;     % 目标1可能范围（真实0°附近）
 
 fprintf('开始蒙特卡洛 ML 仿真 (共 %d 个 θ2 点，每个点 %d 次)...\n', length(theta2_ml_vec), MC_trials);
 
@@ -118,7 +117,6 @@ for pt = 1:length(theta2_ml_vec)
     theta2_true = theta2_ml_vec(pt);
     % 当前目标2的搜索网格
     t2_grid = theta2_true + (-0.8:grid_res:0.8);   % 范围 ±0.8°
-    t1_grid = -0.8:grid_res:0.8;
     
     % 存储估计值
     theta1_est_coherent = zeros(MC_trials, 1);
@@ -138,30 +136,24 @@ for pt = 1:length(theta2_ml_vec)
         % 充分统计量 E = y * s^H / sqrt(N) = y * s_coherent^H (N=1)
         E_coherent = y_coherent * s_coherent';
         
-        % 相干信号 ML 估计：二维网格搜索最大化 L(θ1,θ2) = eta^H P_D eta
-        % 但更简单：计算每个网格点的统计量 L_grid = |a^H E a*|^2 / (M a^H R_s^T a)
-        % 注意对于双目标，正确的 ML 是最大化投影矩阵的迹，但这里我们直接利用：
-        % 对于给定的 (θ1,θ2)，构造 D = [d_beta(θ1), d_beta(θ2)]，然后 L = eta^H P_D eta
-        % 其中 eta = vec(E * UΛ^{-1/2})? 但为了简化，我们采用单目标形式并分别估计两个角度
-        % 实际上对于双目标，需联合估计。由于目标1角度固定为0附近，我们在此网格搜索二维似然。
-        % 构造等效充分统计量 eta = vec(E * UΛ^{-1/2}) 对相干信号。
-        % 计算 UΛ^{-1/2}: 伪逆，对于秩1矩阵
-        [Uc, Lc] = eig(R_s_coherent);
-        Lc_inv_sqrt = diag(1./sqrt(diag(Lc)));  % 奇异值倒数
-        U_sqrtL_inv = Uc * Lc_inv_sqrt;
+        % 计算 UΛ^{-1/2}（伪逆，处理奇异）
+        Lc = diag(Lambda_coherent);
+        Lc_inv_sqrt = diag(1./sqrt(Lc + eps));   % 加小量避免除零
+        U_sqrtL_inv = U_coherent * Lc_inv_sqrt;
         eta_coherent = vec(E_coherent * U_sqrtL_inv);   % 100x1
         
-        % 网格搜索
+        % 网格搜索（二维）
         best_L = -inf;
         best_theta1 = NaN;
-        for i = 1:length(t1_grid)
-            th1 = t1_grid(i);
+        for i = 1:length(theta1_grid)
+            th1 = theta1_grid(i);
             d1 = d_beta(th1, U_sqrtL_coherent);
             for j = 1:length(t2_grid)
                 th2 = t2_grid(j);
                 d2 = d_beta(th2, U_sqrtL_coherent);
                 D = [d1, d2];
-                P_D = D / (D'*D) * D';
+                % 计算投影矩阵 P_D = D * pinv(D)
+                P_D = D * pinv(D);   % 数值稳定，避免 (D'*D) 奇异
                 L_val = real(eta_coherent' * P_D * eta_coherent);
                 if L_val > best_L
                     best_L = L_val;
@@ -172,28 +164,25 @@ for pt = 1:length(theta2_ml_vec)
         theta1_est_coherent(mc) = best_theta1;
         
         % --- 正交信号数据生成 ---
-        % 发射信号矩阵 S (M x N), N=1 时，只需一个快拍，发射向量 s_orth 应满足 R_s = I
-        % 即 E[s s^H] = I，最简单的 s 是任意单位向量乘以 sqrt(M) 以保证功率 M
-        % 由于 N=1，无法实现正交集，但理论上仍然可以使 s 的协方差为 I: 例如取 s = sqrt(M)*randn(M,1)+1j...归一化。
-        % 为保证 R_s = I，我们生成一个随机向量，其样本协方差期望为 I。这里取 s_orth = sqrt(M) * (randn(M,1)+1j*randn(M,1))/sqrt(2)
+        % 发射信号: 为保证 R_s = I，取随机单位向量并缩放 sqrt(M)
         s_orth = sqrt(M) * (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
         signal_orth = alpha1 * A1 * s_orth + alpha2 * A2 * s_orth;
         w_orth = sqrt(sigma_w2_orth/2) * (randn(M,1) + 1j*randn(M,1));
         y_orth = signal_orth + w_orth;
         E_orth = y_orth * s_orth';
-        % 对于正交信号，R_s = I, UΛ^{-1/2} = I，所以 eta = vec(E_orth)
+        % 正交信号：UΛ^{-1/2} = I
         eta_orth = reshape(E_orth, [], 1);
         
         best_L = -inf;
         best_theta1 = NaN;
-        for i = 1:length(t1_grid)
-            th1 = t1_grid(i);
+        for i = 1:length(theta1_grid)
+            th1 = theta1_grid(i);
             d1 = d_beta(th1, U_sqrtL_orth);
             for j = 1:length(t2_grid)
                 th2 = t2_grid(j);
                 d2 = d_beta(th2, U_sqrtL_orth);
                 D = [d1, d2];
-                P_D = D / (D'*D) * D';
+                P_D = D * pinv(D);
                 L_val = real(eta_orth' * P_D * eta_orth);
                 if L_val > best_L
                     best_L = L_val;
