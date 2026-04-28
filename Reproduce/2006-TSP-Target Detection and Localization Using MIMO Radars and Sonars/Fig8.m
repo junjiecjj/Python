@@ -1,17 +1,12 @@
 
+%% 复现 Bekkerman & Tabrikian (2006) Figure 8
+% MIMO雷达中两个目标的角度估计CRB，M=2阵元，SNR=0dB, 目标1固定于0°，目标2分别位于5°,10°,15°，相关系数β从0变化到1
 
 
 clc;
 clear all;
 close all;
-% addpath('./functions');
-
 rng(42); 
-
-
-%% 复现 Bekkerman & Tabrikian (2006) Figure 8
-% MIMO雷达中两个目标的角度估计CRB，M=2阵元，SNR=0dB
-% 目标1固定于0°，目标2分别位于5°,10°,15°，相关系数β从0变化到1
 
 %% 系统参数
 M = 2;                      % 阵元数
@@ -88,13 +83,12 @@ for k = 1:length(theta2_deg_list)
             CRB_var_rad2 = J_inv(1,1);   % θ1的方差（弧度²）
             CRB_theta1_deg = sqrt(CRB_var_rad2) * (180/pi);  % 标准差（度）
         end
-        CRB_results(k, b_idx) = CRB_theta1_deg;
+        CRB_results(k, b_idx) = CRB_var_rad2;
     end
 end
 
 %% 绘图
 figure(1);
-
 colors = {'b', 'r', 'g'};
 for k = 1:length(theta2_deg_list)
     semilogy(beta_vals, CRB_results(k,:), 'Color', colors{k}, 'LineWidth', 2, 'DisplayName', sprintf('\\theta_2 = %d°', theta2_deg_list(k)));
