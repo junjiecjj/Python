@@ -1,55 +1,76 @@
-%% 基于(40)-(43) 计算双目标 CRB（使用等效导向矢量 d_beta，已验证正确）
+%% 图8 稳定复现（基于完整6×6 FIM，等价于(40)-(43)）
 clear; clc; close all;
 
-%% 参数（与之前正确图8相同）
-M = 2; d_lambda = 0.5; SNR_dB = 0; SNR_lin = 10^(SNR_dB/10);
-N = 1; alpha = [1; 1]; sigma_w2 = 1/SNR_lin;
-theta1 = 0; theta2_list = [5, 10, 15]; beta_vals = linspace(0,0.99,100);
+%% 参数设置
+M = 2;                      % 阵元数
+d_lambda = 0.5;             % 半波长间距
+SNR_dB = 0;                 % SNR = 0 dB
+SNR_lin = 10^(SNR_dB/10);
+N = 1;                      % 快拍数
+alpha = [1; 1];             % 两个目标的复振幅
+sigma_w2 = 1 / SNR_lin;     % 噪声方差, 满足 N|α|^2/σ_w^2 = 1
 
-% 对称阵列
-n = -(M-1)/2 : (M-1)/2;
+theta1 = 0;                 % 目标1角度（度）
+theta2_list = [5, 10, 15];  % 目标2角度
+beta_vec = linspace(0, 0.99, 200);  % 相关系数，避开1
+
+% 对称阵列（质心原点）
+n = 0:M-1;     % [-0.5, 0.5]
 a = @(th) exp(-1j*pi*d_lambda*n'*sind(th));
-da = @(th) -1j*pi*d_lambda*cosd(th)*n'.*a(th);
+da = @(th) -1j*pi*d_lambda*cosd(th)*n' .* a(th);
 
-% 相干矩阵
-R_s = @(b) [1, b; b, 1];
-[U, Lam] = eig(R_s(0)); U_sqrtL = @(b) U*sqrt(Lam);  % 通用，仅用于 beta=0,1 时正确
-% 但为准确，对任意 beta 直接计算 U*sqrt(Lam)
+% 相干矩阵及其特征平方根（处理奇异：只保留非零特征值对应的分量）
 function U_sqrtL = get_U_sqrtL(beta)
-    [U,Lam] = eig([1, beta; beta, 1]);
-    U_sqrtL = U * sqrt(Lam);
+    Rs = [1, beta; beta, 1];
+    [U, Lambda] = eig(Rs);
+    lambda = diag(Lambda);
+    tol = 1e-12;
+    keep = lambda > tol;
+    U_sqrtL = U(:,keep) * diag(sqrt(lambda(keep)));
 end
 
-% 等效导向矢量 d_beta
-d_beta = @(th, beta) reshape( sqrt(N) * (a(th)*a(th).' * get_U_sqrtL(beta)), [], 1);
-d_beta_deriv = @(th, beta) reshape( sqrt(N) * ( (da(th)*a(th).' + a(th)*da(th).') * get_U_sqrtL(beta) ), [], 1);
+% 等效导向矢量及其对角度（弧度）的导数
+d_beta = @(th,beta) sqrt(N) * (a(th)*a(th).' * get_U_sqrtL(beta));
+% 向量化版本（返回列向量）
+d_vec = @(th,beta) reshape(d_beta(th,beta), [], 1);
+d_beta_deriv = @(th,beta) sqrt(N) * ( (da(th)*a(th).' + a(th)*da(th).') * get_U_sqrtL(beta) );
+d_deriv_vec = @(th,beta) reshape(d_beta_deriv(th,beta), [], 1);
 
-CRB_results = zeros(length(theta2_list), length(beta_vals));
+CRB_store = zeros(length(theta2_list), length(beta_vec));
 
 for k = 1:length(theta2_list)
     theta2 = theta2_list(k);
-    for b = 1:length(beta_vals)
-        beta = beta_vals(b);
-        d1 = d_beta(theta1, beta); d1p = d_beta_deriv(theta1, beta);
-        d2 = d_beta(theta2, beta); d2p = d_beta_deriv(theta2, beta);
+    for b = 1:length(beta_vec)
+        beta = beta_vec(b);
         
-        % 梯度矩阵: 6 列，分别对应 θ1, θ2, Reα1, Imα1, Reα2, Imα2
+        d1 = d_vec(theta1, beta);
+        d2 = d_vec(theta2, beta);
+        d1p = d_deriv_vec(theta1, beta);
+        d2p = d_deriv_vec(theta2, beta);
+        
+        % 梯度矩阵：6 列，顺序 [θ1, θ2, Reα1, Imα1, Reα2, Imα2]
         G = [alpha(1)*d1p, alpha(2)*d2p, d1, 1j*d1, d2, 1j*d2];
         J = (2/sigma_w2) * real(G' * G);
+        
+        % 求逆得到 CRB 矩阵，取出 θ1 的方差
         if rcond(J) > 1e-12
-            CRB_theta1 = sqrt(inv(J(1,1))) * (180/pi);
+            Jinv = inv(J);
+            CRB_theta1_deg = sqrt(Jinv(1,1)) * 180/pi;
         else
-            CRB_theta1 = NaN;
+            CRB_theta1_deg = NaN;
         end
-        CRB_results(k,b) = CRB_theta1;
+        CRB_store(k,b) = CRB_theta1_deg;
     end
 end
 
 % 绘图
 figure; hold on;
-plot(beta_vals, CRB_results(1,:), 'b-', 'LineWidth',2);
-plot(beta_vals, CRB_results(2,:), 'r--', 'LineWidth',2);
-plot(beta_vals, CRB_results(3,:), 'g-.', 'LineWidth',2);
-xlabel('\beta'); ylabel('CRB (deg)'); legend('\theta_2=5°','\theta_2=10°','\theta_2=15°');
-grid on; 
-title('Figure 8 (correct)');
+semilogy(beta_vec, CRB_store(1,:), 'b-', 'LineWidth', 1.5);
+semilogy(beta_vec, CRB_store(2,:), 'r--', 'LineWidth', 1.5);
+semilogy(beta_vec, CRB_store(3,:), 'g-.', 'LineWidth', 1.5);
+xlabel('\beta');
+ylabel('CRB (deg)');
+legend('\theta_2 = 5°', '\theta_2 = 10°', '\theta_2 = 15°');
+grid on;
+
+title('Figure 8: M=2, L=2, SNR=0dB (stable)');
