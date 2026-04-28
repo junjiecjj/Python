@@ -53,28 +53,18 @@ for idx = 1:length(theta_rad)
     Denom = real(term1 + term2 - term3);
     CRB_var_rad2 = 1 / (2 * SNR_coherent * Denom);
     CRB_coherent(idx) = sqrt(CRB_var_rad2) * (180/pi);
-    %% 正交信号 (R_s = I)
-    R_s = eye(M);
-    R_sT = R_s.';
-    term1 = M * (a_dot' * R_sT * a_dot);
-    term2 = (a_vec' * R_sT * a_vec) * (a_dot' * a_dot);
-    term3 = M * abs(a_vec.' * R_s * conj(a_dot))^2 / (a_vec' * R_sT * a_vec);
-    
-    Denom = real(term1 + term2 - term3);
-    CRB_var_rad2 = 1 / (2 * SNR_coherent * Denom);
-    CRB_orth(idx) = sqrt(CRB_var_rad2) * (180/pi);
 end
 
 %% 正交信号 (R_s = I) - 使用小角度近似，CRB 为常数 (θ=0° 时的值)
 % 计算 θ=0° 时的 ∥a_dot∥^2
-% a_vec0 = a(0);
-% a_dot0 = da_dtheta(0);
-% norm_a_dot2 = a_dot0' * a_dot0;   % = (π)^2 * sum(n^2)
-% 
-% % 正交信号 CRB 常数 (弧度²)
-% CRB_var_rad2_orth = 1 / (4 * M * SNR_orth * norm_a_dot2);
-% CRB_orth_const = sqrt(CRB_var_rad2_orth) * (180/pi);
-% CRB_orth(:) = CRB_orth_const;
+a_vec0 = a(0);
+a_dot0 = da_dtheta(0);
+norm_a_dot2 = a_dot0' * a_dot0;   % = (π)^2 * sum(n^2)
+
+% 正交信号 CRB 常数 (弧度²)
+CRB_var_rad2_orth = 1 / (4 * M * SNR_orth * norm_a_dot2);
+CRB_orth_const = sqrt(CRB_var_rad2_orth) * (180/pi);
+CRB_orth(:) = CRB_orth_const;
 
 %% 绘图
 figure('Position', [100, 100, 600, 450]);

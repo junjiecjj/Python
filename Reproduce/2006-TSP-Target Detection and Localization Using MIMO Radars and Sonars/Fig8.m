@@ -26,7 +26,7 @@ sigma_w2 = N * abs(alpha1)^2 / SNR_lin;  % 噪声方差 (SNR定义见论文(44))
 % 角度（度）变换为弧度
 theta1_deg = 0;             % 目标1角度
 theta2_deg_list = [5, 10, 15];  % 目标2角度列表
-beta_vals = linspace(0, 0.99, 200);  % 相关系数β (0~0.99，避开β=1奇异)
+beta_vals = linspace(0, 0.9999, 200);  % 相关系数β (0~0.99，避开β=1奇异)
 
 % 预分配结果
 CRB_results = zeros(length(theta2_deg_list), length(beta_vals));
@@ -42,8 +42,7 @@ da_dtheta = @(theta_deg) [0; -1j * pi * cosd(theta_deg) * exp(-1j * pi * sind(th
 A_mat = @(theta_deg) a_func(theta_deg) * a_func(theta_deg).';
 
 % A'(θ) = a' a^T + a a'^T
-dA_dtheta = @(theta_deg) da_dtheta(theta_deg) * a_func(theta_deg).' + ...
-                         a_func(theta_deg) * da_dtheta(theta_deg).';
+dA_dtheta = @(theta_deg) da_dtheta(theta_deg) * a_func(theta_deg).' + a_func(theta_deg) * da_dtheta(theta_deg).';
 
 % 计算 U * Λ^{1/2} 矩阵 (2x2)
 % R_s = [1, beta; beta, 1] 的特征分解
@@ -106,7 +105,7 @@ ylabel('CRB on DOA (deg)');
 title('Figure 8: CRB on DOA estimation (M=2, L=2, SNR=0dB, \theta_1=0°)');
 grid on; 
 grid minor;
-legend('Location', 'best');
+legend('Location', 'best', 'FontSize', 18);
 % ylim([0, 1.2]);
 % xlim([0, 1]);
 hold off;

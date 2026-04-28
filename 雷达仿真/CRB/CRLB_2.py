@@ -202,6 +202,8 @@ MseESPRIT_tls = np.zeros(SNRdBs.size)
 MseESPRIT_tls1 = np.zeros(SNRdBs.size)
 MseESPRIT_ml = np.zeros(SNRdBs.size)
 CRLB      = np.zeros(SNRdBs.size)
+# CRLB_theory = np.zeros(SNRdBs.size)   # 新增
+
 D = a1
 Cst = D.conjugate().T  @ (np.eye(N) - H @ scipy.linalg.inv(H.conj().T@H)@H.conj().T) @ D
 
@@ -248,6 +250,13 @@ for i, snr in enumerate(SNRdBs):
         # y       = reshape(Y,[],1);
         # CRLB(i_SNR)     = CRLB(i_SNR) + sigma2/2./ real(-y'*X_bar*a2 + a2'*(X_bar'*X_bar)*H + a1'*(X_bar'*X_bar)*a1);
         CRLB[i] = CRLB[i] + sigma2/2/np.real((Cst*(X@X.conj().T)))[0,0]
+        # # --- 新增：理论闭式 CRLB ---
+        # Es = np.sum(np.abs(X)**2)                     # 总信号能量
+        # M = N
+        # # 注意：原代码中 theta 是弧度，已定义
+        # term = M * (M**2 - 1) / 12 * (np.pi * np.cos(theta))**2
+        # crlb_th = sigma2 / (2 * term * Es)
+        # CRLB_theory[i] += crlb_th
 
 MseMUSIC        = MseMUSIC/Nit;
 MseESPRIT       = MseESPRIT/Nit;
@@ -265,6 +274,7 @@ axs.semilogy(SNRdBs, MseESPRIT_tls, linestyle='-', lw = 2, marker = 'd', color =
 axs.semilogy(SNRdBs, MseESPRIT_ml, linestyle='-', lw = 2, marker = '^', color = colors[3], markersize = 12,  label = "ESPIRT ml",)
 axs.semilogy(SNRdBs, MseESPRIT_tls1, linestyle='-', lw = 2, marker = 'v', color = colors[4], markersize = 12,  label = "ESPIRT tls1",)
 axs.semilogy(SNRdBs, CRLB,      linestyle='--', lw = 2, marker = 'o', mfc = 'none', color = colors[-1], markersize = 12, label = "CRLB", )
+# axs.semilogy(SNRdBs, CRLB_theory, linestyle=':', lw=2, marker='x', color='red', markersize=10, label="CRLB (closed-form)")
 
 axs.set_xlabel( "SNR/(dB)",)
 axs.set_ylabel('MMSE',)
