@@ -37,7 +37,6 @@ function U_sqrtL = get_U_sqrtL(beta, M)
     U_sqrtL = U * diag(lambda_sqrt);
 end
 
-
 % 等效导向矢量及其对角度（弧度）的导数
 d_beta = @(th,beta) sqrt(N) * (a(th)*a(th).' * get_U_sqrtL(beta,M));
 % 向量化版本（返回列向量）
@@ -73,10 +72,10 @@ for k = 1:length(theta2_list)
 end
 
 % 绘图
-figure; hold on;
-semilogy(beta_vec, CRB_store(1,:), 'b-', 'LineWidth', 1.5);
-semilogy(beta_vec, CRB_store(2,:), 'r--', 'LineWidth', 1.5);
-semilogy(beta_vec, CRB_store(3,:), 'g-.', 'LineWidth', 1.5);
+figure(1);
+semilogy(beta_vec, CRB_store(1,:), 'b-', 'LineWidth', 1.5);  hold on;
+semilogy(beta_vec, CRB_store(2,:), 'r--', 'LineWidth', 1.5);  hold on;
+semilogy(beta_vec, CRB_store(3,:), 'g-.', 'LineWidth', 1.5);  hold off;
 xlabel('\beta');
 ylabel('CRB (deg)');
 legend('\theta_2 = 5°', '\theta_2 = 10°', '\theta_2 = 15°');
