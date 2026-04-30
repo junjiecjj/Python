@@ -20,7 +20,7 @@ a = @(th) exp(-1j*pi*d_lambda*n'*sind(th));
 da = @(th) -1j*pi*d_lambda*cosd(th)*n' .* a(th);
 
 % 相干矩阵及其特征平方根（处理奇异：只保留非零特征值对应的分量）
-function U_sqrtL = get_U_sqrtL1(beta)
+function U_sqrtL = get_U_sqrtL(beta)
     Rs = [1, beta; beta, 1];
     [U, Lambda] = eig(Rs);
     lambda = diag(Lambda);
@@ -29,20 +29,11 @@ function U_sqrtL = get_U_sqrtL1(beta)
     U_sqrtL = U(:,keep) * diag(sqrt(lambda(keep)));
 end
 
-function U_sqrtL = get_U_sqrtL(beta, M)
-    Rs = (1-beta)*eye(M) + beta*ones(M);
-    [U, Lambda] = eig(Rs);
-    lambda = diag(Lambda);
-    lambda_sqrt = sqrt(max(lambda, 0));   % 避免负特征值（数值误差）
-    U_sqrtL = U * diag(lambda_sqrt);
-end
-
-
 % 等效导向矢量及其对角度（弧度）的导数
-d_beta = @(th,beta) sqrt(N) * (a(th)*a(th).' * get_U_sqrtL(beta,M));
+d_beta = @(th,beta) sqrt(N) * (a(th)*a(th).' * get_U_sqrtL(beta));
 % 向量化版本（返回列向量）
 d_vec = @(th,beta) reshape(d_beta(th,beta), [], 1);
-d_beta_deriv = @(th,beta) sqrt(N) * ( (da(th)*a(th).' + a(th)*da(th).') * get_U_sqrtL(beta, M) );
+d_beta_deriv = @(th,beta) sqrt(N) * ( (da(th)*a(th).' + a(th)*da(th).') * get_U_sqrtL(beta) );
 d_deriv_vec = @(th,beta) reshape(d_beta_deriv(th,beta), [], 1);
 
 CRB_store = zeros(length(theta2_list), length(beta_vec));
