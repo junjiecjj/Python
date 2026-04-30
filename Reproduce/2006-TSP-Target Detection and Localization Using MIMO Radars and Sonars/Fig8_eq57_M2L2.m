@@ -2,7 +2,6 @@
 %% 复现 Bekkerman & Tabrikian (2006) Figure 8
 % MIMO雷达中两个目标的角度估计CRB，M=2阵元，SNR=0dB, 目标1固定于0°，目标2分别位于5°,10°,15°，相关系数β从0变化到1
 
-
 clc;
 clear all;
 close all;
@@ -28,7 +27,6 @@ CRB_results = zeros(length(theta2_deg_list), length(beta_vals));
 
 %% 辅助函数
 n = 0:M-1;     % [-0.5, 0.5]
-
 % 导向矢量 a(θ) (均匀线阵，半波长间距)
 a_func = @(th) exp(-1j*2*pi*d_lambda*n'*sind(th));
 % 导向矢量对角度（弧度）的导数 da/dθ
@@ -82,9 +80,11 @@ for k = 1:length(theta2_deg_list)
         else
             J_inv = inv(J);
             CRB_var_rad2 = J_inv(1,1);   % θ1的方差（弧度²）
-            CRB_theta1_deg = sqrt(CRB_var_rad2) * (180/pi);  % 标准差（度）
+            % CRB_theta1_deg = sqrt(CRB_var_rad2) * (180/pi);  % 标准差（度）
+            % CRB_theta1_deg = sqrt(CRB_var_rad2);
+            CRB_theta1_deg =  CRB_var_rad2;
         end
-        CRB_results(k, b_idx) = CRB_var_rad2;
+        CRB_results(k, b_idx) = CRB_theta1_deg;
     end
 end
 
@@ -105,7 +105,7 @@ legend('Location', 'best', 'FontSize', 18);
 % xlim([0, 1]);
 hold off;
 
-function U_sqrtL = get_U_sqrtL(beta, M)
+function U_sqrtL = get_U_sqrtL1(beta, M)
     % 返回 U * sqrt(Lambda) 矩阵，大小为 M x M
     % 相干矩阵 R_s = (1-beta)*I + beta*ones(M)
     
@@ -130,7 +130,7 @@ function U_sqrtL = get_U_sqrtL(beta, M)
     U_sqrtL = U * sqrt_Lambda;   % M x M
 end
 
-function U_sqrtL = get_U_sqrtL1(beta, M)
+function U_sqrtL = get_U_sqrtL(beta, M)
     Rs = (1-beta)*eye(M) + beta*ones(M);
     [U, Lambda] = eig(Rs);
     lambda = diag(Lambda);
