@@ -23,15 +23,13 @@ beta_vals = linspace(0, 0.9999, 100);
 n = 0:M-1;         % 阵元位置
 a = @(th) exp(-1j * 2*pi*d_lambda * n' * sind(th));
 da = @(th) -1j * 2*pi*d_lambda * cosd(th) * n' .* a(th);
-A = @(th) a(th) * a(th).';
-dA = @(th) da(th) * a(th).' + a(th) * da(th).';
+A_mat = @(th) a(th) * a(th).';
+dA_dtheta = @(th) da(th) * a(th).' + a(th) * da(th).';
 
-U_sqrtLambda = @(beta, M) get_U_sqrtL(beta, M);
 % 等效导向矢量 d_β(θ) = sqrt(N) * vec( A(θ) * U Λ^{1/2} )   -> 4×1 列向量
-d_beta_vec = @(theta_deg, beta) reshape( sqrt(N) * (A_mat(theta_deg) * U_sqrtLambda(beta, M)), [], 1);
-
+d_beta_vec = @(theta_deg, beta) reshape( sqrt(N) * (A_mat(theta_deg) * get_U_sqrtL(beta, M)), [], 1);
 % d_β(θ) 对角度（弧度）的导数 -> 4×1 列向量
-d_dbeta_dtheta_vec = @(theta_deg, beta) reshape( sqrt(N) * (dA_dtheta(theta_deg) * U_sqrtLambda(beta, M)), [], 1);
+d_dbeta_dtheta_vec = @(theta_deg, beta) reshape( sqrt(N) * (dA_dtheta(theta_deg) * get_U_sqrtL(beta, M)), [], 1);
 
 
 % 预分配结果（存储 θ1 的标准差，单位度）
@@ -42,19 +40,14 @@ for k = 1:length(theta2_list)
     theta_deg(2) = theta2;      % 更新第二个目标角度
     for b = 1:length(beta_vals)
         beta = beta_vals(b);
-        U_sqrtL = get_U_sqrtL(beta, M);
-        
         % 构建每个目标的等效导向矢量及其导数（列向量）
         d_vecs = cell(L, 1);
         d_deriv_vecs = cell(L, 1);
         for l = 1:L
             th = theta_deg(l);
-            A_th = A(th);
-            dA_th = dA(th);
-            d_vecs{l} = reshape( sqrt(N) * (A_th * U_sqrtL), [], 1);
-            d_deriv_vecs{l} = reshape( sqrt(N) * (dA_th * U_sqrtL), [], 1);
+            d_vecs{l} = d_beta_vec(th, beta);
+            d_deriv_vecs{l} = d_dbeta_dtheta_vec(th, beta);
         end
-        
         % 梯度矩阵 G：每列对应一个实参数
         % 参数顺序: [θ1, θ2, ..., θL, Re(α1), Im(α1), ..., Re(αL), Im(αL)]
         n_params = L + 2*L;      % 角度 L 个，复振幅实虚部 2L 个
