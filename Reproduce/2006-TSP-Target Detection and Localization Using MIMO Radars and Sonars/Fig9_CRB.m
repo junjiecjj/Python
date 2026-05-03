@@ -6,6 +6,8 @@
 clc;
 clear all;
 close all;
+addpath('./functions');
+
 
 %% 用户参数
 M = 10;                          % 阵元数（可修改为任意正整数）
@@ -13,8 +15,8 @@ d_lambda = 0.5;                 % 半波长间距
 SNR_dB = 0;                     % 信噪比 (dB)
 SNR_lin = 10^(SNR_dB/10);
 N = 1;                          % 快拍数
-alpha1 = 1; 
-alpha2 = 1;         % 复振幅
+alpha1 = 2; 
+alpha2 = 10;         % 复振幅
 sigma_w2 = N * abs(alpha1)^2 / SNR_lin;   % 噪声方差
 
 theta1_deg = 0;
@@ -31,8 +33,9 @@ dA = @(th) da(th) * a(th).' + a(th) * da(th).';
 % 相干矩阵（通用形式，适用于任意 M）
 R_s = @(beta) (1-beta)*eye(M) + beta*ones(M);
 
-factor = 2 * N / sigma_w2;       % 公共因子 2N/σ_w^2
+factor1 = 2 * N / sigma_w2;       
 
+factor2 = 2 * N * M / sigma_w2;      
 % 辅助函数：从复数迹构造 2x2 子块（公式(61)中的块）
 blk = @(t, f) f * [real(t), -imag(t); imag(t), real(t)];
 
@@ -41,89 +44,29 @@ CRB_theta1 = zeros(2, length(theta2_list));
 %% 主循环
 for k = 1:length(theta2_list)
     theta2_deg = theta2_list(k);
+
     %% 相干信号
     beta = 1;
     Rs = R_s(beta);
-    
-    A1 = A(theta1_deg);   
-    A2 = A(theta2_deg);
-    dA1 = dA(theta1_deg); 
-    dA2 = dA(theta2_deg);
-    % ---------- (60) J_θθ ----------
-    T11 = trace(dA1 * Rs * dA1');
-    T22 = trace(dA2 * Rs * dA2');
-    T12 = trace(dA2 * Rs * dA1');   % 注意顺序：dA2 * Rs * dA1'
-    T21 = trace(dA1 * Rs * dA2');
-    Jtt = factor * [abs(alpha1)^2 * real(T11),  real(conj(alpha1)*alpha2 * T12);
-                    real(conj(alpha2)*alpha1 * T21),  abs(alpha2)^2 * real(T22)];
-    % ---------- (62) J_θa ----------
-    Q11 = conj(alpha1) * trace(A1 * Rs * dA1');
-    Q12 = conj(alpha1) * trace(A2 * Rs * dA1');
-    Q21 = conj(alpha2) * trace(A1 * Rs * dA2');
-    Q22 = conj(alpha2) * trace(A2 * Rs * dA2');
-    row11 = factor * [real(Q11), -imag(Q11)];
-    row12 = factor * [real(Q12), -imag(Q12)];
-    row21 = factor * [real(Q21), -imag(Q21)];
-    row22 = factor * [real(Q22), -imag(Q22)];
-    Jta = [row11, row12; row21, row22];   % 2×4
-    % ---------- (61) J_aa ----------
-    S11 = trace(A1 * Rs * A1');   % 实数
-    S22 = trace(A2 * Rs * A2');
-    S12 = trace(A2 * Rs * A1');   % 复数
-    S21 = trace(A1 * Rs * A2');
-    Jaa = [blk(S11, factor), blk(S12, factor);
-           blk(S21, factor), blk(S22, factor)];   % 4×4
-    Schur = Jtt - Jta / Jaa * Jta';
-    if rcond(Schur) > 1e-12
-        CRB_theta = inv(Schur);
-        % CRB_deg = sqrt(CRB_theta(1,1)) * 180/pi;
-        CRB_deg = CRB_theta(1,1);
-    else
-        CRB_deg = NaN;
-    end
-    CRB_theta1(1, k) = CRB_deg;
+ 
+    CRB_theta1(1, k) =  CRB(d_lambda, M, theta1_deg, theta2_deg, alpha1, alpha2, Rs, factor1);
     %% 正交信号
     beta = 0;
     Rs = R_s(beta);
     
-    % A1 = A(theta1_deg);   
-    % A2 = A(theta2_deg);
-    % dA1 = dA(theta1_deg); 
-    % dA2 = dA(theta2_deg);
-    % ---------- (60) J_θθ ----------
-    T11 = trace(dA1 * Rs * dA1');
-    T22 = trace(dA2 * Rs * dA2');
-    T12 = trace(dA2 * Rs * dA1');   % 注意顺序：dA2 * Rs * dA1'
-    T21 = trace(dA1 * Rs * dA2');
-    Jtt = factor * [abs(alpha1)^2 * real(T11),  real(conj(alpha1)*alpha2 * T12);
-                    real(conj(alpha2)*alpha1 * T21),  abs(alpha2)^2 * real(T22)];
-    % ---------- (62) J_θa ----------
-    Q11 = conj(alpha1) * trace(A1 * Rs * dA1');
-    Q12 = conj(alpha1) * trace(A2 * Rs * dA1');
-    Q21 = conj(alpha2) * trace(A1 * Rs * dA2');
-    Q22 = conj(alpha2) * trace(A2 * Rs * dA2');
-    row11 = factor * [real(Q11), -imag(Q11)];
-    row12 = factor * [real(Q12), -imag(Q12)];
-    row21 = factor * [real(Q21), -imag(Q21)];
-    row22 = factor * [real(Q22), -imag(Q22)];
-    Jta = [row11, row12; row21, row22];   % 2×4
-    % ---------- (61) J_aa ----------
-    S11 = trace(A1 * Rs * A1');   % 实数
-    S22 = trace(A2 * Rs * A2');
-    S12 = trace(A2 * Rs * A1');   % 复数
-    S21 = trace(A1 * Rs * A2');
-    Jaa = [blk(S11, factor), blk(S12, factor);
-           blk(S21, factor), blk(S22, factor)];   % 4×4
-    Schur = Jtt - Jta / Jaa * Jta';
-    if rcond(Schur) > 1e-12
-        CRB_theta = inv(Schur);
-        % CRB_deg = sqrt(CRB_theta(1,1)) * 180/pi;
-        CRB_deg = CRB_theta(1,1);
-    else
-        CRB_deg = NaN;
-    end
-    CRB_theta1(2, k) = CRB_deg;
+    CRB_theta1(2, k) =  CRB(d_lambda, M, theta1_deg, theta2_deg, alpha1, alpha2, Rs, factor2);
 end
+
+%% 
+theta2_list = [0.2, 0.5, 0.8, 1.0, 1.2, 1.5, 1.8, 2.0];  % 目标2真实角度（度）
+MC_trials = 200;                % 蒙特卡洛次数
+
+
+RMSE_coherent = zeros(size(theta2_list));
+RMSE_orth = zeros(size(theta2_list));
+
+
+
 
 %% 绘图
 figure(1);
