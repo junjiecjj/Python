@@ -1,7 +1,7 @@
+%% 严格按 (41)-(43) 实现 CRB(θ) 的通用程序（适用于任意 M）
+% 对应图8：M=2（可改为任意值），L=2，θ1=0°，θ2=5,10,15°，SNR=0dB
+% 使用分块 FIM (J_θθ, J_θa, J_aa) 和 Schur 补，避免完整 6×6 求逆
 
-
-
-%% 不同beta下CRB的趋势倒是对的，虽然和原文有量级的差异，但是ML算法估计出来的和理论的CRB死活对不上，find it
 
 clc;
 clear all;
@@ -18,7 +18,7 @@ N = 1;                          % 快拍数
 alpha1 = 2; 
 alpha2 = 10;         % 复振幅
 sigma2_coherent = N * abs(alpha1)^2 / SNR_lin;   % 噪声方差
-sigma2_orth = sigma2_coherent;   % 正交信号 TOT 补偿
+sigma2_orth = sigma2_coherent / M;   % 正交信号 TOT 补偿
 
 theta1_true = 0;
 theta2_list = 0:0.01:2;
@@ -35,7 +35,7 @@ dA = @(th) da(th) * a(th).' + a(th) * da(th).';
 R_s = @(beta) (1-beta)*eye(M) + beta*ones(M);
 
 factor1 = 2 * N / sigma2_coherent;
-factor2 = 2 * N *M / sigma2_coherent;
+factor2 = 2 * N / sigma2_orth;
 
 % 辅助函数：从复数迹构造 2x2 子块（公式(61)中的块）
 blk = @(t, f) f * [real(t), -imag(t); imag(t), real(t)];
@@ -87,6 +87,25 @@ for k = 1:length(theta2_list_scat)
         % 计算 eta
         eta_coherent = compute_eta(y, s, R_s_coherent, N);
         % 二维网格搜索最大化 L(θ) = eta^H P_D eta
+        % 搜索范围：θ1 ∈ [-0.8,0.8], θ2 ∈ [θ2_true-0.8, θ2_true+0.8]，步长0.02
+        % theta1_grid = linspace(-0.8, 0.8, 81);
+        % theta2_grid = linspace(theta2_true-0.8, theta2_true+0.8, 81);
+        % best_val = -inf;
+        % best_theta1 = NaN;
+        % for i = 1:length(theta1_grid)
+        %     th1 = theta1_grid(i);
+        %     for j = 1:length(theta2_grid)
+        %         th2 = theta2_grid(j);
+        %         D = construct_D([th1, th2], R_s_coherent, M, N);
+        %         P_D = D * ((D'*D) \ D');
+        %         L_val = real(eta_coherent' * P_D * eta_coherent);
+        %         if L_val > best_val
+        %             best_val = L_val;
+        %             best_theta1 = th1;
+        %         end
+        %     end
+        % end
+        % theta1_est_coherent(mc) = best_theta1;
         theta1_est_coherent(mc) = search_theta1_iterative(eta_coherent, R_s_coherent, M, N, theta2_true);
 
         % ----- 正交信号 -----
@@ -98,6 +117,22 @@ for k = 1:length(theta2_list_scat)
         R_s_orth = eye(M);
         eta_orth = compute_eta(y_orth, s_orth, R_s_orth, N);
         % % 网格搜索
+        % best_val = -inf;
+        % best_theta1_orth = NaN;
+        % for i = 1:length(theta1_grid)
+        %     th1 = theta1_grid(i);
+        %     for j = 1:length(theta2_grid)
+        %         th2 = theta2_grid(j);
+        %         D = construct_D([th1, th2], R_s_orth, M, N);
+        %         P_D = D * ((D'*D) \ D');
+        %         L_val = real(eta_orth' * P_D * eta_orth);
+        %         if L_val > best_val
+        %             best_val = L_val;
+        %             best_theta1_orth = th1;
+        %         end
+        %     end
+        % end
+        % theta1_est_orth(mc) = best_theta1_orth;
         theta1_est_orth(mc) = search_theta1_iterative(eta_orth, R_s_orth, M, N, theta2_true);
     end
     
@@ -117,7 +152,7 @@ legend('CRB \beta = 1', 'CRB \beta = 0', 'Coherent ML', 'Orthogonal ML');
 grid on;
 title(sprintf('Figure 8: M=%d, L=2, SNR=0dB (via (41)-(43))', M));
 
-function theta1_est = search_theta1_iterative(eta, R_s, M, N, theta2_true)
+function theta1_est = search_theta1_iterative(eta, R_s, M, N, theta2_true, init_range, final_tol, npoints)
 % 迭代细化一维搜索，估计 theta1（已知 theta2）
 % 参照 MUSIC 算法的迭代峰值搜索思路
 % 输入：
@@ -130,10 +165,16 @@ function theta1_est = search_theta1_iterative(eta, R_s, M, N, theta2_true)
 %   npoints      - 每次迭代的网格点数，默认 21（奇数，包含中心点）
 % 输出：
 %   theta1_est   - 估计的第一个目标角度（度）
-    final_tol = 1e-4;
-    npoints = 21;
+    if nargin < 6, init_range = 0.5; end
+    if nargin < 7, final_tol = 1e-4; end
+    if nargin < 8, npoints = 21; end
+
+    % 预先计算已知 theta2 对应的 d2（固定）
+    d2 = construct_D([0, theta2_true], R_s, M, N);
+    d2 = d2(:, 2);
+
     center = 0;      % 初始中心
-    range = 0.1;
+    range = init_range;
     
     while range > final_tol
         % 生成当前搜索区域的均匀网格
@@ -142,7 +183,9 @@ function theta1_est = search_theta1_iterative(eta, R_s, M, N, theta2_true)
         
         for i = 1:length(theta1_vec)
             th1 = theta1_vec(i);
-            D = construct_D([th1, theta2_true], R_s, M, N);
+            d1 = construct_D([th1, theta2_true], R_s, M, N);
+            d1 = d1(:, 1);
+            D = [d1, d2];
             P_D = D * ((D'*D) \ D');
             L_vals(i) = real(eta' * P_D * eta);
         end

@@ -45,5 +45,4 @@ function crb =  CRB(d_lambda, M, theta1_deg, theta2_deg, alpha1, alpha2, Rs, fac
     else
         crb = NaN;
     end
-
 end

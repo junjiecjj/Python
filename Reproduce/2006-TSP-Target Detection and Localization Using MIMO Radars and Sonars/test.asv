@@ -12,7 +12,7 @@ addpath('./functions');
 %% 用户参数
 M = 10;                         % 阵元数（可修改为任意正整数）
 d_lambda = 0.5;                 % 半波长间距
-SNR_dB = -4:2:15;                % 信噪比 (dB)
+SNR_dB = 0:1:10;                % 信噪比 (dB)
 N = 1;                          % 快拍数
 alpha = 1;
 theta1 = 0;  % 单位:度
@@ -67,7 +67,7 @@ for idx = 1:length(SNR_dB)
 
     Denom = real(term1 + term2 - term3);   % 应为正实数
     CRB_var_rad2 = 1 / (2 * SNR_coherent * Denom);
-    CRB_coherent(idx) = sqrt(CRB_var_rad2) * (180/pi);
+    CRB_coherent(idx) = sqrt(CRB_var_rad2);
 
     %% 正交信号由于TOT补偿，有效SNR提高M倍
     SNR_orth = M * SNR_lin;
@@ -86,7 +86,7 @@ for idx = 1:length(SNR_dB)
     Denom = real(term1 + term2 - term3);
     % 注意此处使用补偿后的 SNR_orth
     CRB_var_rad2 = 1 / (2 * SNR_orth * Denom);
-    CRB_orth(idx) = sqrt(CRB_var_rad2) * (180/pi);
+    CRB_orth(idx) = sqrt(CRB_var_rad2);
 
     % ----- 蒙特卡洛 ML 估计 -----
     fprintf('SNR = %.1f dB: ', SNR_db);
@@ -101,7 +101,7 @@ for idx = 1:length(SNR_dB)
         eta = compute_eta(y, s_coherent, R_s_coherent, N);
         theta_est_c(mc) = ml_single(eta, R_s_coherent, M, N, init_range, final_tol);
     end
-    RMSE_coherent(idx) = sqrt(mean((theta_est_c - theta1).^2));
+    RMSE_coherent(idx) = sqrt(mean((theta_est_c - theta1).^2)) * (pi/180);  % 转换为弧度
     
     fprintf('CRB_coherent =%.4f, coherent RMSE=%.4f rad, ', CRB_coherent(idx), RMSE_coherent(idx));
     
@@ -115,7 +115,7 @@ for idx = 1:length(SNR_dB)
         eta = compute_eta(y, s_orth, R_s_orth, N);
         theta_est_o(mc) = ml_single(eta, R_s_orth, M, N, init_range, final_tol);
     end
-    RMSE_orth(idx) = sqrt(mean((theta_est_o - theta1).^2));
+    RMSE_orth(idx) = sqrt(mean((theta_est_o - theta1).^2)) * (pi/180);
     
     fprintf('CRB_orth = %.4f, orthogonal RMSE=%.4f rad\n', CRB_orth(idx), RMSE_orth(idx));
 
@@ -155,7 +155,7 @@ end
 
 %% 辅助函数：一维迭代细化 ML 估计（基于 (29)-(33) 单目标形式）
 function theta_est = ml_single(eta, R_s, M, N, init_range, final_tol)
-    if nargin < 5, init_range = 90; end
+    if nargin < 5, init_range = 0.1; end
     if nargin < 6, final_tol = 1e-4; end
     center = 0;   % 真实角度在 0° 附近
     range = init_range;

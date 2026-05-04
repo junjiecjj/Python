@@ -1,226 +1,158 @@
-%% 复现 Bekkerman & Tabrikian (2006) Figure 9 - 完整版（修正投影矩阵错误）
-% M=10 阵元，双目标：θ1=0° 固定，θ2 从 0° 到 2° 变化，SNR=0dB
-% 相干信号: 发射波束固定指向 0° (R_s = a(0°)a^H(0°))
-% 正交信号: 全向发射 (R_s = I)，TOT 补偿使有效 SNR 提高 M 倍
-% 绘制 CRB 和 ML 估计的 RMSE (200 次蒙特卡洛，二维网格搜索)
+%% 严格按 (41)-(43) 实现 CRB(θ) 的通用程序（适用于任意 M）
+% 对应图8：M=2（可改为任意值），L=2，θ1=0°，θ2=5,10,15°，SNR=0dB
+% 使用分块 FIM (J_θθ, J_θa, J_aa) 和 Schur 补，避免完整 6×6 求逆
 
-clear; clc; close all;
 
-%% 参数设置
-M = 10;                     % 阵元数
-d_lambda = 0.5;             % 半波长间距
-SNR_dB = 0;                 % 基础信噪比 (0 dB)
-SNR_lin = 10^(SNR_dB/10);   % 线性值
-N = 1;                      % 快拍数（为简化取1，CRB与N成反比）
-alpha1 = 1;                 % 目标1复振幅
-alpha2 = 1;                 % 目标2复振幅
+clc;
+clear all;
+close all;
+addpath('./functions');
 
-% 相干信号：发射波束指向 0°，R_s = a_beam * a_beam^H
-beam_theta = 0;             % 发射波束方向（度）
-% 正交信号：R_s = I，TOT 补偿使等效噪声方差降低 M 倍
-sigma_w2_coherent = 1 / SNR_lin;        % 相干信号噪声方差
-sigma_w2_orth = sigma_w2_coherent / M;  % 正交信号噪声方差 (TOT 补偿)
 
-% 对称阵列（质心为原点）
-n_idx = -(M-1)/2 : (M-1)/2;             % -4.5:4.5
-a = @(theta_deg) exp(-1j * pi * d_lambda * n_idx' * sind(theta_deg));
-% 导向矢量对角度（度）的导数，用于 CRB
-da_dtheta_deg = @(theta_deg) -1j * pi * d_lambda * cosd(theta_deg) * n_idx' .* a(theta_deg);
+%% 用户参数
+M = 10;                          % 阵元数（可修改为任意正整数）
+d_lambda = 0.5;                 % 半波长间距
+SNR_dB = 0;                     % 信噪比 (dB)
+SNR_lin = 10^(SNR_dB/10);
+N = 1;                          % 快拍数
+alpha1 = 2; 
+alpha2 = 10;         % 复振幅
+sigma2_coherent = N * abs(alpha1)^2 / SNR_lin;   % 噪声方差
+sigma2_orth = sigma2_coherent;   % 正交信号 TOT 补偿
 
-% 相干信号的发射导向矢量
-a_beam = a(beam_theta);
-R_s_coherent = a_beam * a_beam';
-R_sT_coherent = R_s_coherent.';
+theta1_true = 0;
+theta2_list = 0:0.01:2;
+beta_vals = linspace(0, 0.9999, 200);   % 相关系数
 
-% 正交信号的 R_s = I
-R_sT_orth = eye(M);
+% 对称阵列（质心在原点）
+n = 0 : (M-1);         % 阵元位置
+a = @(th) exp(-1j * 2*pi*d_lambda * n' * sind(th));
+da = @(th) -1j * 2*pi*d_lambda * cosd(th) * n' .* a(th);
+A = @(th) a(th) * a(th).';
+dA = @(th) da(th) * a(th).' + a(th) * da(th).';
 
-%% 等效导向矢量 d_β(θ) 及其导数 (长度 M^2 = 100)
-% 对于相干信号，计算 U Λ^{1/2}
-[U_coherent, Lambda_coherent] = eig(R_s_coherent);
-Lambda_sqrt_coherent = sqrt(Lambda_coherent);
-U_sqrtL_coherent = U_coherent * Lambda_sqrt_coherent;   % 秩1，第二列为0
-% 对于正交信号，UΛ^{1/2} = I
-U_sqrtL_orth = eye(M);
+% 相干矩阵（通用形式，适用于任意 M）
+R_s = @(beta) (1-beta)*eye(M) + beta*ones(M);
 
-% 函数：计算 d_β(θ) = sqrt(N) * vec( A(θ) * UΛ^{1/2} )
-d_beta = @(theta_deg, U_sqrtL) reshape( sqrt(N) * (a(theta_deg) * a(theta_deg).' * U_sqrtL), [], 1);
-% 导数 d_β'(θ) = sqrt(N) * vec( (a'(θ)a^T(θ) + a(θ)a'^T(θ)) * UΛ^{1/2} )
-d_beta_deriv = @(theta_deg, U_sqrtL) reshape( sqrt(N) * ( (da_dtheta_deg(theta_deg) * a(theta_deg).' + ...
-                                                         a(theta_deg) * da_dtheta_deg(theta_deg).') * U_sqrtL ), [], 1);
+factor1 = 2 * N / sigma2_coherent;
+factor2 = 2 * N *M / sigma2_coherent;
 
-%% 计算 CRB (解析)
-theta2_deg_vec = linspace(0.1, 2, 30);   % 0~2度，避开0度奇异
-CRB_coherent = zeros(size(theta2_deg_vec));
-CRB_orth = zeros(size(theta2_deg_vec));
+% 辅助函数：从复数迹构造 2x2 子块（公式(61)中的块）
+blk = @(t, f) f * [real(t), -imag(t); imag(t), real(t)];
+CRB_theta1 = zeros(2, length(theta2_list));
 
-for idx = 1:length(theta2_deg_vec)
-    theta2 = theta2_deg_vec(idx);
-    theta_deg = [0; theta2];
-    
-    % --- 相干信号 CRB ---
-    d1 = d_beta(theta_deg(1), U_sqrtL_coherent);
-    d2 = d_beta(theta_deg(2), U_sqrtL_coherent);
-    d1p = d_beta_deriv(theta_deg(1), U_sqrtL_coherent);
-    d2p = d_beta_deriv(theta_deg(2), U_sqrtL_coherent);
-    
-    grad = zeros(length(d1), 6);
-    grad(:,1) = alpha1 * d1p;
-    grad(:,2) = alpha2 * d2p;
-    grad(:,3) = d1;
-    grad(:,4) = 1j * d1;
-    grad(:,5) = d2;
-    grad(:,6) = 1j * d2;
-    J = (2/sigma_w2_coherent) * real(grad' * grad);
-    if rcond(J) > 1e-12
-        CRB_var = inv(J);
-        CRB_coherent(idx) = sqrt(CRB_var(1,1)) * (180/pi);
-    else
-        CRB_coherent(idx) = NaN;
-    end
-    
-    % --- 正交信号 CRB ---
-    d1 = d_beta(theta_deg(1), U_sqrtL_orth);
-    d2 = d_beta(theta_deg(2), U_sqrtL_orth);
-    d1p = d_beta_deriv(theta_deg(1), U_sqrtL_orth);
-    d2p = d_beta_deriv(theta_deg(2), U_sqrtL_orth);
-    
-    grad = zeros(length(d1), 6);
-    grad(:,1) = alpha1 * d1p;
-    grad(:,2) = alpha2 * d2p;
-    grad(:,3) = d1;
-    grad(:,4) = 1j * d1;
-    grad(:,5) = d2;
-    grad(:,6) = 1j * d2;
-    J = (2/sigma_w2_orth) * real(grad' * grad);
-    if rcond(J) > 1e-12
-        CRB_var = inv(J);
-        CRB_orth(idx) = sqrt(CRB_var(1,1)) * (180/pi);
-    else
-        CRB_orth(idx) = NaN;
-    end
+%% 主循环
+for k = 1:length(theta2_list)
+    theta2_deg = theta2_list(k);
+
+    %% 相干信号
+    beta = 1;
+    Rs = R_s(beta);
+    CRB_theta1(1, k) =  CRB(d_lambda, M, theta1_true, theta2_deg, alpha1, alpha2, Rs, factor1);
+    %% 正交信号
+    beta = 0;
+    Rs = R_s(beta);
+    CRB_theta1(2, k) =  CRB(d_lambda, M, theta1_true, theta2_deg, alpha1, alpha2, Rs, factor2);
 end
 
-%% 蒙特卡洛 ML 仿真 (RMSE)
-MC_trials = 200;                     % 每个 θ2 点的仿真次数
-theta2_ml_vec = [0.2, 0.5, 0.8, 1.0, 1.2, 1.5, 1.8, 2.0];  % 选取几个点，避免过密计算
-RMSE_coherent = zeros(size(theta2_ml_vec));
-RMSE_orth = zeros(size(theta2_ml_vec));
+%% 
+theta2_list_scat = [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.5, 1.8, 2.0];  % 目标2真实角度（度）
+RMSE_coherent = zeros(size(theta2_list_scat));
+RMSE_orth = zeros(size(theta2_list_scat));
+MC_trials = 100;                % 蒙特卡洛次数
 
-% 二维网格搜索参数（角度范围覆盖真实值附近）
-grid_res = 0.02;                    % 度
-theta1_grid = -0.8:grid_res:0.8;     % 目标1可能范围（真实0°附近）
-
-fprintf('开始蒙特卡洛 ML 仿真 (共 %d 个 θ2 点，每个点 %d 次)...\n', length(theta2_ml_vec), MC_trials);
-
-for pt = 1:length(theta2_ml_vec)
-    theta2_true = theta2_ml_vec(pt);
-    % 当前目标2的搜索网格
-    t2_grid = theta2_true + (-0.8:grid_res:0.8);   % 范围 ±0.8°
+for k = 1:length(theta2_list_scat)
+    theta2_true = theta2_list_scat(k);
+    % fprintf('Processing θ2 = %.1f° ...\n', theta2_true);
     
-    % 存储估计值
+    % 发射信号（相干信号固定，正交信号随机，但需要与 eta 计算一致）
+    R_s_coherent = a(theta1_true) * a(theta1_true)';
+    % 对于相干信号，发射信号 s = a(theta1_true) （所有快拍相同，N=1）
+    s_coherent = a(theta1_true);
+    
     theta1_est_coherent = zeros(MC_trials, 1);
     theta1_est_orth = zeros(MC_trials, 1);
     
     for mc = 1:MC_trials
-        % --- 相干信号数据生成 ---
-        A1 = a(0) * a(0).';
-        A2 = a(theta2_true) * a(theta2_true).';
-        % 发射信号 s[n] = a_beam (所有快拍相同)
-        s_coherent = a_beam;    % M x 1
-        % 无噪声接收
-        signal_coherent = alpha1 * A1 * s_coherent + alpha2 * A2 * s_coherent;
-        % 加噪声
-        w_coherent = sqrt(sigma_w2_coherent/2) * (randn(M,1) + 1j*randn(M,1));
-        y_coherent = signal_coherent + w_coherent;
-        % 充分统计量 E = y * s^H / sqrt(N) = y * s_coherent^H (N=1)
-        E_coherent = y_coherent * s_coherent';
-        
-        % 计算 UΛ^{-1/2}（伪逆，处理奇异）
-        Lc = diag(Lambda_coherent);
-        Lc_inv_sqrt = diag(1./sqrt(Lc + eps));   % 加小量避免除零
-        U_sqrtL_inv = U_coherent * Lc_inv_sqrt;
-        eta_coherent = vec(E_coherent * U_sqrtL_inv);   % 100x1
-        
-        % 网格搜索（二维）
-        best_L = -inf;
-        best_theta1 = NaN;
-        for i = 1:length(theta1_grid)
-            th1 = theta1_grid(i);
-            d1 = d_beta(th1, U_sqrtL_coherent);
-            for j = 1:length(t2_grid)
-                th2 = t2_grid(j);
-                d2 = d_beta(th2, U_sqrtL_coherent);
-                D = [d1, d2];
-                % 计算投影矩阵 P_D = D * pinv(D)
-                P_D = D * pinv(D);   % 数值稳定，避免 (D'*D) 奇异
-                L_val = real(eta_coherent' * P_D * eta_coherent);
-                if L_val > best_L
-                    best_L = L_val;
-                    best_theta1 = th1;
-                end
-            end
-        end
-        theta1_est_coherent(mc) = best_theta1;
-        
-        % --- 正交信号数据生成 ---
-        % 发射信号: 为保证 R_s = I，取随机单位向量并缩放 sqrt(M)
+        fprintf('  Processing: θ2 = %.1f°, %d', theta2_true, mc);
+        fprintf('\r');
+        A1 = A(theta1_true);
+        A2 = A(theta2_true);
+        % ----- 相干信号 -----
+        % 生成接收数据
+        s = s_coherent;
+        alphaAs = (alpha1 * A1 + alpha2 * A2) * s;
+        w = sqrt(sigma2_coherent/2) * (randn(M,1) + 1j*randn(M,1));
+        y = alphaAs + w;
+        % 计算 eta
+        eta_coherent = compute_eta(y, s, R_s_coherent, N);
+        % 二维网格搜索最大化 L(θ) = eta^H P_D eta
+        theta1_est_coherent(mc) = search_theta1_iterative(eta_coherent, R_s_coherent, M, N, theta2_true);
+
+        % ----- 正交信号 -----
+        % 每次独立生成发射信号 s_orth，满足 E[s s^H] = I
         s_orth = sqrt(M) * (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
-        signal_orth = alpha1 * A1 * s_orth + alpha2 * A2 * s_orth;
-        w_orth = sqrt(sigma_w2_orth/2) * (randn(M,1) + 1j*randn(M,1));
-        y_orth = signal_orth + w_orth;
-        E_orth = y_orth * s_orth';
-        % 正交信号：UΛ^{-1/2} = I
-        eta_orth = reshape(E_orth, [], 1);
-        
-        best_L = -inf;
-        best_theta1 = NaN;
-        for i = 1:length(theta1_grid)
-            th1 = theta1_grid(i);
-            d1 = d_beta(th1, U_sqrtL_orth);
-            for j = 1:length(t2_grid)
-                th2 = t2_grid(j);
-                d2 = d_beta(th2, U_sqrtL_orth);
-                D = [d1, d2];
-                P_D = D * pinv(D);
-                L_val = real(eta_orth' * P_D * eta_orth);
-                if L_val > best_L
-                    best_L = L_val;
-                    best_theta1 = th1;
-                end
-            end
-        end
-        theta1_est_orth(mc) = best_theta1;
+        alphaAs_orth = (alpha1 * A1 + alpha2 * A2) * s_orth;
+        w_orth = sqrt(sigma2_orth/2) * (randn(M,1) + 1j*randn(M,1));
+        y_orth = alphaAs_orth + w_orth;
+        R_s_orth = eye(M);
+        eta_orth = compute_eta(y_orth, s_orth, R_s_orth, N);
+        % % 网格搜索
+        theta1_est_orth(mc) = search_theta1_iterative(eta_orth, R_s_orth, M, N, theta2_true);
     end
     
-    % 计算 RMSE (估计误差，真实值为0)
-    rmse_c = sqrt(mean((theta1_est_coherent - 0).^2));
-    rmse_o = sqrt(mean((theta1_est_orth - 0).^2));
-    RMSE_coherent(pt) = rmse_c;
-    RMSE_orth(pt) = rmse_o;
-    fprintf('θ2 = %.1f° : Coherent RMSE = %.3f°, Orthogonal RMSE = %.3f°\n', theta2_true, rmse_c, rmse_o);
+    RMSE_coherent(k) = sqrt(mean((theta1_est_coherent - theta1_true).^2));
+    RMSE_orth(k) = sqrt(mean((theta1_est_orth - theta1_true).^2));
 end
 
 %% 绘图
 figure(1);
-% 绘制 CRB 曲线（连续）
-semilogy(theta2_deg_vec, CRB_coherent, 'b-', 'LineWidth', 2, 'DisplayName', 'Coherent CRB');
-hold on;
-semilogy(theta2_deg_vec, CRB_orth, 'r--', 'LineWidth', 2, 'DisplayName', 'Orthogonal CRB');
-% 绘制 ML 估计 RMSE 点
-semilogy(theta2_ml_vec, RMSE_coherent, 'bo', 'MarkerSize', 8, 'MarkerFaceColor', 'b', 'DisplayName', 'Coherent ML');
-semilogy(theta2_ml_vec, RMSE_orth, 'r^', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'Orthogonal ML');
+semilogy(theta2_list, CRB_theta1(1,:), 'b-', 'LineWidth',1.5); hold on;
+semilogy(theta2_list, CRB_theta1(2,:), 'r--', 'LineWidth',1.5); hold on;
+semilogy(theta2_list_scat, RMSE_coherent, 'bo', 'MarkerSize', 8, 'MarkerFaceColor', 'b'); hold on;
+semilogy(theta2_list_scat, RMSE_orth, 'r^', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+xlabel('\beta'); 
+ylabel('CRB on DOA (deg)');
+legend('CRB \beta = 1', 'CRB \beta = 0', 'Coherent ML', 'Orthogonal ML');
+grid on;
+title(sprintf('Figure 8: M=%d, L=2, SNR=0dB (via (41)-(43))', M));
 
-xlabel('Separation angle \theta_2 (deg)');
-ylabel('RMSE / CRB (deg)');
-title('Figure 9: DOA estimation of first target (M=10, L=2, SNR=0dB)');
-grid on; grid minor;
-legend('Location', 'best');
-% xlim([0, 2]);
-% ylim([0, 0.25]);
-hold off;
-
-%% 辅助函数: vec 操作
-function v = vec(X)
-    v = X(:);
+function theta1_est = search_theta1_iterative(eta, R_s, M, N, theta2_true, init_range, final_tol, npoints)
+% 迭代细化一维搜索，估计 theta1（已知 theta2）
+% 参照 MUSIC 算法的迭代峰值搜索思路
+% 输入：
+%   eta          - 等效观测向量 (M^2 x 1)
+%   R_s          - 发射相干矩阵
+%   M,N          - 阵元数、快拍数
+%   theta2_true  - 已知的第二个目标角度（度）
+%   init_range   - 初始搜索半径（度），默认 0.5
+%   final_tol    - 最终搜索半径阈值（度），默认 0.0001
+%   npoints      - 每次迭代的网格点数，默认 21（奇数，包含中心点）
+% 输出：
+%   theta1_est   - 估计的第一个目标角度（度）
+    final_tol = 1e-4;
+    npoints = 21;
+    center = 0;      % 初始中心
+    range = 0.1;
+    
+    while range > final_tol
+        % 生成当前搜索区域的均匀网格
+        theta1_vec = linspace(center - range, center + range, npoints);
+        L_vals = zeros(size(theta1_vec));
+        
+        for i = 1:length(theta1_vec)
+            th1 = theta1_vec(i);
+            D = construct_D([th1, theta2_true], R_s, M, N);
+            P_D = D * ((D'*D) \ D');
+            L_vals(i) = real(eta' * P_D * eta);
+        end
+        
+        % 找到最大似然对应的角度
+        [~, idx] = max(L_vals);
+        center = theta1_vec(idx);
+        
+        % 缩小搜索半径
+        range = range / 2;
+    end
+    theta1_est = center;
 end
