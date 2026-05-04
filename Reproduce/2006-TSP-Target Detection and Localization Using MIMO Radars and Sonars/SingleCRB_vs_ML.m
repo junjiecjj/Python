@@ -12,13 +12,13 @@ addpath('./functions');
 %% 用户参数
 M = 10;                         % 阵元数（可修改为任意正整数）
 d_lambda = 0.5;                 % 半波长间距
-SNR_dB = -4:2:15;                % 信噪比 (dB)
+SNR_dB = -4:4:15;                % 信噪比 (dB)
 N = 1;                          % 快拍数
 alpha = 1;
 theta1 = 0;  % 单位:度
 
 % 蒙特卡洛参数
-MC_trials = 100;            % 每个 SNR 点的仿真次数（可增加）
+MC_trials = 500;            % 每个 SNR 点的仿真次数（可增加）
 init_range = 0.5;           % 初始搜索半径（度）
 final_tol = 1e-4;           % 最终精度（度）
 
@@ -137,9 +137,13 @@ grid on; grid minor;
 %% 辅助函数：计算 eta (公式(10)及后续白化)
 function eta = compute_eta(y, s, R_s, N)
     E = (1/sqrt(N)) * (y * s');
-    % 计算 U * inv(sqrt(Lambda))
     [U, Lambda] = eig(R_s);
-    U_tmp = U * pinv(sqrtm(Lambda));
+    lambda = diag(Lambda);
+    tol = 1e-12;
+    lambda_inv_sqrt = zeros(size(lambda));
+    valid = lambda > tol;
+    lambda_inv_sqrt(valid) = 1 ./ sqrt(lambda(valid));
+    U_tmp = U * diag(lambda_inv_sqrt);
     eta = reshape(E * U_tmp, [], 1);
 end
 
@@ -149,7 +153,9 @@ function d = d_beta(th, R_s, M, N)
     a = @(th) exp(-1j * pi * n' * sind(th));
     A = a(th) * a(th).';
     [U, Lambda] = eig(R_s);
-    U_sqrtL = U * sqrtm(Lambda);
+    lambda = diag(Lambda);
+    lambda_sqrt = sqrt(max(lambda, 0));
+    U_sqrtL = U * diag(lambda_sqrt);
     d = reshape( sqrt(N) * (A * U_sqrtL), [], 1);
 end
 
@@ -160,7 +166,7 @@ function theta_est = ml_single(eta, R_s, M, N, init_range, final_tol)
     center = 0;   % 真实角度在 0° 附近
     range = init_range;
     while range > final_tol
-        grid = linspace(center - range, center + range, 21);
+        grid = linspace(center - range, center + range, 101);
         L_vals = zeros(size(grid));
         for i = 1:length(grid)
             d = d_beta(grid(i), R_s, M, N);
