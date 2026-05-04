@@ -82,9 +82,9 @@ for k = 1:length(theta2_list)
         A1 = A(theta1_true);
         A2 = A(theta2_true);
         s = s_coherent;
-        signal = alpha_true(1) * A1 * s + alpha_true(2) * A2 * s;
+        alphaAs = (alpha_true(1) * A1 + alpha_true(2) * A2) * s;
         w = sqrt(sigma2_coherent/2) * (randn(M,1) + 1j*randn(M,1));
-        y = signal + w;
+        y = alphaAs + w;
         % 计算 eta
         eta = compute_eta(y, s, R_s_coherent, N);
         % 二维网格搜索最大化 L(θ) = eta^H P_D eta
@@ -97,7 +97,7 @@ for k = 1:length(theta2_list)
             th1 = theta1_grid(i);
             for j = 1:length(theta2_grid)
                 th2 = theta2_grid(j);
-                D = construct_D([th1, th2], R_s_coherent, M, N, a);
+                D = construct_D([th1, th2], R_s_coherent, M, N);
                 P_D = D * ((D'*D) \ D');
                 L_val = real(eta' * P_D * eta);
                 if L_val > best_val
@@ -111,9 +111,9 @@ for k = 1:length(theta2_list)
         % ----- 正交信号 -----
         % 每次独立生成发射信号 s_orth，满足 E[s s^H] = I
         s_orth = sqrt(M) * (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
-        signal_orth = alpha_true(1) * A1 * s_orth + alpha_true(2) * A2 * s_orth;
+        alphaAs_orth = (alpha_true(1) * A1 + alpha_true(2) * A2) * s_orth;
         w_orth = sqrt(sigma2_orth/2) * (randn(M,1) + 1j*randn(M,1));
-        y_orth = signal_orth + w_orth;
+        y_orth = alphaAs_orth + w_orth;
         R_s_orth = eye(M);
         eta_orth = compute_eta(y_orth, s_orth, R_s_orth, N);
         % 网格搜索
@@ -123,7 +123,7 @@ for k = 1:length(theta2_list)
             th1 = theta1_grid(i);
             for j = 1:length(theta2_grid)
                 th2 = theta2_grid(j);
-                D = construct_D([th1, th2], R_s_orth, M, N, a);
+                D = construct_D([th1, th2], R_s_orth, M, N);
                 P_D = D * ((D'*D) \ D');
                 L_val = real(eta_orth' * P_D * eta_orth);
                 if L_val > best_val
@@ -164,7 +164,7 @@ function eta = compute_eta(y, s, R_s, N)
 end
 
 %% 辅助函数：构造 D 矩阵 (M^2 x L)
-function D = construct_D(theta_vec, R_s, M, N, a)
+function D = construct_D(theta_vec, R_s, M, N)
     n = 0 : (M-1);
     a_func = @(th) exp(-1j * pi * n' * sind(th));
     A = @(th) a_func(th) * a_func(th).';
