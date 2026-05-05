@@ -1,6 +1,7 @@
-%% 严格按 (41)-(43) 实现 CRB(θ) 的通用程序（适用于任意 M）
-% 对应图8：M=2（可改为任意值），L=2，θ1=0°，θ2=5,10,15°，SNR=0dB
-% 使用分块 FIM (J_θθ, J_θa, J_aa) 和 Schur 补，避免完整 6×6 求逆
+
+
+
+%% 单目标下的CRB和ML对比，正交信号下死活对不上，相干信号下可以对得上
 
 
 clc;
@@ -8,17 +9,16 @@ clear all;
 close all;
 addpath('./functions');
 
-
 %% 用户参数
-M = 10;                         % 阵元数（可修改为任意正整数）
+M = 11;                         % 阵元数（可修改为任意正整数）
 d_lambda = 0.5;                 % 半波长间距
-SNR_dB = -4:4:15;                % 信噪比 (dB)
+SNR_dB = -4:4:16;                % 信噪比 (dB)
 N = 1;                          % 快拍数
 alpha = 1;
 theta1 = 0;  % 单位:度
 
 % 蒙特卡洛参数
-MC_trials = 500;            % 每个 SNR 点的仿真次数（可增加）
+MC_trials = 100;            % 每个 SNR 点的仿真次数（可增加）
 init_range = 0.5;           % 初始搜索半径（度）
 final_tol = 1e-4;           % 最终精度（度）
 
@@ -35,7 +35,7 @@ R_s_coherent = a(theta1) * a(theta1)';
 
 % 正交信号发射矢量生成函数 (单快拍，满足 E[s s^H]=I)
 % s_orth_gen = @() sqrt(M) * (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
-s_orth = sqrt(M) * (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
+s_orth = (randn(M,1) + 1j*randn(M,1)) / sqrt(2*N);
 R_s_orth = eye(M);
 
 CRB_coherent = zeros(1, length(SNR_dB));
@@ -99,7 +99,7 @@ for idx = 1:length(SNR_dB)
         w = sqrt(sigma_w2_coherent/2) * (randn(M,1) + 1j*randn(M,1));
         y = signal + w;
         eta = compute_eta(y, s_coherent, R_s_coherent, N);
-        theta_est_c(mc) = ml_single(eta, R_s_coherent, M, N, init_range, final_tol);
+        theta_est_c(mc) = ml_single(eta, R_s_coherent, M, N, 0.5, 1e-4);
     end
     RMSE_coherent(idx) = sqrt(mean((theta_est_c - theta1).^2));
     
@@ -108,12 +108,12 @@ for idx = 1:length(SNR_dB)
     % 正交信号
     theta_est_o = zeros(MC_trials, 1);
     for mc = 1:MC_trials
-        % s_orth = s_orth_gen();
+        s_orth = (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
         signal = alpha * A(theta1) * s_orth;
         w = sqrt(sigma_w2_orth/2) * (randn(M,1) + 1j*randn(M,1));
         y = signal + w;
         eta = compute_eta(y, s_orth, R_s_orth, N);
-        theta_est_o(mc) = ml_single(eta, R_s_orth, M, N, init_range, final_tol);
+        theta_est_o(mc) = ml_single(eta, R_s_orth, M, N, 0.5, 1e-4);
     end
     RMSE_orth(idx) = sqrt(mean((theta_est_o - theta1).^2));
     
@@ -161,7 +161,7 @@ end
 
 %% 辅助函数：一维迭代细化 ML 估计（基于 (29)-(33) 单目标形式）
 function theta_est = ml_single(eta, R_s, M, N, init_range, final_tol)
-    if nargin < 5, init_range = 90; end
+    if nargin < 5, init_range = 0.5; end
     if nargin < 6, final_tol = 1e-4; end
     center = 0;   % 真实角度在 0° 附近
     range = init_range;
@@ -170,7 +170,7 @@ function theta_est = ml_single(eta, R_s, M, N, init_range, final_tol)
         L_vals = zeros(size(grid));
         for i = 1:length(grid)
             d = d_beta(grid(i), R_s, M, N);
-            L_vals(i) = abs(d' * eta)^2 / (d' * d + eps);
+            L_vals(i) = abs(d' * eta)^2 / (d' * d);
         end
         [~, idx] = max(L_vals);
         center = grid(idx);
