@@ -9,10 +9,10 @@ M = 6;
 N = 3; 
 SNR_dB = 10; 
 SNR = 10^(SNR_dB/10);
-angles = [-10, 5, 10] * pi/180;
-A = exp(1j * (0:M-1)' * (2*pi*0.5*sin(angles))); % steering vectors
+angles = [-10, 5, 10];
+A = exp(1j * (0:M-1)' * (2*pi*0.5*sind(angles))); % steering vectors
 
-L_vals = 20:20:200;
+L_vals = ceil(logspace(1, 3, 10));
 nMC = 1000;
 MSE_AML = zeros(size(L_vals));
 MSE_LS = zeros(size(L_vals));
@@ -34,34 +34,35 @@ for lidx = 1:length(L_vals)
         % AML
         Pi_S = S' * pinv(S*S') * S;
         T = X * (eye(L) - Pi_S) * X';
-        if rcond(T) < 1e-12
-            T = T + 1e-6*eye(M); 
-        end
-        Tinv = inv(T);
+        % if rcond(T) < 1e-12
+        %     T = T + 1e-6*eye(M); 
+        % end
         beta_AML = pinv((A'/T*A) .* (S*S').') * diag(A'/T*X*S');
-        MSE_AML(lidx) = MSE_AML(lidx) + norm(beta_AML - beta_true)^2;
+        MSE_AML(lidx) = MSE_AML(lidx) + norm(beta_AML(2) - beta_true(2))^2;
         
         % LS
         beta_LS = pinv((A'*A) .* (S*S').') * diag(A'*X*S');
-        MSE_LS(lidx) = MSE_LS(lidx) + norm(beta_LS - beta_true)^2;
+        MSE_LS(lidx) = MSE_LS(lidx) + norm(beta_LS(2) - beta_true(2))^2;
         
         % GC (unconstrained)
         B_GC = pinv(A) * X * pinv(S);
-        MSE_GC(lidx) = MSE_GC(lidx) + norm(diag(B_GC) - beta_true)^2;
+        tmp = diag(B_GC);
+        MSE_GC(lidx) = MSE_GC(lidx) + norm(tmp(2) - beta_true)^2;
     end
     MSE_AML(lidx) = MSE_AML(lidx)/nMC;
     MSE_LS(lidx) = MSE_LS(lidx)/nMC;
     MSE_GC(lidx) = MSE_GC(lidx)/nMC;
     
     % CRB
-    CRB_vals(lidx) = trace(inv((A'*pinv(Q)*A) .* (S*S').'));
+    tmp = diag(inv((A'*pinv(Q)*A) .* (S*S').'));
+    CRB_vals(lidx) = tmp(2);
 end
 
-figure;
-semilogy(L_vals, MSE_AML, 'ro-', 'LineWidth', 1.5); hold on;
-semilogy(L_vals, MSE_LS, 'bs-', 'LineWidth', 1.5);
-semilogy(L_vals, MSE_GC, 'gd-', 'LineWidth', 1.5);
-semilogy(L_vals, CRB_vals, 'k--', 'LineWidth', 1.5);
+figure(1);
+loglog(L_vals, MSE_AML, 'ro-', 'LineWidth', 1.5); hold on;
+loglog(L_vals, MSE_LS, 'bs-', 'LineWidth', 1.5); hold on;
+loglog(L_vals, MSE_GC, 'gd-', 'LineWidth', 1.5); hold on;
+loglog(L_vals, CRB_vals, 'k--', 'LineWidth', 1.5);
 xlabel('Snapshot number L'); ylabel('MSE');
 legend('AML', 'LS', 'GC', 'CRB', 'Location', 'best');
 title('Fig. 1: SNR=10dB, M=6, N=3, independent waveforms');
