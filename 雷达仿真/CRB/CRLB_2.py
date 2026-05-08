@@ -187,7 +187,7 @@ lambda_c        =           3e8/fc
 d               =           lambda_c/2
 T               =           100
 Nit             =           200
-SNRdBs          =           np.arange(-10, 22, 5)
+SNRdBs          =           np.arange(-10, 22, 2)
 #%%
 theta   = np.deg2rad(30)     # np.pi/6
 
