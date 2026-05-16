@@ -361,8 +361,8 @@ def MNIST_BatchnonIID_K0_1bit_flip_acc():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.3, 1.06)  #拉开坐标轴范围显示投影
-
+    # axs.set_ylim(0.2, 1.06)  #拉开坐标轴范围显示投影
+    axs.set_yticks(np.arange(0.1, 1, 0.2))
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
     axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
@@ -389,13 +389,13 @@ def MNIST_BatchnonIID_K0_1bit_flip_acc():
 
     plt.show()
 
-# Fig6_b
-MNIST_BatchnonIID_14bit_erf_acc()
-# Fig8_a
-MNIST_BatchnonIID_flip_acc()
+# # Fig6_b
+# MNIST_BatchnonIID_14bit_erf_acc()
+# # Fig8_a
+# MNIST_BatchnonIID_flip_acc()
 
-# Fig8_b
-MNIST_BatchnonIID_flip_loss()
+# # Fig8_b
+# MNIST_BatchnonIID_flip_loss()
 
 # Fig11_b
 MNIST_BatchnonIID_K0_1bit_flip_acc()

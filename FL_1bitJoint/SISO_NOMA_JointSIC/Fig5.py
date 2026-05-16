@@ -157,16 +157,19 @@ def SISO_2user():
     [label.set_fontname('Times New Roman') for label in labels]
     # [label.set_fontsize(26) for label in labels] #刻度值字号
 
+    axs.set_ylim(10**(-5), 1)
+
+
     # fontt = {'family':'Times New Roman','style':'normal','size':35 }
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
     out_fig = plt.gcf()
 
-    # if cols == 1:
-    #     out_fig.savefig("./Figures/Fig5b_fer.pdf")
-    # elif cols == 2:
-    #     out_fig.savefig( "./Figures/Fig5b_ber.pdf")
-    # # elif cols == 3:
-    #     # out_fig.savefig( "./Figures/Fig5b_aggerr.eps")
+    if cols == 1:
+        out_fig.savefig("./Figures/Fig5b_fer.pdf")
+    elif cols == 2:
+        out_fig.savefig( "./Figures/Fig5b_ber.pdf")
+    # elif cols == 3:
+        # out_fig.savefig( "./Figures/Fig5b_aggerr.eps")
     plt.show()
     plt.close()
     return
@@ -275,17 +278,17 @@ def SISO_4user():
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
     # [label.set_fontsize(26) for label in labels] #刻度值字号
-
+    axs.set_ylim(10**(-5), 1)
     # fontt = {'family':'Times New Roman','style':'normal','size':35 }
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
     out_fig = plt.gcf()
 
-    # if cols == 1:
-    #     out_fig.savefig("./Figures/Fig5c_fer.pdf")
-    # elif cols == 2:
-    #     out_fig.savefig( "./Figures/Fig5c_ber.pdf")
-    # elif cols == 3:
-    #     out_fig.savefig( "./Figures/Fig5c_aggerr.pdf")
+    if cols == 1:
+        out_fig.savefig("./Figures/Fig5c_fer.pdf")
+    elif cols == 2:
+        out_fig.savefig( "./Figures/Fig5c_ber.pdf")
+    elif cols == 3:
+        out_fig.savefig( "./Figures/Fig5c_aggerr.pdf")
     plt.show()
     plt.close()
     return
@@ -435,17 +438,17 @@ def SISO_6user():
     labels = axs.get_xticklabels() + axs.get_yticklabels()
     [label.set_fontname('Times New Roman') for label in labels]
     # [label.set_fontsize(30) for label in labels] #刻度值字号
-
+    axs.set_ylim(10**(-5), 1)
     # fontt = {'family':'Times New Roman','style':'normal','size':35 }
     # plt.suptitle("2 User, Fastfading, BPSK, [1024, 512]", fontproperties = fontt, )
     out_fig = plt.gcf()
 
-    # if cols == 1:
-    #     out_fig.savefig("./Figures/Fig5d_fer.pdf")
-    # elif cols == 2:
-    #     out_fig.savefig( "./Figures/Fig5d_ber.pdf")
-    # elif cols == 3:
-    #     out_fig.savefig( "./Figures/Fig5d_aggerr.pdf")
+    if cols == 1:
+        out_fig.savefig("./Figures/Fig5d_fer.pdf")
+    elif cols == 2:
+        out_fig.savefig( "./Figures/Fig5d_ber.pdf")
+    elif cols == 3:
+        out_fig.savefig( "./Figures/Fig5d_aggerr.pdf")
     plt.show()
     plt.close()
     return

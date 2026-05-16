@@ -377,8 +377,8 @@ def Cifar10_nonIID_K0_1bit_flip_acc():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.2, 1.06)  #拉开坐标轴范围显示投影
-
+    # axs.set_ylim(0.1, 0.92)  #拉开坐标轴范围显示投影
+    axs.set_yticks(np.arange(0.2, 0.9, 0.2))
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
     axs.spines['left'].set_linewidth(2)      #### 设置左边坐标轴的粗细
@@ -406,12 +406,12 @@ def Cifar10_nonIID_K0_1bit_flip_acc():
     plt.show()
 
 
-# Fig6_d
-CIFAR10_nonIID_14bit_erf_acc()
-# Fig10_a
-Cifar10_nonIID_1bit_flip_acc()
-# Fig10_b
-Cifar10_nonIID_1bit_flip_loss()
+# # Fig6_d
+# CIFAR10_nonIID_14bit_erf_acc()
+# # Fig10_a
+# Cifar10_nonIID_1bit_flip_acc()
+# # Fig10_b
+# Cifar10_nonIID_1bit_flip_loss()
 
 # Fig11_d
 Cifar10_nonIID_K0_1bit_flip_acc()

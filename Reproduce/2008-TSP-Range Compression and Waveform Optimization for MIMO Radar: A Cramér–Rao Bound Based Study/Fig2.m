@@ -4,15 +4,37 @@ clc;
 clear all;
 close all;
 
+M = 10;
+N = 10;
 
-K = 6;
-A = randn(K, K) + 1j * randn(K, K);
-
-e2 = zeros(K, 1);
-e2(2) = 1;
-
+d1 = 5;
+d2 = 0.5;
 
 
-% e2' * A * conj(e2)
-e2.' * A * e2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

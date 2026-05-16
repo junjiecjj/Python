@@ -139,7 +139,7 @@ def MNIST_IID_DQbit():
     axs.set_xlabel( "通信轮数", fontproperties=font2, ) # labelpad：类型为浮点数，默认值为None，即标签与坐标轴的距离。
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
-    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=25)
+    font2 = FontProperties(fname=fontpath+"simsun.ttf", size=22)
     legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
@@ -153,7 +153,7 @@ def MNIST_IID_DQbit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    axs.set_ylim(0.3, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0.2, 1.01)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -307,8 +307,8 @@ def CommOverHead():
 
 MNIST_IID_DQbit()
 
-DynamicBitWidth()
-CommOverHead()
+# DynamicBitWidth()
+# CommOverHead()
 
 
 

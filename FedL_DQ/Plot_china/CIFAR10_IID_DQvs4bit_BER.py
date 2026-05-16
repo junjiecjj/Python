@@ -160,7 +160,7 @@ def CIFAR10_IID_DQvs4bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.6, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0., 0.92)
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细

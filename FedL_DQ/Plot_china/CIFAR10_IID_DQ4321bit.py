@@ -166,7 +166,7 @@ def CIAFR10_IID_DQ4321bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0, 0.92)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -250,7 +250,7 @@ def CIAFR10_IID_431bit():
     axs.set_ylabel('学习精度', fontproperties=font2, )
 
     font2 = FontProperties(fname=fontpath+"simsun.ttf", size=24)
-    legend1 = axs.legend(bbox_to_anchor = (0.1, 0.4), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
+    legend1 = axs.legend(bbox_to_anchor = (0.1, 0.42), borderaxespad=0, edgecolor='black', prop=font2, borderpad = 0.1, labelspacing = 0.1)
     frame1 = legend1.get_frame()
     frame1.set_alpha(1)
     frame1.set_facecolor('none')                         # 设置图例legend背景透明
@@ -263,7 +263,7 @@ def CIAFR10_IID_431bit():
     [label.set_fontsize(25) for label in labels]  # 刻度值字号
 
     # axs.set_xlim(-0.2, 2)  #拉开坐标轴范围显示投影
-    # axs.set_ylim(0.5, 1.01)  #拉开坐标轴范围显示投影
+    axs.set_ylim(0, 0.92)  #拉开坐标轴范围显示投影
 
     axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
     axs.spines['bottom'].set_linewidth(2)    ### 设置底部坐标轴的粗细
@@ -556,10 +556,10 @@ def Loss():
 
     return
 
-# CIAFR10_IID_DQ4321bit()
-# CIAFR10_IID_431bit()
-DynamicBitWidth()
-CommOverHead()
+CIAFR10_IID_DQ4321bit()
+CIAFR10_IID_431bit()
+# DynamicBitWidth()
+# CommOverHead()
 # Loss()
 
 

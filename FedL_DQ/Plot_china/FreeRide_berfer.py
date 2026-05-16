@@ -261,7 +261,7 @@ def SNR_berfer( ):  ## E = 10, B = 128
     [label.set_fontname('Times New Roman') for label in labels]
     [label.set_fontsize(30) for label in labels] #刻度值字号
 
-    # axs.set_xlim(-1, 2.2)
+    axs.set_ylim(10**(-7), 1)
 
     out_fig = plt.gcf()
     if cols == 2:
