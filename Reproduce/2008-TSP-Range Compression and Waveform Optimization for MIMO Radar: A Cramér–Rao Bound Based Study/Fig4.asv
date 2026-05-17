@@ -29,8 +29,8 @@ clc;
 close all;
 
 %% ========== Global parameters ==========
-M = 10;                 % transmit antennas
-N = 10;                 % receive antennas
+M = 10;                 % receive  antennas
+N = 10;                 % transmit antennas
 P = 1;                  % total transmit power
 
 theta_true = -16.5;     % true target angle, deg
@@ -78,21 +78,20 @@ for rr = 1:num_radars
     fprintf('\n===== Radar %s =====\n', radars(rr).name);
 
     % Array positions.
-    tx_pos = ((0:M-1) - (M-1)/2).' * dt;
-    rx_pos = ((0:N-1) - (N-1)/2).' * dr;
+    tx_pos = ((0:M-1) - (N-1)/2).' * dt;
+    rx_pos = ((0:N-1) - (M-1)/2).' * dr;
 
     % Steering functions.
     vfun  = @(theta) exp(1j*2*pi*tx_pos*sind(theta));
     afun  = @(theta) exp(1j*2*pi*rx_pos*sind(theta));
 
     vdfun = @(theta) 1j*2*pi*tx_pos*cosd(theta)*(pi/180) .* exp(1j*2*pi*tx_pos*sind(theta));
-
     adfun = @(theta) 1j*2*pi*rx_pos*cosd(theta)*(pi/180) .* exp(1j*2*pi*rx_pos*sind(theta));
 
     % Jammer-plus-noise covariance Q.
     aj = afun(theta_jam);
-    jammer_power = AINR * sigma2 / N;
-    Q = sigma2 * eye(N) + jammer_power * (aj * aj');
+    jammer_power = AINR * sigma2 / M;
+    Q = sigma2 * eye(M) + jammer_power * (aj * aj');
     Qinv = inv(Q);
 
     % True target quantities for evaluating the real CRB.
@@ -102,7 +101,6 @@ for rr = 1:num_radars
     vd_true = vdfun(theta_true);
 
     for ii = 1:num_err
-
         err = err_grid(ii);
         theta_hat = theta_true + err;
 
@@ -115,22 +113,22 @@ for rr = 1:num_radars
         vd_hat = vdfun(theta_hat);
 
         %% ----- 1. Uncorrelated waveforms -----
-        R_uncorr = (P/M) * eye(M);
+        R_uncorr = (P/N) * eye(M);
 
         %% ----- 2. Sum beam -----
-        R_sum = P / real(v_hat' * v_hat) * (v_hat * v_hat');
+        R_sum = (P/N) * (conj(v_hat) * v_hat.');
 
         %% ----- 3. Angle-only -----
-        R_angle = design_angle_only(P, v_hat, vd_hat, a_hat, ad_hat, Qinv, b_true);
+        R_angle = design_angle_only(P, v_hat, vd_hat, a_hat, ad_hat, Q, b_true);
 
         %% ----- 4. Eigen-Opt -----
-        R_eigen = design_eigen_opt_subspace(P, v_hat, vd_hat, a_hat, ad_hat, Qinv, b_true);
+        R_eigen = design_eigen_opt_subspace(P, v_hat, vd_hat, a_hat, ad_hat, Q, b_true);
 
         %% ----- 5. Trace-Opt -----
-        R_trace = design_trace_opt_subspace(P, v_hat, vd_hat, a_hat, ad_hat, Qinv, b_true);
+        R_trace = design_trace_opt_subspace(P, v_hat, vd_hat, a_hat, ad_hat, Q, b_true);
 
         %% ----- 6. Det-Opt -----
-        R_det = design_det_opt_1d(P, v_hat, vd_hat, a_hat, ad_hat, Qinv, b_true);
+        R_det = design_det_opt_1d(P, v_hat, vd_hat, a_hat, ad_hat, Q, b_true);
 
         R_list = {R_uncorr, R_sum, R_angle, R_eigen, R_trace, R_det};
 
@@ -138,13 +136,11 @@ for rr = 1:num_radars
         for mm = 1:num_methods
             R_now = hermitian_project(R_list{mm});
 
-            F_true = FIM_numeric_single( ...
-                R_now, a_true, ad_true, v_true, vd_true, Qinv, b_true);
+            F_true = FIM_numeric_single(R_now, a_true, ad_true, v_true, vd_true, Q, b_true);
 
             C_true = inv(F_true);
 
-            % Root CRB of theta, unit is degree because derivatives are
-            % taken with respect to theta in degrees.
+            % Root CRB of theta, unit is degree because derivatives are taken with respect to theta in degrees.
             RCRB_theta(rr, mm, ii) = sqrt(max(real(C_true(1,1)), 0));
 
             % Root CRB of complex amplitude b.
@@ -166,8 +162,7 @@ markerEvery = 5;
 
 % -------- Radar A --------
 subplot(3,2,1);
-plot_all_methods(err_grid, squeeze(RCRB_theta(1,:,:)), ...
-    methods, lineStyles, lineWidths, markerEvery);
+plot_all_methods(err_grid, squeeze(RCRB_theta(1,:,:)), methods, lineStyles, lineWidths, markerEvery);
 grid on;
 xlabel('Error of Initial Angle Estimate (deg)');
 ylabel('Root CRB of Angle (deg)');
@@ -231,7 +226,7 @@ ylim([1e-2 1e1]);
 %  Local functions
 %% ============================================================
 
-function R = design_angle_only(P, v0, vd0, a0, ad0, Qinv, b)
+function R = design_angle_only(P, v0, vd0, a0, ad0, Q, b)
     % Single-target Angle-only criterion.
     %
     % Paper Appendix D reduces it to:
@@ -242,9 +237,9 @@ function R = design_angle_only(P, v0, vd0, a0, ad0, Qinv, b)
     % If alpha < beta: almost all power on vdot, with tiny zeta on v.
     % If alpha = beta: any convex combination works.
 
-    A00 = real(a0'  * Qinv * a0);
-    A10 = ad0' * Qinv * a0;
-    A11 = real(ad0' * Qinv * ad0);
+    A00 = real(a0' /Q * a0);
+    A10 = ad0' /Q * a0;
+    A11 = real(ad0' /Q * ad0);
 
     nv  = real(v0'  * v0);
     nvd = real(vd0' * vd0);
@@ -253,7 +248,6 @@ function R = design_angle_only(P, v0, vd0, a0, ad0, Qinv, b)
     beta  = abs(b)^2 * nvd * A00;
 
     u1 = v0 / norm(v0);
-
     u2 = vd0 - u1 * (u1' * vd0);
     if norm(u2) < 1e-12
         u2 = null(u1');
@@ -281,7 +275,7 @@ function R = design_angle_only(P, v0, vd0, a0, ad0, Qinv, b)
 end
 
 
-function R = design_eigen_opt_subspace(P, v0, vd0, a0, ad0, Qinv, b)
+function R = design_eigen_opt_subspace(P, v0, vd0, a0, ad0, Q, b)
     % Eigen-Opt:
     %   maximize lambda_min(FIM)
     %
@@ -294,7 +288,7 @@ function R = design_eigen_opt_subspace(P, v0, vd0, a0, ad0, Qinv, b)
         variable t
 
         Rcvx = U * X * U';
-        F = FIM_cvx_single(Rcvx, a0, ad0, v0, vd0, Qinv, b);
+        F = FIM_cvx_single(Rcvx, a0, ad0, v0, vd0, Q, b);
 
         maximize(t)
         subject to
@@ -307,7 +301,7 @@ function R = design_eigen_opt_subspace(P, v0, vd0, a0, ad0, Qinv, b)
 end
 
 
-function R = design_trace_opt_subspace(P, v0, vd0, a0, ad0, Qinv, b)
+function R = design_trace_opt_subspace(P, v0, vd0, a0, ad0, Q, b)
     % Trace-Opt:
     %   minimize trace(inv(FIM))
     %
@@ -321,7 +315,7 @@ function R = design_trace_opt_subspace(P, v0, vd0, a0, ad0, Qinv, b)
         variable u(3)
 
         Rcvx = U * X * U';
-        F = FIM_cvx_single(Rcvx, a0, ad0, v0, vd0, Qinv, b);
+        F = FIM_cvx_single(Rcvx, a0, ad0, v0, vd0, Q, b);
 
         minimize(sum(u))
         subject to
@@ -339,7 +333,7 @@ function R = design_trace_opt_subspace(P, v0, vd0, a0, ad0, Qinv, b)
 end
 
 
-function R = design_det_opt_1d(P, v0, vd0, a0, ad0, Qinv, b)
+function R = design_det_opt_1d(P, v0, vd0, a0, ad0, Q, b)
     % Det-Opt without CVX log_det.
     %
     % Search in:
@@ -349,12 +343,7 @@ function R = design_det_opt_1d(P, v0, vd0, a0, ad0, Qinv, b)
     u1 = U(:,1);
     u2 = U(:,2);
 
-    obj = @(lambda1) -logdet_numeric( ...
-        FIM_numeric_single( ...
-            lambda1 * (u1*u1') + (P-lambda1) * (u2*u2'), ...
-            a0, ad0, v0, vd0, Qinv, b ...
-        ) ...
-    );
+    obj = @(lambda1) -logdet_numeric(FIM_numeric_single(lambda1 * (u1*u1') + (P-lambda1) * (u2*u2'), a0, ad0, v0, vd0, Q, b));
 
     lambda1_opt = fminbnd(obj, 1e-8, P-1e-8);
     lambda2_opt = P - lambda1_opt;
@@ -382,7 +371,7 @@ function U = make_two_dim_subspace(v0, vd0)
 end
 
 
-function F = FIM_numeric_single(R, a0, ad0, v0, vd0, Qinv, b)
+function F = FIM_numeric_single(R, a0, ad0, v0, vd0, Q, b)
     % Numeric 3 x 3 real Fisher information matrix.
     %
     % Parameter vector:
@@ -390,22 +379,19 @@ function F = FIM_numeric_single(R, a0, ad0, v0, vd0, Qinv, b)
     %
     % theta derivative is with respect to degrees, so CRB(theta)
     % is in deg^2.
-
     R = hermitian_project(R);
 
-    A00 = a0'  * Qinv * a0;
-    A10 = ad0' * Qinv * a0;
-    A01 = a0'  * Qinv * ad0;
-    A11 = ad0' * Qinv * ad0;
+    A00 = a0' /Q * a0;
+    A10 = ad0' /Q * a0;
+    A01 = a0' /Q * ad0;
+    A11 = ad0' /Q * ad0;
 
     V00 = v0'  * R * v0;
     V10 = vd0' * R * v0;
     V01 = v0'  * R * vd0;
     V11 = vd0' * R * vd0;
 
-    F11 = 2 * real( abs(b)^2 * ...
-        ( A11 * V00 + A10 * V01 + A01 * V10 + A00 * V11 ) );
-
+    F11 = 2 * real( abs(b)^2 * ( A11 * V00 + A10 * V01 + A01 * V10 + A00 * V11 ) );
     G_theta_b = conj(b) * (A10 * V00 + A00 * V10);
 
     F12 = 2 * real(G_theta_b);
@@ -423,22 +409,21 @@ function F = FIM_numeric_single(R, a0, ad0, v0, vd0, Qinv, b)
 end
 
 
-function F = FIM_cvx_single(R, a0, ad0, v0, vd0, Qinv, b)
+function F = FIM_cvx_single(R, a0, ad0, v0, vd0, Q, b)
     % CVX-compatible FIM.
     % All expressions are affine in R.
 
-    A00 = a0'  * Qinv * a0;
-    A10 = ad0' * Qinv * a0;
-    A01 = a0'  * Qinv * ad0;
-    A11 = ad0' * Qinv * ad0;
+    A00 = a0'  /Q * a0;
+    A10 = ad0' /Q * a0;
+    A01 = a0'  /Q * ad0;
+    A11 = ad0' /Q * ad0;
 
     V00 = v0'  * R * v0;
     V10 = vd0' * R * v0;
     V01 = v0'  * R * vd0;
     V11 = vd0' * R * vd0;
 
-    F11 = 2 * real( abs(b)^2 * ...
-        ( A11 * V00 + A10 * V01 + A01 * V10 + A00 * V11 ) );
+    F11 = 2 * real( abs(b)^2 * ( A11 * V00 + A10 * V01 + A01 * V10 + A00 * V11 ) );
 
     G_theta_b = conj(b) * (A10 * V00 + A00 * V10);
 

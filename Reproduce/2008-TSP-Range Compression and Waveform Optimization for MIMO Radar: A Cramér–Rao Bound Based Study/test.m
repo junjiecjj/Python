@@ -1,408 +1,249 @@
-%% ============================================================
-%  Reproduce Fig. 3 strictly following the paper formulas
-%
-%  Jian Li et al.,
-%  "Range Compression and Waveform Optimization for MIMO Radar:
-%   A Cramer-Rao Bound Based Study"
-%
-%  Fig. 3:
-%    MIMO Radar A(5,0.5)
-%    single target: theta = -16.5 deg, b = 1
-%
-%  Criteria:
-%    (a) Angle-only: closed-form, Appendix D, eqs. (39)/(40)
-%    (b) Eigen-Opt : SDP, eq. (27)
-%    (c) Trace-Opt : SDP, eqs. (22)/(23)
-%    (d) Det-Opt   : closed-form, Appendix E, eq. (42)
-%
-%  Important:
-%    The paper model is X = b*a(theta)*v(theta)^T*S + Z.
-%    Therefore transmit-side quadratic form is:
-%       v(theta)^T R v(theta)^*
-%    not v(theta)^H R v(theta).
-%
-%  Requirement:
-%    CVX is needed for Eigen-Opt and Trace-Opt.
-%% ============================================================
-
 clear; clc; close all;
 
-%% ========== Parameters ==========
-M = 10;                 % transmit antennas
-N = 10;                 % receive antennas
-L = 256;                % waveform length, as used in the paper
-P = 1;                  % total transmit power, trace(R)=P
-
-dt = 5;                 % MIMO Radar A transmit spacing
-dr = 0.5;               % MIMO Radar A receive spacing
-
-theta0 = -16.5;         % target angle, deg
-theta_jam = 5;          % jammer angle, deg
-
-b = 1;                  % target complex amplitude
-sigma2 = 1;             % thermal noise variance
-
-AINR_dB = 100;          % jammer array interference-to-noise ratio
+M = 10;
+N = 10;
+K = 2;
+L = 256;
+P = 1;
+theta_true = [-16.5; -10];
+b_true = [1; 20];
+theta_jam = 5;
+sigma2 = 1;
+AINR_dB = 100;
 AINR = 10^(AINR_dB/10);
+err_grid = -3:0.1:3;
 
-angle_grid = -20:0.01:0;
+radars(1).name = 'A(5,0.5)';
+radars(1).dt = 5;
+radars(1).dr = 0.5;
+radars(2).name = 'B(0.5,0.5)';
+radars(2).dt = 0.5;
+radars(2).dr = 0.5;
 
-%% ========== Array geometry ==========
-% Centered reference point so that vdot^T v^* = 0 approximately.
-tx_pos = ((0:M-1) - (M-1)/2).' * dt;
-rx_pos = ((0:N-1) - (N-1)/2).' * dr;
+methods = {'Uncorrelated', 'Sum Beam', 'Trace Opt'};
+num_radars = length(radars);
+num_methods = length(methods);
+num_err = length(err_grid);
 
-% Steering vectors. Angle is in degrees.
-vfun = @(th) exp(1j*2*pi*tx_pos*sind(th));
-afun = @(th) exp(1j*2*pi*rx_pos*sind(th));
+RCRB_theta1 = zeros(num_radars, num_methods, num_err);
+RCRB_b1 = zeros(num_radars, num_methods, num_err);
 
-% Derivatives wrt theta in degrees.
-% pi/180 appears because theta is in degrees.
-vdfun = @(th) 1j*2*pi*tx_pos*cosd(th)*(pi/180) .* exp(1j*2*pi*tx_pos*sind(th));
+for rr = 1:num_radars
+    dt = radars(rr).dt;
+    dr = radars(rr).dr;
+    fprintf('\n===== Radar %s =====\n', radars(rr).name);
 
-adfun = @(th) 1j*2*pi*rx_pos*cosd(th)*(pi/180) .* exp(1j*2*pi*rx_pos*sind(th));
+    tx_pos = ((0:N-1) - (N-1)/2).' * dt;
+    rx_pos = ((0:M-1) - (M-1)/2).' * dr;
 
-v0  = vfun(theta0);
-vd0 = vdfun(theta0);
-a0  = afun(theta0);
-ad0 = adfun(theta0);
+    vfun = @(th) exp(1j*2*pi*tx_pos*sind(th));
+    afun = @(th) exp(1j*2*pi*rx_pos*sind(th));
+    vdfun = @(th) 1j*2*pi*tx_pos*cosd(th)*(pi/180).*exp(1j*2*pi*tx_pos*sind(th));
+    adfun = @(th) 1j*2*pi*rx_pos*cosd(th)*(pi/180).*exp(1j*2*pi*rx_pos*sind(th));
 
-%% ========== Interference-plus-noise covariance Q ==========
-aj = afun(theta_jam);
+    aj = afun(theta_jam);
+    jammer_power = AINR * sigma2 / M;
+    Q = sigma2 * eye(M) + jammer_power * (aj * aj');
 
-% AINR = incident jammer power * N / sigma2
-jammer_power = AINR * sigma2 / N;
+    [A_true, Ad_true, V_true, Vd_true] = build_steering_multi(theta_true, afun, adfun, vfun, vdfun);
 
-Q = sigma2 * eye(N) + jammer_power * (aj * aj');
-Qinv = inv(Q);
+    R_uncorr_fixed = P / N * eye(N);
+    v1_true = V_true(:,1);
+    R_sum_fixed = P / real(v1_true' * v1_true) * (v1_true * v1_true');
 
-%% ========== Common alpha and beta ==========
-% These correspond to the single-target closed-form derivations
-% in Appendix D and Appendix E.
-%
-% alpha = |b|^2 ||v||^2 * (ad^H Q^{-1} ad
-%                         - |ad^H Q^{-1} a|^2/(a^H Q^{-1}a))
-%
-% beta  = |b|^2 ||vd||^2 * (a^H Q^{-1} a)
-%
-% The common L factor does not affect comparisons, but the FIM itself
-% uses L explicitly.
+    F_uncorr = FIM_numeric_multi_paper(R_uncorr_fixed, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
+    C_uncorr = F_uncorr \ eye(3*K);
+    RCRB_theta1(rr,1,:) = sqrt(max(real(C_uncorr(1,1)), 0));
+    RCRB_b1(rr,1,:) = sqrt(max(real(C_uncorr(K+1,K+1) + C_uncorr(2*K+1,2*K+1)), 0));
 
-A00 = real(a0' /Q * a0);
-A10 = ad0' /Q * a0;
-A11 = real(ad0' /Q * ad0);
+    F_sum = FIM_numeric_multi_paper(R_sum_fixed, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
+    C_sum = F_sum \ eye(3*K);
+    RCRB_theta1(rr,2,:) = sqrt(max(real(C_sum(1,1)), 0));
+    RCRB_b1(rr,2,:) = sqrt(max(real(C_sum(K+1,K+1) + C_sum(2*K+1,2*K+1)), 0));
 
-nv  = real(v0'  * v0);
-nvd = real(vd0' * vd0);
+    for ii = 1:num_err
+        err = err_grid(ii);
+        theta_hat = theta_true;
+        theta_hat(1) = theta_true(1) + err;
+        fprintf('Radar %s, error %.2f deg, %d / %d\n', radars(rr).name, err, ii, num_err);
 
-alpha = abs(b)^2 * nv  * real(A11 - abs(A10)^2 / A00);
-beta  = abs(b)^2 * nvd * A00;
+        [A_hat, Ad_hat, V_hat, Vd_hat] = build_steering_multi(theta_hat, afun, adfun, vfun, vdfun);
 
-fprintf('\nalpha = %.6e\n', alpha);
-fprintf('beta  = %.6e\n', beta);
-fprintf('beta/3 = %.6e\n\n', beta/3);
+        R_trace = design_trace_opt_two_target_target1(P, A_hat, Ad_hat, V_hat, Vd_hat, Q, b_true, L);
+        F_trace = FIM_numeric_multi_paper(R_trace, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
+        C_trace = F_trace \ eye(3*K);
 
-%% ============================================================
-%  1) Angle-only, Appendix D, eqs. (39)/(40)
-%% ============================================================
-
-tol_ab = 1e-10 * max(1, max(abs(alpha), abs(beta)));
-
-if alpha > beta + tol_ab
-    % Eq. (39): pure sum-beam component.
-    % Because the model uses v^T S, the covariance component is
-    % conj(v)*v^T / ||v||^2.
-    R_angle = P / nv * (v0 * v0');
-    fprintf('Angle-only uses eq. (39): pure sum-beam.\n');
-elseif beta > alpha + tol_ab
-    % Eq. (40): almost pure difference-beam component.
-    % zeta should be small and positive.
-    zeta = 1e-4;
-    R_angle = zeta * P / nv  * (v0 * v0') + (1-zeta) * P / nvd * (vd0 * vd0');
-    fprintf('Angle-only uses eq. (40): zeta = %.2e.\n', zeta);
-else
-    % alpha approximately equals beta.
-    % Any split is optimal; choose 50/50.
-    zeta = 0.5;
-    R_angle = zeta * P / nv  * (v0 * v0') + (1-zeta) * P / nvd * (vd0 * vd0');
-    fprintf('Angle-only: alpha approx beta, use 50/50 split.\n');
+        RCRB_theta1(rr,3,ii) = sqrt(max(real(C_trace(1,1)), 0));
+        RCRB_b1(rr,3,ii) = sqrt(max(real(C_trace(K+1,K+1) + C_trace(2*K+1,2*K+1)), 0));
+    end
 end
-R_angle = hermitian_project(R_angle);
 
-%% ============================================================
-%  2) Eigen-Opt, paper eq. (27)
-%
-%  maximize t
-%  subject to F(R) - tI >= 0
-%             trace(R) = P
-%             R >= 0
-%% ============================================================
-
-cvx_begin sdp quiet
-    variable R_eigen(M,M) hermitian semidefinite
-    variable t_eigen
-
-    F_eigen = FIM_cvx_single_paper(R_eigen, a0, ad0, v0, vd0, Q, b, L);
-
-    maximize(t_eigen)
-    subject to
-        trace(R_eigen) == P;
-        F_eigen - t_eigen * eye(3) >= 0;
-cvx_end
-
-R_eigen = hermitian_project(R_eigen);
-
-fprintf('Eigen-Opt CVX status: %s\n', cvx_status);
-
-%% ============================================================
-%  3) Trace-Opt, paper eqs. (22)/(23)
-%
-%  minimize trace(inv(F))
-%  SDP epigraph:
-%     minimize sum u_k
-%     subject to [F e_k; e_k^T u_k] >= 0
-%% ============================================================
-
-cvx_begin sdp quiet
-    variable R_trace(M,M) hermitian semidefinite
-    variable u_trace(3)
-    F_trace = FIM_cvx_single_paper(R_trace, a0, ad0, v0, vd0, Q, b, L);
-
-    minimize(sum(u_trace))
-    subject to
-        trace(R_trace) == P;
-
-        for k = 1:3
-            ek = zeros(3,1);
-            ek(k) = 1;
-            [F_trace, ek; ek', u_trace(k)] >= 0;
-        end
-cvx_end
-R_trace = hermitian_project(R_trace);
-fprintf('Trace-Opt CVX status: %s\n', cvx_status);
-
-%% ============================================================
-%  4) Det-Opt, Appendix E, eq. (42)
-%
-%  If alpha >= beta/3:
-%      lambda1 = P, lambda2 = 0
-%  Else:
-%      lambda1 = 2*beta*P / (3*(beta-alpha))
-%      lambda2 = P - lambda1
-%% ============================================================
-if alpha >= beta/3
-    lambda1 = P;
-    lambda2 = 0;
-    fprintf('Det-Opt uses eq. (42), case alpha >= beta/3.\n');
-else
-    lambda1 = 2 * beta * P / (3 * (beta - alpha));
-    lambda2 = P - lambda1;
-    fprintf('Det-Opt uses eq. (42), case alpha < beta/3.\n');
-end
-R_det = lambda1 / nv  * (v0 * v0') + lambda2 / nvd * (vd0 * vd0');
-
-R_det = hermitian_project(R_det);
-
-fprintf('Det-Opt lambda1 = %.6e, lambda2 = %.6e\n', lambda1, lambda2);
-
-%% ========== Beampatterns ==========
-B_angle = tx_beampattern_paper(R_angle, vfun, angle_grid);
-B_eigen = tx_beampattern_paper(R_eigen, vfun, angle_grid);
-B_trace = tx_beampattern_paper(R_trace, vfun, angle_grid);
-B_det   = tx_beampattern_paper(R_det,   vfun, angle_grid);
-
-%% ========== Plot Fig. 3 style ==========
-figure('Color','w', 'Position', [100 100 900 650]);
+figure('Color','w','Position',[100 100 980 680]);
 
 subplot(2,2,1);
-plot(angle_grid, B_angle, 'LineWidth', 1.3);
-grid on;
-xlabel('Angle (deg)');
-ylabel('Beampattern (dB)');
-title('(a) Angle-only');
-xlim([-20 0]);
-ylim([-30 0]);
-xline(theta0, 'k--', 'LineWidth', 1.0);
+plot_three_methods(err_grid, squeeze(RCRB_theta1(1,:,:)));
+grid on; set(gca,'YScale','log');
+xlabel('Error of Initial Angle Estimate (deg)');
+ylabel('Root CRB of \theta_1 (deg)');
+title('(a) Root CRB of \theta_1 for MIMO radar A(5,0.5)');
+xlim([min(err_grid), max(err_grid)]);
+legend(methods, 'Location', 'best');
 
 subplot(2,2,2);
-plot(angle_grid, B_eigen, 'LineWidth', 1.3);
-grid on;
-xlabel('Angle (deg)');
-ylabel('Beampattern (dB)');
-title('(b) Eigen-Opt');
-xlim([-20 0]);
-ylim([-30 0]);
-xline(theta0, 'k--', 'LineWidth', 1.0);
+plot_three_methods(err_grid, squeeze(RCRB_b1(1,:,:)));
+grid on; set(gca,'YScale','log');
+xlabel('Error of Initial Angle Estimate (deg)');
+ylabel('Root CRB of b_1');
+title('(b) Root CRB of b_1 for MIMO radar A(5,0.5)');
+xlim([min(err_grid), max(err_grid)]);
+legend(methods, 'Location', 'best');
 
 subplot(2,2,3);
-plot(angle_grid, B_trace, 'LineWidth', 1.3);
-grid on;
-xlabel('Angle (deg)');
-ylabel('Beampattern (dB)');
-title('(c) Trace-Opt');
-xlim([-20 0]);
-ylim([-30 0]);
-xline(theta0, 'k--', 'LineWidth', 1.0);
+plot_three_methods(err_grid, squeeze(RCRB_theta1(2,:,:)));
+grid on; set(gca,'YScale','log');
+xlabel('Error of Initial Angle Estimate (deg)');
+ylabel('Root CRB of \theta_1 (deg)');
+title('(c) Root CRB of \theta_1 for MIMO radar B(0.5,0.5)');
+xlim([min(err_grid), max(err_grid)]);
+legend(methods, 'Location', 'best');
 
 subplot(2,2,4);
-plot(angle_grid, B_det, 'LineWidth', 1.3);
-grid on;
-xlabel('Angle (deg)');
-ylabel('Beampattern (dB)');
-title('(d) Det-Opt');
-xlim([-20 0]);
-ylim([-30 0]);
-xline(theta0, 'k--', 'LineWidth', 1.0);
+plot_three_methods(err_grid, squeeze(RCRB_b1(2,:,:)));
+grid on; set(gca,'YScale','log');
+xlabel('Error of Initial Angle Estimate (deg)');
+ylabel('Root CRB of b_1');
+title('(d) Root CRB of b_1 for MIMO radar B(0.5,0.5)');
+xlim([min(err_grid), max(err_grid)]);
+legend(methods, 'Location', 'best');
 
-%% ========== Optional: CRB check ==========
-F_angle_num = FIM_numeric_single_paper(R_angle, a0, ad0, v0, vd0, Q, b, L);
-F_eigen_num = FIM_numeric_single_paper(R_eigen, a0, ad0, v0, vd0, Q, b, L);
-F_trace_num = FIM_numeric_single_paper(R_trace, a0, ad0, v0, vd0, Q, b, L);
-F_det_num   = FIM_numeric_single_paper(R_det,   a0, ad0, v0, vd0, Q, b, L);
+fprintf('\n===== Numerical ranges =====\n');
+for rr = 1:num_radars
+    fprintf('\nRadar %s\n', radars(rr).name);
+    for mm = 1:num_methods
+        theta_min = min(squeeze(RCRB_theta1(rr,mm,:)));
+        theta_max = max(squeeze(RCRB_theta1(rr,mm,:)));
+        b_min = min(squeeze(RCRB_b1(rr,mm,:)));
+        b_max = max(squeeze(RCRB_b1(rr,mm,:)));
+        fprintf('%s: theta1 RCRB [%.3e, %.3e], b1 RCRB [%.3e, %.3e]\n', methods{mm}, theta_min, theta_max, b_min, b_max);
+    end
+end
 
-C_angle = inv(F_angle_num);
-C_eigen = inv(F_eigen_num);
-C_trace = inv(F_trace_num);
-C_det   = inv(F_det_num);
+function [A, Ad, V, Vd] = build_steering_multi(theta, afun, adfun, vfun, vdfun)
+    K = length(theta);
+    M = length(afun(theta(1)));
+    N = length(vfun(theta(1)));
+    A = zeros(M,K);
+    Ad = zeros(M,K);
+    V = zeros(N,K);
+    Vd = zeros(N,K);
+    for k = 1:K
+        A(:,k) = afun(theta(k));
+        Ad(:,k) = adfun(theta(k));
+        V(:,k) = vfun(theta(k));
+        Vd(:,k) = vdfun(theta(k));
+    end
+end
 
-fprintf('\nRoot CRB of theta, in degrees:\n');
-fprintf('Angle-only : %.6e\n', sqrt(real(C_angle(1,1))));
-fprintf('Eigen-Opt  : %.6e\n', sqrt(real(C_eigen(1,1))));
-fprintf('Trace-Opt  : %.6e\n', sqrt(real(C_trace(1,1))));
-fprintf('Det-Opt    : %.6e\n', sqrt(real(C_det(1,1))));
+function R = design_trace_opt_two_target_target1(P, A, Ad, V, Vd, Q, b, L)
+    K = length(b);
+    dim = 3*K;
+    idx_target1 = [1, K+1, 2*K+1];
 
-%% ============================================================
-%  Local functions
-%% ============================================================
+    %========== Trace-Opt for target 1 using Appendix C ==========
+    % Appendix C shows that the optimal R lies in span{V,Vd}.
+    % Write R = U*X*U', where U = orth([V,Vd]).
+    % This is still the generalized Trace-Opt SDP in (23), but optimized over X.
+    U = orth([V, Vd]);
+    r = size(U,2);
 
-function F = FIM_numeric_single_paper(R, a0, ad0, v0, vd0, Q, b, L)
-    % Single-target real FIM following the paper model:
-    %   X = b*a(theta)*v(theta)^T*S + Z
-    % Parameter vector:
-    %   eta = [theta, real(b), imag(b)]^T
-    % The paper uses R = S*S^H/L, hence every FIM block has factor L.
-    % Since the signal uses v^T S, the transmit-side inner product is:
-    %
-    %   y_q^T R y_p^*
-    % implemented as:
-    %   y_q.' * R * conj(y_p)
+    cvx_begin sdp quiet
+        variable X(r,r) hermitian semidefinite
+        variable u(3)
 
+        Rcvx = U * X * U';
+        F = FIM_cvx_multi_paper(Rcvx, A, Ad, V, Vd, Q, b, L);
+
+        minimize(sum(u))
+        subject to
+            trace(X) == P;
+
+            for kk = 1:3
+                e = zeros(dim,1);
+                e(idx_target1(kk)) = 1;
+                [F, e; e', u(kk)] >= 0;
+            end
+    cvx_end
+
+    R = U * X * U';
     R = hermitian_project(R);
 
-    %% Receive-side terms
-    A00 = a0'  /Q * a0;
-    Ad0 = ad0' /Q * a0;
-    A0d = a0'  /Q * ad0;
-    Add = ad0' /Q * ad0;
+    fprintf('Trace-Opt CVX status: %s\n', cvx_status);
+end
 
-    %% Transmit-side terms
-    T_v_v   = v0.'  * R * conj(v0);
-    T_v_vd  = v0.'  * R * conj(vd0);
-    T_vd_v  = vd0.' * R * conj(v0);
-    T_vd_vd = vd0.' * R * conj(vd0);
-
-    %% theta-theta block, corresponding to F11
-    Gtt = abs(b)^2 * ...
-        ( Add * T_v_v ...
-        + Ad0 * T_vd_v ...
-        + A0d * T_v_vd ...
-        + A00 * T_vd_vd );
-
-    F11 = 2 * L * real(Gtt);
-
-    %% theta-amplitude block, corresponding to F12 after real split
-    Gtr = conj(b) * ...
-        ( Ad0 * T_v_v ...
-        + A00 * T_v_vd );
-
-    Gti = 1j * Gtr;
-
-    F12 = 2 * L * real(Gtr);
-    F13 = 2 * L * real(Gti);
-
-    %% amplitude-amplitude block, corresponding to F22 after real split
-    Grr = A00 * T_v_v;
-
-    F22 = 2 * L * real(Grr);
-    F23 = 2 * L * real(1j * Grr);
-    F33 = 2 * L * real(Grr);
-
-    F = [F11, F12, F13;
-         F12, F22, F23;
-         F13, F23, F33];
-
+function F = FIM_numeric_multi_paper(R, A, Ad, V, Vd, Q, b, L)
+    K = length(b);
+    b = b(:);
+    R = hermitian_project(R);
+    A00 = A' / Q * A;
+    Ad0 = Ad' / Q * A;
+    A0d = A' / Q * Ad;
+    Add = Ad' / Q * Ad;
+    V00 = V' * R * V;
+    Vd0 = Vd' * R * V;
+    V0d = V' * R * Vd;
+    Vdd = Vd' * R * Vd;
+    Btt = conj(b) * b.';
+    Bt = conj(b) * ones(1,K);
+    F11c = L * Btt .* (Add .* V00 + Ad0 .* V0d + A0d .* Vd0 + A00 .* Vdd);
+    F12c = L * Bt .* (Ad0 .* V00 + A00 .* Vd0);
+    F22c = L * A00 .* V00;
+    F11 = 2 * real(F11c);
+    F12r = 2 * real(F12c);
+    F12i = -2 * imag(F12c);
+    F22rr = 2 * real(F22c);
+    F22ri = -2 * imag(F22c);
+    F22ii = 2 * real(F22c);
+    F = [F11, F12r, F12i;
+         F12r.', F22rr, F22ri;
+         F12i.', F22ri.', F22ii];
     F = real((F + F')/2);
 end
 
-
-function F = FIM_cvx_single_paper(R, a0, ad0, v0, vd0, Q, b, L)
-    % CVX-compatible single-target real FIM.
-    %
-    % Same as FIM_numeric_single_paper, but all terms are affine in R.
-
-    %% Receive-side terms
-    A00 = a0' /Q * a0;
-    Ad0 = ad0' /Q * a0;
-    A0d = a0'  /Q * ad0;
-    Add = ad0' /Q * ad0;
-
-    %% Transmit-side terms
-    T_v_v   = v0.'  * R * conj(v0);
-    T_v_vd  = v0.'  * R * conj(vd0);
-    T_vd_v  = vd0.' * R * conj(v0);
-    T_vd_vd = vd0.' * R * conj(vd0);
-
-    %% F11
-    Gtt = abs(b)^2 * ...
-        ( Add * T_v_v ...
-        + Ad0 * T_vd_v ...
-        + A0d * T_v_vd ...
-        + A00 * T_vd_vd );
-
-    F11 = 2 * L * real(Gtt);
-
-    %% F12, split into real(b), imag(b)
-    Gtr = conj(b) * ...
-        ( Ad0 * T_v_v ...
-        + A00 * T_v_vd );
-
-    Gti = 1j * Gtr;
-
-    F12 = 2 * L * real(Gtr);
-    F13 = 2 * L * real(Gti);
-
-    %% F22, split into real/imag amplitude block
-    Grr = A00 * T_v_v;
-
-    F22 = 2 * L * real(Grr);
-    F23 = 2 * L * real(1j * Grr);
-    F33 = 2 * L * real(Grr);
-
-    F = [F11, F12, F13;
-         F12, F22, F23;
-         F13, F23, F33];
-
+function F = FIM_cvx_multi_paper(R, A, Ad, V, Vd, Q, b, L)
+    K = length(b);
+    b = b(:);
+    A00 = A' / Q * A;
+    Ad0 = Ad' / Q * A;
+    A0d = A' / Q * Ad;
+    Add = Ad' / Q * Ad;
+    V00 = V' * R * V;
+    Vd0 = Vd' * R * V;
+    V0d = V' * R * Vd;
+    Vdd = Vd' * R * Vd;
+    Btt = conj(b) * b.';
+    Bt = conj(b) * ones(1,K);
+    F11c = L * Btt .* (Add .* V00 + Ad0 .* V0d + A0d .* Vd0 + A00 .* Vdd);
+    F12c = L * Bt .* (Ad0 .* V00 + A00 .* Vd0);
+    F22c = L * A00 .* V00;
+    F11 = 2 * real(F11c);
+    F12r = 2 * real(F12c);
+    F12i = -2 * imag(F12c);
+    F22rr = 2 * real(F22c);
+    F22ri = -2 * imag(F22c);
+    F22ii = 2 * real(F22c);
+    F = [F11, F12r, F12i;
+         F12r.', F22rr, F22ri;
+         F12i.', F22ri.', F22ii];
     F = 0.5 * (F + F.');
 end
 
-
-function B_dB = tx_beampattern_paper(R, vfun, angle_grid)
-    % Transmit beampattern for paper model:
-    %   B(theta) = v(theta)^T R v(theta)^*
-    % not v^H R v.
-
-    R = hermitian_project(R);
-    B = zeros(size(angle_grid));
-    for ii = 1:length(angle_grid)
-        vv = vfun(angle_grid(ii));
-        B(ii) = real(vv.' * R * conj(vv));
-    end
-
-    B = B ./ max(B);
-    B_dB = 10 * log10(B + eps);
-end
-
-
 function R = hermitian_project(R)
     R = (R + R')/2;
+end
+
+function plot_three_methods(x, Y)
+    hold on;
+    plot(x, Y(1,:), 'b:', 'LineWidth', 1.5);
+    plot(x, Y(2,:), 'g-.', 'LineWidth', 1.5);
+    plot(x, Y(3,:), 'r-', 'LineWidth', 1.8);
 end
