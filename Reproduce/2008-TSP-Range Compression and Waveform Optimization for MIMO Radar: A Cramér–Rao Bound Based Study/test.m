@@ -47,20 +47,17 @@ for rr = 1:num_radars
 
     [A_true, Ad_true, V_true, Vd_true] = build_steering_multi(theta_true, afun, adfun, vfun, vdfun);
 
+    %% ========== Fixed uncorrelated waveform ==========
+    % Uncorrelated waveform does not depend on the initial angle estimate, so its CRB is constant over err_grid.
     R_uncorr_fixed = P / N * eye(N);
-    v1_true = V_true(:,1);
-    R_sum_fixed = P / real(v1_true' * v1_true) * (v1_true * v1_true');
-
     F_uncorr = FIM_numeric_multi_paper(R_uncorr_fixed, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
     C_uncorr = F_uncorr \ eye(3*K);
     RCRB_theta1(rr,1,:) = sqrt(max(real(C_uncorr(1,1)), 0));
     RCRB_b1(rr,1,:) = sqrt(max(real(C_uncorr(K+1,K+1) + C_uncorr(2*K+1,2*K+1)), 0));
 
-    F_sum = FIM_numeric_multi_paper(R_sum_fixed, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
-    C_sum = F_sum \ eye(3*K);
-    RCRB_theta1(rr,2,:) = sqrt(max(real(C_sum(1,1)), 0));
-    RCRB_b1(rr,2,:) = sqrt(max(real(C_sum(K+1,K+1) + C_sum(2*K+1,2*K+1)), 0));
-
+    %% ========== Sum Beam and Trace-Opt with initial angle estimation error ==========
+    % Only theta1 has initial estimation error; theta2 and both amplitudes are assumed exact.
+    % Sum Beam and Trace-Opt are designed using theta_hat, then evaluated using true parameters.
     for ii = 1:num_err
         err = err_grid(ii);
         theta_hat = theta_true;
@@ -69,10 +66,18 @@ for rr = 1:num_radars
 
         [A_hat, Ad_hat, V_hat, Vd_hat] = build_steering_multi(theta_hat, afun, adfun, vfun, vdfun);
 
+        % Sum Beam points to the estimated target-of-interest angle theta1_hat, so it varies with err.
+        v1_hat = V_hat(:,1);
+        R_sum = P / real(v1_hat' * v1_hat) * (v1_hat * v1_hat');
+        F_sum = FIM_numeric_multi_paper(R_sum, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
+        C_sum = F_sum \ eye(3*K);
+        RCRB_theta1(rr,2,ii) = sqrt(max(real(C_sum(1,1)), 0));
+        RCRB_b1(rr,2,ii) = sqrt(max(real(C_sum(K+1,K+1) + C_sum(2*K+1,2*K+1)), 0));
+
+        % Trace-Opt minimizes the target-1 CRB block using hatted parameters, then is evaluated at true parameters.
         R_trace = design_trace_opt_two_target_target1(P, A_hat, Ad_hat, V_hat, Vd_hat, Q, b_true, L);
         F_trace = FIM_numeric_multi_paper(R_trace, A_true, Ad_true, V_true, Vd_true, Q, b_true, L);
         C_trace = F_trace \ eye(3*K);
-
         RCRB_theta1(rr,3,ii) = sqrt(max(real(C_trace(1,1)), 0));
         RCRB_b1(rr,3,ii) = sqrt(max(real(C_trace(K+1,K+1) + C_trace(2*K+1,2*K+1)), 0));
     end
@@ -149,24 +154,20 @@ function R = design_trace_opt_two_target_target1(P, A, Ad, V, Vd, Q, b, L)
     dim = 3*K;
     idx_target1 = [1, K+1, 2*K+1];
 
-    %========== Trace-Opt for target 1 using Appendix C ==========
+    %% ========== Trace-Opt for target 1 using Appendix C ==========
     % Appendix C shows that the optimal R lies in span{V,Vd}.
-    % Write R = U*X*U', where U = orth([V,Vd]).
-    % This is still the generalized Trace-Opt SDP in (23), but optimized over X.
+    % Write R = U*X*U', and apply the generalized Trace-Opt SDP in (23) to theta1, real(b1), and imag(b1).
     U = orth([V, Vd]);
     r = size(U,2);
 
     cvx_begin sdp quiet
         variable X(r,r) hermitian semidefinite
         variable u(3)
-
         Rcvx = U * X * U';
         F = FIM_cvx_multi_paper(Rcvx, A, Ad, V, Vd, Q, b, L);
-
         minimize(sum(u))
         subject to
             trace(X) == P;
-
             for kk = 1:3
                 e = zeros(dim,1);
                 e(idx_target1(kk)) = 1;
@@ -176,7 +177,6 @@ function R = design_trace_opt_two_target_target1(P, A, Ad, V, Vd, Q, b, L)
 
     R = U * X * U';
     R = hermitian_project(R);
-
     fprintf('Trace-Opt CVX status: %s\n', cvx_status);
 end
 
