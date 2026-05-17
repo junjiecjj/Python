@@ -1,187 +1,231 @@
-% fig3_MIMO_Radar_A_beampatterns.m
-% 产生论文 Fig.3 (a)-(d) 的发射波束方向图
-% MIMO Radar A: 发射间距 5λ，接收间距 0.5λ，N=M=10, 目标 -16.5°, 干扰 -5°
+clear; clc; close all;
 
-clc;
-clear;
-close all;
+M = 10; 
+N = 10; 
+L = 256; 
+P = 1;
+dt = 5; 
+dr = 0.5;
+theta0 = -16.5; 
+theta_jam = 5;
+b = 1; 
+sigma2 = 1;
+AINR_dB = 100; 
+AINR = 10^(AINR_dB/10);
+angle_grid = -20:0.01:0;
 
-%% 系统参数
-N = 10;                 % 发射天线数
-M = 10;                 % 接收天线数
-L = 256;                % 快拍数（波形长度）
-P = 1;                  % 总发射功率
-ASNR_dB = 40;           % 阵列信噪比 (dB)
-sigma2 = (M*N*P) / (10^(ASNR_dB/10));   % 噪声方差
+tx_pos = ((0:M-1) - (M-1)/2).' * dt;
+rx_pos = ((0:N-1) - (N-1)/2).' * dr;
 
-% 干扰机参数
-jammer_angle = -5;      % 度
-AINR_dB = 100;          % 阵列干扰噪比 (dB)
-jammer_power = 10^(AINR_dB/10) * sigma2 / M;
+vfun = @(th) exp(1j*2*pi*tx_pos*sind(th));
+afun = @(th) exp(1j*2*pi*rx_pos*sind(th));
+vdfun = @(th) 1j*2*pi*tx_pos*cosd(th)*(pi/180).*exp(1j*2*pi*tx_pos*sind(th));
+adfun = @(th) 1j*2*pi*rx_pos*cosd(th)*(pi/180).*exp(1j*2*pi*rx_pos*sind(th));
 
-% 目标参数
-theta_t = -16.5;        % 目标角度 (deg)
-b_t = 1;                % 目标复振幅（实数）
+v0 = vfun(theta0); 
+vd0 = vdfun(theta0);
+a0 = afun(theta0); 
+ad0 = adfun(theta0);
+aj = afun(theta_jam);
 
-% 阵列几何
-d_tx = 5;               % 发射阵元间距（波长）
-d_rx = 0.5;             % 接收阵元间距（波长）
+jammer_power = AINR * sigma2 / N;
+Q = sigma2 * eye(N) + jammer_power * (aj * aj');
 
-% 导向矢量函数
-tx_steer = @(theta) exp(1j*2*pi*d_tx*(0:N-1)'*sind(theta));
-rx_steer = @(theta) exp(1j*2*pi*d_rx*(0:M-1)'*sind(theta));
+A00 = real(a0' / Q * a0);
+A10 = ad0' / Q * a0;
+A11 = real(ad0' / Q * ad0);
+nv = real(v0' * v0);
+nvd = real(vd0' * vd0);
 
-% 干扰加噪声协方差矩阵 Q
-Q = sigma2 * eye(M) + jammer_power * (rx_steer(jammer_angle) * rx_steer(jammer_angle)');
+%% ============================================================
+%  1) Angle-only, Appendix D, eqs. (39)/(40)
+%% ============================================================
 
-% 目标方向的导向矢量及导数
-v0 = tx_steer(theta_t);
-v_dot = 1j*2*pi*d_tx*cosd(theta_t) * (0:N-1)' .* v0;
-a0 = rx_steer(theta_t);
-a_dot = 1j*2*pi*d_rx*cosd(theta_t) * (0:M-1)' .* a0;
+alpha = L * abs(b)^2 * nv * real(A11 - abs(A10)^2 / A00);
+beta = L * abs(b)^2 * nvd * A00;
+fprintf('alpha = %.6e, beta = %.6e, beta/3 = %.6e\n', alpha, beta, beta/3);
 
-% 预计算常数
-A1 = a_dot' * (Q \ a_dot);
-A2 = a_dot' * (Q \ a0);
-A3 = a0'   * (Q \ a0);   % 正实数
+tol_ab = 1e-10 * max(1, max(abs(alpha), abs(beta)));
 
-% 计算 alpha, beta (公式 36-37)
-alpha = L * abs(b_t)^2 * norm(v0)^2 * (A1 - abs(A2)^2 / A3);
-beta  = L * abs(b_t)^2 * norm(v_dot)^2 * A3;
-
-fprintf('alpha = %g, beta = %g\n', alpha, beta);
-
-%% 1. Angle-Only 准则 (α < β 时取小 ζ)
-zeta = 1e-6;   % 非常小的正数，使 λ11>0
-lambda11_ao = zeta * P;
-lambda22_ao = (1 - zeta) * P;
-R_ao = (lambda11_ao / norm(v0)^2) * (v0 * v0') + ...
-       (lambda22_ao / norm(v_dot)^2) * (v_dot * v_dot');
-
-%% 2. Det-Opt 准则 (闭式解 42)
-if beta <= 3*alpha
-    coeff1 = 1;
-    coeff2 = 0;
+if alpha > beta + tol_ab
+    R_angle = P / nv * (v0 * v0');
+    fprintf('Angle-only: use equation (39).\n');
+elseif beta > alpha + tol_ab
+    zeta = 1e-4;
+    R_angle = zeta * P / nv * (v0 * v0') + (1-zeta) * P / nvd * (vd0 * vd0');
+    fprintf('Angle-only: use equation (40), zeta = %.2e.\n', zeta);
 else
-    coeff1 = (2*beta) / (3*(beta - alpha));
-    coeff2 = (beta - 3*alpha) / (3*(beta - alpha));
+    zeta = 0.5;
+    R_angle = zeta * P / nv * (v0 * v0') + (1-zeta) * P / nvd * (vd0 * vd0');
+    fprintf('Angle-only: alpha approximately equals beta, use 50/50 split.\n');
 end
-lambda11_det = coeff1 * P;
-lambda22_det = coeff2 * P;
-R_det = (lambda11_det / norm(v0)^2) * (v0 * v0') + ...
-        (lambda22_det / norm(v_dot)^2) * (v_dot * v_dot');
+R_angle = hermitian_project(R_angle);
 
-%% 3. Trace-Opt 准则 (CVX SDP)
-% 构建 FIM 的线性函数，用于 SDP
-% 注意：我们优化 R_Phi，目标为 min trace(C) 即 min trace(F^{-1})
-% 等价的 SDP: min trace(Z) s.t. [F, I; I, Z] >= 0, tr(R_Phi)=P, R_Phi>=0
-% 这里 F 是 3x3 实 FIM（参数顺序 theta, Re(b), Im(b)）
-% 由于 CVX 不支持直接以 F 为变量，需要构造一个函数返回给定 R 的 FIM
-% 我们直接编写 SDP
 
-% 预先计算 F 各块关于 R 的线性系数（用 lambda 形式，但需要完整 R）
-% 为避免复杂，采用基于矩阵的表达式
-% 定义函数 compute_FIM(R)，返回 3x3 实对称 FIM
-function F = compute_FIM(R, v0, v_dot, a0, a_dot, Q, b, L)
-    % 计算辅助标量
-    vRv = real(v0' * R * v0);
-    vRvd = v0' * R * v_dot;   % 复数
-    vdRvd = real(v_dot' * R * v_dot);
-    % 复数 F11, F12, F22
-    F11c = L * abs(b)^2 * ( (a_dot'*(Q\a_dot))*vRv + (a_dot'*(Q\a0))*vRvd + ...
-            (a_dot'*(Q\a0))'*vRvd' + (a0'*(Q\a0))*vdRvd );
-    F12c = L * conj(b) * ( (a_dot'*(Q\a0))*vRv + (a0'*(Q\a0))*vRvd );
-    F22c = L * (a0'*(Q\a0)) * vRv;   % 实数
-    % 实 FIM
-    F = [ real(F11c), -imag(F11c), real(F12c);
-          imag(F11c),  real(F11c), imag(F12c);
-          real(F12c'),-imag(F12c'), real(F22c) ];
-end
+%% ============================================================
+%  2) Eigen-Opt, paper eq. (27)
+%
+%  maximize t
+%  subject to F(R) - tI >= 0
+%             trace(R) = P
+%             R >= 0
+%% ============================================================
 
-% 使用 CVX 求解 Trace-Opt
-if exist('cvx_begin', 'file')
-    cvx_begin sdp quiet
-        variable R_trace(N,N) hermitian
-        variable Z(3,3) symmetric
-        F_trace = compute_FIM(R_trace, v0, v_dot, a0, a_dot, Q, b_t, L);
-        minimize( trace(Z) )
-        subject to
-            [F_trace, eye(3); eye(3), Z] >= 0;
-            trace(R_trace) == P;
-            R_trace >= 0;
-    cvx_end
+cvx_begin sdp quiet
+    variable R_eigen(M,M) hermitian semidefinite
+    variable t_eigen
+    F_eigen = FIM_cvx_single_paper(R_eigen, a0, ad0, v0, vd0, Q, b, L);
+    maximize(t_eigen)
+    subject to
+        trace(R_eigen) == P;
+        F_eigen - t_eigen * eye(3) >= 0;
+cvx_end
+R_eigen = hermitian_project(R_eigen);
+fprintf('Eigen-Opt CVX status: %s\n', cvx_status);
+
+
+%% ============================================================
+%  3) Trace-Opt, paper eqs. (22)/(23)
+%
+%  minimize trace(inv(F))
+%  SDP epigraph:
+%     minimize sum u_k
+%     subject to [F e_k; e_k^T u_k] >= 0
+%% ============================================================
+
+cvx_begin sdp quiet
+    variable R_trace(M,M) hermitian semidefinite
+    variable u_trace(3)
+    F_trace = FIM_cvx_single_paper(R_trace, a0, ad0, v0, vd0, Q, b, L);
+    minimize(sum(u_trace))
+    subject to
+        trace(R_trace) == P;
+        for k = 1:3
+            ek = zeros(3,1); ek(k) = 1;
+            [F_trace, ek; ek', u_trace(k)] >= 0;
+        end
+cvx_end
+R_trace = hermitian_project(R_trace);
+fprintf('Trace-Opt CVX status: %s\n', cvx_status);
+
+
+%% ============================================================
+%  4) Det-Opt, Appendix E, eq. (42)
+%
+%  If alpha >= beta/3:
+%      lambda1 = P, lambda2 = 0
+%  Else:
+%      lambda1 = 2*beta*P / (3*(beta-alpha))
+%      lambda2 = P - lambda1
+%% ============================================================
+if alpha >= beta/3
+    lambda1 = P; lambda2 = 0;
+    fprintf('Det-Opt: use equation (42), alpha >= beta/3.\n');
 else
-    warning('CVX not found. Using Det-Opt as placeholder for Trace-Opt.');
-    R_trace = R_det;
+    lambda1 = 2 * beta * P / (3 * (beta - alpha));
+    lambda2 = P - lambda1;
+    fprintf('Det-Opt: use equation (42), alpha < beta/3.\n');
 end
+R_det = lambda1 / nv * (v0 * v0') + lambda2 / nvd * (vd0 * vd0');
+R_det = hermitian_project(R_det);
+fprintf('Det-Opt lambda1 = %.6e, lambda2 = %.6e\n', lambda1, lambda2);
 
-%% 4. Eigen-Opt 准则 (CVX SDP)
-% 最大化最小特征值：max t s.t. F >= t*I, tr(R)=P, R>=0
-if exist('cvx_begin', 'file')
-    cvx_begin sdp quiet
-        variable R_eigen(N,N) hermitian
-        variable t
-        F_eigen = compute_FIM(R_eigen, v0, v_dot, a0, a_dot, Q, b_t, L);
-        maximize( t )
-        subject to
-            F_eigen >= t * eye(3);
-            trace(R_eigen) == P;
-            R_eigen >= 0;
-    cvx_end
-else
-    warning('CVX not found. Using Det-Opt as placeholder for Eigen-Opt.');
-    R_eigen = R_det;
-end
+%% ========== Beampatterns ==========
+B_angle = tx_beampattern(R_angle, vfun, angle_grid);
+B_eigen = tx_beampattern(R_eigen, vfun, angle_grid);
+B_trace = tx_beampattern(R_trace, vfun, angle_grid);
+B_det = tx_beampattern(R_det, vfun, angle_grid);
 
-%% 计算波束方向图
-theta_scan = -90:0.5:90;
-bp_ao = zeros(size(theta_scan));
-bp_det = zeros(size(theta_scan));
-bp_trace = zeros(size(theta_scan));
-bp_eigen = zeros(size(theta_scan));
-
-for i = 1:length(theta_scan)
-    v = tx_steer(theta_scan(i));
-    bp_ao(i) = real(v' * R_ao * v);
-    bp_det(i) = real(v' * R_det * v);
-    bp_trace(i) = real(v' * R_trace * v);
-    bp_eigen(i) = real(v' * R_eigen * v);
-end
-
-% 转换为 dB，并归一化（最大值为0dB）
-bp_ao_dB = 10*log10(bp_ao / max(bp_ao));
-bp_det_dB = 10*log10(bp_det / max(bp_det));
-bp_trace_dB = 10*log10(bp_trace / max(bp_trace));
-bp_eigen_dB = 10*log10(bp_eigen / max(bp_eigen));
-
-%% 绘图 (Fig.3)
-figure('Position', [100,100,1200,800]);
+figure('Color','w','Position',[100 100 900 650]);
 
 subplot(2,2,1);
-plot(theta_scan, bp_ao_dB, 'LineWidth', 1.5);
+plot(angle_grid, B_angle, 'LineWidth', 1.3); grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(a) Angle-Only');
-xlim([-20,0]); ylim([-40,5]); grid on;
+title('(a) Angle-only'); xlim([-20 0]); ylim([-30 0]);
+xline(theta0, 'k--', 'LineWidth', 1.0);
 
 subplot(2,2,2);
-plot(theta_scan, bp_eigen_dB, 'LineWidth', 1.5);
+plot(angle_grid, B_eigen, 'LineWidth', 1.3); grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(b) Eigen-Opt');
-xlim([-20,0]); ylim([-40,5]); grid on;
+title('(b) Eigen-Opt'); xlim([-20 0]); ylim([-30 0]);
+xline(theta0, 'k--', 'LineWidth', 1.0);
 
 subplot(2,2,3);
-plot(theta_scan, bp_trace_dB, 'LineWidth', 1.5);
+plot(angle_grid, B_trace, 'LineWidth', 1.3); grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(c) Trace-Opt');
-xlim([-20,0]); ylim([-40,5]); grid on;
+title('(c) Trace-Opt'); xlim([-20 0]); ylim([-30 0]);
+xline(theta0, 'k--', 'LineWidth', 1.0);
 
 subplot(2,2,4);
-plot(theta_scan, bp_det_dB, 'LineWidth', 1.5);
+plot(angle_grid, B_det, 'LineWidth', 1.3); grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(d) Det-Opt');
-xlim([-20,0]); ylim([-40,5]); grid on;
+title('(d) Det-Opt'); xlim([-20 0]); ylim([-30 0]);
+xline(theta0, 'k--', 'LineWidth', 1.0);
 
-sgtitle('Fig. 3 Optimal Transmit Beampatterns for MIMO Radar A(5,0.5)');
-saveas(gcf, 'fig3.png');
+F_angle_num = FIM_numeric_single_paper(R_angle, a0, ad0, v0, vd0, Q, b, L);
+F_eigen_num = FIM_numeric_single_paper(R_eigen, a0, ad0, v0, vd0, Q, b, L);
+F_trace_num = FIM_numeric_single_paper(R_trace, a0, ad0, v0, vd0, Q, b, L);
+F_det_num = FIM_numeric_single_paper(R_det, a0, ad0, v0, vd0, Q, b, L);
 
-fprintf('All beampatterns plotted. Check fig3.png\n');
+C_angle = F_angle_num \ eye(3);
+C_eigen = F_eigen_num \ eye(3);
+C_trace = F_trace_num \ eye(3);
+C_det = F_det_num \ eye(3);
+
+fprintf('\nRoot CRB of theta, in degrees:\n');
+fprintf('Angle-only : %.6e\n', sqrt(real(C_angle(1,1))));
+fprintf('Eigen-Opt  : %.6e\n', sqrt(real(C_eigen(1,1))));
+fprintf('Trace-Opt  : %.6e\n', sqrt(real(C_trace(1,1))));
+fprintf('Det-Opt    : %.6e\n', sqrt(real(C_det(1,1))));
+
+function F = FIM_numeric_single_paper(R, a0, ad0, v0, vd0, Q, b, L)
+    R = hermitian_project(R);
+    A00 = a0' / Q * a0;
+    Ad0 = ad0' / Q * a0;
+    A0d = a0' / Q * ad0;
+    Add = ad0' / Q * ad0;
+    V00 = v0' * R * v0;
+    Vd0 = vd0' * R * v0;
+    V0d = v0' * R * vd0;
+    Vdd = vd0' * R * vd0;
+    F11c = L * abs(b)^2 * (Add * V00 + Ad0 * V0d + A0d * Vd0 + A00 * Vdd);
+    F12c = L * conj(b) * (Ad0 * V00 + A00 * Vd0);
+    F22c = L * A00 * V00;
+    F = 2 * [real(F11c), real(F12c), -imag(F12c);
+             real(F12c), real(F22c), -imag(F22c);
+            -imag(F12c), imag(F22c),  real(F22c)];
+    F = real((F + F')/2);
+end
+
+function F = FIM_cvx_single_paper(R, a0, ad0, v0, vd0, Q, b, L)
+    A00 = a0' / Q * a0;
+    Ad0 = ad0' / Q * a0;
+    A0d = a0' / Q * ad0;
+    Add = ad0' / Q * ad0;
+    V00 = v0' * R * v0;
+    Vd0 = vd0' * R * v0;
+    V0d = v0' * R * vd0;
+    Vdd = vd0' * R * vd0;
+    F11c = L * abs(b)^2 * (Add * V00 + Ad0 * V0d + A0d * Vd0 + A00 * Vdd);
+    F12c = L * conj(b) * (Ad0 * V00 + A00 * Vd0);
+    F22c = L * A00 * V00;
+    F = 2 * [real(F11c), real(F12c), -imag(F12c);
+             real(F12c), real(F22c), -imag(F22c);
+            -imag(F12c), imag(F22c),  real(F22c)];
+    F = 0.5 * (F + F.');
+end
+
+function B_dB = tx_beampattern(R, vfun, angle_grid)
+    R = hermitian_project(R);
+    B = zeros(size(angle_grid));
+    for ii = 1:length(angle_grid)
+        vv = vfun(angle_grid(ii));
+        B(ii) = real(vv' * R * vv);
+    end
+    B = B / max(B);
+    B_dB = 10 * log10(B + eps);
+end
+
+function R = hermitian_project(R)
+    R = (R + R')/2;
+end
