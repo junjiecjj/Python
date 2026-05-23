@@ -1,158 +1,201 @@
-%% 严格按 (41)-(43) 实现 CRB(θ) 的通用程序（适用于任意 M）
-% 对应图8：M=2（可改为任意值），L=2，θ1=0°，θ2=5,10,15°，SNR=0dB
-% 使用分块 FIM (J_θθ, J_θa, J_aa) 和 Schur 补，避免完整 6×6 求逆
-
-
 clc;
-clear all;
+clear;
 close all;
-addpath('./functions');
+rng(42);
+%% Parameters
+M = 10;
+L = 2;
+d_lambda = 0.5;
+SNR_dB = 0;
+SNR_lin = 10^(SNR_dB / 10);
+N_coherent = 1;
+N_orth = M;
+alpha = ones(L, 1);
+sigma2 = abs(alpha(1))^2 / SNR_lin;
+theta1_true_deg = 0;
+theta2_crb_deg = 0:0.1:3;
+theta2_ml_deg = 0:0.2:3;
+MC_trials = 200;
+beta_coherent = 1;
+beta_orth = 0;
+theta_search_min = -1;
+theta_search_max = 3;
+coarse_step = 0.01;
+fine_step = 0.001;
+fine_width = 0.1;
+n = (0:M-1).';
+% n = (-(M - 1) / 2 : (M - 1) / 2).';
+a_fun = @(theta_deg) exp(-1j * 2 * pi * d_lambda * n * sind(theta_deg));
+da_fun = @(theta_deg) -1j * 2 * pi * d_lambda  * n * cosd(theta_deg) .* a_fun(theta_deg);
+A_fun = @(theta_deg) a_fun(theta_deg) * a_fun(theta_deg).';
+dA_fun = @(theta_deg) da_fun(theta_deg) * a_fun(theta_deg).' + a_fun(theta_deg) * da_fun(theta_deg).';
+%% CRB curves
+CRB_coherent_deg = zeros(size(theta2_crb_deg));
+CRB_orth_deg = zeros(size(theta2_crb_deg));
+for idx = 1:length(theta2_crb_deg)
+    theta_true_deg = zeros(L, 1);
+    theta_true_deg(1) = theta1_true_deg;
+    theta_true_deg(2) = theta2_crb_deg(idx);
+    CRB_coherent_rad2 = crb_theta1_equiv_model(theta_true_deg, alpha, beta_coherent, M, N_coherent, sigma2, A_fun, dA_fun);
+    CRB_orth_rad2 = crb_theta1_equiv_model(theta_true_deg, alpha, beta_orth, M, N_orth, sigma2, A_fun, dA_fun);
+    CRB_coherent_deg(idx) = sqrt(max(real(CRB_coherent_rad2), 0)) * 180 / pi;
+    CRB_orth_deg(idx) = sqrt(max(real(CRB_orth_rad2), 0)) * 180 / pi;
+end
+%% ML Monte Carlo
+RMSE_coherent_deg = zeros(size(theta2_ml_deg));
+RMSE_orth_deg = zeros(size(theta2_ml_deg));
+for idx = 1:length(theta2_ml_deg)
+    theta2_true_deg = theta2_ml_deg(idx);
+    theta_true_deg = zeros(L, 1);
+    theta_true_deg(1) = theta1_true_deg;
+    theta_true_deg(2) = theta2_true_deg;
+    theta1_est_coherent = zeros(MC_trials, 1);
+    theta1_est_orth = zeros(MC_trials, 1);
+    fprintf('theta2 = %.2f deg\n', theta2_true_deg);
+    for mc = 1:MC_trials
+        z_coherent = simulate_equiv_observation(theta_true_deg, alpha, beta_coherent, M, N_coherent, sigma2, A_fun);
+        z_orth = simulate_equiv_observation(theta_true_deg, alpha, beta_orth, M, N_orth, sigma2, A_fun);
+        theta_hat_coherent = ml_two_target_joint_search(z_coherent, beta_coherent, M, N_coherent, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width);
+        theta_hat_orth = ml_two_target_joint_search(z_orth, beta_orth, M, N_orth, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width);
+        theta1_est_coherent(mc) = theta_hat_coherent(1);
+        theta1_est_orth(mc) = theta_hat_orth(1);
+    end
+    RMSE_coherent_deg(idx) = sqrt(mean((theta1_est_coherent - theta1_true_deg).^2));
+    RMSE_orth_deg(idx) = sqrt(mean((theta1_est_orth - theta1_true_deg).^2));
+end
+%% Plot
+figure;
+semilogy(theta2_crb_deg, CRB_coherent_deg, 'b-', 'LineWidth', 1.8);
+hold on;
+semilogy(theta2_crb_deg, CRB_orth_deg, 'r--', 'LineWidth', 1.8);
+semilogy(theta2_ml_deg, RMSE_coherent_deg, 'bo', 'MarkerSize', 7, 'LineWidth', 1.5);
+semilogy(theta2_ml_deg, RMSE_orth_deg, 'r^', 'MarkerSize', 7, 'LineWidth', 1.5);
+xlabel('\theta_2 [deg]');
+ylabel('RMSE of \theta_1 [deg]');
+legend('CRB, \beta = 1', 'CRB, \beta = 0', 'ML, \beta = 1', 'ML, \beta = 0', 'Location', 'best');
+grid on;
+grid minor;
+ylim([1e-3, 1e2]);
+title('Figure 9: CRB and ML performance, M = 10, L = 2, SNR = 0 dB');
 
+%% Functions
+% U Lambda^(1/2)
+function U_sqrtL = get_U_sqrtL_rank(beta, M)
+    Rs = (1 - beta) * eye(M) + beta * ones(M);
+    [U, Lambda] = eig(Rs);
+    lambda = real(diag(Lambda));
+    keep = lambda > 1e-10;
+    U = U(:, keep);
+    lambda = lambda(keep);
+    U_sqrtL = U * diag(sqrt(lambda));
+end
 
-%% 用户参数
-M = 10;                          % 阵元数（可修改为任意正整数）
-d_lambda = 0.5;                 % 半波长间距
-SNR_dB = 0;                     % 信噪比 (dB)
-SNR_lin = 10^(SNR_dB/10);
-N = 1;                          % 快拍数
-alpha1 = 2; 
-alpha2 = 10;         % 复振幅
-sigma2_coherent = N * abs(alpha1)^2 / SNR_lin;   % 噪声方差
-sigma2_orth = sigma2_coherent;   % 正交信号 TOT 补偿
+% N^(1/2) A U Lambda^(1/2)
+function d = d_beta_vec(theta_deg, beta, M, N_eff, A_fun)
+    U_sqrtL = get_U_sqrtL_rank(beta, M);
+    X = sqrt(N_eff) * A_fun(theta_deg) * U_sqrtL;
+    d = X(:);
+end
 
-theta1_true = 0;
-theta2_list = 0:0.01:2;
-beta_vals = linspace(0, 0.9999, 200);   % 相关系数
+function dd = d_beta_deriv_vec(theta_deg, beta, M, N_eff, dA_fun)
+    U_sqrtL = get_U_sqrtL_rank(beta, M);
+    X = sqrt(N_eff) * dA_fun(theta_deg) * U_sqrtL;
+    dd = X(:);
+end
 
-% 对称阵列（质心在原点）
-n = 0 : (M-1);         % 阵元位置
-a = @(th) exp(-1j * 2*pi*d_lambda * n' * sind(th));
-da = @(th) -1j * 2*pi*d_lambda * cosd(th) * n' .* a(th);
-A = @(th) a(th) * a(th).';
-dA = @(th) da(th) * a(th).' + a(th) * da(th).';
-
-% 相干矩阵（通用形式，适用于任意 M）
-R_s = @(beta) (1-beta)*eye(M) + beta*ones(M);
-
-factor1 = 2 * N / sigma2_coherent;
-factor2 = 2 * N *M / sigma2_coherent;
-
-% 辅助函数：从复数迹构造 2x2 子块（公式(61)中的块）
-blk = @(t, f) f * [real(t), -imag(t); imag(t), real(t)];
-CRB_theta1 = zeros(2, length(theta2_list));
-
-%% 主循环
-for k = 1:length(theta2_list)
-    theta2_deg = theta2_list(k);
-
-    %% 相干信号
-    beta = 1;
-    Rs = R_s(beta);
-    CRB_theta1(1, k) =  CRB(d_lambda, M, theta1_true, theta2_deg, alpha1, alpha2, Rs, factor1);
-    %% 正交信号
-    beta = 0;
-    Rs = R_s(beta);
-    CRB_theta1(2, k) =  CRB(d_lambda, M, theta1_true, theta2_deg, alpha1, alpha2, Rs, factor2);
+% 根据(57)-(59)计算所有参数的CRB
+function CRB_theta1_rad2 = crb_theta1_equiv_model(theta_deg, alpha, beta, M, N_eff, sigma2, A_fun, dA_fun)
+    L = length(theta_deg);
+    d0 = d_beta_vec(theta_deg(1), beta, M, N_eff, A_fun);
+    obs_dim = length(d0);
+    G = zeros(obs_dim, 3 * L);
+    for k = 1:L
+        dk = d_beta_vec(theta_deg(k), beta, M, N_eff, A_fun);
+        ddk = d_beta_deriv_vec(theta_deg(k), beta, M, N_eff, dA_fun);
+        G(:, k) = alpha(k) * ddk;
+        G(:, L + k) = dk;
+        G(:, 2 * L + k) = 1j * dk;
+    end
+    J = (2 / sigma2) * real(G' * G);
+    J = (J + J.') / 2;
+    if rcond(J) < 1e-12
+        CRB_theta1_rad2 = NaN;
+    else
+        J_inv = J \ eye(3 * L);
+        CRB_theta1_rad2 = J_inv(1, 1);
+    end
 end
 
 %% 
-theta2_list_scat = [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.5, 1.8, 2.0];  % 目标2真实角度（度）
-RMSE_coherent = zeros(size(theta2_list_scat));
-RMSE_orth = zeros(size(theta2_list_scat));
-MC_trials = 100;                % 蒙特卡洛次数
-
-for k = 1:length(theta2_list_scat)
-    theta2_true = theta2_list_scat(k);
-    % fprintf('Processing θ2 = %.1f° ...\n', theta2_true);
-    
-    % 发射信号（相干信号固定，正交信号随机，但需要与 eta 计算一致）
-    R_s_coherent = a(theta1_true) * a(theta1_true)';
-    % 对于相干信号，发射信号 s = a(theta1_true) （所有快拍相同，N=1）
-    s_coherent = a(theta1_true);
-    
-    theta1_est_coherent = zeros(MC_trials, 1);
-    theta1_est_orth = zeros(MC_trials, 1);
-    
-    for mc = 1:MC_trials
-        fprintf('  Processing: θ2 = %.1f°, %d', theta2_true, mc);
-        fprintf('\r');
-        A1 = A(theta1_true);
-        A2 = A(theta2_true);
-        % ----- 相干信号 -----
-        % 生成接收数据
-        s = s_coherent;
-        alphaAs = (alpha1 * A1 + alpha2 * A2) * s;
-        w = sqrt(sigma2_coherent/2) * (randn(M,1) + 1j*randn(M,1));
-        y = alphaAs + w;
-        % 计算 eta
-        eta_coherent = compute_eta(y, s, R_s_coherent, N);
-        % 二维网格搜索最大化 L(θ) = eta^H P_D eta
-        theta1_est_coherent(mc) = search_theta1_iterative(eta_coherent, R_s_coherent, M, N, theta2_true);
-
-        % ----- 正交信号 -----
-        % 每次独立生成发射信号 s_orth，满足 E[s s^H] = I
-        s_orth = sqrt(M) * (randn(M,1) + 1j*randn(M,1)) / sqrt(2);
-        alphaAs_orth = (alpha1 * A1 + alpha2 * A2) * s_orth;
-        w_orth = sqrt(sigma2_orth/2) * (randn(M,1) + 1j*randn(M,1));
-        y_orth = alphaAs_orth + w_orth;
-        R_s_orth = eye(M);
-        eta_orth = compute_eta(y_orth, s_orth, R_s_orth, N);
-        % % 网格搜索
-        theta1_est_orth(mc) = search_theta1_iterative(eta_orth, R_s_orth, M, N, theta2_true);
+function z = simulate_equiv_observation(theta_deg, alpha, beta, M, N_eff, sigma2, A_fun)
+    L = length(theta_deg);
+    d0 = d_beta_vec(theta_deg(1), beta, M, N_eff, A_fun);
+    z = zeros(size(d0));
+    for k = 1:L
+        dk = d_beta_vec(theta_deg(k), beta, M, N_eff, A_fun);
+        z = z + alpha(k) * dk;
     end
-    
-    RMSE_coherent(k) = sqrt(mean((theta1_est_coherent - theta1_true).^2));
-    RMSE_orth(k) = sqrt(mean((theta1_est_orth - theta1_true).^2));
+    w = sqrt(sigma2 / 2) * (randn(size(z)) + 1j * randn(size(z)));
+    z = z + w;
 end
 
-%% 绘图
-figure(1);
-semilogy(theta2_list, CRB_theta1(1,:), 'b-', 'LineWidth',1.5); hold on;
-semilogy(theta2_list, CRB_theta1(2,:), 'r--', 'LineWidth',1.5); hold on;
-semilogy(theta2_list_scat, RMSE_coherent, 'bo', 'MarkerSize', 8, 'MarkerFaceColor', 'b'); hold on;
-semilogy(theta2_list_scat, RMSE_orth, 'r^', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
-xlabel('\beta'); 
-ylabel('CRB on DOA (deg)');
-legend('CRB \beta = 1', 'CRB \beta = 0', 'Coherent ML', 'Orthogonal ML');
-grid on;
-title(sprintf('Figure 8: M=%d, L=2, SNR=0dB (via (41)-(43))', M));
+function score = ml_concentrated_score(z, D)
+    G = D' * D;
+    rhs = D' * z;
+    if rcond(G) > 1e-12
+        amp_hat = G \ rhs;
+    else
+        amp_hat = pinv(G) * rhs;
+    end
+    score = real(rhs' * amp_hat);
+end
 
-function theta1_est = search_theta1_iterative(eta, R_s, M, N, theta2_true, init_range, final_tol, npoints)
-% 迭代细化一维搜索，估计 theta1（已知 theta2）
-% 参照 MUSIC 算法的迭代峰值搜索思路
-% 输入：
-%   eta          - 等效观测向量 (M^2 x 1)
-%   R_s          - 发射相干矩阵
-%   M,N          - 阵元数、快拍数
-%   theta2_true  - 已知的第二个目标角度（度）
-%   init_range   - 初始搜索半径（度），默认 0.5
-%   final_tol    - 最终搜索半径阈值（度），默认 0.0001
-%   npoints      - 每次迭代的网格点数，默认 21（奇数，包含中心点）
-% 输出：
-%   theta1_est   - 估计的第一个目标角度（度）
-    final_tol = 1e-4;
-    npoints = 21;
-    center = 0;      % 初始中心
-    range = 0.1;
-    
-    while range > final_tol
-        % 生成当前搜索区域的均匀网格
-        theta1_vec = linspace(center - range, center + range, npoints);
-        L_vals = zeros(size(theta1_vec));
-        
-        for i = 1:length(theta1_vec)
-            th1 = theta1_vec(i);
-            D = construct_D([th1, theta2_true], R_s, M, N);
-            P_D = D * ((D'*D) \ D');
-            L_vals(i) = real(eta' * P_D * eta);
+function dict = build_dictionary(theta_grid, beta, M, N_eff, A_fun)
+    d0 = d_beta_vec(theta_grid(1), beta, M, N_eff, A_fun);
+    dict = zeros(length(d0), length(theta_grid));
+    for k = 1:length(theta_grid)
+        dict(:, k) = d_beta_vec(theta_grid(k), beta, M, N_eff, A_fun);
+    end
+end
+
+function theta_hat = ml_grid_search_joint(z, beta, M, N_eff, A_fun, theta1_grid, theta2_grid)
+    best_score = -inf;
+    theta_hat = zeros(2, 1);
+    d1_grid = build_dictionary(theta1_grid, beta, M, N_eff, A_fun);
+    d2_grid = build_dictionary(theta2_grid, beta, M, N_eff, A_fun);
+    for i = 1:length(theta1_grid)
+        theta1 = theta1_grid(i);
+        d1 = d1_grid(:, i);
+        for j = 1:length(theta2_grid)
+            theta2 = theta2_grid(j);
+            if theta2 < theta1
+                continue;
+            end
+            d2 = d2_grid(:, j);
+            D = [d1, d2];
+            score = ml_concentrated_score(z, D);
+            if score > best_score
+                best_score = score;
+                theta_hat(1) = theta1;
+                theta_hat(2) = theta2;
+            end
         end
-        
-        % 找到最大似然对应的角度
-        [~, idx] = max(L_vals);
-        center = theta1_vec(idx);
-        
-        % 缩小搜索半径
-        range = range / 2;
     end
-    theta1_est = center;
 end
+
+function theta_hat = ml_two_target_joint_search(z, beta, M, N_eff, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width)
+    theta_grid = theta_search_min:coarse_step:theta_search_max;
+    theta_hat = ml_grid_search_joint(z, beta, M, N_eff, A_fun, theta_grid, theta_grid);
+    theta1_center = theta_hat(1);
+    theta2_center = theta_hat(2);
+    theta1_grid = theta1_center - fine_width:fine_step:theta1_center + fine_width;
+    theta2_grid = theta2_center - fine_width:fine_step:theta2_center + fine_width;
+    theta1_grid = theta1_grid(theta1_grid >= theta_search_min);
+    theta1_grid = theta1_grid(theta1_grid <= theta_search_max);
+    theta2_grid = theta2_grid(theta2_grid >= theta_search_min);
+    theta2_grid = theta2_grid(theta2_grid <= theta_search_max);
+    theta_hat = ml_grid_search_joint(z, beta, M, N_eff, A_fun, theta1_grid, theta2_grid);
+    theta_hat = sort(theta_hat);
+end
+
+

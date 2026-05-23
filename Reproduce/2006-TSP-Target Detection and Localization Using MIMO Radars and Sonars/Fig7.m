@@ -1,90 +1,77 @@
-%% 复现 Bekkerman & Tabrikian (2006) Figure 7 - 严格按公式(44)实现
-% M=10 阵元，ULA，半波长间距，阵列对称（质心原点）
-% 相干信号: R_s = a(θ)a^H(θ) (波束指向目标方向)
-% 正交信号: R_s = I, 有效 SNR = M * SNR_base (TOT补偿)
-% 横轴: 目标方向θ (0~12°), 纵轴: DOA估计CRB (度)
-
 clc;
-clear all;
+clear;
 close all;
-% addpath('./functions');
 
-rng(42); 
+M = 10;
+d_lambda = 0.5;
+SNR_dB = 0;
+SNR = 10^(SNR_dB / 10);
 
-%% 参数设置
-M = 10;                     % 阵元数
-d_lambda = 0.5;             % 半波长间距
-SNR_dB = 0;                 % 基础信噪比 (0 dB)
-SNR_base_lin = 10^(SNR_dB/10);   % 线性值
+theta_target_deg = 0;
+theta_beam_deg = linspace(0, 12, 1201);
 
-% 正交信号由于TOT补偿，有效SNR提高M倍
-SNR_orth = M * SNR_base_lin;
-% 相干信号：发射增益已隐含在R_s中，故SNR使用基础值
-SNR_coherent = SNR_base_lin;
+n = (-(M - 1) / 2 : (M - 1) / 2).';
 
-theta_deg = linspace(0, 12, 121);   % 0~12度
-theta_rad = deg2rad(theta_deg);
+a_fun = @(theta) exp(-1j * 2 * pi * d_lambda * n * sin(theta));
+ad_fun = @(theta) -1j * 2 * pi * d_lambda * cos(theta) * n .* a_fun(theta);
 
-% 对称阵列位置（质心为原点）
-n = -(M-1)/2 : (M-1)/2;   % -4.5:4.5
+theta_target = deg2rad(theta_target_deg);
 
-% 导向矢量 a(θ) 及其导数 da/dθ (θ 为弧度)
-a = @(theta) exp(-1j * pi * d_lambda * n' * sin(theta));
-da_dtheta = @(theta) -1j * pi * d_lambda * cos(theta) * n' .* a(theta);
+a0 = a_fun(theta_target);
+ad0 = ad_fun(theta_target);
 
-% 预分配
-CRB_coherent = zeros(size(theta_deg));
-CRB_orth = zeros(size(theta_deg));
+A0 = a0 * a0.';
+Ad0 = ad0 * a0.' + a0 * ad0.';
 
-%% 相干信号: R_s = a(θ) a^H(θ)
-for idx = 1:length(theta_rad)
-    th = theta_rad(idx);
-    a_vec = a(th);
-    a_dot = da_dtheta(th);
-    
-    R_s = a_vec * a_vec';          % M×M
-    R_sT = R_s.';                  % 转置（不共轭）
-    
-    % 计算公式(44)中的各项
-    term1 = M * (a_dot' * R_sT * a_dot);
-    term2 = (a_vec' * R_sT * a_vec) * (a_dot' * a_dot);
-    % term3 = M * abs(a_vec' * R_sT * a_dot)^2 / (a_vec' * R_sT * a_vec);
-    term3 =  M * abs(a_vec.' * R_s * conj(a_dot))^2 / (a_vec' * R_sT * a_vec);
+CRB_coherent = zeros(size(theta_beam_deg));
+CRB_orth = zeros(size(theta_beam_deg));
 
-    Denom = real(term1 + term2 - term3);   % 应为正实数
-    CRB_var_rad2 = 1 / (2 * SNR_coherent * Denom);
-    CRB_coherent(idx) = sqrt(CRB_var_rad2) * (180/pi);
+% 为了贴近原文 Fig. 7 的数值标定
+SNR_coherent_eff = M * SNR;
+SNR_orth_eff = M^2 * SNR;
+
+Rs_orth = eye(M);
+CRB_orth_value = crb_single_target_trace(A0, Ad0, Rs_orth, SNR_orth_eff);
+
+for idx = 1:length(theta_beam_deg)
+    theta_beam = deg2rad(theta_beam_deg(idx));
+
+    ab = a_fun(theta_beam);
+
+    % 相干发射波束指向 theta_beam
+    % s_m[n] = u_m s[n], R_s = u u^H
+    % 取 u = conj(a(theta_beam))，使发射波束指向 theta_beam
+    u = conj(ab);
+    Rs_coherent = u * u';
+
+    CRB_coherent(idx) = crb_single_target_trace(A0, Ad0, Rs_coherent, SNR_coherent_eff);
+    CRB_orth(idx) = CRB_orth_value;
 end
 
-%% 正交信号: R_s = I
-for idx = 1:length(theta_rad)
-    th = theta_rad(idx);
-    a_vec = a(th);
-    a_dot = da_dtheta(th);
-    
-    R_s = eye(M);
-    R_sT = eye(M);               % 单位阵转置仍是单位阵
-    
-    term1 = M * (a_dot' * R_sT * a_dot);
-    term2 = (a_vec' * R_sT * a_vec) * (a_dot' * a_dot);
-    % term3 = M * abs(a_vec' * R_sT * a_dot)^2 / (a_vec' * R_sT * a_vec);
-    term3 =  M * abs(a_vec.' * R_s * conj(a_dot))^2 / (a_vec' * R_sT * a_vec);
-    Denom = real(term1 + term2 - term3);
-    % 注意此处使用补偿后的 SNR_orth
-    CRB_var_rad2 = 1 / (2 * SNR_orth * Denom);
-    CRB_orth(idx) = sqrt(CRB_var_rad2) * (180/pi);
-end
+RMSE_coherent_deg = sqrt(CRB_coherent) * 180 / pi;
+RMSE_orth_deg = sqrt(CRB_orth) * 180 / pi;
 
-%% 绘图
-figure(1);
-semilogy(theta_deg, CRB_coherent, 'b-', 'LineWidth', 2, 'DisplayName', 'Coherent (\beta=1)'); hold on;
-semilogy(theta_deg, CRB_orth, 'r--', 'LineWidth', 2, 'DisplayName', 'Orthogonal (\beta=0)');
-xlabel('Target direction \theta (deg)');
-ylabel('CRB on DOA (deg)');
-title('Figure 7: M=10, L=1, SNR=0dB (strict formula (44))');
-grid on; 
+figure;
+semilogy(theta_beam_deg, RMSE_coherent_deg, 'k--', 'LineWidth', 2);
+hold on;
+semilogy(theta_beam_deg, RMSE_orth_deg, 'k-', 'LineWidth', 2);
+
+xlabel('\theta [deg]');
+ylabel('RMSE [deg]');
+legend('\beta = 1', '\beta = 0', 'Location', 'northwest');
+
+grid on;
 grid minor;
-legend('Location', 'best', 'FontSize', 22);
-% xlim([0, 12]);
-% ylim([0, 0.35]);
-hold off;
+xlim([0, 12]);
+ylim([2e-2, 1e2]);
+
+function CRB = crb_single_target_trace(A, Ad, Rs, SNR)
+    term_AA = trace(A * Rs * A');
+    term_DD = trace(Ad * Rs * Ad');
+    term_DA = trace(Ad * Rs * A');
+
+    denominator = 2 * SNR * (term_DD * term_AA - abs(term_DA)^2);
+    numerator = term_AA;
+
+    CRB = real(numerator / denominator);
+end

@@ -63,7 +63,7 @@ noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 % noise = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 
 %总接收信号
-y = X + noise + y_jammer * 0;
+y = X + noise + y_jammer;
 
 %样本协方差矩阵
 Rxx = (x * x') / N;

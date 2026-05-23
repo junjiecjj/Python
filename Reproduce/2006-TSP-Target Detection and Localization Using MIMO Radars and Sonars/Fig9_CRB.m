@@ -8,7 +8,6 @@ clear all;
 close all;
 addpath('./functions');
 
-
 %% 用户参数
 M = 10;                          % 阵元数（可修改为任意正整数）
 d_lambda = 0.5;                 % 半波长间距

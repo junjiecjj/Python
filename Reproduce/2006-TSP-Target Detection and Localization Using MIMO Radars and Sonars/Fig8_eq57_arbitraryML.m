@@ -31,7 +31,6 @@ d_beta_vec = @(theta_deg, beta) reshape( sqrt(N) * (A_mat(theta_deg) * get_U_sqr
 % d_β(θ) 对角度（弧度）的导数 -> 4×1 列向量
 d_dbeta_dtheta_vec = @(theta_deg, beta) reshape( sqrt(N) * (dA_dtheta(theta_deg) * get_U_sqrtL(beta, M)), [], 1);
 
-
 % 预分配结果（存储 θ1 的标准差，单位度）
 CRB_results = zeros(length(theta2_list), length(beta_vals));
 
@@ -70,8 +69,8 @@ for k = 1:length(theta2_list)
         if rcond(J) > 1e-12
             J_inv = inv(J);
             CRB_theta1_rad2 = J_inv(1,1);
-            % CRB_deg = sqrt(CRB_theta1_rad2) * 180/pi;
-            CRB_deg = CRB_theta1_rad2;
+            CRB_deg = sqrt(CRB_theta1_rad2) * 180/pi;
+            % CRB_deg = CRB_theta1_rad2;
         else
             CRB_deg = NaN;
         end

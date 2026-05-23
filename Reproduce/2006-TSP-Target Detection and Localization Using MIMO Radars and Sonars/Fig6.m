@@ -68,9 +68,9 @@ ColorSet = [
 %设置循环使用的颜色集合
 set(gcf, 'DefaultAxesColorOrder', ColorSet);
 
-plot(theta_grid, pow2db(Gtr1(1,:)/max(Gtr1, [], 'all')), '-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, pow2db(Gtr1(2,:)/max(Gtr1, [], 'all')), '-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, pow2db(Gtr1(3,:)/max(Gtr1, [], 'all')), '-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, pow2db(Gtr1(1,:)/max(Gtr1, [], 'all')), 'k-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, pow2db(Gtr1(2,:)/max(Gtr1, [], 'all')), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, pow2db(Gtr1(3,:)/max(Gtr1, [], 'all')), 'k-.', 'LineWidth', 1.5); hold on;
 
 xlabel('\theta (degrees)');
 ylabel('G(\theta) (dB)');
@@ -84,35 +84,12 @@ ylim([-60, 0]);
 h2 = figure(2);
 %这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 fig(h2, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);
-% axes1 = axes('Parent',h1,...
-%     'Position',[0.091785714285714 0.1099604743083 0.390357142857143 0.858418972332016]);%left bottom width heigh
-%颜色集合，这是默认的八种颜色，颜色的数量可以更改0.101785714285714 0.1699604743083 0.380357142857143 0.798418972332016
-ColorSet = [
-1       0       0      % 红色
-0       1       0      % 绿色
-0       0       1      % 蓝色
-1       0       1      % 洋红色
-0       1       1      % 青色
-1       0.5     0      % 橙色
-0.5     0       0.5  % 紫色
-0.6     0.3     0   % 棕色
-0       0.5     0   % 深绿色
 
-0       0       0
-0       0       0
-1       0.75    0.8 % 粉色
-0.5     0       0   % 深红色
-0.5     0.5     0   % 橄榄绿
-0       0       0.5 % 深蓝色
-0       0       0   % 黑色
-0.5     0.5     0.5 % 灰色
-    ];
-%设置循环使用的颜色集合
 set(gcf, 'DefaultAxesColorOrder', ColorSet);
 
-plot(theta_grid, pow2db(Gtr0(1,:)/max(Gtr0, [], 'all')), '-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, pow2db(Gtr0(2,:)/max(Gtr0, [], 'all')), '-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, pow2db(Gtr0(3,:)/max(Gtr0, [], 'all')), '-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, pow2db(Gtr0(1,:)/max(Gtr0, [], 'all')), 'k-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, pow2db(Gtr0(2,:)/max(Gtr0, [], 'all')), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, pow2db(Gtr0(3,:)/max(Gtr0, [], 'all')), 'k-.', 'LineWidth', 1.5); hold on;
 
 xlabel('\theta (degrees)');
 ylabel('G(\theta) (dB)');

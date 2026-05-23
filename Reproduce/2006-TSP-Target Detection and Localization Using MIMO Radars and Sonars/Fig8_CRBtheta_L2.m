@@ -79,8 +79,8 @@ for k = 1:length(theta2_list)
         
         if rcond(Schur) > 1e-12
             CRB_theta = inv(Schur);
-            % CRB_deg = sqrt(CRB_theta(1,1)) * 180/pi;
-            CRB_deg = CRB_theta(1,1);
+            CRB_deg = sqrt(CRB_theta(1,1)) * 180/pi;
+            %  CRB_deg = CRB_theta(1,1);
         else
             CRB_deg = NaN;
         end
@@ -98,3 +98,7 @@ ylabel('CRB on DOA (deg)');
 legend('\theta_2 = 5°','\theta_2 = 10°','\theta_2 = 15°');
 grid on;
 title(sprintf('Figure 8: M=%d, L=2, SNR=0dB (via (41)-(43))', M));
+
+
+
+
