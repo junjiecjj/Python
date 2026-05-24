@@ -1,4 +1,8 @@
-clear; clc; close all;
+
+
+clear; 
+clc; 
+close all;
 
 M = 10;
 N = 10;

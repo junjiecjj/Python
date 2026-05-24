@@ -16,8 +16,8 @@ N_coherent = 1;
 N_orth = M;
 beta_coherent = 0.5;
 beta_orth = 0;
-theta_search_min = -10;
-theta_search_max = 20;
+theta_search_min = theta_true_deg-20;
+theta_search_max = theta_true_deg+20;
 coarse_step = 0.01;
 fine_step = 0.001;
 fine_width = 0.01;
@@ -25,8 +25,8 @@ fine_width = 0.01;
 n = (-(M-1)/2 : (M-1)/2).';
 a_fun = @(theta_deg) exp(-1j * 2 * pi * d_lambda * n * sind(theta_deg));
 da_fun = @(theta_deg) -1j * 2 * pi * d_lambda * cosd(theta_deg) * n .* a_fun(theta_deg);
-A_fun = @(theta_deg) a_fun(theta_deg) * a_fun(theta_deg).';
-dA_fun = @(theta_deg) da_fun(theta_deg) * a_fun(theta_deg).' + a_fun(theta_deg) * da_fun(theta_deg).';
+A_fun = @(theta_deg) a_fun(theta_deg) * a_fun(theta_deg)';
+dA_fun = @(theta_deg) da_fun(theta_deg) * a_fun(theta_deg)' + a_fun(theta_deg) * da_fun(theta_deg)';
 Rs_fun = @(beta) (1 - beta) * eye(M) + beta * ones(M);
 
 %% CRB and ML
@@ -46,12 +46,12 @@ for idx = 1:length(SNR_dB_vec)
 
     a0 = a_fun(theta_true_deg);
     adot0 = da_fun(theta_true_deg);
-    Rs_coherent =  a_fun(12) * a_fun(12)';  %  Rs_fun(beta_coherent);
+    Rs_coherent =  a_fun(theta_true_deg) * a_fun(theta_true_deg)';  %  Rs_fun(beta_coherent);
     Rs_orth = Rs_fun(beta_orth);
 
     % Eq.(57-59)
-    CRB_coherent_rad2 = crb_single_target_equiv_model(theta_true_deg, alpha, beta_coherent, M, N_coherent, sigma2, A_fun, dA_fun);
-    CRB_orth_rad2 = crb_single_target_equiv_model(theta_true_deg, alpha, beta_orth, M, N_orth, sigma2, A_fun, dA_fun);
+    CRB_coherent_rad2 = crb_single_target_equiv_model(theta_true_deg, alpha, Rs_coherent, M, N_coherent, sigma2, A_fun, dA_fun);
+    CRB_orth_rad2 = crb_single_target_equiv_model(theta_true_deg, alpha, Rs_orth, M, N_orth, sigma2, A_fun, dA_fun);
     CRB_coherent_deg(idx) = sqrt(max(real(CRB_coherent_rad2), 0)) * 180 / pi;
     CRB_orth_deg(idx) = sqrt(max(real(CRB_orth_rad2), 0)) * 180 / pi;
     
@@ -72,10 +72,10 @@ for idx = 1:length(SNR_dB_vec)
     theta_est_orth = zeros(MC_trials, 1);
     fprintf('SNR = %.1f dB\n', SNR_dB);
     for mc = 1:MC_trials
-        z_coherent = simulate_single_target_equiv(theta_true_deg, alpha, beta_coherent, M, N_coherent, sigma2, A_fun);
-        z_orth = simulate_single_target_equiv(theta_true_deg, alpha, beta_orth, M, N_orth, sigma2, A_fun);
-        theta_est_coherent(mc) = ml_single_target_search(z_coherent, beta_coherent, M, N_coherent, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width);
-        theta_est_orth(mc) = ml_single_target_search(z_orth, beta_orth, M, N_orth, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width);
+        z_coherent = simulate_single_target_equiv(theta_true_deg, alpha, Rs_coherent, M, N_coherent, sigma2, A_fun);
+        z_orth = simulate_single_target_equiv(theta_true_deg, alpha, Rs_orth, M, N_orth, sigma2, A_fun);
+        theta_est_coherent(mc) = ml_single_target_search(z_coherent, Rs_coherent, M, N_coherent, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width);
+        theta_est_orth(mc) = ml_single_target_search(z_orth, Rs_orth, M, N_orth, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width);
     end
     RMSE_coherent_deg(idx) = sqrt(mean((theta_est_coherent - theta_true_deg).^2));
     RMSE_orth_deg(idx) = sqrt(mean((theta_est_orth - theta_true_deg).^2));
@@ -108,7 +108,6 @@ title('Orthogonal signal: comparison of three CRB calculations');
 %% CRB comparison, coherent
 figure(3);
 semilogy(SNR_dB_vec, CRB_coherent_deg, 'k-', 'LineWidth', 1.8); hold on;
-
 semilogy(SNR_dB_vec, CRB_coherent_63_deg, 'ro', 'MarkerSize', 7, 'LineWidth', 1.3); hold on;
 semilogy(SNR_dB_vec, CRB_coherent_67_deg, 'b^', 'MarkerSize', 7, 'LineWidth', 1.3);
 xlabel('SNR [dB]');
@@ -120,8 +119,8 @@ xlim([min(SNR_dB_vec), max(SNR_dB_vec)]);
 title('Coherent signal: comparison of three CRB calculations');
 
 %% Functions
-function U_sqrtL = get_U_sqrtL_rank(beta, M)
-    Rs = (1 - beta) * eye(M) + beta * ones(M);
+function U_sqrtL = get_U_sqrtL_rank(Rs, M)
+    % Rs = (1 - beta) * eye(M) + beta * ones(M);
     [U, Lambda] = eig(Rs);
     lambda = real(diag(Lambda));
     keep = lambda > 1e-10;
@@ -130,22 +129,22 @@ function U_sqrtL = get_U_sqrtL_rank(beta, M)
     U_sqrtL = U * diag(sqrt(lambda));
 end
 
-function d = d_beta_vec(theta_deg, beta, M, N_eff, A_fun)
-    U_sqrtL = get_U_sqrtL_rank(beta, M);
+function d = d_beta_vec(theta_deg, Rs, M, N_eff, A_fun)
+    U_sqrtL = get_U_sqrtL_rank(Rs, M);
     X = sqrt(N_eff) * A_fun(theta_deg) * U_sqrtL;
     d = X(:);
 end
 
-function dd = d_beta_deriv_vec(theta_deg, beta, M, N_eff, dA_fun)
-    U_sqrtL = get_U_sqrtL_rank(beta, M);
+function dd = d_beta_deriv_vec(theta_deg, Rs, M, N_eff, dA_fun)
+    U_sqrtL = get_U_sqrtL_rank(Rs, M);
     X = sqrt(N_eff) * dA_fun(theta_deg) * U_sqrtL;
     dd = X(:);
 end
 
 % Eq.(57)-(59)
-function CRB_rad2 = crb_single_target_equiv_model(theta_deg, alpha, beta, M, N_eff, sigma2, A_fun, dA_fun)
-    d = d_beta_vec(theta_deg, beta, M, N_eff, A_fun);
-    dd = d_beta_deriv_vec(theta_deg, beta, M, N_eff, dA_fun);
+function CRB_rad2 = crb_single_target_equiv_model(theta_deg, alpha, Rs, M, N_eff, sigma2, A_fun, dA_fun)
+    d = d_beta_vec(theta_deg, Rs, M, N_eff, A_fun);
+    dd = d_beta_deriv_vec(theta_deg, Rs, M, N_eff, dA_fun);
     G = zeros(length(d), 3);
     G(:, 1) = alpha * dd;
     G(:, 2) = d;
@@ -161,8 +160,8 @@ function CRB_rad2 = crb_single_target_equiv_model(theta_deg, alpha, beta, M, N_e
 end
 
 function CRB = crb_single_63(a, adot, Rs, SNR)
-    A = a * a.';
-    Adot = adot * a.' + a * adot.';
+    A = a * a';
+    Adot = adot * a' + a * adot';
     term_AA = trace(A * Rs * A');
     term_DD = trace(Adot * Rs * Adot');
     term_DA = trace(Adot * Rs * A');
@@ -172,9 +171,9 @@ end
 % 只对 n = (-(M-1)/2 : (M-1)/2).'; 适用
 function CRB = crb_single_67_correct(a, adot, Rs, SNR)
     M = length(a);
-    term1 = (a' * Rs.' * a) * (adot' * adot);
-    term2 = M * (adot' * Rs.' * adot);
-    term3 = M * abs(adot' * Rs.' * a)^2 / (a' * Rs.' * a);
+    term1 = (a' * Rs * a) * (adot' * adot);
+    term2 = M * (adot' * Rs * adot);
+    term3 = M * abs(a' * Rs * adot)^2 / (a' * Rs * a);
     CRB = real(1 / (2 * SNR * (term1 + term2 - term3)));
 end
 
