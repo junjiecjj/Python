@@ -90,29 +90,56 @@ function R = design_trace_opt_two_target_target1(P, A, Ad, V, Vd, Q, b, L)
     K = length(b);
     dim = 3*K;
     idx_target1 = [1, K+1, 2*K+1];
+
+    %% ========== Trace-Opt for target 1 using Appendix C ==========
+    % Eq. (30): U = [V*(V'*V)^(-1/2), Vd*(Vd'*Vd)^(-1/2)].
+    % Eq. (29): R = U*Lambda*U^H.
+    % Eq. (23): minimize selected CRB diagonal entries by Schur complement.
     U = make_optimal_subspace(V, Vd);
     rU = size(U,2);
-    % 原文附录 C 的结论：最优 R 的非零特征向量属于 span{V V˙}，所以不直接优化完整 N×N 的 R，而是优化低维矩阵 X。原文也说数值例子中会对这个低维变量优化，因为维度更低、计算量更小。
+
     cvx_begin sdp quiet
-        variable X(rU,rU) hermitian semidefinite
+        variable Lambda(rU,rU) hermitian semidefinite
         variable u(3)
-        Rcvx = U * X * U';
+        Rcvx = U * Lambda * U';
         F = FIM_cvx_multi_paper(Rcvx, A, Ad, V, Vd, Q, b, L);
         minimize(sum(u))
         subject to
-            trace(X) == P;
+            trace(Rcvx) == P;
             for kk = 1:3
                 e = zeros(dim,1);
                 e(idx_target1(kk)) = 1;
                 [F, e; e', u(kk)] >= 0;
             end
     cvx_end
-    R = U * X * U';
+
+    R = U * Lambda * U';
     R = hermitian_project(R);
     if size(R,1) ~= N
         error('R dimension is inconsistent with the number of transmit antennas.');
     end
     fprintf('Trace-Opt CVX status: %s\n', cvx_status);
+end
+
+function U = make_optimal_subspace(V, Vd)
+    %% ========== Construct U according to Appendix C, eq. (30) ==========
+    % The first block is V*(V'*V)^(-1/2), and the second block is Vd*(Vd'*Vd)^(-1/2).
+    % This follows the paper's normalized subspace construction directly.
+    Gv = V' * V;
+    Gd = Vd' * Vd;
+    Gv_inv_sqrt = matrix_inv_sqrt(Gv);
+    Gd_inv_sqrt = matrix_inv_sqrt(Gd);
+    U = [V * Gv_inv_sqrt, Vd * Gd_inv_sqrt];
+end
+
+function A_inv_sqrt = matrix_inv_sqrt(A)
+    A = hermitian_project(A);
+    [E,D] = eig(A);
+    d = real(diag(D));
+    tol = 1e-10 * max(1,max(d));
+    d(d < tol) = tol;
+    A_inv_sqrt = E * diag(1 ./ sqrt(d)) * E';
+    A_inv_sqrt = hermitian_project(A_inv_sqrt);
 end
 
 function F = FIM_cvx_multi_paper(R, A, Ad, V, Vd, Q, b, L)
@@ -150,12 +177,7 @@ function F = FIM_cvx_multi_paper(R, A, Ad, V, Vd, Q, b, L)
     F = 0.5 * (F + F.');
 end
 
-function U = make_optimal_subspace(V, Vd)
-    Z = [V, Vd];
-    [U,~] = qr(Z,0);
-    keep = vecnorm(U) > 1e-12;
-    U = U(:,keep);
-end
+
 
 function B_dB = tx_beampattern(R, vfun, angle_grid)
     R = hermitian_project(R);

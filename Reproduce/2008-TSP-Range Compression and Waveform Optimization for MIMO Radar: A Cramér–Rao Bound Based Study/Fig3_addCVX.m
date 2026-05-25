@@ -146,6 +146,7 @@ R_det_num = lambda1_num / nv * (v0 * v0') + lambda2_num / nvd * (vd0 * vd0');
 R_det_num = hermitian_project(R_det_num);
 fprintf('Det-Opt numeric lambda1 = %.6e, lambda2 = %.6e\n', lambda1_num, lambda2_num);
 
+
 %% ========== Beampatterns ==========
 B_angle = tx_beampattern(R_angle, vfun, angle_grid);
 B_angle_cvx = tx_beampattern(R_angle_cvx, vfun, angle_grid);
@@ -153,7 +154,6 @@ B_eigen = tx_beampattern(R_eigen, vfun, angle_grid);
 B_trace = tx_beampattern(R_trace, vfun, angle_grid);
 B_det = tx_beampattern(R_det, vfun, angle_grid);
 B_det_num = tx_beampattern(R_det_num, vfun, angle_grid);
-
 figure('Color','w','Position',[100 100 1050 650]);
 
 subplot(2,3,1);
