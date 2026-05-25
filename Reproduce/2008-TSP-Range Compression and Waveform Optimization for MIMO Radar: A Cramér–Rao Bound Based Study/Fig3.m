@@ -104,7 +104,8 @@ cvx_begin sdp quiet
     subject to
         trace(R_trace) == P;
         for k = 1:3
-            ek = zeros(3,1); ek(k) = 1;
+            ek = zeros(3,1); 
+            ek(k) = 1;
             [F_trace, ek; ek', u_trace(k)] >= 0;
         end
 cvx_end
