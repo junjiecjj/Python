@@ -9,10 +9,9 @@ close all;
 addpath('./functions');
 rng(42);
 
-rng(1);
-N = 4;
-K = 3;
-L = 10;
+N = 6;
+K = 8;
+L = 20;
 PT = 1;
 
 H = (randn(K, N) + 1j * randn(K, N)) / sqrt(2);
@@ -26,11 +25,28 @@ X1 = strict_waveform(H, S, Rd, L);
 X2 = strict_waveform1(H, S, Rd, L);
 
 
+obj1 = norm(H * X1 - S, 'fro')^2;
+obj2 = norm(H * X2 - S, 'fro')^2;
+
+covErr1 = norm(X1 * X1' / L - Rd, 'fro');
+covErr2 = norm(X2 * X2' / L - Rd, 'fro');
+
+xDiff = norm(X1 - X2, 'fro');
+
+disp(obj1);
+disp(obj2);
+disp(abs(obj1 - obj2));
+
+disp(covErr1);
+disp(covErr2);
+
+disp(xDiff);
+
 function X = strict_waveform(H, S, Rd, L)
     N = size(H, 2);
     F = chol(Rd, 'lower');
     A = F' * H' * S;
-    [U, ~, V] = svd(A, 'econ');
+    [U, ~, V] = svd(A);
     VN = V(:, 1:N);
     X = sqrt(L) * F * U * VN';
 end
@@ -59,9 +75,8 @@ function X_opt = strict_waveform1(H, S, R_d, L)
     C = L * R_d;
     % Cholesky 分解 C = F * F^H (F 为下三角)
     F = chol(C, 'lower');           % N×N
-    H_tilde = H * F;                % M×N
-    A = S' * H_tilde;               % L×N
-    [U_A, ~, V_A] = svd(A, 'econ'); % U_A: L×L, V_A: N×N (因为 L≥N)
+    A = S' * H * F;               % L×N
+    [U_A, ~, V_A] = svd(A); % U_A: L×L, V_A: N×N (因为 L≥N)
     U_A1 = U_A(:, 1:N);             % L×N
     X_opt = F * V_A * U_A1';
 end

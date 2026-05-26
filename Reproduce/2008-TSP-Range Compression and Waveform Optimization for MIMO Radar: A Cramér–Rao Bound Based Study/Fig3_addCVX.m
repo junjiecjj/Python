@@ -156,42 +156,39 @@ B_det = tx_beampattern(R_det, vfun, angle_grid);
 B_det_num = tx_beampattern(R_det_num, vfun, angle_grid);
 figure('Color','w','Position',[100 100 1050 650]);
 
-subplot(2,3,1);
-plot(angle_grid, B_angle, 'LineWidth', 1.3); grid on;
-xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(a) Angle-only closed-form'); xlim([-20 0]); ylim([-30 0]);
+subplot(2,2,1);
+plot(angle_grid, B_angle, 'r-', 'LineWidth', 1.3); hold on;
+plot(angle_grid, B_angle_cvx, 'b--', 'LineWidth', 1.3); 
+grid on;
+xlabel('Angle (deg)'); 
+ylabel('Beampattern (dB)');
+title('(a) Angle-only closed-form'); 
+xlim([-20 0]); 
+ylim([-30 0]);
 xline(theta0, 'k--', 'LineWidth', 1.0);
-
-subplot(2,3,2);
-plot(angle_grid, B_angle_cvx, 'LineWidth', 1.3); grid on;
-xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(b) Angle-only CVX'); xlim([-20 0]); ylim([-30 0]);
-xline(theta0, 'k--', 'LineWidth', 1.0);
-
-subplot(2,3,3);
-plot(angle_grid, B_eigen, 'LineWidth', 1.3); grid on;
+ 
+subplot(2,2,2);
+plot(angle_grid, B_eigen, 'LineWidth', 1.3); 
+grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
 title('(c) Eigen-Opt'); xlim([-20 0]); ylim([-30 0]);
 xline(theta0, 'k--', 'LineWidth', 1.0);
 
-subplot(2,3,4);
-plot(angle_grid, B_trace, 'LineWidth', 1.3); grid on;
+subplot(2,2,3);
+plot(angle_grid, B_trace, 'LineWidth', 1.3); 
+grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
 title('(d) Trace-Opt'); xlim([-20 0]); ylim([-30 0]);
 xline(theta0, 'k--', 'LineWidth', 1.0);
 
-subplot(2,3,5);
-plot(angle_grid, B_det, 'LineWidth', 1.3); grid on;
+subplot(2,2,4);
+plot(angle_grid, B_det, 'r-', 'LineWidth', 1.3);  hold on;
+plot(angle_grid, B_det_num, 'b--', 'LineWidth', 1.3); 
+grid on;
 xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
 title('(e) Det-Opt closed-form'); xlim([-20 0]); ylim([-30 0]);
 xline(theta0, 'k--', 'LineWidth', 1.0);
-
-subplot(2,3,6);
-plot(angle_grid, B_det_num, 'LineWidth', 1.3); grid on;
-xlabel('Angle (deg)'); ylabel('Beampattern (dB)');
-title('(f) Det-Opt numeric'); xlim([-20 0]); ylim([-30 0]);
-xline(theta0, 'k--', 'LineWidth', 1.0);
-
+ 
 %% ========== CRB check ==========
 F_angle_num = FIM_numeric_single_paper(R_angle, a0, ad0, v0, vd0, Q, b, L);
 F_angle_cvx_num = FIM_numeric_single_paper(R_angle_cvx, a0, ad0, v0, vd0, Q, b, L);
