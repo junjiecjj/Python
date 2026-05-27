@@ -1,7 +1,7 @@
 clc;
 clear all;
 close all;
-addpath('./functions');
+addpath('./functions_2007TSP_OnProb');
 rng(42);
 
 %% Fig.4(c): Minimum sidelobe design with PAR < 1.2

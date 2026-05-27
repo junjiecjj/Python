@@ -11,7 +11,8 @@ addpath('./functions');
 
 %% 1. 参数设置（示例，可修改）
 M = 10;                     % 天线数
-c = ones(M,1) * 1/M;                      % 对角元固定值
+C = 1;
+c = ones(M, 1) * C / M;     % 对角元固定值          
 theta_est = [0];   % 目标角度估计（度）
 
 K = length(theta_est);      % 目标个数
