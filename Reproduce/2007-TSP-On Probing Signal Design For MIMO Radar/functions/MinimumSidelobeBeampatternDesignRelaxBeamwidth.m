@@ -22,13 +22,15 @@ function  R = MinimumSidelobeBeampatternDesignRelaxBeamwidth(c, M, theta0, theta
         variable R(M,M) hermitian
         variable t
         maximize t
+        expression P0
+        P0 = real(a0' * R * a0);
         subject to
             % 主瓣 - 旁瓣差约束：每个旁瓣点的主瓣功率差 ≥ t
             for k = 1:N_Omega
                 real(a0'*R*a0 - a_Omega(:,k)'*R*a_Omega(:,k)) >= t;
             end
             % 放宽的 3dB 宽度约束（允许在 0.5±δ 范围内）
-            P0 = real(a0'*R*a0);
+            
             real(a1'*R*a1) >= (0.5 - delta) * P0;
             real(a1'*R*a1) <= (0.5 + delta) * P0;
             real(a2'*R*a2) >= (0.5 - delta) * P0;

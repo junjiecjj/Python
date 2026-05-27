@@ -33,11 +33,11 @@ function  R = MinimumSidelobeBeampatternDesignFloatPow(c, M, theta0, theta1, the
             % 半正定
             R == hermitian_semidefinite(M);
             % 总功率约束
-            sum(diag(R)) == sum(c);
+            sum(real(diag(R))) == sum(c);
             % 阵元功率上下界
             for m = 1:M
-                R(m,m) >= 0.8 * c(m);
-                R(m,m) <= 1.2 * c(m);
+                real(R(m,m)) >= 0.8 * c(m);
+                real(R(m,m)) <= 1.2 * c(m);
             end
     cvx_end
     
