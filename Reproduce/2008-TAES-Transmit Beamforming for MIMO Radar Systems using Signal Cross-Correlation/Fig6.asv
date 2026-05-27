@@ -8,7 +8,6 @@ rng('default');
 N = 10;
 d = 0.5;
 lambda = 2 * d;
-Pt = 10;
 
 % ULA 一维阵元位置，单位为 wavelength
 pos = ((0:N-1) - (N-1) / 2) * d;
@@ -39,14 +38,12 @@ grid on;
 A = steeringMatrixULA1D(normalizedPos, theta_grid);
 %% A. Squared Error Optimization
 Rmmse = helperMMSECovariance(normalizedPos, P_des, theta_grid);
-Rmmse = Rmmse * (Pt/N);
 P_mmse = abs(diag(A'*Rmmse*A))/(4*pi);
 
 fprintf('trace(Rmmse) = %.6f\n',  trace(Rmmse));
 
 %% B. Maximum Error Optimization
 Rminmax = helperMinMaxCovariance(normalizedPos, P_des, theta_grid);
-Rminmax = Rminmax * (Pt/N);
 P_minmax = abs(diag(A'*Rminmax*A))/(4*pi);
 
 fprintf('trace(Rminmax) = %.6f\n',  trace(Rminmax));
@@ -55,7 +52,7 @@ fprintf('trace(Rminmax) = %.6f\n',  trace(Rminmax));
 figure(2);
 plot(theta_grid, 10 * log10(P_des / max(P_des) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'k'); hold on;
 plot(theta_grid, 10 * log10(P_mmse / max(P_mmse) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
-plot(theta_grid, 10 * log10(P_minmax / max(P_minmax) + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
+plot(theta_grid, 10 * log10(Bminmax / max(Bminmax) + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');
 ylabel('Normalized (dB)');
 legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
@@ -64,10 +61,10 @@ title('Transmit Beam Pattern');
 grid on;
 
 figure(3);
-P_des_plot = Pt * P_des / (2 * pi * trapz(deg2rad(theta_grid), P_des .* cosd(theta_grid)));
-plot(theta_grid, 10 * log10(P_des_plot + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k'); hold on;
-plot(theta_grid, 10 * log10(P_mmse + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
-plot(theta_grid, 10 * log10(P_minmax + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
+Bdes_plot = N * Bdes / (2 * pi * trapz(deg2rad(theta_grid), Bdes .* cosd(theta_grid)));
+plot(theta_grid, 10 * log10(Bdes_plot + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k'); hold on;
+plot(theta_grid, 10 * log10(Bmmse + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
+plot(theta_grid, 10 * log10(Bminmax + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');
 ylabel('(dB)');
 legend('Desired', 'MMSE Covariance', 'MinMax Covariance');

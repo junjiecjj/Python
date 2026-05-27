@@ -12,6 +12,7 @@ function R = helperMMSECovariance(elPos, Pdesired, ang)
     % wavelength. Pdesired is the desired beam pattern evaluated at the angles
     % specified in ang.
     N = size(elPos, 2);
+
     % Initial covariance is random. x_ is a vector of all elements that are
     % in the upper triangular part of the matrix above the main diagonal.
     x_ = initialCovariance(N);

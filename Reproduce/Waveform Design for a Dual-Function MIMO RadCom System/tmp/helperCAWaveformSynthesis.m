@@ -1,5 +1,7 @@
 
-% 
+
+
+
 function X = helperCAWaveformSynthesis(R, M, rho)
     N = size(R, 1);
     epsilon = 0.1;
@@ -10,20 +12,20 @@ function X = helperCAWaveformSynthesis(R, M, rho)
     Rexp_sr = sqrt(D) * L';
     maxNumIter = 1000;
     for iter = 1:maxNumIter
-        Z = sqrt(M) * U * Rexp_sr;
+        Z = sqrt(M) * U * Rexp_sr;   % Eq.(2) in "Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
         X = zeros(N, M);
         Xexp = zeros(P+M-1, N*P);
         for n = 1:N
-            zn = getzn(Z, M, P, n);          % 列向量
+            zn = getzn(Z, M, P, n);                % 列向量
             gamma = R(n, n);
-            xn = nearestVector(zn, gamma, rho); % 列向量
-            X(n, :) = xn';                   % 共軛轉置存入行
+            xn = nearestVector(zn, gamma, rho);    % 列向量
+            X(n, :) = xn';                         % 共軛轉置存入行 Eq.(8)-(10)
             for p = 1:P
                 Xexp(p:p+M-1, (n-1)*P + p) = xn;
             end
         end
         [Ubar, ~, Utilde] = svd(sqrt(M) * Rexp_sr * Xexp', 'econ');
-        U_ = Utilde * Ubar';
+        U_ = Utilde * Ubar';                       % Eq.(4)
         if norm(U_ - U) < epsilon
             break;
         else
@@ -31,7 +33,6 @@ function X = helperCAWaveformSynthesis(R, M, rho)
         end
     end
 end
-
 
 % function X = helperCAWaveformSynthesis(R, M, rho)
 %     N = size(R, 1);
@@ -47,10 +48,10 @@ end
 %         X = zeros(N, M);
 %         Xexp = zeros(N*P, P+M-1);
 %         for n = 1:N
-%             zn = getzn(Z, M, P, n);          % 列向量
+%             zn = getzn(Z, M, P, n);                % 列向量
 %             gamma = R(n, n);
-%             xn = nearestVector(zn.', gamma, rho); % 列向量
-%             X(n, :) = xn.';                   % 共軛轉置存入行
+%             xn = nearestVector(zn.', gamma, rho);  % 列向量
+%             X(n, :) = xn.';                        % 共軛轉置存入行
 %             for p = 1:P
 %                 Xexp((n-1)*P + p, p:p+M-1) = xn.';
 %             end
@@ -64,4 +65,16 @@ end
 %         end
 %     end
 % end
+
+
+
+
+
+
+
+
+
+
+
+
 

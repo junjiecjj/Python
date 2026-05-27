@@ -45,7 +45,7 @@ OmniRd = (p.Pt / p.N) * eye(p.N, p.N);
 DirectRd = directbeampattern(p);
 
 % Simulation Settings
-p.montecarlo = 1000;
+p.montecarlo = 10;
 
 OmniStrictCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
 OmniTradeoffCapacityArray = zeros(p.montecarlo, length(p.SNRdB));

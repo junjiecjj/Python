@@ -8,7 +8,7 @@ rng(42);
 addpath('./functions_2007TSP_OnProb');
 
 
-%% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
+%% 
 N = 10;                       % 天线数
 c = ones(N, 1)/N;                % 对角元固定值
 theta_est = [0];   % 目标角度估计（度）
@@ -27,37 +27,31 @@ end
 P_des(idx) = 1;
 L = length(theta_grid);
 
-% 权重
+% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
 w_l = ones(L, 1);           % 所有网格点权重相同
 wc = 0;
 [R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, N, w_l, wc, theta_est, theta_grid, P_des);
 p_des = abs(P_des * alpha0+eps);
 
-P_opt0 = zeros(size(theta_grid));
-for i = 1:length(theta_grid)
-    a_theta = a(theta_grid(i));
-    P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
-end
-
-rho = 1.1;
-
 %%  Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
+rho = 1.1;
 L  = 256;
 X_optR = WaveformSynthesisXoptimR(L, R_opt0, rho );
-
 Rhat1 = X_optR * X_optR'/L;
-P_opt1 = zeros(size(theta_grid));
-for i = 1:length(theta_grid)
-    a_theta = a(theta_grid(i));
-    P_opt1(i) = real(a_theta' * Rhat1 * a_theta);
-end
 
 %%  PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
 X_par = WaveformSynthesisXwithPAR(L, R_opt0, rho  );
 Rhat2 = X_par * X_par'/L;
+
+
+
+P_opt0 = zeros(size(theta_grid));
+P_opt1 = zeros(size(theta_grid));
 P_opt2 = zeros(size(theta_grid));
 for i = 1:length(theta_grid)
     a_theta = a(theta_grid(i));
+    P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
+    P_opt1(i) = real(a_theta' * Rhat1 * a_theta);
     P_opt2(i) = real(a_theta' * Rhat2 * a_theta);
 end
 
