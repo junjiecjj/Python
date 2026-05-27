@@ -1,20 +1,20 @@
 
+ 
 
 clc;
 clear all;
 close all;
 addpath('./functions');
 
-rng('default');                     % Set random number generator for reproducibility
-
+rng('default');
 
 N = 10;
 d = 0.5;
-lambda = 2*d;
+lambda = 2 * d;
 
-% Use isotropic antenna elements
-element = phased.IsotropicAntennaElement('BackBaffled', true);
-array = phased.ULA('Element', element, 'NumElements', N, 'ElementSpacing', d, 'ArrayAxis', 'y');
+% ULA 一维阵元位置，单位为 wavelength
+pos = ((0:N-1) - (N-1) / 2) * d;
+normalizedPos = pos / lambda;
 
 % Three targets of interest
 tgtAz = [-40 0 40];                % Azimuths of the targets of interest
@@ -22,11 +22,13 @@ tgtAz = [-40 0 40];                % Azimuths of the targets of interest
 ang = linspace(-90, 90, 200);       % Grid of azimuth angles
 beamwidth = 10;                     % Desired beamwidth
 
+A = steeringMatrixULA1D(normalizedPos, ang);
+
 % Desired beam pattern
 Bdes = zeros(size(ang));
 idx = false(size(ang));
 for i = 1:numel(tgtAz)
-    idx = idx | ang >= tgtAz(i)-beamwidth/2 & ang <= tgtAz(i)+beamwidth/2;
+    idx = idx | ang >= tgtAz(i) - beamwidth / 2 & ang <= tgtAz(i) + beamwidth / 2;
 end
 Bdes(idx) = 1;
 
@@ -38,59 +40,35 @@ title('Desired Beam Pattern');
 grid on;
 
 
-%%  A. Squared Error Optimization
+%% A. Squared Error Optimization
 Pt = 1;
-rxpos = array.getElementPosition(); 
-
-% Normalize the antenna element positions by the wavelength
-normalizedPos = rxpos/lambda;
-
-% Solve the optimization problem to find the covariance matrix
-Rmmse = helperMMSECovariance(normalizedPos, Bdes, ang); % Eq.(24)
-
-%Rmmse = Rmmse*Pt/N;
-
-% Matrix of steering vectors corresponding to the angles in the grid ang
-A = steervec(normalizedPos, [ang; zeros(size(ang))]);
-
-% Compute the resulting beam pattern given the found covariance matrix
+Rmmse = helperMMSECovariance(normalizedPos, Bdes, ang);
 Bmmse = abs(diag(A'*Rmmse*A))/(4*pi);
 
-%%  B. Maximum Error Optimization
-% Solve the optimization problem to find the covariance matrix
+%% B. Maximum Error Optimization
 Rminmax = helperMinMaxCovariance(normalizedPos, Bdes, ang);
-
-%Rminmax = Rminmax*Pt/N;
-
-% Matrix of steering vectors corresponding to the angles in the grid ang
-A = steervec(normalizedPos, [ang; zeros(size(ang))]);
-
-% Compute the resulting beam pattern given the found covariance matrix
 Bminmax = abs(diag(A'*Rminmax*A))/(4*pi);
 
 %% Plot Fig
 figure(2);
-plot(ang, pow2db(Bdes/max(Bdes)+eps), 'LineStyle','-', 'LineWidth', 2, 'Color','k'); hold on;
-plot(ang, pow2db(Bmmse/max(Bmmse)), 'LineStyle','-', 'LineWidth', 2, 'Color','r'); hold on;
-plot(ang, pow2db(Bminmax/max(Bminmax)), 'LineStyle','-', 'LineWidth', 2, 'Color','b');
-
+plot(ang, 10 * log10(Bdes / max(Bdes) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'k'); hold on;
+plot(ang, 10 * log10(Bmmse / max(Bmmse) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
+plot(ang, 10 * log10(Bminmax / max(Bminmax) + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');
 ylabel('Normalized (dB)');
 legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
-ylim([-40 5]);
+ylim([-40 6]);
 title('Transmit Beam Pattern');
 grid on;
 
-
 figure(3);
-plot(ang, pow2db(Bdes + eps), 'LineStyle','-', 'LineWidth', 2, 'Color','k'); hold on;
-plot(ang, pow2db(Bmmse), 'LineStyle','-', 'LineWidth', 2, 'Color','r'); hold on;
-plot(ang, pow2db(Bminmax), 'LineStyle','-', 'LineWidth', 2, 'Color','b');
-
+Bdes_plot = N * Bdes / (2 * pi * trapz(deg2rad(ang), Bdes .* cosd(ang)));
+plot(ang, 10 * log10(Bdes_plot + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k'); hold on;
+plot(ang, 10 * log10(Bmmse + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
+plot(ang, 10 * log10(Bminmax + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');
 ylabel('(dB)');
 legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
-ylim([-40 5]);
+ylim([-40 6]);
 title('Transmit Beam Pattern');
 grid on;
-

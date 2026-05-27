@@ -34,15 +34,15 @@ ylabel('Desired Beam Pattern');
 title('Desired Beam Pattern');
 grid on;
 
-
-A = steeringMatrixULA1D(normalizedPos, ang);
 %% A. Squared Error Optimization
 Pt = 1;
 Rmmse = helperMMSECovariance(normalizedPos, Bdes, ang);
+A = steeringMatrixULA1D(normalizedPos, ang);
 Bmmse = abs(diag(A'*Rmmse*A))/(4*pi);
 
 %% B. Maximum Error Optimization
 Rminmax = helperMinMaxCovariance(normalizedPos, Bdes, ang);
+A = steeringMatrixULA1D(normalizedPos, ang);
 Bminmax = abs(diag(A'*Rminmax*A))/(4*pi);
 
 %% Plot Fig
@@ -59,7 +59,7 @@ grid on;
 
 figure(3);
 Bdes_plot = N * Bdes / (2 * pi * trapz(deg2rad(ang), Bdes .* cosd(ang)));
-plot(ang, 10 * log10(Bdes_plot + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k'); hold on;
+plot(ang, 10 * log10(Bdes_plot + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'k'); hold on;
 plot(ang, 10 * log10(Bmmse + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
 plot(ang, 10 * log10(Bminmax + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');

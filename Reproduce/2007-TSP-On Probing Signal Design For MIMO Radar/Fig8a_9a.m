@@ -3,9 +3,7 @@ clear all;
 close all;
 
 addpath('./functions');
-
 rng(42); 
-
 
 %% Minimum Sidelobe Beampattern Design. Eq.(32)
 
@@ -31,7 +29,7 @@ R_fixed = MinimumSidelobeBeampatternDesign(c, M, theta0, theta1, theta2, Omega);
 R_float = MinimumSidelobeBeampatternDesignFloatPow(c, M, theta0, theta1, theta2, Omega);
  
 %% 放宽3dB宽度（阵元功率固定为 c/M）
-R_float1 = MinimumSidelobeBeampatternDesignFloatSidelobe(c, M, theta0, theta1, theta2, Omega);
+R_float1 = MinimumSidelobeBeampatternDesignRelaxBeamwidth(c, M, theta0, theta1, theta2, Omega);
 
 %% 计算并绘制波束图
 theta_plot = -90:0.1:90;

@@ -1,7 +1,7 @@
 
 
 
-function  R = MinimumSidelobeBeampatternDesignFloatSidelobe(c, M, theta0, theta1, theta2, Omega)
+function  R = MinimumSidelobeBeampatternDesignRelaxBeamwidth(c, M, theta0, theta1, theta2, Omega)
     fprintf('\n求解旁瓣浮动版本...\n');
     N_Omega = length(Omega);
 
@@ -35,11 +35,11 @@ function  R = MinimumSidelobeBeampatternDesignFloatSidelobe(c, M, theta0, theta1
             real(a2'*R*a2) <= (0.5 + delta) * P0;
             
             % 半正定
-            R >= 0;
+            R == hermitian_semidefinite(M);
             
             % 阵元功率固定为 c/M
             for m = 1:M
-                R(m,m) == c(m)/M;
+                R(m,m) == c(m);
             end
     cvx_end
     

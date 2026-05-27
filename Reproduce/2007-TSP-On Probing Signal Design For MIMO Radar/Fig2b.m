@@ -29,7 +29,6 @@ end
 P_des(idx) = 1;
 L = length(theta_grid);
 
-
 % 权重
 w_l = ones(L, 1);           % 所有网格点权重相同
 

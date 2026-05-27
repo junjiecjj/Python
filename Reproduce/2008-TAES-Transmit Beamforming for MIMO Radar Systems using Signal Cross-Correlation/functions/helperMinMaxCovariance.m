@@ -23,7 +23,8 @@ function R = helperMinMaxCovariance(elPos, Pdesired, ang)
     x_ = initialCovariance(N); 
     Pdesired = N * Pdesired / (2*pi*trapz(deg2rad(ang), Pdesired.*cosd(ang))); % Eq.(16)
     Pdesired = Pdesired * 4 * pi;  % Eq.(15)
-    A = steervec(elPos, [ang; zeros(size(ang))]);
+    % A = steervec(elPos, [ang; zeros(size(ang))]);
+    A = steeringMatrixULA1D(elPos, ang);
     
     epsilon = 1e-4;
     stopCriteriaMet = false;

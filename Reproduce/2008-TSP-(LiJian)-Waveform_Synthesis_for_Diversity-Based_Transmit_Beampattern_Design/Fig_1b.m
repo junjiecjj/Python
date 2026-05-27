@@ -10,7 +10,7 @@ addpath('./functions');
 
 %% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
 N = 10;                       % 天线数
-c = ones(N, 1);                % 对角元固定值
+c = ones(N, 1)/N;                % 对角元固定值
 theta_est = [0];   % 目标角度估计（度）
 
 K = length(theta_est);      % 目标个数
@@ -52,10 +52,7 @@ for i = 1:length(theta_grid)
     P_opt1(i) = real(a_theta' * Rhat1 * a_theta);
 end
 
-
-
 %%  PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
-
 X_par = WaveformSynthesisXwithPAR(L, R_opt0, rho  );
 Rhat2 = X_par * X_par'/L;
 P_opt2 = zeros(size(theta_grid));
@@ -64,14 +61,12 @@ for i = 1:length(theta_grid)
     P_opt2(i) = real(a_theta' * Rhat2 * a_theta);
 end
 
-
 %% 可选：绘制发射波束图对比
 figure(1);
 plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt1, 'b--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt2, 'c--', 'LineWidth', 1.5); hold on;
-
 
 % plot(theta_grid, pow2db(p_des/max(p_des+eps)), 'r--', 'LineWidth', 1.5); hold on;
 % plot(theta_grid, pow2db(P_opt0/max(P_opt0)), 'b-', 'LineWidth', 1.5); hold on;

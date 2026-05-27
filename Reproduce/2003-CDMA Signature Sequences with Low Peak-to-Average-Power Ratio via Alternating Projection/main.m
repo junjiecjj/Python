@@ -16,7 +16,6 @@ rng(42);
 % % X0 = [];
 % 
 % parX0 = PAR_cols(X0)
-% 
 % X = AlternatingProjection(M, N, col_norms, par, X0);
 % 
 % fprintf('列范数：\n'); disp(sqrt(sum(abs(X).^2,1)));
@@ -46,8 +45,6 @@ fprintf('列范数：\n'); disp(sqrt(sum(abs(X).^2,1)));
 fprintf('PAR：\n'); disp(PAR_cols(X));
 fprintf('奇异值：\n'); disp(svd(X)');
 
-
-
 %% Algorithm 4
 c = 0.75^2; 
 
@@ -69,7 +66,7 @@ fprintf('范数平方: %f (应等于 %f)\n', norm(s)^2, c);
 fprintf('PAR: %f (应 ≤ %f)\n', max(abs(s).^2) / (norm(s)^2/d), rho);
 fprintf('\n');
 
-if 0
+if 1
     % 测试用例1：保留集全为零分支
     d1 = 5;
     c1 = 1;

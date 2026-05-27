@@ -57,16 +57,27 @@ function [R_opt, alpha, r_opt] = BeampatternMatchingDesign(c, M, w_l, w_c, theta
     % 第二项：来自交叉项抑制
     Q2 = zeros(M^2+1, M^2+1);
     n_pairs = 0;
-    for k = 1:K
+    % for k = 1:K
+    %     for p = k+1:K
+    %         n_pairs = n_pairs + 1;
+    %         x = [0; d{k,p}];
+    %         Q2 = Q2 + x * x.';
+    %     end
+    % end
+    % if n_pairs > 0
+    %     Q2 = (2 * w_c / (K^2 - K)) * real(Q2);
+    % end
+    for k = 1:K-1
         for p = k+1:K
             n_pairs = n_pairs + 1;
-            x = [0; d{k,p}];
-            Q2 = Q2 + x * x.';
+            x = [0; d{k, p}];
+            Q2 = Q2 + real(conj(x) * x.');
         end
     end
     if n_pairs > 0
-        Q2 = (2 * w_c / (K^2 - K)) * real(Q2);
+        Q2 = 2 * w_c / (K^2 - K) * Q2;
     end
+
     fprintf('norm(Q1) = %e\n', norm(Q1));
     fprintf('norm(Q2) = %e\n', norm(Q2));
     fprintf('norm(Q2)/norm(Q1) = %e\n', norm(Q2)/norm(Q1));
@@ -77,8 +88,12 @@ function [R_opt, alpha, r_opt] = BeampatternMatchingDesign(c, M, w_l, w_c, theta
     % D = max(D, 0);
     % sqrt_Gamma =  V * sqrt(D) * V';
     % sqrt_Gamma = sqrtm(Gamma);
-    sqrt_Gamma = Gamma^(0.5);
-
+    % sqrt_Gamma = Gamma^(0.5);
+    Gamma = (Gamma + Gamma') / 2;
+    [V, D] = eig(Gamma);
+    lambda = real(diag(D));
+    lambda(lambda < 0) = 0;
+    sqrt_Gamma = diag(sqrt(lambda)) * V';
     %% 5. 求解 SOCP（使用 CVX）
     % 定义变量：R (Hermitian), r (实向量), alpha_, delta
     cvx_begin quiet sdp

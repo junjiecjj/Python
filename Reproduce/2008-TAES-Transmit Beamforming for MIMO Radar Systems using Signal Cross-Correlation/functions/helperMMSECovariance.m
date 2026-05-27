@@ -1,6 +1,4 @@
 
-
-
 function R = helperMMSECovariance(elPos, Pdesired, ang)
     % This function computes a waveform covariance matrix that generates a
     % desired transmit beam pattern. The computation is based on the squared
@@ -22,7 +20,8 @@ function R = helperMMSECovariance(elPos, Pdesired, ang)
     Pdesired = N * Pdesired / (2*pi*trapz(deg2rad(ang), Pdesired.*cosd(ang))); % Eq.(16)
     Pdesired = Pdesired * 4 * pi;                                              % Eq.(15)
     % Matrix of steering vectors corresponding to angles in ang
-    A = steervec(elPos, [ang; zeros(size(ang))]);
+    % A = steervec(elPos, [ang; zeros(size(ang))]);
+    A = steeringMatrixULA1D(elPos, ang);
     % Parameters of the barrier method
     mu = 4;
     % The barrier term is weighted by 1/t. At each iteration t is multiplied

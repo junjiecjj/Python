@@ -28,14 +28,11 @@ end
 P_des(idx) = 1;
 L = length(theta_grid);
 
-
 % 权重
 w_l = ones(L, 1);           % 所有网格点权重相同
 
 wc = 0;
 [R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, M, w_l, wc, theta_est, theta_grid, P_des);
-
-
 
 % 网格参数（覆盖感兴趣的区域）
 theta_plot = -90:0.1:90;      % 度，网格点

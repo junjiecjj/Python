@@ -21,7 +21,7 @@ function  R = MinimumSidelobeBeampatternDesign(c, M, theta0, theta1, theta2, Ome
         variable R(M,M) hermitian
         variable t
         maximize t
-        subject to
+        subject to  % Eq.(32)
             % 主瓣功率 - 旁瓣功率 >= t
             for k = 1:N_Omega
                 real(a0'*R*a0 - a_Omega(:,k)'*R*a_Omega(:,k)) >= t;
@@ -30,10 +30,10 @@ function  R = MinimumSidelobeBeampatternDesign(c, M, theta0, theta1, theta2, Ome
             real(a1'*R*a1) == 0.5 * real(a0'*R*a0);
             real(a2'*R*a2) == 0.5 * real(a0'*R*a0);
             % 半正定
-            R >= 0;
+            R == hermitian_semidefinite(M);
             % 对角元固定
             for m = 1:M
-                R(m,m) == c(m)/M;
+                R(m,m) == c(m);
             end
     cvx_end
     
