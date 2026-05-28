@@ -44,6 +44,12 @@ P_mmse = abs(diag(A'*Rmmse*A))/(4*pi);
 
 fprintf('trace(Rmmse) = %.6f\n',  trace(Rmmse));
 
+%% A. Squared Error Optimization, 不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数。
+[Rmmse1, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt);
+P_mmse1 = abs(diag(A'*Rmmse1*A))/(4*pi);
+fprintf('trace(Rmmse1) = %.6f\n',  trace(Rmmse1));
+
+
 %% B. Maximum Error Optimization
 Rminmax = helperMinMaxCovariance(normalizedPos, P_des, theta_grid);
 Rminmax = Rminmax * (Pt/N);
@@ -55,10 +61,11 @@ fprintf('trace(Rminmax) = %.6f\n',  trace(Rminmax));
 figure(2);
 plot(theta_grid, 10 * log10(P_des / max(P_des) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'k'); hold on;
 plot(theta_grid, 10 * log10(P_mmse / max(P_mmse) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
+plot(theta_grid, 10 * log10(P_mmse1 / max(P_mmse1) + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'm'); hold on;
 plot(theta_grid, 10 * log10(P_minmax / max(P_minmax) + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');
 ylabel('Normalized (dB)');
-legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
+legend('Desired', 'MMSE Covariance', 'my MMSE', 'MinMax Covariance');
 ylim([-40 5]);
 title('Transmit Beam Pattern');
 grid on;
@@ -67,10 +74,11 @@ figure(3);
 P_des_plot = Pt * P_des / (2 * pi * trapz(deg2rad(theta_grid), P_des .* cosd(theta_grid)));
 plot(theta_grid, 10 * log10(P_des_plot + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k'); hold on;
 plot(theta_grid, 10 * log10(P_mmse + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
+plot(theta_grid, 10 * log10(P_mmse1 + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'm'); hold on;
 plot(theta_grid, 10 * log10(P_minmax + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 xlabel('Azimuth (deg)');
 ylabel('(dB)');
-legend('Desired', 'MMSE Covariance', 'MinMax Covariance');
+legend('Desired', 'MMSE Covariance', 'my MMSE', 'MinMax Covariance');
 ylim([-40 5]);
 title('Transmit Beam Pattern');
 grid on;

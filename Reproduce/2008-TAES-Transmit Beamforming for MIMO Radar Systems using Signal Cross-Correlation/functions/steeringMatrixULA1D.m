@@ -1,3 +1,6 @@
+
+
+
 function A = steeringMatrixULA1D(normalizedPos, ang)
     % 输入：
     %   normalizedPos - 1×N 阵元位置，单位为 wavelength

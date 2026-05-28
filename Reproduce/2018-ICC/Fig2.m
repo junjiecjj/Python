@@ -6,13 +6,33 @@ clear all;
 close all;
 addpath('./functions');
 rng(42);
+p.K = 4;                            % # of Users
+p.N = 16;                           % # of Antennas per Each Users (ULA)
+p.L = 20;                           % # of Communication Frame
+p.Pt = 1;                           % Total Power Constraint
+p.N0dB = 2 : -2 : -12;              % Noise Settings
+p.N0 = 10.^(p.N0dB ./ 10);  
+p.SNR = p.Pt ./ p.N0;
+p.SNRdB = 10 * log10(p.SNR);
+% Radar Settings
+p.theta = -pi/2 : pi/180 : pi/2;        % Radar ULA Angle Settings
+p.theta_target = [0];
+p.target_DoA = [0];
+
+p.beam_width= 9;
+p.l=ceil((p.target_DoA + pi/2 * ones(1, length(p.target_DoA)))/(pi/180) + ones(1, length(p.target_DoA)));
+p.Pd_theta = zeros(length(p.theta), 1);
+
+for idx = 1:length(p.target_DoA)
+    p.Pd_theta(p.l(idx)-(p.beam_width-1)/2 : p.l(idx)+(p.beam_width-1)/2, 1) = ones(p.beam_width, 1);
+end
 
 rng(1);
 N = 4;
-K = 3;
-L = 5;
+K = 4;
+L = 20;
 PT = 1;
-rho = 0.3;
+rho = 0.1;
 epsTol = 1e-10;
 maxIter = 200;
 H = (randn(K, N) + 1j * randn(K, N)) / sqrt(2);

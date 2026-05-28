@@ -3,8 +3,6 @@ clc;
 clear all;
 close all;
 
-
-
 % Figure 2, 3
 % Parameter Settings
 % Communication Settings
@@ -15,8 +13,7 @@ p.Pt = 1;                           % Total Power Constraint
 p.N0dB = 2 : -2 : -12;              % Noise Settings
 p.N0 = 10.^(p.N0dB ./ 10);  
 p.SNR = p.Pt ./ p.N0;
-p.SNRdB = 10 * log(p.SNR) / log(10);    % SNR Settings
-
+p.SNRdB = 10 * log10(p.SNR);
 % Radar Settings
 p.theta = -pi/2 : pi/180 : pi/2;        % Radar ULA Angle Settings
 p.theta_target = [0];
@@ -51,6 +48,7 @@ OmniStrictCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
 OmniTradeoffCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
 DirectStrictCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
 DirectTradeoffCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
+
 OmniStrictBPArray = zeros(p.montecarlo, length(p.theta));
 OmniTradeoffBPArray = zeros(p.montecarlo, length(p.theta));
 DirectStrictBPArray = zeros(p.montecarlo, length(p.theta));
@@ -63,14 +61,13 @@ for idx = 1 : p.montecarlo
     % Desired Signal Matrix - 4QAM Modulation
     S = (1/sqrt(2)) * ((2 * randi([0 1], p.K, p.L) - ones(p.K, p.L)) + 1i * ((2 * randi([0 1], p.K, p.L) - ones(p.K, p.L))));
 
-    % Optimal Waveform Design (Omni-Directional)
+    %% Optimal Waveform Design (Omni-Directional)
     F = chol(OmniRd);                   % Cholesky Factorization
     [U, ~, V] = svd(F * H' * S);        % SVD (singular value decomposition)
     
     OmniXStrict = sqrt(p.L) * F' * U * eye(p.N, p.L) * V';
 
-    % Trade-off Between Radar and Communication Performances
-    % (Omni-Directional)
+    %% Trade-off Between Radar and Communication Performances, (Omni-Directional)
     Q = p.rho * (H' * H) + (1 - p.rho) * eye(p.N, p.N);
     G = p.rho * H' * S + (1 - p.rho) * OmniXStrict;
 
@@ -81,14 +78,13 @@ for idx = 1 : p.montecarlo
 
     OmniXTradeoff = BisectionSearch(Q, G, lambda_low, lambda_high, p);
     
-    % Optimal Waveform Design (Directional)
+    %% Optimal Waveform Design (Directional)
     Fd = chol(DirectRd);
     [Ud, ~, Vd] = svd(Fd * H' * S);
     
     DirectXStrict = sqrt(p.L) * Fd' * Ud * eye(p.N, p.L) * Vd';
     
-    % Trade-off Between Radar and Communication Performances 
-    % (Directional)
+    %% Trade-off Between Radar and Communication Performances, (Directional)
     Qd = p.rho * (H' * H) + (1 - p.rho) * eye(p.N, p.N);
     Gd = p.rho * H' * S + (1 - p.rho) * DirectXStrict;
 
