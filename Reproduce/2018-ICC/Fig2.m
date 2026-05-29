@@ -113,8 +113,16 @@ for iter = 1:Iters
     H = (randn(Kc, M) + 1j * randn(Kc, M)) / sqrt(2);
     data = randi([0, 3], Kc, L);
     S = pskmod(data, 4, pi / 4, 'gray');
-    OmniStrictX = strict_waveform(H, S, OmniRd, L);
-    DirectStrictX = strict_waveform(H, S, DirectRd, L);
+    
+    % 生成严格满足雷达约束R但是尽可能小的MUI的波形；
+    % OmniStrictX = strict_waveform(H, S, OmniRd, L);
+    % DirectStrictX = strict_waveform(H, S, DirectRd, L);
+    
+    par = 1.1;                          % Parameter that controls low PAR constraint
+    OmniStrictX = helperCAWaveformSynthesis(OmniRd, L, par);
+    DirectStrictX = helperCAWaveformSynthesis(DirectRd, L, par);
+
+    % 根据严格波形生成折中波形；
     OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
     DirectTradeoffX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
     for idxSNR = 1:length(SNRdB)
