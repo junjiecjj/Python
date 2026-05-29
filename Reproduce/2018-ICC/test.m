@@ -1,85 +1,86 @@
 
 
 
-
-
 clc;
 clear all;
 close all;
 addpath('./functions');
 rng(42);
+p.K = 4;                            % # of Users
+p.N = 16;                           % # of Antennas per Each Users (ULA)
+p.L = 20;                           % # of Communication Frame
+p.Pt = 1;                           % Total Power Constraint
+p.N0dB = 2 : -2 : -12;              % Noise Settings
+p.N0 = 10.^(p.N0dB ./ 10);  
+p.SNR = p.Pt ./ p.N0;
+p.SNRdB = 10 * log10(p.SNR);
+% Radar Settings
+p.theta = -pi/2 : pi/180 : pi/2;        % Radar ULA Angle Settings
+p.theta_target = [0];
+p.target_DoA = [0];
 
-N = 6;
-K = 8;
+p.beam_width= 9;
+p.l=ceil((p.target_DoA + pi/2 * ones(1, length(p.target_DoA)))/(pi/180) + ones(1, length(p.target_DoA)));
+p.Pd_theta = zeros(length(p.theta), 1);
+
+for idx = 1:length(p.target_DoA)
+    p.Pd_theta(p.l(idx)-(p.beam_width-1)/2 : p.l(idx)+(p.beam_width-1)/2, 1) = ones(p.beam_width, 1);
+end
+
+rng(1);
+N = 4;
+K = 4;
 L = 20;
 PT = 1;
-
+rho = 0.1;
+epsTol = 1e-10;
+maxIter = 200;
 H = (randn(K, N) + 1j * randn(K, N)) / sqrt(2);
 data = randi([0, 3], K, L);
 S = pskmod(data, 4, pi / 4, 'gray');
-tmp = randn(N, L) + 1j * randn(N, L);
-R = tmp * tmp';
-Rd = (R + R') / 2;
+X0Raw = (randn(N, L) + 1j * randn(N, L)) / sqrt(2);
+X0 = sqrt(L * PT) * X0Raw / norm(X0Raw, 'fro');
+XAlg = algorithm1_tradeoff(H, S, X0, PT, rho);
+XCvx = cvx_problem12_sdr(H, S, X0, PT, rho);
 
-X1 = strict_waveform(H, S, Rd, L);
-X2 = strict_waveform1(H, S, Rd, L);
+powerTarget = L * PT;
+objAlg = rho * norm(H * XAlg - S, 'fro')^2 + (1 - rho) * norm(XAlg - X0, 'fro')^2;
+objCvx = rho * norm(H * XCvx - S, 'fro')^2 + (1 - rho) * norm(XCvx - X0, 'fro')^2;
 
+powerAlg = norm(XAlg, 'fro')^2;
+powerCvx = norm(XCvx, 'fro')^2;
 
-obj1 = norm(H * X1 - S, 'fro')^2;
-obj2 = norm(H * X2 - S, 'fro')^2;
-
-covErr1 = norm(X1 * X1' / L - Rd, 'fro');
-covErr2 = norm(X2 * X2' / L - Rd, 'fro');
-
-xDiff = norm(X1 - X2, 'fro');
-
-disp(obj1);
-disp(obj2);
-disp(abs(obj1 - obj2));
-
-disp(covErr1);
-disp(covErr2);
-
-disp(xDiff);
-
-function X = strict_waveform(H, S, Rd, L)
-    N = size(H, 2);
-    F = chol(Rd, 'lower');
-    A = F' * H' * S;
-    [U, ~, V] = svd(A);
-    VN = V(:, 1:N);
-    X = sqrt(L) * F * U * VN';
-end
+fprintf('Comparison between Algorithm 1 and CVX-SDR:\n');
+fprintf('N                      = %d\n', N);
+fprintf('K                      = %d\n', K);
+fprintf('L                      = %d\n', L);
+fprintf('rho                    = %.4f\n', rho);
+fprintf('\n');
+fprintf('Algorithm 1 result:\n');
+fprintf('objective              = %.12e\n', objAlg);
+fprintf('power                  = %.12e\n', powerAlg);
+ 
+fprintf('\n');
+fprintf('CVX-SDR result:\n');
+fprintf('objective              = %.12e\n', objCvx);
+fprintf('power                  = %.12e\n', powerCvx);
+ 
 
 
-function X_opt = strict_waveform1(H, S, R_d, L)
-    % 求解问题：min ||H X - S||_F^2  s.t. (1/L) X X^H = R_d
-    % 输入：H - M×N, S - M×L, R_d - N×N Hermitian 正定, L (要求 L ≥ N)
-    % 输出：X_opt = F * V_A * U_{A,1}^H，其中 F 来自 C = L*R_d = F*F^H
-    [M, N_h] = size(H);
-    N = size(R_d, 1);          % 从 R_d 获取 N
-    if N_h ~= N
-        error('H 的列数必须与 R_d 的维度一致');
-    end
-    [M_s, L_s] = size(S);
-    if M_s ~= M || L_s ~= L
-        error('S 的尺寸必须与 H X 匹配');
-    end
-    if L < N
-        error('约束要求 L ≥ N，否则无解');
-    end
-    if ~isequal(R_d, R_d')
-        error('R_d 必须是 Hermitian 矩阵');
-    end
-    
-    C = L * R_d;
-    % Cholesky 分解 C = F * F^H (F 为下三角)
-    F = chol(C, 'lower');           % N×N
-    A = S' * H * F;               % L×N
-    [U_A, ~, V_A] = svd(A); % U_A: L×L, V_A: N×N (因为 L≥N)
-    U_A1 = U_A(:, 1:N);             % L×N
-    X_opt = F * V_A * U_A1';
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -10,19 +10,35 @@ rng(42);
 M = 10;
 C = 1;
 c = ones(M, 1) * C / M;
-theta_est = 0;
-Delta = 30;
-theta_grid = -90:0.1:90;
-theta_plot = theta_grid;
-L = length(theta_grid);
 
 %% 统一的期望 beampattern
+theta_est = [-40, 0, 40];   % 目标角度估计（度）
+K = length(theta_est);      % 目标个数
+
+Delta = 10;
+theta_grid = -90:0.1:90;
 P_des = zeros(size(theta_grid));
+% Desired beam pattern
 idx = false(size(theta_grid));
 for i = 1:numel(theta_est)
-    idx = idx | theta_grid >= theta_est(i) - Delta & theta_grid <= theta_est(i) + Delta;
+    idx = idx | theta_grid >= theta_est(i)-Delta & theta_grid <= theta_est(i)+Delta;
 end
 P_des(idx) = 1;
+
+
+%% 统一的期望 beampattern
+% theta_est = 0;
+% Delta = 30;
+% theta_grid = -90:0.1:90;
+% theta_plot = theta_grid;
+% L = length(theta_grid);
+
+% P_des = zeros(size(theta_grid));
+% idx = false(size(theta_grid));
+% for i = 1:numel(theta_est)
+%     idx = idx | theta_grid >= theta_est(i) - Delta & theta_grid <= theta_est(i) + Delta;
+% end
+% P_des(idx) = 1;
 
 %% 统一的导向矢量
 a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));

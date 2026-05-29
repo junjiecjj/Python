@@ -35,6 +35,7 @@ p_des = abs(P_des * alpha0+eps);
 
 %%  Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
 rho = 1.1;
+
 L  = 256;
 X_optR = WaveformSynthesisXoptimR(L, R_opt0, rho );
 Rhat1 = X_optR * X_optR'/L;
@@ -42,8 +43,6 @@ Rhat1 = X_optR * X_optR'/L;
 %%  PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
 X_par = WaveformSynthesisXwithPAR(L, R_opt0, rho  );
 Rhat2 = X_par * X_par'/L;
-
-
 
 P_opt0 = zeros(size(theta_grid));
 P_opt1 = zeros(size(theta_grid));
