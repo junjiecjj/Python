@@ -9,9 +9,9 @@ addpath('./functions_2007TSP_OnProb');
 addpath('./functions_2008TAES_CrossCorre');
 
 %% 1. 参数设置（示例，可修改）
-Kc = 30;                      % # of users
-M = 64;                     % 天线数
-L = 70;                     % # of Communication Frame
+Kc = 6;                      % # of users
+M = 12;                     % 天线数
+L = 40;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;        % 对角元固定值
 % c = rand(M, 1)
@@ -54,6 +54,7 @@ w_c = 0;
 %  为了和文献1对齐，将 R 除以 M，使 trace(R)=1
 DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
 DirectRd2 = DirectRd2_raw / M;
+DirectRd2 = (DirectRd2 + DirectRd2')/2;
 
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数
@@ -71,9 +72,9 @@ if 1
         P_lit2(i) = real(ai' * DirectRd2 * ai);
         P_lit2_(i) = real(ai' * DirectRd3 * ai);
     end
-    P_lit1(P_lit1 < 0) = 0;
-    P_lit2(P_lit2 < 0) = 0;
-    P_lit2_(P_lit2 < 0) = 0;
+    % P_lit1(P_lit1 < 0) = 0;
+    % P_lit2(P_lit2 < 0) = 0;
+    % P_lit2_(P_lit2 < 0) = 0;
 
     P_des1 = alpha1 * P_des;
     figure(1);
@@ -89,8 +90,7 @@ if 1
     xlim([-90, 90]);
 end
 
-
-SNRdB = -2:1:12;
+SNRdB = -5:1:12;
 N0 = Pt ./ 10.^(SNRdB/10);
 
 OmniStrictCapacityArray = zeros(Iters, length(SNRdB));
@@ -105,7 +105,7 @@ DirectTradeoffBPArray = zeros(Iters, length(theta_grid));
 
 
 %% Choose Directional Covariance Matrix
-DirectRd = DirectRd3;
+DirectRd = DirectRd2;
 
 %% Monte Carlo Simulation
 for iter = 1:Iters
@@ -159,6 +159,7 @@ xlim([min(SNRdB), max(SNRdB)]);
 
 %% Figure 3: Radar Beampattern
 figure(3);
+plot(theta_grid, P_des1, 'k-', 'LineWidth', 1.5); hold on;
 plot(theta_grid, OmniStrictBP, 'r-', 'LineWidth', 1.5); hold on;
 plot(theta_grid, DirectStrictBP, 'g--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, OmniTradeoffBP, 'b--', 'LineWidth', 1.5); hold on;
@@ -166,19 +167,9 @@ plot(theta_grid, DirectTradeoffBP, 'k--', 'LineWidth', 1.5);
 grid on;
 xlabel('\theta (deg)');
 ylabel('Beampattern');
-legend('Omni-Strict', 'Directional-Strict', 'Omni-Tradeoff, \rho = 0.1', 'Directional-Tradeoff, \rho = 0.1', 'Location', 'South');
+legend('Desired', 'Omni-Strict', 'Directional-Strict', 'Omni-Tradeoff, \rho = 0.1', 'Directional-Tradeoff, \rho = 0.1', 'Location', 'South');
 xlim([-90, 90]);
 
-%% Local Functions
-
-function BPdB = beampattern_dB(R, afun, theta_grid)
-    BP = zeros(size(theta_grid));
-    for idxTheta = 1:length(theta_grid)
-        a = afun(theta_grid(idxTheta));
-        BP(idxTheta) = real(a' * R * a);
-    end
-    % BPdB = 10 * log10(BP + 1e-12);
-end
 
 
 
