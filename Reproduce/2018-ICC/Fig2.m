@@ -8,41 +8,25 @@ addpath('./functions');
 addpath('./functions_2007TSP_OnProb');
 addpath('./functions_2008TAES_CrossCorre');
 
-rng(42);
-p.K = 4;                            % # of Users
-p.N = 16;                           % # of Antennas per Each Users (ULA)
-p.L = 20;                           % # of Communication Frame
-p.Pt = 1;                           % Total Power Constraint
-p.N0dB = 2 : -2 : -12;              % Noise Settings
-p.N0 = 10.^(p.N0dB ./ 10);  
-p.SNR = p.Pt ./ p.N0;
-p.SNRdB = 10 * log10(p.SNR);
-% Radar Settings
-p.theta = -pi/2 : pi/180 : pi/2;        % Radar ULA Angle Settings
-p.theta_target = [0];
-p.target_DoA = [0];
-
-p.beam_width= 9;
-p.l=ceil((p.target_DoA + pi/2 * ones(1, length(p.target_DoA)))/(pi/180) + ones(1, length(p.target_DoA)));
-p.Pd_theta = zeros(length(p.theta), 1);
-
-for idx = 1:length(p.target_DoA)
-    p.Pd_theta(p.l(idx)-(p.beam_width-1)/2 : p.l(idx)+(p.beam_width-1)/2, 1) = ones(p.beam_width, 1);
-end
-
-rng(1);
-
-
-
 %% 1. 参数设置（示例，可修改）
 Kc = 4;                      % # of users
 M = 10;                     % 天线数
 L = 20;                     % # of Communication Frame
-c = ones(M,1) * 1/M;        % 对角元固定值
-% c = rand(M, 1)
 Pt  = 1;
-theta_est = [-50, 0, 50];   % 目标角度估计（度）
+c = ones(M, 1) * Pt/M;        % 对角元固定值
+% c = rand(M, 1)
+Iters =100;
 
+d = 0.5;
+lambda = 2 * d;
+pos = (0:M-1) * d;
+normalizedPos = pos / lambda;
+
+afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
+rho = 0.1;   % Tradeoff Settings
+
+%% Desired Beampattern
+theta_est = [-50, 0, 50];   % 目标角度估计（度）
 Kt = length(theta_est);      % 目标个数
 
 Delta = 5;
@@ -55,18 +39,76 @@ for i = 1:numel(theta_est)
 end
 P_des(idx) = 1;
 
-afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
-% Tradeoff Settings
-rho = 0.1;
-
-% Omni-Directional Beampattern
+%% Omni-Directional Beampattern
 OmniRd = (Pt / M) * eye(M);
 
-% Directional Beampattern
-DirectRd = directbeampattern(p);
+%% Directional Beampattern
+%  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design
+%  diag(R)=1/M, trace(R)=1, wc=0
+w_l = ones(length(theta_grid), 1);
+w_c = 0;
+[DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
+
+%  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
+%  helperMMSECovariance 默认 diag(R)=1, trace(R)=M
+%  为了和文献1对齐，将 R 除以 M，使 trace(R)=1
+DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
+DirectRd2 = DirectRd2_raw / M;
+
+%  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
+%  不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数
+[DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
+fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
+
+
+SNRdB = -2:1:12;
+N0 = Pt ./ 10^(SNRdB/10);
+
+OmniStrictCapacityArray = zeros(Iters, length(SNRdB));
+OmniTradeoffCapacityArray = zeros(Iters, length(SNRdB));
+DirectStrictCapacityArray = zeros(Iters, length(SNRdB));
+DirectTradeoffCapacityArray = zeros(Iters, length(SNRdB));
+
+OmniStrictBPArray = zeros(Iters, length(theta_grid));
+OmniTradeoffBPArray = zeros(Iters, length(theta_grid));
+DirectStrictBPArray = zeros(Iters, length(theta_grid));
+DirectTradeoffBPArray = zeros(Iters, length(theta_grid));
 
 
 
+
+
+
+
+
+if false
+    %% 计算 beampattern
+    P_lit1 = zeros(size(theta_grid));
+    P_lit2 = zeros(size(theta_grid));
+    P_lit2_ = zeros(size(theta_grid));
+    for i = 1:length(theta_grid)
+        ai = afun(theta_grid(i));
+        P_lit1(i) = real(ai' * DirectRd1 * ai);
+        P_lit2(i) = real(ai' * DirectRd2 * ai);
+        P_lit2_(i) = real(ai' * DirectRd3 * ai);
+    end
+    P_lit1(P_lit1 < 0) = 0;
+    P_lit2(P_lit2 < 0) = 0;
+    P_lit2_(P_lit2 < 0) = 0;
+
+    P_des1 = alpha1 * P_des;
+    figure(1);
+    plot(theta_grid, P_des1, 'k--', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, P_lit1, 'b-', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, P_lit2, 'r-.', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, P_lit2_, 'c-.', 'LineWidth', 1.5);
+    grid on;
+    xlabel('\theta (degrees)');
+    ylabel('Beampattern');
+    legend('Desired', 'Beampattern Matching', 'Squared Error', 'my Squared Error', 'Location', 'best');
+    title('Comparison under trace(R)=1');
+    xlim([-90, 90]);
+end
 
 
 

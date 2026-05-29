@@ -12,10 +12,10 @@ Pt = 1;
 c = ones(M, 1) * Pt / M;
 
 %% 统一的期望 beampattern
-theta_est = [-50, 0, 50];   % 目标角度估计（度）
+theta_est = [-40, 0, 40];   % 目标角度估计（度）
 K = length(theta_est);      % 目标个数
 
-Delta = 5;
+Delta = 10;
 theta_grid = -90:0.1:90;
 theta_plot = theta_grid;
 P_des = zeros(size(theta_grid));
@@ -112,7 +112,7 @@ fprintf('lit2 error to alpha_lit2 * P_des = %.4e\n', err_lit2_self_alpha);
 figure(1);
 plot(theta_plot, P_des_lit1, 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_lit1, 'b-', 'LineWidth', 1.5); hold on;
-plot(theta_plot, P_lit2, 'r-.', 'LineWidth', 1.5); hold on;
+plot(theta_plot, P_lit2, 'r-.', 'LineWidth', 1.5);
 plot(theta_plot, P_lit2_, 'c-.', 'LineWidth', 1.5);
 grid on;
 xlabel('\theta (degrees)');
@@ -123,9 +123,9 @@ xlim([-90, 90]);
 
 %% 绝对 dB 对比
 figure(2);
-plot(theta_plot, 10 * log10(P_des_lit2 + eps), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, 10 * log10(P_des_lit1 + eps), 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_plot, 10 * log10(P_lit1 + eps), 'b-', 'LineWidth', 1.5); hold on;
-plot(theta_plot, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5); hold on;
+plot(theta_plot, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5);
 plot(theta_plot, 10 * log10(P_lit2_ + eps), 'c-.', 'LineWidth', 1.5);
 grid on;
 xlabel('\theta (degrees)');
@@ -139,7 +139,7 @@ ylim([-40, 5]);
 figure(3);
 plot(theta_plot, 10 * log10(P_des + eps), 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_plot, 10 * log10(P_lit1 / max(P_lit1) + eps), 'b-', 'LineWidth', 1.5); hold on;
-plot(theta_plot, 10 * log10(P_lit2 / max(P_lit2) + eps), 'r-.', 'LineWidth', 1.5); hold on;
+plot(theta_plot, 10 * log10(P_lit2 / max(P_lit2) + eps), 'r-.', 'LineWidth', 1.5);
 plot(theta_plot, 10 * log10(P_lit2_ / max(P_lit2_) + eps), 'c-.', 'LineWidth', 1.5);
 grid on;
 xlabel('\theta (degrees)');
