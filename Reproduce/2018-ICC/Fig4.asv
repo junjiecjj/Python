@@ -33,7 +33,7 @@ rhoList = 0.01:0.02:1;
 OmniRd = (Pt / M) * eye(M);
 
 %% Simulation Settings
-Iters = 600;
+Iters = 1000;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
