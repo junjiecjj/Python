@@ -167,17 +167,17 @@ xlim([min(SNRdB), max(SNRdB)]);
 
 %% Figure 3: Radar Beampattern
 figure(3);
-plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'r-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'g--', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(OmniTradeoffBP + eps), 'b--', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(DirectTradeoffBP + eps), 'k--', 'LineWidth', 1.5);
+plot(theta_grid, 10 * log10(P_des1 / max(P_des1) + eps), 'k-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(P_des1 / max(P_des1) + eps),OmniStrictBP, 'r-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, DirectStrictBP, 'g--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, OmniTradeoffBP, 'b--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, DirectTradeoffBP, 'k--', 'LineWidth', 1.5);
 grid on;
 xlabel('\theta (deg)');
 ylabel('Beampattern');
 legend('Desired', 'Omni-Strict', 'Directional-Strict', 'Omni-Tradeoff, \rho = 0.1', 'Directional-Tradeoff, \rho = 0.1', 'Location', 'South');
 xlim([-90, 90]);
-ylim([-30, 10]);
+
 
 
 
