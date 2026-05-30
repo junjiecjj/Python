@@ -23,7 +23,7 @@ pos = (0:M-1) * d;
 normalizedPos = pos / lambda;
 
 afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
-rho = 0.1;   % Tradeoff Settings
+
 
 %% Desired Beampattern
 theta_est = [-60, 0, 60];   % 目标角度估计（度）
@@ -54,7 +54,7 @@ w_c = 0;
 %  为了和文献1对齐，将 R 除以 M，使 trace(R)=1
 DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
 DirectRd2 = DirectRd2_raw / M;
-% DirectRd2 = (DirectRd2 + DirectRd2')/2;
+DirectRd2 = (DirectRd2 + DirectRd2')/2;
 
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数
@@ -78,16 +78,17 @@ if 1
 
     P_des1 = alpha1 * P_des;
     figure(1);
-    plot(theta_grid, P_des1, 'k--', 'LineWidth', 1.5); hold on;
-    plot(theta_grid, P_lit1, 'b-', 'LineWidth', 1.5); hold on;
-    plot(theta_grid, P_lit2, 'r-.', 'LineWidth', 1.5); hold on;
-    plot(theta_grid, P_lit2_, 'c-.', 'LineWidth', 1.5);
+    plot(theta_grid, 10 * log10(P_des1 + eps), 'k--', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit1 + eps), 'b-', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit2_ + eps), 'c-.', 'LineWidth', 1.5);
     grid on;
     xlabel('\theta (degrees)');
     ylabel('Beampattern');
     legend('Desired', 'Beampattern Matching', 'Squared Error', 'my Squared Error', 'Location', 'best');
     title('Comparison under trace(R)=1');
     xlim([-90, 90]);
+    ylim([-40, 20]);
 end
 
 SNRdB = -5:1:12;
@@ -106,7 +107,7 @@ DirectTradeoffBPArray = zeros(Iters, length(theta_grid));
 
 %% Choose Directional Covariance Matrix
 DirectRd = DirectRd2;
-
+rho = 0.2;   % Tradeoff Settings
 %% Monte Carlo Simulation
 for iter = 1:Iters
     fprintf('Monte Carlo iteration: %d / %d\n', iter, Iters);
@@ -115,12 +116,12 @@ for iter = 1:Iters
     S = pskmod(data, 4, pi / 4, 'gray');
     
     % 生成严格满足雷达约束R但是尽可能小的MUI的波形；
-    % OmniStrictX = strict_waveform(H, S, OmniRd, L);
-    % DirectStrictX = strict_waveform(H, S, DirectRd, L);
+    OmniStrictX = strict_waveform(H, S, OmniRd, L);
+    DirectStrictX = strict_waveform(H, S, DirectRd, L);
     
-    par = 1.1;                          % Parameter that controls low PAR constraint
-    OmniStrictX = helperCAWaveformSynthesis(OmniRd, L, par);
-    DirectStrictX = helperCAWaveformSynthesis(DirectRd, L, par);
+    % par = 1.1;                          % Parameter that controls low PAR
+    % OmniStrictX = helperCAWaveformSynthesis(OmniRd, L, par);
+    % DirectStrictX = helperCAWaveformSynthesis(DirectRd, L, par);
 
     % 根据严格波形生成折中波形；
     OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
