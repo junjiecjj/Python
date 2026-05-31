@@ -18,7 +18,7 @@ Mr = Mt;
 % Radial velocity of 2000 m/s 
 v_r = 2000; 
 % Radar reference point 
-r_0 = 500*10^3; 
+r_0 = 500*10^3;
 % Carrier frequency 3.5GHz 
 f_c = 3.5*10^9; % Angular carrier frequency 
 omega_c = 2*pi*f_c; 

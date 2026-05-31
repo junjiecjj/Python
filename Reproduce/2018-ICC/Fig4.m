@@ -8,32 +8,54 @@ rng(42);
 
 %% Figure 4: Trade-off of Omni-Directional Beampattern Design
 
-%% Communication Settings
-KcList = 4 : 2 : 8;
-M = 16;
-L = 20;
-Pt = 1;
-N0dB = -10;
-N0 = 10^(N0dB / 10);
+%% 1. 参数设置（示例，可修改）
+KcList = 4 : 2 : 8;         % # of users
+M = 16;                     % 天线数
+L = 20;                     % # of Communication Frame
+Pt  = 1;
+c = ones(M, 1) * Pt/M;       % 对角元固定值
+% c = rand(M, 1)
 
-%% Radar Settings
-thetaGrid = -pi/2 : pi/180 : pi/2;
-thetaDetectIndex = 127;
-thetaDetect = thetaGrid(thetaDetectIndex);
+SNRdB = -6;
+N0 = Pt ./ 10.^(SNRdB/10);
 
-alphadB = -6;
-alpha = 10^(alphadB / 10);
-falsealarm = 1e-7;
+Pfa = 1e-7;
+thetaDetect = 36;
 
-%% Tradeoff Settings
+d = 0.5;
+lambda = 2 * d;
+pos = (0:M-1) * d;
+normalizedPos = pos / lambda;
+afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
 
-rhoList = 0.01:0.02:1;
+%% Desired Beampattern
+theta_est = [-60, 0, 60];   % 目标角度估计（度）
+Kt = length(theta_est);      % 目标个数
+
+Delta = 5;
+theta_grid = -90:0.1:90;
+P_des = zeros(size(theta_grid));
+% Desired beam pattern
+idx = false(size(theta_grid));
+for i = 1:numel(theta_est)
+    idx = idx | theta_grid >= theta_est(i)-Delta & theta_grid <= theta_est(i)+Delta;
+end
+P_des(idx) = 1;
 
 %% Omni-Directional Beampattern
 OmniRd = (Pt / M) * eye(M);
+fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
+
+%% Directional Beampattern
+[DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
+fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
+
+
+%% Tradeoff Settings
+rhoList = 0.0:0.05:1;
 
 %% Simulation Settings
-Iters = 600;
+Iters = 200;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
@@ -49,12 +71,9 @@ for iter = 1:Iters
             S = pskmod(data, 4, pi / 4, 'gray');
             
             OmniStrictX = strict_waveform(H, S, OmniRd, L);
-            OmniTradeoffX0 = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
-            
-            OmniTradeoffX = sqrt(M) * OmniTradeoffX0;
-            
-            OmniRateArray(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffX / sqrt(M), S, N0);
-            OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(OmniTradeoffX, L, M, thetaDetect, alpha, falsealarm);
+            OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
+            OmniRateArray(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffX, S, N0);
+            OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffX, M, thetaDetect, 1/N0, Pfa);
         end
     end
     clc;
@@ -75,9 +94,8 @@ OmniProbability3 = OmniProbability(:, 3);
 
 %% Figure 4
 figure;
-plot(OmniRate1, OmniProbability1, 'b', 'LineWidth', 1.5);
-hold on;
-plot(OmniRate2, OmniProbability2, 'k', 'LineWidth', 1.5);
+plot(OmniRate1, OmniProbability1, 'b', 'LineWidth', 1.5); hold on;
+plot(OmniRate2, OmniProbability2, 'k', 'LineWidth', 1.5); hold on;
 plot(OmniRate3, OmniProbability3, 'r', 'LineWidth', 1.5);
 grid on;
 xlabel('Average Achievable Rate (bps/Hz/user)');
@@ -85,13 +103,14 @@ ylabel('Detection Probability');
 legend('K=4', 'K=6', 'K=8', 'Location', 'southwest');
 
 %% Local Function
-function Pd = radar_detection_probability_fig4(X, L, M, thetaDetect, alpha, falsealarm)
-    a = zeros(M, 1);
-    for idx = 1:M
-        a(idx, 1) = exp(1j * pi * (idx - ceil(M / 2)) * sin(thetaDetect));
-    end
+function Pd = radar_detection_probability_fig4(X, M, thetaDetect, snr, Pfa)
+    L = size(X, 2);
+    a = exp(1j * pi * (0:M-1)' * sind(thetaDetect));
     Rs = X * X' / L;
-    noncentrality = alpha * abs(a' * Rs.' * a)^2;
-    delta = chi2inv(1 - falsealarm, 2);
+    noncentrality = snr * abs(a' * Rs.' * a)^2;
+    delta = chi2inv(1 - Pfa, 2);
     Pd = 1 - ncx2cdf(delta, 2, noncentrality);
 end
+
+
+
