@@ -20,7 +20,7 @@ c = ones(M, 1) * Pt/M;       % 对角元固定值
 SNRdB = -6;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
-RadarSNRdB = -19;
+RadarSNRdB = -16;
 radarSNR = 10^(RadarSNRdB / 10);
 
 Pfa = 1e-7;
@@ -46,10 +46,6 @@ for i = 1:numel(theta_est)
 end
 P_des(idx) = 1;
 
-%% Omni-Directional Beampattern
-OmniRd = (Pt / M) * eye(M);
-fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
-
 %% Directional Beampattern
 % %  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design
 % %  diag(R)=1/M, trace(R)=1, wc=0
@@ -65,15 +61,15 @@ fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 % % DirectRd2 = (DirectRd2 + DirectRd2')/2;
 % fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
 % 
-% [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
-% fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
+[DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
+fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
 
 %% Tradeoff Settings
-rhoList = 0.01:0.01:0.99;
+rhoList = 0.1:0.01:0.99;
 
 %% Simulation Settings
-Iters = 500;
+Iters = 100;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
@@ -90,10 +86,10 @@ for iter = 1:Iters
             data = randi([0, 3], Kc, L);
             S = pskmod(data, 4, pi / 4, 'gray');
             
-            OmniStrictX = strict_waveform(H, S, OmniRd, L);
+            OmniStrictX = strict_waveform(H, S, DirectRd3, L);
             OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArray(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffX, S, N0);
-            OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffX, thetaDetect, 1/N0, Pfa);
+            OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffX, thetaDetect, radarSNR, Pfa);
         end
     end
 end
