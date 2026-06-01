@@ -27,21 +27,6 @@ for i = 1:numel(theta_est)
 end
 P_des(idx) = 1;
 
-
-%% 统一的期望 beampattern
-% theta_est = 0;
-% Delta = 30;
-% theta_grid = -90:0.1:90;
-% theta_plot = theta_grid;
-% 
-
-% P_des = zeros(size(theta_grid));
-% idx = false(size(theta_grid));
-% for i = 1:numel(theta_est)
-%     idx = idx | theta_grid >= theta_est(i) - Delta & theta_grid <= theta_est(i) + Delta;
-% end
-% P_des(idx) = 1;
-
 %% 统一的导向矢量
 a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
 
@@ -80,9 +65,9 @@ for i = 1:length(theta_plot)
     P_lit2(i) = real(ai' * R_lit2 * ai);
     P_lit2_(i) = real(ai' * Rmmse1 * ai);
 end
-P_lit1(P_lit1 < 0) = 0;
-P_lit2(P_lit2 < 0) = 0;
-P_lit2_(P_lit2 < 0) = 0;
+% P_lit1(P_lit1 < 0) = 0;
+% P_lit2(P_lit2 < 0) = 0;
+% P_lit2_(P_lit2 < 0) = 0;
 
 %% 文献1的 alpha-scaled desired
 P_des_lit1 = alpha_lit1 * P_des;
@@ -90,6 +75,8 @@ P_des_lit1 = alpha_lit1 * P_des;
 %% 为文献2单独计算一个最优 alpha，用于误差评估，不改变 R
 alpha_lit2 = (P_des(:)' * P_lit2(:)) / (P_des(:)' * P_des(:));
 P_des_lit2 = alpha_lit2 * P_des;
+
+P_des_lit3 = b * P_des;
 
 %% 误差指标
 err_lit1 = norm(P_lit1(:) - P_des_lit1(:)) / norm(P_des_lit1(:));
@@ -99,8 +86,10 @@ err_lit2_self_alpha = norm(P_lit2(:) - P_des_lit2(:)) / norm(P_des_lit2(:));
 fprintf('===== Power check =====\n');
 fprintf('trace(R_lit1) = %.6f\n', real(trace(R_lit1)));
 fprintf('trace(R_lit2) = %.6f\n', real(trace(R_lit2)));
+fprintf('trace(Rmmse1) = %.6f\n', real(trace(Rmmse1)));
 fprintf('max diag error lit1 = %.4e\n', max(abs(real(diag(R_lit1)) - 1/M)));
 fprintf('max diag error lit2 = %.4e\n', max(abs(real(diag(R_lit2)) - 1/M)));
+fprintf('max diag error lit3 = %.4e\n', max(abs(real(diag(Rmmse1)) - 1/M)));
 fprintf('\n===== Alpha and error =====\n');
 fprintf('alpha_lit1 = %.6f\n', alpha_lit1);
 fprintf('alpha_lit2 best fit = %.6f\n', alpha_lit2);
@@ -123,7 +112,7 @@ xlim([-90, 90]);
 
 %% 绝对 dB 对比
 figure(2);
-plot(theta_plot, 10 * log10(P_des_lit2 + eps), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, 10 * log10(P_des_lit1 + eps), 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_plot, 10 * log10(P_lit1 + eps), 'b-', 'LineWidth', 1.5); hold on;
 plot(theta_plot, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5); hold on;
 plot(theta_plot, 10 * log10(P_lit2_ + eps), 'c-.', 'LineWidth', 1.5);
@@ -149,3 +138,14 @@ title('Shape comparison');
 xlim([-90, 90]);
 ylim([-40, 5]);
 
+figure(4);
+plot(theta_plot, 10 * log10(P_des_lit1 + eps), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, 10 * log10(P_des_lit2 + eps), 'b-', 'LineWidth', 1.5); hold on;
+plot(theta_plot, 10 * log10(P_des_lit3 + eps), 'r-.', 'LineWidth', 1.5);
+grid on;
+xlabel('\theta (degrees)');
+ylabel('Normalized Beampattern (dB)');
+legend('P_des_lit1', 'P_des_lit2', 'P_des_lit3', 'Location', 'best');
+title('Shape comparison');
+xlim([-90, 90]);
+% ylim([-40, 5]);

@@ -1,10 +1,10 @@
 
 function X = algorithm1_tradeoff(H, S, X0, PT, rho)
     epsTol = 1e-10;
-    maxIter = 200;
-    N = size(H, 2);
+    maxIter = 400;
+    M = size(H, 2);
     L = size(S, 2);
-    I = eye(N);
+    I = eye(M);
     Q = rho * (H' * H) + (1 - rho) * I;
     G = rho * H' * S + (1 - rho) * X0;
     Q = (Q + Q') / 2;
@@ -15,7 +15,7 @@ function X = algorithm1_tradeoff(H, S, X0, PT, rho)
     powerTarget = L * PT;
     lambdaLeft = -lambdaMin + 1e-10;
     maxB = max(abs(B(:)));
-    lambdaRight = -lambdaMin + sqrt(N / PT) * maxB;
+    lambdaRight = -lambdaMin + sqrt(M / PT) * maxB;
     if lambdaRight <= lambdaLeft
         lambdaRight = lambdaLeft + 1;
     end

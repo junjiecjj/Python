@@ -24,7 +24,6 @@ normalizedPos = pos / lambda;
 
 afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
 
-
 %% Desired Beampattern
 theta_est = [-60, 0, 60];   % 目标角度估计（度）
 Kt = length(theta_est);      % 目标个数
