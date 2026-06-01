@@ -9,9 +9,9 @@ rng(42);
 %% Figure 4: Trade-off of Omni-Directional Beampattern Design
 
 %% 1. 参数设置（示例，可修改）
-KcList = 4 : 2 : 8;         % # of users
+KcList = 4 : 4 : 12;         % # of users
 M = 16;                     % 天线数
-L = 20;                     % # of Communication Frame
+L = 100;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;       % 对角元固定值
 % c = rand(M, 1)
@@ -29,7 +29,7 @@ normalizedPos = pos / lambda;
 afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
 
 %% Desired Beampattern
-theta_est = [-60, 0, 60];   % 目标角度估计（度）
+theta_est = [thetaDetect];   % 目标角度估计（度）
 Kt = length(theta_est);      % 目标个数
 
 Delta = 5;
@@ -42,6 +42,8 @@ for i = 1:numel(theta_est)
 end
 P_des(idx) = 1;
 
+
+
 %% Omni-Directional Beampattern
 OmniRd = (Pt / M) * eye(M);
 fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
@@ -50,9 +52,31 @@ fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
 fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
 
+if 1
+    %% 计算 beampattern
+    P_lit1 = zeros(size(theta_grid));
+    P_lit2 = zeros(size(theta_grid));
+    for i = 1:length(theta_grid)
+        ai = afun(theta_grid(i));
+        P_lit1(i) = real(ai' * OmniRd * ai);
+        P_lit2(i) = real(ai' * DirectRd3 * ai);
+    end
+ 
+    figure(1);
+    plot(theta_grid, 10 * log10(P_des + eps), 'k--', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit1 + eps), 'b-', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5);
+    grid on;
+    xlabel('\theta (degrees)');
+    ylabel('Beampattern');
+    legend('Desired', 'Omni-Directional', 'my Squared Error', 'Location', 'best');
+    title('Comparison under trace(R)=1');
+    xlim([-90, 90]);
+    % ylim([-40, 20]);
+end
 
 %% Tradeoff Settings
-rhoList = 0.0:0.05:1;
+rhoList = 0.01:0.01:0.98;
 
 %% Simulation Settings
 Iters = 200;
@@ -62,6 +86,8 @@ OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
 
 %% Monte Carlo Simulation
 for iter = 1:Iters
+    clc;
+    disp(['Progress - ', num2str(iter), '/', num2str(Iters)]);
     for idxRho = 1:length(rhoList)
         rho = rhoList(idxRho);
         for idxKc = 1:length(KcList)
@@ -76,8 +102,6 @@ for iter = 1:Iters
             OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffX, M, thetaDetect, 1/N0, Pfa);
         end
     end
-    clc;
-    disp(['Progress - ', num2str(iter), '/', num2str(Iters)]);
 end
 
 %% Average Results

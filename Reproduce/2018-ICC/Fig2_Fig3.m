@@ -1,172 +1,205 @@
 
+
+
 clc;
-clear all;
+clear;
 close all;
+addpath('./functions');
+addpath('./functions_2007TSP_OnProb');
+addpath('./functions_2008TAES_CrossCorre');
 
-% Figure 2, 3
-% Parameter Settings
-% Communication Settings
-p.K = 4;                            % # of Users
-p.N = 16;                           % # of Antennas per Each Users (ULA)
-p.L = 20;                           % # of Communication Frame
-p.Pt = 1;                           % Total Power Constraint
-p.N0dB = 2 : -2 : -12;              % Noise Settings
-p.N0 = 10.^(p.N0dB ./ 10);  
-p.SNR = p.Pt ./ p.N0;
-p.SNRdB = 10 * log10(p.SNR);
-% Radar Settings
-p.theta = -pi/2 : pi/180 : pi/2;        % Radar ULA Angle Settings
-p.theta_target = [0];
-p.target_DoA = [0];
+%% 1. 参数设置（示例，可修改）
+Kc = 6;                      % # of users
+M = 12;                     % 天线数
+L = 40;                     % # of Communication Frame
+Pt  = 1;
+c = ones(M, 1) * Pt/M;        % 对角元固定值
+% c = rand(M, 1)
+Iters =100;
 
-p.beam_width= 9;
-p.l=ceil((p.target_DoA + pi/2 * ones(1, length(p.target_DoA)))/(pi/180) + ones(1, length(p.target_DoA)));
-p.Pd_theta = zeros(length(p.theta), 1);
+d = 0.5;
+lambda = 2 * d;
+pos = (0:M-1) * d;
+normalizedPos = pos / lambda;
 
-for idx = 1:length(p.target_DoA)
-    p.Pd_theta(p.l(idx)-(p.beam_width-1)/2 : p.l(idx)+(p.beam_width-1)/2, 1) = ones(p.beam_width, 1);
+afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
+
+
+%% Desired Beampattern
+theta_est = [-60, 0, 60];   % 目标角度估计（度）
+Kt = length(theta_est);      % 目标个数
+
+Delta = 5;
+theta_grid = -90:0.1:90;
+P_des = zeros(size(theta_grid));
+% Desired beam pattern
+idx = false(size(theta_grid));
+for i = 1:numel(theta_est)
+    idx = idx | theta_grid >= theta_est(i)-Delta & theta_grid <= theta_est(i)+Delta;
+end
+P_des(idx) = 1;
+
+%% Omni-Directional Beampattern
+OmniRd = (Pt / M) * eye(M);
+
+%% Directional Beampattern
+%  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design
+%  diag(R)=1/M, trace(R)=1, wc=0
+w_l = ones(length(theta_grid), 1);
+w_c = 0;
+[DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
+
+%  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
+%  helperMMSECovariance 默认 diag(R)=1, trace(R)=M
+%  为了和文献1对齐，将 R 除以 M，使 trace(R)=1
+DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
+DirectRd2 = DirectRd2_raw / M;
+DirectRd2 = (DirectRd2 + DirectRd2')/2;
+
+%  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
+%  不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数
+[DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
+fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
+
+if 1
+    %% 计算 beampattern
+    P_lit1 = zeros(size(theta_grid));
+    P_lit2 = zeros(size(theta_grid));
+    P_lit2_ = zeros(size(theta_grid));
+    for i = 1:length(theta_grid)
+        ai = afun(theta_grid(i));
+        P_lit1(i) = real(ai' * DirectRd1 * ai);
+        P_lit2(i) = real(ai' * DirectRd2 * ai);
+        P_lit2_(i) = real(ai' * DirectRd3 * ai);
+    end
+    % P_lit1(P_lit1 < 0) = 0;
+    % P_lit2(P_lit2 < 0) = 0;
+    % P_lit2_(P_lit2 < 0) = 0;
+
+    P_des1 = alpha1 * P_des;
+    figure(1);
+    plot(theta_grid, 10 * log10(P_des1 + eps), 'k--', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit1 + eps), 'b-', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5); hold on;
+    plot(theta_grid, 10 * log10(P_lit2_ + eps), 'c-.', 'LineWidth', 1.5);
+    grid on;
+    xlabel('\theta (degrees)');
+    ylabel('Beampattern');
+    legend('Desired', 'Beampattern Matching', 'Squared Error', 'my Squared Error', 'Location', 'best');
+    title('Comparison under trace(R)=1');
+    xlim([-90, 90]);
+    ylim([-40, 20]);
 end
 
-p.c = 3e8;
-p.fc = 3.2e9;
-p.lambda = p.c / p.fc;
-p.spacing = p.lambda / 2;
+SNRdB = -5:1:12;
+N0 = Pt ./ 10.^(SNRdB/10);
 
-% Tradeoff Settings
-p.rho = 0.1;                            % Weighting Factor
+OmniStrictCapacityArray = zeros(Iters, length(SNRdB));
+OmniTradeoffCapacityArray = zeros(Iters, length(SNRdB));
+DirectStrictCapacityArray = zeros(Iters, length(SNRdB));
+DirectTradeoffCapacityArray = zeros(Iters, length(SNRdB));
 
-% Omni-Directional Beampattern
-OmniRd = (p.Pt / p.N) * eye(p.N, p.N);
+OmniStrictBPArray = zeros(Iters, length(theta_grid));
+OmniTradeoffBPArray = zeros(Iters, length(theta_grid));
+DirectStrictBPArray = zeros(Iters, length(theta_grid));
+DirectTradeoffBPArray = zeros(Iters, length(theta_grid));
 
-% Directional Beampattern
-DirectRd = directbeampattern(p);
 
-% Simulation Settings
-p.montecarlo = 10;
-
-OmniStrictCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
-OmniTradeoffCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
-DirectStrictCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
-DirectTradeoffCapacityArray = zeros(p.montecarlo, length(p.SNRdB));
-
-OmniStrictBPArray = zeros(p.montecarlo, length(p.theta));
-OmniTradeoffBPArray = zeros(p.montecarlo, length(p.theta));
-DirectStrictBPArray = zeros(p.montecarlo, length(p.theta));
-DirectTradeoffBPArray = zeros(p.montecarlo, length(p.theta));
-
-for idx = 1 : p.montecarlo
-    % Channel Realization
-    H = (1/sqrt(2)) * (randn([p.K, p.N]) + 1i * randn([p.K, p.N]));
-
-    % Desired Signal Matrix - 4QAM Modulation
-    S = (1/sqrt(2)) * ((2 * randi([0 1], p.K, p.L) - ones(p.K, p.L)) + 1i * ((2 * randi([0 1], p.K, p.L) - ones(p.K, p.L))));
-
-    %% Optimal Waveform Design (Omni-Directional)
-    F = chol(OmniRd);                   % Cholesky Factorization
-    [U, ~, V] = svd(F * H' * S);        % SVD (singular value decomposition)
+%% Choose Directional Covariance Matrix
+DirectRd = DirectRd2;
+rho = 0.2;   % Tradeoff Settings
+%% Monte Carlo Simulation
+for iter = 1:Iters
+    fprintf('Monte Carlo iteration: %d / %d\n', iter, Iters);
+    H = (randn(Kc, M) + 1j * randn(Kc, M)) / sqrt(2);
+    data = randi([0, 3], Kc, L);
+    S = pskmod(data, 4, pi / 4, 'gray');
     
-    OmniXStrict = sqrt(p.L) * F' * U * eye(p.N, p.L) * V';
-
-    %% Trade-off Between Radar and Communication Performances, (Omni-Directional)
-    Q = p.rho * (H' * H) + (1 - p.rho) * eye(p.N, p.N);
-    G = p.rho * H' * S + (1 - p.rho) * OmniXStrict;
-
-    [P, LAMBDA] = eig(Q);               % Eigenvalue, Eigenvector of Matrix Q
-
-    lambda_low = - min(diag(LAMBDA));
-    lambda_high = - min(diag(LAMBDA)) + sqrt(p.N / p.Pt) * max(max(abs(P' * G)));
-
-    OmniXTradeoff = BisectionSearch(Q, G, lambda_low, lambda_high, p);
+    % 生成严格满足雷达约束R但是尽可能小的MUI的波形；
+    OmniStrictX = strict_waveform(H, S, OmniRd, L);
+    DirectStrictX = strict_waveform(H, S, DirectRd, L);
     
-    %% Optimal Waveform Design (Directional)
-    Fd = chol(DirectRd);
-    [Ud, ~, Vd] = svd(Fd * H' * S);
-    
-    DirectXStrict = sqrt(p.L) * Fd' * Ud * eye(p.N, p.L) * Vd';
-    
-    %% Trade-off Between Radar and Communication Performances, (Directional)
-    Qd = p.rho * (H' * H) + (1 - p.rho) * eye(p.N, p.N);
-    Gd = p.rho * H' * S + (1 - p.rho) * DirectXStrict;
+    % par = 1.1;                          % Parameter that controls low PAR
+    % OmniStrictX = helperCAWaveformSynthesis(OmniRd, L, par);
+    % DirectStrictX = helperCAWaveformSynthesis(DirectRd, L, par);
 
-    [Pd, LAMBDAd] = eig(Qd);               % Eigenvalue, Eigenvector of Matrix Q
-
-    lambda_low = - min(diag(LAMBDAd));
-    lambda_high = - min(diag(LAMBDAd)) + sqrt(p.N / p.Pt) * max(max(abs(Pd' * Gd)));
-
-    DirectXTradeoff = BisectionSearch(Qd, Gd, lambda_low, lambda_high, p);
-    
-    % Communication Capacity
-    for jdx = 1 : length(p.N0dB)
-        OmniEStrict = H * OmniXStrict - S;
-        OmniETradeoff = H * OmniXTradeoff - S;
-        OmnigammaStrict = 1 ./ (mean(abs(OmniEStrict).^2, 2) + p.N0(jdx));
-        OmnigammaTradeoff =  1 ./ (mean(abs(OmniETradeoff).^2, 2) + p.N0(jdx)); 
-        
-        DirectEStrict = H * DirectXStrict - S;
-        DirectETradeoff = H * DirectXTradeoff - S;
-        DirectgammaStrict = 1./ (mean(abs(DirectEStrict).^2, 2) + p.N0(jdx));
-        DirectgammaTradeoff =  1 ./ (mean(abs(DirectETradeoff).^2, 2) + p.N0(jdx)); 
-        
-        for kdx = 1 : p.K
-            OmniStrictCapacityArray(idx, jdx) = OmniStrictCapacityArray(idx, jdx) + log2(1 + OmnigammaStrict(kdx));
-            OmniTradeoffCapacityArray(idx, jdx) = OmniTradeoffCapacityArray(idx, jdx) + log2(1 + OmnigammaTradeoff(kdx));
-            DirectStrictCapacityArray(idx, jdx) = DirectStrictCapacityArray(idx, jdx) + log2(1 + DirectgammaStrict(kdx));
-            DirectTradeoffCapacityArray(idx, jdx) = DirectTradeoffCapacityArray(idx, jdx) + log2(1 + DirectgammaTradeoff(kdx));            
-        end
+    % 根据严格波形生成折中波形；
+    OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
+    DirectTradeoffX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
+    for idxSNR = 1:length(SNRdB)
+        OmniStrictCapacityArray(iter, idxSNR) = average_user_rate(H, OmniStrictX, S, N0(idxSNR));
+        OmniTradeoffCapacityArray(iter, idxSNR) = average_user_rate(H, OmniTradeoffX, S, N0(idxSNR));
+        DirectStrictCapacityArray(iter, idxSNR) = average_user_rate(H, DirectStrictX, S, N0(idxSNR));
+        DirectTradeoffCapacityArray(iter, idxSNR) = average_user_rate(H, DirectTradeoffX, S, N0(idxSNR));
     end
-    % Radar Beampattern
-    for jdx = 1 : length(p.theta)
-        a = zeros(p.N, 1);
-        
-        for kdx = 1 : p.N
-            a(kdx, 1) = exp(1i * pi * (kdx - ceil(p.N / 2)) * sin(p.theta(jdx)));
-        end
-        
-        OmniStrictBPArray(idx, jdx) = a' * (OmniXStrict * OmniXStrict') * a / real(trace(OmniXStrict * OmniXStrict'));
-        OmniTradeoffBPArray(idx, jdx) = a' * (OmniXTradeoff * OmniXTradeoff') * a / real(trace(OmniXTradeoff * OmniXTradeoff'));
-        DirectStrictBPArray(idx, jdx) = a' * (DirectXStrict * DirectXStrict') * a / real(trace(DirectXStrict * DirectXStrict'));
-        DirectTradeoffBPArray(idx, jdx) = a' * (DirectXTradeoff * DirectXTradeoff') * a / real(trace(DirectXTradeoff * DirectXTradeoff'));
-    end
-    clc;
-    disp(['Progress - ',num2str(idx),'/',num2str(p.montecarlo)]);
+    OmniStrictR = OmniStrictX * OmniStrictX' / L;
+    OmniTradeoffR = OmniTradeoffX * OmniTradeoffX' / L;
+    DirectStrictR = DirectStrictX * DirectStrictX' / L;
+    DirectTradeoffR = DirectTradeoffX * DirectTradeoffX' / L;
+    OmniStrictBPArray(iter, :) = beampattern_dB(OmniStrictR, afun, theta_grid);
+    OmniTradeoffBPArray(iter, :) = beampattern_dB(OmniTradeoffR, afun, theta_grid);
+    DirectStrictBPArray(iter, :) = beampattern_dB(DirectStrictR, afun, theta_grid);
+    DirectTradeoffBPArray(iter, :) = beampattern_dB(DirectTradeoffR, afun, theta_grid);
 end
-% Communication Plot
-AWGNCapacity = p.K * log(1 + p.SNR) / log(2);
-OmniStrictCapacity = mean(OmniStrictCapacityArray);
-OmniTradeoffCapacity = mean(OmniTradeoffCapacityArray);
-DirectStrictCapacity = mean(DirectStrictCapacityArray);
-DirectTradeoffCapacity = mean(DirectTradeoffCapacityArray);
 
-figure(1);
-plot(p.SNRdB, AWGNCapacity, 'r--v', p.SNRdB, OmniStrictCapacity, 'k-x', p.SNRdB, OmniTradeoffCapacity, 'k--o', 'LineWidth', 1.5);
-hold on
-plot(p.SNRdB, DirectStrictCapacity, 'b-x', p.SNRdB, DirectTradeoffCapacity, 'b--o', 'LineWidth', 1.5);
-hold off
-xlabel('Transmit SNR (dB)');
-ylabel('Average Achievable Sum Rate (bps/Hz)');
-legend('AWGN Capacity', 'Omni-Strict', 'Omni-Tradeoff (\rho = 0.2)', 'Directional Strict', 'Directional Tradeoff (\rho = 0.2)', 'Location', 'northwest');
-grid on
+%% Average Results
+OmniStrictCapacity = mean(OmniStrictCapacityArray, 1);
+OmniTradeoffCapacity = mean(OmniTradeoffCapacityArray, 1);
+DirectStrictCapacity = mean(DirectStrictCapacityArray, 1);
+DirectTradeoffCapacity = mean(DirectTradeoffCapacityArray, 1);
+OmniStrictBP = mean(OmniStrictBPArray, 1);
+OmniTradeoffBP = mean(OmniTradeoffBPArray, 1);
+DirectStrictBP = mean(DirectStrictBPArray, 1);
+DirectTradeoffBP = mean(DirectTradeoffBPArray, 1);
+AWGNCapacity = log2(1 + Pt ./ N0);
 
-% Radar Plot
-OmniStrictBP = real(OmniStrictBPArray(1,:));
-OmniStrictBP = 10 .* log10(OmniStrictBP);
-OmniTradeoffBP = real(OmniTradeoffBPArray(1,:));
-OmniTradeoffBP = 10 .* log10(OmniTradeoffBP);
-
-DirectStrictBP = real(DirectStrictBPArray(1,:));
-DirectStrictBP = 10 .* log10(DirectStrictBP);
-DirectTradeoffBP = real(DirectTradeoffBPArray(1,:));
-DirectTradeoffBP = 10 .* log10(DirectTradeoffBP);
-p.theta_deg = p.theta * (180/pi);
-
+%% Figure 2: Average Achievable Rate
 figure(2);
-plot(p.theta_deg, OmniStrictBP, '--', p.theta_deg, OmniTradeoffBP, '-', 'LineWidth', 1.5);
-hold on
-plot(p.theta_deg, DirectStrictBP, '--', p.theta_deg, DirectTradeoffBP, '-', 'LineWidth', 1.5);
-hold off
+plot(SNRdB, AWGNCapacity, 'r--v', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, OmniTradeoffCapacity, 'k--x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, DirectTradeoffCapacity, 'b--o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, OmniStrictCapacity, 'k-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, DirectStrictCapacity, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7);
+grid on;
+xlabel('Transmit SNR (dB)');
+ylabel('Average Achievable Rate (bps/Hz/user)');
+legend('AWGN Capacity', 'Omni-Tradeoff, \rho = 0.1', 'Directional-Tradeoff, \rho = 0.1', 'Omni-Strict', 'Directional-Strict', 'Location', 'NorthWest');
+xlim([min(SNRdB), max(SNRdB)]);
+
+%% Figure 3: Radar Beampattern
+figure(3);
+plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'r-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'g--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(OmniTradeoffBP + eps), 'b--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(DirectTradeoffBP + eps), 'k--', 'LineWidth', 1.5);
+grid on;
 xlabel('\theta (deg)');
 ylabel('Beampattern');
-xlim([-90 90]);
-ylim([-12 12]);
-legend('Omni-Strict', 'Omni-Tradeoff (\rho = 0.2)', 'Directional Strict', 'Directional Tradeoff (\rho = 0.2)', 'Location', 'south');
-grid on
+legend('Desired', 'Omni-Strict', 'Directional-Strict', 'Omni-Tradeoff, \rho = 0.1', 'Directional-Tradeoff, \rho = 0.1', 'Location', 'South');
+xlim([-90, 90]);
+ylim([-30, 10]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
