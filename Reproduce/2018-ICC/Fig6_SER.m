@@ -64,12 +64,26 @@ fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
 SNRdB = -5:1:12;
 N0 = Pt ./ 10.^(SNRdB/10);
 
+
+%% Choose Directional Covariance Matrix
+DirectRd = DirectRd2;
+rho = 0.2;   % Tradeoff Settings
+par = 1.1;                          % Parameter that controls low PAR
+
+%% Monte Carlo Simulation
+
+%% Initialization
+
+Q = 4;
+Iters = 10000;
+
 OmniStrictSERArray = zeros(Iters, length(SNRdB));
 OmniTradeoffSERTolArray = zeros(Iters, length(SNRdB));
 OmniTradeoffSERPerAntArray = zeros(Iters, length(SNRdB));
 DirectStrictSERArray = zeros(Iters, length(SNRdB));
 DirectTradeoffSERTolArray = zeros(Iters, length(SNRdB));
 DirectTradeoffSERPerAntArray = zeros(Iters, length(SNRdB));
+ZeroMUISERArray = zeros(Iters, length(SNRdB));
 
 OmniStrictBPArray = zeros(Iters, length(theta_grid));
 OmniTradeoffBPTolArray = zeros(Iters, length(theta_grid));
@@ -78,44 +92,38 @@ DirectStrictBPArray = zeros(Iters, length(theta_grid));
 DirectTradeoffBPTolArray = zeros(Iters, length(theta_grid));
 DirectTradeoffBPPerAntArray = zeros(Iters, length(theta_grid));
 
-%% Choose Directional Covariance Matrix
-DirectRd = DirectRd2;
-rho = 0.2;   % Tradeoff Settings
-par = 1.1;                          % Parameter that controls low PAR
-
 %% Monte Carlo Simulation
-Iters = 100;
-Q = 4;
-
 for iter = 1:Iters
     fprintf('Monte Carlo iteration: %d / %d\n', iter, Iters);
+
     H = (randn(Kc, M) + 1j * randn(Kc, M)) / sqrt(2);
-    data = randi([0, 3], Kc, L);
+
+    data = randi([0, Q - 1], Kc, L);
     S = pskmod(data, Q, pi / Q, 'gray');
-    
-    % 生成严格满足雷达约束R但是尽可能小的MUI的波形；
+
     OmniStrictX = strict_waveform(H, S, OmniRd, L);
     DirectStrictX = strict_waveform(H, S, DirectRd, L);
 
-    % OmniStrictX = WaveformSynthesisXoptimR(OmniRd, L,  par );
+    % 如果你想用波形合成生成严格雷达波形，可以替换为下面两行
+    % OmniStrictX = WaveformSynthesisXoptimR(OmniRd, L, par);
     % DirectStrictX = WaveformSynthesisXoptimR(DirectRd, L, par);
 
-    % 根据严格波形生成折中波形；
     OmniTradeoffTolX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
     DirectTradeoffTolX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
-    
+
     OmniTradeoffPerAntX = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
     DirectTradeoffPerAntX = helperRadComWaveform(H, S, DirectStrictX, Pt, rho);
 
-
     for idxSNR = 1:length(SNRdB)
-        OmniStrictSERArray(iter, idxSNR) =  
-        OmniTradeoffSERTolArray(iter, idxSNR) =  
-        OmniTradeoffSERPerAntArray(iter, idxSNR) =  
-        DirectStrictSERArray(iter, idxSNR) =  
-        DirectTradeoffSERTolArray(iter, idxSNR) =  
-        DirectTradeoffSERPerAntArray(iter, idxSNR) =  
+        OmniStrictSERArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniStrictX, data, Q, N0(idxSNR));
+        OmniTradeoffSERTolArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniTradeoffTolX, data, Q, N0(idxSNR));
+        OmniTradeoffSERPerAntArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniTradeoffPerAntX, data, Q, N0(idxSNR));
+        DirectStrictSERArray(iter, idxSNR) = qpsk_ser_from_waveform(H, DirectStrictX, data, Q, N0(idxSNR));
+        DirectTradeoffSERTolArray(iter, idxSNR) = qpsk_ser_from_waveform(H, DirectTradeoffTolX, data, Q, N0(idxSNR));
+        DirectTradeoffSERPerAntArray(iter, idxSNR) = qpsk_ser_from_waveform(H, DirectTradeoffPerAntX, data, Q, N0(idxSNR));
+        ZeroMUISERArray(iter, idxSNR) = qpsk_ser_zero_mui(S, data, Q, N0(idxSNR));
     end
+
     OmniStrictR = OmniStrictX * OmniStrictX' / L;
     OmniTradeoffTolR = OmniTradeoffTolX * OmniTradeoffTolX' / L;
     OmniTradeoffPerAntR = OmniTradeoffPerAntX * OmniTradeoffPerAntX' / L;
@@ -123,6 +131,12 @@ for iter = 1:Iters
     DirectTradeoffTolR = DirectTradeoffTolX * DirectTradeoffTolX' / L;
     DirectTradeoffPerAntR = DirectTradeoffPerAntX * DirectTradeoffPerAntX' / L;
 
+    OmniStrictBPArray(iter, :) = beampattern_linear(OmniStrictR, afun, theta_grid);
+    OmniTradeoffBPTolArray(iter, :) = beampattern_linear(OmniTradeoffTolR, afun, theta_grid);
+    OmniTradeoffBPPerAntArray(iter, :) = beampattern_linear(OmniTradeoffPerAntR, afun, theta_grid);
+    DirectStrictBPArray(iter, :) = beampattern_linear(DirectStrictR, afun, theta_grid);
+    DirectTradeoffBPTolArray(iter, :) = beampattern_linear(DirectTradeoffTolR, afun, theta_grid);
+    DirectTradeoffBPPerAntArray(iter, :) = beampattern_linear(DirectTradeoffPerAntR, afun, theta_grid);
 end
 
 %% Average Results
@@ -132,29 +146,67 @@ OmniTradeoffSERPerAnt = mean(OmniTradeoffSERPerAntArray, 1);
 DirectStrictSER = mean(DirectStrictSERArray, 1);
 DirectTradeoffSERTol = mean(DirectTradeoffSERTolArray, 1);
 DirectTradeoffSERPerAnt = mean(DirectTradeoffSERPerAntArray, 1);
+ZeroMUISER = mean(ZeroMUISERArray, 1);
 
-
-%% Figure 2: Average Achievable Rate
+%% Figure: SER
 figure(1);
-% plot(SNRdB, AWGNSER, 'k--', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, OmniStrictSER, 'b--x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, OmniTradeoffSERTol, 'b--o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, OmniTradeoffSERPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
- 
-plot(SNRdB, DirectStrictSER, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, DirectTradeoffSERTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, DirectTradeoffSERPerAnt, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
-
+semilogy(SNRdB, OmniStrictSER, 'b-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+semilogy(SNRdB, DirectStrictSER, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+semilogy(SNRdB, OmniTradeoffSERTol, 'b-s', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+semilogy(SNRdB, DirectTradeoffSERTol, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+semilogy(SNRdB, OmniTradeoffSERPerAnt, 'b--s', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+semilogy(SNRdB, DirectTradeoffSERPerAnt, 'r--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+semilogy(SNRdB, ZeroMUISER, 'k--v', 'LineWidth', 1.5, 'MarkerSize', 7);
 grid on;
 xlabel('Transmit SNR (dB)');
-ylabel('Average Achievable Rate (bps/Hz/user)');
-legend( 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'NorthWest');
+ylabel('SER');
+legend('Omni-Strict', ...
+       'Directional-Strict', ...
+       'Omni-Tradeoff-Total, \rho = 0.2', ...
+       'Directional-Tradeoff-Total, \rho = 0.2', ...
+       'Omni-Tradeoff-perAnt, \rho = 0.2', ...
+       'Directional-Tradeoff-perAnt, \rho = 0.2', ...
+       'Zero MUI', ...
+       'Location', 'SouthWest');
 xlim([min(SNRdB), max(SNRdB)]);
- 
+ylim([1e-5, 1]);
+
+%% Figure: Beampattern
+OmniStrictBP = mean(OmniStrictBPArray, 1);
+OmniTradeoffBPTol = mean(OmniTradeoffBPTolArray, 1);
+OmniTradeoffBPPerAnt = mean(OmniTradeoffBPPerAntArray, 1);
+DirectStrictBP = mean(DirectStrictBPArray, 1);
+DirectTradeoffBPTol = mean(DirectTradeoffBPTolArray, 1);
+DirectTradeoffBPPerAnt = mean(DirectTradeoffBPPerAntArray, 1);
+
+figure(2);
+plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b-', 'LineWidth', 1.5);
+hold on;
+plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'r-', 'LineWidth', 1.5);
+plot(theta_grid, 10 * log10(OmniTradeoffBPTol + eps), 'b--', 'LineWidth', 1.5);
+plot(theta_grid, 10 * log10(DirectTradeoffBPTol + eps), 'r--', 'LineWidth', 1.5);
+plot(theta_grid, 10 * log10(OmniTradeoffBPPerAnt + eps), 'c--', 'LineWidth', 1.5);
+plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'm--', 'LineWidth', 1.5);
+grid on;
+xlabel('\theta (deg)');
+ylabel('Beampattern (dB)');
+legend('Omni-Strict', ...
+       'Directional-Strict', ...
+       'Omni-Tradeoff-Total, \rho = 0.2', ...
+       'Directional-Tradeoff-Total, \rho = 0.2', ...
+       'Omni-Tradeoff-perAnt, \rho = 0.2', ...
+       'Directional-Tradeoff-perAnt, \rho = 0.2', ...
+       'Location', 'South');
+xlim([-90, 90]);
 
 
-
-
+function BP = beampattern_linear(R, afun, theta_grid)
+    BP = zeros(size(theta_grid));
+    for idxTheta = 1:length(theta_grid)
+        a = afun(theta_grid(idxTheta));
+        BP(idxTheta) = real(a' * R * a);
+    end
+end
 
 
 
