@@ -109,12 +109,12 @@ for iter = 1:Iters
 
 
     for idxSNR = 1:length(SNRdB)
-        OmniStrictSERArray(iter, idxSNR) = average_user_rate(H, OmniStrictX, S, N0(idxSNR));
-        OmniTradeoffSERTolArray(iter, idxSNR) = average_user_rate(H, OmniTradeoffTolX, S, N0(idxSNR));
-        OmniTradeoffSERPerAntArray(iter, idxSNR) = average_user_rate(H, OmniTradeoffPerAntX, S, N0(idxSNR));
-        DirectStrictSERArray(iter, idxSNR) = average_user_rate(H, DirectStrictX, S, N0(idxSNR));
-        DirectTradeoffSERTolArray(iter, idxSNR) = average_user_rate(H, DirectTradeoffTolX, S, N0(idxSNR));
-        DirectTradeoffSERPerAntArray(iter, idxSNR) = average_user_rate(H, DirectTradeoffPerAntX, S, N0(idxSNR));
+        OmniStrictSERArray(iter, idxSNR) =  
+        OmniTradeoffSERTolArray(iter, idxSNR) =  
+        OmniTradeoffSERPerAntArray(iter, idxSNR) =  
+        DirectStrictSERArray(iter, idxSNR) =  
+        DirectTradeoffSERTolArray(iter, idxSNR) =  
+        DirectTradeoffSERPerAntArray(iter, idxSNR) =  
     end
     OmniStrictR = OmniStrictX * OmniStrictX' / L;
     OmniTradeoffTolR = OmniTradeoffTolX * OmniTradeoffTolX' / L;
