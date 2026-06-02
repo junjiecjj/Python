@@ -1,3 +1,5 @@
+
+
 clc;
 clear all;
 close all;
@@ -40,7 +42,7 @@ for i = 1:numel(theta_est)
 end
 P_des(idx) = 1;
 
-
+A = steeringMatrixULA1D(normalizedPos, theta_grid);
 
 %% Directional Beampattern
 %  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design
@@ -49,12 +51,14 @@ w_l = ones(length(theta_grid), 1);
 w_c = 0;
 [DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
 fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
+P_des1 = P_des * alpha1;
 
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  helperMMSECovariance 默认 diag(R)=1, trace(R)=M, 为了和文献1对齐，将 R 除以 M，使 trace(R)=1
 DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
 DirectRd2 = DirectRd2_raw / M;
-DirectRd2 = (DirectRd2 + DirectRd2')/2;
+DirectRd2 = projectToPSD(DirectRd2);
+DirectRd2 = DirectRd2 + 1e-10 * eye(size(M));
 fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
 
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
@@ -62,7 +66,11 @@ fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
 DirectRd = DirectRd2;
 %% Tradeoff Settings
-rhoList = 0.1:0.1:0.9;
+% rhoList = 0.1:0.1:0.9;
+rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
+rhoList = 10.^(rhodB ./ 10);
+
+
 %% Simulation Settings
 Iters = 1000;
 
@@ -84,9 +92,11 @@ for iter = 1:Iters
             DirectTradeoffX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
             
             % DirectTradeoffX = sqrt(M) * DirectTradeoffX0;
+            Rtmp = DirectTradeoffX * DirectTradeoffX' / L;
             
             DirectRateArray(iter, idxRho, idxKc) = average_user_rate(H, DirectTradeoffX, S, N0);
-            DirectTradeoffBPArray(iter, idxRho, idxKc) = radar_beampattern_mse_fig5(DirectRd, DirectTradeoffX, theta_grid, M);
+            DirectTradeoffBPArray(iter, idxRho, idxKc) = sqrt(norm(diag(A'*DirectRd*A) - diag(A'*Rtmp*A), 2));
+            % radar_beampattern_mse_fig5(DirectRd, DirectTradeoffX, theta_grid, M);
         end
     end
 end
@@ -101,9 +111,9 @@ DirectRate3 = DirectRate(:, 3);
 DirectTradeoffBP = squeeze(mean(real(DirectTradeoffBPArray), 1));
 DirectTradeoffBP = 10 * log10(DirectTradeoffBP);
 
-DirectTradeoffBP1 = squeeze(DirectTradeoffBP(:, :, 1)).';
-DirectTradeoffBP2 = squeeze(DirectTradeoffBP(:, :, 2)).';
-DirectTradeoffBP3 = squeeze(DirectTradeoffBP(:, :, 3)).';
+DirectTradeoffBP1 = squeeze(DirectTradeoffBP(:, 1)).';
+DirectTradeoffBP2 = squeeze(DirectTradeoffBP(:, 2)).';
+DirectTradeoffBP3 = squeeze(DirectTradeoffBP(:, 3)).';
 
 %% Figure 5
 figure(2);
@@ -141,13 +151,14 @@ end
 function mseValue = radar_beampattern_mse_fig5(DirectRd, DirectXTradeoff, theta_grid, M)
     DBP = zeros(length(theta_grid), 1);
     DTBP = zeros(length(theta_grid), 1);
-    
+    L = size(DirectXTradeoff, 2);
+    Rtmp = DirectXTradeoff * DirectXTradeoff'/L;
     for idxTheta = 1:length(theta_grid)
         theta = theta_grid(idxTheta);
         a = exp(1j * pi * (0:M - 1)' * sind(theta));
         
         DBP(idxTheta) = a' * DirectRd * a;
-        DTBP(idxTheta) = a' * DirectXTradeoff * a;
+        DTBP(idxTheta) = a' * Rtmp * a;
     end
     
     mseValue = norm(DTBP - DBP, 2)^2;

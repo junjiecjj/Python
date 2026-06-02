@@ -58,7 +58,7 @@ rhoList = 0.1:0.1:0.9;
 % rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
 % rhoList = 10.^(rhodB ./ 10);
 %% Simulation Settings
-Iters = 5000;
+Iters = 4000;
 
 OmniRateArrayTol = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArrayTol = zeros(Iters, length(rhoList), length(KcList));
@@ -77,14 +77,13 @@ for iter = 1:Iters
             S = pskmod(data, 4, pi / 4, 'gray');
             
             OmniStrictX = strict_waveform(H, S, OmniRd, L);
-
             OmniTradeoffXTol = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArrayTol(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXTol, S, N0);
             OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXTol, thetaDetect, radarSNR, Pfa);
 
-            % OmniTradeoffXPerAnt = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
-            % OmniRateArrayPerAnt(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXPerAnt, S, N0);
-            % OmniProbabilityArrayPerAnt(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXPerAnt, thetaDetect, radarSNR, Pfa);
+            OmniTradeoffXPerAnt = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
+            OmniRateArrayPerAnt(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXPerAnt, S, N0);
+            OmniProbabilityArrayPerAnt(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXPerAnt, thetaDetect, radarSNR, Pfa);
         end
     end
 end
@@ -101,34 +100,15 @@ OmniProbabilityTol1 = OmniProbabilityTol(:, 1);
 OmniProbabilityTol2 = OmniProbabilityTol(:, 2);
 OmniProbabilityTol3 = OmniProbabilityTol(:, 3);
 
-
-% % 
-OmniRatePerAnt = squeeze(mean(real(OmniRateArrayPerAnt), 1));
-OmniProbabilityPerAnt = squeeze(mean(real(OmniProbabilityArrayPerAnt), 1));
-
-OmniRatePerAnt1 = OmniRatePerAnt(:, 1);
-OmniRatePerAnt2 = OmniRatePerAnt(:, 2);
-OmniRatePerAnt3 = OmniRatePerAnt(:, 3);
-
-OmniProbabilityPerAnt1 = OmniProbabilityPerAnt(:, 1);
-OmniProbabilityPerAnt2 = OmniProbabilityPerAnt(:, 2);
-OmniProbabilityPerAnt3 = OmniProbabilityPerAnt(:, 3);
-
 %% Figure 4
 figure(1);
-plot(OmniRateTol1, OmniProbabilityTol1, 'b-', 'LineWidth', 1.5); hold on;
-plot(OmniRateTol2, OmniProbabilityTol2, 'k-', 'LineWidth', 1.5); hold on;
-plot(OmniRateTol3, OmniProbabilityTol3, 'r-', 'LineWidth', 1.5); hold on;
-
-% plot(OmniRatePerAnt1, OmniProbabilityPerAnt1, 'b--', 'LineWidth', 1.5); hold on;
-% plot(OmniRatePerAnt2, OmniProbabilityPerAnt2, 'k--', 'LineWidth', 1.5); hold on;
-% plot(OmniRatePerAnt3, OmniProbabilityPerAnt3, 'r--', 'LineWidth', 1.5);
-
-
+plot(OmniRate1, OmniProbability1, 'b', 'LineWidth', 1.5); hold on;
+plot(OmniRate2, OmniProbability2, 'k', 'LineWidth', 1.5); hold on;
+plot(OmniRate3, OmniProbability3, 'r', 'LineWidth', 1.5);
 grid on;
 xlabel('Average Achievable Rate (bps/Hz/user)');
 ylabel('Detection Probability');
-legend('K=6, Tol', 'K=8, Tol', 'K=10, Tol', 'K=6, PerAnt', 'K=8, PerAnt', 'K=10, PerAnt', 'Location', 'southwest');
+legend('K=6', 'K=8', 'K=10', 'Location', 'southwest');
 
 if 0
     %% 计算 beampattern

@@ -1,9 +1,12 @@
+
+
 clc;
 clear;
 close all;
-addpath('./functions');
+addpath('./functions_2018ICC');
 addpath('./functions_2007TSP_OnProb');
 addpath('./functions_2008TAES_CrossCorre');
+addpath('./functions_2008TSP_WaveformSynthesis');
 rng(42);
 
 %% Figure 4: Trade-off of Omni-Directional Beampattern Design
@@ -56,18 +59,20 @@ fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
 % % % helperMMSECovariance 默认 diag(R)=1, trace(R)=M, 为了和文献1对齐，将 R 除以 M，使 trace(R)=1
 DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
 DirectRd2 = DirectRd2_raw / M;
-% DirectRd2 = (DirectRd2 + DirectRd2')/2;
+DirectRd2 = projectToPSD(DirectRd2);
+DirectRd2 = DirectRd2 + 1e-10 * eye(size(M));
 fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
 
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
 fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
-DirectRd = DirectRd1;
+DirectRd = DirectRd3;
 %% Tradeoff Settings
-rhoList = 0.1:0.02:0.9;
-
+rhoList = 0.1:0.1:0.9;
+% rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
+% rhoList = 10.^(rhodB ./ 10);
 %% Simulation Settings
-Iters = 2000;
+Iters = 4000;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
