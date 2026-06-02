@@ -1,4 +1,4 @@
-function X = WaveformSynthesisXwithPAR(L, R, rho)
+function X = WaveformSynthesisXwithPAR(R, L, rho)
     % 输入：
     %   L   - 每个发射波形的长度
     %   R   - 期望逼近的协方差矩阵，N×N

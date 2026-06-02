@@ -24,7 +24,7 @@ P_des = zeros(size(theta_grid));
 % Desired beam pattern
 idx = false(size(theta_grid));
 for i = 1:numel(theta_est)
-    idx = idx | theta_grid >= theta_est(i)-Delta & theta_grid <= theta_est(i)+Delta;
+    idx = idx | theta_grid >= theta_est(i) - Delta & theta_grid <= theta_est(i) + Delta;
 end
 P_des(idx) = 1;
 L = length(theta_grid);

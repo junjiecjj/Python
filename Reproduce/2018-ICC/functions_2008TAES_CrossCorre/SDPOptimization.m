@@ -1,7 +1,7 @@
 
 
 
-
+% used in helperMinMaxCovariance
 function [x, z] = SDPOptimization(elPos, Theta0, Ptheta0) 
     A0 = steervec(elPos, [Theta0; zeros(size(Theta0))]);
     N = size(A0, 1);

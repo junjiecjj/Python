@@ -9,18 +9,17 @@ rng(42);
 %% Figure 4: Trade-off of Omni-Directional Beampattern Design
 
 %% 1. 参数设置（示例，可修改）
-KcList = 4 : 4 : 12;         % # of users
+KcList = 6 : 2 : 10;         % # of users
 M = 16;                     % 天线数
 L = 100;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;       % 对角元固定值
-% c = rand(M, 1)
 
 % comm snr
-SNRdB = -6;
+SNRdB = 10;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
-RadarSNRdB = -16;
+RadarSNRdB = -20;
 radarSNR = 10^(RadarSNRdB / 10);
 
 Pfa = 1e-7;
@@ -47,29 +46,28 @@ end
 P_des(idx) = 1;
 
 %% Directional Beampattern
-% %  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design
-% %  diag(R)=1/M, trace(R)=1, wc=0
-% w_l = ones(length(theta_grid), 1);
-% w_c = 0;
-% [DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
-% fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
-% 
-% %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
-% %  helperMMSECovariance 默认 diag(R)=1, trace(R)=M, 为了和文献1对齐，将 R 除以 M，使 trace(R)=1
-% DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
-% DirectRd2 = DirectRd2_raw / M;
-% % DirectRd2 = (DirectRd2 + DirectRd2')/2;
-% fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
-% 
+% %  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design,  diag(R)=1/M, trace(R)=1, wc=0
+w_l = ones(length(theta_grid), 1);
+w_c = 0;
+[DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
+fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
+
+% % 文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
+% % % helperMMSECovariance 默认 diag(R)=1, trace(R)=M, 为了和文献1对齐，将 R 除以 M，使 trace(R)=1
+DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
+DirectRd2 = DirectRd2_raw / M;
+% DirectRd2 = (DirectRd2 + DirectRd2')/2;
+fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
+
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
 fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
-
+DirectRd = DirectRd1;
 %% Tradeoff Settings
-rhoList = 0.1:0.01:0.99;
+rhoList = 0.1:0.02:0.9;
 
 %% Simulation Settings
-Iters = 100;
+Iters = 2000;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
@@ -86,7 +84,7 @@ for iter = 1:Iters
             data = randi([0, 3], Kc, L);
             S = pskmod(data, 4, pi / 4, 'gray');
             
-            OmniStrictX = strict_waveform(H, S, DirectRd3, L);
+            OmniStrictX = strict_waveform(H, S, DirectRd, L);
             OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArray(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffX, S, N0);
             OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffX, thetaDetect, radarSNR, Pfa);
@@ -101,20 +99,23 @@ OmniProbability = squeeze(mean(real(OmniProbabilityArray), 1));
 OmniRate1 = OmniRate(:, 1);
 OmniRate2 = OmniRate(:, 2);
 OmniRate3 = OmniRate(:, 3);
+% OmniRate4 = OmniRate(:, 4);
 
 OmniProbability1 = OmniProbability(:, 1);
 OmniProbability2 = OmniProbability(:, 2);
 OmniProbability3 = OmniProbability(:, 3);
+% OmniProbability4 = OmniProbability(:, 4);
 
 %% Figure 4
 figure(1);
 plot(OmniRate1, OmniProbability1, 'b', 'LineWidth', 1.5); hold on;
 plot(OmniRate2, OmniProbability2, 'k', 'LineWidth', 1.5); hold on;
-plot(OmniRate3, OmniProbability3, 'r', 'LineWidth', 1.5);
+plot(OmniRate3, OmniProbability3, 'r', 'LineWidth', 1.5); hold on;
+% plot(OmniRate4, OmniProbability4, 'g', 'LineWidth', 1.5); hold on;
 grid on;
 xlabel('Average Achievable Rate (bps/Hz/user)');
 ylabel('Detection Probability');
-legend('K=4', 'K=6', 'K=8', 'Location', 'southwest');
+legend('K=6', 'K=8', 'K=10', 'Location', 'southwest');
 
 if 0
     %% 计算 beampattern

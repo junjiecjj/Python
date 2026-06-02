@@ -1,15 +1,18 @@
+
+
 clc;
 clear;
 close all;
-addpath('./functions');
+addpath('./functions_2018ICC');
 addpath('./functions_2007TSP_OnProb');
 addpath('./functions_2008TAES_CrossCorre');
+addpath('./functions_2008TSP_WaveformSynthesis');
 rng(42);
 
 %% Figure 4: Trade-off of Omni-Directional Beampattern Design
 
 %% 1. 参数设置（示例，可修改）
-KcList = 4 : 4 : 12;         % # of users
+KcList = 6 : 2 : 10;         % # of users
 M = 16;                     % 天线数
 L = 100;                     % # of Communication Frame
 Pt  = 1;
@@ -17,7 +20,7 @@ c = ones(M, 1) * Pt/M;       % 对角元固定值
 % c = rand(M, 1)
 
 % comm snr
-SNRdB = -6;
+SNRdB = 10;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
 RadarSNRdB = -6;
@@ -50,20 +53,18 @@ P_des(idx) = 1;
 OmniRd = (Pt / M) * eye(M);
 fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 
-
 %% Tradeoff Settings
-rhoList = 0.1:0.01:0.99;
+rhoList = 0.1:0.1:0.9;
 
 %% Simulation Settings
-Iters = 200;
+Iters = 2000;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
 
 %% Monte Carlo Simulation
 for iter = 1:Iters
-    clc;
-    disp(['Progress - ', num2str(iter), '/', num2str(Iters)]);
+    clc; disp(['Progress - ', num2str(iter), '/', num2str(Iters)]);
     for idxRho = 1:length(rhoList)
         rho = rhoList(idxRho);
         for idxKc = 1:length(KcList)
@@ -100,7 +101,7 @@ plot(OmniRate3, OmniProbability3, 'r', 'LineWidth', 1.5);
 grid on;
 xlabel('Average Achievable Rate (bps/Hz/user)');
 ylabel('Detection Probability');
-legend('K=4', 'K=6', 'K=8', 'Location', 'southwest');
+legend('K=6', 'K=8', 'K=10', 'Location', 'southwest');
 
 if 0
     %% 计算 beampattern

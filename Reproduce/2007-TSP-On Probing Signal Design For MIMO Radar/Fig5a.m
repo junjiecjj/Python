@@ -88,7 +88,7 @@ for i = 1:length(sigma2_dB)
         %% 1 生成发射信号
         % w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
         % x = Rsqrt * w;
-        x = WaveformSynthesisXoptimR(N, R_opt, 2);
+        x = WaveformSynthesisXoptimR(R_opt, N, 2);
         %% 生成目标回波
         y_target = zeros(M, N);
         for k = 1:length(theta_targets)

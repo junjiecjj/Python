@@ -27,8 +27,8 @@ a = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
 R_opt = MinimumSidelobeDesignWithNull(c, M, theta0, theta1, theta2, Omega, theta_null, null_level_dB);
 
 %% Step 2：CA 合成波形
-X_optR = WaveformSynthesisXoptimR(L, R_opt, rho);
-X_par = WaveformSynthesisXwithPAR(L, R_opt, rho);
+X_optR = WaveformSynthesisXoptimR(R_opt, L, rho);
+X_par = WaveformSynthesisXwithPAR(R_opt, L, rho);
 
 %% Step 3：计算样本协方差矩阵
 R_optR = X_optR * X_optR' / L;

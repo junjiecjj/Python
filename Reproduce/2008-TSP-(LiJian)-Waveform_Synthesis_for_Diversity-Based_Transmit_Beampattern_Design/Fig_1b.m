@@ -27,21 +27,21 @@ end
 P_des(idx) = 1;
 L = length(theta_grid);
 
-% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
+%% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
 w_l = ones(L, 1);           % 所有网格点权重相同
 wc = 0;
 [R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, N, w_l, wc, theta_est, theta_grid, P_des);
 p_des = abs(P_des * alpha0+eps);
 
-%%  Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
+%  Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
 rho = 1.1;
 
 L  = 256;
-X_optR = WaveformSynthesisXoptimR(L, R_opt0, rho );
+X_optR = WaveformSynthesisXoptimR(R_opt0, L,  rho );
 Rhat1 = X_optR * X_optR'/L;
 
-%%  PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
-X_par = WaveformSynthesisXwithPAR(L, R_opt0, rho  );
+% PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
+X_par = WaveformSynthesisXwithPAR(R_opt0, L, rho);
 Rhat2 = X_par * X_par'/L;
 
 P_opt0 = zeros(size(theta_grid));
@@ -54,7 +54,7 @@ for i = 1:length(theta_grid)
     P_opt2(i) = real(a_theta' * Rhat2 * a_theta);
 end
 
-%% 可选：绘制发射波束图对比
+% 绘制发射波束图对比
 figure(1);
 plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1.5); hold on;
@@ -70,6 +70,60 @@ ylabel('Beampattern');
 legend('Desired',  'Optimized,w_c=0', 'CA:optimal R', 'CA:PAR = 1.1');
 title('Transmit Beampattern');
 grid on;
+
+%% 问题(24)的求解, in "2008-TAES-Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation"
+
+p_des = N * P_des / (2 * pi * trapz(deg2rad(theta_grid), P_des .* cosd(theta_grid)));
+
+d = 0.5;
+lambda = 2 * d;
+pos = (0:N-1) * d;
+normalizedPos = pos / lambda;
+R_mmse = helperMMSECovariance(normalizedPos, P_des, theta_grid);
+
+P_opt0 = zeros(size(theta_grid));
+for i = 1:length(theta_grid)
+    a_theta = a(theta_grid(i));
+    P_opt0(i) = real(a_theta' * R_mmse * a_theta)/(4*pi);
+end
+
+rho = 1.1;
+
+% Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
+L  = 256;
+X_optR = WaveformSynthesisXoptimR(R_mmse, L, rho );
+
+Rhat1 = X_optR * X_optR'/L/(4*pi);
+P_opt1 = zeros(size(theta_grid));
+for i = 1:length(theta_grid)
+    a_theta = a(theta_grid(i));
+    P_opt1(i) = real(a_theta' * Rhat1 * a_theta);
+end
+
+% PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
+X_par = WaveformSynthesisXwithPAR(R_mmse, L, rho  );
+Rhat2 = X_par * X_par'/L/(4*pi);
+P_opt2 = zeros(size(theta_grid));
+for i = 1:length(theta_grid)
+    a_theta = a(theta_grid(i));
+    P_opt2(i) = real(a_theta' * Rhat2 * a_theta);
+end
+
+% 可选：绘制发射波束图对比
+figure(2);
+plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, P_opt0, 'r-', 'LineWidth', 2.5); hold on;
+plot(theta_grid, P_opt1, 'b-.', 'LineWidth', 1.5); hold on;
+plot(theta_grid, P_opt2, 'c--', 'LineWidth', 1.5); 
+
+xlabel('\theta (degrees)');
+ylabel('Beampattern');
+legend('Desired',  'Optimized MMSE', 'CA:optimal R', 'CA:PAR = 1.1');
+title('Transmit Beampattern');
+grid on;
+
+
+
 
 
 

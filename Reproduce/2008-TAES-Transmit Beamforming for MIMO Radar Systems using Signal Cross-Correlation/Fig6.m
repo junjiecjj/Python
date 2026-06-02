@@ -49,7 +49,6 @@ fprintf('trace(Rmmse) = %.6f\n',  trace(Rmmse));
 P_mmse1 = abs(diag(A'*Rmmse1*A))/(4*pi);
 fprintf('trace(Rmmse1) = %.6f\n',  trace(Rmmse1));
 
-
 %% B. Maximum Error Optimization
 Rminmax = helperMinMaxCovariance(normalizedPos, P_des, theta_grid);
 Rminmax = Rminmax * (Pt/N);

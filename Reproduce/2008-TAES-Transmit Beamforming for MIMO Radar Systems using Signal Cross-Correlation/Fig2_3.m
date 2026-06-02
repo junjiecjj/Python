@@ -17,7 +17,6 @@ deltaTheta = Theta(2) - Theta(1);
 Ptheta = zeros(length(Rho), length(Theta));
 cmap = jet(length(Rho)); % 生成hsv颜色矩阵
 
-
 %% 
 figure(1);
 for i = 1:length(Rho)

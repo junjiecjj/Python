@@ -90,7 +90,7 @@ end
 % 1 生成发射信号 x(n) ~ CN(0, R_opt)
 % w = (randn(M, N) + 1j * randn(M, N)) / sqrt(2);
 % x = sqrtm(R_opt) * w;
-x = WaveformSynthesisXoptimR(N, R_opt, 2);
+x = WaveformSynthesisXoptimR(R_opt, N, 2);
 % 生成目标回波
 X = zeros(M, N);
 for k = 1:length(theta_targets)

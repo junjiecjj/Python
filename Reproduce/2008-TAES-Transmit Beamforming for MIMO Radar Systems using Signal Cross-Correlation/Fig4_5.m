@@ -4,7 +4,6 @@ clc;
 clear all;
 close all;
 
-
 Rho = 0:0.2:1;
 
 N = 12;

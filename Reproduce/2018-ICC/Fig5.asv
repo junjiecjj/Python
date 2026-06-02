@@ -98,7 +98,7 @@ DirectRate1 = DirectRate(:, 1);
 DirectRate2 = DirectRate(:, 2);
 DirectRate3 = DirectRate(:, 3);
 
-DirectTradeoffBP = squeeze(mean(real(DirectTradeoffBPArray), 1));
+DirectTradeoffBP = real(DirectTradeoffBPArray(1, :, :));
 DirectTradeoffBP = 10 * log10(DirectTradeoffBP);
 
 DirectTradeoffBP1 = squeeze(DirectTradeoffBP(:, :, 1)).';
@@ -139,22 +139,6 @@ end
 
 %% Local Function
 function mseValue = radar_beampattern_mse_fig5(DirectRd, DirectXTradeoff, theta_grid, M)
-    DBP = zeros(length(theta_grid), 1);
-    DTBP = zeros(length(theta_grid), 1);
-    
-    for idxTheta = 1:length(theta_grid)
-        theta = theta_grid(idxTheta);
-        a = exp(1j * pi * (0:M - 1)' * sind(theta));
-        
-        DBP(idxTheta) = a' * DirectRd * a;
-        DTBP(idxTheta) = a' * DirectXTradeoff * a;
-    end
-    
-    mseValue = norm(DTBP - DBP, 2)^2;
-end
-
-
-function mseValue = radar_beampattern_mse_fig5x(DirectRd, DirectXTradeoff, theta_grid, M)
     DBP = zeros(length(theta_grid), 1);
     DTBP = zeros(length(theta_grid), 1);
     

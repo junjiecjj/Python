@@ -1,6 +1,6 @@
 
 
-function X = WaveformSynthesisXoptimR(L, R, rho)
+function X = WaveformSynthesisXoptimR(R, L, rho)
     % 输入：
     %   L   - 每个发射波形的长度
     %   R   - 期望实现的协方差矩阵，N×N
