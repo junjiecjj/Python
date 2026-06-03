@@ -17,7 +17,6 @@ L = 40;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;        % 对角元固定值
 % c = rand(M, 1)
-Iters =100;
 
 d = 0.5;
 lambda = 2 * d;
@@ -64,6 +63,7 @@ fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
 
 SNRdB = -5:1:12;
 N0 = Pt ./ 10.^(SNRdB/10);
+Iters =100;
 
 OmniStrictCapacityArray = zeros(Iters, length(SNRdB));
 OmniTradeoffCapacityTolArray = zeros(Iters, length(SNRdB));
