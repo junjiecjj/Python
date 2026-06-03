@@ -5,7 +5,7 @@ close all;
 
 %% 参数设置（与论文一致，但提高分辨率）
 M = 10;                     % 天线数（提高分辨率，使三峰分离）
-N = 12800;                    % 快拍数
+N = 2000;                    % 快拍数
 sigma2_dB = -10;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
 jammer_power = 50;         
@@ -19,7 +19,6 @@ theta_jammer = 0;              % 度
 
 % 导向矢量函数 (均匀线阵，半波长间距)
 a_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
-ac_func = @(theta) conj(a_func(theta));
 
 A = zeros(M, length(theta_targets));
 for k = 1:length(theta_targets)
@@ -35,27 +34,11 @@ X = zeros(M, N);
 for k = 1:length(theta_targets)
     at = a_func(theta_targets(k));
     ar = a_func(theta_targets(k));
-    X = X + beta(k) * ar * (at.' * x);
+    X = X + beta(k) * ar * (at' * x);
+    % X = X + beta(k) * conj(ar) * (at' * x); % 这种也是对的
 end
 % 以上过程等效为
-X = A * diag(beta) * A.' * x;
-
-%% 生成阵列接收信号 X (M × Ns)
-K = length(theta_targets);
-f0 = 1e6;
-f = [0.1, 0.2, 0.3] * f0;   % 各信号频率（保证正交）
-fs = 1e8;                   % 采样频率 (Hz)
-Ts = 1/fs;
-t = (0:N-1) * Ts;
-
-S = zeros(K, N);
-for k = 1:K
-    sk = exp(1j * 2 * pi * f(k) * t);
-    sk = randn(1, N);
-    S(k, :) = sk;
-end
-X = A * S;
-
+X = A * diag(beta) * A' * x;
 
 % 生成干扰回波
 jam = sqrt(jammer_power) * (randn(1, N) + 1j*randn(1, N)) / sqrt(2);
@@ -80,7 +63,7 @@ noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 % noise = L_chol * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
 
 %总接收信号
-y = X + noise + 0 * y_jammer;
+y = X + noise + y_jammer;
 
 %样本协方差矩阵
 Rxx = (x * x') / N;
@@ -106,25 +89,25 @@ for idx = 1:L
     ar = a_func(theta);     % 接收导向矢量 M×1
 
     % ========== LS  ==========
-    LS(idx) = (ar' * Ryx * conj(at)) / (norm(ar)^2 * at.' * Rxx * conj(at));
+    LS(idx) = (ar' * Ryx * at) / (norm(ar)^2 * at' * Rxx * at);
 
     % ========== GLRT 严格按公式(16)计算 ==========
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
-    Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
+    Q = Ryy - (Ryx * at * at' * Ryx') / (at' * Rxx * at);
     % 分母项: a^* Q^{-1} a
     denom_GLRT = ar' / Q * ar;
     GLRT(idx) = 1 - ar' / Ryy * ar / denom_GLRT;
 
     % ========== APES 严格按公式(7)计算 ==========
     % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
-    Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
-    APES(idx) = ar'/Q * Ryx * conj(at) / ((ar' /Q * ar) * (at.' * Rxx * conj(at)));
+    % Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
+    APES(idx) = ar'/Q * Ryx * at / ((ar' /Q * ar) * (at' * Rxx * at));
 
     % ========== Capon 空间谱 —— 严格按照公式(5) ==========
     % 分子: a^* Ryy^{-1} Ryx ac
-    num_capon = ar' / Ryy * Ryx * conj(at);   % 标量
+    num_capon = ar' / Ryy * Ryx * at;   % 标量
     % 分母: a^* Ryy^{-1} a  *  a^T Rxx ac
-    denom_capon = (ar' / Ryy * ar) * (at.' * Rxx * conj(at));
+    denom_capon = (ar' / Ryy * ar) * (at' * Rxx * at);
     % Capon 谱值
     Capon(idx) = (num_capon) / denom_capon;   % 通常取模平方，保证为正
 end
@@ -196,7 +179,6 @@ ylabel('GLRT spectrum');
 grid on; xlim([-90, 90]);
 
 % (f) MUSIC 伪谱
-
 subplot(3,2,5);
 plot(theta_scan, Pmusic, 'r-', 'LineWidth', 1.5);hold on;
 plot(music_est, music_peak, 'bo', 'MarkerSize', 8); 
@@ -210,3 +192,98 @@ stem(theta_est, abs(CAML), 'r-', 'LineWidth', 1.5);
 xlabel('\theta (degrees)');
 ylabel('CAML spectrum');
 grid on; xlim([-90, 90]);
+
+%% ========== IEEE-style 1x5 绘图，不含 MUSIC，稳定保存 PDF ==========
+fig = figure('Color', 'w');
+fig.Units = 'centimeters';
+fig.Position = [2, 2, 36, 6.5];
+set(fig, 'Renderer', 'painters');
+fontName = 'Times New Roman';
+fontSize = 12;
+lineWidth = 1.4;
+markerSize = 4.5;
+blueColor = [0, 0.4470, 0.7410];
+xLimVal = [-90, 90];
+
+leftMargin = 0.045;
+rightMargin = 0.012;
+bottomMargin = 0.22;
+topMargin = 0.10;
+gap = 0.018;
+axWidth = (1 - leftMargin - rightMargin - 4 * gap) / 5;
+axHeight = 1 - bottomMargin - topMargin;
+
+specData = {abs(LS), abs(Capon), abs(APES), abs(GLRT)};
+specName = {'LS', 'Capon', 'APES', 'GLRT'};
+
+for ii = 1:4
+    axLeft = leftMargin + (ii - 1) * (axWidth + gap);
+    ax = axes('Position', [axLeft, bottomMargin, axWidth, axHeight]);
+    yData = specData{ii};
+    plot(theta_scan, yData, '-', 'Color', blueColor, 'LineWidth', lineWidth);
+    hold on;
+    if ii ~= 1
+        [peaks, locs] = findpeaks(yData, theta_scan, ...
+            'MinPeakHeight', 0.2 * max(yData), ...
+            'MinPeakDistance', 5);
+        plot(locs, peaks, 'o', ...
+            'Color', blueColor, ...
+            'MarkerSize', markerSize, ...
+            'LineWidth', 1.0, ...
+            'MarkerFaceColor', 'w');
+    end
+    xlim(xLimVal);
+    grid on;
+    box on;
+    xlabel('\theta (degrees)', 'FontName', fontName, 'FontSize', fontSize);
+    ylabel([specName{ii}, ' spectrum'], 'FontName', fontName, 'FontSize', fontSize);
+    % title(['(', char('a' + ii - 1), ') ', specName{ii}], 'FontName', fontName, 'FontSize', fontSize, 'FontWeight', 'normal');
+    set(ax, ...
+        'FontName', fontName, ...
+        'FontSize', fontSize, ...
+        'LineWidth', 0.9, ...
+        'TickDir', 'in', ...
+        'TickLength', [0.012, 0.012], ...
+        'Layer', 'top');
+end
+
+axLeft = leftMargin + 4 * (axWidth + gap);
+ax = axes('Position', [axLeft, bottomMargin, axWidth, axHeight]);
+stem(theta_est, abs(CAML), ...
+    'Color', blueColor, ...
+    'LineWidth', lineWidth, ...
+    'Marker', 'o', ...
+    'MarkerSize', markerSize, ...
+    'MarkerFaceColor', 'w', ...
+    'MarkerEdgeColor', blueColor);
+xlim(xLimVal);
+grid on;
+box on;
+xlabel('\theta (degrees)', 'FontName', fontName, 'FontSize', fontSize);
+ylabel('CAML spectrum', 'FontName', fontName, 'FontSize', fontSize);
+title('(e) CAML', 'FontName', fontName, ...
+    'FontSize', fontSize, ...
+    'FontWeight', 'normal');
+set(ax, ...
+    'FontName', fontName, ...
+    'FontSize', fontSize, ...
+    'LineWidth', 0.9, ...
+    'TickDir', 'in', ...
+    'TickLength', [0.012, 0.012], ...
+    'Layer', 'top');
+
+set(findall(fig, '-property', 'FontName'), 'FontName', fontName);
+set(findall(fig, '-property', 'FontSize'), 'FontSize', fontSize);
+
+drawnow;
+
+set(fig, 'PaperUnits', 'centimeters');
+set(fig, 'PaperPositionMode', 'manual');
+set(fig, 'PaperPosition', [0, 0, 36, 6.5]);
+set(fig, 'PaperSize', [36, 6.5]);
+
+print(fig, 'Fig_MIMO_adaptive_methods.pdf', '-dpdf', '-painters');
+
+
+
+

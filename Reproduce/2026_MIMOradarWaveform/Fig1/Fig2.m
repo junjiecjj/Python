@@ -193,7 +193,7 @@ xlabel('\theta (degrees)');
 ylabel('CAML spectrum');
 grid on; xlim([-90, 90]);
 
-
+%% ========== IEEE-style 1x5 绘图，不含 MUSIC，稳定保存 PDF ==========
 
 
 
