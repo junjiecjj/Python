@@ -192,3 +192,9 @@ stem(theta_est, abs(CAML), 'r-', 'LineWidth', 1.5);
 xlabel('\theta (degrees)');
 ylabel('CAML spectrum');
 grid on; xlim([-90, 90]);
+
+
+
+
+
+
