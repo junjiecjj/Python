@@ -352,10 +352,23 @@ set(get(gca,'Children'), 'markersize', markersize);  %设置标记大小
 set(gcf,'color','white');  % 设置背景是白色的 原先是灰色的 论文里面不好看
 
 
-print(figure(1), '-depsc', 'WER_payload.eps');%保存为eps格式的图片color
-exportgraphics(figure(1),'WER_payload.pdf','ContentType','vector')
-saveas(figure(1), 'WER.pdf','pdf');
+print(figure(1), '-depsc', 'Fig6.eps');%保存为eps格式的图片color
+exportgraphics(figure(1), 'Fig6.pdf','ContentType','vector')
+saveas(figure(1), 'Fig6.pdf','pdf');
 
  
- 
+% width = 8;
+% height = 6;
+% % 强制修改图形窗口的实际尺寸
+% set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [1, 1, width, height]);
+% 
+% % 可选：同时设置打印属性，确保 print 命令也能生效
+% set(gcf, 'PaperUnits', 'inches');
+% set(gcf, 'PaperPosition', [0, 0, width, height]);
+% set(gcf, 'PaperSize', [width, height]);
+% % 导出（三种格式）
+% exportgraphics(gcf, 'Fig6.pdf', 'ContentType', 'vector');
+% exportgraphics(gcf, 'Fig6.eps', 'ContentType', 'vector');
+% exportgraphics(gcf, 'Fig6.png', 'Resolution', 300);
 
