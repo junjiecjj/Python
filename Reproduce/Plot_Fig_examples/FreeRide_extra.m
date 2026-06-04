@@ -151,8 +151,8 @@ LDPC5GFreeRideExtra10BitPayloadBerFer = [...
 
 
 %===========================================
-width = 7;%设置图宽，这个不用改
-height = width*0.85;%设置图高，这个不用改
+width = 8;%设置图宽，这个不用改
+height = 6;%设置图高，这个不用改
 fontsize = 18;%设置图中字体大小
 linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
 markersize = 10;%标记的大小，按照个人喜好设置。
@@ -162,6 +162,18 @@ markersize = 10;%标记的大小，按照个人喜好设置。
 
 h = figure(1);
 % fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+set(gcf, 'PaperPositionMode', 'manual');
+
 
 ColorSet = [...
          0         0    1.0000
@@ -201,17 +213,10 @@ hold on;
 semilogy(LDPC5GFreeRideExtra2BitExtraBerFer(:,1), LDPC5GFreeRideExtra2BitExtraBerFer(:,3), 'b-^', 'LineWidth',2, 'markersize',10)
 hold on;
 
-%---------------------------------------------------------
-hold on;
-grid on;
-set(gca,'XMinorGrid','off'); % 关闭X轴的次网格
-set(gca,'XGrid','off','LineWidth',0.01); % 关闭X轴的网格
-set(gca,'gridlinestyle','--','Gridalpha',0.2,'LineWidth',0.01,'Layer','bottom');
-
-% gca表示对axes的设置；  gcf表示对figure的设置
 %-------------------------------------------------------------------
-scalesize = 28;
-% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 
 h_legend = legend('Payload data, without extra data', ...
@@ -222,54 +227,40 @@ h_legend = legend('Payload data, without extra data', ...
                   'Extra data, Free-Ride, ${\ell}$=2'...
                   );  %图例，与上面的曲线先后对应
 
-legendsize = 16;
+legendsize = 12;
 set(h_legend,'FontName','宋体','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 set(h_legend,'Interpreter','latex') %  'box','off');
 % h_legend.Interpreter = 'latex';
-labelsize = 28;
-xlabel('SNR(dB)','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
-ylabel('WER','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
+labelsize = 18;
+xlabel('SNR(dB)','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
+ylabel('WER','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
 % ylabel('\fontname{宋体}\fontsize{18}误帧率');
 %注意这里必须为小写
 %set(get(gca,'XLabel'),'FontSize',14);%图上文字为8 point或小5号
 %set(get(gca,'YLabel'),'FontSize',14);
 
-set(gca, 'XTick', 0:0.5:11);  % 设置x坐标轴的刻度
-%set(gca, 'YTick',(0:2:32))   % 设置y坐标轴的刻度
+% set(gca, 'XTick', 0:0.5:11);  % 设置x坐标轴的刻度
+% set(gca, 'YTick',(0:2:32))   % 设置y坐标轴的刻度
 axis([0 2.5 1e-7 1]);         % 横纵坐标范围
 
-% set(get(gca,'Children'),'linewidth',linewidth);   %设置图中线宽
-set(gca,'linewidth',1.5);       % 设置坐标轴粗细
-
+% set(get(gca,'Children'),'linewidth', linewidth);   %设置图中线宽
 % set(get(gca,'Children'), 'markersize', markersize);  %设置标记大小
 % set(get(gca,'Children'), 'MarkerEdgeColor','b', 'MarkerFaceColor','b');% 设置标记颜色,统一颜色。
 
 
-set(gcf,'color','white');  % 设置背景是白色的 原先是灰色的 论文里面不好看
+%----- Grid 设置-------------------------------------------------
 
-% print(figure(1), '-depsc', 'Fig5.pdf');%保存为eps格式的图片color
-% exportgraphics(figure(1),'Fig5_111.eps','ContentType','vector')
-% saveas(figure(1), 'WER1.pdf','pdf');
+grid on;
+%set(gca,'XMinorGrid','on'); % 关闭X轴的次网格
+%set(gca,'XGrid','on','LineWidth',0.01); % 关闭X轴的网格
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
 
-% print(gcf, '-depsc', 'Fig5.eps');%保存为eps格式的图片color
-% print(gcf, '-dpng', 'Fig5.png');%保存为pdf格式的图片color
-% print(gcf, '-dpdf', 'Fig5.pdf');%保存为pdf格式的图片color
-
-width = 8;
-height = 6;
-
-set(gcf, 'Units', 'inches');
-set(gcf, 'Position', [1, 1, width, height]);
-set(gcf, 'Color', 'w');
-set(gcf, 'Renderer', 'painters');
+%--------- savefig-------------
 set(gca, 'Units', 'normalized');
-set(gca, 'Position', [0.14, 0.14, 0.80, 0.78]);
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-set(gcf, 'PaperUnits', 'inches');
-set(gcf, 'PaperPosition', [0, 0, width, height]);
-set(gcf, 'PaperSize', [width, height]);
-set(gcf, 'PaperPositionMode', 'manual');
-
-print(gcf, 'Fig5.pdf', '-dpdf', '-vector');
 print(gcf, 'Fig5.eps', '-depsc', '-vector');
 print(gcf, 'Fig5.png', '-dpng', '-r300');
+
+print(gcf, 'Fig5.pdf', '-dpdf', '-vector');
+% exportgraphics(gca, 'Fig5.pdf', 'ContentType', 'vector');

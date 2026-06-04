@@ -1,4 +1,3 @@
-
 clear; close all; clc;
 
 
@@ -151,67 +150,117 @@ LDPC5GFreeRideExtra10BitPayloadBerFer = [...
 ];
 
 
+%===========================================
+width = 8;%设置图宽，这个不用改
+height = 6;%设置图高，这个不用改
+fontsize = 18;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+%%========================================================================================
+%    开始画图
+%%========================================================================================
+
+h = figure(1);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
 
-%% 
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+set(gcf, 'PaperPositionMode', 'manual');
 
-width = 8;
-height = 6;
-fontsize = 18;
-linewidth = 2;
-markersize = 10;
-fig = figure(1);
-clf(fig);
-set(fig, 'Units', 'inches');
-set(fig, 'Position', [1, 1, width, height]);
-set(fig, 'Color', 'w');
-set(fig, 'Renderer', 'painters');
-ax = axes(fig);
-set(ax, 'Units', 'normalized');
-set(ax, 'Position', [0.14, 0.14, 0.80, 0.78]);
-hold(ax, 'on');
 
-semilogy(ax, LDPC5GNoExtraFer(:,1), LDPC5GNoExtraFer(:,2), 'm--', 'LineWidth', linewidth);
-semilogy(ax, LDPC5GFreeRideExtra1BitPayloadBerFer(:,1), LDPC5GFreeRideExtra1BitPayloadBerFer(:,3), 'k*', 'LineWidth', linewidth, 'MarkerSize', 10);
-semilogy(ax, LDPC5GFreeRideExtra2BitPayloadBerFer(:,1), LDPC5GFreeRideExtra2BitPayloadBerFer(:,3), 'ro', 'LineWidth', linewidth, 'MarkerSize', 12);
-p2 = semilogy(ax, LDPC5GNoExtraBer2bit(:,1), LDPC5GNoExtraBer2bit(:,3), '--*', 'LineWidth', linewidth, 'MarkerSize', 12);
+ColorSet = [...
+         0         0    1.0000
+         0    0.5000         0
+    1.0000         0         0
+         0    0.7500    0.7500
+    0.7500         0    0.7500
+    0.7500    0.7500         0
+   0.2500    0.2500     0.2500
+];%颜色集合，这是默认的八种颜色，颜色的数量可以更改
+set(gcf, 'DefaultAxesColorOrder', ColorSet);%设置循环使用的颜色集合
+
+%纵坐标对数域，如果不需要对数改为plot
+% semilogy(LDPC5GNoExtraFer(:,1), LDPC5GNoExtraFer(:,2), 'm--', ...
+%          LDPC5GFreeRideExtra1BitPayloadBerFer(:,1), LDPC5GFreeRideExtra1BitPayloadBerFer(:,3), 'k*', 'markersize',7,...
+%          LDPC5GFreeRideExtra2BitPayloadBerFer(:,1), LDPC5GFreeRideExtra2BitPayloadBerFer(:,3), 'ro', ...
+%          LDPC5GFreeRideExtra1BitExtraBerFer(:,1), LDPC5GFreeRideExtra1BitExtraBerFer(:,3), 'b-x', ...
+%          LDPC5GFreeRideExtra2BitExtraBerFer(:,1), LDPC5GFreeRideExtra2BitExtraBerFer(:,3), 'b-^');
+
+
+semilogy(LDPC5GNoExtraFer(:,1), LDPC5GNoExtraFer(:,2), 'm--','LineWidth',2)
+hold on;
+
+semilogy(LDPC5GFreeRideExtra1BitPayloadBerFer(:,1), LDPC5GFreeRideExtra1BitPayloadBerFer(:,3), 'k*', 'LineWidth',2, 'markersize',10)
+hold on;
+
+semilogy(LDPC5GFreeRideExtra2BitPayloadBerFer(:,1), LDPC5GFreeRideExtra2BitPayloadBerFer(:,3), 'ro', 'LineWidth',2, 'markersize',12)
+hold on;
+
+p2 = semilogy(LDPC5GNoExtraBer2bit(:,1), LDPC5GNoExtraBer2bit(:,3),   '--*', 'LineWidth',2, 'markersize',12);
 p2.Color = '#00841a';
-semilogy(ax, LDPC5GFreeRideExtra1BitExtraBerFer(:,1), LDPC5GFreeRideExtra1BitExtraBerFer(:,3), 'b-d', 'LineWidth', linewidth, 'MarkerSize', 10);
-semilogy(ax, LDPC5GFreeRideExtra2BitExtraBerFer(:,1), LDPC5GFreeRideExtra2BitExtraBerFer(:,3), 'b-^', 'LineWidth', linewidth, 'MarkerSize', 10);
+hold on;
 
-grid(ax, 'on');
-set(ax, 'XGrid', 'off');
-set(ax, 'XMinorGrid', 'off');
-set(ax, 'GridLineStyle', '--');
-set(ax, 'GridAlpha', 0.2);
-set(ax, 'Layer', 'bottom');
-set(ax, 'FontSize', fontsize);
-set(ax, 'FontName', 'Times New Roman');
-set(ax, 'LineWidth', 1.5);
-set(ax, 'XTick', 0:0.5:2.5);
-axis(ax, [0 2.5 1e-7 1]);
+semilogy(LDPC5GFreeRideExtra1BitExtraBerFer(:,1), LDPC5GFreeRideExtra1BitExtraBerFer(:,3), 'b-d', 'LineWidth',2, 'markersize',10)
+hold on;
 
-xlabel(ax, 'SNR(dB)', 'FontName', 'Times New Roman', 'FontSize', fontsize, 'Interpreter', 'latex');
-ylabel(ax, 'WER', 'FontName', 'Times New Roman', 'FontSize', fontsize, 'Interpreter', 'latex');
+semilogy(LDPC5GFreeRideExtra2BitExtraBerFer(:,1), LDPC5GFreeRideExtra2BitExtraBerFer(:,3), 'b-^', 'LineWidth',2, 'markersize',10)
+hold on;
 
-h_legend = legend(ax, ...
-    'Payload data, without extra data', ...
-    'Payload data, Free-Ride, ${\ell}=1$', ...
-    'Payload data, Free-Ride, ${\ell}=2$', ...
-    'Extra data, traditional, ${\ell}=2$', ...
-    'Extra data, Free-Ride, ${\ell}=1$', ...
-    'Extra data, Free-Ride, ${\ell}=2$');
-set(h_legend, 'FontSize', 16);
-set(h_legend, 'FontWeight', 'normal');
-set(h_legend, 'LineWidth', 1);
-set(h_legend, 'Location', 'northeast');
-set(h_legend, 'Interpreter', 'latex');
+%-------------------------------------------------------------------
 
-set(fig, 'PaperUnits', 'inches');
-set(fig, 'PaperPosition', [0, 0, width, height]);
-set(fig, 'PaperSize', [width, height]);
-set(fig, 'PaperPositionMode', 'manual');
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 
-print(fig, 'Fig5.pdf', '-dpdf', '-painters');
-print(fig, 'Fig5.eps', '-depsc', '-painters');
-print(fig, 'Fig5.png', '-dpng', '-r300');
+h_legend = legend('Payload data, without extra data', ...
+                  'Payload data, Free-Ride, ${\ell}$=1',...
+                  'Payload data, Free-Ride, ${\ell}$=2',...
+                  'Extra data, traditional, ${\ell}$=2',...
+                  'Extra data, Free-Ride, ${\ell}$=1',...
+                  'Extra data, Free-Ride, ${\ell}$=2'...
+                  );  %图例，与上面的曲线先后对应
+
+legendsize = 12;
+set(h_legend,'FontName','宋体','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
+set(h_legend,'Interpreter','latex') %  'box','off');
+% h_legend.Interpreter = 'latex';
+labelsize = 18;
+xlabel('SNR(dB)','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
+ylabel('WER','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
+% ylabel('\fontname{宋体}\fontsize{18}误帧率');
+%注意这里必须为小写
+%set(get(gca,'XLabel'),'FontSize',14);%图上文字为8 point或小5号
+%set(get(gca,'YLabel'),'FontSize',14);
+
+% set(gca, 'XTick', 0:0.5:11);  % 设置x坐标轴的刻度
+% set(gca, 'YTick',(0:2:32))   % 设置y坐标轴的刻度
+axis([0 2.5 1e-7 1]);         % 横纵坐标范围
+
+% set(get(gca,'Children'),'linewidth', linewidth);   %设置图中线宽
+% set(get(gca,'Children'), 'markersize', markersize);  %设置标记大小
+% set(get(gca,'Children'), 'MarkerEdgeColor','b', 'MarkerFaceColor','b');% 设置标记颜色,统一颜色。
+
+
+%----- Grid 设置-------------------------------------------------
+
+grid on;
+%set(gca,'XMinorGrid','on'); % 关闭X轴的次网格
+%set(gca,'XGrid','on','LineWidth',0.01); % 关闭X轴的网格
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+
+print(gcf, 'Fig5.eps', '-depsc', '-vector');
+print(gcf, 'Fig5.png', '-dpng', '-r300');
+
+print(gcf, 'Fig5.pdf', '-dpdf', '-vector');
+% exportgraphics(gca, 'Fig5.pdf', 'ContentType', 'vector');
