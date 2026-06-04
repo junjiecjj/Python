@@ -8,7 +8,7 @@ markersize = 3;
 legendfontsize  = 12;
 xlabel_fontsize = 12;
 ylabel_fontsize = 12;
-
+title_fontsize = 10;
 set(groot, 'defaultAxesFontName', 'Times New Roman');
 set(groot, 'defaultTextFontName', 'Times New Roman');
 set(groot, 'defaultLegendFontName', 'Times New Roman');
@@ -47,7 +47,7 @@ for idx = 1:cols*rows
     % 控制 Xlabel/Ylabel 与坐标轴的距离
     % hx.Units = 'normalized';  hx.Position(2) = -0.11;
     % hy.Units = 'normalized';  hy.Position(1) = -0.11;
-    title(ax, ['Subfigure ', num2str(idx)], 'Interpreter', 'latex');
+    title(ax, ['Subfigure ', num2str(idx)], 'FontSize', title_fontsize, 'Interpreter', 'latex');
     if idx == 1
         h_legend = legend(ax, 'Method 1', 'Method 2', 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'southwest', 'Interpreter', 'latex');
         %set(h_legend,'FontName','宋体','FontSize',legendsize,'FontWeight','normal','LineWidth', 1, 'Location','SouthWest');
@@ -63,5 +63,6 @@ set(fig, 'PaperSize', [width, height]);
 set(fig, 'PaperPositionMode', 'manual');
 
 print(fig, 'Fig_2x3.pdf', '-dpdf', '-vector');
+% print(fig, 'Fig_2x3.pdf', '-dpdf', '-painters');
 print(fig, 'Fig_2x3.eps', '-depsc', '-vector');
 print(fig, 'Fig_2x3.png', '-dpng', '-r300');
