@@ -196,5 +196,7 @@ grid on; xlim([-90, 90]);
 %% ========== IEEE-style 1x5 绘图，不含 MUSIC，稳定保存 PDF ==========
 
 
+fig(2)
+subplot(1,5,1,'position', [0.05 0.15 0.3 0.58]);
 
 
