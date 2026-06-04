@@ -1,6 +1,6 @@
 clear; close all; clc;
 
-width = 10;
+width = 12;
 height = 6.5;
 fontsize = 14;
 linewidth = 1;
@@ -21,13 +21,15 @@ set(fig, 'Color', 'w');
 set(fig, 'Renderer', 'painters');
 
 
-t = tiledlayout(fig, 2, 3);
-t.TileSpacing = 'compact';
-t.Padding = 'compact';
+rows = 2;
+cols = 4;
+t = tiledlayout(fig, rows, cols);
+t.TileSpacing = 'tight';
+t.Padding = 'tight';
 
 x = 0:0.1:10;
 
-for idx = 1:6
+for idx = 1:cols*rows
     ax = nexttile(t);
     y1 = exp(-0.15 * idx * x) .* abs(sin(x + 0.3 * idx));
     y2 = exp(-0.12 * idx * x) .* abs(cos(x + 0.2 * idx));
@@ -45,7 +47,7 @@ for idx = 1:6
     % 控制 Xlabel/Ylabel 与坐标轴的距离
     % hx.Units = 'normalized';  hx.Position(2) = -0.11;
     % hy.Units = 'normalized';  hy.Position(1) = -0.11;
-    % title(ax, ['Subfigure ', num2str(idx)], 'Interpreter', 'latex');
+    title(ax, ['Subfigure ', num2str(idx)], 'Interpreter', 'latex');
     if idx == 1
         h_legend = legend(ax, 'Method 1', 'Method 2', 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'southwest', 'Interpreter', 'latex');
         %set(h_legend,'FontName','宋体','FontSize',legendsize,'FontWeight','normal','LineWidth', 1, 'Location','SouthWest');

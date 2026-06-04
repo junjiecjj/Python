@@ -21,12 +21,12 @@ set(fig, 'Position', [1, 1, width, height]);
 set(fig, 'Color', 'w');
 set(fig, 'Renderer', 'painters');
 
-left_margin = 0.065;
-right_margin = 0.010;
+left_margin = 0.055;
+right_margin = 0.025;
 bottom_margin = 0.1;
-top_margin = 0.045;
-horizontal_gap = 0.055;
-vertical_gap = 0.155;
+top_margin = 0.055;
+horizontal_gap = 0.045;
+vertical_gap = 0.045;
 
 num_col = 4;
 num_row = 1;
@@ -76,6 +76,6 @@ set(fig, 'PaperPosition', [0, 0, width, height]);
 set(fig, 'PaperSize', [width, height]);
 set(fig, 'PaperPositionMode', 'manual');
 
-print(fig, 'Fig_2x3_manual.pdf', '-dpdf', '-vector');
+print(fig, 'Fig_2x3_manual.pdf', '-dpdf', '-painters');
 print(fig, 'Fig_2x3_manual.eps', '-depsc', '-vector');
 print(fig, 'Fig_2x3_manual.png', '-dpng', '-r300');
