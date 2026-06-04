@@ -43,10 +43,8 @@ for idx = 1:6
     hx = xlabel(ax, 'SNR(dB)', 'FontSize', xlabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
     hy = ylabel(ax, 'WER', 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
     % 控制 Xlabel/Ylabel 与坐标轴的距离
-    hx.Units = 'normalized'; 
-    hy.Units = 'normalized';
-    hx.Position(2) = -0.11;
-    hy.Position(1) = -0.11;
+    % hx.Units = 'normalized';  hx.Position(2) = -0.11;
+    % hy.Units = 'normalized';  hy.Position(1) = -0.11;
     % title(ax, ['Subfigure ', num2str(idx)], 'Interpreter', 'latex');
     if idx == 1
         h_legend = legend(ax, 'Method 1', 'Method 2', 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'southwest', 'Interpreter', 'latex');
