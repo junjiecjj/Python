@@ -91,6 +91,7 @@ markersize = 10;%标记的大小，按照个人喜好设置。
 figure(2);
 % fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
+
 % gca表示对axes的设置；  gcf表示对figure的设置
 set(gcf, 'Units', 'inches');
 % set(gcf, 'Position', [0, 0, width, height]);

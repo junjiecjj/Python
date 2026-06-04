@@ -112,7 +112,7 @@ set(h_legend,'Interpreter','latex') %  'box','off');
 % h_legend.Interpreter = 'latex';
 labelsize = 18;
 xlabel('$\theta^{\circ}$','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
-ylabel('Transmit Beampattern','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
+ylabel('Beampattern','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
 
 % axis([0 2.5 1e-7 1]);         % 横纵坐标范围
 

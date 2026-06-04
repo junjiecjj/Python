@@ -45,9 +45,9 @@ for i = 1:length(theta_plot)
 end
 
 % 避免数值误差导致 log10 出现负数或零
-P_fixed(P_fixed < 0) = 0;
-P_float(P_float < 0) = 0;
-P_relax(P_relax < 0) = 0;
+% P_fixed(P_fixed < 0) = 0;
+% P_float(P_float < 0) = 0;
+% P_relax(P_relax < 0) = 0;
 
 % 归一化 dB 显示
 P_fixed_dB = 10 * log10(P_fixed / max(P_fixed) + eps);
@@ -89,9 +89,9 @@ text(theta1 - 2, -5, '-10°', 'HorizontalAlignment', 'right');
 text(theta2 + 2, -5, '10°', 'HorizontalAlignment', 'left');
 
 % 标注最高旁瓣电平文字
-text(theta_sidelobe_fixed, max_sidelobe_fixed + 1, sprintf('%.2f dB', max_sidelobe_fixed), 'Color', 'b', 'HorizontalAlignment', 'center');
-text(theta_sidelobe_float, max_sidelobe_float + 1, sprintf('%.2f dB', max_sidelobe_float), 'Color', 'r', 'HorizontalAlignment', 'center');
-text(theta_sidelobe_relax, max_sidelobe_relax + 1, sprintf('%.2f dB', max_sidelobe_relax), 'Color', 'k', 'HorizontalAlignment', 'center');
+text(theta_sidelobe_fixed, max_sidelobe_fixed + 0.5, sprintf('%.2f dB', max_sidelobe_fixed), 'Color', 'b', 'HorizontalAlignment', 'center');
+text(theta_sidelobe_float, max_sidelobe_float + 0.5, sprintf('%.2f dB', max_sidelobe_float), 'Color', 'r', 'HorizontalAlignment', 'center');
+text(theta_sidelobe_relax, max_sidelobe_relax + 0.5, sprintf('%.2f dB', max_sidelobe_relax), 'Color', 'k', 'HorizontalAlignment', 'center');
 
 xlabel('\theta (degrees)');
 ylabel('Normalized Power (dB)');
@@ -101,5 +101,95 @@ legend('Fixed elemental power', 'Elemental power 80%~120%', 'Relaxed 3dB beamwid
 title('Minimum Sidelobe Beampattern');
 grid on;
 xlim([-90, 90]);
-ylim([-25, 0]);
+% ylim([-25, 0]);
 hold off;
+
+
+%% 
+
+%===========================================
+width = 8;%设置图宽，这个不用改
+height = 6;%设置图高，这个不用改
+fontsize = 18;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+%%========================================================================================
+%    开始画图
+%%========================================================================================
+
+figure(2);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+set(gcf, 'PaperPositionMode', 'manual');
+
+plot(theta_plot, P_fixed_dB, 'b-', 'LineWidth', 1.5); hold on;
+plot(theta_plot, P_float_dB, 'r--', 'LineWidth', 1.5); hold on;
+plot(theta_plot, P_relax_dB, 'k--', 'LineWidth', 1.5);
+
+% 标注最高旁瓣位置
+plot(theta_sidelobe_fixed, max_sidelobe_fixed, 'bo', 'MarkerSize', 6, 'LineWidth', 1.2);
+plot(theta_sidelobe_float, max_sidelobe_float, 'ro', 'MarkerSize', 6, 'LineWidth', 1.2);
+plot(theta_sidelobe_relax, max_sidelobe_relax, 'ko', 'MarkerSize', 6, 'LineWidth', 1.2);
+
+% 标注主瓣 3dB 宽度
+xline(theta1, 'k--', 'LineWidth', 1);
+xline(theta2, 'k--', 'LineWidth', 1);
+text(theta1 - 2, -5, '-10°', 'HorizontalAlignment', 'right');
+text(theta2 + 2, -5, '10°', 'HorizontalAlignment', 'left');
+
+% 标注最高旁瓣电平文字
+text(theta_sidelobe_fixed, max_sidelobe_fixed + 0.5, sprintf('%.2f dB', max_sidelobe_fixed), 'FontSize',10, 'Color', 'b', 'HorizontalAlignment', 'center');
+text(theta_sidelobe_float, max_sidelobe_float + 0.5, sprintf('%.2f dB', max_sidelobe_float), 'FontSize',10,'Color', 'r', 'HorizontalAlignment', 'center');
+text(theta_sidelobe_relax, max_sidelobe_relax + 0.5, sprintf('%.2f dB', max_sidelobe_relax), 'FontSize',10, 'Color', 'k', 'HorizontalAlignment', 'center');
+
+%-------------------------------------------------------------------
+
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+
+h_legend =  legend('Fixed elemental power',...
+    'Elemental power 80%~120%',...
+    'Relaxed 3dB beamwidth',...
+    'Fixed max sidelobe',...
+    'Float max sidelobe',...
+    'Relax max sidelobe',...
+    'Location', 'best');
+
+legendsize = 12;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
+% set(h_legend,'Interpreter','latex') %  'box','off');
+% h_legend.Interpreter = 'latex';
+labelsize = 18;
+xlabel('$\theta^{\circ}$','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
+ylabel('Normalized Beampattern (dB)','FontName','Times New Roman','FontSize',labelsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
+
+% axis([0 2.5 1e-7 1]);         % 横纵坐标范围
+
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+
+print(gcf, 'Fig_2_4.pdf', '-dpdf', '-vector');
+
+
+
+
+
+
+

@@ -73,6 +73,10 @@ height = 6;%设置图高，这个不用改
 fontsize = 18;%设置图中字体大小
 linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
 markersize = 10;%标记的大小，按照个人喜好设置。
+
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
 %%========================================================================================
 %    开始画图
 %%========================================================================================
@@ -90,7 +94,7 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 set(gcf, 'PaperPositionMode', 'manual');
  
-plot(theta_grid, abs(P_des * alpha0), 'k--', 'LineWidth', 1.5); hold on;
+plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, P_opt0, 'b-', 'LineWidth', 1.5); hold on; hold on;
 plot(theta_grid, P_opt1, 'r--', 'LineWidth', 1.5); hold on;
 
@@ -103,7 +107,7 @@ set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 h_legend = legend('Desired', 'BeamMatch, $w_c$=0', 'BeamMatch, $w_c$=1', 'Interpreter','latex');  %图例，与上面的曲线先后对应
 
 legendsize = 12;
-set(h_legend,'FontName','宋体','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 set(h_legend,'Interpreter','latex') %  'box','off');
 % h_legend.Interpreter = 'latex';
 labelsize = 18;

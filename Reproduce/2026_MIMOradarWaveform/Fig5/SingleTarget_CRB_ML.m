@@ -1,9 +1,9 @@
 clc;
 clear;
 close all;
+
+addpath('./functions');
 rng(42);
-
-
 %% Parameters
 M = 10;
 L = 1;
@@ -120,81 +120,7 @@ title('Coherent signal: comparison of three CRB calculations');
 
 
 
-function d = d_beta_vec(theta_deg, Rs, M, N_eff, A_fun)
-    U_sqrtL = get_U_sqrtL_rank(Rs, M);
-    X = sqrt(N_eff) * A_fun(theta_deg) * U_sqrtL;
-    d = X(:);
-end
 
-function dd = d_beta_deriv_vec(theta_deg, Rs, M, N_eff, dA_fun)
-    U_sqrtL = get_U_sqrtL_rank(Rs, M);
-    X = sqrt(N_eff) * dA_fun(theta_deg) * U_sqrtL;
-    dd = X(:);
-end
 
-% Eq.(57)-(59)
-function CRB_rad2 = crb_single_target_equiv_model(theta_deg, alpha, Rs, M, N_eff, sigma2, A_fun, dA_fun)
-    d = d_beta_vec(theta_deg, Rs, M, N_eff, A_fun);
-    dd = d_beta_deriv_vec(theta_deg, Rs, M, N_eff, dA_fun);
-    G = zeros(length(d), 3);
-    G(:, 1) = alpha * dd;
-    G(:, 2) = d;
-    G(:, 3) = 1j * d;
-    J = (2 / sigma2) * real(G' * G);
-    J = (J + J.') / 2;
-    if rcond(J) < 1e-12
-        CRB_rad2 = NaN;
-    else
-        J_inv = J \ eye(3);
-        CRB_rad2 = J_inv(1, 1);
-    end
-end
 
-function CRB = crb_single_63(a, adot, Rs, SNR)
-    A = a * a';
-    Adot = adot * a' + a * adot';
-    term_AA = trace(A * Rs * A');
-    term_DD = trace(Adot * Rs * Adot');
-    term_DA = trace(Adot * Rs * A');
-    CRB = real(term_AA / (2 * SNR * (term_DD * term_AA - abs(term_DA)^2)));
-end
-
-% 只对 n = (-(M-1)/2 : (M-1)/2).'; 适用
-function CRB = crb_single_67_correct(a, adot, Rs, SNR)
-    M = length(a);
-    term1 = (a' * Rs * a) * (adot' * adot);
-    term2 = M * (adot' * Rs * adot);
-    term3 = M * abs(a' * Rs * adot)^2 / (a' * Rs * a);
-    CRB = real(1 / (2 * SNR * (term1 + term2 - term3)));
-end
-
-% Eq.(15), compute_eta
-function z = simulate_single_target_equiv(theta_deg, alpha, beta, M, N_eff, sigma2, A_fun)
-    d = d_beta_vec(theta_deg, beta, M, N_eff, A_fun);
-    w = sqrt(sigma2 / 2) * (randn(size(d)) + 1j * randn(size(d)));
-    z = alpha * d + w;
-end
-
-% 
-function theta_hat = ml_single_target_grid(z, beta, M, N_eff, A_fun, theta_grid)
-    best_score = -inf;
-    theta_hat = theta_grid(1);
-    for k = 1:length(theta_grid)
-        d = d_beta_vec(theta_grid(k), beta, M, N_eff, A_fun);
-        score = abs(d' * z)^2 / real(d' * d);  % Eq.(29)
-        if score > best_score
-            best_score = score;
-            theta_hat = theta_grid(k);
-        end
-    end
-end
-
-function theta_hat = ml_single_target_search(z, beta, M, N_eff, A_fun, theta_search_min, theta_search_max, coarse_step, fine_step, fine_width)
-    theta_grid = theta_search_min:coarse_step:theta_search_max;
-    theta_hat = ml_single_target_grid(z, beta, M, N_eff, A_fun, theta_grid);
-    theta_grid = theta_hat - fine_width:fine_step:theta_hat + fine_width;
-    theta_grid = theta_grid(theta_grid >= theta_search_min);
-    theta_grid = theta_grid(theta_grid <= theta_search_max);
-    theta_hat = ml_single_target_grid(z, beta, M, N_eff, A_fun, theta_grid);
-end
 
