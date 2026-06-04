@@ -259,8 +259,8 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-print(gcf, 'Fig5.eps', '-depsc', '-vector');
-print(gcf, 'Fig5.png', '-dpng', '-r300');
+print(gcf, 'SingleSubFig.eps', '-depsc', '-vector');
+print(gcf, 'SingleSubFig.png', '-dpng', '-r300');
 
-print(gcf, 'Fig5.pdf', '-dpdf', '-vector');
+print(gcf, 'SingleSubFig.pdf', '-dpdf', '-vector');
 % exportgraphics(gca, 'Fig5.pdf', 'ContentType', 'vector');

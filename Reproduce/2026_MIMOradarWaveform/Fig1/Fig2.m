@@ -125,7 +125,6 @@ CAML = AML_estimator(y, x, theta_est);
 disp('MUSIC 峰值角度：');
 disp(music_est);
 
-
 %% 绘图
 
 figure(1);
@@ -195,8 +194,84 @@ grid on; xlim([-90, 90]);
 
 %% ========== IEEE-style 1x5 绘图，不含 MUSIC，稳定保存 PDF ==========
 
+width = 12;
+height = 3;
+fontsize = 14;
+linewidth = 1;
+markersize = 6;
+legendfontsize  = 12;
+xlabel_fontsize = 14;
+ylabel_fontsize = 14;
+title_fontsize = 10;
 
-fig(2)
-subplot(1,5,1,'position', [0.05 0.15 0.3 0.58]);
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
 
 
+fig = figure(2);
+set(fig, 'Units', 'inches');
+set(fig, 'Position', [1, 1, width, height]);
+set(fig, 'Color', 'w');
+set(fig, 'Renderer', 'painters');
+rows = 1;
+cols = 5;
+t = tiledlayout(fig, rows, cols);
+t.TileSpacing = 'tight';
+t.Padding = 'tight';
+ax_list = gobjects(rows * cols, 1);
+hx_list = gobjects(rows * cols, 1);
+hy_list = gobjects(rows * cols, 1);
+
+blueColor = [0, 0.4470, 0.7410];
+specData = {abs(LS), abs(Capon), abs(APES), abs(GLRT)};
+specName = {'$\beta_\mathrm{LS}$', '$\beta_\mathrm{Capon}$', '$\beta_\mathrm{APES}$', '$\beta_\mathrm{GLRT}$'};
+
+for ii = 1:5
+    ax = nexttile(t); ax.Toolbar.Visible = 'off';
+    ax.XAxis.TickLabelGapOffset = 0.01;
+    ax.YAxis.TickLabelGapOffset = 0.01;
+    if ii < 5
+        yData = specData{ii};
+        plot(ax, theta_scan, yData, '-', 'Color', blueColor, 'LineWidth', linewidth); hold(ax, 'on');
+        if ii ~= 1
+            [peaks, locs] = findpeaks(yData, theta_scan, 'MinPeakHeight', 0.2 * max(yData), 'MinPeakDistance', 5);
+            plot(locs, peaks, 'o', 'Color', blueColor, 'MarkerSize', markersize, 'LineWidth', 0.9, 'MarkerFaceColor', 'w');
+        end
+        grid(ax, 'on');
+        box(ax, 'on');
+        set(ax, 'FontName', 'Times New Roman', 'FontSize', fontsize, 'LineWidth', 1.2);
+        set(ax,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+    
+        axis(ax, [-90 90 0 max(yData)+0.5]);
+    
+        hx = xlabel(ax, '$\theta^{\circ}$', 'FontSize', xlabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+        set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
+        hy = ylabel(ax, specName{ii}, 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+       
+        h_legend = legend(ax, specName{ii}, 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'best', 'Interpreter', 'latex');
+    
+    elseif ii == 5
+        stem(ax, theta_est, abs(CAML), 'r-', 'LineWidth', 1.5);
+        grid(ax, 'on');
+        box(ax, 'on');
+        set(ax, 'FontName', 'Times New Roman', 'FontSize', fontsize, 'LineWidth', 1.2);
+        set(ax,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+        axis(ax, [-90 90 0 5]);
+        hx = xlabel(ax, '$\theta^{\circ}$', 'FontSize', xlabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+        set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
+        hy = ylabel(ax, "CAML", 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+       
+        h_legend = legend(ax, "CAML", 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'best', 'Interpreter', 'latex');
+    end
+end
+
+% % save Fig
+set(fig, 'PaperUnits', 'inches');
+set(fig, 'PaperPosition', [0, 0, width, height]);
+set(fig, 'PaperSize', [width, height]);
+set(fig, 'PaperPositionMode', 'manual');
+
+drawnow;
+
+print(fig, 'Fig_1.pdf', '-dpdf', '-vector');
