@@ -9,14 +9,14 @@ addpath('./functions');
 rng(42);
 %% Parameters
 M = 10;
-L = 20;
+L = 1;
 d_lambda = 0.5;
 theta_true_deg = 0;
 alpha = 1;
-SNR_dB_vec = -40:5:10;
-MC_trials = 2000;
+SNR_dB_vec = -30:2:10;
+MC_trials = 1000;
 N_coherent = L;
-N_orth = M * L;
+N_orth = L;
 beta_coherent = 0.5;
 beta_orth = 0;
 theta_search_min = theta_true_deg-20;

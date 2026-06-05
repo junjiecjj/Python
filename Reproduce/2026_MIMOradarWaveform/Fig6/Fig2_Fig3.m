@@ -4,6 +4,9 @@
 clc;
 clear;
 close all;
+
+rng(42);
+
 addpath('./functions_2018ICC');
 addpath('./functions_2007TSP_OnProb');
 addpath('./functions_2008TAES_CrossCorre');
@@ -151,7 +154,7 @@ DirectTradeoffBPPerAnt = mean(DirectTradeoffBPPerAntArray, 1);
 AWGNCapacity = log2(1 + Pt ./ N0);
 
 %% Figure 2: Average Achievable Rate
-figure(2);
+figure(1);
 plot(SNRdB, AWGNCapacity, 'k--', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 plot(SNRdB, OmniStrictCapacity, 'b--x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 plot(SNRdB, OmniTradeoffCapacityTol, 'b--o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
@@ -168,7 +171,7 @@ legend('AWGN Capacity', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tr
 xlim([min(SNRdB), max(SNRdB)]);
 
 %% Figure 3: Radar Beampattern
-figure(3);
+figure(2);
 plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
 plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b--', 'LineWidth', 1.5); hold on;
 plot(theta_grid, 10 * log10(OmniTradeoffBPTol + eps), 'r-.', 'LineWidth', 1.5); hold on;
@@ -182,37 +185,6 @@ ylabel('Beampattern');
 legend('Desired', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'Best');
 xlim([-90, 90]);
 ylim([-30, 10]);
-
-
-if 0
-    %% 计算 beampattern
-    P_lit1 = zeros(size(theta_grid));
-    P_lit2 = zeros(size(theta_grid));
-    P_lit2_ = zeros(size(theta_grid));
-    for i = 1:length(theta_grid)
-        ai = afun(theta_grid(i));
-        P_lit1(i) = real(ai' * DirectRd1 * ai);
-        P_lit2(i) = real(ai' * DirectRd2 * ai);
-        P_lit2_(i) = real(ai' * DirectRd3 * ai);
-    end
-    % P_lit1(P_lit1 < 0) = 0;
-    % P_lit2(P_lit2 < 0) = 0;
-    % P_lit2_(P_lit2 < 0) = 0;
-
-    P_des1 = alpha1 * P_des;
-    figure(1);
-    plot(theta_grid, 10 * log10(P_des1 + eps), 'k--', 'LineWidth', 1.5); hold on;
-    plot(theta_grid, 10 * log10(P_lit1 + eps), 'b-', 'LineWidth', 1.5); hold on;
-    plot(theta_grid, 10 * log10(P_lit2 + eps), 'r-.', 'LineWidth', 1.5); hold on;
-    plot(theta_grid, 10 * log10(P_lit2_ + eps), 'c-.', 'LineWidth', 1.5);
-    grid on;
-    xlabel('\theta (degrees)');
-    ylabel('Beampattern');
-    legend('Desired', 'Beampattern Matching', 'Squared Error', 'my Squared Error', 'Location', 'best');
-    title('Comparison under trace(R)=1');
-    xlim([-90, 90]);
-    ylim([-40, 20]);
-end
 
 
 
