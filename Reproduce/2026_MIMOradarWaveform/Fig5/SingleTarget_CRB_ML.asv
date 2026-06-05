@@ -1,6 +1,3 @@
-
-
-
 clc;
 clear;
 close all;
@@ -9,14 +6,14 @@ addpath('./functions');
 rng(42);
 %% Parameters
 M = 10;
-L = 20;
+L = 1;
 d_lambda = 0.5;
 theta_true_deg = 0;
 alpha = 1;
-SNR_dB_vec = -40:5:10;
-MC_trials = 2000;
-N_coherent = L;
-N_orth = M * L;
+SNR_dB_vec = -30:2:10;
+MC_trials = 1000;
+N_coherent = 1;
+N_orth = M;
 beta_coherent = 0.5;
 beta_orth = 0;
 theta_search_min = theta_true_deg-20;
@@ -60,16 +57,14 @@ for idx = 1:length(SNR_dB_vec)
     
     SNR_coherent_eff = N_coherent * abs(alpha)^2 / sigma2;
     SNR_orth_eff = N_orth * abs(alpha)^2 / sigma2; 
-    
-    % Eq.(63)
+
     CRB_orth_63_rad2 = crb_single_63(a0, adot0, Rs_orth, SNR_orth_eff);
     CRB_orth_63_deg(idx) = sqrt(max(real(CRB_orth_63_rad2), 0)) * 180 / pi;
-    CRB_coherent_63_rad2 = crb_single_63(a0, adot0, Rs_coherent, SNR_coherent_eff);
-    CRB_coherent_63_deg(idx) = sqrt(max(real(CRB_coherent_63_rad2), 0)) * 180 / pi;
-
-    % Eq.(67)
     CRB_orth_67_rad2 = crb_single_67_correct(a0, adot0, Rs_orth, SNR_orth_eff); 
     CRB_orth_67_deg(idx) = sqrt(max(real(CRB_orth_67_rad2), 0)) * 180 / pi;
+
+    CRB_coherent_63_rad2 = crb_single_63(a0, adot0, Rs_coherent, SNR_coherent_eff);
+    CRB_coherent_63_deg(idx) = sqrt(max(real(CRB_coherent_63_rad2), 0)) * 180 / pi;
     CRB_coherent_67_rad2 = crb_single_67_correct(a0, adot0, Rs_coherent, SNR_coherent_eff);
     CRB_coherent_67_deg(idx) = sqrt(max(real(CRB_coherent_67_rad2), 0)) * 180 / pi;
 
@@ -139,7 +134,7 @@ set(groot, 'defaultLegendFontName', 'Times New Roman');
 %         开始画图
 %%========================================================================================
 
-figure(4);
+figure(1);
 % fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
 % gca表示对axes的设置；  gcf表示对figure的设置
@@ -154,23 +149,23 @@ set(gcf, 'PaperPositionMode', 'manual');
 
 semilogy(SNR_dB_vec, CRB_coherent_deg, 'b-', 'LineWidth', 1.8); hold on;
 semilogy(SNR_dB_vec, CRB_orth_deg, 'r-', 'LineWidth', 1.8); hold on;
-semilogy(SNR_dB_vec, RMSE_coherent_deg, 'b--o', 'MarkerSize', 7, 'LineWidth', 1); hold on;
-semilogy(SNR_dB_vec, RMSE_orth_deg, 'r--d', 'MarkerSize', 7, 'LineWidth', 1);
+semilogy(SNR_dB_vec, RMSE_coherent_deg, 'b--', 'MarkerSize', 7, 'LineWidth', 1); hold on;
+semilogy(SNR_dB_vec, RMSE_orth_deg, 'r--', 'MarkerSize', 7, 'LineWidth', 1);
 %-------------------------------------------------------------------
 
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-h_legend =  legend('CRB, coherent signal', 'CRB, orthogonal signal', 'ML, coherent signal', 'ML, orthogonal signal', 'Interpreter', 'latex');
+h_legend =  legend('Optimal R', 'CA: optimal R', 'CA: PAR $\leq $ 1.2', 'Interpreter', 'latex');
 legendsize = 14;
-set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1, 'Location', 'northeast');
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 % set(h_legend,'Interpreter','latex') %  'box','off');
 % h_legend.Interpreter = 'latex';
 labelsize = 14;
 
-xlabel('SNR (dB)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-ylabel('RMSE of $\theta^{\circ}$', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-% xlim([-90, 90]);
+xlabel('SNR (dB]', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Beampattern (dB)", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+xlim([-90, 90]);
 %----- Grid 设置----------------
 grid on;
 set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
@@ -179,7 +174,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-print(gcf, 'Fig_5_2.pdf', '-dpdf', '-vector');
+print(gcf, 'Fig_4_6.pdf', '-dpdf', '-vector');
 
 
 

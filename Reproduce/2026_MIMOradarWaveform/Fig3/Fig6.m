@@ -123,7 +123,8 @@ set(gcf, 'PaperPositionMode', 'manual');
 P_des_plot = Pt * P_des / (2 * pi * trapz(deg2rad(theta_grid), P_des .* cosd(theta_grid)));
 plot(theta_grid, 10 * log10(P_des_plot + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'k'); hold on;
 plot(theta_grid, 10 * log10(P_mmse + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'r'); hold on;
-plot(theta_grid, 10 * log10(P_mmse1 + eps), 'LineStyle', '--', 'LineWidth', 2, 'Color', 'c'); hold on;
+p1 = plot(theta_grid, 10 * log10(P_mmse1 + eps), 'LineStyle', '--', 'LineWidth', 2); hold on;
+p1.Color = '#43c951';
 plot(theta_grid, 10 * log10(P_minmax + eps), 'LineStyle', '-', 'LineWidth', 2, 'Color', 'b');
 
 %-------------------------------------------------------------------

@@ -131,9 +131,9 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 set(gcf, 'PaperPositionMode', 'manual');
 
-plot(1:1:N, PAR1(1,:), 'r-o', 'LineWidth', 1.5); hold on;
-plot(1:1:N, PAR1(2,:), 'b--*', 'LineWidth', 1.5); hold on;
-plot(1:1:N, PAR1(3,:), 'c--d', 'LineWidth', 1.5); hold on;
+plot(1:1:N, PAR1(1,:), 'k-o', 'LineWidth', 1.5); hold on;
+plot(1:1:N, PAR1(2,:), 'r--*', 'LineWidth', 1.5); hold on;
+plot(1:1:N, PAR1(3,:), 'b--d', 'LineWidth', 1.5); hold on;
 
 %-------------------------------------------------------------------
 
@@ -175,9 +175,9 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 set(gcf, 'PaperPositionMode', 'manual');
 
-plot(1:1:N, PAR2(1,:), 'r-o', 'LineWidth', 1.5); hold on;
-plot(1:1:N, PAR2(2,:), 'b--*', 'LineWidth', 1.5); hold on;
-plot(1:1:N, PAR2(3,:), 'c--d', 'LineWidth', 1.5); hold on;
+plot(1:1:N, PAR2(1,:), 'k-o', 'LineWidth', 1.5); hold on;
+plot(1:1:N, PAR2(2,:), 'r--*', 'LineWidth', 1.5); hold on;
+plot(1:1:N, PAR2(3,:), 'b--d', 'LineWidth', 1.5); hold on;
 
 %-------------------------------------------------------------------
 

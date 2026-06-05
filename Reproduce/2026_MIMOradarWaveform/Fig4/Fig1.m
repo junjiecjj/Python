@@ -131,9 +131,11 @@ for ii = 1:3
     yData1 = specData{2*ii-1};
     yData2 = specData{2*ii};
     plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold(ax, 'on');
-    plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1.5); hold(ax, 'on');
-    plot(ax, theta_grid, yData1, 'b-.', 'LineWidth', 1.5);  hold(ax, 'on');
-    plot(ax, theta_grid, yData2, 'g:', 'LineWidth', 1.5);
+    p1 = plot(theta_grid, P_opt0, '-', 'LineWidth', 1.5); hold(ax, 'on');
+    p1.Color = '#A9A9A9';
+    plot(ax, theta_grid, yData1, 'r-.', 'LineWidth', 1.5);  hold(ax, 'on');
+    p2 = plot(ax, theta_grid, yData2, 'b:', 'LineWidth', 1.5);
+    % p2.Color = '#00841a';
 
     grid(ax, 'on');
     box(ax, 'on');
