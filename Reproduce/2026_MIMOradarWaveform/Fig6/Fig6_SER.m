@@ -12,8 +12,8 @@ addpath('./functions_2008TSP_WaveformSynthesis');
 
 %% 1. 参数设置（示例，可修改）
 Kc = 4;                      % # of users
-M = 12;                     % 天线数
-L = 40;                     % # of Communication Frame
+M = 16;                     % 天线数
+L = 100;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;        % 对角元固定值
 % c = rand(M, 1)
@@ -75,7 +75,7 @@ par = 1.1;                          % Parameter that controls low PAR
 %% Initialization
 
 Q = 4;
-Iters = 1000;
+Iters = 2000;
 
 OmniStrictSERArray = zeros(Iters, length(SNRdB));
 OmniTradeoffSERTolArray = zeros(Iters, length(SNRdB));
@@ -122,7 +122,6 @@ for iter = 1:Iters
         DirectTradeoffSERPerAntArray(iter, idxSNR) = qpsk_ser_from_waveform(H, DirectTradeoffPerAntX, data, Q, N0(idxSNR));
         ZeroMUISERArray(iter, idxSNR) = qpsk_ser_zero_mui(S, data, Q, N0(idxSNR));
     end
-
 end
 
 %% Average Results
@@ -135,7 +134,54 @@ DirectTradeoffSERPerAnt = mean(DirectTradeoffSERPerAntArray, 1);
 ZeroMUISER = mean(ZeroMUISERArray, 1);
 
 %% Figure: SER
+% figure(1);
+% semilogy(SNRdB, OmniStrictSER, 'b-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, OmniTradeoffSERTol, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, OmniTradeoffSERPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, DirectStrictSER, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, DirectTradeoffSERTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, DirectTradeoffSERPerAnt, 'r--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, ZeroMUISER, 'k--v', 'LineWidth', 1.5, 'MarkerSize', 7);
+% grid on;
+% xlabel('Transmit SNR (dB)');
+% ylabel('SER');
+% legend('Omni-Strict', ...
+%        'Omni-Tradeoff-Total, \rho = 0.2', ...
+%        'Omni-Tradeoff-perAnt, \rho = 0.2', ...
+%        'Directional-Strict', ...
+%        'Directional-Tradeoff-Total, \rho = 0.2', ...
+%        'Directional-Tradeoff-perAnt, \rho = 0.2', ...
+%        'Zero MUI', ...
+%        'Location', 'SouthWest');
+% xlim([min(SNRdB), max(SNRdB)]);
+% ylim([1e-5, 1]);
+
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
 figure(1);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+
+
 semilogy(SNRdB, OmniStrictSER, 'b-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 semilogy(SNRdB, OmniTradeoffSERTol, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 semilogy(SNRdB, OmniTradeoffSERPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
@@ -143,20 +189,33 @@ semilogy(SNRdB, DirectStrictSER, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold
 semilogy(SNRdB, DirectTradeoffSERTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 semilogy(SNRdB, DirectTradeoffSERPerAnt, 'r--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 semilogy(SNRdB, ZeroMUISER, 'k--v', 'LineWidth', 1.5, 'MarkerSize', 7);
-grid on;
-xlabel('Transmit SNR (dB)');
-ylabel('SER');
-legend('Omni-Strict', ...
-       'Omni-Tradeoff-Total, \rho = 0.2', ...
-       'Omni-Tradeoff-perAnt, \rho = 0.2', ...
-       'Directional-Strict', ...
-       'Directional-Tradeoff-Total, \rho = 0.2', ...
-       'Directional-Tradeoff-perAnt, \rho = 0.2', ...
-       'Zero MUI', ...
-       'Location', 'SouthWest');
-xlim([min(SNRdB), max(SNRdB)]);
-ylim([1e-5, 1]);
 
+h_legend =  legend('Omni-Strict', ...
+       'Omni-Tradeoff-Total, $\rho$ = 0.2', ...
+       'Omni-Tradeoff-perAnt, $\rho$ = 0.2', ...
+       'Directional-Strict', ...
+       'Directional-Tradeoff-Total, $\rho$ = 0.2', ...
+       'Directional-Tradeoff-perAnt, $\rho$ = 0.2', ...
+       'Zero MUI', ...
+       'Location', 'SouthWest',...
+       'Interpreter', 'latex');
+
+legendsize = 12;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','best');
+labelsize = 14;
+
+xlabel('Transmit SNR (dB)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("SER", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+xlim([min(SNRdB), max(SNRdB)]);
+ylim([10^(-5), 10^(0)]);
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
+print(gcf, 'Fig_6_6.pdf', '-dpdf', '-vector');
 
 
 

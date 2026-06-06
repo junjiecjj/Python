@@ -15,8 +15,8 @@ addpath('./functions_2008TSP_WaveformSynthesis');
 
 %% 1. 参数设置（示例，可修改）
 Kc = 6;                      % # of users
-M = 12;                     % 天线数
-L = 40;                     % # of Communication Frame
+M = 16;                      % 天线数
+L = 100;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;        % 对角元固定值
 % c = rand(M, 1)
@@ -66,7 +66,7 @@ fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
 
 SNRdB = -5:1:12;
 N0 = Pt ./ 10.^(SNRdB/10);
-Iters =100;
+Iters  = 1000;
 
 OmniStrictCapacityArray = zeros(Iters, length(SNRdB));
 OmniTradeoffCapacityTolArray = zeros(Iters, length(SNRdB));
@@ -181,12 +181,112 @@ plot(theta_grid, 10 * log10(DirectTradeoffBPTol + eps), 'm-', 'LineWidth', 1.5);
 plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'y-', 'LineWidth', 1.5);
 grid on;
 xlabel('\theta (deg)');
-ylabel('Beampattern');
+ylabel('Beampattern (dB)');
 legend('Desired', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'Best');
 xlim([-90, 90]);
 ylim([-30, 10]);
 
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
+figure(3);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+
+plot(SNRdB, AWGNCapacity, 'k--', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, OmniStrictCapacity, 'b--x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, OmniTradeoffCapacityTol, 'b--o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, OmniTradeoffCapacityPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+ 
+plot(SNRdB, DirectStrictCapacity, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, DirectTradeoffCapacityTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(SNRdB, DirectTradeoffCapacityPerAnt, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
+
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+h_legend =  legend('AWGN Capacity', 'Omni-Strict', 'Omni-Tradeoff-Tol, $\rho$ = 0.2', 'Omni-Tradeoff-Per, $\rho$ = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, $\rho$ = 0.2', 'Directional-Tradeoff-Per, $\rho$ = 0.2', 'Interpreter', 'latex');
+legendsize = 12;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+% set(h_legend,'Interpreter','latex') %  'box','off');
+% h_legend.Interpreter = 'latex';
+labelsize = 14;
+
+xlabel('Transmit SNR (dB)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Average Achievable Rate (bps/Hz/user)", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+xlim([min(SNRdB), max(SNRdB)]);
+
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+
+print(gcf, 'Fig_6_1.pdf', '-dpdf', '-vector');
+
+% ===========================================
+figure(4);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+
+plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
+p2 = plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b--', 'LineWidth', 2.5); hold on;
+p2.Color = '#A9A9A9';
+plot(theta_grid, 10 * log10(OmniTradeoffBPTol + eps), 'b-.', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(OmniTradeoffBPPerAnt + eps), 'r:', 'LineWidth', 1.5); hold on;
+
+p5 = plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'b-', 'LineWidth', 1.5); hold on;
+p5.Color = '#A9A9A9';
+plot(theta_grid, 10 * log10(DirectTradeoffBPTol + eps), 'b-', 'LineWidth', 1.5); hold on;
+plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'r-', 'LineWidth', 1.5);
+
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+h_legend =  legend('Desired', 'Omni-Strict', 'Omni-Tradeoff-Tol, $\rho$ = 0.2', 'Omni-Tradeoff-Per, $\rho$ = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, $\rho$ = 0.2', 'Directional-Tradeoff-Per, $\rho$ = 0.2', 'Interpreter', 'latex');
+legendsize = 11;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+
+labelsize = 16;
+xlabel('$\theta^{\circ}$', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Beampattern (dB)", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+xlim([-90, 90]);
+ylim([-20, 8]);
+
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+
+print(gcf, 'Fig_6_2.pdf', '-dpdf', '-vector');
 
 
 

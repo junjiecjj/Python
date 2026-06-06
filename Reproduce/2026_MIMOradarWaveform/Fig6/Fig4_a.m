@@ -54,9 +54,9 @@ OmniRd = (Pt / M) * eye(M);
 fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 
 %% Tradeoff Settings
-rhoList = 0.1:0.1:0.9;
-% rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
-% rhoList = 10.^(rhodB ./ 10);
+% rhoList = 0.1:0.1:0.9;
+rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
+rhoList = 10.^(rhodB ./ 10);
 %% Simulation Settings
 Iters = 5000;
 
@@ -109,26 +109,72 @@ OmniProbabilityPerAnt = squeeze(mean(real(OmniProbabilityArrayPerAnt), 1));
 OmniRatePerAnt1 = OmniRatePerAnt(:, 1);
 OmniRatePerAnt2 = OmniRatePerAnt(:, 2);
 OmniRatePerAnt3 = OmniRatePerAnt(:, 3);
-
-OmniProbabilityPerAnt1 = OmniProbabilityPerAnt(:, 1);
-OmniProbabilityPerAnt2 = OmniProbabilityPerAnt(:, 2);
-OmniProbabilityPerAnt3 = OmniProbabilityPerAnt(:, 3);
+% 
+% OmniProbabilityPerAnt1 = OmniProbabilityPerAnt(:, 1);
+% OmniProbabilityPerAnt2 = OmniProbabilityPerAnt(:, 2);
+% OmniProbabilityPerAnt3 = OmniProbabilityPerAnt(:, 3);
 
 %% Figure 4
+% figure(1);
+% plot(OmniRateTol1, OmniProbabilityTol1, 'b-', 'LineWidth', 1.5); hold on;
+% plot(OmniRateTol2, OmniProbabilityTol2, 'k-', 'LineWidth', 1.5); hold on;
+% plot(OmniRateTol3, OmniProbabilityTol3, 'r-', 'LineWidth', 1.5); hold on;
+% 
+% % plot(OmniRatePerAnt1, OmniProbabilityPerAnt1, 'b--', 'LineWidth', 1.5); hold on;
+% % plot(OmniRatePerAnt2, OmniProbabilityPerAnt2, 'k--', 'LineWidth', 1.5); hold on;
+% % plot(OmniRatePerAnt3, OmniProbabilityPerAnt3, 'r--', 'LineWidth', 1.5);
+% 
+% grid on;
+% xlabel('Average Achievable Rate (bps/Hz/user)');
+% ylabel('Detection Probability');
+% legend('K=6, Tol', 'K=8, Tol', 'K=10, Tol', 'K=6, PerAnt', 'K=8, PerAnt', 'K=10, PerAnt', 'Location', 'southwest');
+
+
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
 figure(1);
-plot(OmniRateTol1, OmniProbabilityTol1, 'b-', 'LineWidth', 1.5); hold on;
-plot(OmniRateTol2, OmniProbabilityTol2, 'k-', 'LineWidth', 1.5); hold on;
-plot(OmniRateTol3, OmniProbabilityTol3, 'r-', 'LineWidth', 1.5); hold on;
 
-% plot(OmniRatePerAnt1, OmniProbabilityPerAnt1, 'b--', 'LineWidth', 1.5); hold on;
-% plot(OmniRatePerAnt2, OmniProbabilityPerAnt2, 'k--', 'LineWidth', 1.5); hold on;
-% plot(OmniRatePerAnt3, OmniProbabilityPerAnt3, 'r--', 'LineWidth', 1.5);
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+
+plot(OmniRateTol1, OmniProbabilityTol1, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(OmniRateTol2, OmniProbabilityTol2, 'k-s', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(OmniRateTol3, OmniProbabilityTol3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
 
 
+h_legend =  legend('K=6', 'K=8', 'K=10', 'Interpreter', 'latex');
+legendsize = 12;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','best');
+
+labelsize = 14;
+
+xlabel('Average Achievable Rate (bps/Hz/user)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Detection Probability", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+%----- Grid 设置----------------
 grid on;
-xlabel('Average Achievable Rate (bps/Hz/user)');
-ylabel('Detection Probability');
-legend('K=6, Tol', 'K=8, Tol', 'K=10, Tol', 'K=6, PerAnt', 'K=8, PerAnt', 'K=10, PerAnt', 'Location', 'southwest');
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+print(gcf, 'Fig_6_3.pdf', '-dpdf', '-vector');
 
 if 0
     %% 计算 beampattern

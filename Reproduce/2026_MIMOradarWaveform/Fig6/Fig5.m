@@ -116,17 +116,65 @@ DirectTradeoffBP2 = squeeze(DirectTradeoffBP(:, 2)).';
 DirectTradeoffBP3 = squeeze(DirectTradeoffBP(:, 3)).';
 
 %% Figure 5
-figure(2);
-plot(DirectRate1, DirectTradeoffBP1, 'b', 'LineWidth', 1.5); hold on;
-plot(DirectRate2, DirectTradeoffBP2, 'k', 'LineWidth', 1.5); hold on;
-plot(DirectRate3, DirectTradeoffBP3, 'r', 'LineWidth', 1.5);
+% figure(2);
+% plot(DirectRate1, DirectTradeoffBP1, 'b', 'LineWidth', 1.5); hold on;
+% plot(DirectRate2, DirectTradeoffBP2, 'k', 'LineWidth', 1.5); hold on;
+% plot(DirectRate3, DirectTradeoffBP3, 'r', 'LineWidth', 1.5);
+% grid on;
+% xlabel('Average Achievable Rate (bps/Hz/user)');
+% ylabel('Average MSE (dB)');
+% legend('K=6', 'K=8', 'K=10', 'Location', 'southeast');
+% 
+
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
+figure(1);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+
+plot(DirectRate1, DirectTradeoffBP1, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(DirectRate2, DirectTradeoffBP2, 'k-s', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+plot(DirectRate3, DirectTradeoffBP3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
+
+
+h_legend =  legend('K=6', 'K=8', 'K=10', 'Interpreter', 'latex');
+legendsize = 12;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+labelsize = 14;
+
+xlabel('Average Achievable Rate (bps/Hz/user)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Average MSE (dB)", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+%----- Grid 设置----------------
 grid on;
-xlabel('Average Achievable Rate (bps/Hz/user)');
-ylabel('Average MSE (dB)');
-legend('K=6', 'K=8', 'K=10', 'Location', 'southeast');
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
 
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+print(gcf, 'Fig_6_5.pdf', '-dpdf', '-vector');
 
-if 1
+%%
+if 0
     %% 计算 beampattern
     P_lit1 = zeros(size(theta_grid));
     for i = 1:length(theta_grid)
@@ -146,36 +194,3 @@ if 1
     ylim([-40, 20]);
 end
 
-
-%% Local Function
-function mseValue = radar_beampattern_mse_fig5(DirectRd, DirectXTradeoff, theta_grid, M)
-    DBP = zeros(length(theta_grid), 1);
-    DTBP = zeros(length(theta_grid), 1);
-    L = size(DirectXTradeoff, 2);
-    Rtmp = DirectXTradeoff * DirectXTradeoff'/L;
-    for idxTheta = 1:length(theta_grid)
-        theta = theta_grid(idxTheta);
-        a = exp(1j * pi * (0:M - 1)' * sind(theta));
-        
-        DBP(idxTheta) = a' * DirectRd * a;
-        DTBP(idxTheta) = a' * Rtmp * a;
-    end
-    
-    mseValue = norm(DTBP - DBP, 2)^2;
-end
-
-
-function mseValue = radar_beampattern_mse_fig5x(DirectRd, DirectXTradeoff, theta_grid, M)
-    DBP = zeros(length(theta_grid), 1);
-    DTBP = zeros(length(theta_grid), 1);
-    
-    for idxTheta = 1:length(theta_grid)
-        theta = theta_grid(idxTheta);
-        a = exp(1j * pi * (0:M - 1)' * sind(theta));
-        
-        DBP(idxTheta) = real(a' * (DirectRd * DirectRd') * a) / real(trace(DirectRd * DirectRd'));
-        DTBP(idxTheta) = real(a' * (DirectXTradeoff * DirectXTradeoff') * a) / real(trace(DirectXTradeoff * DirectXTradeoff'));
-    end
-    
-    mseValue = norm(DTBP - DBP, 2)^2;
-end
