@@ -194,7 +194,7 @@ grid on; xlim([-90, 90]);
 
 %% ========== IEEE-style 1x5 绘图，不含 MUSIC，稳定保存 PDF ==========
 
-width = 12;
+width = 17;
 height = 3;
 fontsize = 14;
 linewidth = 1;
@@ -207,7 +207,6 @@ title_fontsize = 10;
 set(groot, 'defaultAxesFontName', 'Times New Roman');
 set(groot, 'defaultTextFontName', 'Times New Roman');
 set(groot, 'defaultLegendFontName', 'Times New Roman');
-
 
 fig = figure(2);
 set(fig, 'Units', 'inches');
@@ -236,7 +235,7 @@ for ii = 1:5
         plot(ax, theta_scan, yData, '-', 'Color', blueColor, 'LineWidth', linewidth); hold(ax, 'on');
         if ii ~= 1
             [peaks, locs] = findpeaks(yData, theta_scan, 'MinPeakHeight', 0.2 * max(yData), 'MinPeakDistance', 5);
-            plot(locs, peaks, 'o', 'Color', blueColor, 'MarkerSize', markersize, 'LineWidth', 0.9, 'MarkerFaceColor', 'w');
+            plot(locs, peaks, 'o', 'Color', 'r', 'MarkerSize', markersize, 'LineWidth', 0.9, 'MarkerFaceColor', 'w');
         end
         grid(ax, 'on');
         box(ax, 'on');
@@ -249,7 +248,7 @@ for ii = 1:5
         set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
         hy = ylabel(ax, specName{ii}, 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
        
-        h_legend = legend(ax, specName{ii}, 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'best', 'Interpreter', 'latex');
+        h_legend = legend(ax, specName{ii}, 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'northeast', 'Interpreter', 'latex');
     
     elseif ii == 5
         stem(ax, theta_est, abs(CAML), 'r-', 'LineWidth', 1.5);
@@ -262,7 +261,7 @@ for ii = 1:5
         set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
         hy = ylabel(ax, "CAML", 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
        
-        h_legend = legend(ax, "CAML", 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'best', 'Interpreter', 'latex');
+        h_legend = legend(ax, "CAML", 'FontSize',legendfontsize, 'FontWeight','normal', 'Location', 'northeast', 'Interpreter', 'latex');
     end
 end
 
@@ -271,7 +270,7 @@ set(fig, 'PaperUnits', 'inches');
 set(fig, 'PaperPosition', [0, 0, width, height]);
 set(fig, 'PaperSize', [width, height]);
 set(fig, 'PaperPositionMode', 'manual');
-
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 drawnow;
 
 print(fig, 'Fig_1.pdf', '-dpdf', '-vector');
