@@ -1,5 +1,7 @@
 # Frequency Domain Equalization
 
+https://github.com/oguzhan-baser/Frequency-Domain-Equalization
+
 In real life communication networks, the channels encountered are not quite representable by simple pulses. Instead, the channel is spread over different symbol instances with different magnitude and shape. A typical everyday ISI channel is shown in the figure below. To reduce the ISI effect coming from the channel, equalizers are utilized in the receiver (Rx) side. There are several equalizers such as Zero Forcing Equalizer, Minimum Mean Square Error Equalizer, Maximum Sequence Estimation Equalizer, Viterbi Algorithm etc. However, all of these equalizers are in time domain and has several disadvantages such as computational complexity and thus run-time. In this project, Frequency Domain Equalizer (FDE) in MMSE configuration (taking the noise into the consideration) will be implemented.
 
 ![](./figs/scheme.PNG)
