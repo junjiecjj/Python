@@ -73,7 +73,6 @@ par = 1.1;                          % Parameter that controls low PAR
 %% Monte Carlo Simulation
 
 %% Initialization
-
 Q = 4;
 Iters = 5000;
 
