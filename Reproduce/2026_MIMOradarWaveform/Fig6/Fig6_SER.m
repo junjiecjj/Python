@@ -110,8 +110,8 @@ for iter = 1:Iters
         OmniTradeoffTolX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
         DirectTradeoffTolX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
 
-        OmniTradeoffPerAntX = RiemannianConjugateGradient(H, S, OmniStrictX, Pt, rho);
-        DirectTradeoffPerAntX = RiemannianConjugateGradient(H, S, DirectStrictX, Pt, rho);
+        OmniTradeoffPerAntX = RiemannianGradientDescent(H, S, OmniStrictX, Pt, rho);
+        DirectTradeoffPerAntX = RiemannianGradientDescent(H, S, DirectStrictX, Pt, rho);
 
         OmniStrictSERArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniStrictX, data, Q, N0(idxSNR));
         OmniTradeoffSERTolArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniTradeoffTolX, data, Q, N0(idxSNR));
