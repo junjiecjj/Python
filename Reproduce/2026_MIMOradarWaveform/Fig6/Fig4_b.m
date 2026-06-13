@@ -66,7 +66,7 @@ fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
 fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
-DirectRd = DirectRd3;
+DirectRd = DirectRd1;
 %% Tradeoff Settings
 % rhoList = 0.1:0.1:0.9;
 rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
@@ -152,7 +152,7 @@ plot(OmniRate2, OmniProbability2, 'k-s', 'LineWidth', 1.5, 'MarkerSize', 7); hol
 plot(OmniRate3, OmniProbability3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
 
 
-h_legend =  legend('K=6', 'K=8', 'K=10', 'Interpreter', 'latex');
+h_legend =  legend('$K_c$=6', '$K_c$=8', '$K_c$=10', 'Interpreter', 'latex');
 legendsize = 12;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
 labelsize = 14;

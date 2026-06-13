@@ -11,7 +11,7 @@ addpath('./functions_2008TSP_WaveformSynthesis');
 
 
 %% 1. 参数设置（示例，可修改）
-Kc = 4;                      % # of users
+Kc = 6;                      % # of users
 M = 16;                     % 天线数
 L = 100;                     % # of Communication Frame
 Pt  = 1;
@@ -66,7 +66,7 @@ N0 = Pt ./ 10.^(SNRdB/10);
 
 
 %% Choose Directional Covariance Matrix
-DirectRd = DirectRd2;
+DirectRd = DirectRd1;
 rho = 0.2;   % Tradeoff Settings
 par = 1.1;                          % Parameter that controls low PAR
 
@@ -75,7 +75,7 @@ par = 1.1;                          % Parameter that controls low PAR
 %% Initialization
 
 Q = 4;
-Iters = 2000;
+Iters = 5000;
 
 OmniStrictSERArray = zeros(Iters, length(SNRdB));
 OmniTradeoffSERTolArray = zeros(Iters, length(SNRdB));
@@ -111,8 +111,8 @@ for iter = 1:Iters
         OmniTradeoffTolX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
         DirectTradeoffTolX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
 
-        OmniTradeoffPerAntX = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
-        DirectTradeoffPerAntX = helperRadComWaveform(H, S, DirectStrictX, Pt, rho);
+        OmniTradeoffPerAntX = RiemannianConjugateGradient(H, S, OmniStrictX, Pt, rho);
+        DirectTradeoffPerAntX = RiemannianConjugateGradient(H, S, DirectStrictX, Pt, rho);
 
         OmniStrictSERArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniStrictX, data, Q, N0(idxSNR));
         OmniTradeoffSERTolArray(iter, idxSNR) = qpsk_ser_from_waveform(H, OmniTradeoffTolX, data, Q, N0(idxSNR));
@@ -132,29 +132,6 @@ DirectStrictSER = mean(DirectStrictSERArray, 1);
 DirectTradeoffSERTol = mean(DirectTradeoffSERTolArray, 1);
 DirectTradeoffSERPerAnt = mean(DirectTradeoffSERPerAntArray, 1);
 ZeroMUISER = mean(ZeroMUISERArray, 1);
-
-%% Figure: SER
-% figure(1);
-% semilogy(SNRdB, OmniStrictSER, 'b-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-% semilogy(SNRdB, OmniTradeoffSERTol, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-% semilogy(SNRdB, OmniTradeoffSERPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-% semilogy(SNRdB, DirectStrictSER, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-% semilogy(SNRdB, DirectTradeoffSERTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-% semilogy(SNRdB, DirectTradeoffSERPerAnt, 'r--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-% semilogy(SNRdB, ZeroMUISER, 'k--v', 'LineWidth', 1.5, 'MarkerSize', 7);
-% grid on;
-% xlabel('Transmit SNR (dB)');
-% ylabel('SER');
-% legend('Omni-Strict', ...
-%        'Omni-Tradeoff-Total, \rho = 0.2', ...
-%        'Omni-Tradeoff-perAnt, \rho = 0.2', ...
-%        'Directional-Strict', ...
-%        'Directional-Tradeoff-Total, \rho = 0.2', ...
-%        'Directional-Tradeoff-perAnt, \rho = 0.2', ...
-%        'Zero MUI', ...
-%        'Location', 'SouthWest');
-% xlim([min(SNRdB), max(SNRdB)]);
-% ylim([1e-5, 1]);
 
 %% ===========================================
 width = 6;%设置图宽，这个不用改
@@ -180,7 +157,6 @@ set(gcf, 'PaperSize', [width, height]);
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-
 
 semilogy(SNRdB, OmniStrictSER, 'b-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
 semilogy(SNRdB, OmniTradeoffSERTol, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
@@ -215,11 +191,33 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
-print(gcf, 'Fig_6_6.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_6_6.pdf', '-dpdf', '-vector');
 
 
 
 
+%% Figure: SER
+% figure(1);
+% semilogy(SNRdB, OmniStrictSER, 'b-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, OmniTradeoffSERTol, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, OmniTradeoffSERPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, DirectStrictSER, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, DirectTradeoffSERTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, DirectTradeoffSERPerAnt, 'r--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% semilogy(SNRdB, ZeroMUISER, 'k--v', 'LineWidth', 1.5, 'MarkerSize', 7);
+% grid on;
+% xlabel('Transmit SNR (dB)');
+% ylabel('SER');
+% legend('Omni-Strict', ...
+%        'Omni-Tradeoff-Total, \rho = 0.2', ...
+%        'Omni-Tradeoff-perAnt, \rho = 0.2', ...
+%        'Directional-Strict', ...
+%        'Directional-Tradeoff-Total, \rho = 0.2', ...
+%        'Directional-Tradeoff-perAnt, \rho = 0.2', ...
+%        'Zero MUI', ...
+%        'Location', 'SouthWest');
+% xlim([min(SNRdB), max(SNRdB)]);
+% ylim([1e-5, 1]);
 
 
 

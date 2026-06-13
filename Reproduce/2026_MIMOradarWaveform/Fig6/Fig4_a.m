@@ -17,13 +17,12 @@ M = 16;                     % 天线数
 L = 100;                     % # of Communication Frame
 Pt  = 1;
 c = ones(M, 1) * Pt/M;       % 对角元固定值
-% c = rand(M, 1)
 
 % comm snr
 SNRdB = 10;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
-RadarSNRdB = -25;
+RadarSNRdB = -6;
 radarSNR = 10^(RadarSNRdB / 10);
 
 Pfa = 1e-7;
@@ -58,7 +57,7 @@ fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
 rhoList = 10.^(rhodB ./ 10);
 %% Simulation Settings
-Iters = 200;
+Iters = 4000;
 
 OmniRateArrayTol = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArrayTol = zeros(Iters, length(rhoList), length(KcList));
@@ -80,7 +79,7 @@ for iter = 1:Iters
 
             OmniTradeoffXTol = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArrayTol(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXTol, S, N0);
-            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXTol, thetaDetect, L*radarSNR, Pfa);
+            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXTol, thetaDetect, radarSNR, Pfa);
 
             % OmniTradeoffXPerAnt = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
             % OmniRateArrayPerAnt(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXPerAnt, S, N0);
@@ -161,7 +160,7 @@ plot(OmniRateTol3, OmniProbabilityTol3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7
 % plot(OmniRatePerAnt2, OmniProbabilityPerAnt2, 'k--', 'LineWidth', 1.5); hold on;
 % plot(OmniRatePerAnt3, OmniProbabilityPerAnt3, 'r--', 'LineWidth', 1.5);
 
-h_legend =  legend('K=6', 'K=8', 'K=10', 'Interpreter', 'latex');
+h_legend =  legend('$K_c$=6', '$K_c$=8', '$K_c$=10', 'Interpreter', 'latex');
 legendsize = 12;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','best');
 
@@ -176,7 +175,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
-% print(gcf, 'Fig_6_3.pdf', '-dpdf', '-vector');
+print(gcf, 'Fig_6_3.pdf', '-dpdf', '-vector');
 
 if 0
     %% 计算 beampattern

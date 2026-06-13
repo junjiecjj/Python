@@ -83,9 +83,15 @@ DirectTradeoffBPTolArray = zeros(Iters, length(theta_grid));
 DirectTradeoffBPPerAntArray = zeros(Iters, length(theta_grid));
 
 %% Choose Directional Covariance Matrix
-DirectRd = DirectRd2;
+DirectRd = DirectRd1;
+P_predesign = zeros(size(theta_grid));
+for i = 1:length(theta_grid)
+    ai = afun(theta_grid(i));
+    P_predesign(i) = real(ai' * DirectRd * ai);
+end
+
 rho = 0.2;   % Tradeoff Settings
-par = 1.1;                          % Parameter that controls low PAR
+% par = 1.1;                          % Parameter that controls low PAR
 
 %% Monte Carlo Simulation
 for iter = 1:Iters
@@ -108,8 +114,8 @@ for iter = 1:Iters
     OmniTradeoffTolX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
     DirectTradeoffTolX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
     
-    OmniTradeoffPerAntX = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
-    DirectTradeoffPerAntX = helperRadComWaveform(H, S, DirectStrictX, Pt, rho);
+    OmniTradeoffPerAntX = RiemannianGradientDescent(H, S, OmniStrictX, Pt, rho);
+    DirectTradeoffPerAntX = RiemannianGradientDescent(H, S, DirectStrictX, Pt, rho);
 
 
     for idxSNR = 1:length(SNRdB)
@@ -153,38 +159,6 @@ DirectTradeoffBPPerAnt = mean(DirectTradeoffBPPerAntArray, 1);
 
 AWGNCapacity = log2(1 + Pt ./ N0);
 
-%% Figure 2: Average Achievable Rate
-figure(1);
-plot(SNRdB, AWGNCapacity, 'k--', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, OmniStrictCapacity, 'b--x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, OmniTradeoffCapacityTol, 'b--o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, OmniTradeoffCapacityPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
- 
-plot(SNRdB, DirectStrictCapacity, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, DirectTradeoffCapacityTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
-plot(SNRdB, DirectTradeoffCapacityPerAnt, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
-
-grid on;
-xlabel('Transmit SNR (dB)');
-ylabel('Average Achievable Rate (bps/Hz/user)');
-legend('AWGN Capacity', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'NorthWest');
-xlim([min(SNRdB), max(SNRdB)]);
-
-%% Figure 3: Radar Beampattern
-figure(2);
-plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b--', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(OmniTradeoffBPTol + eps), 'r-.', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(OmniTradeoffBPPerAnt + eps), 'g--', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'c-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(DirectTradeoffBPTol + eps), 'm-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'y-', 'LineWidth', 1.5);
-grid on;
-xlabel('\theta (deg)');
-ylabel('Beampattern (dB)');
-legend('Desired', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'Best');
-xlim([-90, 90]);
-ylim([-30, 10]);
 
 %% ===========================================
 width = 6;%设置图宽，这个不用改
@@ -239,7 +213,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-print(gcf, 'Fig_6_1.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_6_1.pdf', '-dpdf', '-vector');
 
 % ===========================================
 figure(4);
@@ -255,12 +229,15 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 
 plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
-p2 = plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b--', 'LineWidth', 2.5); hold on;
-p2.Color = '#A9A9A9';
+p2 = plot(theta_grid, 10 * log10(P_predesign), 'k:', 'LineWidth', 1.5); hold on;
+p2.Color = '#00ff1c';
+
+p3 = plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b-', 'LineWidth', 3); hold on;
+p3.Color = '#A9A9A9';
 plot(theta_grid, 10 * log10(OmniTradeoffBPTol + eps), 'b-.', 'LineWidth', 1.5); hold on;
 plot(theta_grid, 10 * log10(OmniTradeoffBPPerAnt + eps), 'r:', 'LineWidth', 1.5); hold on;
 
-p5 = plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'b-', 'LineWidth', 1.5); hold on;
+p5 = plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'b--', 'LineWidth', 1.5); hold on;
 p5.Color = '#A9A9A9';
 plot(theta_grid, 10 * log10(DirectTradeoffBPTol + eps), 'b-', 'LineWidth', 1.5); hold on;
 plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'r-', 'LineWidth', 1.5);
@@ -268,7 +245,7 @@ plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'r-', 'LineWidth', 1.
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-h_legend =  legend('Desired', 'Omni-Strict', 'Omni-Tradeoff-Tol, $\rho$ = 0.2', 'Omni-Tradeoff-Per, $\rho$ = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, $\rho$ = 0.2', 'Directional-Tradeoff-Per, $\rho$ = 0.2', 'Interpreter', 'latex');
+h_legend =  legend('Desired', 'BeamMatchDesign', 'Omni-Strict', 'Omni-Tradeoff-Tol, $\rho$ = 0.2', 'Omni-Tradeoff-Per, $\rho$ = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, $\rho$ = 0.2', 'Directional-Tradeoff-Per, $\rho$ = 0.2', 'Interpreter', 'latex');
 legendsize = 11;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
 
@@ -286,13 +263,45 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-print(gcf, 'Fig_6_2.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_6_2.pdf', '-dpdf', '-vector');
 
 
 
 
 
 
+%% Figure 2: Average Achievable Rate
+% figure(1);
+% plot(SNRdB, AWGNCapacity, 'k--', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% plot(SNRdB, OmniStrictCapacity, 'b--x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% plot(SNRdB, OmniTradeoffCapacityTol, 'b--o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% plot(SNRdB, OmniTradeoffCapacityPerAnt, 'b--d', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% 
+% plot(SNRdB, DirectStrictCapacity, 'r-x', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% plot(SNRdB, DirectTradeoffCapacityTol, 'r-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+% plot(SNRdB, DirectTradeoffCapacityPerAnt, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
+% 
+% grid on;
+% xlabel('Transmit SNR (dB)');
+% ylabel('Average Achievable Rate (bps/Hz/user)');
+% legend('AWGN Capacity', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'NorthWest');
+% xlim([min(SNRdB), max(SNRdB)]);
+
+%% Figure 3: Radar Beampattern
+% figure(2);
+% plot(theta_grid, 10 * log10(P_des1 + eps), 'k-', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, 10 * log10(OmniStrictBP + eps), 'b--', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, 10 * log10(OmniTradeoffBPTol + eps), 'r-.', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, 10 * log10(OmniTradeoffBPPerAnt + eps), 'g--', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, 10 * log10(DirectStrictBP + eps), 'c-', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, 10 * log10(DirectTradeoffBPTol + eps), 'm-', 'LineWidth', 1.5); hold on;
+% plot(theta_grid, 10 * log10(DirectTradeoffBPPerAnt + eps), 'y-', 'LineWidth', 1.5);
+% grid on;
+% xlabel('\theta (deg)');
+% ylabel('Beampattern (dB)');
+% legend('Desired', 'Omni-Strict', 'Omni-Tradeoff-Tol, \rho = 0.2', 'Omni-Tradeoff-Per, \rho = 0.2', 'Directional-Strict', 'Directional-Tradeoff-Tol, \rho = 0.2', 'Directional-Tradeoff-Per, \rho = 0.2', 'Location', 'Best');
+% xlim([-90, 90]);
+% ylim([-30, 10]);
 
 
 

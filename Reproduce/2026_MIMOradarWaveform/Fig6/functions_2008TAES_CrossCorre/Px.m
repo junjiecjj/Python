@@ -1,3 +1,5 @@
+
+
 % Tangent space projector
 function PxZ = Px(X, Z, Pt)
     [N, M] = size(X);

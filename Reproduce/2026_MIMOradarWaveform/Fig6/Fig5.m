@@ -156,7 +156,7 @@ plot(DirectRate2, DirectTradeoffBP2, 'k-s', 'LineWidth', 1.5, 'MarkerSize', 7); 
 plot(DirectRate3, DirectTradeoffBP3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
 
 
-h_legend =  legend('K=6', 'K=8', 'K=10', 'Interpreter', 'latex');
+h_legend =  legend('$K_c$=6', '$K_c$=8', '$K_c$=10', 'Interpreter', 'latex');
 legendsize = 12;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
 labelsize = 14;
@@ -171,7 +171,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
-print(gcf, 'Fig_6_5.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_6_5.pdf', '-dpdf', '-vector');
 
 %%
 if 0

@@ -40,8 +40,7 @@ function X = helperRadComWaveform(H, S, X0, Pt, rho)
     k = 1;
     while true
         fx = norm(A*X-B, 'fro').^2;
-        % Iterate until the maximum number of iterations is reached or the norm
-        % of the gradient is less than delta
+        % Iterate until the maximum number of iterations is reached or the norm of the gradient is less than delta
         if k > maxNumIterations || norm(gradF, 'fro') < delta
             break
         end
