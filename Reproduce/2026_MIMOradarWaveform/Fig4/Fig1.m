@@ -33,7 +33,6 @@ wc = 0;
 [R_opt0, alpha0, ~] = BeampatternMatchingDesign(c, N, w_l, wc, theta_est, theta_grid, P_des);
 p_des = abs(P_des * alpha0+eps);
 
-
 %  Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
 rho = 1;
 L  = 256;
@@ -114,7 +113,7 @@ rows = 1;
 cols = 3;
 t = tiledlayout(fig, rows, cols);
 t.TileSpacing = 'tight';
-t.Padding = 'tight';
+t.Padding = 'compact';
 ax_list = gobjects(rows * cols, 1);
 hx_list = gobjects(rows * cols, 1);
 hy_list = gobjects(rows * cols, 1);
@@ -124,7 +123,9 @@ specData = {P_pro1_optimR, P_pro1_PAR, P_pro11_optimR, P_pro11_PAR, P_pro2_optim
 specName = {'CA:optimal R', 'CA:PAR = 1', 'CA:optimal R', 'CA:PAR = 1.1', 'CA:optimal R', 'CA:PAR = 2'};
 
 for ii = 1:3
-    ax = nexttile(t); ax.Toolbar.Visible = 'off';
+    ax = nexttile(t); 
+    ax.Toolbar.Visible = 'off';
+    ax_list(ii) = ax;
     ax.XAxis.TickLabelGapOffset = 0.01;
     ax.YAxis.TickLabelGapOffset = 0.01;
 
@@ -145,15 +146,51 @@ for ii = 1:3
     hx = xlabel(ax, '$\theta^{\circ}$', 'FontSize', xlabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
     set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
     hy = ylabel(ax, "Beampattern", 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+    % 添加子图标签 (a) (b) (c)
+    letter = char('a' + ii - 1);
+    text(ax, 0.5, -0.1, ['(', letter, ')'], 'Units', 'normalized', 'FontSize', 12, 'FontWeight', 'normal', 'VerticalAlignment', 'top', 'HorizontalAlignment', 'center');
+
     h_legend = legend(ax, 'Desired','Optimized, $w_c$=0', specName{2*ii-1}, specName{2*ii}, 'FontSize',8, 'FontWeight','normal', 'Location', 'northeast', 'Interpreter', 'latex');
 end
 
 % % save Fig
+% set(fig, 'PaperUnits', 'inches');
+% set(fig, 'PaperPosition', [0, 0, width, height]);
+% set(fig, 'PaperSize', [width, height]);
+% set(fig, 'PaperPositionMode', 'manual');
+
 set(fig, 'PaperUnits', 'inches');
 set(fig, 'PaperPosition', [0, 0, width, height]);
 set(fig, 'PaperSize', [width, height]);
 set(fig, 'PaperPositionMode', 'manual');
 
 drawnow;
-print(fig, 'Fig_4_1.pdf', '-dpdf', '-vector');
 
+subfig_label = {'(a)', '(b)', '(c)'};
+subfig_fontsize = 14;
+subfig_y_offset = 0.2;
+subfig_box_width = 0.05;
+subfig_box_height = 0.035;
+
+for ii = 1:3
+    pos = ax_list(ii).Position;
+    x_center = pos(1) + pos(3) / 2;
+    y_bottom = pos(2);
+
+    x_pos = x_center - subfig_box_width / 2;
+    y_pos = y_bottom - subfig_y_offset;
+
+    if y_pos < 0
+        y_pos = 0.005;
+    end
+
+    annotation(fig, 'textbox', ...
+        [x_pos, y_pos, subfig_box_width, subfig_box_height], ...
+        'String', subfig_label{ii}, ...
+        'FontName', 'Times New Roman', ...
+        'FontSize', subfig_fontsize, ...
+        'Interpreter', 'latex', ...
+        'HorizontalAlignment', 'center', ...
+        'VerticalAlignment', 'middle', ...
+        'LineStyle', 'none');
+end
