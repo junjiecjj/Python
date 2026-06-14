@@ -63,72 +63,61 @@ for i = 1:length(theta_grid)
 end
 
 %% 可选：绘制发射波束图对比
-width = 7;%设置图宽，这个不用改
-height = 7*0.85;%设置图高，这个不用改
+
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
 fontsize = 18;%设置图中字体大小
 linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
 markersize = 10;%标记的大小，按照个人喜好设置。
-legendsize = 16;
-
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
 figure(1);
-
-ColorSet = [...
-         0         0    1.0000
-         0    0.5000         0
-    1.0000         0         0
-         0    0.7500    0.7500
-    0.7500         0    0.7500
-    0.7500    0.7500         0
-   0.2500    0.2500     0.2500
-];%颜色集合，这是默认的八种颜色，颜色的数量可以更改
-set(gcf, 'DefaultAxesColorOrder', ColorSet);%设置循环使用的颜色集合
-
-plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
-plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1.5); hold on;
-plot(theta_grid, P_opt1, 'b--', 'LineWidth', 1.5); hold on;
-plot(theta_grid, P_opt2, 'c--', 'LineWidth', 1.5); hold on;
-
-% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
-set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-
-h_legend = legend('Desired', ...
-                  'Optimized,$w_c$=0',...
-                  'CA:optimal R',...
-                  'CA:PAR = 1'...
-                  );  %图例，与上面的曲线先后对应
-
-set(h_legend,'FontName','Times New Roman','FontSize',12,'FontWeight','normal','LineWidth',1,'Location','northeast');
-set(h_legend,'Interpreter','latex'); %  'box','off');
-
-xlabel('$\theta$ (degrees)','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%横坐标标号,坐标轴label字体、字体大小
-ylabel('Beampattern','FontName','Times New Roman','FontSize',fontsize,'FontWeight','normal','Color','k','Interpreter','latex');%纵坐标标号，坐标轴label字体、字体大小
-
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
 
 % gca表示对axes的设置；  gcf表示对figure的设置
-% set(gca,'XMinorGrid','off'); % 关闭X轴的次网格
-% set(gca,'XGrid','off','LineWidth',0.01); % 关闭X轴的网格
-set(gca,'linewidth',1.5); 
-set(gca,'gridlinestyle','--','Gridalpha',0.2,'LineWidth',0.01,'Layer','bottom');
-% set(gca, 'Xlim', [-90, 90]);  % 设置x坐标轴的刻度      % 设置坐标轴粗细
-% set(gca, 'XTick', [-90, 90]);  % 设置x坐标轴的刻度
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
+
+plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
+p2 = plot(theta_grid, P_opt0, 'r-', 'LineWidth', 2); hold on;
+p2.Color = '#A9A9A9';
+plot(theta_grid, P_opt1, 'r-.', 'LineWidth', 1.5); hold on;
+plot(theta_grid, P_opt2, 'b:', 'LineWidth', 1.5); hold on;
+
+h_legend = legend('Desired', ...
+                  'Optimized, $w_c$=0',...
+                  'CA:strict R',...
+                  'CA:PAR = 1',...
+                  'Interpreter', 'latex'...
+                  );  %图例，与上面的曲线先后对应
+
+legendsize = 12;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1, 'Location','NorthEast');
+labelsize = 14;
+
+xlabel('$\theta^{\circ}$', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Beampattern", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+%----- Grid 设置----------------
 grid on;
-% ==============================================
-% ✅ 核心：设置图片大小 + 去除所有白边 + 保存PDF
-% ==============================================
-set(gcf, 'PaperUnits', 'centimeters');
-set(gcf, 'PaperSize', [16 12]);       % 图片大小：宽12cm × 高8cm（可改）
-set(gcf, 'PaperPosition', [0 0 16 12]); 
-set(gcf,'color','white');  % 设置背景是白色的 原先是灰色的 论文里面不好看
-
-% 去除四周空白（关键！）
-set(gca, 'LooseInset', get(gca, 'TightInset'));
-% set(gca, 'looseInset', [0 0 0 0]);
-
-saveas(gcf, sprintf('/home/jack/tmp/waveform_rho_%g.pdf', rho), 'pdf');
-
-
-
-
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+set(get(gca, 'XAxis'), 'FontSize', 12);  % 调整坐标轴刻度标签（tick labels）的字体大小
+set(get(gca, 'YAxis'), 'FontSize', 12);
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
+print(gcf, 'Fig_4_1a.pdf', '-dpdf', '-vector');
 
 
 

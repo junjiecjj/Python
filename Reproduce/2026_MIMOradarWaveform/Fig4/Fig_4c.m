@@ -7,7 +7,7 @@ rng(42);
 %% Fig.4(c): Minimum sidelobe design with PAR < 1.2
 M = 10;
 L = 256;
-rho = 1.0;
+rho = 1.2;
 
 C = 1;
 c = ones(M, 1) * C / M;
@@ -114,9 +114,8 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 set(gcf, 'PaperPositionMode', 'manual');
 
-p1 = plot(theta_plot, P_R_dB, '-', 'LineWidth', 1.5); 
+p1 = plot(theta_plot, P_R_dB, '-', 'LineWidth', 2); 
 p1.Color = '#A9A9A9';
-p1.LineWidth=3;
 hold on;
 plot(theta_plot, P_optR_dB, 'b--', 'LineWidth', 1.5); hold on;
 plot(theta_plot, P_par_dB, 'r:', 'LineWidth', 1.5); hold on;
@@ -126,7 +125,7 @@ xline(theta_null, 'k:', 'LineWidth', 2);
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-h_legend =  legend('Optimal R', 'CA: optimal R', 'CA: PAR $ = $ 1', 'Interpreter', 'latex');
+h_legend =  legend('Optimized R', 'CA: strict R', 'CA: PAR $ \leq $ 1.2','null', 'Interpreter', 'latex');
 legendsize = 14;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 % set(h_legend,'Interpreter','latex') %  'box','off');
@@ -144,4 +143,4 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-print(gcf, 'Fig_4_4.pdf', '-dpdf', '-vector');
+print(gcf, 'Fig_4_4c.pdf', '-dpdf', '-vector');

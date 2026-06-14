@@ -113,14 +113,14 @@ rows = 1;
 cols = 3;
 t = tiledlayout(fig, rows, cols);
 t.TileSpacing = 'tight';
-t.Padding = 'compact';
+t.Padding = 'tight';
 ax_list = gobjects(rows * cols, 1);
 hx_list = gobjects(rows * cols, 1);
 hy_list = gobjects(rows * cols, 1);
 
 blueColor = [0, 0.4470, 0.7410];
 specData = {P_pro1_optimR, P_pro1_PAR, P_pro11_optimR, P_pro11_PAR, P_pro2_optimR, P_pro2_PAR};
-specName = {'CA:optimal R', 'CA:PAR = 1', 'CA:optimal R', 'CA:PAR = 1.1', 'CA:optimal R', 'CA:PAR = 2'};
+specName = {'CA:strict R', 'CA:PAR = 1', 'CA:strict R', 'CA:PAR $\leq$ 1.1', 'CA:strict R', 'CA:PAR $\leq$ 2'};
 
 for ii = 1:3
     ax = nexttile(t); 
@@ -143,54 +143,31 @@ for ii = 1:3
     set(ax, 'FontName', 'Times New Roman', 'FontSize', fontsize, 'LineWidth', 1.2);
     set(ax,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer', 'bottom');
 
-    hx = xlabel(ax, '$\theta^{\circ}$', 'FontSize', xlabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-    set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
-    hy = ylabel(ax, "Beampattern", 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-    % 添加子图标签 (a) (b) (c)
+    % hx = xlabel(ax, '$\theta^{\circ}$', 'FontSize', xlabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+    % set(hx, 'VerticalAlignment', 'cap');   % 使标签紧贴轴线
+    % hy = ylabel(ax, "Beampattern", 'FontSize', ylabel_fontsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+    % % 添加子图标签 (a) (b) (c)
+    % letter = char('a' + ii - 1);
+    % text(ax, 0.5, -0.1, ['(', letter, ')'], 'Units', 'normalized', 'FontSize', 12, 'FontWeight', 'normal', 'VerticalAlignment', 'top', 'HorizontalAlignment', 'center');
     letter = char('a' + ii - 1);
-    text(ax, 0.5, -0.1, ['(', letter, ')'], 'Units', 'normalized', 'FontSize', 12, 'FontWeight', 'normal', 'VerticalAlignment', 'top', 'HorizontalAlignment', 'center');
-
+    
+    hx = xlabel(ax, {'$\theta^{\circ}$', ['(', letter, ')']}, ...
+        'FontSize', xlabel_fontsize, ...
+        'FontName', 'Times New Roman', ...
+        'Interpreter', 'latex');
+    
+    hy = ylabel(ax, 'Beampattern', ...
+        'FontSize', ylabel_fontsize, ...
+        'FontName', 'Times New Roman', ...
+        'Interpreter', 'latex');
     h_legend = legend(ax, 'Desired','Optimized, $w_c$=0', specName{2*ii-1}, specName{2*ii}, 'FontSize',8, 'FontWeight','normal', 'Location', 'northeast', 'Interpreter', 'latex');
 end
 
+drawnow;
 % % save Fig
-% set(fig, 'PaperUnits', 'inches');
-% set(fig, 'PaperPosition', [0, 0, width, height]);
-% set(fig, 'PaperSize', [width, height]);
-% set(fig, 'PaperPositionMode', 'manual');
-
 set(fig, 'PaperUnits', 'inches');
 set(fig, 'PaperPosition', [0, 0, width, height]);
 set(fig, 'PaperSize', [width, height]);
 set(fig, 'PaperPositionMode', 'manual');
-
-drawnow;
-
-subfig_label = {'(a)', '(b)', '(c)'};
-subfig_fontsize = 14;
-subfig_y_offset = 0.2;
-subfig_box_width = 0.05;
-subfig_box_height = 0.035;
-
-for ii = 1:3
-    pos = ax_list(ii).Position;
-    x_center = pos(1) + pos(3) / 2;
-    y_bottom = pos(2);
-
-    x_pos = x_center - subfig_box_width / 2;
-    y_pos = y_bottom - subfig_y_offset;
-
-    if y_pos < 0
-        y_pos = 0.005;
-    end
-
-    annotation(fig, 'textbox', ...
-        [x_pos, y_pos, subfig_box_width, subfig_box_height], ...
-        'String', subfig_label{ii}, ...
-        'FontName', 'Times New Roman', ...
-        'FontSize', subfig_fontsize, ...
-        'Interpreter', 'latex', ...
-        'HorizontalAlignment', 'center', ...
-        'VerticalAlignment', 'middle', ...
-        'LineStyle', 'none');
-end
+print(fig, 'Fig_4_1.pdf', '-dpdf', '-vector');
+ 

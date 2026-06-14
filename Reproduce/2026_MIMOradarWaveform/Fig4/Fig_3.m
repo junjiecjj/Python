@@ -140,7 +140,7 @@ plot(1:1:N, PAR1(3,:), 'b--d', 'LineWidth', 1.5); hold on;
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-h_legend =  legend('CA(PAR=1):optimal R', 'CA(PAR$\leq$1.1):optimal R', 'CA(PAR$\leq$2):optimal R', 'Interpreter', 'latex');
+h_legend =  legend('CA:strict R, (PAR=1)', 'CA:strict R, (PAR$\leq$1.1)', 'CA:strict R, (PAR$\leq$2)', 'Interpreter', 'latex');
 legendsize = 14;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 % set(h_legend,'Interpreter','latex') %  'box','off');
@@ -184,7 +184,7 @@ plot(1:1:N, PAR2(3,:), 'b--d', 'LineWidth', 1.5); hold on;
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-h_legend =  legend('CA(PAR=1):optimal R', 'CA(PAR$\leq$1.1):optimal R', 'CA(PAR$\leq$2):optimal R', 'Interpreter', 'latex');
+h_legend =  legend('CA:PAR=1', 'CA:PAR$\leq$1.1', 'CA:PAR$\leq$2', 'Interpreter', 'latex');
 legendsize = 14;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
 % set(h_legend,'Interpreter','latex') %  'box','off');
