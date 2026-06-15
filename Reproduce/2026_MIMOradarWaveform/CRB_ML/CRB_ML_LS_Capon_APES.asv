@@ -12,7 +12,7 @@ d_lambda = 0.5;
 Pt = 2;
 theta_true_deg = 10;
 beta = 1;
-SNR_dB_vec = -40:10:0;
+SNR_dB_vec = -40:4:0;
 MC_trials = 100;
 
 theta_search_min = theta_true_deg - 20;
@@ -42,8 +42,8 @@ a0 = a_fun(theta_true_rad);
 R_orth = eye(N);
 
 R_coherent = a0 * a0';
-epsilon = 0.6;
-R_coherent = (1 - epsilon) * R_coherent + epsilon * eye(N);
+epsilon = 0.05;
+R_coherent = (1 - epsilon) * R_coherent + epsilon * eye(N) / N;
 
 
 % G = randn(N, N) + 1j * randn(N, N);

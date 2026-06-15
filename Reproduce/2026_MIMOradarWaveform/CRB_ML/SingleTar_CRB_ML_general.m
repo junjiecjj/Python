@@ -13,7 +13,7 @@ Pt = 2;
 theta_true_deg = 10;
 beta = 1;
 SNR_dB_vec = -40:4:0;
-MC_trials = 100;
+MC_trials = 2000;
 
 theta_search_min = theta_true_deg - 20;
 theta_search_max = theta_true_deg + 20;
@@ -38,14 +38,17 @@ theta_true_rad = theta_true_deg * pi / 180;
 a0 = a_fun(theta_true_rad);
 
 R_orth = eye(N);
-% R_coherent = a0 * a0';
 
-G = randn(N, N) + 1j * randn(N, N);
-R_random = G * G';
-R_coherent = (R_random + R_random') / 2;
+% G = randn(N, N) + 1j * randn(N, N);
+% R_random = G * G';
+% R_coherent = (R_random + R_random') / 2;
+% 
+% cohe = 0.9;
+% R_coherent = (1-cohe)*eye(N) + cohe*ones(N);
 
-cohe = 0.9;
-R_coherent = (1-cohe)*eye(N) + cohe*ones(N);
+R_coherent = a0 * a0';
+epsilon = 0.3;
+R_coherent = (1 - epsilon) * R_coherent + epsilon * eye(N);
 
 R_orth = Pt * R_orth / real(trace(R_orth));
 R_coherent = Pt * R_coherent / real(trace(R_coherent));
@@ -154,5 +157,5 @@ set(get(gca, 'YAxis'), 'FontSize', 12);
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
 
-% print(gcf, 'Fig_5_1a.pdf', '-dpdf', '-vector');
+print(gcf, 'Fig_5_1a.pdf', '-dpdf', '-vector');
 

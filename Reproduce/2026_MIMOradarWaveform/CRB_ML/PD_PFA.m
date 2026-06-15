@@ -32,13 +32,19 @@ v0 = v_fun(theta_true_rad);
 
 %% Transmit covariance matrices
 R_orth = eye(N);
-R_coherent = a0 * a0';
+
+
 % cohe = 0.9;
 % R_coherent = (1-cohe)*eye(N) + cohe*ones(N);
 
 % G = randn(N, N) + 1j * randn(N, N);
 % R_random = G * G';
 % R_coherent = (R_random + R_random') / 2;
+
+R_coherent = a0 * a0';
+epsilon = 0.3;
+R_coherent = (1 - epsilon) * R_coherent + epsilon * eye(N);
+
 
 R_orth = Pt * R_orth / real(trace(R_orth));
 R_coherent = Pt * R_coherent / real(trace(R_coherent));
@@ -131,7 +137,7 @@ set(get(gca, 'XAxis'), 'FontSize', 12);  % 调整坐标轴刻度标签（tick la
 set(get(gca, 'YAxis'), 'FontSize', 12);
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
-set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]); 
+set(gca, 'Position', [0.1, 0.15, 0.87, 0.84]); 
 print(gcf, 'Fig_PD_vs_PFA.pdf', '-dpdf', '-vector');
 
 %% Figure 2: P_D versus SNR
@@ -171,4 +177,4 @@ set(get(gca, 'YAxis'), 'FontSize', 12);
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
 
-print(gcf, 'Fig_PD_vs_SNR.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_PD_vs_SNR.pdf', '-dpdf', '-vector');
