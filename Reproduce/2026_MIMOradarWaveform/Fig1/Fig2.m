@@ -99,8 +99,6 @@ for idx = 1:L
     GLRT(idx) = 1 - ar' / Ryy * ar / denom_GLRT;
 
     % ========== APES 严格按公式(7)计算 ==========
-    % 构造 Q = Ryy - (Ryx * a * a' * Ryx') / denom
-    % Q = Ryy - (Ryx * conj(at) * at.' * Ryx') / (at.' * Rxx * conj(at));
     APES(idx) = ar'/Q * Ryx * at / ((ar' /Q * ar) * (at' * Rxx * at));
 
     % ========== Capon 空间谱 —— 严格按照公式(5) ==========
