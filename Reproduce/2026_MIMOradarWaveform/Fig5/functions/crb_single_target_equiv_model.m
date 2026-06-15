@@ -1,6 +1,6 @@
 
 
-% Eq.(57)-(59)
+% Eq.(57)-(59) in <Target Detection and Localization Using MIMO Radars and Sonars>
 function CRB_rad2 = crb_single_target_equiv_model(theta_deg, alpha, Rs, M, N_eff, sigma2, A_fun, dA_fun)
     d = d_beta_vec(theta_deg, Rs, M, N_eff, A_fun);
     dd = d_beta_deriv_vec(theta_deg, Rs, M, N_eff, dA_fun);

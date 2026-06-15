@@ -179,7 +179,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
 
-print(gcf, 'Fig_5_2.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_5_2.pdf', '-dpdf', '-vector');
 
 
 
