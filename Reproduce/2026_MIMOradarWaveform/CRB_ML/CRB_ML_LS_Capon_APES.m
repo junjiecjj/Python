@@ -12,8 +12,8 @@ d_lambda = 0.5;
 Pt = 2;
 theta_true_deg = 10;
 beta = 1;
-SNR_dB_vec = -40:10:0;
-MC_trials = 100;
+SNR_dB_vec = -40:4:0;
+MC_trials = 10000;
 
 theta_search_min = theta_true_deg - 20;
 theta_search_max = theta_true_deg + 20;
@@ -42,7 +42,7 @@ a0 = a_fun(theta_true_rad);
 R_orth = eye(N);
 
 R_coherent = a0 * a0';
-epsilon = 0.6;
+epsilon = 0.3;
 R_coherent = (1 - epsilon) * R_coherent + epsilon * eye(N);
 
 
@@ -156,8 +156,8 @@ set(gcf, 'PaperSize', [width, height]);
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 
-semilogy(SNR_dB_vec, CRB_orth_A_deg, 'k-', 'LineWidth', 1.8); hold on;
-semilogy(SNR_dB_vec, RMSE_ml_orth_deg, 'b--o', 'LineWidth', 1.4);
+semilogy(SNR_dB_vec, CRB_orth_A_deg, 'r-', 'LineWidth', 1.8); hold on;
+semilogy(SNR_dB_vec, RMSE_ml_orth_deg, 'r--o', 'LineWidth', 1.4);
 % semilogy(SNR_dB_vec, RMSE_LS_orth_deg, 'o-', 'LineWidth', 1.2, 'MarkerSize', 6);
 p3 = semilogy(SNR_dB_vec, RMSE_Capon_orth_deg, '-s', 'LineWidth', 1.2, 'MarkerSize', 6);
 p3.Color = '#72B063';
@@ -172,7 +172,7 @@ labelsize = 14;
 
 xlabel('SNR (dB)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 ylabel('RMSE of $\theta$ (deg)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-% xlim([min(SNRdB), max(SNRdB)]); 
+ylim([min(CRB_coherent_A_deg), max(RMSE_ml_orth_deg)]); 
 %----- Grid 设置----------------
 grid on;
 set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
@@ -200,7 +200,7 @@ set(gcf, 'PaperSize', [width, height]);
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 
-semilogy(SNR_dB_vec, CRB_coherent_A_deg, 'k-', 'LineWidth', 1.8); hold on;
+semilogy(SNR_dB_vec, CRB_coherent_A_deg, 'b-', 'LineWidth', 1.8); hold on;
 semilogy(SNR_dB_vec, RMSE_ml_coherent_deg, 'b--o', 'LineWidth', 1.4);
 % semilogy(SNR_dB_vec, RMSE_LS_coherent_deg, 'o-', 'LineWidth', 1.2, 'MarkerSize', 6);
 p3 = semilogy(SNR_dB_vec, RMSE_Capon_coherent_deg, '-s', 'LineWidth', 1.2, 'MarkerSize', 6);
@@ -217,7 +217,7 @@ labelsize = 14;
 
 xlabel('SNR (dB)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 ylabel('RMSE of $\theta$ (deg)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-% xlim([min(SNRdB), max(SNRdB)]); 
+ylim([min(CRB_coherent_A_deg), max(RMSE_ml_orth_deg)]); 
 %----- Grid 设置----------------
 grid on;
 set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
