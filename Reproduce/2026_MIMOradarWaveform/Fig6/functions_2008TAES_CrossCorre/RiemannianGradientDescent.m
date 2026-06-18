@@ -1,25 +1,22 @@
 
 
 function X = RiemannianGradientDescent(H, S, X0, Pt, rho)
-% RiemannianGradientDescent  Solve dual-functional waveform design
-%   with per-antenna power constraint using Riemannian gradient descent.
-%
-%   X = RiemannianGradientDescent(H, S, X0, Pt, rho)
-%
-%   Inputs:
-%       H   - K-by-N channel matrix (K users, N antennas)
-%       S   - K-by-L symbol matrix (L symbols)
-%       X0  - N-by-L reference waveform matrix (from radar-only design)
-%       Pt  - total transmit power
-%       rho - trade-off parameter (0 <= rho <= 1)
-%   Output:
-%       X   - optimized N-by-L waveform matrix satisfying per-antenna
-%             power constraint: diag(X*X') = (L*Pt/N)*ones(N,1)
-%
-%   This implementation is a simplified version of the RCG algorithm
-%   (Algorithm 2 in Liu et al., TSP 2018), using only the negative
-%   Riemannian gradient as descent direction.
-
+    % RiemannianGradientDescent  Solve dual-functional waveform design
+    %   with per-antenna power constraint using Riemannian gradient descent.
+    %
+    %   X = RiemannianGradientDescent(H, S, X0, Pt, rho)
+    %   Inputs:
+    %       H   - K-by-N channel matrix (K users, N antennas)
+    %       S   - K-by-L symbol matrix (L symbols)
+    %       X0  - N-by-L reference waveform matrix (from radar-only design)
+    %       Pt  - total transmit power
+    %       rho - trade-off parameter (0 <= rho <= 1)
+    %   Output:
+    %       X   - optimized N-by-L waveform matrix satisfying per-antenna
+    %             power constraint: diag(X*X') = (L*Pt/N)*ones(N,1)
+    %   This implementation is a simplified version of the RCG algorithm
+    %   (Algorithm 2 in Liu et al., TSP 2018), using only the negative
+    %   Riemannian gradient as descent direction.
     % -------------------------------------------------------------------------
     % Retraction mapping for oblique manifold.
     % Maps a point X + Z back to the manifold where each row has norm
@@ -31,7 +28,6 @@ function X = RiemannianGradientDescent(H, S, X0, Pt, rho)
         d = diag(Y * Y') .^ (-1/2);
         RxZ = sqrt(M * Pt / N) * diag(d) * Y;
     end
-    
     % -------------------------------------------------------------------------
     % Projection onto the tangent space of the oblique manifold at X.
     % Enforces Re( diag(Z*X') ) = 0.
@@ -68,16 +64,13 @@ function X = RiemannianGradientDescent(H, S, X0, Pt, rho)
         % Project to tangent space -> Riemannian gradient
         gradF = Px(X, dF, Pt);
         fx = norm(A * X - B, 'fro')^2;
-
         % Check termination
         if k > maxNumIterations || norm(gradF, 'fro') < delta
             break;
         end
-
         % Descent direction = negative Riemannian gradient
         G = -gradF;
         gamma = real(trace(gradF * G'));  % = -||gradF||^2 < 0
-
         % Armijo line search to find step size mu
         m = 0;
         mu = 1;
@@ -91,7 +84,6 @@ function X = RiemannianGradientDescent(H, S, X0, Pt, rho)
             end
             m = m + 1;
         end
-
         k = k + 1;
     end
 end

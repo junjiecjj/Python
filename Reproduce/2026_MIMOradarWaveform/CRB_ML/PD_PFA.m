@@ -115,8 +115,8 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]); 
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 
-semilogx(PFA_vec, PD_orth_vs_PFA, 'b-', 'LineWidth', linewidth); hold on;
-semilogx(PFA_vec, PD_coherent_vs_PFA, 'r--', 'LineWidth', linewidth);
+semilogx(PFA_vec, PD_orth_vs_PFA, 'r-', 'LineWidth', linewidth); hold on;
+semilogx(PFA_vec, PD_coherent_vs_PFA, 'b--', 'LineWidth', linewidth);
 
 h_legend = legend('Orthogonal signal', 'Coherent signal', 'Location', 'northeast', 'Interpreter', 'latex');
 
@@ -156,8 +156,8 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]); 
 set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
 
-plot(SNR_dB_vec, PD_orth_vs_SNR, 'b-', 'LineWidth', linewidth); hold on;
-plot(SNR_dB_vec, PD_coherent_vs_SNR, 'r--', 'LineWidth', linewidth);
+plot(SNR_dB_vec, PD_orth_vs_SNR, 'r-', 'LineWidth', linewidth); hold on;
+plot(SNR_dB_vec, PD_coherent_vs_SNR, 'b--', 'LineWidth', linewidth);
 h_legend = legend('Orthogonal signal', 'Coherent signal', 'Location', 'northeast', 'Interpreter', 'latex');
 
 legendsize = 12;
