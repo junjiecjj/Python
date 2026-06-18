@@ -6,8 +6,8 @@ close all;
 %% 参数设置（与论文一致，但提高分辨率）
 M = 10;                     % 天线数（提高分辨率，使三峰分离）
 N = 8;
-N = 2000;                    % 快拍数
-sigma2_dB = -10;            % 噪声功率 (dB)
+L = 2000;                    % 快拍数
+sigma2_dB = 0;            % 噪声功率 (dB)
 sigma2 = 10^(sigma2_dB/10);
 jammer_power = 50;         
 jammer_power = 10^(jammer_power/10); % 干扰功率 (60 dB)
@@ -19,35 +19,41 @@ beta = [4, 3, 1];
 theta_jammer = 0;              % 度
 
 % 导向矢量函数 (均匀线阵，半波长间距)
-a_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
+ar_func = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));
+at_func = @(theta) exp(1j * pi * (0:N-1)' * sind(theta));
 
-A = zeros(M, length(theta_targets));
+V = zeros(M, length(theta_targets));
 for k = 1:length(theta_targets)
-    A(:,k) = a_func(theta_targets(k));
+    V(:,k) = ar_func(theta_targets(k));
+end
+
+A = zeros(N, length(theta_targets));
+for k = 1:length(theta_targets)
+    A(:,k) = at_func(theta_targets(k));
 end
 
 %% 生成发射信号 x(n) ~ CN(0, (c/M)*I)
 % data = randi([0 3], M, N); % 生成 0~3 的随机整数
 % x = qammod(data, 4, 'UnitAveragePower', true);
-x = (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+x = (randn(N, L) + 1j*randn(N, L)) / sqrt(2);
 % 生成目标回波
-X = zeros(M, N);
+X = zeros(M, L);
 for k = 1:length(theta_targets)
-    at = a_func(theta_targets(k));
-    ar = a_func(theta_targets(k));
+    at = at_func(theta_targets(k));
+    ar = ar_func(theta_targets(k));
     X = X + beta(k) * ar * (at' * x);
     % X = X + beta(k) * conj(ar) * (at' * x); % 这种也是对的
 end
 % 以上过程等效为
-X = A * diag(beta) * A' * x;
+X = V * diag(beta) * A' * x;
 
 % 生成干扰回波
-jam = sqrt(jammer_power) * (randn(1, N) + 1j*randn(1, N)) / sqrt(2);
-ac_jammer = a_func(theta_jammer);
+jam = sqrt(jammer_power) * (randn(1, L) + 1j*randn(1, L)) / sqrt(2);
+ac_jammer = ar_func(theta_jammer);
 y_jammer = ac_jammer * jam;
 
 % 生成噪声
-noise = sqrt(sigma2) * (randn(M, N) + 1j*randn(M, N)) / sqrt(2);
+noise = sqrt(sigma2) * (randn(M, L) + 1j*randn(M, L)) / sqrt(2);
 % SNR_lin = 10;
 % SNR_lin = 10^(SNR_lin/10);
 % Rw = zeros(M, M);
@@ -86,8 +92,8 @@ APES = zeros(L, 1);
 %% 扫描每个角度
 for idx = 1:L
     theta = theta_scan(idx);
-    at = a_func(theta);       % 发射导向矢量 M×1
-    ar = a_func(theta);     % 接收导向矢量 M×1
+    at = at_func(theta);       % 发射导向矢量 M×1
+    ar = ar_func(theta);     % 接收导向矢量 M×1
 
     % ========== LS  ==========
     LS(idx) = (ar' * Ryx * at) / (norm(ar)^2 * at' * Rxx * at);

@@ -27,16 +27,6 @@ for i = 1:size(x_vec,2)
 end
 F_grid = reshape(f_vals, size(Xs));
 
-figure;
-surf(Xs, Ys, Zs, F_grid, 'EdgeColor', 'none', 'FaceAlpha', 0.9);
-colormap(jet);
-colorbar;
-caxis([min(f_vals), max(f_vals)]);
-axis equal;
-xlabel('x'); ylabel('y'); zlabel('z');
-title('Rayleigh quotient on the sphere: f(x) = (x^T A x)/(x^T x)');
-grid on;
-hold on;
 
 [V, D] = eig(A);
 [~, idx_min] = min(diag(D));
@@ -88,6 +78,18 @@ end
 fprintf('Final f(x) = %f\n', f(x));
 fprintf('Final point (approx eigenvector of smallest eigenvalue):\n');
 disp(x);
+
+figure(1);
+surf(Xs, Ys, Zs, F_grid, 'EdgeColor', 'none', 'FaceAlpha', 0.9);
+colormap(jet);
+colorbar;
+caxis([min(f_vals), max(f_vals)]);
+axis equal;
+xlabel('x'); ylabel('y'); zlabel('z');
+title('Rayleigh quotient on the sphere: f(x) = (x^T A x)/(x^T x)');
+grid on;
+hold on;
+
 
 %% 4. Plot trajectory and adjust view
 x_vals = X_hist(1,:);
