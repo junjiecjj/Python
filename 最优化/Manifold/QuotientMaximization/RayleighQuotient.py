@@ -71,11 +71,11 @@ r = 1
 ### 球坐标转化为三维直角坐标
 # 第一种方法
 # z轴坐标网格数据
-Z = np.outer(r*np.cos(theta), np.ones(nphi+1))
-# x轴坐标网格数据
-X = np.outer(r*np.sin(theta), np.cos(phi))
-# y轴坐标网格数据
-Y = np.outer(r*np.sin(theta), np.sin(phi))
+# Z = np.outer(r*np.cos(theta), np.ones(nphi+1))
+# # x轴坐标网格数据
+# X = np.outer(r*np.sin(theta), np.cos(phi))
+# # y轴坐标网格数据
+# Y = np.outer(r*np.sin(theta), np.sin(phi))
 
 # 第二种方法
 pp_, tt_ = np.meshgrid(phi, theta)
