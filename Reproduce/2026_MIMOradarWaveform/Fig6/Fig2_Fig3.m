@@ -52,6 +52,7 @@ w_l = ones(length(theta_grid), 1);
 w_c = 0;
 [DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
 P_des1 = P_des * alpha1;
+fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
 
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  helperMMSECovariance 默认 diag(R)=1, trace(R)=M,为了和文献1对齐，将 R 除以 M，使 trace(R)=1
@@ -62,7 +63,7 @@ DirectRd2 = DirectRd2 + 1e-10 * eye(size(M));
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
-fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
+fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
 SNRdB = -5:1:12;
 N0 = Pt ./ 10.^(SNRdB/10);

@@ -17,13 +17,12 @@ M = 16;                     % 天线数
 N = 16;
 L = 100;                     % # of Communication Frame
 Pt  = 1;
-c = ones(N, 1) * Pt/N;       % 对角元固定值
+c = ones(M, 1) * Pt/M;       % 对角元固定值
 
 % comm snr
 SNRdB = 10;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
-beta = 1
 RadarSNRdB = -6;
 radarSNR = 10^(RadarSNRdB / 10);
 
@@ -32,9 +31,9 @@ thetaDetect = 0;
 
 d = 0.5;
 lambda = 2 * d;
-pos = (0:N-1) * d;
+pos = (0:M-1) * d;
 normalizedPos = pos / lambda;
-afun = @(theta) exp(1j * pi * (0:N-1)' * sind(theta));  % N×1
+afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
 
 %% Desired Beampattern
 theta_est = [thetaDetect];   % 目标角度估计（度）
@@ -51,7 +50,7 @@ end
 P_des(idx) = 1;
 
 %% Omni-Directional Beampattern
-OmniRd = (Pt / N) * eye(N);
+OmniRd = (Pt / M) * eye(M);
 fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 
 %% Tradeoff Settings
@@ -73,7 +72,7 @@ for iter = 1:Iters
         rho = rhoList(idxRho);
         for idxKc = 1:length(KcList)
             Kc = KcList(idxKc);
-            H = (randn(Kc, N) + 1j * randn(Kc, N)) / sqrt(2);
+            H = (randn(Kc, M) + 1j * randn(Kc, M)) / sqrt(2);
             data = randi([0, 3], Kc, L);
             S = pskmod(data, 4, pi / 4, 'gray');
             
@@ -81,11 +80,11 @@ for iter = 1:Iters
 
             OmniTradeoffXTol = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArrayTol(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXTol, S, N0);
-            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(OmniTradeoffXTol, thetaDetect, M * radarSNR, Pfa);
+            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXTol, thetaDetect, radarSNR, Pfa);
 
             % OmniTradeoffXPerAnt = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
             % OmniRateArrayPerAnt(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXPerAnt, S, N0);
-            % OmniProbabilityArrayPerAnt(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(N) * OmniTradeoffXPerAnt, thetaDetect, radarSNR, Pfa);
+            % OmniProbabilityArrayPerAnt(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffXPerAnt, thetaDetect, radarSNR, Pfa);
         end
     end
 end
@@ -177,7 +176,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
-% print(gcf, 'Fig_6_3.pdf', '-dpdf', '-vector');
+print(gcf, 'Fig_6_3.pdf', '-dpdf', '-vector');
 
 if 0
     %% 计算 beampattern

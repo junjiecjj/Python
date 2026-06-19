@@ -11,7 +11,7 @@ addpath('./functions_2008TSP_WaveformSynthesis');
 
 
 %% 1. 参数设置（示例，可修改）
-Kc = 6;                      % # of users
+Kc = 4;                      % # of users
 M = 16;                     % 天线数
 L = 100;                     % # of Communication Frame
 Pt  = 1;
@@ -49,7 +49,7 @@ w_l = ones(length(theta_grid), 1);
 w_c = 0;
 [DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
 P_des1 = P_des * alpha1;
-
+fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  helperMMSECovariance 默认 diag(R)=1, trace(R)=M,为了和文献1对齐，将 R 除以 M，使 trace(R)=1
 DirectRd2 = helperMMSECovariance(normalizedPos, P_des, theta_grid);
@@ -59,7 +59,7 @@ DirectRd2 = DirectRd2 + 1e-10 * eye(size(M));
 %  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 %  不用 cos(theta) 权重，不做积分归一化，不用 barrier/Newton，直接 CVX 最小化二范数
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
-fprintf('trace(Rmmse1) = %.6f\n',  trace(DirectRd3));
+fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
 
 SNRdB = -5:1:18;
 N0 = Pt ./ 10.^(SNRdB/10);
@@ -166,11 +166,11 @@ semilogy(SNRdB, DirectTradeoffSERPerAnt, 'r--d', 'LineWidth', 1.5, 'MarkerSize',
 semilogy(SNRdB, ZeroMUISER, 'k--v', 'LineWidth', 1.5, 'MarkerSize', 7);
 
 h_legend =  legend('Omni-Strict', ...
-       'Omni-Tradeoff-Total, $\rho$ = 0.2', ...
-       'Omni-Tradeoff-perAnt, $\rho$ = 0.2', ...
+       'Omni-Tradeoff-Tol, $\rho$ = 0.2', ...
+       'Omni-Tradeoff-Per, $\rho$ = 0.2', ...
        'Directional-Strict', ...
-       'Directional-Tradeoff-Total, $\rho$ = 0.2', ...
-       'Directional-Tradeoff-perAnt, $\rho$ = 0.2', ...
+       'Directional-Tradeoff-Tol, $\rho$ = 0.2', ...
+       'Directional-Tradeoff-Per, $\rho$ = 0.2', ...
        'Zero MUI', ...
        'Location', 'SouthWest',...
        'Interpreter', 'latex');
@@ -190,7 +190,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
-% print(gcf, 'Fig_6_6.pdf', '-dpdf', '-vector');
+print(gcf, 'Fig_6_ser.pdf', '-dpdf', '-vector');
 
 
 
