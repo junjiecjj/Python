@@ -31,7 +31,9 @@ X = r * sin(tt_) .* cos(pp_);
 Y = r * sin(tt_) .* sin(pp_);
 Points = [X(:), Y(:), Z(:)];
 
-Q = [1, 0.5, 1; 0.5, 2, -0.2; 1, -0.2, 1];
+Q = [1, 0.5, 1; 
+    0.5, 2, -0.2; 
+    1, -0.2, 1];
 Rayleigh_Q = sum((Points * Q) .* Points, 2);
 Rayleigh_Q_ = reshape(Rayleigh_Q, size(X));
 
@@ -159,7 +161,8 @@ set(fig, 'Position', [100, 100, 1000, 1000]);
 ax = axes(fig);
 hold(ax, 'on');
 
-mesh(ax, X, Y, Z, 'EdgeColor', [0.5, 0.5, 0.5], 'LineWidth', 0.25, 'FaceColor', 'none', 'HandleVisibility', 'off');
+surf(ax, X, Y, Z, Rayleigh_Q_, 'FaceColor', 'interp', 'EdgeColor', 'interp', 'LineWidth', 0.25, 'FaceAlpha', 0, 'HandleVisibility', 'off');
+colormap(turbo);
 plot_trajectory_3d(ax, x_hist);
 
 xlabel(ax, '$\it{x_1}$', 'Interpreter', 'latex');
@@ -482,48 +485,48 @@ end
 % 本地函数 3：在三维球面图上绘制 RGD 轨迹
 % ============================================================
 function plot_trajectory_3d(ax, x_hist)
-plot3(ax, x_hist(:, 1), x_hist(:, 2), x_hist(:, 3), 'k-o', 'LineWidth', 2.4, 'MarkerSize', 3, 'DisplayName', 'RGD path');
-scatter3(ax, x_hist(1, 1), x_hist(1, 2), x_hist(1, 3), 80, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k', 'DisplayName', 'Start');
-scatter3(ax, x_hist(end, 1), x_hist(end, 2), x_hist(end, 3), 90, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k', 'DisplayName', 'End');
+    plot3(ax, x_hist(:, 1), x_hist(:, 2), x_hist(:, 3), 'k-o', 'LineWidth', 2.4, 'MarkerSize', 3, 'DisplayName', 'RGD path');
+    scatter3(ax, x_hist(1, 1), x_hist(1, 2), x_hist(1, 3), 80, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k', 'DisplayName', 'Start');
+    scatter3(ax, x_hist(end, 1), x_hist(end, 2), x_hist(end, 3), 90, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k', 'DisplayName', 'End');
 end
 
 % ============================================================
 % 本地函数 4：在二维展开图上绘制 RGD 轨迹
 % ============================================================
 function plot_trajectory_2d(ax, phi_hist, theta_hist)
-phi_plot = phi_hist(:);
-theta_plot = theta_hist(:);
-idx_jump = find(abs(diff(phi_plot)) > pi, 1, 'first');
-if ~isempty(idx_jump)
-    phi_plot = [phi_plot(1:idx_jump); NaN; phi_plot(idx_jump + 1:end)];
-    theta_plot = [theta_plot(1:idx_jump); NaN; theta_plot(idx_jump + 1:end)];
-end
-plot(ax, phi_plot, theta_plot, 'k-o', 'LineWidth', 2.4, 'MarkerSize', 3, 'DisplayName', 'RGD path');
-scatter(ax, phi_hist(1), theta_hist(1), 70, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k', 'DisplayName', 'Start');
-scatter(ax, phi_hist(end), theta_hist(end), 80, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k', 'DisplayName', 'End');
+    phi_plot = phi_hist(:);
+    theta_plot = theta_hist(:);
+    idx_jump = find(abs(diff(phi_plot)) > pi, 1, 'first');
+    if ~isempty(idx_jump)
+        phi_plot = [phi_plot(1:idx_jump); NaN; phi_plot(idx_jump + 1:end)];
+        theta_plot = [theta_plot(1:idx_jump); NaN; theta_plot(idx_jump + 1:end)];
+    end
+    plot(ax, phi_plot, theta_plot, 'k-o', 'LineWidth', 2.4, 'MarkerSize', 3, 'DisplayName', 'RGD path');
+    scatter(ax, phi_hist(1), theta_hist(1), 70, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k', 'DisplayName', 'Start');
+    scatter(ax, phi_hist(end), theta_hist(end), 80, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k', 'DisplayName', 'End');
 end
 
 % ============================================================
 % 本地函数 5：将二维等高线映射回三维单位球面
 % ============================================================
 function plot_contours_on_sphere(ax, C, fixed_color, levels, line_width)
-idx = 1;
-cmap = turbo(256);
-while idx < size(C, 2)
-    level = C(1, idx);
-    num_points = C(2, idx);
-    phi_i = C(1, idx + 1:idx + num_points);
-    theta_i = C(2, idx + 1:idx + num_points);
-    Z_i = cos(theta_i);
-    X_i = sin(theta_i) .* cos(phi_i);
-    Y_i = sin(theta_i) .* sin(phi_i);
-    if ~isempty(fixed_color)
-        plot3(ax, X_i, Y_i, Z_i, 'Color', fixed_color, 'LineWidth', line_width, 'HandleVisibility', 'off');
-    else
-        t = (level - min(levels)) / (max(levels) - min(levels));
-        color_idx = max(1, min(256, round(1 + t * 255)));
-        plot3(ax, X_i, Y_i, Z_i, 'Color', cmap(color_idx, :), 'LineWidth', line_width, 'HandleVisibility', 'off');
+    idx = 1;
+    cmap = turbo(256);
+    while idx < size(C, 2)
+        level = C(1, idx);
+        num_points = C(2, idx);
+        phi_i = C(1, idx + 1:idx + num_points);
+        theta_i = C(2, idx + 1:idx + num_points);
+        Z_i = cos(theta_i);
+        X_i = sin(theta_i) .* cos(phi_i);
+        Y_i = sin(theta_i) .* sin(phi_i);
+        if ~isempty(fixed_color)
+            plot3(ax, X_i, Y_i, Z_i, 'Color', fixed_color, 'LineWidth', line_width, 'HandleVisibility', 'off');
+        else
+            t = (level - min(levels)) / (max(levels) - min(levels));
+            color_idx = max(1, min(256, round(1 + t * 255)));
+            plot3(ax, X_i, Y_i, Z_i, 'Color', cmap(color_idx, :), 'LineWidth', line_width, 'HandleVisibility', 'off');
+        end
+        idx = idx + num_points + 1;
     end
-    idx = idx + num_points + 1;
-end
 end
