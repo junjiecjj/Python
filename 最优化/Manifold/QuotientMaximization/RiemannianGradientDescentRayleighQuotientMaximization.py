@@ -86,70 +86,6 @@ X = r*np.sin(tt_)*np.cos(pp_)
 # y轴坐标网格数据
 Y = r*np.sin(tt_)*np.sin(pp_)
 
-############# 1 画出单位球
-fig = plt.figure(figsize = (20, 20))
-ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_wireframe(X, Y, Z, rstride=2, cstride=2, linewidth=0.25)
-# 单独绘制经纬线
-# surf = ax.plot_wireframe(X, Y, Z, rstride=0, cstride=2, linewidth=0.25)
-# surf = ax.plot_wireframe(X, Y, Z, rstride=2, cstride=0, linewidth=0.25)
-surf.set_facecolor((0,0,0,0)) #利用 set_facecolor((0, 0, 0, 0)) 将曲面的表面颜色设置为透明,这样仅仅显示曲线。
-
-ax.set_proj_type('ortho')
-# 另外一种设定正交投影的方式
-
-ax.set_xlabel(r'$\it{x_1}$')
-ax.set_ylabel(r'$\it{x_2}$')
-ax.set_zlabel(r'$\it{x_3}$')
-ax.set_xticks([])
-ax.set_yticks([])
-ax.set_zticks([])
-k = 1.5
-# three reference lines
-# ax.plot((-k, k), (0, 0), (0, 0), 'k')
-# ax.plot((0, 0), (-k, k), (0, 0), 'k')
-# ax.plot((0, 0), (0, 0), (-k, k), 'k')
-ax.axis('off')
-ax.set_xlim((-k, k))
-ax.set_ylim((-k, k))
-ax.set_zlim((-k, k))
-ax.set_box_aspect([1,1,1])
-ax.view_init(azim=-155, elev=35)
-ax.grid(False)
-plt.show()
-
-############# 2 画出单位球,并画出小点点
-fig = plt.figure(figsize = (20, 20))
-ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_wireframe(X, Y, Z, rstride=2, cstride=2, color = '0.68',linewidth=0.25)
-surf.set_facecolor((0,0,0,0))
-ax.scatter(X[::2,::2],
-           Y[::2,::2],
-           Z[::2,::2],
-           s = 3.8)
-ax.set_proj_type('ortho')
-# 另外一种设定正交投影的方式
-
-ax.set_xlabel(r'$\it{x_1}$')
-ax.set_ylabel(r'$\it{x_2}$')
-ax.set_zlabel(r'$\it{x_3}$')
-ax.set_xticks([])
-ax.set_yticks([])
-ax.set_zticks([])
-k = 1.5
-# three reference lines
-# ax.plot((-k, k), (0, 0), (0, 0), 'k')
-# ax.plot((0, 0), (-k, k), (0, 0), 'k')
-# ax.plot((0, 0), (0, 0), (-k, k), 'k')
-ax.axis('off')
-ax.set_xlim((-k, k))
-ax.set_ylim((-k, k))
-ax.set_zlim((-k, k))
-ax.set_box_aspect([1,1,1])
-ax.view_init(azim = -155, elev = 35)
-ax.grid(False)
-plt.show()
-
 ################## 1. 计算瑞利商
 # 每一行代表一个三维直角坐标系坐标点
 # 所有坐标点都在单位球面上
@@ -212,7 +148,7 @@ ax.grid(False)
 plt.show()
 
 
-## 2. 填充
+################## 2. 填充
 norm_plt = plt.Normalize(Rayleigh_Q_.min(), Rayleigh_Q_.max())
 colors = cm.RdYlBu_r(norm_plt(Rayleigh_Q_)) # (51, 101, 4)
 
@@ -244,7 +180,7 @@ ax.grid(False)
 # fig.savefig('Figures/瑞利商，填充.svg', format='svg')
 plt.show()
 
-## 3. 只有网格
+################## 3. 只有网格
 fig = plt.figure(figsize = (20, 20))
 ax = fig.add_subplot(111, projection='3d')
 surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, facecolors=colors,  linewidth=0.25, shade=False)
@@ -275,27 +211,7 @@ ax.grid(False)
 plt.show()
 
 
-#%%###############  将瑞利商球面展开
-fig, ax = plt.subplots(figsize = (12, 5))
-c = ax.scatter(pp_, tt_, s = 1.8)
-ax.set_ylim(tt_.min(), tt_.max())
-ax.set_xlim(pp_.min(), pp_.max())
-ax.set_xlabel(r'$\phi$')
-ax.set_ylabel(r'$\theta$', rotation=0)
-ax.set_xticks(np.linspace(0, 2*np.pi, 5))
-ax.set_xticklabels(['0', r'$\pi/2 (90^\circ)$', r'$\pi (180^\circ)$', r'$3\pi/2 (270^\circ)$', r'$2\pi (360^\circ)$'])
-
-ax.set_yticks(np.linspace(0, np.pi, 3))
-ax.set_yticklabels(['0', r'$\pi/2 (90^\circ)$', r'$\pi (180^\circ)$'])
-ax.invert_yaxis()
-plt.axis('scaled')
-plt.grid()
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-ax.spines['left'].set_visible(False)
-# fig.savefig('Figures/角度网格散点.svg', format='svg')
-plt.show()
+#%%###############  将瑞利商球面展开为平面
 
 ## θ、φ 网格数据,将球体展开成平面
 fig, ax = plt.subplots()
@@ -388,61 +304,6 @@ plt.show()
 
 
 #%% 单位球面上的瑞利商等高线
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib import cm
-
-# 设置步数
-intervals = 50
-ntheta = intervals
-nphi = 2*intervals
-
-# 单位球，球坐标
-# theta取值范围为 [0, pi]
-theta = np.linspace(0, np.pi*1, ntheta+1)
-# phi取值范围为 [0, 2*pi]
-phi   = np.linspace(0, np.pi*2, nphi+1)
-
-# 单位球半径
-r = 1
-
-# 球坐标转化为三维直角坐标
-# z轴坐标网格数据
-Z = np.outer(r*np.cos(theta), np.ones(nphi+1))
-# x轴坐标网格数据
-X = np.outer(r*np.sin(theta), np.cos(phi))
-# y轴坐标网格数据
-Y = np.outer(r*np.sin(theta), np.sin(phi))
-pp_, tt_ = np.meshgrid(phi, theta)
-
-# 每一行代表一个三维直角坐标系坐标点
-# 所有坐标点都在单位球面上
-Points = np.column_stack([X.ravel(), Y.ravel(), Z.ravel()])
-
-# 定义矩阵Q
-Q = np.array([[1, 0.5, 1],
-              [0.5, 2, -0.2],
-              [1, -0.2, 1]])
-Rayleigh_Q = np.diag(Points @ Q @ Points.T)
-Rayleigh_Q_ = np.reshape(Rayleigh_Q, X.shape)
-
-## 1 展开成平面
-fig, ax = plt.subplots()
-levels = np.linspace(Rayleigh_Q_.min(), Rayleigh_Q_.max(), 12)
-
-colorbar = ax.contour(pp_, tt_, Rayleigh_Q_, levels = levels, cmap='RdYlBu_r')
-
-fig.colorbar(colorbar, ax=ax)
-ax.set_xlim(tt_.min(), tt_.max())
-ax.set_ylim(pp_.min(), pp_.max())
-# ax.set_xticks([])
-# ax.set_yticks([])
-ax.set_xlabel('$phi$')
-ax.set_ylabel('$theta$')
-plt.axis('scaled')
-# fig.savefig('Figures/对x1偏导.svg', format='svg')
-plt.show()
 
 ## 2
 fig, ax = plt.subplots(subplot_kw={'projection': '3d'})

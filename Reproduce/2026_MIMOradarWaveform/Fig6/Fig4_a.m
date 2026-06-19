@@ -23,9 +23,9 @@ c = ones(N, 1) * Pt/N;       % 对角元固定值
 SNRdB = 10;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
-beta = 1
-RadarSNRdB = -6;
-radarSNR = 10^(RadarSNRdB / 10);
+beta = 1;
+RadarSNRdB = -14;
+sigmas2 = Pt * beta^2/10^(RadarSNRdB / 10);
 
 Pfa = 1e-7;
 thetaDetect = 0;
@@ -40,7 +40,7 @@ afun = @(theta) exp(1j * pi * (0:N-1)' * sind(theta));  % N×1
 theta_est = [thetaDetect];   % 目标角度估计（度）
 Kt = length(theta_est);      % 目标个数
 
-Delta = 5;
+Delta = 1;
 theta_grid = -90:0.1:90;
 P_des = zeros(size(theta_grid));
 % Desired beam pattern
@@ -59,7 +59,7 @@ fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
 rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
 rhoList = 10.^(rhodB ./ 10);
 %% Simulation Settings
-Iters = 4000;
+Iters = 1000;
 
 OmniRateArrayTol = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArrayTol = zeros(Iters, length(rhoList), length(KcList));
@@ -81,7 +81,7 @@ for iter = 1:Iters
 
             OmniTradeoffXTol = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArrayTol(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXTol, S, N0);
-            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(OmniTradeoffXTol, thetaDetect, M * radarSNR, Pfa);
+            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(OmniTradeoffXTol, thetaDetect, beta^2*L*M/sigmas2, Pfa);
 
             % OmniTradeoffXPerAnt = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
             % OmniRateArrayPerAnt(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXPerAnt, S, N0);

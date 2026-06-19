@@ -13,32 +13,35 @@ rng(42);
 
 %% 1. 参数设置（示例，可修改）
 KcList = 6 : 2 : 10;         % # of users
-M = 16;                     % 天线数
+M = 16;                     % 收天线数
+N = 16;
 L = 100;                     % # of Communication Frame
 Pt  = 1;
-c = ones(M, 1) * Pt/M;       % 对角元固定值
+c = ones(N, 1) * Pt/N;       % 对角元固定值
 
 % comm snr
 SNRdB = 10;
 N0 = Pt ./ 10.^(SNRdB/10);
 % radar snr
+beta = 1;
 RadarSNRdB = -20;
-radarSNR = 10^(RadarSNRdB / 10);
+sigmas2 = Pt * beta^2/10^(RadarSNRdB / 10);
+
 
 Pfa = 1e-7;
 thetaDetect = 0;
 
 d = 0.5;
 lambda = 2 * d;
-pos = (0:M-1) * d;
+pos = (0:N-1) * d;
 normalizedPos = pos / lambda;
-afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
+afun = @(theta) exp(1j * pi * (0:N-1)' * sind(theta));  % M×1
 
 %% Desired Beampattern
 theta_est = [thetaDetect];   % 目标角度估计（度）
 Kt = length(theta_est);      % 目标个数
 
-Delta = 5;
+Delta = 1;
 theta_grid = -90:0.1:90;
 P_des = zeros(size(theta_grid));
 % Desired beam pattern
@@ -52,15 +55,15 @@ P_des(idx) = 1;
 % %  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design,  diag(R)=1/M, trace(R)=1, wc=0
 w_l = ones(length(theta_grid), 1);
 w_c = 0;
-[DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
+[DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, N, w_l, w_c, theta_est, theta_grid, P_des);
 fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
 
 % % 文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
 % % % helperMMSECovariance 默认 diag(R)=1, trace(R)=M, 为了和文献1对齐，将 R 除以 M，使 trace(R)=1
 DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
-DirectRd2 = DirectRd2_raw / M;
+DirectRd2 = DirectRd2_raw / N;
 DirectRd2 = projectToPSD(DirectRd2);
-DirectRd2 = DirectRd2 + 1e-10 * eye(size(M));
+DirectRd2 = DirectRd2 + 1e-10 * eye(size(N));
 fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
 
 [DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
@@ -72,7 +75,7 @@ DirectRd = DirectRd1;
 rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
 rhoList = 10.^(rhodB ./ 10);
 %% Simulation Settings
-Iters = 4000;
+Iters = 1000;
 
 OmniRateArray = zeros(Iters, length(rhoList), length(KcList));
 OmniProbabilityArray = zeros(Iters, length(rhoList), length(KcList));
@@ -85,14 +88,14 @@ for iter = 1:Iters
         rho = rhoList(idxRho);
         for idxKc = 1:length(KcList)
             Kc = KcList(idxKc);
-            H = (randn(Kc, M) + 1j * randn(Kc, M)) / sqrt(2);
+            H = (randn(Kc, N) + 1j * randn(Kc, N)) / sqrt(2);
             data = randi([0, 3], Kc, L);
             S = pskmod(data, 4, pi / 4, 'gray');
             
             OmniStrictX = strict_waveform(H, S, DirectRd, L);
             OmniTradeoffX = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
             OmniRateArray(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffX, S, N0);
-            OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(M) * OmniTradeoffX, thetaDetect, radarSNR, Pfa);
+            OmniProbabilityArray(iter, idxRho, idxKc) = radar_detection_probability_fig4(OmniTradeoffX, thetaDetect, beta^2*L*M/sigmas2, Pfa);
         end
     end
 end
@@ -167,9 +170,9 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
 set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
-print(gcf, 'Fig_6_4.pdf', '-dpdf', '-vector');
+% print(gcf, 'Fig_6_4.pdf', '-dpdf', '-vector');
 
-if 0
+if 1
     %% 计算 beampattern
     P_lit1 = zeros(size(theta_grid));
     P_lit2 = zeros(size(theta_grid));
