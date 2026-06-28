@@ -55,11 +55,36 @@ disp(x_left.');
 disp('直接周期时延 J*x 的结果:');
 disp(x_right.');
 
+%% Eq.(16)
+N = 8;
+k = 2;
+q = 0;
 
+n = 0:N-1;
 
-%% 
+D = diag(exp(1j * 2 * pi * q * n / N));
 
+J = zeros(N, N);
+J(1:k, N-k+1:N) = eye(k);
+J(k+1:N, 1:N-k) = eye(N-k);
 
+Left = D * J;
+phase_factor = exp(-1j * 2 * pi * q * k / N);
+Right = phase_factor * J * D;
+err_matrix = norm(Left - Right, 'fro');
+
+fprintf('矩阵级验证误差 ||Left - Right||_F = %.3e\n', err_matrix);
+
+x = randn(N, 1) + 1j * randn(N, 1);
+x_left = D * J * x;
+x_right = phase_factor * J * D * x;
+err_signal = norm(x_left - x_right);
+fprintf('信号级验证误差 ||x_left - x_right||_2 = %.3e\n', err_signal);
+
+disp('D * J * x 的结果:');
+disp(x_left.');
+disp('phase_factor * J * D * x 的结果:');
+disp(x_right.');
 
 
 
