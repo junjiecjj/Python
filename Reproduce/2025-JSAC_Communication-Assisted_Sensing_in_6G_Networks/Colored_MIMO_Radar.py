@@ -55,40 +55,6 @@ def align_eigenvectors(U_c, Psi_c):
 
     return Psi_c_aligned, reorder
 
-#%% 按行展开, 是错的，对不上
-M = 2
-N = 3
-T = 4
-I = np.eye(T)
-H = np.arange(M*N).reshape(M, N)
-X = np.random.randn(N, T)
-Y = H@X
-
-y = Y.flatten('C')
-
-Hhat = np.kron(I, H)
-x = X.flatten('C')
-
-yhat = Hhat @ x
-
-#%% 按列展开,对的, Eq.(12)
-M = 2
-N = 3
-T = 4
-
-Hs = np.random.randn(M, N) + 1j * np.random.randn(M, N)
-Xs = np.random.randn(N, T) + 1j * np.random.randn(N, T)
-Ys = Hs@Xs
-
-ys = Ys.conj().T.flatten('F')
-I = np.eye(M)
-Xhat = np.kron(I, Xs.conj().T)
-hs = Hs.conj().T.flatten('F')
-
-yhat = Xhat @ hs
-
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Radar Capacity maximization %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  MMSE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
