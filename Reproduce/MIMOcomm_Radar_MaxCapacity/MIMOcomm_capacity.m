@@ -5,7 +5,7 @@ rng(42);
 N = 4;          % 发射天线 / 目标维数
 M = 6;          % 接收天线
 L = N;          % 雷达快拍数（取 L=N 简化）
-PT = 10;        % 总发射功率
+PT = 1;        % 总发射功率
 sigma_c2 = 1;   % 高斯白噪声方差
 options = optimoptions('fmincon', 'Display', 'off', 'Algorithm', 'sqp');
 
