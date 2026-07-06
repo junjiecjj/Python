@@ -1,3 +1,5 @@
+
+
 clc;
 clear;
 close all;
@@ -58,9 +60,7 @@ fprintf('S = X^H X: %d x %d\n', N, N);
 %  s.t. sum p_i <= PT, p_i >= 0
 % ============================================================
 
-p_MI = water_filling(sigma_z2 * ones(N, 1), lambda_H, PT);
-water_level_MI = compute_water_level(sigma_z2 * ones(N, 1), lambda_H, PT);
-
+[p_MI, water_level_MI] = water_filling(sigma_z2 * ones(N, 1), lambda_H, PT);
 S_MI = U_H * diag(p_MI) * U_H';
 S_MI = (S_MI + S_MI') / 2;
 
@@ -75,8 +75,7 @@ MI_value = sum(log(1 + lambda_H .* p_MI / sigma_z2));
 %  白噪声下，其 KKT 解与 MI 有相同的注水形式
 % ============================================================
 
-p_MSE = water_filling(sigma_z2 * ones(N, 1), lambda_H, PT);
-water_level_MSE = compute_water_level(sigma_z2 * ones(N, 1), lambda_H, PT);
+[p_MSE, water_level_MSE] = water_filling(sigma_z2 * ones(N, 1), lambda_H, PT);
 
 S_MSE = U_H * diag(p_MSE) * U_H';
 S_MSE = (S_MSE + S_MSE') / 2;
@@ -167,13 +166,11 @@ fprintf('S gap: MSE theory vs MSE fmincon        = %.4e\n', norm(S_MSE - S_MSE_f
 
 fprintf('\nMI scalar value, theory                  = %.8f\n', MI_value);
 fprintf('MI scalar value, fmincon                 = %.8f\n', MI_value_fmincon);
-
-fprintf('MSE scalar value, theory                 = %.8f\n', MSE_value);
-fprintf('MSE scalar value, fmincon                = %.8f\n', MSE_value_fmincon);
-
 fprintf('\nMI matrix value using S_MI               = %.8f\n', MI_matrix_MI);
 fprintf('MI matrix value using S_MSE              = %.8f\n', MI_matrix_MSE);
 
+fprintf('MSE scalar value, theory                 = %.8f\n', MSE_value);
+fprintf('MSE scalar value, fmincon                = %.8f\n', MSE_value_fmincon);
 fprintf('MSE matrix value using S_MI              = %.8f\n', MSE_matrix_MI);
 fprintf('MSE matrix value using S_MSE             = %.8f\n', MSE_matrix_MSE);
 
@@ -198,7 +195,7 @@ box on;
 
 %% ============================ Local functions ============================
 
-function power_allocation = water_filling(sigma2, lambda, PT)
+function [power_allocation, water_level] = water_filling(sigma2, lambda, PT)
     N = length(lambda);
     noise_terms = sigma2(:) ./ lambda(:);
     [noise_sorted, idx_sorted] = sort(noise_terms, 'ascend');
@@ -218,20 +215,6 @@ function power_allocation = water_filling(sigma2, lambda, PT)
             power_allocation(idx_sorted(i)) = max(0, water_level - noise_sorted(i));
         else
             power_allocation(idx_sorted(i)) = 0;
-        end
-    end
-end
-
-function water_level = compute_water_level(sigma2, lambda, PT)
-    N = length(lambda);
-    noise_terms = sigma2(:) ./ lambda(:);
-    noise_sorted = sort(noise_terms, 'ascend');
-    water_level = 0;
-    for k = 1:N
-        water_candidate = (PT + sum(noise_sorted(1:k))) / k;
-        if k == N || water_candidate <= noise_sorted(k+1)
-            water_level = water_candidate;
-            break;
         end
     end
 end

@@ -60,9 +60,7 @@ U_Z_s = U_Z(:, end-N+1:end);
 %  p_i = (mu - lambda_Z_i / lambda_H_i)^+
 % ============================================================
 
-p_MI = water_filling(lambda_Z_s, lambda_H, PT);
-water_level_MI = compute_water_level(lambda_Z_s, lambda_H, PT);
-
+[p_MI, water_level_MI] = water_filling(lambda_Z_s, lambda_H, PT);
 X_MI = U_Z_s * diag(sqrt(p_MI)) * U_H';
 S_MI = X_MI' * X_MI;
 S_MI = (S_MI + S_MI') / 2;
@@ -175,7 +173,7 @@ box on;
 
 %% ============================ Local functions ============================
 
-function power_allocation = water_filling(sigma2, lambda, PT)
+function [power_allocation, water_level] = water_filling(sigma2, lambda, PT)
     N = length(lambda);
     noise_terms = sigma2(:) ./ lambda(:);
     [noise_sorted, idx_sorted] = sort(noise_terms, 'ascend');
@@ -195,20 +193,6 @@ function power_allocation = water_filling(sigma2, lambda, PT)
             power_allocation(idx_sorted(i)) = max(0, water_level - noise_sorted(i));
         else
             power_allocation(idx_sorted(i)) = 0;
-        end
-    end
-end
-
-function water_level = compute_water_level(sigma2, lambda, PT)
-    N = length(lambda);
-    noise_terms = sigma2(:) ./ lambda(:);
-    noise_sorted = sort(noise_terms, 'ascend');
-    water_level = 0;
-    for k = 1:N
-        water_candidate = (PT + sum(noise_sorted(1:k))) / k;
-        if k == N || water_candidate <= noise_sorted(k+1)
-            water_level = water_candidate;
-            break;
         end
     end
 end

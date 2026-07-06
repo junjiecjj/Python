@@ -2,7 +2,7 @@ clc;
 clear;
 close all;
 
-rng(42);
+rng(111);
 
 set(0, 'DefaultAxesFontName', 'Times New Roman');
 set(0, 'DefaultTextFontName', 'Times New Roman');
@@ -35,8 +35,7 @@ Sigma_H = (Sigma_H + Sigma_H') / 2;
 Lambda_h = real(diag(D_h));
 Lambda_h = max(Lambda_h, 0);
 
-Lambda_x_white = water_filling(ones(N, 1) * sigma_c2, Lambda_h, PT);
-water_level_white = compute_water_level(ones(N, 1) * sigma_c2, Lambda_h, PT);
+[Lambda_x_white, water_level_white] = water_filling(ones(N, 1) * sigma_c2, Lambda_h, PT);
 
 fprintf('White noise, theoretical power allocation:\n');
 disp(Lambda_x_white.');
@@ -98,8 +97,7 @@ A_eff = (A_eff + A_eff') / 2;
 Lambda_eff = real(diag(D_eff));
 Lambda_eff = max(Lambda_eff, 0);
 
-Lambda_x_colored = water_filling(ones(N, 1), Lambda_eff, PT);
-water_level_colored = compute_water_level(ones(N, 1), Lambda_eff, PT);
+[Lambda_x_colored, water_level_colored] = water_filling(ones(N, 1), Lambda_eff, PT);
 
 fprintf('Colored noise, theoretical power allocation:\n');
 disp(Lambda_x_colored.');
@@ -149,7 +147,7 @@ fprintf('Colored noise fmincon true capacity = %.8f\n', C_colored_fmincon_true);
 
 %% ============================ Local functions ============================
 
-function power_allocation = water_filling(sigma2, lambda, PT)
+function [power_allocation, water_level] = water_filling(sigma2, lambda, PT)
     N = length(lambda);
     noise_terms = sigma2(:) ./ lambda(:);
     [noise_sorted, idx_sorted] = sort(noise_terms, 'ascend');
@@ -169,20 +167,6 @@ function power_allocation = water_filling(sigma2, lambda, PT)
             power_allocation(idx_sorted(i)) = max(0, water_level - noise_sorted(i));
         else
             power_allocation(idx_sorted(i)) = 0;
-        end
-    end
-end
-
-function water_level = compute_water_level(sigma2, lambda, PT)
-    N = length(lambda);
-    noise_terms = sigma2(:) ./ lambda(:);
-    noise_sorted = sort(noise_terms, 'ascend');
-    water_level = 0;
-    for k = 1:N
-        water_candidate = (PT + sum(noise_sorted(1:k))) / k;
-        if k == N || water_candidate <= noise_sorted(k+1)
-            water_level = water_candidate;
-            break;
         end
     end
 end
