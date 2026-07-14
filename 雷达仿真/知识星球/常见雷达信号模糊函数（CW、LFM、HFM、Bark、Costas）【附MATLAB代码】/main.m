@@ -13,23 +13,26 @@ switch type_index
     case 1
         % 1. pcw
         x = exp(1i*2*pi*fc*t);
+        
     case 2
         % 2. lfm
         k = B/T;
         f0 = fc-B/2;
         x = exp(1i*2*pi*(f0*t+k/2*t.^2));
+        
     case 3
         % 3. hfm
         f0 = fc+B/2;
         beta = B/f0/(fc-B/2)/T;
         x = exp(1i*2*pi/beta*log(1+beta*f0*t));
+        
     case 4
         % 4.bark信号
         % 4. hfm + pcw
         %     f0 = fc+B/2;
         %     beta = B/f0/(fc-B/2)/T;
         %     x = sin(2*pi/beta*log(1+beta*f0*t)) + sin(2*pi*fc*t);
-        % bark = [1,1,1,1,1,-1,-1,1,1,-1,1,-1,1];
+%         bark = [1,1,1,1,1,-1,-1,1,1,-1,1,-1,1];
         bark = (randi(2,1,100)-1)*2-1;
         Tbark = T/length(bark);
         tbark = 0:1/fs:Tbark-1/fs;
@@ -42,6 +45,7 @@ switch type_index
             end
         end
         x = [s, zeros(1,length(t)-length(s))];
+        
     case 5
         % 5.costas信号
         costas = [2,4,8,5,10,9,7,3,6,1];
@@ -52,7 +56,8 @@ switch type_index
         for i = 1:length(costas)
             s((i-1)*length(tcostas)+1:i*length(tcostas)) = exp(1j*2*pi*f(i)*tcostas);
         end
-        x = [s,zeros(1,length(t)-length(s))]; 
+        x = [s,zeros(1,length(t)-length(s))];
+        
 end
 
 re_fs = 0.9*fs:2:1.1*fs;
@@ -78,7 +83,9 @@ parfor i = 1:length(alpha)
     %     disp(num2str(i))
     afmag_temp = conv(x_temp,x);
     M = length(afmag_temp);
+    
     afmag(i,:) = afmag_temp*sqrt(alpha(i));
+    
 end
 toc
 

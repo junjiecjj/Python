@@ -1,0 +1,73 @@
+Stage 4 Pd-vs-SNR CA-CFAR Monte Carlo
+Mode: quick
+Trials: 8
+Echo SNR axis dB: -20, -15, -10, -5, 0, 5, 10
+No RIS model: blocked NLOS baseline with zero target echo amplitude
+SNR reference: optimized RIS noiseless beat-signal average sample power
+quick | SNR  -20.0 dB |   1/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.000/1.000
+quick | SNR  -20.0 dB |   2/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.000/1.000
+quick | SNR  -20.0 dB |   3/  8 | noise 1.610e-07 W | hits N/R/O 0/1/4 | avgPd 0.000/0.083/1.000
+quick | SNR  -20.0 dB |   4/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.062/1.000
+quick | SNR  -20.0 dB |   5/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.050/1.000
+quick | SNR  -20.0 dB |   6/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.042/1.000
+quick | SNR  -20.0 dB |   7/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.036/1.000
+quick | SNR  -20.0 dB |   8/  8 | noise 1.610e-07 W | hits N/R/O 0/0/4 | avgPd 0.000/0.031/1.000
+quick | SNR  -15.0 dB |   1/  8 | noise 5.092e-08 W | hits N/R/O 0/1/4 | avgPd 0.000/0.250/1.000
+quick | SNR  -15.0 dB |   2/  8 | noise 5.092e-08 W | hits N/R/O 0/1/4 | avgPd 0.000/0.250/1.000
+quick | SNR  -15.0 dB |   3/  8 | noise 5.092e-08 W | hits N/R/O 0/2/4 | avgPd 0.000/0.333/1.000
+quick | SNR  -15.0 dB |   4/  8 | noise 5.092e-08 W | hits N/R/O 0/1/4 | avgPd 0.000/0.312/1.000
+quick | SNR  -15.0 dB |   5/  8 | noise 5.092e-08 W | hits N/R/O 0/2/4 | avgPd 0.000/0.350/1.000
+quick | SNR  -15.0 dB |   6/  8 | noise 5.092e-08 W | hits N/R/O 0/2/4 | avgPd 0.000/0.375/1.000
+quick | SNR  -15.0 dB |   7/  8 | noise 5.092e-08 W | hits N/R/O 0/1/4 | avgPd 0.000/0.357/1.000
+quick | SNR  -15.0 dB |   8/  8 | noise 5.092e-08 W | hits N/R/O 0/0/4 | avgPd 0.000/0.312/1.000
+quick | SNR  -10.0 dB |   1/  8 | noise 1.610e-08 W | hits N/R/O 0/3/4 | avgPd 0.000/0.750/1.000
+quick | SNR  -10.0 dB |   2/  8 | noise 1.610e-08 W | hits N/R/O 0/4/4 | avgPd 0.000/0.875/1.000
+quick | SNR  -10.0 dB |   3/  8 | noise 1.610e-08 W | hits N/R/O 0/3/4 | avgPd 0.000/0.833/1.000
+quick | SNR  -10.0 dB |   4/  8 | noise 1.610e-08 W | hits N/R/O 0/4/4 | avgPd 0.000/0.875/1.000
+quick | SNR  -10.0 dB |   5/  8 | noise 1.610e-08 W | hits N/R/O 0/4/4 | avgPd 0.000/0.900/1.000
+quick | SNR  -10.0 dB |   6/  8 | noise 1.610e-08 W | hits N/R/O 0/4/4 | avgPd 0.000/0.917/1.000
+quick | SNR  -10.0 dB |   7/  8 | noise 1.610e-08 W | hits N/R/O 0/3/4 | avgPd 0.000/0.893/1.000
+quick | SNR  -10.0 dB |   8/  8 | noise 1.610e-08 W | hits N/R/O 0/3/4 | avgPd 0.000/0.875/1.000
+quick | SNR   -5.0 dB |   1/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   2/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   3/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   4/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   5/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   6/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   7/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   -5.0 dB |   8/  8 | noise 5.092e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   1/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   2/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   3/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   4/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   5/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   6/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   7/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    0.0 dB |   8/  8 | noise 1.610e-09 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   1/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   2/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   3/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   4/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   5/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   6/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   7/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR    5.0 dB |   8/  8 | noise 5.092e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   1/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   2/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   3/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   4/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   5/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   6/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   7/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+quick | SNR   10.0 dB |   8/  8 | noise 1.610e-10 W | hits N/R/O 0/4/4 | avgPd 0.000/1.000/1.000
+Summary average Pd No RIS: 0, 0, 0, 0, 0, 0, 0
+Summary average Pd Random RIS: 0.03125, 0.3125, 0.875, 1, 1, 1, 1
+Summary average Pd Optimized RIS: 1, 1, 1, 1, 1, 1, 1
+Echo noise power W: 1.6104e-07, 5.0924e-08, 1.6104e-08, 5.0924e-09, 1.6104e-09, 5.0924e-10, 1.6104e-10
+Quick No RIS lowest: true
+Quick optimized >= random mean Pd: true
+Quick Pd rises overall: true
+Quick acceptance status: PASS
+Saved figure PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_pd_vs_snr_quick_20260521_134613.png
+Saved data MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_pd_vs_snr_quick_20260521_134613.mat
+Saved log TXT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\logs\stage4_pd_vs_snr_quick_20260521_134613.txt

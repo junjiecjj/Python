@@ -1,0 +1,29 @@
+cd('F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\main')
+main_stage2_model_validation
+cd('F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction')
+files = [dir(fullfile(pwd,'main','*.m')); dir(fullfile(pwd,'config','*.m')); dir(fullfile(pwd,'functions','*.m'))];
+issueCount = 0;
+for k = 1:numel(files)
+    f = fullfile(files(k).folder, files(k).name);
+    issues = checkcode(f, '-id');
+    issueCount = issueCount + numel(issues);
+    if isempty(issues)
+        fprintf('OK: %s\n', files(k).name);
+    else
+        fprintf('ISSUES: %s\n', files(k).name);
+        for j = 1:numel(issues)
+            fprintf('  line %d [%s]: %s\n', issues(j).line, issues(j).id, issues(j).message);
+        end
+    end
+end
+fprintf('TOTAL_ISSUES=%d\n', issueCount);
+cd('F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\main')
+main_stage2_model_validation
+cd('F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction')
+files = [dir(fullfile(pwd,'main','*.m')); dir(fullfile(pwd,'config','*.m')); dir(fullfile(pwd,'functions','*.m'))];
+issueCount = 0;
+for k = 1:numel(files)
+    issues = checkcode(fullfile(files(k).folder, files(k).name), '-id');
+    issueCount = issueCount + numel(issues);
+end
+fprintf('TOTAL_ISSUES=%d\n', issueCount);

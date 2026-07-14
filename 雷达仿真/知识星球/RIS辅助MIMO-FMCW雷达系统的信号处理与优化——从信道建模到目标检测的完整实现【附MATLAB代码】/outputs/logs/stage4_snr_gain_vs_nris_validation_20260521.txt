@@ -1,0 +1,41 @@
+Stage 4 ZF-SNR gain vs N_RIS
+N_RIS axis: 4, 8, 12, 16
+Trials: 3
+Optimizer: fixed-grid zf_snr
+phaseGridSize: 16
+numStarts: 3
+maxSweeps: 4
+N_RIS   4 | trial   1/  3 | random -117.391 dB | opt -106.953 dB | gain  10.438 dB | Ggain  10.438 dB | cond R/O 263.763/ 81.953 | runtime 0.115 s
+           running mean: random -117.391 dB | opt -106.953 dB | gain  10.438 dB | runtime 0.115 s
+N_RIS   4 | trial   2/  3 | random -107.083 dB | opt  -97.804 dB | gain   9.279 dB | Ggain   9.279 dB | cond R/O  46.841/ 12.318 | runtime 0.086 s
+           running mean: random -112.237 dB | opt -102.378 dB | gain   9.859 dB | runtime 0.101 s
+N_RIS   4 | trial   3/  3 | random -103.698 dB | opt  -95.131 dB | gain   8.566 dB | Ggain   8.566 dB | cond R/O  49.090/ 11.364 | runtime 0.130 s
+           running mean: random -109.391 dB | opt  -99.963 dB | gain   9.428 dB | runtime 0.111 s
+N_RIS   8 | trial   1/  3 | random  -84.388 dB | opt  -77.937 dB | gain   6.451 dB | Ggain   6.451 dB | cond R/O  13.705/  2.953 | runtime 0.299 s
+           running mean: random  -84.388 dB | opt  -77.937 dB | gain   6.451 dB | runtime 0.299 s
+N_RIS   8 | trial   2/  3 | random -103.611 dB | opt  -82.964 dB | gain  20.648 dB | Ggain  20.648 dB | cond R/O  51.366/  3.063 | runtime 0.278 s
+           running mean: random  -94.000 dB | opt  -80.450 dB | gain  13.549 dB | runtime 0.289 s
+N_RIS   8 | trial   3/  3 | random  -88.816 dB | opt  -79.215 dB | gain   9.601 dB | Ggain   9.601 dB | cond R/O   8.490/  3.104 | runtime 0.287 s
+           running mean: random  -92.272 dB | opt  -80.039 dB | gain  12.233 dB | runtime 0.288 s
+N_RIS  12 | trial   1/  3 | random  -91.050 dB | opt  -75.710 dB | gain  15.341 dB | Ggain  15.341 dB | cond R/O  27.424/  2.835 | runtime 0.431 s
+           running mean: random  -91.050 dB | opt  -75.710 dB | gain  15.341 dB | runtime 0.431 s
+N_RIS  12 | trial   2/  3 | random  -88.914 dB | opt  -76.533 dB | gain  12.382 dB | Ggain  12.382 dB | cond R/O  12.712/  2.819 | runtime 0.454 s
+           running mean: random  -89.982 dB | opt  -76.121 dB | gain  13.861 dB | runtime 0.442 s
+N_RIS  12 | trial   3/  3 | random  -88.592 dB | opt  -76.030 dB | gain  12.561 dB | Ggain  12.561 dB | cond R/O  16.529/  2.513 | runtime 0.422 s
+           running mean: random  -89.519 dB | opt  -76.091 dB | gain  13.428 dB | runtime 0.436 s
+N_RIS  16 | trial   1/  3 | random  -85.602 dB | opt  -72.557 dB | gain  13.045 dB | Ggain  13.045 dB | cond R/O  14.435/  2.077 | runtime 0.640 s
+           running mean: random  -85.602 dB | opt  -72.557 dB | gain  13.045 dB | runtime 0.640 s
+N_RIS  16 | trial   2/  3 | random  -82.117 dB | opt  -72.819 dB | gain   9.298 dB | Ggain   9.298 dB | cond R/O   6.100/  2.078 | runtime 0.608 s
+           running mean: random  -83.860 dB | opt  -72.688 dB | gain  11.171 dB | runtime 0.624 s
+N_RIS  16 | trial   3/  3 | random  -80.606 dB | opt  -74.773 dB | gain   5.833 dB | Ggain   5.833 dB | cond R/O   5.157/  1.847 | runtime 0.626 s
+           running mean: random  -82.775 dB | opt  -73.383 dB | gain   9.392 dB | runtime 0.625 s
+Summary random SNR mean dB: -109.3906, -92.27176, -89.51874, -82.77501
+Summary optimized SNR mean dB: -99.9628, -80.0387, -76.0909, -73.3829
+Summary SNR gain mean dB: 9.42782, 12.233, 13.4279, 9.39208
+Summary G_ZF gain mean dB: 9.42782, 12.233, 13.4279, 9.39208
+Summary runtime mean s: 0.11063, 0.28824, 0.43563, 0.62483
+Optimized mean SNR above random at all N_RIS: true
+Summary finite: true
+Saved figure PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_snr_gain_vs_nris_validation_20260521.png
+Saved data MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_snr_gain_vs_nris_validation_20260521.mat
+Saved log TXT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\logs\stage4_snr_gain_vs_nris_validation_20260521.txt

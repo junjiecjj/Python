@@ -1,0 +1,2 @@
+cd('F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\main')
+main_stage2_model_validation

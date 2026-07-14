@@ -1,0 +1,27 @@
+Stage 4 FMCW RD detection validation
+Optimizer: fixed_grid_zf_snr
+Targets: 4
+Target range m: 25, 20, 10, 5
+Target velocity m/s: -1, 1, -1, 1
+Random G_ZF: 4.5576e-11
+Optimized G_ZF: 5.4626e-10
+G_ZF improvement dB: 10.7866
+Random SNR dB: -83.4126
+Optimized SNR dB: -72.626
+Random RD peak dB: -29.0675, -30.3685, -31.6786, -33.2032
+Random peak range m: 24.9, 20.1, 9.9, 5.1
+Random peak velocity m/s: -1.0653, 1.0653, -1.0653, 1.0653
+Optimized RD peak dB: -18.2766, -19.584, -20.8907, -22.424
+Optimized peak range m: 24.9, 20.1, 9.9, 5.1
+Optimized peak velocity m/s: -1.0653, 1.0653, -1.0653, 1.0653
+RD peak improvement dB: 10.7909, 10.7845, 10.7879, 10.7792
+Range pass: true
+Velocity pass: true
+Gain pass: true
+RD peak pass (>1 dB): true
+Validation status: PASS
+Saved figure PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_20260520_210255.png
+Saved figure FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_20260520_210255.fig
+Saved data MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_detection_20260520_210255.mat
+Saved Python source MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_four_targets_latest.mat
+Saved detection CSV: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_four_targets_detection_latest.csv

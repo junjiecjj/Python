@@ -1,0 +1,47 @@
+Stage 4 FMCW RD detection validation
+Optimizer: fixed_grid_zf_snr
+No RIS model: blocked NLOS baseline with zero target echo amplitude and matched echo noise
+Targets: 4
+Target range m: 25, 20, 10, 5
+Target velocity m/s: -1, 1, -1, 1
+Random G_ZF: 4.5576e-11
+Optimized G_ZF: 5.4626e-10
+G_ZF improvement dB: 10.7866
+Random SNR dB: -83.4126
+Optimized SNR dB: -72.626
+No RIS RD local noise peak dB: -83.6296, -77.5993, -78.3316, -78.8746
+Random RD peak dB: -29.0675, -30.3685, -31.6786, -33.2032
+Random peak range m: 24.9, 20.1, 9.9, 5.1
+Random peak velocity m/s: -1.0653, 1.0653, -1.0653, 1.0653
+Optimized RD peak dB: -18.2766, -19.584, -20.8907, -22.424
+Optimized peak range m: 24.9, 20.1, 9.9, 5.1
+Optimized peak velocity m/s: -1.0653, 1.0653, -1.0653, 1.0653
+RD peak improvement vs no RIS dB: 65.353, 58.0153, 57.4409, 56.4506
+RD peak improvement dB: 10.7909, 10.7845, 10.7879, 10.7792
+Range pass: true
+Velocity pass: true
+Gain pass: true
+RD peak pass (>1 dB): true
+Validation status: PASS
+Saved figure PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_20260521_121642.png
+Saved figure FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_20260521_121642.fig
+Saved data MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_detection_20260521_121642.mat
+Saved Python source MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_four_targets_latest.mat
+Saved detection CSV: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_four_targets_detection_latest.csv
+CA-CFAR training cells: [6 6]
+CA-CFAR guard cells: [2 2]
+CA-CFAR pfa: 0.0001
+No RIS CA-CFAR peak count / target hits: 4 / 0
+Random CA-CFAR peak count / target hits: 7 / 4
+Optimized CA-CFAR peak count / target hits: 7 / 4
+Random CA-CFAR peak dB: -29.0675, -30.3685, -31.6786, -33.2032
+Optimized CA-CFAR peak dB: -18.2766, -19.584, -20.8907, -22.424
+CA-CFAR peak improvement dB: 10.7909, 10.7845, 10.7879, 10.7792
+CA-CFAR random hit pass: true
+CA-CFAR optimized hit pass: true
+CA-CFAR validation status: PASS
+Saved CFAR figure PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_cfar_20260521_121642.png
+Saved CFAR figure FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_cfar_20260521_121642.fig
+Saved CFAR data MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_detection_cfar_20260521_121642.mat
+Saved CFAR Python source MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_four_targets_cfar_latest.mat
+Saved CFAR detection CSV: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_four_targets_cfar_detection_latest.csv

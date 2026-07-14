@@ -1,0 +1,24 @@
+Stage 3.4 optimizer comparison
+Trials: 30
+numStarts: 3
+Main objective: zf_snr
+ 
+Summary table:
+                        method                        meanSnrDb    medianSnrDb    stdSnrDb    minSnrDb    maxSnrDb    meanImprovementVsRandomSingleDb    meanImprovementVsRandomBestDb    failureCountVsRandomSingle    failureCountVsRandomBest    meanCond    meanZfRawPower    meanPathGain    meanRuntimeSec
+    ______________________________________________    _________    ___________    ________    ________    ________    _______________________________    _____________________________    __________________________    ________________________    ________    ______________    ____________    ______________
+    "random_single"                                     -85.64       -84.887       6.1036     -108.43     -78.163                      0                            -4.187                            30                           30                19.191        1.164e+10       2.1837e-07              0    
+    "random_best_of_numStarts"                         -81.453       -81.401         2.43     -87.354     -76.702                  4.187                                 0                            11                           30                8.6041       6.5572e+08       2.2924e-07              0    
+    "fixed_grid_zf_snr"                                -72.494       -72.463       1.4244     -75.502      -70.21                 13.146                            8.9588                             0                            0                2.2105       7.4909e+07       3.3304e-07        0.73687    
+    "coarse_to_fine_zf_snr"                            -72.588       -72.397       1.4121     -75.941     -69.666                 13.051                            8.8643                             0                            0                2.1868       7.6509e+07       3.2278e-07        0.90796    
+    "coarse_to_fine_zf_snr_with_condition_penalty"      -72.62       -72.646       1.3218     -75.568     -70.439                  13.02                            8.8325                             0                            0                2.2943        7.654e+07       3.2975e-07        0.92384    
+ 
+Acceptance checks:
+coarse_to_fine_zf_snr mean improvement vs random_single > 0: true
+coarse_to_fine_zf_snr mean improvement vs random_best_of_numStarts > 0: true
+coarse_to_fine_zf_snr failure count vs random_single: 0
+coarse_to_fine_zf_snr failure count vs random_best_of_numStarts: 0
+ 
+Recommended main method: fixed_grid_zf_snr
+Saved data: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage3_optimizer_comparison_20260517_194349.mat
+Saved PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_optimizer_comparison.png
+Saved FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_optimizer_comparison.fig

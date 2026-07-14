@@ -1,0 +1,24 @@
+Stage 4 FMCW RD detection validation
+Optimizer: fixed_grid_zf_snr
+Target range m: 25
+Target velocity m/s: 3
+Random G_ZF: 4.5576e-11
+Optimized G_ZF: 5.4626e-10
+G_ZF improvement dB: 10.7866
+Random SNR dB: -83.4126
+Optimized SNR dB: -72.626
+Random RD peak dB: -28.4769
+Random peak range m: 24.9
+Random peak velocity m/s: 3.0438
+Optimized RD peak dB: -17.6983
+Optimized peak range m: 24.9
+Optimized peak velocity m/s: 3.0438
+RD peak improvement dB: 10.7786
+Range pass: true
+Velocity pass: true
+Gain pass: true
+RD peak pass (>1 dB): true
+Validation status: PASS
+Saved figure PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_20260520_204249.png
+Saved figure FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage4_rd_detection_20260520_204249.fig
+Saved data MAT: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage4_rd_detection_20260520_204249.mat

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+output/*.png
+output/*.npz
+.venv/
+
+# IDE
+.idea/
+
+# Temp scripts
+temp/
+
+# OS
+.DS_Store

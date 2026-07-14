@@ -1,0 +1,21 @@
+Stage 3 ADMM validation
+Project root: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction
+Random seed: 20251012
+Hsr size: [16 4]
+Hrd size: [16 16]
+vRandom size: [16 1]
+vAdmm size: [16 1]
+Unit modulus max error: 1.1102e-16
+Random path gain: 8.9838e-08
+ADMM path gain: 1.1582e-07
+Random SNR dB: -82.614
+ADMM SNR dB: -82.3683
+Gain improvement dB: 1.1034
+SNR improvement dB: 0.24576
+ADMM iterations: 50
+ADMM converged: false
+rho: 1
+Saved data: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage3_admm_validation_20260517_161538.mat
+Saved PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_admm_convergence.png
+Saved FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_admm_convergence.fig
+Validation status: passed

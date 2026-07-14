@@ -1,0 +1,38 @@
+Stage 3 objective diagnostics
+Project root: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction
+Hsr size: [16 4]
+Hrd size: [16 16]
+ 
+Result table:
+           method              optimizedObjective       reportedObjectiveType    objectiveValue     pathGain     snrLinear      snrDb     condHeff    zfRawPower    unitModulusError
+    _____________________    _______________________    _____________________    ______________    __________    __________    _______    ________    __________    ________________
+    "random"                 "none"                          "zf_snr"              5.4777e-09      8.9838e-08    5.4777e-09    -82.614     5.2381     7.3023e+08       1.1102e-16   
+    "quadratic_admm"         "quadratic_trace_proxy"         "zf_snr"              2.1914e-09      4.1721e-07    2.1914e-09    -86.593     24.906     1.8253e+09       1.1102e-16   
+    "objective_path_gain"    "path_gain"                     "path_gain"           5.4459e-07      5.4459e-07    3.0024e-09    -85.225      24.86     1.3323e+09       1.1102e-16   
+    "objective_zf_snr"       "zf_snr"                        "zf_snr"              2.2933e-08      1.2813e-07    2.2933e-08    -76.395     2.2125     1.7442e+08                0   
+ 
+Diagnostic conclusions:
+Quadratic ADMM optimizes proxy objective: true
+Path-gain objective optimizer improves true path_gain: true
+ZF-SNR objective optimizer improves ZF-SNR by > 0.1 dB: true
+ADMM method: quadratic_admm_approximation
+ADMM actual optimized objective: quadratic_trace_proxy
+ADMM rho: 0.97179
+ADMM normT: 0.4859
+ADMM final primal residual: 1.0051e-07
+ADMM final dual residual: 4.047e-07
+ADMM converged: true
+Path optimizer method: multi_start_coordinate_phase_search
+Path optimizer final objective: 5.4459e-07
+ZF-SNR optimizer method: multi_start_coordinate_phase_search
+ZF-SNR optimizer final objective: 2.2933e-08
+ 
+Interpretation:
+quadratic_admm optimizes a proxy, not the engineering SNR objective.
+objective_path_gain optimizes true path_gain and may or may not optimize ZF-SNR.
+objective_zf_snr directly optimizes the engineering target used for SNR curves.
+Do not proceed to CD/Fig.3/Fig.4 unless the chosen optimizer and objective are accepted.
+ 
+Saved data: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage3_admm_validation_20260517_175941.mat
+Saved PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_objective_diagnostics.png
+Saved FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_objective_diagnostics.fig

@@ -1,0 +1,19 @@
+Stage 2 model validation
+Project root: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction
+Random seed: 20251009
+Hsr size: [16 4]
+Hrd size: [16 16]
+Phi size: [16 16]
+Heff size: [4 4]
+B size: [4 4]
+ZF raw power W: 730233331.2632
+ZF normalized power W: 0.01
+ZF relative error: 6.9912e-16
+Nominal SNR linear: 5.4777e-09
+Nominal SNR dB: -82.614
+Power sweep dBm: [0 5 10 15 20]
+SNR vs power dB: [-92.614 -87.614 -82.614 -77.614 -72.614]
+Noise sweep dBm: [-20 -10 0 10 20]
+SNR vs noise dB: [-52.614 -62.614 -72.614 -82.614 -92.614]
+Saved data: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage2_model_validation_20260520_204059.mat
+Validation status: passed

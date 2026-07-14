@@ -1,0 +1,25 @@
+Stage 3.3 ZF-SNR stability test
+Objective optimized: zf_snr
+Trials: 8
+Failure count (improvement <= 0 dB): 0
+Mean improvement dB: 13.8389
+Median improvement dB: 13.7255
+Min improvement dB: 6.8751
+Max improvement dB: 19.303
+Best-so-far endpoints match final best: true
+ 
+Trial table:
+    trialIdx    channelSeed    optimizerSeed    randomSnrDb    optimizedSnrDb    snrImprovementDb    randomPathGain    optimizedPathGain    randomCond    optimizedCond    randomZfRawPower    optimizedZfRawPower    unitModulusError    numIter    converged    bestHistoryEndpointMatches
+    ________    ___________    _____________    ___________    ______________    ________________    ______________    _________________    __________    _____________    ________________    ___________________    ________________    _______    _________    __________________________
+       1        2.0251e+07      2.0253e+07         -77.32         -70.445             6.8751           3.1874e-07         4.4382e-07          5.8181         1.8707           2.1581e+08           4.4315e+07            1.1102e-16         37         true                 true            
+       2        2.0251e+07      2.0253e+07        -86.445         -69.682             16.763           1.8555e-07         5.2342e-07           14.84         1.8518           1.7642e+09           3.7174e+07                     0         39         true                 true            
+       3        2.0251e+07      2.0253e+07        -84.166         -72.609             11.557            2.806e-07         4.2256e-07          13.812         3.0342            1.044e+09           7.2944e+07                     0         40         true                 true            
+       4        2.0251e+07      2.0253e+07        -83.451          -70.78             12.672           1.9136e-07         3.9796e-07          9.3107         1.7944           8.8547e+08           4.7865e+07            1.1102e-16         35         true                 true            
+       5        2.0251e+07      2.0253e+07        -92.256         -72.953             19.303           2.2528e-07         3.1464e-07          35.698         2.2406           6.7248e+09           7.8956e+07                     0         30         true                 true            
+       6        2.0251e+07      2.0253e+07        -88.394         -72.304             16.091           1.3013e-07         3.0384e-07          14.757         1.9699           2.7636e+09           6.7985e+07                     0         44         false                true            
+       7        2.0251e+07      2.0253e+07         -85.39         -71.591             13.799           3.6786e-07         3.3797e-07          19.673         1.8615           1.3839e+09           5.7704e+07                     0         40         true                 true            
+       8        2.0251e+07      2.0253e+07         -87.67         -74.018             13.652           1.5096e-07         2.5962e-07          15.986         2.5061           2.3393e+09            1.009e+08                     0         37         true                 true            
+ 
+Saved data: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\data\stage3_zf_snr_stability_20260520_204124.mat
+Saved PNG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_zf_snr_stability.png
+Saved FIG: F:\CodexAddress\codex_RIS_study\RIS_MIMO_FMCW\RIS_MIMO_FMCW_Reproduction\outputs\figures\stage3_zf_snr_stability.fig
