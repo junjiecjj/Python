@@ -1,0 +1,15 @@
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 仿真结果数据（不包含 PNG，图片要放 README 里展示）
+results/*.npz
+
+# 论文 PDF
+*.pdf
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
