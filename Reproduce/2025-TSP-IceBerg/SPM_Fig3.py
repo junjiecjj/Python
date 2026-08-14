@@ -15,12 +15,15 @@ import scipy
 import commpy
 from Modulations import modulator
 
+from matplotlib.font_manager import FontProperties
+fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
+fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
+
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
-# plt.rcParams["font.family"] = "SimSun"
-plt.rcParams['font.size'] = 18                     # 设置全局字体大小
-plt.rcParams['axes.titlesize'] = 18                # 设置坐标轴标题字体大小
-plt.rcParams['axes.labelsize'] = 18                # 设置坐标轴标签字体大小
+plt.rcParams['font.size'] = 22                     # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22                # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22                # 设置坐标轴标签字体大小
 plt.rcParams['xtick.labelsize'] = 18               # 设置 x 轴刻度字体大小
 plt.rcParams['ytick.labelsize'] = 18               # 设置 y 轴刻度字体大小
 plt.rcParams['axes.unicode_minus'] = False         # 用来显示负号
@@ -33,7 +36,7 @@ plt.rcParams['lines.markersize'] = 6               # 标记大小
 # plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
-plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.fontsize'] = 22
 np.random.seed(42)
 
 #%%
@@ -184,41 +187,6 @@ for k in range(L*N):
 TheoAveACF_SC_M1 = TheoAveACF_SC_M1/TheoAveACF_SC_M1.max() + 1e-10
 TheoAveACF_SC_M1 = np.fft.fftshift(TheoAveACF_SC_M1)
 
-###>>>>> SC, Eq.(26), 1000 Monte-Carlo, 化简前的general表达式
-kappa = 1.32
-U = np.eye(N)
-V = U.conj().T @ FN.conj().T
-tilde_V = V * V.conj()
-g = (N * (FLN@p) * (FLN.conj() @ p.conj()))
-# g = np.fft.fftshift(g)
-
-MOD_TYPE = "qam"
-Order = 16
-modem, Es, bps = modulator(MOD_TYPE, Order)
-Constellation = modem.constellation/np.sqrt(Es)
-AvgEnergy = np.mean(np.abs(Constellation)**2)
-
-Iter = 1000
-
-###>>>>  M = 1
-M = 1
-SimAveACF_SC_M1 = np.zeros((Iter, L*N))
-
-for k in range(L*N):
-    fk = FLN[:,k]
-    fk_tilde = fk[:N]
-    gk = g[:N] + (1 - g[:N]) * np.exp(-1j * 2 * pi * k / L)
-    for it in range(Iter):
-        d = np.random.randint(Order, size = N)
-        s = Constellation[d]
-        VHs = np.abs(V.conj().T @ s)**2
-        SimAveACF_SC_M1[it, k] = np.abs((gk * VHs * fk_tilde.conj()).sum())**2
-
-Sim_SC_M1_avg = SimAveACF_SC_M1.mean(axis = 0)
-Sim_SC_M1_avg = Sim_SC_M1_avg/Sim_SC_M1_avg.max() + 1e-10
-Sim_SC_M1_avg = np.fft.fftshift(Sim_SC_M1_avg)
-
-
 #%% CDMA, Eq.(27, 34), 化简前的general表达式
 kappa = 1.32
 U = hadamard_matrix_sylvester(N)/np.sqrt(N)
@@ -293,31 +261,49 @@ TheoAveACF_AFDM_M1 = TheoAveACF_AFDM_M1/TheoAveACF_AFDM_M1.max() + 1e-10
 TheoAveACF_AFDM_M1 = np.fft.fftshift(TheoAveACF_AFDM_M1)
 
 #%% plot together
-colors = plt.cm.jet(np.linspace(0, 1, 5))
-# x = np.arange(-N//2, N//2, 1/((L)))
+
 x = np.arange(-N*L//2, N*L//2,)
-fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout=True)
-axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='b', linestyle='-', label='OFDM, M = 1, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_SC_M1), color='r', linestyle='-', label='SC, M = 1, Theoretical',)
-axs.plot(x, 10 * np.log10(Sim_SC_M1_avg), color='r', linestyle='--', marker = 'o', markevery = 20, ms = 12, markerfacecolor = 'none',  lw = 1, label='SC, M = 1, Simulat',)
-axs.plot(x, 10 * np.log10(TheoAveACF_CDMA_M1), color=colors[-3], linestyle='-', label='CDMA, M = 1, Theoretical',)
+fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.plot(x, 10 * np.log10(TheoAveACF_OTFS_M1), color=colors[0], linestyle='--', marker = '*', markevery = 20, ms = 12, markerfacecolor = 'none',  lw = 1, label='OTFS, M = 1, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_SC_M1), color='#00A1F1', linestyle='-', label='SC',)
 
-axs.plot(x, 10 * np.log10(TheoAveACF_AFDM_M1), color='purple', linestyle='--', marker = 's', markevery = 20, ms = 12, markerfacecolor = 'none',  lw = 1, label='AFDM, M = 1, Theoretical',)
+axs.plot(x, 10 * np.log10(TheoAveACF_AFDM_M1), color='#00A8BB', linestyle='--', lw = 2, label='AFDM',)
 
+axs.plot(x, 10 * np.log10(TheoAveACF_OTFS_M1), color='#8A2BE2', linestyle='--', lw = 2, label='OTFS',)
 
-legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
+axs.plot(x, 10 * np.log10(TheoAveACF_CDMA_M1), color='#77AC30', linestyle='--', lw = 2, label='CDMA',)
+
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_M1 ), color='r', linestyle='-', lw = 2, label='OFDM',)
+
+axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', lw = 2, label="Iceberg",)
+
+font1 = {'family':'Times New Roman','style':'normal','size':12, }
+font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', fontsize = 12, labelspacing = 0.2, prop = font1,)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+bw = 2
+axs.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+axs.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 16, width = bw)
+labels = axs.get_xticklabels() + axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(22) for label in labels] #刻度值字号
+
+axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+
 
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
-axs.set_xlim([-200, 200])
-
+axs.set_xlim([-100, 100])
+axs.set_ylim([-50, 5])
 out_fig = plt.gcf()
-# filepath2 = '/home/jack/snap/'
-out_fig.savefig('Fig3.png', )
-out_fig.savefig('Fig3.pdf', )
+out_fig.savefig('SPM_Fig3.pdf', )
 plt.show()
 plt.close()
 

@@ -6,31 +6,35 @@ Created on Sun Aug 24 17:29:50 2025
 @author: jack
 """
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 import commpy
 from Modulations import modulator
 
+from matplotlib.font_manager import FontProperties
+fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
+fonte = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size=22)
+
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
-# plt.rcParams["font.family"] = "SimSun"
-plt.rcParams['font.size'] = 18               # 设置全局字体大小
-plt.rcParams['axes.titlesize'] = 18          # 设置坐标轴标题字体大小
-plt.rcParams['axes.labelsize'] = 18          # 设置坐标轴标签字体大小
-plt.rcParams['xtick.labelsize'] = 18         # 设置 x 轴刻度字体大小
-plt.rcParams['ytick.labelsize'] = 18         # 设置 y 轴刻度字体大小
-plt.rcParams['axes.unicode_minus'] = False   # 用来显示负号
-plt.rcParams["figure.figsize"] = [8, 6]      # 调整生成的图表最大尺寸
-# plt.rcParams['figure.dpi'] = 300           # 每英寸点数
+plt.rcParams['font.size'] = 22                     # 设置全局字体大小
+plt.rcParams['axes.titlesize'] = 22                # 设置坐标轴标题字体大小
+plt.rcParams['axes.labelsize'] = 22                # 设置坐标轴标签字体大小
+plt.rcParams['xtick.labelsize'] = 18               # 设置 x 轴刻度字体大小
+plt.rcParams['ytick.labelsize'] = 18               # 设置 y 轴刻度字体大小
+plt.rcParams['axes.unicode_minus'] = False         # 用来显示负号
+plt.rcParams["figure.figsize"] = [8, 6]            # 调整生成的图表最大尺寸
+# plt.rcParams['figure.dpi'] = 300                 # 每英寸点数
 plt.rcParams['lines.linestyle'] = '-'
-plt.rcParams['lines.linewidth'] = 2          # 线条宽度
+plt.rcParams['lines.linewidth'] = 2                # 线条宽度
 plt.rcParams['lines.color'] = 'blue'
-plt.rcParams['lines.markersize'] = 6         # 标记大小
+plt.rcParams['lines.markersize'] = 6               # 标记大小
 # plt.rcParams['figure.facecolor'] = 'lightgrey'   # 设置图形背景色为浅灰色
 plt.rcParams['figure.facecolor'] = 'white'         # 设置图形背景色为浅灰色
 plt.rcParams['axes.edgecolor'] = 'black'           # 设置坐标轴边框颜色为黑色
-plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.fontsize'] = 22
 np.random.seed(42)
 
 #%%
@@ -173,31 +177,44 @@ TheoAveACF_OFDM_Gaussian_M1 = TheoAveACF_OFDM_Gaussian_M1/TheoAveACF_OFDM_Gaussi
 TheoAveACF_OFDM_Gaussian_M1 = np.fft.fftshift(TheoAveACF_OFDM_Gaussian_M1)
 
 #%% plot together
-colors = plt.cm.jet(np.linspace(0, 1, 5))
-# x = np.arange(-N//2, N//2, 1/((L)))
 x = np.arange(-N*L//2, N*L//2,)
-fig, axs = plt.subplots(1, 1, figsize=(12, 8), constrained_layout=True)
-# axs.plot(x, 10 * np.log10(TheoAveACF_Iceberg), color='k', linestyle='--', label='Squared ACF of the Pulse ("Iceberg")',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_16QAM_M1 ), color='b', linestyle='--', label='OFDM, 16QAM, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='r', linestyle='-', label='OFDM, 1024QAM, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_PSK_M1), color='k', linestyle='--', label='OFDM, PSK, Theoretical',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_Gaussian_M1), color='g', linestyle='--', label='OFDM, Gaussian, Theoretical',)
+fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-legend1 = axs.legend(loc='best', borderaxespad=0,  edgecolor='black', fontsize = 18)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_Gaussian_M1), color='g', linestyle='--', label='Gaussian',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='r', linestyle='-', label='1024QAM',)
+
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_16QAM_M1 ), color='b', linestyle='--', label='16QAM',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_PSK_M1), color='k', linestyle='--', label='PSK',)
+
+font1 = {'family':'Times New Roman','style':'normal','size':12, }
+font1 = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black', fontsize = 12, labelspacing = 0.2, prop = font1,)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')  # 设置图例legend背景透明
+
+bw = 2
+axs.spines['bottom'].set_linewidth(bw) ###设置底部坐标轴的粗细
+axs.spines['left'].set_linewidth(bw)   ###设置左边坐标轴的粗细
+axs.spines['right'].set_linewidth(bw)  ###设置右边坐标轴的粗细
+axs.spines['top'].set_linewidth(bw)    ###设置上部坐标轴的粗细
+
+axs.tick_params(direction = 'in', axis = 'both', top=True, right = True, labelsize = 16, width = bw)
+labels = axs.get_xticklabels() + axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(22) for label in labels] #刻度值字号
+
+axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+
 
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
-axs.set_xlim([-200, 200])
-
+axs.set_xlim([-100, 100])
+axs.set_ylim([-50, 5])
 out_fig = plt.gcf()
-# filepath2 = '/home/jack/snap/'
-out_fig.savefig('Fig5.png', )
-out_fig.savefig('Fig5.pdf', )
+out_fig.savefig('SPM_Fig5.pdf', )
 plt.show()
 plt.close()
-
-
-
 
 
 
