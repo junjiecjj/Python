@@ -180,10 +180,10 @@ TheoAveACF_OFDM_Gaussian_M1 = np.fft.fftshift(TheoAveACF_OFDM_Gaussian_M1)
 x = np.arange(-N*L//2, N*L//2,)
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_Gaussian_M1), color='g', linestyle='--', label='Gaussian',)
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='r', linestyle='-', label='1024QAM',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_Gaussian_M1), color='g', linestyle='-', label='Gaussian',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_1024QAM_M1 ), color='#00A1F1', linestyle='-', label='1024QAM',)
 
-axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_16QAM_M1 ), color='b', linestyle='--', label='16QAM',)
+axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_16QAM_M1 ), color='#8A2BE2', linestyle='-', label='16QAM',)
 axs.plot(x, 10 * np.log10(TheoAveACF_OFDM_PSK_M1), color='k', linestyle='--', label='PSK',)
 
 font1 = {'family':'Times New Roman','style':'normal','size':12, }
@@ -204,7 +204,7 @@ labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
 [label.set_fontsize(22) for label in labels] #刻度值字号
 
-axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
+axs.grid(linestyle = (0, (5, 10)), linewidth = 1 )
 
 
 axs.set_xlabel(r'Delay Index', )

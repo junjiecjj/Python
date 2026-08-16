@@ -1,0 +1,158 @@
+
+
+clc;
+clear;
+close all;
+addpath('./functions_2018ICC');
+addpath('./functions_2007TSP_OnProb');
+addpath('./functions_2008TAES_CrossCorre');
+addpath('./functions_2008TSP_WaveformSynthesis');
+rng(42);
+
+%% Figure 4: Trade-off of Omni-Directional Beampattern Design
+
+%% 1. 参数设置（示例，可修改）
+KcList = 6 : 2 : 10;         % # of users
+M = 16;                     % 天线数
+N = 16;
+L = 100;                     % # of Communication Frame
+Pt  = 1;
+c = ones(N, 1) * Pt/N;       % 对角元固定值
+
+% comm snr
+SNRdB = 10;
+N0 = Pt ./ 10.^(SNRdB/10);
+% radar snr
+beta = 1;
+RadarSNRdB = -14;
+sigmas2 = Pt * beta^2/10^(RadarSNRdB / 10);
+
+Pfa = 1e-7;
+thetaDetect = 0;
+
+d = 0.5;
+lambda = 2 * d;
+pos = (0:N-1) * d;
+normalizedPos = pos / lambda;
+afun = @(theta) exp(1j * pi * (0:N-1)' * sind(theta));  % N×1
+
+%% Desired Beampattern
+theta_est = [thetaDetect];   % 目标角度估计（度）
+Kt = length(theta_est);      % 目标个数
+
+Delta = 1;
+theta_grid = -90:0.1:90;
+P_des = zeros(size(theta_grid));
+% Desired beam pattern
+idx = false(size(theta_grid));
+for i = 1:numel(theta_est)
+    idx = idx | theta_grid >= theta_est(i)-Delta & theta_grid <= theta_est(i)+Delta;
+end
+P_des(idx) = 1;
+
+%% Omni-Directional Beampattern
+OmniRd = (Pt / N) * eye(N);
+fprintf('trace(OmniRd) = %.6f\n',  trace(OmniRd));
+
+%% Tradeoff Settings
+% rhoList = 0.1:0.1:0.9;
+rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
+rhoList = 10.^(rhodB ./ 10);
+%% Simulation Settings
+Iters = 1000;
+
+OmniRateArrayTol = zeros(Iters, length(rhoList), length(KcList));
+OmniProbabilityArrayTol = zeros(Iters, length(rhoList), length(KcList));
+OmniRateArrayPerAnt = zeros(Iters, length(rhoList), length(KcList));
+OmniProbabilityArrayPerAnt = zeros(Iters, length(rhoList), length(KcList));
+
+%% Monte Carlo Simulation
+for iter = 1:Iters
+    clc; disp(['Progress - ', num2str(iter), '/', num2str(Iters)]);
+    for idxRho = 1:length(rhoList)
+        rho = rhoList(idxRho);
+        for idxKc = 1:length(KcList)
+            Kc = KcList(idxKc);
+            H = (randn(Kc, N) + 1j * randn(Kc, N)) / sqrt(2);
+            data = randi([0, 3], Kc, L);
+            S = pskmod(data, 4, pi / 4, 'gray');
+            
+            OmniStrictX = strict_waveform(H, S, OmniRd, L);
+
+            OmniTradeoffXTol = algorithm1_tradeoff(H, S, OmniStrictX, Pt, rho);
+            OmniRateArrayTol(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXTol, S, N0);
+            OmniProbabilityArrayTol(iter, idxRho, idxKc) = radar_detection_probability_fig4(OmniTradeoffXTol, thetaDetect, beta^2*L*M/sigmas2, Pfa);
+
+            % OmniTradeoffXPerAnt = helperRadComWaveform(H, S, OmniStrictX, Pt, rho);
+            % OmniRateArrayPerAnt(iter, idxRho, idxKc) = average_user_rate(H, OmniTradeoffXPerAnt, S, N0);
+            % OmniProbabilityArrayPerAnt(iter, idxRho, idxKc) = radar_detection_probability_fig4(sqrt(N) * OmniTradeoffXPerAnt, thetaDetect, radarSNR, Pfa);
+        end
+    end
+end
+
+%% Average Results
+OmniRateTol = squeeze(mean(real(OmniRateArrayTol), 1));
+OmniProbabilityTol = squeeze(mean(real(OmniProbabilityArrayTol), 1));
+
+OmniRateTol1 = OmniRateTol(:, 1);
+OmniRateTol2 = OmniRateTol(:, 2);
+OmniRateTol3 = OmniRateTol(:, 3);
+
+OmniProbabilityTol1 = OmniProbabilityTol(:, 1);
+OmniProbabilityTol2 = OmniProbabilityTol(:, 2);
+OmniProbabilityTol3 = OmniProbabilityTol(:, 3);
+
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
+figure(1);
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+
+p1 = plot(OmniRateTol1, OmniProbabilityTol1, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+p1.Color = '#F65314';
+
+p2 = plot(OmniRateTol2, OmniProbabilityTol2, 'k-s', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+p2.Color = '#00A1F1';
+
+p3 = plot(OmniRateTol3, OmniProbabilityTol3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
+p3.Color = '#8A2BE2';
+
+% plot(OmniRatePerAnt1, OmniProbabilityPerAnt1, 'b--', 'LineWidth', 1.5); hold on;
+% plot(OmniRatePerAnt2, OmniProbabilityPerAnt2, 'k--', 'LineWidth', 1.5); hold on;
+% plot(OmniRatePerAnt3, OmniProbabilityPerAnt3, 'r--', 'LineWidth', 1.5);
+
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',14,'FontName','Times New Roman');
+
+h_legend =  legend('$K_c$=6', '$K_c$=8', '$K_c$=10', 'Interpreter', 'latex');
+legendsize = 16;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','best');
+
+labelsize = 16;
+xlabel('Average Achievable Rate (bps/Hz/user)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Detection Probability", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+% print(gcf, 'Fig_6_3.pdf', '-dpdf', '-vector');
+

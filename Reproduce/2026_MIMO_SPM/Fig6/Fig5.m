@@ -1,0 +1,167 @@
+
+
+clc;
+clear all;
+close all;
+addpath('./functions_2018ICC');
+addpath('./functions_2007TSP_OnProb');
+addpath('./functions_2008TAES_CrossCorre');
+addpath('./functions_2008TSP_WaveformSynthesis');
+rng(42);
+
+%% Figure 5: Trade-off of Directional Beampattern Design
+
+%% Communication Settings
+KcList = 6 : 2 : 10;
+M = 16;
+L = 100;
+Pt = 1;
+c = ones(M, 1) * Pt/M;       % 对角元固定值
+
+% comm snr
+SNRdB = 10;
+N0 = Pt / 10^(SNRdB/10);
+
+%% Radar Settings
+d = 0.5;
+lambda = 2 * d;
+pos = (0:M - 1) * d;
+normalizedPos = pos / lambda;
+afun = @(theta) exp(1j * pi * (0:M-1)' * sind(theta));  % M×1
+%% Desired Beampattern
+theta_est = [0];             % 目标角度估计（度）
+Kt = length(theta_est);      % 目标个数
+
+Delta = 5;
+theta_grid = -90:0.1:90;
+P_des = zeros(size(theta_grid));
+% Desired beam pattern
+idx = false(size(theta_grid));
+for i = 1:numel(theta_est)
+    idx = idx | theta_grid >= theta_est(i)-Delta & theta_grid <= theta_est(i)+Delta;
+end
+P_des(idx) = 1;
+
+A = steeringMatrixULA1D(normalizedPos, theta_grid);
+
+%% Directional Beampattern
+%  文献1：On Probing Signal Design For MIMO Radar, C. Beampattern Matching Design
+%  diag(R)=1/M, trace(R)=1, wc=0
+w_l = ones(length(theta_grid), 1);
+w_c = 0;
+[DirectRd1, alpha1, ~] = BeampatternMatchingDesign(c, M, w_l, w_c, theta_est, theta_grid, P_des);
+fprintf('trace(DirectRd1) = %.6f\n',  trace(DirectRd1));
+P_des1 = P_des * alpha1;
+
+%  文献2：Transmit Beamforming for MIMO Radar Systems using Signal Cross-Correlation, A. Squared Error Optimization
+%  helperMMSECovariance 默认 diag(R)=1, trace(R)=M, 为了和文献1对齐，将 R 除以 M，使 trace(R)=1
+DirectRd2_raw = helperMMSECovariance(normalizedPos, P_des, theta_grid);
+DirectRd2 = DirectRd2_raw / M;
+DirectRd2 = projectToPSD(DirectRd2);
+DirectRd2 = DirectRd2 + 1e-10 * eye(size(M));
+fprintf('trace(DirectRd2) = %.6f\n',  trace(DirectRd2));
+
+[DirectRd3, b] = helperMMSECovariance_direct(normalizedPos, P_des, theta_grid, Pt); 
+fprintf('trace(DirectRd3) = %.6f\n',  trace(DirectRd3));
+
+DirectRd = DirectRd2;
+%% Tradeoff Settings
+% rhoList = 0.1:0.1:0.9;
+rhodB = [-30 -25 -20 -15 -10 -8 -6 -4 -2 -1, -0.06];
+rhoList = 10.^(rhodB ./ 10);
+
+
+%% Simulation Settings
+Iters = 1000;
+
+DirectRateArray = zeros(Iters, length(rhoList), length(KcList));
+DirectTradeoffBPArray = zeros(Iters, length(rhoList), length(KcList));
+
+%% Monte Carlo Simulation
+for iter = 1:Iters
+    clc; disp(['Progress - ', num2str(iter), '/', num2str(Iters)]);
+    for idxRho = 1:length(rhoList)
+        rho = rhoList(idxRho);
+        for idxKc = 1:length(KcList)
+            Kc = KcList(idxKc);
+            H = (randn(Kc, M) + 1j * randn(Kc, M)) / sqrt(2);
+            data = randi([0, 3], Kc, L);
+            S = pskmod(data, 4, pi / 4, 'gray');
+            
+            DirectStrictX = strict_waveform(H, S, DirectRd, L);
+            DirectTradeoffX = algorithm1_tradeoff(H, S, DirectStrictX, Pt, rho);
+            
+            % DirectTradeoffX = sqrt(M) * DirectTradeoffX0;
+            Rtmp = DirectTradeoffX * DirectTradeoffX' / L;
+            
+            DirectRateArray(iter, idxRho, idxKc) = average_user_rate(H, DirectTradeoffX, S, N0);
+            DirectTradeoffBPArray(iter, idxRho, idxKc) = sqrt(norm(diag(A'*DirectRd*A) - diag(A'*Rtmp*A), 2));
+            % radar_beampattern_mse_fig5(DirectRd, DirectTradeoffX, theta_grid, M);
+        end
+    end
+end
+
+%% Average Results
+DirectRate = squeeze(mean(real(DirectRateArray), 1));
+
+DirectRate1 = DirectRate(:, 1);
+DirectRate2 = DirectRate(:, 2);
+DirectRate3 = DirectRate(:, 3);
+
+DirectTradeoffBP = squeeze(mean(real(DirectTradeoffBPArray), 1));
+DirectTradeoffBP = 10 * log10(DirectTradeoffBP);
+
+DirectTradeoffBP1 = squeeze(DirectTradeoffBP(:, 1)).';
+DirectTradeoffBP2 = squeeze(DirectTradeoffBP(:, 2)).';
+DirectTradeoffBP3 = squeeze(DirectTradeoffBP(:, 3)).';
+
+%% ===========================================
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
+figure(1);
+% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
+
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+
+p1 = plot(DirectRate1, DirectTradeoffBP1, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+p1.Color = '#F65314';
+
+p2 = plot(DirectRate2, DirectTradeoffBP2, 'k-s', 'LineWidth', 1.5, 'MarkerSize', 7); hold on;
+p2.Color = '#00A1F1';
+
+p3 = plot(DirectRate3, DirectTradeoffBP3, 'r-d', 'LineWidth', 1.5, 'MarkerSize', 7);
+p3.Color = '#8A2BE2';
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',14,'FontName','Times New Roman');
+
+h_legend =  legend('$K_c$=6', '$K_c$=8', '$K_c$=10', 'Interpreter', 'latex');
+legendsize = 13;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+
+labelsize = 16;
+xlabel('Average Achievable Rate (bps/Hz/user)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel("Average MSE (dB)", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+% print(gcf, 'Fig_6_5.pdf', '-dpdf', '-vector');
