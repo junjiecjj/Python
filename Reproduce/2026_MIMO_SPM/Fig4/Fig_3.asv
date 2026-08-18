@@ -190,8 +190,8 @@ print(gcf, 'Fig_4_3.pdf', '-dpdf', '-vector');
 
 
 %===========================================
-width = 6;
-height = 4;
+width = 5;
+height = 4.5;
 fontsize = 14;
 linewidth = 2;
 markersize = 10;
@@ -218,15 +218,15 @@ set(gcf, 'PaperPositionMode', 'manual');
 
 subplot(2,1,1);
 
-p1 = plot(1:N, PAR1(1,:), '-', 'LineWidth', 2); hold on;
+p1 = plot(1:N, PAR1(1,:), 'o-', 'LineWidth', 2); hold on;
 p1.Color = '#F65314';
-p2 = plot(1:N, PAR1(2,:), '--', 'LineWidth', 2);
+p2 = plot(1:N, PAR1(2,:), '*--', 'LineWidth', 2);
 p2.Color = '#8A2BE2';
-p3 = plot(1:N, PAR1(3,:), '--', 'LineWidth', 2);
+p3 = plot(1:N, PAR1(3,:), 'd--', 'LineWidth', 2);
 p3.Color = '#00A1F1';
 
 set(gca, 'FontSize', 14, 'FontName', 'Times New Roman', 'LineWidth', 1.5);
-title('AO: Terminate with update U', 'FontName', 'Times New Roman', 'FontSize', 12, 'FontWeight', 'normal');
+title('Terminate with update U', 'FontName', 'Times New Roman', 'FontSize', 15, 'FontWeight', 'normal');
 
 h_legend = legend('AO: strict R, (PAR=1)', 'AO: strict R, (PAR$\leq$1.1)', 'AO: strict R, (PAR$\leq$2)', 'Interpreter', 'latex', 'Location', 'northeast');
 set(h_legend, 'FontName', 'Times New Roman', 'FontSize', 11, 'FontWeight', 'normal', 'LineWidth', 1);
@@ -236,12 +236,11 @@ ylabel('PAPR', 'FontSize', 15, 'FontName', 'Times New Roman', 'Interpreter', 'la
 
 xlim([1 10]);
 xticks(1:1:10);
-ylim([0.8 2.2]);
 yticks(0.8:0.2:2.2);
-
+xlim([1 10]);
 grid on;
 set(gca, 'GridLineStyle', '--', 'GridAlpha', 0.2, 'LineWidth', 1.5, 'GridLineWidth', 0.5, 'Layer', 'bottom');
-set(gca, 'Position', [0.12 0.58 0.83 0.36]);
+set(gca, 'Position', [0.13 0.55 0.83 0.36]);
 
 %%========================================================================================
 %                           (b) Terminate with update X
@@ -249,15 +248,15 @@ set(gca, 'Position', [0.12 0.58 0.83 0.36]);
 
 subplot(2,1,2);
 
-p1 = plot(1:N, PAR2(1,:), '-', 'LineWidth', 2); hold on;
+p1 = plot(1:N, PAR2(1,:), 'o-', 'LineWidth', 2); hold on;
 p1.Color = '#F65314';
-p2 = plot(1:N, PAR2(2,:), '--', 'LineWidth', 2);
+p2 = plot(1:N, PAR2(2,:), '*--', 'LineWidth', 2);
 p2.Color = '#8A2BE2';
-p3 = plot(1:N, PAR2(3,:), '--', 'LineWidth', 2);
+p3 = plot(1:N, PAR2(3,:), 'd--', 'LineWidth', 2);
 p3.Color = '#00A1F1';
 
 set(gca, 'FontSize', 14, 'FontName', 'Times New Roman', 'LineWidth', 1.5);
-title('AO: Terminate with update X', 'FontName', 'Times New Roman', 'FontSize', 12, 'FontWeight', 'normal');
+title('Terminate with update X', 'FontName', 'Times New Roman', 'FontSize', 15, 'FontWeight', 'normal');
 
 h_legend = legend('AO: PAR=1', 'AO: PAR$\leq$1.1', 'AO: PAR$\leq$2', 'Interpreter', 'latex', 'Location', 'northeast');
 set(h_legend, 'FontName', 'Times New Roman', 'FontSize', 11, 'FontWeight', 'normal', 'LineWidth', 1);
@@ -268,12 +267,11 @@ ylabel('PAPR', 'FontSize', 15, 'FontName', 'Times New Roman', 'Interpreter', 'la
 
 xlim([1 10]);
 xticks(1:1:10);
-ylim([0.8 2.2]);
 yticks(0.8:0.2:2.2);
 
 grid on;
 set(gca, 'GridLineStyle', '--', 'GridAlpha', 0.2, 'LineWidth', 1.5, 'GridLineWidth', 0.5, 'Layer', 'bottom');
-set(gca, 'Position', [0.12 0.12 0.83 0.36]);
+set(gca, 'Position', [0.13 0.10 0.83 0.36]);
 
 %% ========================================================
 %                     Save

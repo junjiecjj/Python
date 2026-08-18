@@ -85,29 +85,38 @@ set(gcf, 'Renderer', 'painters');
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
+
+p1 = plot(theta_grid, p_des, 'k--', 'LineWidth', 2); hold on;
+
+p2 = plot(theta_grid, P_opt0, 'r-', 'LineWidth', 2.5); hold on;
+p2.Color = '#A9A9A9';
+
+p3 = plot(theta_grid, P_opt1, 'r-.', 'LineWidth', 2); hold on;
+p3.Color = '#F65314';
+
+p4 = plot(theta_grid, P_opt2, 'b:', 'LineWidth', 2); hold on;
+p4.Color = '#00A1F1';
+
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
-set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-
-plot(theta_grid, p_des, 'k--', 'LineWidth', 1.5); hold on;
-p2 = plot(theta_grid, P_opt0, 'r-', 'LineWidth', 2); hold on;
-p2.Color = '#A9A9A9';
-plot(theta_grid, P_opt1, 'r-.', 'LineWidth', 1.5); hold on;
-plot(theta_grid, P_opt2, 'b:', 'LineWidth', 1.5); hold on;
+set(gca, 'FontSize',16,'FontName','Times New Roman');
 
 h_legend = legend('Desired', ...
                   'Optimized, $w_c$=0',...
-                  'CA:strict R',...
-                  'CA:PAR $\leq$ 2',...
+                  'AO:strict R',...
+                  'AO:PAPR $\leq$ 2',...
                   'Interpreter', 'latex'...
                   );  %图例，与上面的曲线先后对应
-
+h_legend.Color = 'none';
 legendsize = 12;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1, 'Location','NorthEast');
 labelsize = 16;
 
 xlabel('$\theta^{\circ}$', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 ylabel("Beampattern", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+xlim([-90 90]);         % 横纵坐标范围
+xticks(-90:20:90); 
 
 set(get(gca, 'XAxis'), 'FontSize', 12);  % 调整坐标轴刻度标签（tick labels）的字体大小
 set(get(gca, 'YAxis'), 'FontSize', 12);

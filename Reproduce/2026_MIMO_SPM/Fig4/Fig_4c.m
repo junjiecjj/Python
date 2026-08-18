@@ -114,27 +114,32 @@ set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 set(gcf, 'PaperPositionMode', 'manual');
 
-p1 = plot(theta_plot, P_R_dB, '-', 'LineWidth', 2); 
-p1.Color = '#A9A9A9';
-hold on;
-plot(theta_plot, P_optR_dB, 'b--', 'LineWidth', 1.5); hold on;
-plot(theta_plot, P_par_dB, 'r:', 'LineWidth', 1.5); hold on;
-xline(theta_null, 'k:', 'LineWidth', 2);
+p1 = plot(theta_plot, P_R_dB, '-', 'LineWidth', 2.5); hold on;
+p1.Color = '#A9A9A9'; 
+
+p2 = plot(theta_plot, P_optR_dB, 'b--', 'LineWidth', 2); hold on;
+p2.Color = '#F65314';  
+
+p3 = plot(theta_plot, P_par_dB, 'r:', 'LineWidth', 2); hold on;
+p3.Color = '#00A1F1';  
+
+xline(theta_null, 'k-.', 'LineWidth', 2);
 %-------------------------------------------------------------------
 
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
-set(gca, 'FontSize',fontsize,'FontName','Times New Roman');
-h_legend =  legend('Optimized R', 'CA: strict R', 'CA: PAR $ \leq $ 1.2','null', 'Interpreter', 'latex');
-legendsize = 14;
-set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','NorthEast');
-% set(h_legend,'Interpreter','latex') %  'box','off');
-% h_legend.Interpreter = 'latex';
-labelsize = 14;
+set(gca, 'FontSize',16,'FontName','Times New Roman');
+h_legend =  legend('Optimized R', 'AO: strict R', 'AO: PAPR $\leq 1.2$ ', 'null', 'Interpreter', 'latex');
+h_legend.Color = 'none';
+legendsize = 16;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','Best');
 
+labelsize = 18;
 xlabel('$\theta^{\circ}$', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 ylabel("Beampattern (dB)", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
-xlim([-90, 90]);
+
+xlim([-90 90]);         % 横纵坐标范围
+xticks(-80:20:80);
 %----- Grid 设置----------------
 grid on;
 set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
