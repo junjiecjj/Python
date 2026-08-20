@@ -19,11 +19,28 @@ import scipy
 
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
-
+np.random.seed(42)
 filepath2 = '/home/jack/snap/'
 fontpath = "/usr/share/fonts/truetype/windows/"
 fontpath1 = "/usr/share/fonts/truetype/msttcorefonts/"
 fontpath2 = "/usr/share/fonts/truetype/NerdFonts/"
+
+def srrcFunction(beta, L, span, Tsym = 1):
+    # Function for generating rectangular pulse for the given inputs
+    # L - oversampling factor (number of samples per symbol)
+    # span - filter span in symbol durations
+    # Returns the output pulse p(t) that spans the discrete-time base -span:1/L:span. Also returns the filter delay.
+    t = np.arange(-span*Tsym/2, span*Tsym/2 + 0.5/L, Tsym/L)
+    A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
+    B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
+    p = 1/np.sqrt(Tsym) * A/B
+    # p[np.argwhere(np.isnan(p))] = 1
+    p[np.argwhere(np.isnan(p))] = (1+beta*(4/np.pi-1))/np.sqrt(Tsym); # 这个才是准确的，上面的是书上的，不精确
+    p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
+    filtDelay = (len(p)-1)/2
+    p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
+    return p, t, filtDelay
+
 
 #%%=================================================================================
 ## 上采样
@@ -88,72 +105,6 @@ c = np.convolve([.5, 1, .5], [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9])
 
 ###==========================================================================
 
-## %% https://gist.github.com/Dreistein/8d546eab7236876882f08c0b487dad28
-def rcosdesign(beta: float, span: float, sps: float, shape='normal'):
-    if beta < 0 or beta > 1:
-        raise ValueError("parameter beta must be float between 0 and 1, got {}".format(beta))
-
-    if span < 0:
-        raise ValueError("parameter span must be positive, got {}".format(span))
-
-    if sps < 0:
-        raise ValueError("parameter sps must be positive, got {}".format(span))
-
-    if ((sps*span) % 2) == 1:
-        raise ValueError("rcosdesign:OddFilterOrder {}, {}".format(sps, span))
-
-    if shape != 'normal' and shape != 'sqrt':
-        raise ValueError("parameter shape must be either 'normal' or 'sqrt'")
-
-    eps = np.finfo(float).eps
-
-    # design the raised cosine filter
-    delay = span*sps/2
-    t = np.arange(-delay, delay)
-
-    if len(t) % 2 == 0:
-        t = np.concatenate([t, [delay]])
-    t = t / sps
-    b = np.empty(len(t))
-
-    if shape == 'normal':
-        # design normal raised cosine filter
-        # find non-zero denominator
-        denom = (1-np.power(2*beta*t, 2))
-        idx1 = np.nonzero(np.fabs(denom) > np.sqrt(eps))[0]
-
-        # calculate filter response for non-zero denominator indices
-        b[idx1] = np.sinc(t[idx1])*(np.cos(np.pi*beta*t[idx1])/denom[idx1])/sps
-
-        # fill in the zeros denominator indices
-        idx2 = np.arange(len(t))
-        idx2 = np.delete(idx2, idx1)
-
-        b[idx2] = beta * np.sin(np.pi/(2*beta)) / (2*sps)
-
-    else:
-        # design a square root raised cosine filter
-        # find mid-point
-        idx1 = np.nonzero(t == 0)[0]
-        if len(idx1) > 0:
-            b[idx1] = -1 / (np.pi*sps) * (np.pi * (beta-1) - 4*beta)
-        # find non-zero denominator indices
-        idx2 = np.nonzero(np.fabs(np.fabs(4*beta*t) - 1) < np.sqrt(eps))[0]
-        if idx2.size > 0:
-            b[idx2] = 1 / (2*np.pi*sps) * (np.pi * (beta+1) * np.sin(np.pi * (beta+1) / (4*beta)) - 4*beta * np.sin(np.pi * (beta-1) / (4*beta)) + np.pi*(beta-1)   * np.cos(np.pi * (beta-1) / (4*beta)))
-
-        # fill in the zeros denominator indices
-        ind = np.arange(len(t))
-        idx = np.unique(np.concatenate([idx1, idx2]))
-        ind = np.delete(ind, idx)
-        nind = t[ind]
-
-        b[ind] = -4*beta/sps * (np.cos((1+beta)*np.pi*nind) + np.sin((1-beta)*np.pi*nind) / (4*beta*nind)) / (  np.pi * (np.power(4*beta*nind, 2) - 1))
-
-    # normalize filter energy
-    b = b / np.sqrt(np.sum(np.power(b, 2)))
-    return b
-
 #%% ==================== 输入信号  ====================
 x = 2*np.random.randint(0,2,(10,)) - 1
 # x = 2 * x
@@ -161,8 +112,8 @@ x = 2*np.random.randint(0,2,(10,)) - 1
 # ==================== 设置滤波器 ====================
 span = 6
 L = 4   # L
-h = rcosdesign(0.5, span, L, 'sqrt')
-
+beta = 0.25
+h, t, _ = srrcFunction(beta, L, span)
 # ==================== 脉冲成型 + 上变频-> 基带信号 ====================
 #对输入信号进行上采样
 y = scipy.signal.upfirdn(h, x, L)

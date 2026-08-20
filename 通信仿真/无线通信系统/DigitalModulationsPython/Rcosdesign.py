@@ -169,7 +169,8 @@ def srrcFunction(beta, L, span, Tsym = 1):
     A = np.sin(np.pi*t*(1-beta)/Tsym) + 4*beta*t/Tsym * np.cos(np.pi*t*(1+beta)/Tsym)
     B = np.pi*t/Tsym * (1-(4*beta*t/Tsym)**2)
     p = 1/np.sqrt(Tsym) * A/B
-    p[np.argwhere(np.isnan(p))] = 1
+    # p[np.argwhere(np.isnan(p))] = 1
+    p[np.argwhere(np.isnan(p))] = (1+beta*(4/np.pi-1))/np.sqrt(Tsym); # 这个才是准确的，上面的是书上的，不精确
     p[np.argwhere(np.isinf(p))] = beta/(np.sqrt(2*Tsym)) * ((1+2/np.pi)*np.sin(np.pi/(4*beta)) + (1-2/np.pi)*np.cos(np.pi/(4*beta)))
     filtDelay = (len(p)-1)/2
     p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
@@ -195,8 +196,8 @@ fig, axs = plt.subplots(1, 1, figsize = (horvizen*width, vertical*high), constra
 labelsize = 20
 
 axs.plot(t, h1, ls = '-', color = 'r', marker = 'o', mfc = 'none', label = 'rcosdesign_srv')
-axs.plot(t, h2, ls = '-', color = 'g', marker = '*', mfc = 'none', label = 'rcosdesign')
-axs.plot(t, h3, ls = '-', color = 'b', marker = 'd', mfc = 'none', label = 'srrcFunction')
+axs.plot(t, h2, ls = '--', color = 'g', marker = '*', mfc = 'none', label = 'rcosdesign')
+axs.plot(t, h3, ls = '-.', color = 'b', marker = 'd', mfc = 'none', label = 'srrcFunction')
 axs.plot(t1, h_rrc, ls = 'none', color = 'y', marker = 's', ms = 12, mfc = 'none', mew = 2, label = 'commpy')
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)
@@ -284,7 +285,7 @@ vertical = 1
 fig, axs = plt.subplots(1, 1, figsize = (horvizen*width, vertical*high), constrained_layout = True)
 labelsize = 20
 
-axs.plot(t, h1, ls = '-', color = 'r', marker = 'o', mfc = 'none', label = 'raisedCosineDesign')
+axs.plot(t, h1, ls = '--', color = 'r', marker = 'o', mfc = 'none', label = 'raisedCosineDesign')
 axs.plot(t, h2, ls = '-', color = 'g', marker = '*', mfc = 'none', label = 'raisedCosineFunction')
 
 font = FontProperties(fname=fontpath1+"Times_New_Roman.ttf", size = 20)

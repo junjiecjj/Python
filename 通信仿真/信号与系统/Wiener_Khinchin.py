@@ -221,8 +221,6 @@ print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
 
 #%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
 
-
-
 #%%
 # 实现与MATLAB cconv完全一致的圆卷积
 def cconv(a, b, n=None):

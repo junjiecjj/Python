@@ -275,7 +275,6 @@ Vs = V[:, -lenCP:]
 
 H_cp1 @ Vs # Proof of Theorem 1
 
-
 Vc = V[:, :S.size]
 Vs = V[:, -lenCP:]
 
