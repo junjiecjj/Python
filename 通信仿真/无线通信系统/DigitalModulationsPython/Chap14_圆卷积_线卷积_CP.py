@@ -391,6 +391,9 @@ def Acp(N, Ncp):
         ])
     return Acp
 
+def
+
+
 # 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程
 h = np.array([-0.4878, -1.5351, 0.2355])
 S = np.array([-0.0155, 2.5770, 1.9238, -0.0629, ])
