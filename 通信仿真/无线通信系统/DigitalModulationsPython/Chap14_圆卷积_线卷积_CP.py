@@ -143,7 +143,7 @@ lin_scp = scipy.signal.convolve(h, s_cp)
 r = lin_scp[Ncp:Ncp+N]
 print(f" r = \n    {r}\n cir_s_h = \n    {cir_s_h}")  # cir_s_h == r
 
-# 14.2.3 Verifying DFT property， 时域的圆卷积等于频域相乘.
+# 14.2.3 Verifying DFT property， 时域的圆卷积对应于频域相乘.
 R = scipy.fft.fft(r, N)
 H = scipy.fft.fft(h, N)
 S = scipy.fft.fft(s, N)
@@ -224,12 +224,98 @@ h1 = np.pad(h, (0, Nx - 1))
 h_tilde = CutFoldAdd(h1, Nx)
 y_tilde = CutFoldAdd(y, Nx)
 # z_tilde = CutFoldAdd(z, Nx)
-H_tilde = scipy.linalg.circulant(h_tilde)
+H_tilde = scipy.linalg.circulant(h_tilde)   # 生成循环矩阵
 
 ## 圆卷积。 y1 == y_tilde 得到验证, 仔细一想，这是肯定成立的， 因为仅仅只是行之间的线性相加，没有理由不成立。
 y1 = H_tilde @ s # + z_tilde
 
 ## y1 == r, 这也说明，关于OFDM: (1) 在发送方加CP ; (2) 在接收方做切分然后累加转为圆卷积。两者是等效的。
+
+
+
+#%% On Discrete Ambiguity Functions of Random Communication Waveforms
+import numpy as np
+
+def Jap_Nk_right(N, k):
+    Jtilde = np.zeros((N, N))
+    Jtilde[k:N, 0:N - k] = np.eye(N - k)
+    return Jtilde
+
+def Jap_Nk_left(N, k):
+    Jtilde = np.zeros((N, N))
+    Jtilde[0:N - k, k:N] = np.eye(N - k)
+    return Jtilde
+
+def Jp_Nk_right(N, k):
+    Jtilde = np.zeros((N, N))
+    Jtilde[k:N, 0:N - k] = np.eye(N - k)
+    Jtilde[0:k, N - k:N] = np.eye(k)
+    return Jtilde
+
+def Jp_Nk_left(N, k):
+    Jtilde = np.zeros((N, N))
+    Jtilde[0:N - k, k:N] = np.eye(N - k)
+    Jtilde[N - k:N, 0:k] = np.eye(k)
+    return Jtilde
+
+# Eq.(14)
+N = 5
+Ncp = 3
+k = 2
+
+if k > Ncp:
+    raise ValueError('公式(14)要求 k <= Ncp，否则CP长度不足。')
+
+Acp = np.block([
+    [np.zeros((Ncp, N - Ncp)), np.eye(Ncp)],
+    [np.eye(N)]
+])
+
+Rcp = np.block([
+    [np.zeros((N, Ncp)), np.eye(N)]
+])
+
+L = N + Ncp
+Jtilde = Jap_Nk_right(L, k)  # Jap_Nk_left is wrong
+J = np.zeros((N, N))
+J[0:k, N - k:N] = np.eye(k)
+J[k:N, 0:N - k] = np.eye(N - k)
+Left = Rcp @ Jtilde @ Acp
+
+Right = J
+err_matrix = np.linalg.norm(Left - Right, 'fro')
+print('矩阵级验证误差 ||Left - Right||_F = %.3e' % err_matrix)
+
+x = np.random.randn(N, 1) + 1j * np.random.randn(N, 1)
+x_left = Rcp @ Jtilde @ Acp @ x
+x_right = J @ x
+err_signal = np.linalg.norm(x_left - x_right)
+
+print('信号级验证误差 ||x_left - x_right||_2 = %.3e' % err_signal)
+print('原始信号 x:')
+print(x.T)
+
+print('加CP -> 线性时延 -> 去CP 后的结果:')
+print(x_left.T)
+
+print('直接周期时延 J*x 的结果:')
+print(x_right.T)
+
+
+N = 6
+Ncp = 2
+Acp = np.block([[np.zeros((Ncp, N-Ncp)), np.eye(Ncp)], [np.eye(N)]])
+Rcp = np.block([np.zeros((N, Ncp)),np.eye(N)])
+
+Rcp @ Acp # = I
+
+
+#%%
+
+
+
+
+#%%
 
 
 #%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
@@ -265,7 +351,6 @@ Diag = F @ H_cp1 @ Acp @ FH  # Eq.(3): F@T(h)@A@FH is diagonal such that the dat
 CirH = H_cp1 @ Acp
 print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
 
-
 U, s, VH = scipy.linalg.svd(H_cp1)
 
 V = VH.conj().T
@@ -292,30 +377,50 @@ x1 = x_c + x_s    # Eq.(9)
 
 x_c @ x_s.conj().T # == 0,
 
-
 # Eq.(11)
 a = np.linalg.norm(x_oc)**2
 b = np.linalg.norm(x_c)**2 + np.linalg.norm(Vs.conj().T @ x_oc)**2
 
 
+#%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
 
+def Acp(N, Ncp):
+    Acp = np.block([
+        [np.zeros((Ncp, N-Ncp)), np.eye(Ncp)],
+        [np.eye(N)]
+        ])
+    return Acp
 
-#%%
+# 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程
+h = np.array([-0.4878, -1.5351, 0.2355])
+S = np.array([-0.0155, 2.5770, 1.9238, -0.0629, ])
+s = np.fft.ifft(S) # IFFT
+N = s.size
+L = h.size
+cir_s_h = cconv(h, s, N)  #   circular conv
 
+Hlin = convMatrix(h, N)
+y = Hlin @ s                 # linear conv
 
+lenCP = L - 1
+Acp = Acp(N, lenCP)
+s_cp = Acp @ s                    # add CP
 
+Hlin_cp = convMatrix(h, s_cp.size)
+y_cp = Hlin_cp @ s_cp                #  pass freq selected channel
 
-#%%
+y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp, == cir_s_h
 
+H_cp1 = convMatrix(h, s_cp.size)[lenCP:lenCP + N, :]
+y_remo_cp1 = H_cp1 @ s_cp         #  pass freq selected channel + remove cp
 
+F = scipy.linalg.dft(N)/np.sqrt(N)
+FH = F.conj().T
 
+Diag = F @ H_cp1 @ Acp @ FH       # Eq.(3): F@T(h)@A@FH is diagonal such that the data is parallelly transmitted over different subcarriers, and thus the ISI is avoided.
 
-#%%
-
-
-
-
-
+CirH = H_cp1 @ Acp
+print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
 
 
 

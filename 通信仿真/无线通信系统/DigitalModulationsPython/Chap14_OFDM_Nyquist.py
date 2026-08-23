@@ -130,8 +130,6 @@ def srrcFunction(beta, L, span):
     return p, t, filtDelay
 
 
-
-
 #%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
 
 # 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程
@@ -154,7 +152,7 @@ s_cp = Acp @ s                    # add CP
 H_cp = convMatrix(h, s_cp.size)
 y_cp = H_cp @ s_cp                #  pass freq selected channel
 
-y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp
+y_remo_cp = y_cp[lenCP:lenCP + N] # receiver, remove cp, == cir_s_h
 
 H_cp1 = convMatrix(h, s_cp.size)[lenCP:lenCP + N, :]
 y_remo_cp1 = H_cp1 @ s_cp        #  pass freq selected channel + remove cp
