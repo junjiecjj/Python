@@ -439,6 +439,8 @@ Hcir = Scp @ Hlin_cp @ Acp
 print(f"h = {h}\n Hcir = \n{Hcir}")     # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
 
 
+##>>>>>> On Discrete Ambiguity Functions of Random Communication Waveforms, Eq.(14)
+
 
 
 
