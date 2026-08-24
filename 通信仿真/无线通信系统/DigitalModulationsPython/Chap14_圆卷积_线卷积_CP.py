@@ -415,28 +415,28 @@ F = FFTmatrix(N)
 FH = F.conj().T
 
 U = FH
-s = FH @ S                  # IFFT
+s = FH @ S                    # IFFT
 
-cir_s_h = cconv(h, s, N)    # circular conv
+cir_s_h = cconv(h, s, N)      # circular conv
 
 # Hlin = convMatrix(h, N)
 # y = Hlin @ s                # linear conv
 
 Ncp = L - 1
 Acp = AcpMat(N, Ncp)
-s_cp = Acp @ s                    # add CP
+s_cp = Acp @ s                # add CP
 
 Hlin_cp = convMatrix(h, s_cp.size)
 y_lincp = Hlin_cp @ s_cp                # pass freq selected channel
 y_remo_cp = y_lincp[Ncp:Ncp + N]        # receiver, remove cp, == cir_s_h
 
 Scp = ScpMat(N, Ncp, L)
-y_remo_cp1 = Scp @ Hlin_cp @ Acp @ s         #  pass freq selected channel + remove cp
+y_remo_cp1 = Scp @ Hlin_cp @ Acp @ s    #  pass freq selected channel + remove cp
 
-Diag = F @ Scp @ Hlin_cp @ Acp @ U       # Eq.(3): F@T(h)@A@FH is diagonal such that the data is parallelly transmitted over different subcarriers, and thus the ISI is avoided.
+Diag = F @ Scp @ Hlin_cp @ Acp @ U      # Eq.(3): F@T(h)@A@FH is diagonal such that the data is parallelly transmitted over different subcarriers, and thus the ISI is avoided.
 
 Hcir = Scp @ Hlin_cp @ Acp
-print(f"h = {h}\n Hcir = \n{Hcir}") # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
+print(f"h = {h}\n Hcir = \n{Hcir}")     # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
 
 
 
