@@ -400,7 +400,6 @@ b = np.linalg.norm(x_c)**2 + np.linalg.norm(Vs.conj().T @ x_oc)**2
 #%% On Discrete Ambiguity Functions of Random Communication Waveforms
 
 Acp = AcpMat(N, Ncp)
-
 Rcp = RcpMat(N, Ncp)
 
 k = 2
@@ -410,7 +409,6 @@ Left = Rcp @ Jtilde @ Acp
 Right = Jp_Nk_right(N, k)
 
 Rcp @ Acp # = I
-
 
 #%%
 def Jbar(N, Ncp, k):
@@ -441,7 +439,7 @@ for k in range(h.size):
     Hsum_cir += h[k] * Jp_Nk_right(N, k)  # == Hlin_cp
 
 
-
+#%%
 
 
 
