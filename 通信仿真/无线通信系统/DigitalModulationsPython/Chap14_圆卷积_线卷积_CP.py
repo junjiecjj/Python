@@ -302,17 +302,13 @@ L = N + Ncp
 Jtilde = Jap_Nk_right(L, k)  # Jap_Nk_left is wrong
 Left = Rcp @ Jtilde @ Acp
 
-J = np.zeros((N, N))
-J[0:k, N - k:N] = np.eye(k)
-J[k:N, 0:N - k] = np.eye(N - k)
-
 Right = Jp_Nk_right(N, k)
 err_matrix = np.linalg.norm(Left - Right, 'fro')
 print('矩阵级验证误差 ||Left - Right||_F = %.3e' % err_matrix)
 
 x = np.random.randn(N, 1) + 1j * np.random.randn(N, 1)
 x_left = Rcp @ Jtilde @ Acp @ x
-x_right = J @ x
+x_right = Right @ x
 err_signal = np.linalg.norm(x_left - x_right)
 
 print('信号级验证误差 ||x_left - x_right||_2 = %.3e' % err_signal)
@@ -325,7 +321,6 @@ print(x_left.T)
 print('直接周期时延 J*x 的结果:')
 print(x_right.T)
 
-
 N = 6
 Ncp = 2
 Acp = np.block([[np.zeros((Ncp, N-Ncp)), np.eye(Ncp)], [np.eye(N)]])
@@ -336,7 +331,6 @@ Rcp @ Acp # = I
 
 #%%
 #%%
-
 
 #%% <A Dual-Functional Sensing-Communication Waveform Design Based on OFDM, Guanding Yu>
 
@@ -403,7 +397,7 @@ a = np.linalg.norm(x_oc)**2
 b = np.linalg.norm(x_c)**2 + np.linalg.norm(Vs.conj().T @ x_oc)**2
 
 
-#%%
+#%% On Discrete Ambiguity Functions of Random Communication Waveforms
 
 Acp = AcpMat(N, Ncp)
 
@@ -419,7 +413,6 @@ Rcp @ Acp # = I
 
 
 #%%
-
 def Jbar(N, Ncp, k):
     Acp = np.block([
         [np.zeros((k, N + Ncp))],
@@ -427,6 +420,7 @@ def Jbar(N, Ncp, k):
         [np.zeros((L-1-k, N + Ncp))]
         ])
     return Acp
+# Scp = ScpMat(N, Ncp, L)
 
 Hlin_cp
 Hsum = np.zeros_like(Hlin_cp)
@@ -434,12 +428,17 @@ for l in range(h.size):
     Hsum += h[l] * Jbar(N, Ncp, l)  # == Hlin_cp
 
 
+Heff = Scp @ Hlin_cp @ Acp
+print(f"h = {h}\n Heff = \n{Heff}")     # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
+
 k = 1
 J_bar = Jbar(N, Ncp, k)
-Scp = ScpMat(N, Ncp, L)
 Left = Scp @ J_bar @ Acp
 Right = Jp_Nk_right(N, k)
 
+Hsum_cir = np.zeros_like(Heff)
+for k in range(h.size):
+    Hsum_cir += h[k] * Jp_Nk_right(N, k)  # == Hlin_cp
 
 
 

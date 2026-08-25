@@ -1,0 +1,126 @@
+%% Fig. 7 in "Sensing With Communication Signals: From Information Theory to Signal Processing"
+% 2025 JSAC version
+%
+% Equations used:
+%   Eq. (34): pulse-shaped continuous-time transmit signal (discretized here)
+%   Eq. (35): x = U*s, with U = F_N^H for OFDM
+%   Eq. (40b): three-target sensing echo
+%   Eq. (47): matched filtering using the complete transmitted signal
+
+clear;
+clc;
+close all;
+
+rng(7);
+
+%% Parameters explicitly specified around Fig. 7
+modOrder = 16;                        % 16-PSK
+SNRdB = 10;                            % input echo SNR
+targetRange = [10, 20, 25];           % [m]
+Q = length(targetRange);
+
+%% Parameters not explicitly reported for Fig. 7 in the paper
+% These parameters are collected here instead of being presented as paper values.
+N = 128;                              % number of OFDM symbols/subcarriers
+L = 10;                               % oversampling factor
+alpha = 0.35;                         % RRC roll-off factor
+span = 20;                            % RRC span in symbols
+rangeSampleSpacing = 0.025;           % range represented by one sample [m]
+
+% The peak levels are read approximately from the published Fig. 7.
+targetAmplitude_dB = [0, -8, -30];
+targetPhase = [0, 0, 0];
+gamma = 10.^(targetAmplitude_dB/20).*exp(1j*targetPhase);
+
+%% Eq. (35): OFDM time-domain samples x = U*s = F_N^H*s
+symbolIndex = randi([0, modOrder - 1], N, 1);
+s = exp(1j*2*pi*symbolIndex/modOrder);
+
+FFTmatrix = exp(-1j*2*pi*(0:N-1).'*(0:N-1)/N)/sqrt(N);
+U = FFTmatrix';
+x = U*s;
+
+%% Eq. (34): RRC pulse shaping
+% MATLAB's rcosdesign generates the square-root raised-cosine pulse.
+p = rcosdesign(alpha, span, L, 'sqrt').';
+p = p/norm(p);
+
+xup = complex(zeros(L*N, 1));
+xup(1:L:end) = x;
+xTilde = conv(xup, p, 'full');
+
+%% Eq. (40b): sensing echo from three delayed targets
+targetDelaySample = round(targetRange/rangeSampleSpacing);
+maxTargetDelaySample = max(targetDelaySample);
+
+ysTarget = complex(zeros(length(xTilde) + maxTargetDelaySample, Q));
+
+for q = 1:Q
+    startIndex = targetDelaySample(q) + 1;
+    endIndex = targetDelaySample(q) + length(xTilde);
+    ysTarget(startIndex:endIndex, q) = gamma(q)*xTilde;
+end
+
+ysNoiseless = sum(ysTarget, 2);
+
+signalPower = mean(abs(ysNoiseless).^2);
+noisePower = signalPower/10^(SNRdB/10);
+zs = sqrt(noisePower/2)*(randn(size(ysNoiseless)) + ...
+    1j*randn(size(ysNoiseless)));
+ys = ysNoiseless + zs;
+
+%% Eq. (47): sensing matched filter uses the entire transmitted signal
+matchedFilter = conj(flipud(xTilde));
+
+yMatchedTarget = complex(zeros(length(ysTarget) + length(xTilde) - 1, Q));
+for q = 1:Q
+    yMatchedTarget(:,q) = conv(ysTarget(:,q), matchedFilter, 'full');
+end
+
+yMatched = conv(ys, matchedFilter, 'full');
+
+% For conv(y, conj(flip(x))), the zero-delay peak occurs at length(xTilde).
+delaySample = (1:length(yMatched)).' - length(xTilde);
+rangeAxis = delaySample*rangeSampleSpacing;
+
+plotIndex = rangeAxis >= 0 & rangeAxis <= 35;
+
+normalization = max(abs(yMatched));
+rangeProfile_dB = 20*log10(abs(yMatched)/normalization + eps);
+targetProfile_dB = 20*log10(abs(yMatchedTarget)/normalization + eps);
+
+%% Plot Fig. 7
+figure('Color', 'w');
+hold on;
+
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,1), ':', ...
+    'Color', [0.8500, 0.3250, 0.0980], 'LineWidth', 1.5);
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,2), ':', ...
+    'Color', [0.4940, 0.1840, 0.5560], 'LineWidth', 1.5);
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,3), ':', ...
+    'Color', [0.20, 0.20, 0.20], 'LineWidth', 1.5);
+plot(rangeAxis(plotIndex), rangeProfile_dB(plotIndex), '-', ...
+    'Color', [0, 0.4470, 0.7410], 'LineWidth', 1.5);
+
+xlim([0, 35]);
+ylim([-80, 0]);
+xticks(0:5:35);
+yticks(-80:20:0);
+grid on;
+box on;
+
+xlabel('Range [m]');
+ylabel('Amplitude [dB]');
+legend('Target 1', 'Target 2', 'Target 3', 'Range Profile', ...
+    'Location', 'northeast');
+
+set(gca, 'FontName', 'Times New Roman', 'FontSize', 11);
+set(gcf, 'Position', [100, 100, 650, 440]);
+
+exportgraphics(gcf, 'Fig7_JSAC.png', 'Resolution', 300);
+exportgraphics(gcf, 'Fig7_JSAC.pdf', 'ContentType', 'vector');
+
+%% Numerical checks
+fprintf('Target ranges [m]:            %g  %g  %g\n', targetRange);
+fprintf('Implemented peak levels [dB]: %g  %g  %g\n', targetAmplitude_dB);
+fprintf('Input echo SNR [dB]:           %g\n', SNRdB);

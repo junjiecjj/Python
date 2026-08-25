@@ -1,0 +1,142 @@
+%% Fig. 7 in "Sensing With Communication Signals: From Information Theory to Signal Processing"
+% 2025 JSAC version
+%
+% Equations used:
+%   Eq. (34): pulse-shaped continuous-time transmit signal (discretized here)
+%   Eq. (35): x = U*s, with U = F_N^H for OFDM
+%   Eq. (40b): three-target sensing echo
+%   Eq. (47): matched filtering using the complete transmitted signal
+
+clear;
+clc;
+close all;
+
+rng(7);
+
+%% Parameters explicitly specified around Fig. 7
+modOrder = 16;                        % 16-PSK
+SNRdB = 20;                            % input echo SNR
+targetRange = [10, 20, 25];           % [m]
+Q = length(targetRange);
+Iter = 100;                          % number of Monte Carlo trials
+
+%% Parameters not explicitly reported for Fig. 7 in the paper
+% These parameters are collected here instead of being presented as paper values.
+N = 128;                              % number of OFDM symbols/subcarriers
+L = 10;                               % oversampling factor
+alpha = 0.35;                         % RRC roll-off factor
+span = 10;                            % RRC span in symbols
+rangeSampleSpacing = 0.025;           % range represented by one sample [m]
+
+% The peak levels are read approximately from the published Fig. 7.
+targetAmplitude_dB = [0, -8, -30];
+targetPhase = [0, 0, 0];
+gamma = 10.^(targetAmplitude_dB/20).*exp(1j*targetPhase);
+
+%% Fixed matrices and pulse
+FFTmatrix = exp(-1j*2*pi*(0:N-1).'*(0:N-1)/N)/sqrt(N);
+U = FFTmatrix';
+p = rcosdesign(alpha, span, L, 'sqrt').';
+p = p/norm(p);
+
+targetDelaySample = round(targetRange/rangeSampleSpacing);
+maxTargetDelaySample = max(targetDelaySample);
+
+lengthXTilde = L*N + length(p) - 1;
+lengthYs = lengthXTilde + maxTargetDelaySample;
+lengthYMatched = lengthYs + lengthXTilde - 1;
+
+% For conv(y, conj(flip(x))), the zero-delay peak occurs at length(xTilde).
+delaySample = (1:lengthYMatched).' - lengthXTilde;
+rangeAxis = delaySample*rangeSampleSpacing;
+plotIndex = rangeAxis >= 0 & rangeAxis <= 35;
+
+%% Monte Carlo simulation
+% Preserve the complete arrays from every trial before ensemble averaging.
+SimRangeProfile = zeros(Iter, lengthYMatched);
+SimTargetProfile = zeros(Iter, lengthYMatched, Q);
+
+for ii = 1:Iter
+    %% Eq. (35): OFDM time-domain samples x = U*s = F_N^H*s
+    symbolIndex = randi([0, modOrder - 1], N, 1);
+    s = exp(1j*2*pi*symbolIndex/modOrder);
+    x = U*s;
+
+    %% Eq. (34): RRC pulse shaping
+    xup = complex(zeros(L*N, 1));
+    xup(1:L:end) = x;
+    xTilde = conv(xup, p, 'full');
+
+    %% Eq. (40b): sensing echo from three delayed targets
+    ysTarget = complex(zeros(lengthYs, Q));
+
+    for q = 1:Q
+        startIndex = targetDelaySample(q) + 1;
+        endIndex = targetDelaySample(q) + length(xTilde);
+        ysTarget(startIndex:endIndex,q) = gamma(q)*xTilde;
+    end
+
+    ysNoiseless = sum(ysTarget, 2);
+
+    signalPower = mean(abs(ysNoiseless).^2);
+    noisePower = signalPower/10^(SNRdB/10);
+    zs = sqrt(noisePower/2)*(randn(size(ysNoiseless)) + ...
+        1j*randn(size(ysNoiseless)));
+    ys = ysNoiseless + zs;
+
+    %% Eq. (47): matched filter uses the complete transmitted signal
+    matchedFilter = conj(flipud(xTilde));
+
+    for q = 1:Q
+        yMatchedTarget = conv(ysTarget(:,q), matchedFilter, 'full');
+        SimTargetProfile(ii,:,q) = abs(yMatchedTarget.').^2;
+    end
+
+    yMatched = conv(ys, matchedFilter, 'full');
+    SimRangeProfile(ii,:) = abs(yMatched.').^2;
+end
+
+%% Ensemble average of the squared matched-filter magnitude
+AveRangeProfile = mean(SimRangeProfile, 1);
+AveTargetProfile = squeeze(mean(SimTargetProfile, 1));
+
+normalization = max(AveRangeProfile);
+rangeProfile_dB = 10*log10(AveRangeProfile/normalization + eps);
+targetProfile_dB = 10*log10(AveTargetProfile/normalization + eps);
+
+%% Plot Fig. 7
+figure('Color', 'w');
+hold on;
+
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,1), ':', ...
+    'Color', [0.8500, 0.3250, 0.0980], 'LineWidth', 1.5);
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,2), ':', ...
+    'Color', [0.4940, 0.1840, 0.5560], 'LineWidth', 1.5);
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,3), ':', ...
+    'Color', [0.20, 0.20, 0.20], 'LineWidth', 1.5);
+plot(rangeAxis(plotIndex), rangeProfile_dB(plotIndex), '-', ...
+    'Color', [0, 0.4470, 0.7410], 'LineWidth', 1.5);
+
+xlim([0, 35]);
+ylim([-80, 0]);
+xticks(0:5:35);
+yticks(-80:20:0);
+grid on;
+box on;
+
+xlabel('Range [m]');
+ylabel('Amplitude [dB]');
+legend('Target 1', 'Target 2', 'Target 3', 'Range Profile', ...
+    'Location', 'northeast');
+
+set(gca, 'FontName', 'Times New Roman', 'FontSize', 11);
+set(gcf, 'Position', [100, 100, 650, 440]);
+
+exportgraphics(gcf, 'Fig7_JSAC.png', 'Resolution', 300);
+exportgraphics(gcf, 'Fig7_JSAC.pdf', 'ContentType', 'vector');
+
+%% Numerical checks
+fprintf('Target ranges [m]:            %g  %g  %g\n', targetRange);
+fprintf('Implemented peak levels [dB]: %g  %g  %g\n', targetAmplitude_dB);
+fprintf('Input echo SNR [dB]:           %g\n', SNRdB);
+fprintf('Monte Carlo trials:             %d\n', Iter);
