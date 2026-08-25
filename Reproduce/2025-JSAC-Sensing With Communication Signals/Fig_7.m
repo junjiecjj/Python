@@ -16,18 +16,18 @@ rng(42);
 
 %% Parameters explicitly specified around Fig. 7
 Order = 16;                           % 16-PSK
-SNRdB = 20;                           % input echo SNR
+SNRdB = 0;                           % input echo SNR
 targetRange = [10, 20, 25];           % [m]
 Q = length(targetRange);
 Iter = 1000;                          % number of Monte Carlo trials
 
 %% Parameters not explicitly reported for Fig. 7 in the paper
 % These parameters are collected here instead of being presented as paper values.
-N = 1024;                              % number of OFDM symbols/subcarriers
+N = 4096;                              % number of OFDM symbols/subcarriers
 L = 20;                               % oversampling factor
-alpha = 0.3;                         % RRC roll-off factor
+alpha = 0.35;                         % RRC roll-off factor
 span = 20;                            % RRC span in symbols
-rangeSampleSpacing = 0.02;           % range represented by one sample [m]
+rangeSampleSpacing = 0.025;           % range represented by one sample [m]
 
 % The peak levels are read approximately from the published Fig. 7.
 targetAmplitude_dB = [0, -10, -30];
@@ -78,7 +78,6 @@ for ii = 1:Iter
         endIndex = targetDelaySample(q) + length(xTilde);
         ysTarget(startIndex:endIndex,q) = gamma(q)*xTilde;
     end
-
     ysNoiseless = sum(ysTarget, 2);
 
     signalPower = mean(abs(ysNoiseless).^2);
@@ -88,7 +87,6 @@ for ii = 1:Iter
 
     %% Eq. (47): matched filter uses the complete transmitted signal
     matchedFilter = conj(flipud(xTilde));
-
     for q = 1:Q
         yMatchedTarget = conv(ysTarget(:,q), matchedFilter, 'full');
         SimTargetProfile(ii,:,q) = abs(yMatchedTarget.').^2;
@@ -106,9 +104,8 @@ normalization = max(AveRangeProfile);
 rangeProfile_dB = 10*log10(AveRangeProfile/normalization + eps);
 targetProfile_dB = 10*log10(AveTargetProfile/normalization + eps);
 
-
 %% ===========================================
-width = 6;%设置图宽，这个不用改
+width = 8;%设置图宽，这个不用改
 height = 4;%设置图高，这个不用改
 fontsize = 14;%设置图中字体大小
 linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
@@ -118,8 +115,6 @@ set(groot, 'defaultTextFontName', 'Times New Roman');
 set(groot, 'defaultLegendFontName', 'Times New Roman');
 % ===========================================
 figure(1);
-% fig(h, 'units','inches','width',width, 'height', height, 'font','Times New Roman','fontsize',fontsize);%这是用于裁剪figure的。需要把fig.m文件放在一个文件夹中
-
 % gca表示对axes的设置；  gcf表示对figure的设置
 set(gcf, 'Units', 'inches');
 % set(gcf, 'Position', [0, 0, width, height]);
@@ -129,12 +124,9 @@ set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperPosition', [0, 0, width, height]);
 set(gcf, 'PaperSize', [width, height]);
 
-plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,1), ':',  'Color','#F65314', 'LineWidth', 1.5); hold on;
-
-plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,2), ':', 'Color', '#00A1F1', 'LineWidth', 1.5);
-
-plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,3), ':', 'Color','#8A2BE2', 'LineWidth', 1.5);
-
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,1), ':',  'Color','#F65314', 'LineWidth', 2); hold on;
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,2), ':', 'Color', '#00A1F1', 'LineWidth', 2);
+plot(rangeAxis(plotIndex), targetProfile_dB(plotIndex,3), ':', 'Color','#8A2BE2', 'LineWidth', 2);
 plot(rangeAxis(plotIndex), rangeProfile_dB(plotIndex), '-', 'Color', '#A9A9A9', 'LineWidth', 1.5);
 
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
@@ -150,7 +142,7 @@ xlabel('Range [m]', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Inter
 ylabel('Amplitude [dB]', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 
 xlim([0, 35]);
-ylim([-50, 0]);
+ylim([-55, 0]);
 xticks(0:5:35);
 yticks(-80:10:0);
 %----- Grid 设置----------------
