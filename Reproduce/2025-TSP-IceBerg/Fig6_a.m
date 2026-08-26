@@ -56,7 +56,6 @@ pulseSpectrumError = norm(g-g_design)/max(norm(g_design),eps);
 fprintf('Relative squared-spectrum reconstruction error: %.3e\n', pulseSpectrumError);
 
 %% OFDM theoretical average squared ACF, Eq. (36)
-M = 1;
 U = FN';  
 V = eye(N);
 tilde_V = V.*conj(V);  
@@ -76,7 +75,7 @@ for k = 0:L*N-1
     r2 = (kappa-1)/M* (N-2*(1-cos(2*pi_value*k/L))*sum(g(1:N).*(1-g(1:N))));
     TheoAveACF_OFDM_M1(k+1) = r1+r2;
 
-    M = 10000;
+    M = 1000;
     r2 = (kappa-1)/M* (N-2*(1-cos(2*pi_value*k/L))*sum(g(1:N).*(1-g(1:N))));
     TheoAveACF_OFDM_M10000(k+1) = r1+r2;
 end
@@ -98,7 +97,7 @@ AvgEnergy = mean(abs(Constellation).^2);
 
 % Fig. 6(a) displays numerical realizations. Keep the full 3-D coherent-
 % integration array, with one outer realization of the 10,000-slot result.
-Iter = 100;
+Iter = 1000;
 
 %% No coherent integration: M = 1
 M = 1;
@@ -122,7 +121,7 @@ Sim_M1_avg = Sim_M1_avg/max(Sim_M1_avg)+1e-14;
 Sim_M1_avg = fftshift(Sim_M1_avg);
 
 %% 10,000 coherent integrations: M = 10000
-M = 100;
+M = 1000;
 SimAveACF_OFDM_M10000 = complex(zeros(M,Iter,L*N));
 
 for k = 0:L*N-1
@@ -166,9 +165,9 @@ plot(x,10*log10(TheoAveACF_Iceberg),'k--','LineWidth',1.2, 'DisplayName','"Icebe
 
 xlabel('Delay Index');
 ylabel('Ambiguity Level (dB)');
-xlim([-30,30]);
+xlim([-300,300]);
 ylim([-120,0]);
-xticks(-30:10:30);
+xticks(-300:50:300);
 yticks(-120:20:0);
 grid on;
 box on;
@@ -178,7 +177,65 @@ set(gca,'FontName','Times New Roman','FontSize',14);
 exportgraphics(gcf,'Fig6_a.png','Resolution',300);
 exportgraphics(gcf,'Fig6_a.pdf','ContentType','vector');
 
+%% ===========================================
+width = 8;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
+figure(1);
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
 
+plot(x,10*log10(Sim_M1_avg),'-', 'Color','#F65314', 'LineWidth', 2); hold on;
+plot(x,10*log10(TheoAveACF_OFDM_M1),':', 'Color', '#F65314', 'LineWidth', 2);
+plot(x,10*log10(Sim_M10000_avg),'-', 'Color','#00A1F1', 'LineWidth', 2);
+plot(x,10*log10(TheoAveACF_OFDM_M10000),':', 'Color', '#00A1F1', 'LineWidth', 1.5);
+plot(x,10*log10(TheoAveACF_Iceberg),'k--', 'Color', '#B0B0B0', 'LineWidth', 1.5);
+
+
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',16,'FontName','Times New Roman');
+h_legend =  legend('No Integration, Numerical', 'No Integration, Theoretical', '10k Coh Integration, Numerical', '10k Coh Integration, Theoretical', '"Iceberg" of the Designed Pulse','Interpreter', 'latex');
+legendsize = 13;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+% set(h_legend,'Interpreter','latex') %  'box','off');
+% h_legend.Interpreter = 'latex';
+labelsize = 16;
+xlabel('Delay Index', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel('Ambiguity Level (dB)', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+xlim([-300,300]);
+ylim([-120,0]);
+xticks(-300:50:300);
+yticks(-120:20:0);
+%----- Grid 设置----------------
+grid on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.12, 0.87, 0.86]);
+
+% print(gcf, 'Fig6_a.pdf', '-dpdf', '-vector');
+
+
+
+
+
+
+%%  
 function g_opt = solve_iceberg_shaping_psl(N,L,alpha,K_s1)
 N_alpha = fix(alpha*N);
 N_non_rolloff = N-N_alpha;

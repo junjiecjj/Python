@@ -151,7 +151,6 @@ for k in range(L*N):
     r2 = (kappa-1)/M*(N - 2*(1-np.cos(2*pi*k/L))*np.sum(g[:N]*(1-g[:N])))
     TheoAveACF_OFDM_M10000[k] = r1+r2
 
-
 TheoAveACF_Iceberg = (TheoAveACF_Iceberg/TheoAveACF_Iceberg.max()+1e-14)
 TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
 
@@ -196,7 +195,7 @@ Sim_M1_avg = np.fft.fftshift(Sim_M1_avg)
 
 
 # %% 10,000 coherent integrations: M=10000
-M = 100
+M = 10000
 SimAveACF_OFDM_M10000 = np.zeros((M, Iter, L*N), dtype=complex)
 
 for k in range(L*N):
