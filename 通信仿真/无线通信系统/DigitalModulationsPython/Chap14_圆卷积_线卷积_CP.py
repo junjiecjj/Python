@@ -154,10 +154,7 @@ print(f"H*S = {H*S}")
 r1 = scipy.fft.ifft(S*H)         # 频域相乘后ifft等于r
 print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
 
-
-
 #%% 验证《从微积分到5G》Chap13.Eq(13.1), Page 247
-
 def genH(h, Nx,):
     Nh = h.size
     H = np.zeros((Nx+Nh-1, Nx),  dtype= complex )
@@ -344,7 +341,7 @@ F = FFTmatrix(N)
 FH = F.conj().T
 
 U = FH
-s = U @ S                    # IFFT
+s = U @ S                     # IFFT
 
 cir_s_h = cconv(h, s, N)      # circular conv
 
@@ -366,7 +363,6 @@ Diag = F @ Scp @ Hlin_cp @ Acp @ U      # Eq.(3): F@T(h)@A@FH is diagonal such t
 
 Heff = Scp @ Hlin_cp @ Acp
 print(f"h = {h}\n Heff = \n{Heff}")     # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
-
 
 H_cp1 = Hlin_cp[Ncp:Ncp + N, :]
 U, s, VH = scipy.linalg.svd(H_cp1)
