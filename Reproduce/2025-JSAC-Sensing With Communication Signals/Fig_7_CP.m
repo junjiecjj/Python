@@ -1,3 +1,7 @@
+
+
+
+
 %% Fig. 7 reproduction with CP added before pulse shaping
 % Sensing With Communication Signals: From Information Theory to Signal Processing
 % Transmitter: s -> x = U*s -> add CP -> upsample -> RRC pulse shaping
@@ -19,23 +23,23 @@ Q = length(targetRange);            % 目标数量
 Iter = 1000;                        % 蒙特卡洛实验次数
 
 %% Discrete waveform parameters
-N = 4096;                         % 一个OFDM块中的子载波数，也等于IFFT输出样本数
-L = 20;                           % pulse shaping的过采样倍数，每个符号对应L个高采样率样本
-alpha = 0.35;                     % RRC脉冲的滚降系数
-span = 20;                        % RRC脉冲的截断长度，单位为符号周期
-rangeSampleSpacing = 0.025;       % 高采样率下一个采样点对应的单站雷达距离，单位为m
-desiredCPRange = 40;              % 希望CP至少覆盖的物理距离，单位为m
-c = 299792458;                    % 真空光速，单位为m/s
+N = 4096;                           % 一个OFDM块中的子载波数，也等于IFFT输出样本数
+L = 20;                             % pulse shaping的过采样倍数，每个符号对应L个高采样率样本
+alpha = 0.35;                       % RRC脉冲的滚降系数
+span = 20;                          % RRC脉冲的截断长度，单位为符号周期
+rangeSampleSpacing = 0.025;         % 高采样率下一个采样点对应的单站雷达距离，单位为m
+desiredCPRange = 40;                % 希望CP至少覆盖的物理距离，单位为m
+c = 299792458;                      % 真空光速，单位为m/s
 
 %% Target amplitudes
-gamma = 10.^(targetAmplitude_dB/20).*exp(1j*targetPhase);% dB幅度使用20而不是10转换为复幅度
+gamma = 10.^(targetAmplitude_dB/20).*exp(1j*targetPhase);   % dB幅度使用20而不是10转换为复幅度
 
 %% Physical range, propagation delay and sample-index conversion
-Fs = c/(2*rangeSampleSpacing);        % 由DeltaR=c/(2Fs)反推出高采样率Fs
-Ts = 1/Fs;                            % 高采样率采样间隔，单位为s
-symbolPeriod = L*Ts;                  % 原始离散序列x相邻样本之间的时间间隔T=L*Ts
-symbolRangeSpacing = L*rangeSampleSpacing;  % x中一个符号率样本对应的距离，单位为m
-targetPropagationDelay = 2*targetRange/c;   % 单站雷达往返传播时延tau=2R/c
+Fs = c/(2*rangeSampleSpacing);                       % 由DeltaR=c/(2Fs)反推出高采样率Fs
+Ts = 1/Fs;                                           % 高采样率采样间隔，单位为s
+symbolPeriod = L*Ts;                                 % 原始离散序列x相邻样本之间的时间间隔T=L*Ts
+symbolRangeSpacing = L*rangeSampleSpacing;           % x中一个符号率样本对应的距离，单位为m
+targetPropagationDelay = 2*targetRange/c;            % 单站雷达往返传播时延tau=2R/c
 targetDelaySample = round(targetPropagationDelay/Ts);% 将物理时延量化为高采样率整数索引
 targetRangeGrid = targetDelaySample*c*Ts/2;          % 整数时延索引实际对应的栅格距离
 targetRangeError = targetRangeGrid-targetRange;      % 距离量化误差
