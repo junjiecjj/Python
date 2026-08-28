@@ -10,51 +10,51 @@ close all;
 rng(42);
 
 %% Parameters used for the three-target example
-Order = 16;% 16-PSK星座阶数
-SNRdB = 0;% 去CP后的总无噪声回波与输入噪声之比，单位为dB
-targetRange = [10,20,25];% 三个目标的物理距离，单位为m
-targetAmplitude_dB = [0,-10,-30];% 三个目标复反射系数的幅度，单位为dB
-targetPhase = [0,0,0];% 三个目标复反射系数的相位，单位为rad
-Q = length(targetRange);% 目标数量
-Iter = 1000;% 蒙特卡洛实验次数
+Order = 16;                         % 16-PSK星座阶数
+SNRdB = 0;                          % 去CP后的总无噪声回波与输入噪声之比，单位为dB
+targetRange = [10,20,25];           % 三个目标的物理距离，单位为m
+targetAmplitude_dB = [0,-10,-30];   % 三个目标复反射系数的幅度，单位为dB
+targetPhase = [0,0,0];              % 三个目标复反射系数的相位，单位为rad
+Q = length(targetRange);            % 目标数量
+Iter = 1000;                        % 蒙特卡洛实验次数
 
 %% Discrete waveform parameters
-N = 4096;% 一个OFDM块中的子载波数，也等于IFFT输出样本数
-L = 20;% pulse shaping的过采样倍数，每个符号对应L个高采样率样本
-alpha = 0.35;% RRC脉冲的滚降系数
-span = 20;% RRC脉冲的截断长度，单位为符号周期
-rangeSampleSpacing = 0.025;% 高采样率下一个采样点对应的单站雷达距离，单位为m
-desiredCPRange = 40;% 希望CP至少覆盖的物理距离，单位为m
-c = 299792458;% 真空光速，单位为m/s
+N = 4096;                         % 一个OFDM块中的子载波数，也等于IFFT输出样本数
+L = 20;                           % pulse shaping的过采样倍数，每个符号对应L个高采样率样本
+alpha = 0.35;                     % RRC脉冲的滚降系数
+span = 20;                        % RRC脉冲的截断长度，单位为符号周期
+rangeSampleSpacing = 0.025;       % 高采样率下一个采样点对应的单站雷达距离，单位为m
+desiredCPRange = 40;              % 希望CP至少覆盖的物理距离，单位为m
+c = 299792458;                    % 真空光速，单位为m/s
 
 %% Target amplitudes
 gamma = 10.^(targetAmplitude_dB/20).*exp(1j*targetPhase);% dB幅度使用20而不是10转换为复幅度
 
 %% Physical range, propagation delay and sample-index conversion
-Fs = c/(2*rangeSampleSpacing);% 由DeltaR=c/(2Fs)反推出高采样率Fs
-Ts = 1/Fs;% 高采样率采样间隔，单位为s
-symbolPeriod = L*Ts;% 原始离散序列x相邻样本之间的时间间隔T=L*Ts
-symbolRangeSpacing = L*rangeSampleSpacing;% x中一个符号率样本对应的距离，单位为m
-targetPropagationDelay = 2*targetRange/c;% 单站雷达往返传播时延tau=2R/c
+Fs = c/(2*rangeSampleSpacing);        % 由DeltaR=c/(2Fs)反推出高采样率Fs
+Ts = 1/Fs;                            % 高采样率采样间隔，单位为s
+symbolPeriod = L*Ts;                  % 原始离散序列x相邻样本之间的时间间隔T=L*Ts
+symbolRangeSpacing = L*rangeSampleSpacing;  % x中一个符号率样本对应的距离，单位为m
+targetPropagationDelay = 2*targetRange/c;   % 单站雷达往返传播时延tau=2R/c
 targetDelaySample = round(targetPropagationDelay/Ts);% 将物理时延量化为高采样率整数索引
-targetRangeGrid = targetDelaySample*c*Ts/2;% 整数时延索引实际对应的栅格距离
-targetRangeError = targetRangeGrid-targetRange;% 距离量化误差
-maxTargetDelaySample = max(targetDelaySample);% 最远目标的高采样率时延索引
+targetRangeGrid = targetDelaySample*c*Ts/2;          % 整数时延索引实际对应的栅格距离
+targetRangeError = targetRangeGrid-targetRange;      % 距离量化误差
+maxTargetDelaySample = max(targetDelaySample);       % 最远目标的高采样率时延索引
 
 %% RRC pulse: causal FIR representation used after CP insertion
-p = rcosdesign(alpha,span,L,'sqrt').';% 生成因果有限长RRC FIR脉冲，长度为span*L+1
-p = p/norm(p);% 将离散脉冲能量归一化为1
-pulseMemorySample = length(p)-1;% FIR滤波器记忆长度，单位为高采样率样本
+p = rcosdesign(alpha,span,L,'sqrt').';  % 生成因果有限长RRC FIR脉冲，长度为span*L+1
+p = p/norm(p);                          % 将离散脉冲能量归一化为1
+pulseMemorySample = length(p)-1;        % FIR滤波器记忆长度，单位为高采样率样本
 
 %% CP is defined before upsampling, hence its high-rate length is L*Ncp
 % It must cover both the pulse-shaping memory and the maximum target delay.
-NcpFromDesiredRange = ceil(desiredCPRange/symbolRangeSpacing);% 将40m转换为符号率下的CP样本数
-NcpFromTotalMemory = ceil((pulseMemorySample+maxTargetDelaySample)/L);% 覆盖pulse记忆和最大目标时延所需的CP长度
+NcpFromDesiredRange = ceil(desiredCPRange/symbolRangeSpacing);           % 将40m转换为符号率下的CP样本数
+NcpFromTotalMemory = ceil((pulseMemorySample+maxTargetDelaySample)/L);   % 覆盖pulse记忆和最大目标时延所需的CP长度
 Ncp = max(NcpFromDesiredRange,NcpFromTotalMemory);% 在符号率序列x上添加的最终CP长度
-NcpSample = L*Ncp;% 经过L倍上采样后，CP对应的高采样率样本数
-Tcp = Ncp*symbolPeriod;% CP持续时间，单位为s
-cpSupportedRange = NcpSample*c*Ts/2;% CP持续时间对应的单站雷达距离
-lengthBlock = L*N;% 去CP后pulse-shaped有用波形块的高采样率长度
+NcpSample = L*Ncp;                    % 经过L倍上采样后，CP对应的高采样率样本数
+Tcp = Ncp*symbolPeriod;               % CP持续时间，单位为s
+cpSupportedRange = NcpSample*c*Ts/2;  % CP持续时间对应的单站雷达距离
+lengthBlock = L*N;                    % 去CP后pulse-shaped有用波形块的高采样率长度
 
 fprintf('Sampling rate Fs = %.6f GHz\n',Fs/1e9);
 fprintf('High-rate range grid = %.6f m/sample\n',rangeSampleSpacing);
@@ -75,11 +75,11 @@ end
 
 %% Eq. (35): OFDM modulation basis U = F_N^H
 FFTmatrix = exp(-1j*2*pi*(0:N-1).'*(0:N-1)/N)/sqrt(N);% N阶酉DFT矩阵F_N
-U = FFTmatrix';% OFDM调制基U=F_N^H，对频域符号执行归一化IFFT
+U = FFTmatrix';      % OFDM调制基U=F_N^H，对频域符号执行归一化IFFT
 
 %% Range axis of the length-LN periodic matched-filter output
-delaySample = (0:lengthBlock-1).';% 周期匹配滤波输出的零基时延索引
-rangeAxis = delaySample*c*Ts/2;% 利用R=k*c*Ts/2将时延索引转换为距离，单位为m
+delaySample = (0:lengthBlock-1).';       % 周期匹配滤波输出的零基时延索引
+rangeAxis = delaySample*c*Ts/2;          % 利用R=k*c*Ts/2将时延索引转换为距离，单位为m
 plotIndex = rangeAxis>=0 & rangeAxis<=35;% 只绘制论文所需的0至35m距离区域
 
 %% Preserve the complete Monte Carlo arrays
