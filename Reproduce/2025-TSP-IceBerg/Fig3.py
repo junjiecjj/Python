@@ -316,8 +316,8 @@ axs.set_xlim([-200, 200])
 
 out_fig = plt.gcf()
 # filepath2 = '/home/jack/snap/'
-out_fig.savefig('Fig3.png', )
-out_fig.savefig('Fig3.pdf', )
+out_fig.savefig('./Figs/Fig3.png', )
+out_fig.savefig('./Figs/Fig3.pdf', )
 plt.show()
 plt.close()
 

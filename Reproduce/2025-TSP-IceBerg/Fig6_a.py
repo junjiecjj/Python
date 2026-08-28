@@ -34,13 +34,13 @@ plt.rcParams["legend.fontsize"] = 14
 np.random.seed(42)
 
 
-def FFTmatrix(L):
-    mat = np.zeros((L, L), dtype=complex)
-    for i in range(L):
-        for j in range(L):
-            mat[i, j] = np.exp(-1j*2*np.pi*i*j/L)/np.sqrt(L)
-    return mat
-
+# 产生傅里叶矩阵
+def FFTmatrix(L, ):
+     mat = np.zeros((L, L), dtype = complex)
+     ll = np.arange(L)
+     for i in range(L):
+         mat[i,:] = 1.0*np.exp(-1j*2.0*np.pi*i*ll/L) / (np.sqrt(L)*1.0)
+     return mat
 
 def solve_iceberg_shaping_psl(N, L, alpha, K_s1):
     """PSL iceberg-shaping problem in (44) and (49)."""
@@ -94,7 +94,6 @@ kappa = 1.32
 FLN = FFTmatrix(L*N)
 FN = FFTmatrix(N)
 
-
 # %% Generate the optimized pulse according to Fig. 6(d)
 # The paper interval [5,15] uses symbol-delay units. The discrete ACF is
 # sampled at Ts=T/L, and therefore uses k=5L,...,15L.
@@ -147,7 +146,7 @@ for k in range(L*N):
     r2 = (kappa-1)/M*(N - 2*(1-np.cos(2*pi*k/L))*np.sum(g[:N]*(1-g[:N])))
     TheoAveACF_OFDM_M1[k] = r1+r2
 
-    M = 10000
+    M = 1000
     r2 = (kappa-1)/M*(N - 2*(1-np.cos(2*pi*k/L))*np.sum(g[:N]*(1-g[:N])))
     TheoAveACF_OFDM_M10000[k] = r1+r2
 
@@ -195,7 +194,7 @@ Sim_M1_avg = np.fft.fftshift(Sim_M1_avg)
 
 
 # %% 10,000 coherent integrations: M=10000
-M = 10000
+M = 1000
 SimAveACF_OFDM_M10000 = np.zeros((M, Iter, L*N), dtype=complex)
 
 for k in range(L*N):
@@ -211,7 +210,6 @@ for k in range(L*N):
 
             # Do not square here. Average the complex ACF over M first.
             SimAveACF_OFDM_M10000[m, it, k] = np.sum(gk*VHs*fk_tilde.conj())
-
 
 # %% Coherent averaging, Eq. (33)
 RkBar = SimAveACF_OFDM_M10000.mean(axis=0)
@@ -230,8 +228,8 @@ fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
 axs.plot( x, 10*np.log10(Sim_M1_avg), color="tab:blue", linestyle="-", linewidth=1.2, label="No Integration, Numerical" )
 axs.plot( x, 10*np.log10(TheoAveACF_OFDM_M1), color="tab:blue", linestyle=":", linewidth=1.8, label="No Integration, Theoretical" )
 
-axs.plot(x, 10*np.log10(Sim_M10000_avg), color="tab:orange", linestyle="-", linewidth=1.2, label="10k Coh Integration, Numerical")
-axs.plot(x, 10*np.log10(TheoAveACF_OFDM_M10000), color="tab:orange", linestyle=":", linewidth=1.8, label="10k Coh Integration, Theoretical" )
+axs.plot(x, 10*np.log10(Sim_M10000_avg), color="tab:orange", linestyle="-", linewidth=1.2, label="1k Coh Integration, Numerical")
+axs.plot(x, 10*np.log10(TheoAveACF_OFDM_M10000), color="tab:orange", linestyle=":", linewidth=1.8, label="1k Coh Integration, Theoretical" )
 
 axs.plot(x, 10*np.log10(TheoAveACF_Iceberg), color="black", linestyle="--", linewidth=1.2, label='"Iceberg" of the Designed Pulse')
 
@@ -245,8 +243,8 @@ axs.grid(True)
 axs.legend(loc="lower center", edgecolor="black")
 
 out_fig = plt.gcf()
-# out_fig.savefig("Fig6_a.png", dpi=300)
-out_fig.savefig("Fig6_a.pdf")
+# out_fig.savefig("./Figs/Fig_6a_py.png", dpi=300)
+# out_fig.savefig("./Figs/Fig_6a_py.pdf")
 plt.show()
 plt.close()
 

@@ -348,7 +348,7 @@ cir_s_h = cconv(h, s, N)      # circular conv
 # Hlin = convMatrix(h, N)
 # y = Hlin @ s                # linear conv
 
-Ncp = L - 1
+Ncp = L + 1
 Acp = AcpMat(N, Ncp)
 s_cp = Acp @ s                # add CP
 
@@ -363,6 +363,7 @@ Diag = F @ Scp @ Hlin_cp @ Acp @ U      # Eq.(3): F@T(h)@A@FH is diagonal such t
 
 Heff = Scp @ Hlin_cp @ Acp
 print(f"h = {h}\n Heff = \n{Heff}")     # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
+
 
 H_cp1 = Hlin_cp[Ncp:Ncp + N, :]
 U, s, VH = scipy.linalg.svd(H_cp1)

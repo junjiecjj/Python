@@ -62,7 +62,7 @@ def srrcFunction(beta, L, span, Tsym = 1):
 
 def solve_iceberg_shaping_psl(N, L, alpha, K_s1, ):
     """
-    求解冰山谱形优化问题（PSL目标函数）
+    求解冰山谱形优化问题(PSL目标函数)
     参数:
         N: 滤波器长度
         alpha: 滚降因子
@@ -156,8 +156,8 @@ axs.set_ylabel(r'Power Spectrum', )
 axs.set_xlim([-120, 120])
 
 out_fig = plt.gcf()
-# out_fig.savefig('Fig6_d.png', )
-# out_fig.savefig('Fig6_d.pdf', )
+# out_fig.savefig('./Figs/Fig_6d_py.png', )
+# out_fig.savefig('./Figs/Fig_6d_py.pdf', )
 plt.show()
 plt.close()
 

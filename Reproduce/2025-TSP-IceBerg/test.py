@@ -1,145 +1,180 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Fig. 6(b): OFDM with the original, unoptimized RRC pulse."""
+
 import numpy as np
-from scipy.optimize import minimize, Bounds
+import commpy
 import matplotlib.pyplot as plt
+from Modulations import modulator
 
-def solve_iceberg_shaping(N, alpha, L, K_s1, f_hat, use_psl=True):
-    """
-    求解冰山谱形优化问题
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["font.size"] = 18
+plt.rcParams["axes.titlesize"] = 18
+plt.rcParams["axes.labelsize"] = 18
+plt.rcParams["xtick.labelsize"] = 18
+plt.rcParams["ytick.labelsize"] = 18
+plt.rcParams["axes.unicode_minus"] = False
+plt.rcParams["figure.figsize"] = [8, 6]
+plt.rcParams["lines.linestyle"] = "-"
+plt.rcParams["lines.linewidth"] = 2
+plt.rcParams["lines.color"] = "blue"
+plt.rcParams["lines.markersize"] = 6
+plt.rcParams["figure.facecolor"] = "white"
+plt.rcParams["axes.edgecolor"] = "black"
+plt.rcParams["legend.fontsize"] = 14
 
-    参数:
-    N: 原始信号长度
-    alpha: 滚降因子
-    L: 上采样因子
-    K_s1: 延迟区域索引集合
-    f_hat: 频域向量序列 f_hat_{k+1} for k in K_s1
-    use_psl: True使用PSL目标，False使用ISL目标
+np.random.seed(42)
 
-    返回:
-    g_opt: 最优的时域滤波器系数
-    """
+# 产生傅里叶矩阵
+def FFTmatrix(L, ):
+     mat = np.zeros((L, L), dtype = complex)
+     ll = np.arange(L)
+     for i in range(L):
+         mat[i,:] = 1.0*np.exp(-1j*2.0*np.pi*i*ll/L) / (np.sqrt(L)*1.0)
+     return mat
 
-    # 计算相关参数
-    N_alpha = int(alpha * N)
-    N_non_rolloff = N - N_alpha
-    N_zeros = N_non_rolloff // 2
-    N_ones = N_non_rolloff // 2
+# %% Parameters in Fig. 6(b)
+Tsym = 1
+pi = np.pi
+N = 128
+L = 10
+alpha = 0.35
+kappa = 1.32
 
-    # 构建tilde_g_k函数
-    def get_tilde_g_k(g, k):
-        """计算tilde_g_k = g_n + (1 - g_n)e^{-j2πk/L}"""
-        phase = -2j * np.pi * k / L
-        return g + (1 - g) * np.exp(phase)
+FLN = FFTmatrix(L*N)
+FN = FFTmatrix(N)
 
-    # 目标函数
-    def objective(g):
-        obj_terms = []
-        for k in K_s1:
-            tilde_g_k = get_tilde_g_k(g, k)
-            # 计算 |f_hat_{k+1}^H tilde_g_k|^2
-            term = np.abs(np.vdot(f_hat[k], tilde_g_k))**2
-            obj_terms.append(term)
+# %% Generate the original, unoptimized RRC pulse exactly as in Fig2.py
+t, p = commpy.filters.rrcosfilter(L*N, alpha, Tsym, L/Tsym)
+p = p/np.sqrt(np.sum(np.abs(p)**2))
 
-        if use_psl:
-            return np.max(obj_terms)  # PSL目标
-        else:
-            return np.sum(obj_terms)  # ISL目标
+norm2p = np.linalg.norm(p)
+g = N*(FLN @ p)*(FLN.conj() @ p.conj())
+g = np.real(g)
 
-    # 约束条件
-    constraints = []
+# %% OFDM theoretical average squared ACF, Eq. (36)
+U = FN.conj().T
+V = np.eye(N)
+tilde_V = V*V.conj()
 
-    # 约束(45): 前N_zeros个元素为0
-    def constraint_zeros(g):
-        return g[:N_zeros]
+TheoAveACF_Iceberg = np.zeros(L*N)
+TheoAveACF_OFDM_M1 = np.zeros(L*N)
+TheoAveACF_OFDM_M10000 = np.zeros(L*N)
 
-    # 约束(46): 后N_ones个元素为1
-    def constraint_ones(g):
-        return g[-N_ones:]
+for k in range(L*N):
+    gk = g[:N]+(1-g[:N])*np.exp(-1j*2*pi*k/L)
+    f_k = np.exp(-1j*2*pi*k*np.arange(N)/(L*N))
 
-    # 约束(47): 单调递增
-    def constraint_monotonic(g):
-        return np.diff(g)
+    r1 = np.abs(gk @ f_k.conj())**2
+    TheoAveACF_Iceberg[k] = r1
 
-    # 约束(48): 总能量约束
-    def constraint_energy(g):
-        return np.sum(g) - N/2
+    M = 1
+    r2 = (kappa-1)/M*(N- 2*(1-np.cos(2*pi*k/L))*np.sum(g[:N]*(1-g[:N])))
+    TheoAveACF_OFDM_M1[k] = r1+r2
 
-    # 定义约束字典
-    constraints = [
-        {'type': 'eq', 'fun': constraint_zeros},    # g_n = 0 for n=1,...,N_zeros
-        {'type': 'eq', 'fun': constraint_ones, 'args': (np.ones(N_ones),)},  # g_n = 1 for tail
-        {'type': 'ineq', 'fun': constraint_monotonic},  # g_{n+1} - g_n ≥ 0
-        {'type': 'eq', 'fun': constraint_energy}    # sum(g_n) = N/2
-    ]
+    M = 100
+    r2 = (kappa-1)/M*(N- 2*(1-np.cos(2*pi*k/L))*np.sum(g[:N]*(1-g[:N])))
+    TheoAveACF_OFDM_M10000[k] = r1+r2
 
-    # 边界约束: 0 ≤ g_n ≤ 1
-    bounds = [(0, 1) for _ in range(N)]
+TheoAveACF_Iceberg = (TheoAveACF_Iceberg/TheoAveACF_Iceberg.max()+1e-14)
+TheoAveACF_Iceberg = np.fft.fftshift(TheoAveACF_Iceberg)
 
-    # 初始猜测 (满足单调性的线性插值)
-    g0 = np.zeros(N)
-    g0[:N_zeros] = 0
-    g0[-N_ones:] = 1
-    # 中间部分线性插值
-    if N_alpha > 0:
-        rolloff_indices = range(N_zeros, N - N_ones)
-        g0[rolloff_indices] = np.linspace(0, 1, len(rolloff_indices))
+TheoAveACF_OFDM_M1 = (TheoAveACF_OFDM_M1/TheoAveACF_OFDM_M1.max()+1e-14)
+TheoAveACF_OFDM_M1 = np.fft.fftshift(TheoAveACF_OFDM_M1)
 
-    # 求解优化问题
-    result = minimize(objective, g0, method='SLSQP',
-                     bounds=bounds, constraints=constraints,
-                     options={'maxiter': 1000, 'ftol': 1e-8, 'disp': True})
+TheoAveACF_OFDM_M10000 = (TheoAveACF_OFDM_M10000/TheoAveACF_OFDM_M10000.max()+1e-14)
+TheoAveACF_OFDM_M10000 = np.fft.fftshift(TheoAveACF_OFDM_M10000)
 
-    if result.success:
-        print("优化成功!")
-        print(f"最优目标值: {result.fun}")
-        return result.x
-    else:
-        print(f"优化失败: {result.message}")
-        return None
+# %% Numerical average squared ACF, inherited from Fig2.py Eq. (26)
+MOD_TYPE = "qam"
+Order = 16
+modem, Es, bps = modulator(MOD_TYPE, Order)
+Constellation = modem.constellation/np.sqrt(Es)
+AvgEnergy = np.mean(np.abs(Constellation)**2)
 
-def plot_iceberg_shape(g_opt, alpha, N):
-    """绘制冰山谱形"""
-    plt.figure(figsize=(10, 6))
-    plt.plot(g_opt, 'b-', linewidth=2, label='最优冰山谱形')
+# Preserve the full three-dimensional coherent-integration array.
+Iter = 10
 
-    N_alpha = int(alpha * N)
-    N_non_rolloff = N - N_alpha
-    N_zeros = N_non_rolloff // 2
+# %% No coherent integration: M=1
+M = 1
+SimAveACF_OFDM_M1 = np.zeros((Iter, L*N))
 
-    # 标记关键区域
-    plt.axvline(x=N_zeros, color='r', linestyle='--', alpha=0.7, label='滚降开始')
-    plt.axvline(x=N - N_zeros, color='g', linestyle='--', alpha=0.7, label='滚降结束')
+for k in range(L*N):
+    fk = FLN[:, k]
+    fk_tilde = fk[:N]
+    gk = g[:N]+(1-g[:N])*np.exp(-1j*2*pi*k/L)
 
-    plt.xlabel('频率索引 n')
-    plt.ylabel('g_n')
-    plt.title(f'冰山谱形 (α={alpha})')
-    plt.grid(True, alpha=0.3)
-    plt.legend()
-    plt.show()
+    for it in range(Iter):
+        d = np.random.randint(Order, size=N)
+        s = Constellation[d]
+        VHs = np.abs(V.conj().T @ s)**2
+        SimAveACF_OFDM_M1[it, k] = np.abs(np.sum(gk*VHs*fk_tilde.conj()))**2
 
-# 使用示例
-if __name__ == "__main__":
-    # 参数设置
-    N = 64      # 原始信号长度
-    alpha = 0.3  # 滚降因子
-    L = 4       # 上采样因子
-    K_s1 = list(range(10, 30))  # 延迟区域索引
+Sim_M1_avg = SimAveACF_OFDM_M1.mean(axis=0)
+Sim_M1_avg = Sim_M1_avg/Sim_M1_avg.max()+1e-14
+Sim_M1_avg = np.fft.fftshift(Sim_M1_avg)
 
-    # 生成测试用的f_hat向量（实际应用中应根据具体问题设置）
-    f_hat = {}
-    for k in K_s1:
-        # 创建具有特定结构的测试向量
-        f_hat[k] = np.exp(1j * 2 * np.pi * np.random.rand(N))
+# %% 10,000 coherent integrations: M=10000
+M = 100
+SimAveACF_OFDM_M10000 = np.zeros((M, Iter, L*N), dtype=complex)
 
-    # 求解优化问题（使用PSL目标）
-    print("求解PSL优化问题...")
-    g_optimal_psl = solve_iceberg_shaping(N, alpha, L, K_s1, f_hat, use_psl=True)
+for k in range(L*N):
+    fk = FLN[:, k]
+    fk_tilde = fk[:N]
+    gk = g[:N]+(1-g[:N])*np.exp(-1j*2*pi*k/L)
 
-    if g_optimal_psl is not None:
-        # 绘制结果
-        plot_iceberg_shape(g_optimal_psl, alpha, N)
+    for m in range(M):
+        for it in range(Iter):
+            d = np.random.randint(Order, size=N)
+            s = Constellation[d]
+            VHs = np.abs(V.conj().T @ s)**2
 
-        # 验证约束满足情况
-        print(f"前{N//5}个元素: {g_optimal_psl[:N//5]}")
-        print(f"后{N//5}个元素: {g_optimal_psl[-N//5:]}")
-        print(f"总能量: {np.sum(g_optimal_psl)} (目标: {N/2})")
-        print(f"单调性检查: {np.all(np.diff(g_optimal_psl) >= -1e-6)}")
+            # First retain the complex ACF; do not square before averaging.
+            SimAveACF_OFDM_M10000[m, it, k] = np.sum(gk*VHs*fk_tilde.conj())
+
+# %% Coherent averaging, Eq. (33)
+RkBar = SimAveACF_OFDM_M10000.mean(axis=0)
+RkBar2 = np.abs(RkBar)**2
+
+Sim_M10000_avg = RkBar2.mean(axis=0)
+Sim_M10000_avg = Sim_M10000_avg/Sim_M10000_avg.max()+1e-14
+Sim_M10000_avg = np.fft.fftshift(Sim_M10000_avg)
+
+# %% Plot Fig. 6(b)
+x = np.arange(-N*L//2, N*L//2)
+
+fig, axs = plt.subplots(1, 1, figsize=(10, 8), constrained_layout=True)
+
+axs.plot(x, 10*np.log10(Sim_M1_avg),color="tab:blue", linestyle="-", linewidth=1.2,label="No Integration, Numerical")
+axs.plot(x, 10*np.log10(TheoAveACF_OFDM_M1),color="tab:blue", linestyle=":", linewidth=1.8,label="No Integration, Theoretical")
+
+axs.plot(x, 10*np.log10(Sim_M10000_avg),color="tab:orange", linestyle="-", linewidth=1.2,label="10k Coh Integration, Numerical")
+axs.plot(x, 10*np.log10(TheoAveACF_OFDM_M10000),color="tab:orange", linestyle=":", linewidth=1.8,label="10k Coh Integration, Theoretical")
+
+axs.plot(x, 10*np.log10(TheoAveACF_Iceberg),color="black", linestyle="--", linewidth=1.2,label='"Iceberg" of the RRC Pulse')
+
+axs.set_xlabel("Delay Index")
+axs.set_ylabel("Ambiguity Level (dB)")
+axs.set_xlim([-300, 300])
+axs.set_ylim([-120, 0])
+axs.set_xticks(np.arange(-300, 301, 100))
+axs.set_yticks(np.arange(-120, 1, 20))
+axs.grid(True)
+axs.legend(loc="lower center", edgecolor="black")
+
+out_fig = plt.gcf()
+# out_fig.savefig("./Figs/Fig_6b.png", dpi=300)
+# out_fig.savefig("./Figs/Fig_6b_py.pdf")
+plt.show()
+plt.close()
+
+
+
+
+
+
+
+
+
+
+

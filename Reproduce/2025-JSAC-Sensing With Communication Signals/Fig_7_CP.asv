@@ -1,0 +1,186 @@
+%% Fig. 7 in "Sensing With Communication Signals: From Information Theory to Signal Processing"
+% The continuous-time model in (34)-(47) is implemented using the discrete
+% CP-assisted periodic model of "Uncovering the Iceberg in the Sea".
+% The CP is long enough to cover the maximum round-trip target delay.
+
+clear;
+clc;
+close all;
+rng(42);
+
+%% Parameters explicitly specified around Fig. 7
+Order = 16;
+SNRdB = 0;
+targetRange = [10,20,25];
+Q = length(targetRange);
+Iter = 1000;
+
+%% Parameters not explicitly reported for Fig. 7
+N = 4096;
+L = 20;
+alpha = 0.35;
+span = 20;
+rangeSampleSpacing = 0.025;
+c = 299792458;
+desiredCPRange = 40;
+
+targetAmplitude_dB = [0,-10,-25];
+targetPhase = [0,0,0];
+gamma = 10.^(targetAmplitude_dB/20).*exp(1j*targetPhase);
+
+%% Physical distance, propagation delay and discrete delay index
+Fs = c/(2*rangeSampleSpacing);
+Ts = 1/Fs;
+targetPropagationDelay = 2*targetRange/c;
+targetDelaySample = round(targetPropagationDelay/Ts);
+targetRangeGrid = targetDelaySample*c*Ts/2;
+targetRangeError = targetRangeGrid-targetRange;
+maxTargetDelaySample = max(targetDelaySample);
+Ncp = max(ceil(desiredCPRange/rangeSampleSpacing),maxTargetDelaySample+1);
+Tcp = Ncp*Ts;
+maxUnambiguousRangeCP = Ncp*c*Ts/2;
+
+fprintf('Sampling rate Fs = %.6f GHz\n',Fs/1e9);
+fprintf('Sampling interval Ts = %.6f ns\n',Ts*1e9);
+fprintf('Range spacing = %.6f m/sample\n',c*Ts/2);
+fprintf('CP length Ncp = %d samples\n',Ncp);
+fprintf('CP duration Tcp = %.6f ns\n',Tcp*1e9);
+fprintf('CP-supported range = %.6f m\n',maxUnambiguousRangeCP);
+
+for q = 1:Q
+    fprintf('Target %d: nominal range = %.6f m, propagation delay = %.6f ns, delay index = %d, grid range = %.6f m, error = %.3e m\n',q,targetRange(q),targetPropagationDelay(q)*1e9,targetDelaySample(q),targetRangeGrid(q),targetRangeError(q));
+end
+
+if Ncp<=maxTargetDelaySample
+    error('Ncp must be larger than the maximum target delay index.');
+end
+
+%% Eq. (35): OFDM modulation matrix U = F_N^H
+FFTmatrix = exp(-1j*2*pi*(0:N-1).'*(0:N-1)/N)/sqrt(N);
+U = FFTmatrix';
+
+%% RRC pulse and its length-LN periodic representation
+p = rcosdesign(alpha,span,L,'sqrt').';
+p = p/norm(p);
+lengthBlock = L*N;
+pulseHalfLength = (length(p)-1)/2;
+pulseLag = (-pulseHalfLength:pulseHalfLength).';
+pPeriodic = complex(zeros(lengthBlock,1));
+pulsePeriodicIndex = mod(pulseLag,lengthBlock)+1;
+pPeriodic(pulsePeriodicIndex) = p;
+
+%% Range axis after CP removal and periodic matched filtering
+delaySample = (0:lengthBlock-1).';
+rangeAxis = delaySample*c*Ts/2;
+plotIndex = rangeAxis>=0 & rangeAxis<=35;
+
+%% Monte Carlo simulation
+% The complete arrays of all trials are retained before ensemble averaging.
+SimRangeProfile = zeros(Iter,lengthBlock);
+SimTargetProfile = zeros(Iter,lengthBlock,Q);
+
+for ii = 1:Iter
+    %% Eq. (35): x = U*s = F_N^H*s
+    symbolIndex = randi([0,Order-1],N,1);
+    s = pskmod(symbolIndex,Order,pi/Order);
+    x = U*s;
+
+    %% Discrete periodic implementation of Eq. (34)
+    xup = complex(zeros(lengthBlock,1));
+    xup(1:L:end) = x;
+    xTilde = ifft(fft(xup).*fft(pPeriodic));
+
+    %% Add a CP that covers every sensing-target delay
+    xCP = [xTilde(end-Ncp+1:end);xTilde];
+
+    %% Linear propagation through the three-target sensing channel
+    lengthYCP = length(xCP)+maxTargetDelaySample;
+    ysCPTarget = complex(zeros(lengthYCP,Q));
+
+    for q = 1:Q
+        startIndex = targetDelaySample(q)+1;
+        endIndex = targetDelaySample(q)+length(xCP);
+        ysCPTarget(startIndex:endIndex,q) = gamma(q)*xCP;
+    end
+
+    ysCPNoiseless = sum(ysCPTarget,2);
+
+    %% The SNR is defined using the useful received block after CP removal
+    usefulIndex = Ncp+1:Ncp+lengthBlock;
+    ysNoiseless = ysCPNoiseless(usefulIndex);
+    signalPower = mean(abs(ysNoiseless).^2);
+    noisePower = signalPower/10^(SNRdB/10);
+    zsCP = sqrt(noisePower/2)*(randn(lengthYCP,1)+1j*randn(lengthYCP,1));
+    ysCP = ysCPNoiseless+zsCP;
+
+    %% Remove the CP: every linear target delay becomes a circular shift
+    ys = ysCP(usefulIndex);
+    ysTarget = ysCPTarget(usefulIndex,:);
+
+    %% Numerical verification of the CP circularization identity
+    if ii==1
+        for q = 1:Q
+            ysTargetEquivalent = gamma(q)*circshift(xTilde,targetDelaySample(q));
+            circularizationError = norm(ysTarget(:,q)-ysTargetEquivalent)/max(norm(ysTargetEquivalent),eps);
+            fprintf('Target %d CP circularization error = %.3e\n',q,circularizationError);
+        end
+    end
+
+    %% Periodic matched filtering: discrete implementation of Eq. (47)
+    for q = 1:Q
+        yMatchedTarget = ifft(fft(ysTarget(:,q)).*conj(fft(xTilde)));
+        SimTargetProfile(ii,:,q) = abs(yMatchedTarget.').^2;
+    end
+
+    yMatched = ifft(fft(ys).*conj(fft(xTilde)));
+    SimRangeProfile(ii,:) = abs(yMatched.').^2;
+end
+
+%% Ensemble average of the squared periodic matched-filter magnitude
+AveRangeProfile = mean(SimRangeProfile,1);
+AveTargetProfile = squeeze(mean(SimTargetProfile,1));
+normalization = max(AveRangeProfile);
+rangeProfile_dB = 10*log10(AveRangeProfile/normalization+eps);
+targetProfile_dB = 10*log10(AveTargetProfile/normalization+eps);
+
+%% Plot Fig. 7
+width = 8;
+height = 4;
+fontsize = 14;
+linewidth = 2;
+markersize = 10;
+set(groot,'defaultAxesFontName','Times New Roman');
+set(groot,'defaultTextFontName','Times New Roman');
+set(groot,'defaultLegendFontName','Times New Roman');
+
+figure(1);
+set(gcf,'Units','inches');
+set(gcf,'Color','white');
+set(gcf,'Renderer','painters');
+set(gcf,'PaperUnits','inches');
+set(gcf,'PaperPosition',[0,0,width,height]);
+set(gcf,'PaperSize',[width,height]);
+
+plot(rangeAxis(plotIndex),targetProfile_dB(plotIndex,1),':','Color','#F65314','LineWidth',linewidth);
+hold on;
+plot(rangeAxis(plotIndex),targetProfile_dB(plotIndex,2),':','Color','#00A1F1','LineWidth',linewidth);
+plot(rangeAxis(plotIndex),targetProfile_dB(plotIndex,3),':','Color','#8A2BE2','LineWidth',linewidth);
+plot(rangeAxis(plotIndex),rangeProfile_dB(plotIndex),'-','Color','#A9A9A9','LineWidth',1.5);
+
+set(gca,'FontSize',16,'FontName','Times New Roman');
+h_legend = legend('Target 1','Target 2','Target 3','Range Profile','Interpreter','latex');
+legendsize = 13;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+labelsize = 16;
+xlabel('Range [m]','FontSize',labelsize,'FontName','Times New Roman','Interpreter','latex');
+ylabel('Amplitude [dB]','FontSize',labelsize,'FontName','Times New Roman','Interpreter','latex');
+xlim([0,35]);
+ylim([-80,0]);
+xticks(0:5:35);
+yticks(-80:10:0);
+grid on;
+set(gca,'GridLineStyle','--','Gridalpha',0.2,'LineWidth',1,'GridLineWidth',0.5,'Layer','bottom');
+set(gca,'Units','normalized');
+set(gca,'Position',[0.11,0.12,0.87,0.86]);
+
+% print(gcf,'Fig7_JSAC_CP.pdf','-dpdf','-vector');

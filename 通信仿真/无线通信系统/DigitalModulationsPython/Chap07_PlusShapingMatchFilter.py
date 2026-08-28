@@ -241,7 +241,7 @@ ax.set_ylabel('SER ($P_s$)')
 ax.set_title('Symbol Error Rate for M-'+str(mod_type)+' over AWGN')
 ax.legend(fontsize = 12)
 out_fig = plt.gcf()
-out_fig.savefig('hh.png',format='png',dpi=1000,)
+# out_fig.savefig('hh.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 
@@ -281,7 +281,6 @@ for i, M in enumerate(arrayOfM):
         modem = modem_dict[mod_type.lower()](M)           # choose modem from dictionary
 
     for j, EsN0dB in enumerate(EsN0dBs):
-
         d = np.random.randint(low=0, high = M, size = nSym) # uniform random symbols from 0 to M-1
         u = modem.modulate(d) #modulate
         ## Upper sample
@@ -316,7 +315,7 @@ ax.set_ylabel('SER ($P_s$)')
 ax.set_title('Symbol Error Rate for M-'+str(mod_type)+' over AWGN')
 ax.legend(fontsize = 12)
 out_fig = plt.gcf()
-out_fig.savefig('hh1.png',format='png',dpi=1000,)
+# out_fig.savefig('hh1.png',format='png',dpi=1000,)
 plt.show()
 plt.close()
 

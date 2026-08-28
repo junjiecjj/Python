@@ -70,28 +70,56 @@ if max(rolloff)-min(rolloff) < 1e-3
 end
 
 %% Plot Fig. 6(d)
-x = (-N*L/2:N*L/2-1).';
 
-figure('Color','w','Position',[100,100,760,560]);
-hold on;
+%% ===========================================
+width = 8;%设置图宽，这个不用改
+height = 6;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
+markersize = 10;%标记的大小，按照个人喜好设置。
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+% ===========================================
+figure(1);
+% gca表示对axes的设置；  gcf表示对figure的设置
+set(gcf, 'Units', 'inches');
+% set(gcf, 'Position', [0, 0, width, height]);
+set(gcf, 'Color', 'white'); % 设置背景是白色的 原先是灰色的 论文里面不好看
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
 
-plot(x,abs(g_Design),'--','Color',[0.8500,0.3250,0.0980], 'LineWidth',1.8,'DisplayName','Spectrum of the Designed Pulse');
-plot(x,abs(g_rrc),'-','Color',[0,0.4470,0.7410],  'LineWidth',1.8,'DisplayName','Spectrum of the RRC');
+x = -N*L/2:N*L/2-1;
+plot(x,abs(g_Design),'-', 'Color','#F65314', 'LineWidth', 1.5); hold on;
+plot(x,abs(g_rrc),'--', 'Color', '#05C349', 'LineWidth', 1.5);
 
-legend('Location','northwest','Box','on');
-xlabel('Frequency Index');
-ylabel('Power Spectrum');
-xlim([-N,N]);
-ylim([0,1.2]);
-xticks(-100:50:100);
-yticks(0:0.2:1.2);
+% 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
+% 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
+set(gca, 'FontSize',16,'FontName','Times New Roman');
+h_legend =  legend('No Integration, Numerical', 'No Integration, Theoretical', '1k Coh Integration, Numerical', '1k Coh Integration, Theoretical', '``Iceberg" of the Designed Pulse','Interpreter', 'latex');
+legendsize = 13;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+% set(h_legend,'Interpreter','latex') %  'box','off');
+% h_legend.Interpreter = 'latex';
+labelsize = 16;
+xlabel('Frequency Index', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+ylabel('Power Spectrum', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
+
+xlim([-120,120]);
+ylim([-120,0]);
+xticks(-120:50:120);
+yticks(-120:20:0);
+%----- Grid 设置----------------
 grid on;
-box on;
+set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
 
-set(gca,'FontName','Times New Roman','FontSize',14,'LineWidth',1);
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.125, 0.125, 0.85, 0.86]);
+% print(gcf, './Figs/Fig_6a_m.pdf', '-dpdf', '-vector');
 
-exportgraphics(gcf,'Fig6_d_correct.png','Resolution',300);
-exportgraphics(gcf,'Fig6_d_correct.pdf','ContentType','vector');
 
 
 function g_opt = solve_iceberg_shaping_psl(N,L,alpha,K_s1)
