@@ -6,8 +6,6 @@ Created on Fri Aug 28 16:11:35 2026
 @author: jack
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Noiseless Nyquist transmission verified entirely by matrix operations."""
 
 import numpy as np
@@ -20,12 +18,22 @@ def upsamplingMatrix(N, L):
         QL[n*L, n] = 1
     return QL
 
-def convolutionMatrix(a, inputLength):
-    a = np.asarray(a, dtype=complex).reshape(-1)
-    firstColumn = np.concatenate((a, np.zeros(inputLength-1, dtype=complex)))
-    firstRow = np.concatenate(([a[0]], np.zeros(inputLength-1, dtype=complex)))
-    return toeplitz(firstColumn, firstRow)
+def convolutionMatrix(h, N):  #
+    """
+    Construct the convolution matrix of size (L+N-1)x N from the
+    input matrix h of size L. (see chapter 1)
+    Parameters:
+        h : numpy vector of length L
+        N : scalar value
+    Returns:
+        H : convolution matrix of size (L+N-1)xN
+    """
+    col = np.hstack((h, np.zeros(N-1)))
+    row = np.hstack((h[0], np.zeros(N-1)))
 
+    # from scipy.linalg import toeplitz
+    H = toeplitz(col, row)
+    return H
 
 def downsamplingMatrix(outputLength, inputLength, L, firstSampleIndex):
     DL = np.zeros((outputLength, inputLength))
@@ -53,7 +61,7 @@ def srrcFunction(beta, L, span):
     p = p / np.sqrt(np.sum(np.power(p, 2))) # both Add and Delete this line is OK.
     return p, t, filtDelay
 
-np.set_printoptions(precision=6, suppress=True)
+# np.set_printoptions(precision=6, suppress=True)
 
 N = 6
 L = 4

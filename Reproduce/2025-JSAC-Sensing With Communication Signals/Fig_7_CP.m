@@ -1,7 +1,5 @@
 
 
-
-
 %% Fig. 7 reproduction with CP added before pulse shaping
 % Sensing With Communication Signals: From Information Theory to Signal Processing
 % Transmitter: s -> x = U*s -> add CP -> upsample -> RRC pulse shaping
@@ -15,7 +13,7 @@ rng(42);
 
 %% Parameters used for the three-target example
 Order = 16;                         % 16-PSK星座阶数
-SNRdB = 0;                          % 去CP后的总无噪声回波与输入噪声之比，单位为dB
+SNRdB = -10;                          % 去CP后的总无噪声回波与输入噪声之比，单位为dB
 targetRange = [10,20,25];           % 三个目标的物理距离，单位为m
 targetAmplitude_dB = [0,-10,-30];   % 三个目标复反射系数的幅度，单位为dB
 targetPhase = [0,0,0];              % 三个目标复反射系数的相位，单位为rad
@@ -104,7 +102,7 @@ for ii = 1:Iter
     xCPUp(1:L:end) = xCP;% 每两个有效样本之间插入L-1个零
 
     %% Physical transmit pulse shaping is a linear convolution
-    xTransmit = conv(xCPUp,p,'full');% CP扩展序列与因果RRC脉冲执行物理线性卷积
+    xTransmit = conv(xCPUp, p,'full');% CP扩展序列与因果RRC脉冲执行物理线性卷积
 
     %% Select the pulse-shaped useful block after the high-rate CP
     usefulIndex = NcpSample+1:NcpSample+lengthBlock;% 舍弃高采样率CP区间并保留长度LN的有用区间
@@ -134,7 +132,6 @@ for ii = 1:Iter
     ysNoiselessFull = sum(ysTargetFull,2);% 在复数信号层面相干叠加三个目标回波
 
     %% Select the same useful observation interval at the sensing receiver
-    ysNoiseless = ysNoiselessFull(usefulIndex);% 截取总无噪声回波的长度LN有用区间
     ysTarget = ysTargetFull(usefulIndex,:);% 分别截取三个目标的有用区间，用于画独立目标曲线
 
     %% Verify that CP converts every physical linear delay to a circular shift
@@ -147,6 +144,7 @@ for ii = 1:Iter
     end
 
     %% Add complex Gaussian noise to the selected useful sensing block
+    ysNoiseless = ysNoiselessFull(usefulIndex);% 截取总无噪声回波的长度LN有用区间
     signalPower = mean(abs(ysNoiseless).^2);% 三个目标叠加后的有用区间平均功率
     noisePower = signalPower/10^(SNRdB/10);% 根据总输入回波SNR确定复噪声功率
     noise = sqrt(noisePower/2)*(randn(lengthBlock,1)+1j*randn(lengthBlock,1));% 生成CN(0,noisePower)白噪声

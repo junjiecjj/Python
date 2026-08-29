@@ -168,7 +168,6 @@ print(f"h = {h}\nCirH = \n{CirH}") # H --> CirH, 将拓普利兹矩阵变为循�
 
 #%%
 
-
 #%% Performance of modulations in AWGN
 ## 使用upfirdn函数
 #---------Input Fields------------------------

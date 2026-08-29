@@ -128,12 +128,12 @@ print(f"C3 = {C3}")
 # A1 = scipy.linalg.circulant(X)
 
 ##>>>
-h = np.array([-0.4878, -1.5351, 0.2355])
-s = np.array([-0.0155, 2.5770, 1.9238, -0.0629, -0.8105, 0.6727, -1.5924, -0.8007])
+h = np.array([-0.4878+0.43j, -1.5351-0.43j, 0.2355+0.23j])
+s = np.array([-0.0155+0.453j, 2.5770+0.432j, 1.9238-0.76j, -0.0629+0.53j, -0.8105+0.33j, 0.6727, -1.5924, -0.8007])
 N = s.size
 
 lin_s_h = scipy.signal.convolve(h, s)
-cir_s_h = cconv(h, s, N)
+cir_s_h = cconv(h, s, N)   #  == scipy.linalg.circulant(np.pad(h, (0, Nx - h.size)))@s
 print(f"lin_s_h = \n    {lin_s_h}\ncir_s_h = \n    {cir_s_h}")
 
 ## 加了循环前缀后线卷积的部分结果等于圆卷积。
@@ -141,7 +141,6 @@ Ncp = h.size - 1 # len(CP) >= len(h) - 1
 s_cp = np.hstack((s[-Ncp:], s))
 lin_scp = scipy.signal.convolve(h, s_cp)
 r = lin_scp[Ncp:Ncp+N]
-print(f" r = \n    {r}\n cir_s_h = \n    {cir_s_h}")  # cir_s_h == r
 
 # 14.2.3 Verifying DFT property， 时域的圆卷积对应于频域相乘.
 R = scipy.fft.fft(r, N)
@@ -152,7 +151,7 @@ print(f"R = {R}")
 print(f"H*S = {H*S}")
 # r1 == r
 r1 = scipy.fft.ifft(S*H)         # 频域相乘后ifft等于r
-print(f"r1 = \n{r1}\ncir_s_h = \n{cir_s_h}")
+print(f" r = \n {r}\n r1 = \n {r1}\n cir_s_h = \n {cir_s_h}")
 
 #%% 验证《从微积分到5G》Chap13.Eq(13.1), Page 247
 def genH(h, Nx,):
@@ -202,7 +201,6 @@ def CutFoldAdd(x, L):
 
 Nh = h.size
 Nx = s.size
-# h = np.sqrt(1/2) * (np.random.randn(Nh) + 1j * np.random.randn(Nh))
 H = genH(h, Nx,)
 
 # d = np.random.randint(Order, size = Nx)
@@ -292,7 +290,6 @@ if k > Ncp:
     raise ValueError('公式(14)要求 k <= Ncp，否则CP长度不足。')
 
 Acp = AcpMat(N, Ncp)
-
 Rcp = RcpMat(N, Ncp)
 
 L = N + Ncp
@@ -334,6 +331,8 @@ Rcp @ Acp # = I
 # 下面是OFDM中IFFT -> +cp -> H -> -cp -> FFT的等效过程
 h = np.array([-0.4878, -1.5351, 0.2355])
 S = np.array([-0.0155, 2.5770, 1.9238, -0.0629])
+# Hlin = convMatrix(h, N)
+# y = Hlin @ s                # linear conv
 
 N = S.size
 L = h.size
@@ -345,15 +344,12 @@ s = U @ S                     # IFFT
 
 cir_s_h = cconv(h, s, N)      # circular conv
 
-# Hlin = convMatrix(h, N)
-# y = Hlin @ s                # linear conv
-
-Ncp = L + 1
+Ncp = L - 1
 Acp = AcpMat(N, Ncp)
 s_cp = Acp @ s                # add CP
 
 Hlin_cp = convMatrix(h, s_cp.size)
-y_lincp = Hlin_cp @ s_cp                # pass freq selected channel
+y_lincp = Hlin_cp @ s_cp                # pass freq selected channel, == np.convolve(s_cp,h)
 y_remo_cp = y_lincp[Ncp:Ncp + N]        # receiver, remove cp, == cir_s_h
 
 Scp = ScpMat(N, Ncp, L)
@@ -373,7 +369,7 @@ Vs = V[:, -Ncp:]
 H_cp1 @ Vs # Proof of Theorem 1
 
 Vc = V[:, :S.size]
-Vs = V[:, -Ncp:]
+Vs = V[:, -(L-1):]
 
 Vc @ Vc.conj().T + Vs @ Vs.conj().T  #  == I
 
@@ -395,45 +391,44 @@ b = np.linalg.norm(x_c)**2 + np.linalg.norm(Vs.conj().T @ x_oc)**2
 
 
 #%% On Discrete Ambiguity Functions of Random Communication Waveforms
-
-Acp = AcpMat(N, Ncp)
-Rcp = RcpMat(N, Ncp)
-
-k = 2
-Jtilde = Jap_Nk_right(N + Ncp, k)  # Jap_Nk_left is wrong
-Left = Rcp @ Jtilde @ Acp
-
-Right = Jp_Nk_right(N, k)
-
-Rcp @ Acp # = I
-
-#%%
-def Jbar(N, Ncp, k):
+def Jbar(N, Ncp, L, k):
     Acp = np.block([
         [np.zeros((k, N + Ncp))],
         [np.eye(N + Ncp)],
         [np.zeros((L-1-k, N + Ncp))]
         ])
     return Acp
+
+
+k = 2
+Acp = AcpMat(N, Ncp)
+Rcp = RcpMat(N, Ncp)
+
+Jtilde = Jap_Nk_right(N + Ncp, k)  # Jap_Nk_left is wrong
+Left1 = Rcp @ Jtilde @ Acp
+Right1 = Jp_Nk_right(N, k)
+Rcp @ Acp # = I
+print(f"Left1 = \n{Left1}, \n right1 = \n{Right1}")
+
+# k = 1
+J_bar = Jbar(N, Ncp, L, k)
+Left2 = Scp @ J_bar @ Acp
+Right2 = Jp_Nk_right(N, k)
+print(f"Left2 = \n{Left2}, \n right2 = \n{Right2}")
+
+#%%
+
 # Scp = ScpMat(N, Ncp, L)
 
 Hlin_cp
 Hsum = np.zeros_like(Hlin_cp)
 for l in range(h.size):
-    Hsum += h[l] * Jbar(N, Ncp, l)  # == Hlin_cp
-
+    Hsum += h[l] * Jbar(N, Ncp, L, l)  # == Hlin_cp
 
 Heff = Scp @ Hlin_cp @ Acp
-print(f"h = {h}\n Heff = \n{Heff}")     # H --> Hcir, 将拓普利兹矩阵变为循环阵, 到这里，从离散信号角度完美的对应OFDM的理论
-
-k = 1
-J_bar = Jbar(N, Ncp, k)
-Left = Scp @ J_bar @ Acp
-Right = Jp_Nk_right(N, k)
-
 Hsum_cir = np.zeros_like(Heff)
 for k in range(h.size):
-    Hsum_cir += h[k] * Jp_Nk_right(N, k)  # == Hlin_cp
+    Hsum_cir += h[k] * Jp_Nk_right(N, k)  # == Heff
 
 
 #%%
