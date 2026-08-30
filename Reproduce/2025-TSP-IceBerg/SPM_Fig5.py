@@ -209,6 +209,7 @@ axs.grid(linestyle = (0, (5, 10)), linewidth = 1 )
 
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
+axs.set_title(r'OFDM')
 axs.set_xlim([-100, 100])
 axs.set_ylim([-50, 5])
 out_fig = plt.gcf()

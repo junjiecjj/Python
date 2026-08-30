@@ -300,6 +300,7 @@ axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5 )
 
 axs.set_xlabel(r'Delay Index', )
 axs.set_ylabel(r'Ambiguity Level (dB)', )
+axs.set_title(r'16-QAM With CP')
 axs.set_xlim([-100, 100])
 axs.set_ylim([-50, 5])
 out_fig = plt.gcf()
