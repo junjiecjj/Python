@@ -13,7 +13,6 @@ S -> IFFT -> add CP -> upsample -> pulse shaping -> multipath channel
 import numpy as np
 from scipy.linalg import toeplitz
 
-
 # 实现与MATLAB cconv完全一致的圆卷积
 def cconv(a, b, n=None):
     a = np.asarray(a, dtype=complex)
@@ -32,14 +31,12 @@ def cconv(a, b, n=None):
         result[:len(linear_conv)] = linear_conv
     return result
 
-
 def convMatrix(h, N):
     h = np.asarray(h,dtype=complex).reshape(-1)
     col = np.hstack((h,np.zeros(N-1,dtype=complex)))
     row = np.hstack((h[0],np.zeros(N-1,dtype=complex)))
     H = toeplitz(col,row)
     return H
-
 
 # 产生傅里叶矩阵
 def FFTmatrix(L):
@@ -49,7 +46,6 @@ def FFTmatrix(L):
         mat[i,:] = np.exp(-1j*2*np.pi*i*ll/L)/np.sqrt(L)
     return mat
 
-
 def AcpMat(N, Ncp):
     Acp = np.block([
         [np.zeros((Ncp,N-Ncp)),np.eye(Ncp)],
@@ -57,20 +53,17 @@ def AcpMat(N, Ncp):
     ])
     return Acp
 
-
 def ScpMat(N, Ncp, Leq):
     Scp = np.block([
         [np.zeros((N,Ncp)),np.eye(N),np.zeros((N,Leq-1))]
     ])
     return Scp
 
-
 def upsamplingMatrix(M, Q):
     GammaQ = np.zeros((Q*M,M))
     for m in range(M):
         GammaQ[m*Q,m] = 1
     return GammaQ
-
 
 def downsamplingMatrix(outputLength, inputLength, Q, n0):
     DQn0 = np.zeros((outputLength,inputLength))
@@ -79,7 +72,6 @@ def downsamplingMatrix(outputLength, inputLength, Q, n0):
         raise ValueError('The requested downsampling position exceeds the input length.')
     DQn0[np.arange(outputLength),sampleIndex] = 1
     return DQn0
-
 
 def srrcFunction(beta, Q, span):
     Tsym = 1
@@ -93,7 +85,6 @@ def srrcFunction(beta, Q, span):
     filtDelay = (len(p)-1)/2
     p = p/np.sqrt(np.sum(np.abs(p)**2))
     return p,t,filtDelay
-
 
 np.set_printoptions(precision=6,suppress=True)
 np.random.seed(42)
@@ -218,3 +209,25 @@ assert np.allclose(Diag,np.diag(np.diag(Diag)),atol=1e-12)
 assert np.allclose(S_hat,S,atol=1e-10)
 
 print('\nVerification passed: the complete noiseless CP-OFDM and Nyquist link recovers S exactly.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
