@@ -4,9 +4,10 @@
 Created on Fri Aug 28 16:11:35 2026
 
 @author: jack
-"""
 
-"""Noiseless Nyquist transmission verified entirely by matrix operations."""
+Noiseless Nyquist transmission verified entirely by matrix operations.
+
+"""
 
 import numpy as np
 from scipy.linalg import toeplitz
@@ -43,6 +44,38 @@ def downsamplingMatrix(outputLength, inputLength, L, firstSampleIndex):
     DL[np.arange(outputLength), sampleIndex] = 1
     return DL
 
+def equivalentSymbolRateMatrix(c, N, L, n0):
+    """
+    根据 G[m,i] = c[n0+(m-i)L] 直接构造符号率端到端矩阵 G。
+
+    Parameters
+    ----------
+    c : ndarray
+        发射脉冲、物理信道和接收滤波器构成的总等效冲激响应：
+        c = p_t * h * p_r。
+    N : int
+        输入符号数量，G的维度为N×N。
+    L : int
+        上采样倍数。
+    n0 : int
+        接收端的第一个抽样位置，即符号定时位置。
+
+    Returns
+    -------
+    G : ndarray
+        N×N符号率端到端矩阵。
+    """
+    c = np.asarray(c).reshape(-1)
+    G = np.zeros((N, N), dtype=np.result_type(c.dtype, np.complex128))
+
+    for m in range(N):
+        for i in range(N):
+            cIndex = n0+(m-i)*L
+            if 0 <= cIndex < len(c):
+                G[m,i] = c[cIndex]
+
+    return G
+
 # Program 7.8: test SRRCPulse.m: Square-root raised-cosine pulse characteristics
 def srrcFunction(beta, L, span):
     # Function for generating rectangular pulse for the given inputs
@@ -67,7 +100,6 @@ N = 6
 L = 4
 beta = 0.35
 span = 6
-
 
 # A deterministic complex-symbol vector is used so that the result is reproducible.
 s = np.random.randn(N) + 1j * np.random.randn(N)
@@ -101,36 +133,59 @@ firstSampleIndex = len(p_t)-1
 DL = downsamplingMatrix(N, z.size, L, firstSampleIndex)
 s_hat = DL@z
 
-# Complete end-to-end symbol-rate matrix.
+C1 = Pr@H@Pt
+# 通过完整矩阵链得到符号率端到端矩阵
 G = DL@Pr@H@Pt@QL
 
-# Equivalent impulse-response representation.
-c = np.convolve(np.convolve(p_t, h), p_r)
-C = convolutionMatrix(c, s_up.size)
-G_equivalent = DL@C@QL
-s_hat_equivalent = G_equivalent@s
+# 总等效冲激响应
+c = np.convolve(np.convolve(p_t, h),p_r)
+# 通过卷积矩阵得到符号率端到端矩阵
+C2 = convolutionMatrix(c,s_up.size)
+G_equivalent = DL@C2@QL
 
-print("s =")
-print(s)
-print("\ns_hat =")
-print(s_hat)
-print("\nEnd-to-end symbol-rate matrix G = DL @ Pr @ H @ Pt @ QL =")
+# 根据G[m,i]=c[n0+(m-i)L]直接逐元素构造G
+G_direct = equivalentSymbolRateMatrix(c, N, L, firstSampleIndex)
+
+# 三种矩阵分别作用于符号向量
+s_hat = G@s
+s_hat_equivalent = G_equivalent@s
+s_hat_direct = G_direct@s
+
+print(f"s = \n{s}")
+print("\ns_hat = {s_hat}")
+
+print("\nG = DL@Pr@H@Pt@QL:")
 print(G)
-print("\nEquivalent matrix G_equivalent = DL @ C @ QL =")
+
+print("\nG_equivalent = DL@C2@QL:")
 print(G_equivalent)
 
-matrixFactorizationError = np.linalg.norm(G-G_equivalent, "fro")
-nyquistMatrixError = np.linalg.norm(G-np.eye(N), "fro")
+print("\nG_direct constructed from c[n0+(m-i)L]:")
+print(G_direct)
+
+matrixFactorizationError = np.linalg.norm(G-G_equivalent,"fro")
+directConstructionError = np.linalg.norm(G-G_direct,"fro")
+equivalentDirectError = np.linalg.norm(G_equivalent-G_direct,"fro")
 symbolRecoveryError = np.linalg.norm(s_hat-s)
-equivalentRecoveryError = np.linalg.norm(s_hat-s_hat_equivalent)
+directRecoveryError = np.linalg.norm(s_hat_direct-s)
+equivalRecoveryError = np.linalg.norm(s_hat_equivalent-s)
 
-print(f"\nMatrix factorization error = {matrixFactorizationError:.3e}")
-print(f"Nyquist matrix error       = {nyquistMatrixError:.3e}")
-print(f"Symbol recovery error      = {symbolRecoveryError:.3e}")
-print(f"Equivalent recovery error  = {equivalentRecoveryError:.3e}")
+print(f"\n||G-G_equivalent||_F        = {matrixFactorizationError:.3e}")
+print(f"||G-G_direct||_F            = {directConstructionError:.3e}")
+print(f"||G_equivalent-G_direct||_F = {equivalentDirectError:.3e}")
+print(f"||G@s-s||_2                 = {symbolRecoveryError:.3e}")
+print(f"||G_direct@s-s||_2          = {directRecoveryError:.3e}")
+print(f"||G_equivalent@s-s||_2          = {equivalRecoveryError:.3e}")
 
-# assert np.allclose(G, G_equivalent, atol=1e-12)
-# assert np.allclose(G, np.eye(N), atol=1e-12)
-# assert np.allclose(s_hat, s, atol=1e-12)
+assert np.allclose(G,G_equivalent,atol=1e-12)
+assert np.allclose(G,G_direct,atol=1e-12)
 
-print("\nVerification passed: in the noiseless Nyquist system, s_hat is equal to s.")
+
+
+
+
+
+
+
+
+

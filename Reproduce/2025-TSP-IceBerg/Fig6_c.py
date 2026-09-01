@@ -131,9 +131,9 @@ for k in range(L*N):
     TheoAveACF_RRC_M10000[k] = r1_RRC+r2_RRC
     TheoAveACF_Designed_M10000[k] = r1_Designed+r2_Designed
 
-normalization_Theo = TheoAveACF_RRC_M10000[0]
-TheoAveACF_RRC_M10000 = TheoAveACF_RRC_M10000/normalization_Theo+1e-14
-TheoAveACF_Designed_M10000 = TheoAveACF_Designed_M10000/normalization_Theo+1e-14
+# normalization_Theo = TheoAveACF_RRC_M10000[0]
+TheoAveACF_RRC_M10000 = TheoAveACF_RRC_M10000/np.abs(TheoAveACF_RRC_M10000).max() + 1e-14
+TheoAveACF_Designed_M10000 = TheoAveACF_Designed_M10000/np.abs(TheoAveACF_Designed_M10000).max()+1e-14
 TheoAveACF_RRC_M10000 = np.fft.fftshift(TheoAveACF_RRC_M10000)
 TheoAveACF_Designed_M10000 = np.fft.fftshift(TheoAveACF_Designed_M10000)
 
@@ -166,9 +166,9 @@ if runNumericalSimulation:
     Sim_RRC_M10000_avg = np.squeeze(np.mean(RkBar2_RRC, axis=1))
     Sim_Designed_M10000_avg = np.squeeze(np.mean(RkBar2_Designed, axis=1))
 
-    normalization = Sim_RRC_M10000_avg[0]
-    Sim_RRC_M10000_avg = Sim_RRC_M10000_avg/normalization+1e-14
-    Sim_Designed_M10000_avg = Sim_Designed_M10000_avg/normalization+1e-14
+    # normalization = Sim_RRC_M10000_avg[0]
+    Sim_RRC_M10000_avg = Sim_RRC_M10000_avg/np.abs(Sim_RRC_M10000_avg).max()+1e-14
+    Sim_Designed_M10000_avg = Sim_Designed_M10000_avg/np.abs(Sim_Designed_M10000_avg).max()+1e-14
     Sim_RRC_M10000_avg = np.fft.fftshift(Sim_RRC_M10000_avg)
     Sim_Designed_M10000_avg = np.fft.fftshift(Sim_Designed_M10000_avg)
 
@@ -177,11 +177,11 @@ x = np.arange(-N*L//2, N*L//2)
 fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
 if runNumericalSimulation:
-    axs.plot(x, 10*np.log10(Sim_RRC_M10000_avg), color='#8A2BE2', linestyle='none', marker='x', ms=8, markevery=20, label='RRC, 10k Coh Integration, Numerical')
-    axs.plot(x, 10*np.log10(Sim_Designed_M10000_avg), color='#05C349', linestyle='none', marker='+', ms=10, markevery=20, label='Designed Pulse, 10k Coh Integration, Numerical')
+    axs.plot(x, 10*np.log10(Sim_RRC_M10000_avg), color='#8A2BE2', linestyle='none', marker='x', ms=8, markevery=20, label='RRC, 10k Coh Integration, Numerical', zorder = 1)
+    axs.plot(x, 10*np.log10(Sim_Designed_M10000_avg), color='#05C349', linestyle='none', marker='+', ms=10, markevery=20, label='Designed Pulse, 10k Coh Integration, Numerical', zorder = 10)
 
-axs.plot(x, 10*np.log10(TheoAveACF_RRC_M10000), color='#F65314', linestyle='-', linewidth=2, label='RRC, 10k Coh Integration')
-axs.plot(x, 10*np.log10(TheoAveACF_Designed_M10000), color='#00A1F1', linestyle='--', linewidth=2, label='Designed Pulse, 10k Coh Integration')
+axs.plot(x, 10*np.log10(TheoAveACF_RRC_M10000), color='#F65314', linestyle='-', linewidth=2, label='RRC, 10k Coh Integration', zorder = 1)
+axs.plot(x, 10*np.log10(TheoAveACF_Designed_M10000), color='#00A1F1', linestyle='-', linewidth=1, label='Designed Pulse, 10k Coh Integration', zorder = 10)
 
 # font1 = {'family':'Times New Roman', 'style':'normal', 'size':12}
 font1 = FontProperties(family='Times New Roman', style='normal', size=20)
@@ -197,7 +197,7 @@ axs.spines['right'].set_linewidth(bw)
 axs.spines['top'].set_linewidth(bw)
 axs.set_xlabel(r'Delay Index')
 axs.set_ylabel(r'Ambiguity Level (dB)')
-axs.set_title(r'Iceberg Shaping Design')
+axs.set_title(r'OFDM with 16-QAM, Iceberg Shaping Design')
 axs.set_xlim([-300, 300])
 axs.set_ylim([-80, 0])
 axs.set_xticks(np.arange(-300, 301, 100))
