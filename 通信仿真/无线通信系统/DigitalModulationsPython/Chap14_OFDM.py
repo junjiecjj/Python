@@ -282,7 +282,7 @@ from DigiCommPy.errorRates import ser_rayleigh
 
 L = 10              ## Number of taps for the frequency selective channel model
 
-nSym = 10000
+nSym = 2000
 EbN0dBs = np.arange(-2, 26, 2)
 MOD_TYPE = "psk"    ## "pam" "psk",   "fsk" is not suitable.
 arrayOfM = [2, 4, 8, 16, 32]
@@ -305,9 +305,9 @@ for m, M in enumerate(arrayOfM):
     errors= np.zeros(EsN0dBs.size)
 
     if MOD_TYPE.lower() == 'fsk':
-        modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
+        modem = modem_dict[MOD_TYPE.lower()](M, coherence)  # choose modem from dictionary
     else: # for all other modulations
-        modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
+        modem = modem_dict[MOD_TYPE.lower()](M)         #  choose modem from dictionary
 
     for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
         for j, sym in enumerate(range(nSym)):
