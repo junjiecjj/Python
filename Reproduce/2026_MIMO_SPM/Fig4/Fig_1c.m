@@ -88,10 +88,10 @@ set(gcf, 'PaperSize', [width, height]);
 
 p1 = plot(theta_grid, p_des, 'k--', 'LineWidth', 2); hold on;
 
-p2 = plot(theta_grid, P_opt0, 'r-', 'LineWidth', 2.5); hold on;
+p2 = plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1); hold on;
 p2.Color = '#A9A9A9';
 
-p3 = plot(theta_grid, P_opt1, 'r-.', 'LineWidth', 2); hold on;
+p3 = plot(theta_grid, P_opt1, 'r--', 'LineWidth', 2); hold on;
 p3.Color = '#F65314';
 
 p4 = plot(theta_grid, P_opt2, 'b:', 'LineWidth', 2); hold on;
@@ -126,7 +126,7 @@ set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth',
 
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
-set(gca, 'Position', [0.1, 0.1, 0.87, 0.86]);
+set(gca, 'Position', [0.1, 0.11, 0.87, 0.86]);
 print(gcf, 'Fig_4_1c.pdf', '-dpdf', '-vector');
 
 
