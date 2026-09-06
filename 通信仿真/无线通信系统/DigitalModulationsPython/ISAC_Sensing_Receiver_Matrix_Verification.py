@@ -25,7 +25,7 @@ def FFTmatrix(N):
     return mat
 
 
-def AcpMat(N,Ncp):
+def AcpMat(N, Ncp):
     Acp = np.block([[np.zeros((Ncp,N-Ncp)),np.eye(Ncp)],[np.eye(N)]])
     return Acp
 
@@ -43,7 +43,6 @@ def convMatrix(h,inputLength):
     H = toeplitz(col,row)
     return H
 
-
 def circulantConvMatrix(h,N):
     hPeriodic = np.zeros(N,dtype=complex)
     for indexSample,value in enumerate(np.asarray(h,dtype=complex).reshape(-1)):
@@ -53,12 +52,10 @@ def circulantConvMatrix(h,N):
         Hcir[:,indexColumn] = np.roll(hPeriodic,indexColumn)
     return Hcir
 
-
 def linearDelayMatrix(outputLength, inputLength, delay):
     Jtilde = np.zeros((outputLength,inputLength))
     Jtilde[delay:delay+inputLength,:] = np.eye(inputLength)
     return Jtilde
-
 
 def circularDelayMatrix(N, delay):
     delay = delay%N
@@ -67,10 +64,8 @@ def circularDelayMatrix(N, delay):
     J[delay:N,0:N-delay] = np.eye(N-delay)
     return J
 
-
 def relativeError(left,right):
     return np.linalg.norm(left-right)/max(np.linalg.norm(right),np.finfo(float).eps)
-
 
 
 # System dimensions
