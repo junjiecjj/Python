@@ -7,7 +7,6 @@ close all;
 rng(42); 
 addpath('./functions_2007TSP_OnProb');
 
-
 %% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
 N = 10;                       % 天线数
 c = ones(N, 1);                % 对角元固定值
