@@ -295,8 +295,9 @@ modem_dict = {'psk': PSKModem,'qam':QAMModem,'pam':PAMModem,'fsk':FSKModem}
 
 N = 64
 Ncp = 16
-# colors = ['b', 'g', 'r', 'c', 'm', 'k']
-colors = plt.cm.jet(np.linspace(0, 1, len(arrayOfM))) # colormap
+colors = ['#F65314', '#00A1F1', '#77AC30', '#8A2BE2', '#00A8BB', 'k']
+markers = ['s','v','d', 'o', '*', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4', '8', 'H', '+', 'x', 'D',]
+# colors = plt.cm.hsv(np.linspace(0, 1, len(arrayOfM))) # colormap
 fig, axs = plt.subplots(1, 1, figsize = (8, 6), constrained_layout = True)
 for m, M in enumerate(arrayOfM):
     print(f"{m}/{len(arrayOfM)}")
@@ -305,9 +306,9 @@ for m, M in enumerate(arrayOfM):
     errors= np.zeros(EsN0dBs.size)
 
     if MOD_TYPE.lower() == 'fsk':
-        modem = modem_dict[MOD_TYPE.lower()](M, coherence)  # choose modem from dictionary
+        modem = modem_dict[MOD_TYPE.lower()](M, coherence)#choose modem from dictionary
     else: # for all other modulations
-        modem = modem_dict[MOD_TYPE.lower()](M)         #  choose modem from dictionary
+        modem = modem_dict[MOD_TYPE.lower()](M)#choose modem from dictionary
 
     for i, EsN0dB in tqdm(enumerate(EsN0dBs)):
         for j, sym in enumerate(range(nSym)):
@@ -339,16 +340,35 @@ for m, M in enumerate(arrayOfM):
     SER_sim = errors/(nSym * N)
     SER_theory = ser_rayleigh(EbN0dBs, MOD_TYPE, M)
 
-    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = "o", ms = 12, )
+    axs.semilogy(EbN0dBs, SER_sim, color = colors[m], ls = 'none', marker = markers[m], ms = 12, mfc = 'none' , mew = 2)
     axs.semilogy(EbN0dBs, SER_theory, color = colors[m], ls = '-', label = f'{M}-{MOD_TYPE.upper()}' )
 
+axs.grid(linestyle=(0, (5, 10)), linewidth=0.5, )
 axs.set_ylim(1e-3, 1)
-axs.set_xlabel( 'Eb/N0(dB)',)
-axs.set_ylabel('SER (Ps)',)
-axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
+axs.set_xlabel( r'$E_b/N_0$(dB)',)
+axs.set_ylabel('SER',)
+
+font1 = FontProperties(family='Times New Roman', style='normal', size=16)
+legend1 = axs.legend(loc='lower left', borderaxespad=0, edgecolor='black', labelspacing=0.2, prop=font1)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')
+
+bw = 2
+axs.spines['bottom'].set_linewidth(bw)
+axs.spines['left'].set_linewidth(bw)
+axs.spines['right'].set_linewidth(bw)
+axs.spines['top'].set_linewidth(bw)
+
+axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
+labels = axs.get_xticklabels()+axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(22) for label in labels]
+
+# axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
 axs.legend(fontsize = 20)
 out_fig = plt.gcf()
-# out_fig.savefig('hh1.png',format='png',dpi=1000,)
+# out_fig.savefig('/home/jack/文档/ShareFileSysu/我的论文/ISAC_Nyquist/Figures/QAM_Rayleigh.pdf', )
 plt.show()
 plt.close()
 
