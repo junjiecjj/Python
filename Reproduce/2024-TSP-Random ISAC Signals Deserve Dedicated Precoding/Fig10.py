@@ -18,11 +18,11 @@ from matplotlib.font_manager import FontProperties
 
 # 全局设置字体大小
 plt.rcParams["font.family"] = "Times New Roman"
-plt.rcParams['font.size'] = 18
-plt.rcParams['axes.titlesize'] = 18
-plt.rcParams['axes.labelsize'] = 18
-plt.rcParams['xtick.labelsize'] = 18
-plt.rcParams['ytick.labelsize'] = 18
+plt.rcParams['font.size'] = 22
+plt.rcParams['axes.titlesize'] = 22
+plt.rcParams['axes.labelsize'] = 22
+plt.rcParams['xtick.labelsize'] = 22
+plt.rcParams['ytick.labelsize'] = 22
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams["figure.figsize"] = [8, 6]
 plt.rcParams['lines.linestyle'] = '-'
@@ -331,37 +331,38 @@ color_DIP = '#00A1F1'
 color_DDP = '#8A2BE2'
 
 # L=24：实线
-axs.plot(result[24]['DetOpt Rate'], result[24]['DetOpt'], color=color_DetOpt, linestyle='-', linewidth=2, marker='>', ms=8, markerfacecolor='white', label=r'DetOpt, $L=24$', zorder=3)
-axs.plot(result[24]['DIP Rate'], result[24]['DIP'], color=color_DIP, linestyle='-', linewidth=2, marker='o', ms=7, markerfacecolor='white', label=r'DIP, $L=24$', zorder=4)
-axs.plot(result[24]['DDP Rate'], result[24]['DDP'], color=color_DDP, linestyle='-', linewidth=2, marker='s', ms=7, markerfacecolor='white', label=r'DDP, $L=24$', zorder=5)
+axs.plot(result[24]['DetOpt Rate'], result[24]['DetOpt'], color=color_DetOpt, linestyle='-', linewidth=2, marker='>', ms=10, markerfacecolor='white', label=r'DetOpt, $L=24$', zorder=3)
+axs.plot(result[24]['DIP Rate'], result[24]['DIP'], color=color_DIP, linestyle='-', linewidth=2, marker='o', ms=10, markerfacecolor='white', label=r'DIP, $L=24$', zorder=4)
+axs.plot(result[24]['DDP Rate'], result[24]['DDP'], color=color_DDP, linestyle='-', linewidth=2, marker='s', ms=10, markerfacecolor='white', label=r'DDP, $L=24$', zorder=5)
 
 # L=32：虚线
-axs.plot(result[32]['DetOpt Rate'], result[32]['DetOpt'], color=color_DetOpt, linestyle='--', linewidth=2, marker='>', ms=8, label=r'DetOpt, $L=32$', zorder=3)
-axs.plot(result[32]['DIP Rate'], result[32]['DIP'], color=color_DIP, linestyle='--', linewidth=2, marker='o', ms=7, label=r'DIP, $L=32$', zorder=4)
-axs.plot(result[32]['DDP Rate'], result[32]['DDP'], color=color_DDP, linestyle='--', linewidth=2, marker='s', ms=7, label=r'DDP, $L=32$', zorder=5)
+axs.plot(result[32]['DetOpt Rate'], result[32]['DetOpt'], color=color_DetOpt, linestyle='--', linewidth=2, marker='>', ms=10, label=r'DetOpt, $L=32$', zorder=3)
+axs.plot(result[32]['DIP Rate'], result[32]['DIP'], color=color_DIP, linestyle='--', linewidth=2, marker='o', ms=10, label=r'DIP, $L=32$', zorder=4)
+axs.plot(result[32]['DDP Rate'], result[32]['DDP'], color=color_DDP, linestyle='--', linewidth=2, marker='s', ms=10, label=r'DDP, $L=32$', zorder=5)
 
-font1 = FontProperties(family='Times New Roman', style='normal', size=14)
-legend1 = axs.legend(loc='upper left', ncol=2, borderaxespad=0, edgecolor='black', fontsize=14, labelspacing=0.2, prop=font1)
+font1 = FontProperties(family='Times New Roman', style='normal', size=16)
+legend1 = axs.legend(loc='upper left', ncol=2, borderaxespad=0, edgecolor='black',  labelspacing=0.2, prop=font1)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')
 
 bw = 2
+axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
+labels = axs.get_xticklabels()+axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(18) for label in labels]
+axs.grid(linestyle=(0, (5, 10)), linewidth=0.5)
+
 axs.spines['bottom'].set_linewidth(bw)
 axs.spines['left'].set_linewidth(bw)
 axs.spines['right'].set_linewidth(bw)
 axs.spines['top'].set_linewidth(bw)
 axs.set_xlabel(r'Communication Rate [bps/Hz]')
 axs.set_ylabel(r'Normalized ELMMSE [dB]')
-axs.set_xlim([20.5, 33])
-axs.set_ylim([-16, -10])
+axs.set_xlim([20.5, 32])
+axs.set_ylim([-16, -9])
 axs.set_xticks(np.arange(22, 33, 2))
 axs.set_yticks(np.arange(-16, -9, 1))
-axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
-labels = axs.get_xticklabels()+axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(18) for label in labels]
-axs.grid(linestyle=(0, (5, 10)), linewidth=0.5)
 
 plt.savefig('Fig10_TSP.pdf')
 # plt.savefig('Fig10_TSP.png', dpi=300, bbox_inches='tight')

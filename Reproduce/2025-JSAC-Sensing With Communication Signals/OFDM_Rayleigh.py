@@ -140,7 +140,7 @@ font1 = FontProperties(family='Times New Roman', style='normal', size=20)
 handles = handles_theor + handles_simu
 labels_legend = labels_theor + labels_simu
 
-legend1 = axs.legend(handles, labels_legend, loc='lower left', borderaxespad=0, edgecolor='black', labelspacing=0.1, columnspacing=0.5, handlelength=2.2, prop=font1, ncol=2)
+legend1 = axs.legend(handles, labels_legend, loc='lower left', borderaxespad=0, edgecolor='black', labelspacing=0.2, columnspacing=0.5, handlelength=1, prop=font1, ncol=2)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')

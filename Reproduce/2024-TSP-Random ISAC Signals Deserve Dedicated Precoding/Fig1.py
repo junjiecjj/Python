@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
@@ -20,14 +19,15 @@ r"""
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 
 # ===================== 全局画图设置（参考你的风格） =====================
 plt.rcParams["font.family"] = "Times New Roman"
-plt.rcParams['font.size'] = 18
-plt.rcParams['axes.titlesize'] = 18
-plt.rcParams['axes.labelsize'] = 18
-plt.rcParams['xtick.labelsize'] = 18
-plt.rcParams['ytick.labelsize'] = 18
+plt.rcParams['font.size'] = 22
+plt.rcParams['axes.titlesize'] = 22
+plt.rcParams['axes.labelsize'] = 22
+plt.rcParams['xtick.labelsize'] = 22
+plt.rcParams['ytick.labelsize'] = 22
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams["figure.figsize"] = [8, 6]
 plt.rcParams['lines.linestyle'] = '-'
@@ -35,14 +35,14 @@ plt.rcParams['lines.linewidth'] = 2
 plt.rcParams['lines.markersize'] = 6
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['axes.edgecolor'] = 'black'
-plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['legend.fontsize'] = 22
 
 np.random.seed(42)
 
 
 def generate_signal_matrix(Nt, L):
-    """
-    生成随机信号矩阵 S，其列向量独立同分布，且
+    r"""
+    生成随机信号矩阵 S \in C^{Nt x L}，其列向量独立同分布，且
         s(ell) ~ CN(0, I_Nt).
     """
     S = (np.random.randn(Nt, L) + 1j * np.random.randn(Nt, L)) / np.sqrt(2)
@@ -84,6 +84,8 @@ def theoretical_mean_error(Nt, L):
     """
     return Nt / L
 
+
+
 # ===================== 参数设置 =====================
 Nt_list = [128, 64, 32, 16]
 log2L_list = np.arange(2, 17, 2)   # 2,4,...,16
@@ -109,40 +111,45 @@ for Nt in Nt_list:
     print(f'Nt = {Nt}:', np.round(10 * np.log10(sim_result[Nt]), 2))
 
 # ===================== 绘图 =====================
-marker_dict = {128: 'o', 64: '^', 32: 's', 16: 'd'}
+colors = ['#F65314', '#00A1F1', '#77AC30', '#8A2BE2', '#00A8BB', 'k']
+markers = ['s','v','d', 'o', '*', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4', '8', 'H', '+', 'x', 'D']
 
-fig, ax = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
 
-# 仿真曲线
-for Nt in Nt_list:
-    ax.plot(
-        log2L_list,
-        10 * np.log10(sim_result[Nt]),
-        marker=marker_dict[Nt],
-        markerfacecolor='white',
-        label=rf'$N={Nt}$'
-    )
+for iNt, Nt in enumerate(Nt_list):
+    axs.plot(log2L_list, 10*np.log10(sim_result[Nt]), color=colors[iNt], linestyle='-', linewidth=2, marker=markers[iNt], ms=12, markerfacecolor='white', label=rf'$N={Nt}$', zorder=10-iNt)
 
-# 如果你还想把理论均值 Nt/L 一起画出来，就取消下面注释
-# for Nt in Nt_list:
-#     ax.plot(
-#         log2L_list,
-#         10 * np.log10(th_result[Nt]),
-#         linestyle='--',
-#         linewidth=1.5
-#     )
+# 如果需要同时画理论平均误差 Nt/L，可取消下面注释
+# for iNt, Nt in enumerate(Nt_list):
+#     axs.plot(log2L_list, 10*np.log10(th_result[Nt]), color=colors[iNt], linestyle='--', linewidth=1.5, label=rf'Theory, $N_t={Nt}$')
 
-ax.set_xlabel('Frame Length')
-ax.set_ylabel('Approximation Error [dB]')
-ax.set_xticks(log2L_list)
-ax.set_xticklabels([rf'$2^{{{k}}}$' for k in log2L_list])
-ax.set_xlim([2, 16])
-ax.set_ylim([-40, 20])
-ax.grid(linestyle=(0, (5, 10)), linewidth=0.5)
-ax.legend(loc='best', borderaxespad=0, edgecolor='black', fontsize=18)
+font1 = FontProperties(family='Times New Roman', style='normal', size=22)
+legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black',  labelspacing=0.2, prop=font1)
+frame1 = legend1.get_frame()
+frame1.set_alpha(1)
+frame1.set_facecolor('none')
 
-out_fig = plt.gcf()
-out_fig.savefig('fig1_sample_covariance_repro.png', dpi=300)
-# out_fig.savefig('fig1_sample_covariance_repro.pdf')
+bw = 2
+axs.spines['bottom'].set_linewidth(bw)
+axs.spines['left'].set_linewidth(bw)
+axs.spines['right'].set_linewidth(bw)
+axs.spines['top'].set_linewidth(bw)
+
+axs.set_xlabel(r'Frame Length', fontsize = 24)
+axs.set_ylabel(r'Approximation Error: $\left\|\mathbf{S}\mathbf{S}^{H}/L-\mathbf{I}\right\|_F^2$ [dB]')
+axs.set_xlim([2, 16])
+axs.set_ylim([-40, 20])
+axs.set_xticks(log2L_list)
+axs.set_xticklabels([rf'$2^{{{k}}}$' for k in log2L_list])
+axs.set_yticks(np.arange(-40, 21, 10))
+axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
+
+labels = axs.get_xticklabels()+axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(22) for label in labels]
+
+axs.grid(linestyle=(0, (5, 10)), linewidth=0.5)
+
+plt.savefig('Fig1_sample_covariance.pdf')
 plt.show()
 plt.close()
