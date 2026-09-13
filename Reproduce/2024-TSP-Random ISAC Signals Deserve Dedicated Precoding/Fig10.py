@@ -350,7 +350,7 @@ bw = 2
 axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
 labels = axs.get_xticklabels()+axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(18) for label in labels]
+[label.set_fontsize(22) for label in labels]
 axs.grid(linestyle=(0, (5, 10)), linewidth=0.5)
 
 axs.spines['bottom'].set_linewidth(bw)
