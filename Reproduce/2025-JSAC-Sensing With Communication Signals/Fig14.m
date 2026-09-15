@@ -265,37 +265,81 @@ fprintf('N=32 DIP Rate:      '); fprintf('%.6f  ',result.N32.DIPRate); fprintf('
 fprintf('N=32 DDP Rate:      '); fprintf('%.6f  ',result.N32.DDPRate); fprintf('\n');
 
 %% 绘制 Fig.14
-figure('Color','w','Position',[100,100,800,600]); hold on;
+%%===========================================
+
+width = 6;%设置图宽，这个不用改
+height = 4;%设置图高，这个不用改
+fontsize = 14;%设置图中字体大小
+linewidth = 2;%设置线宽
+markersize = 10;%标记大小
+
+set(groot, 'defaultAxesFontName', 'Times New Roman');
+set(groot, 'defaultTextFontName', 'Times New Roman');
+set(groot, 'defaultLegendFontName', 'Times New Roman');
+
+figure(1);
+set(gcf, 'Units', 'inches');
+set(gcf, 'Color', 'white');
+set(gcf, 'Renderer', 'painters');
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperPosition', [0, 0, width, height]);
+set(gcf, 'PaperSize', [width, height]);
+set(gcf, 'PaperPositionMode', 'manual');
+
 colorBaseline = '#77AC30';
 colorDIP = '#00A1F1';
 colorDDP = '#F65314';
 
 % N=20：实线；N=32：虚线。Baseline 用圆圈，DIP 不加 marker，DDP 用方块。
-plot(result.N20.BaselineRate,result.N20.Baseline,'Color',colorBaseline,'LineStyle','-','LineWidth',2,'Marker','o','MarkerSize',7,'MarkerFaceColor','w','DisplayName','Baseline (N = 20)');
-plot(result.N20.DIPRate,result.N20.DIP,'Color',colorDIP,'LineStyle','-','LineWidth',2,'DisplayName','DIP Scheme (N = 20)');
-plot(result.N20.DDPRate,result.N20.DDP,'Color',colorDDP,'LineStyle','-','LineWidth',2,'Marker','s','MarkerSize',7,'MarkerFaceColor','w','DisplayName','DDP Scheme (N = 20)');
-plot(result.N32.BaselineRate,result.N32.Baseline,'Color',colorBaseline,'LineStyle','--','LineWidth',2,'Marker','o','MarkerSize',7,'MarkerFaceColor','w','DisplayName','Baseline (N = 32)');
-plot(result.N32.DIPRate,result.N32.DIP,'Color',colorDIP,'LineStyle','--','LineWidth',2,'DisplayName','DIP Scheme (N = 32)');
-plot(result.N32.DDPRate,result.N32.DDP,'Color',colorDDP,'LineStyle','--','LineWidth',2,'Marker','s','MarkerSize',7,'MarkerFaceColor','w','DisplayName','DDP Scheme (N = 32)');
+p1 = plot(result.N20.BaselineRate, result.N20.Baseline, '-', 'LineWidth', linewidth, 'Marker', 'o', 'MarkerSize', markersize, 'MarkerFaceColor', 'w'); hold on;
+p1.Color = colorBaseline;
 
-% 原 Fig.14 的 3 bps/s/Hz 标注；箭头位置仅用于视觉对齐，不参与数值计算。
-text(24.2,-11.35,'3 bps/s/Hz','FontName','Times New Roman','FontSize',14,'Color','k');
-quiver(23.9,-11.58,-1.1,0,0,'Color','k','LineWidth',1.2,'MaxHeadSize',0.6,'HandleVisibility','off');
-quiver(25.8,-11.58,1.1,0,0,'Color','k','LineWidth',1.2,'MaxHeadSize',0.6,'HandleVisibility','off');
+p2 = plot(result.N20.DIPRate, result.N20.DIP, '-', 'LineWidth', linewidth); hold on;
+p2.Color = colorDIP;
 
-legend1 = legend('Location','northwest','NumColumns',2,'Box','on');
-set(legend1,'FontName','Times New Roman','FontSize',14,'Color','none');
-ax = gca; bw = 2;
-ax.LineWidth = bw; ax.FontName = 'Times New Roman'; ax.FontSize = 18; ax.TickDir = 'in';
-ax.XAxis.TickDirection = 'in'; ax.YAxis.TickDirection = 'in'; ax.Box = 'on';
-ax.XGrid = 'on'; ax.YGrid = 'on'; ax.GridLineStyle = '--'; ax.GridAlpha = 0.25;
-xlabel('Communication Rate [bps/s/Hz]','FontName','Times New Roman','FontSize',18);
-ylabel('Normalized ELMMSE [dB]','FontName','Times New Roman','FontSize',18);
-xlim([18,32]); ylim([-15,-9]); xticks(18:2:32); yticks(-15:1:-9);
-set(gcf,'PaperPositionMode','auto');
-print(gcf,'Fig14_JSAC_MATLAB','-dpdf','-bestfit');
-% print(gcf,'Fig14_JSAC_MATLAB','-dpng','-r300');
-hold off;
+p3 = plot(result.N20.DDPRate, result.N20.DDP, '-', 'LineWidth', linewidth, 'Marker', 's', 'MarkerSize', markersize, 'MarkerFaceColor', 'w'); hold on;
+p3.Color = colorDDP;
+
+p4 = plot(result.N32.BaselineRate, result.N32.Baseline, '--', 'LineWidth', linewidth, 'Marker', 'o', 'MarkerSize', markersize, 'MarkerFaceColor', 'w'); hold on;
+p4.Color = colorBaseline;
+
+p5 = plot(result.N32.DIPRate, result.N32.DIP, '--', 'LineWidth', linewidth); hold on;
+p5.Color = colorDIP;
+
+p6 = plot(result.N32.DDPRate, result.N32.DDP, '--', 'LineWidth', linewidth, 'Marker', 's', 'MarkerSize', markersize, 'MarkerFaceColor', 'w'); hold on;
+p6.Color = colorDDP;
+
+%-------------------------------------------------------------------
+% 坐标轴、图例、标注设置
+set(gca, 'FontSize', 16, 'FontName', 'Times New Roman');
+
+h_legend = legend('Baseline, $N=20$', 'DIP Scheme, $N=20$', 'DDP Scheme, $N=20$', ...
+                  'Baseline, $N=32$', 'DIP Scheme, $N=32$', 'DDP Scheme, $N=32$', ...
+                  'Interpreter', 'latex');
+
+legendsize = 12;
+set(h_legend, 'FontName', 'Times New Roman', 'FontSize', legendsize, 'FontWeight', 'normal', ...
+              'LineWidth', 1, 'Location', 'Best', 'NumColumns', 2);
+h_legend.Color = 'none';
+
+labelsize = 18;
+xlabel('Communication Rate [bps/s/Hz]', 'FontSize', labelsize, 'FontName', 'Times New Roman');
+ylabel('Normalized ELMMSE [dB]', 'FontSize', labelsize, 'FontName', 'Times New Roman');
+
+xlim([18 32]);
+ylim([-15 -9]);
+xticks(18:2:32);
+yticks(-15:1:-9);
+
+%----- Grid 设置----------------
+grid on;
+set(gca, 'GridLineStyle', '--', 'GridAlpha', 0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer', 'bottom');
+
+%--------- savefig-------------
+set(gca, 'Units', 'normalized');
+set(gca, 'Position', [0.11, 0.13, 0.87, 0.86]);
+
+print(gcf, 'Fig14_JSAC_MATLAB.pdf', '-dpdf', '-vector');
 
 %% ========================================================================
 % Local functions
