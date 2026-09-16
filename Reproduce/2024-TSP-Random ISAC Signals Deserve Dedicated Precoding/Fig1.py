@@ -114,7 +114,7 @@ for Nt in Nt_list:
 colors = ['#F65314', '#00A1F1', '#77AC30', '#8A2BE2', '#00A8BB', 'k']
 markers = ['s','v','d', 'o', '*', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '4', '8', 'H', '+', 'x', 'D']
 
-fig, axs = plt.subplots(1, 1, figsize=(8, 6), constrained_layout=True)
+fig, axs = plt.subplots(1, 1, figsize=(6.5, 4.5), constrained_layout=True)
 
 for iNt, Nt in enumerate(Nt_list):
     axs.plot(log2L_list, 10*np.log10(sim_result[Nt]), color=colors[iNt], linestyle='-', linewidth=2, marker=markers[iNt], ms=12, markerfacecolor='white', label=rf'$N={Nt}$', zorder=10-iNt)
@@ -123,30 +123,30 @@ for iNt, Nt in enumerate(Nt_list):
 # for iNt, Nt in enumerate(Nt_list):
 #     axs.plot(log2L_list, 10*np.log10(th_result[Nt]), color=colors[iNt], linestyle='--', linewidth=1.5, label=rf'Theory, $N_t={Nt}$')
 
-font1 = FontProperties(family='Times New Roman', style='normal', size=22)
+font1 = FontProperties(family='Times New Roman', style='normal', size=18)
 legend1 = axs.legend(loc='best', borderaxespad=0, edgecolor='black',  labelspacing=0.2, prop=font1)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
 frame1.set_facecolor('none')
 
-bw = 2
+bw = 1
 axs.spines['bottom'].set_linewidth(bw)
 axs.spines['left'].set_linewidth(bw)
 axs.spines['right'].set_linewidth(bw)
 axs.spines['top'].set_linewidth(bw)
 
-axs.set_xlabel(r'Frame Length', fontsize = 24)
-axs.set_ylabel(r'Approximation Error: $\left\|\mathbf{S}\mathbf{S}^{H}/L-\mathbf{I}\right\|_F^2$ [dB]')
+axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
+labels = axs.get_xticklabels()+axs.get_yticklabels()
+[label.set_fontname('Times New Roman') for label in labels]
+[label.set_fontsize(18) for label in labels]
+
+axs.set_xlabel(r'Frame Length', fontsize = 22)
+axs.set_ylabel(r'Approximation Error: $\left\|\mathbf{S}\mathbf{S}^{H}/L-\mathbf{I}\right\|_F^2$ [dB]',fontsize = 17)
 axs.set_xlim([2, 16])
 axs.set_ylim([-40, 20])
 axs.set_xticks(log2L_list)
-axs.set_xticklabels([rf'$2^{{{k}}}$' for k in log2L_list])
-axs.set_yticks(np.arange(-40, 21, 10))
-axs.tick_params(direction='in', axis='both', top=True, right=True, labelsize=16, width=bw)
-
-labels = axs.get_xticklabels()+axs.get_yticklabels()
-[label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(22) for label in labels]
+axs.set_yticks(np.arange(-40, 21, 10), )
+axs.set_xticklabels([rf'$2^{{{k}}}$' for k in log2L_list], fontsize = 18)
 
 axs.grid(linestyle=(0, (5, 10)), linewidth=0.5)
 
