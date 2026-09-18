@@ -317,7 +317,7 @@ h_legend = legend('Baseline, $L=20$', 'DIP Scheme, $L=20$', 'DDP Scheme, $L=20$'
                   'Baseline, $L=32$', 'DIP Scheme, $L=32$', 'DDP Scheme, $L=32$', ...
                   'Interpreter', 'latex');
 
-legendsize = 12;
+legendsize = 13;
 set(h_legend, 'FontName', 'Times New Roman', 'FontSize', legendsize, 'FontWeight', 'normal', ...
               'LineWidth', 1, 'Location', 'Best', 'NumColumns', 2);
 h_legend.Color = 'none';

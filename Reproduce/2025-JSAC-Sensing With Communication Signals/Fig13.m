@@ -197,15 +197,14 @@ p6 = plot(SNRdB,result.Nt64_N48.DDP,'--','LineWidth',linewidth,'Marker','s','Mar
 p6.Color = colorDDP;
 
 set(gca, 'FontSize',16,'FontName','Times New Roman');
-
 h_legend = legend('Water-Filling, $N=32,L=24$', 'DIP (SGP), $N=32,L=24$', 'DDP, $N=32,L=24$', ...
                   'Water-Filling, $N=64,L=48$', 'DIP (SGP), $N=64,L=48$', 'DDP, $N=64,L=48$', ...
                   'Interpreter','latex');
-legendsize = 11;
+legendsize = 12;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','Best','NumColumns',1);
 h_legend.Color = 'none';
 
-labelsize = 18;
+labelsize = 19;
 xlabel('Transmit SNR [dB]', 'FontSize',labelsize,'FontName','Times New Roman');
 ylabel('Normalized ELMMSE [dB]', 'FontSize',labelsize,'FontName','Times New Roman');
 
@@ -221,7 +220,6 @@ set(gca,'Units','normalized');
 set(gca,'Position',[0.11,0.13,0.87,0.86]);
 
 print(gcf,'Fig13_JSAC_MATLAB.pdf','-dpdf','-vector');
-
 hold off;
 
 
