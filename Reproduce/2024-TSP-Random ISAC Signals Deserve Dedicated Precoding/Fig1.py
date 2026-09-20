@@ -117,7 +117,7 @@ markers = ['s','v','d', 'o', '*', '>', '1', 'p', '2', 'h', 'P', '3', '|', 'X', '
 fig, axs = plt.subplots(1, 1, figsize=(6.5, 4.5), constrained_layout=True)
 
 for iNt, Nt in enumerate(Nt_list):
-    axs.plot(log2L_list, 10*np.log10(sim_result[Nt]), color=colors[iNt], linestyle='-', linewidth=2, marker=markers[iNt], ms=12, markerfacecolor='white', label=rf'$N={Nt}$', zorder=10-iNt)
+    axs.plot(log2L_list, 10*np.log10(sim_result[Nt]), color=colors[iNt], linestyle='-', linewidth=2, marker=markers[iNt], ms=8, markerfacecolor='white', label=rf'$N={Nt}$', zorder=10-iNt)
 
 # 如果需要同时画理论平均误差 Nt/L，可取消下面注释
 # for iNt, Nt in enumerate(Nt_list):

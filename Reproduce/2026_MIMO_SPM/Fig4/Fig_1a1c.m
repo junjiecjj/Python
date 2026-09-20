@@ -7,7 +7,6 @@ close all;
 rng(42); 
 addpath('./functions_2007TSP_OnProb');
 addpath('./functions_2008TSP_WaveformSynthesis');
-
 %% 问题(19)的SOCP求解, in "2007-TSP-On Probing Signal Design For MIMO Radar"
 N = 10;                       % 天线数
 c = ones(N, 1);                % 对角元固定值
@@ -39,8 +38,7 @@ for i = 1:length(theta_grid)
     P_opt0(i) = real(a_theta' * R_opt0 * a_theta);
 end
 
-rho = 1;
-
+rho = 2;
 %%  Optimal R in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
 L  = 256;
 X_optR = WaveformSynthesisXoptimR(R_opt0, L, rho );
@@ -62,10 +60,26 @@ for i = 1:length(theta_grid)
     P_opt2(i) = real(a_theta' * Rhat2 * a_theta);
 end
 
+
+
+
+%%  PAR < rho in "2008-TSP-Waveform Synthesis for Diversity-Based Transmit Beampattern Design"
+rho = 1;
+X_par = WaveformSynthesisXwithPAR(R_opt0, L, rho);
+Rhat2 = X_par * X_par'/L;
+P_opt3 = zeros(size(theta_grid));
+for i = 1:length(theta_grid)
+    a_theta = a(theta_grid(i));
+    P_opt3(i) = real(a_theta' * Rhat2 * a_theta);
+end
+
+
+
+
 %% 可选：绘制发射波束图对比
 
 %% ===========================================
-width = 6;%设置图宽，这个不用改
+width = 7;%设置图宽，这个不用改
 height = 4;%设置图高，这个不用改
 fontsize = 18;%设置图中字体大小
 linewidth = 2;%设置线宽，一般大小为2，好看些。1是默认大小
@@ -88,44 +102,106 @@ set(gcf, 'PaperSize', [width, height]);
 
 p1 = plot(theta_grid, p_des, 'k--', 'LineWidth', 2); hold on;
 
-p2 = plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1); hold on;
-p2.Color = '#A9A9A9';
+plot(theta_grid, P_opt0, 'r-', 'LineWidth', 1, 'Color', '#A9A9A9'); hold on;
+%p2.Color = '#A9A9A9';
 
-p3 = plot(theta_grid, P_opt1, 'r--', 'LineWidth', 2); hold on;
-p3.Color = '#F65314';
+plot(theta_grid, P_opt1, 'r--', 'LineWidth', 2, 'Color', '#F65314'); hold on;
+%p3.Color = '#F65314';
 
-p4 = plot(theta_grid, P_opt2, 'b:', 'LineWidth', 2); hold on;
-p4.Color = '#00A1F1';
+plot(theta_grid, P_opt3, ':', 'LineWidth', 2, 'Color', '#8A2BE2'); hold on;
+%p4.Color = '#00A1F1';
+
+plot(theta_grid, P_opt2, 'b:', 'LineWidth', 2, 'Color', '#00A1F1'); hold on;
+%p4.Color = '#00A1F1';
 
 % 设置坐标轴的数字大小，包括xlabel/ylabel文字(坐标轴标注)大小.同时影响图例、标题等,除非它们被单独设置。
 % 所以一开始就使用这行先设置刻度字体字号，然后在后面在单独设置坐标轴标注、图例、标题等的 字体字号。
-set(gca, 'FontSize',14,'FontName','Times New Roman');
+set(gca, 'FontSize',18,'FontName','Times New Roman');
 
 h_legend = legend('Desired', ...
                   'Optimized, $w_c$=0',...
                   'AO:strict R',...
-                  'AO:PAPR = 1',...
+                  'AO:PAPR $=$ 1',...
+                  'AO:PAPR $\leq$ 2',...
                   'Interpreter', 'latex'...
                   );  %图例，与上面的曲线先后对应
 h_legend.Color = 'none';
 legendsize = 12;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1, 'Location','NorthEast');
-
-labelsize = 18;
+labelsize = 20;
 xlabel('$\theta^{\circ}$', 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 ylabel("Beampattern", 'FontSize', labelsize, 'FontName', 'Times New Roman', 'Interpreter', 'latex');
 
 xlim([-90 90]);         % 横纵坐标范围
 xticks(-90:20:90); 
+ylim([0 22]); 
+set(get(gca, 'XAxis'), 'FontSize', 18);  % 调整坐标轴刻度标签（tick labels）的字体大小
+set(get(gca, 'YAxis'), 'FontSize', 18);
 %----- Grid 设置----------------
 grid on;
 set(gca,'GridLineStyle', '--', 'Gridalpha',0.2, 'LineWidth', 1, 'GridLineWidth', 0.5, 'Layer','bottom');
-% set(get(gca, 'XAxis'), 'FontSize', 12);  % 调整坐标轴刻度标签（tick labels）的字体大小
-% set(get(gca, 'YAxis'), 'FontSize', 12);
+
 %--------- savefig-------------
 set(gca, 'Units', 'normalized');
-set(gca, 'Position', [0.1, 0.11, 0.87, 0.86]);
-print(gcf, 'Fig_4_1a.pdf', '-dpdf', '-vector');
+set(gca, 'Position', [0.1, 0.135, 0.87, 0.86]);
+print(gcf, 'Fig_4_1a1c.pdf', '-dpdf', '-vector');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
