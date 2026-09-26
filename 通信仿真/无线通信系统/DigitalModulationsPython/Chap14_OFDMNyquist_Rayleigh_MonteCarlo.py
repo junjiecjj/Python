@@ -87,7 +87,7 @@ np.random.seed(42)
 nSym = 2000
 EbN0dBs = np.arange(start=-4,stop=25,step=4)
 MOD_TYPE = "psk"    ## "pam" "psk",   "fsk" is not suitable.
-arrayOfOrder = [2,  8, 32]
+arrayOfOrder = [2,  8, 16, 32]
 
 MOD_TYPE = "qam"
 arrayOfOrder = [4, 16, 64,]
@@ -102,7 +102,7 @@ span = 4
 L = 5
 
 # Generate the transmit SRRC pulse and its receive matched filter
-p_t,t,filtDelay = srrcFunction(beta,Q,span)
+p_t, t, filtDelay = srrcFunction(beta,Q,span)
 p_r = np.conj(p_t[::-1])
 Lp = p_t.size
 Lr = p_r.size
@@ -112,7 +112,7 @@ Lc = Lp+L+Lr-2
 n0 = 0
 Leq = int(np.floor((Lc-1-n0)/Q)+1)
 Ncp = Leq-1
-M = N+Ncp
+M = N + Ncp
 
 if Ncp > N:
     raise ValueError('Ncp must not exceed N. Increase N or shorten the pulse/channel memory.')
@@ -165,7 +165,7 @@ for indexOrder,Order in enumerate(arrayOfOrder):
 
             # OFDM modulation and CP insertion
             x = scipy.fft.ifft(X,N)
-            x_cp = add_cyclic_prefix(x,Ncp)
+            x_cp = add_cyclic_prefix(x, Ncp)
 
             # Manual Q-fold upsampling
             x_up = np.zeros(Q*M,dtype=complex)
@@ -176,7 +176,7 @@ for indexOrder,Order in enumerate(arrayOfOrder):
 
             # Known complex frequency-selective Rayleigh channel with deterministic ensemble normalization
             h = (np.random.randn(L)+1j*np.random.randn(L))/np.sqrt(2*channelNormalization)
-            c = np.convolve(np.convolve(p_t,h),p_r)
+            c = np.convolve(np.convolve(p_t, h), p_r)
             h_eq = c[n0::Q]
 
             # Physical linear convolution through the random multipath channel
@@ -186,33 +186,33 @@ for indexOrder,Order in enumerate(arrayOfOrder):
             # its subcarrier variance is N*noiseVarianceHighRate = AvgEnergy/EsN0.
             noiseVarianceHighRate = AvgEnergy/(N*EsN0)
             noise = np.sqrt(noiseVarianceHighRate/2)*(np.random.randn(r_noiseless.size)+1j*np.random.randn(r_noiseless.size))
-            r = r_noiseless+noise
+            r = r_noiseless + noise
 
             # Communication receive matched filter by linear convolution
-            z = np.convolve(r,p_r,mode='full')
+            z = np.convolve(r, p_r,mode='full')
 
             # Manual Q-fold downsampling from n0
             outputLength = M+Leq-1
             r_d = z[n0:n0+Q*outputLength:Q]
 
             # Remove the symbol-rate CP
-            y = remove_cyclic_prefix(r_d,Ncp,N)
+            y = remove_cyclic_prefix(r_d, Ncp, N)
 
             # FFT and ideal one-tap frequency-domain equalization
-            Y = scipy.fft.fft(y,N)
-            H_eq = scipy.fft.fft(h_eq,N)
+            Y = scipy.fft.fft(y, N)
+            H_eq = scipy.fft.fft(h_eq, N)
             X_hat = Y/H_eq
 
             # Verify the noiseless complete-link identities in the first block
             if indexOrder == 0 and indexSNR == 0 and indexBlock == 0:
-                z_noiseless = np.convolve(r_noiseless,p_r,mode='full')
+                z_noiseless = np.convolve(r_noiseless, p_r, mode='full')
                 r_d_noiseless = z_noiseless[n0:n0+Q*outputLength:Q]
-                y_noiseless = remove_cyclic_prefix(r_d_noiseless,Ncp,N)
-                y_circular = cconv(h_eq,x,N)
-                X_noiseless_hat = scipy.fft.fft(y_noiseless,N)/H_eq
-                equivalentChannelError = np.linalg.norm(r_d_noiseless-np.convolve(x_cp,h_eq,mode='full'))
-                circularizationError = np.linalg.norm(y_noiseless-y_circular)
-                noiselessRecoveryError = np.linalg.norm(X_noiseless_hat-X)
+                y_noiseless = remove_cyclic_prefix(r_d_noiseless, Ncp, N)
+                y_circular = cconv(h_eq, x, N )
+                X_noiseless_hat = scipy.fft.fft(y_noiseless, N)/H_eq
+                equivalentChannelError = np.linalg.norm(r_d_noiseless-np.convolve(x_cp, h_eq, mode='full'))
+                circularizationError = np.linalg.norm(y_noiseless - y_circular)
+                noiselessRecoveryError = np.linalg.norm(X_noiseless_hat - X)
                 print(f'\n    Equivalent channel error = {equivalentChannelError:.3e}')
                 print(f'    CP circularization error = {circularizationError:.3e}')
                 print(f'    Noiseless recovery error = {noiselessRecoveryError:.3e}\n')

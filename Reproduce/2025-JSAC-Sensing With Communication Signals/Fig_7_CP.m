@@ -21,7 +21,7 @@ Q = length(targetRange);            % 目标数量
 Iter = 1000;                        % 蒙特卡洛实验次数
 
 %% Discrete waveform parameters
-N = 4096;                           % 一个OFDM块中的子载波数，也等于IFFT输出样本数
+N = 1024;                           % 一个OFDM块中的子载波数，也等于IFFT输出样本数
 L = 20;                             % pulse shaping的过采样倍数，每个符号对应L个高采样率样本
 alpha = 0.35;                       % RRC脉冲的滚降系数
 span = 20;                          % RRC脉冲的截断长度，单位为符号周期

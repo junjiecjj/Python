@@ -47,7 +47,7 @@ def remove_cyclic_prefix(r, Ncp, N):
 
 L = 10              ## Number of taps for the frequency selective channel model
 
-nSym = 10000
+nSym = 1000
 EbN0dBs = np.arange(-2, 26, 2)
 MOD_TYPE = "psk"    ## "pam" "psk",   "fsk" is not suitable.
 arrayOfM = [2, 4, 8, 16, 32]
@@ -131,7 +131,9 @@ for m, M in enumerate(arrayOfM):
     handles_simu.append(h_simu)
     labels_simu.append('Simu')
 
-axs.grid(linestyle=(0, (5, 10)), linewidth=0.5, )
+# axs.grid(linestyle=(0, (5, 10)), linewidth=0.5, )
+axs.grid(linestyle=(0, (5, 10)), linewidth=0.5, which='both',)
+
 axs.set_ylim(1e-3, 1)
 axs.set_xlabel( r'$E_b/N_0$(dB)',)
 axs.set_ylabel('SER',)
@@ -158,7 +160,7 @@ labels = axs.get_xticklabels()+axs.get_yticklabels()
 
 # axs.set_title(f"M{MOD_TYPE.upper()}-CP-OFDM over Freq Selective Rayleigh")
 out_fig = plt.gcf()
-out_fig.savefig('/home/jack/文档/ShareFileSysu/我的论文/ISAC_Nyquist/Figures/QAM_Rayleigh.pdf', bbox_inches='tight')
+out_fig.savefig('/home/jack/文档/ShareFileSysu/我的论文/2026_ISAC_Nyquist/ISAC_Nyquist/Figures/QAM_Rayleigh.pdf', bbox_inches='tight')
 plt.show()
 plt.close()
 
