@@ -18,29 +18,31 @@
 % 说明：
 %   这里直接使用“理论协方差矩阵”构造 STAP 权重，用于清楚展示
 %   STAP 的基本原理。实际系统中通常需由邻近训练距离单元估计协方差矩阵。
-
 clear;
 clc;
 close all;
+
+% 图中文字使用支持中文的字体
+chineseFont = 'Noto Sans CJK SC';
+set(groot, 'DefaultAxesFontName', chineseFont);
+set(groot, 'DefaultTextFontName', chineseFont);
 
 %% 1. 基本参数
 
 N = 16;                         % 阵元数
 M = 16;                         % 相干处理脉冲数
 NM = N * M;                     % 空时维数
-
 lambda = 0.03;                  % 工作波长 / m
 d = lambda / 2;                 % 阵元间距 / m
 v = 60;                         % 平台速度 / (m/s)
 Tr = 1e-4;                      % 脉冲重复周期 PRI / s
 
 % 归一化杂波脊斜率：
-% nu_c = beta * u
-% 其中 u = (d/lambda) sin(theta)，nu = f_d Tr
+% nu_c = beta * u, 其中 u = (d/lambda) sin(theta)，nu = f_d Tr
 beta = 2 * v * Tr / d;
 
 % 目标参数
-thetaTargetDeg = 10;            % 目标角度 / deg
+thetaTargetDeg = 40;            % 目标角度 / deg
 nuTarget = 0.32;                % 目标归一化多普勒频率 / cycles per PRI
 
 % 噪声、杂波和干扰功率参数
@@ -60,7 +62,6 @@ angleScanDeg = -90:1:90;
 nuScan = -0.5:0.005:0.5;
 
 %% 2. 目标空时导向矢量
-
 aTarget = spatialSteeringVector(N, d, lambda, thetaTargetDeg);
 bTarget = dopplerSteeringVector(M, nuTarget);
 
@@ -68,11 +69,9 @@ bTarget = dopplerSteeringVector(M, nuTarget);
 sTarget = kron(aTarget, bTarget);
 
 %% 3. 白噪声协方差矩阵
-
 Rn = noisePower * eye(NM);
 
 %% 4. 杂波协方差矩阵
-
 % 旁视阵列、静止地面杂波条件下：
 %   u(theta) = (d/lambda) sin(theta)
 %   nu_c(theta) = beta * u(theta)
@@ -82,46 +81,32 @@ clutterDoppler = beta * clutterSpatialFreq;
 % 将总杂波功率均匀分配到所有独立杂波块
 totalClutterPower = noisePower * 10^(CNRdB / 10);
 clutterPatchPower = totalClutterPower / numClutterPatches;
-
 Vclutter = zeros(NM, numClutterPatches);
-
 for k = 1:numClutterPatches
-    aClutter = spatialSteeringVector( ...
-        N, d, lambda, clutterAngleDeg(k));
-
-    bClutter = dopplerSteeringVector( ...
-        M, clutterDoppler(k));
-
+    aClutter = spatialSteeringVector( N, d, lambda, clutterAngleDeg(k));
+    bClutter = dopplerSteeringVector( M, clutterDoppler(k));
     Vclutter(:, k) = kron(aClutter, bClutter);
 end
 
 % 各杂波块相互不相关且等功率：
-%   Rc = sum_k sigma_c,k^2 s_c,k s_c,k^H
-%      = sigma_c^2 Vc Vc^H
+%   Rc = sum_k sigma_c,k^2 s_c,k s_c,k^H = sigma_c^2 Vc Vc^H
 Rc = clutterPatchPower * (Vclutter * Vclutter');
 
 % 数值上强制 Hermitian，对理论结果无影响
 Rc = (Rc + Rc') / 2;
 
 %% 5. 宽带压制式干扰机协方差矩阵
-
 % 对于第 q 个宽带压制式干扰机：
 %   Rj,q = Pj (a_j a_j^H) \otimes I_M
 %
 % 该模型表示：
 %   - 空间上来自固定到达角；
 %   - 慢时间上近似白，因此会占据该角度处的一整条多普勒方向。
-
 Rj = zeros(NM);
-
 jammerPower = noisePower * 10^(JNRdB / 10);
-
 for q = 1:numel(jammerAngleDeg)
-    aJammer = spatialSteeringVector( ...
-        N, d, lambda, jammerAngleDeg(q));
-
-    Rj = Rj + jammerPower * ...
-        kron(aJammer * aJammer', eye(M));
+    aJammer = spatialSteeringVector(N, d, lambda, jammerAngleDeg(q));
+    Rj = Rj + jammerPower * kron(aJammer * aJammer', eye(M));
 end
 
 Rj = (Rj + Rj') / 2;
@@ -130,16 +115,12 @@ Rj = (Rj + Rj') / 2;
 
 Rcase = cell(4, 1);
 caseName = cell(4, 1);
-
 Rcase{1} = Rn;
 caseName{1} = '仅白噪声';
-
 Rcase{2} = Rn + Rc;
 caseName{2} = '白噪声 + 杂波';
-
 Rcase{3} = Rn + Rj;
 caseName{3} = '白噪声 + 干扰机';
-
 Rcase{4} = Rn + Rc + Rj;
 caseName{4} = '白噪声 + 杂波 + 干扰机';
 
@@ -147,24 +128,17 @@ caseName{4} = '白噪声 + 杂波 + 干扰机';
 
 Wstap = cell(4, 1);
 responseDB = cell(4, 1);
-
 for iCase = 1:4
-
     R = Rcase{iCase};
 
-    % 最大输出 SINR 的权重方向为：
-    %   w \propto R^{-1} s0
+    % 最大输出 SINR 的权重方向为： w \propto R^{-1} s0
     %
-    % 加入无失真约束 w^H s0 = 1 后，得到 MVDR/STAP 权重：
-    %   w = R^{-1}s0 / (s0^H R^{-1}s0)
+    % 加入无失真约束 w^H s0 = 1 后，得到 MVDR/STAP 权重： w = R^{-1}s0 / (s0^H R^{-1}s0)
     %
     % 使用反斜杠求解线性方程，避免显式计算 inv(R)。
     x = R \ sTarget;
     Wstap{iCase} = x / (sTarget' * x);
-
-    response = computeSpaceTimeResponse( ...
-        Wstap{iCase}, N, M, d, lambda, ...
-        angleScanDeg, nuScan);
+    response = computeSpaceTimeResponse(Wstap{iCase}, N, M, d, lambda, angleScanDeg, nuScan);
 
     % 因为采用 w^H s0 = 1 的归一化，理论目标响应为 0 dB。
     responseDB{iCase} = 20 * log10(max(response, eps));
@@ -173,69 +147,56 @@ end
 
 %% 8. 绘制四种场景的角度-多普勒响应
 
-figure('Color', 'w');
-
+fig1 = figure('Color', 'w', 'Units', 'pixels', 'Position', [100, 100, 1150, 780]);
+layout1 = tiledlayout(fig1, 2, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
 for iCase = 1:4
-
-    subplot(2, 2, iCase);
-
-    imagesc(angleScanDeg, nuScan, responseDB{iCase});
-    axis xy;
-    axis tight;
-
-    xlabel('角度 \theta / deg');
-    ylabel('归一化多普勒 \nu = f_d T_r');
-    title(caseName{iCase});
-    colorbar;
-    caxis([-80, 0]);
-
-    hold on;
+    ax = nexttile(layout1);
+    imagesc(ax, angleScanDeg, nuScan, responseDB{iCase});
+    axis(ax, 'xy');
+    axis(ax, 'tight');
+    ax.FontSize = 11;
+    xlabel(ax, '角度 \theta / deg', 'FontName', chineseFont, 'Interpreter', 'tex', 'FontSize', 13);
+    ylabel(ax, '$\nu=f_{\mathrm{d}}T_{\mathrm{r}}$', 'Interpreter', 'latex', 'FontSize', 13);
+    title(ax, caseName{iCase}, 'FontSize', 14);
+    cb = colorbar(ax);
+    cb.FontSize = 11;
+    caxis(ax, [-80, 0]);
+    hold(ax, 'on');
 
     % 标出目标位置
-    plot(thetaTargetDeg, nuTarget, 'wo', ...
-        'MarkerSize', 7, 'LineWidth', 1.5);
+    plot(ax, thetaTargetDeg, nuTarget, 'ro', 'MarkerSize', 7, 'LineWidth', 1.5);
 
     % 对含杂波的场景叠加理论杂波脊
     if iCase == 2 || iCase == 4
         nuRidge = beta * (d / lambda) * sind(angleScanDeg);
-
         validIndex = abs(nuRidge) <= 0.5;
-
-        plot(angleScanDeg(validIndex), ...
-             nuRidge(validIndex), ...
-             'w--', 'LineWidth', 1.0);
+        plot(ax, angleScanDeg(validIndex), nuRidge(validIndex), 'w--', 'LineWidth', 1.0);
     end
 
     % 对含干扰机的场景标出干扰机到达角
     if iCase == 3 || iCase == 4
         for q = 1:numel(jammerAngleDeg)
-            xline(jammerAngleDeg(q), 'w:', ...
-                'LineWidth', 1.0);
+            xline(ax, jammerAngleDeg(q), 'w:', 'LineWidth', 1.0);
         end
     end
 
-    hold off;
+    hold(ax, 'off');
 end
 
-sgtitle('图1  STAP 在不同干扰环境下的角度-多普勒二维响应');
+title(layout1, 'STAP 在不同干扰环境下的角度-多普勒二维响应', 'FontName', chineseFont, 'FontSize', 15);
+fontname(fig1, chineseFont);
+drawnow;
+exportgraphics(layout1, 'STAP_图1.png', 'Resolution', 600, 'BackgroundColor', 'white');
+pngToPdf('STAP_图1.png', 'STAP_图1.pdf', 600);
 
 %% 9. 图2：均匀空时匹配与 Chebyshev 空时加窗对比
-
 % 这一部分不是 STAP 的协方差自适应权重设计，而是固定空时加窗。
 % 其目的与经典示例中的第二幅图一致：比较不加窗与 Chebyshev 加窗
-% 后的角度-多普勒二维旁瓣特性。
-%
-% 未加窗空时匹配权重：
-%   w_uniform = s0 / (s0^H s0)
-%
-% 空时 Chebyshev 窗：
-%   g = g_space \otimes g_time
-%
-% 加窗后：
-%   w_cheb ∝ s0 .* g
-%
+% 后的角度-多普勒二维旁瓣特性。 
+% 未加窗空时匹配权重： w_uniform = s0 / (s0^H s0) 
+% 空时 Chebyshev 窗： g = g_space \otimes g_time 
+% 加窗后： w_cheb ∝ s0 .* g 
 % 两种权重都归一化到目标方向单位增益，便于公平比较。
-
 % 未加窗的空时匹配权重
 wUniform = sTarget / (sTarget' * sTarget);
 
@@ -253,44 +214,45 @@ wChebRaw = sTarget .* spaceTimeWindow;
 wCheb = wChebRaw / (sTarget' * wChebRaw);
 
 % 计算未加窗和加窗后的二维响应
-responseUniform = computeSpaceTimeResponse( ...
-    wUniform, N, M, d, lambda, angleScanDeg, nuScan);
-
-responseCheb = computeSpaceTimeResponse( ...
-    wCheb, N, M, d, lambda, angleScanDeg, nuScan);
-
+responseUniform = computeSpaceTimeResponse(wUniform, N, M, d, lambda, angleScanDeg, nuScan);
+responseCheb = computeSpaceTimeResponse(wCheb, N, M, d, lambda, angleScanDeg, nuScan);
 responseUniformDB = 20 * log10(max(responseUniform, eps));
 responseChebDB = 20 * log10(max(responseCheb, eps));
-
 responseUniformDB(responseUniformDB < -80) = -80;
 responseChebDB(responseChebDB < -80) = -80;
+fig2 = figure('Color', 'w', 'Units', 'pixels', 'Position', [150, 120, 1200, 580]);
+layout2 = tiledlayout(fig2, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+ax = nexttile(layout2);
+imagesc(ax, angleScanDeg, nuScan, responseUniformDB);
+axis(ax, 'xy');
+axis(ax, 'tight');
+ax.FontSize = 11;
+xlabel(ax, '角度 \theta / deg', 'FontName', chineseFont, 'Interpreter', 'tex', 'FontSize', 13);
+ylabel(ax, '$\nu=f_{\mathrm{d}}T_{\mathrm{r}}$', 'Interpreter', 'latex', 'FontSize', 13);
+title(ax, '均匀空时匹配', 'FontSize', 14);
+cb = colorbar(ax);
+cb.FontSize = 11;
+caxis(ax, [-80, 0]);
 
-figure('Color', 'w');
+ax = nexttile(layout2);
+imagesc(ax, angleScanDeg, nuScan, responseChebDB);
+axis(ax, 'xy');
+axis(ax, 'tight');
+ax.FontSize = 11;
+xlabel(ax, '角度 \theta / deg', 'FontName', chineseFont, 'Interpreter', 'tex', 'FontSize', 13);
+ylabel(ax, '$\nu=f_{\mathrm{d}}T_{\mathrm{r}}$', 'Interpreter', 'latex', 'FontSize', 13);
+title(ax, 'Chebyshev 空时加窗', 'FontSize', 14);
+cb = colorbar(ax);
+cb.FontSize = 11;
+caxis(ax, [-80, 0]);
 
-subplot(1, 2, 1);
-imagesc(angleScanDeg, nuScan, responseUniformDB);
-axis xy;
-axis tight;
-xlabel('角度 \theta / deg');
-ylabel('归一化多普勒 \nu = f_d T_r');
-title('均匀空时匹配');
-colorbar;
-caxis([-80, 0]);
-
-subplot(1, 2, 2);
-imagesc(angleScanDeg, nuScan, responseChebDB);
-axis xy;
-axis tight;
-xlabel('角度 \theta / deg');
-ylabel('归一化多普勒 \nu = f_d T_r');
-title('Chebyshev 空时加窗');
-colorbar;
-caxis([-80, 0]);
-
-sgtitle('图2  空时 Chebyshev 加窗前后的二维响应对比');
+title(layout2, '空时 Chebyshev 加窗前后的二维响应对比', 'FontName', chineseFont, 'FontSize', 15);
+fontname(fig2, chineseFont);
+drawnow;
+exportgraphics(layout2, 'STAP_图2.png', 'Resolution', 600, 'BackgroundColor', 'white');
+pngToPdf('STAP_图2.png', 'STAP_图2.pdf', 600);
 
 %% 10. 输出 SINR 对比
-
 % 组合场景：白噪声 + 杂波 + 干扰机
 Rin = Rn + Rc + Rj;
 
@@ -302,37 +264,27 @@ wSTAP = Wstap{4};
 
 % 设目标功率为 1，则输出 SINR 为：
 %   SINR_out = |w^H s0|^2 / (w^H Rin w)
-sinrMatched = abs(wMatched' * sTarget)^2 / ...
-    real(wMatched' * Rin * wMatched);
-
-sinrSTAP = abs(wSTAP' * sTarget)^2 / ...
-    real(wSTAP' * Rin * wSTAP);
-
+sinrMatched = abs(wMatched' * sTarget)^2 / real(wMatched' * Rin * wMatched);
+sinrSTAP = abs(wSTAP' * sTarget)^2 / real(wSTAP' * Rin * wSTAP);
 fprintf('--------------------------------------------------\n');
 fprintf('组合场景输出 SINR 对比\n');
 fprintf('常规空时匹配权重： %.2f dB\n', 10 * log10(sinrMatched));
 fprintf('STAP 最优权重：     %.2f dB\n', 10 * log10(sinrSTAP));
-fprintf('STAP SINR 增益：    %.2f dB\n', ...
-    10 * log10(sinrSTAP / sinrMatched));
+fprintf('STAP SINR 增益：    %.2f dB\n', 10 * log10(sinrSTAP / sinrMatched));
 fprintf('--------------------------------------------------\n');
 
 %% 局部函数
 
 function a = spatialSteeringVector(N, d, lambda, thetaDeg)
 %SPATIALSTEERINGVECTOR 生成 ULA 空间导向矢量
-%
 %   a(theta) =
 %   [1, exp(j2piu), ..., exp(j2pi(N-1)u)]^T
-%
 %   其中：
 %       u = (d/lambda) sin(theta)
-
     elementIndex = (0:N-1).';
     u = (d / lambda) * sind(thetaDeg);
-
     a = exp(1j * 2 * pi * elementIndex * u);
 end
-
 
 function b = dopplerSteeringVector(M, nu)
 %DOPPLERSTEERINGVECTOR 生成慢时间多普勒导向矢量
@@ -341,41 +293,75 @@ function b = dopplerSteeringVector(M, nu)
 %   [1, exp(j2pinu), ..., exp(j2pi(M-1)nu)]^T
 %
 %   nu = f_d Tr 为归一化多普勒频率，单位为 cycles per PRI。
-
     pulseIndex = (0:M-1).';
-
     b = exp(1j * 2 * pi * pulseIndex * nu);
 end
 
-
-function response = computeSpaceTimeResponse( ...
-    w, N, M, d, lambda, angleScanDeg, nuScan)
-%COMPUTESPACETIMERESPONSE 计算角度-多普勒二维空时响应
-%
-%   response(iNu,iTheta)
-%       = |w^H s(theta_i,nu_j)|
-%
-%   其中：
-%       s(theta,nu) = a(theta) \otimes b(nu)
-
+function response = computeSpaceTimeResponse(w, N, M, d, lambda, angleScanDeg, nuScan)
+%COMPUTESPACETIMERESPONSE 计算角度-多普勒二维空时响应 
+%   response(iNu,iTheta) = |w^H s(theta_i,nu_j)| 
+%   其中： s(theta,nu) = a(theta) \otimes b(nu)
     numAngle = numel(angleScanDeg);
     numDoppler = numel(nuScan);
-
     response = zeros(numDoppler, numAngle);
 
     % 预先构造所有慢时间多普勒导向矢量
     pulseIndex = (0:M-1).';
     Bscan = exp(1j * 2 * pi * pulseIndex * nuScan);
-
     for iAngle = 1:numAngle
-
-        aScan = spatialSteeringVector( ...
-            N, d, lambda, angleScanDeg(iAngle));
+        aScan = spatialSteeringVector(N, d, lambda, angleScanDeg(iAngle));
 
         % Sscan 的每一列分别为：
         %   a(theta_i) \otimes b(nu_j)
         Sscan = kron(aScan, Bscan);
-
         response(:, iAngle) = abs(w' * Sscan).';
     end
+end
+
+% 将已经裁切的 PNG 原样嵌入 PDF，页面大小严格匹配图像。
+% PDF 不再依赖字体嵌入，也不会增加页面底部空白。
+function pngToPdf(pngFile, pdfFile, dpi)
+    I = imread(pngFile);
+    [height, width, channels] = size(I);
+    if channels ~= 3 || ~isa(I, 'uint8')
+        error('PNG 导出结果应为 8 位 RGB 图像。');
+    end
+
+    pageWidth = 72 * width / dpi;
+    pageHeight = 72 * height / dpi;
+    imageBytes = reshape(permute(I, [3, 2, 1]), [], 1);
+    content = sprintf('q\n%.8f 0 0 %.8f 0 0 cm\n/Im0 Do\nQ\n', pageWidth, pageHeight);
+    fid = fopen(pdfFile, 'wb');
+    if fid < 0
+        error('无法写入 PDF 文件：%s', pdfFile);
+    end
+
+    closeFile = onCleanup(@() fclose(fid));
+    fprintf(fid, '%%PDF-1.4\n');
+    offsets = zeros(1, 5);
+    offsets(1) = ftell(fid);
+    fprintf(fid, '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    offsets(2) = ftell(fid);
+    fprintf(fid, '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+    offsets(3) = ftell(fid);
+    fprintf(fid, ['3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %.8f %.8f] ' ...
+        '/Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>\nendobj\n'], ...
+        pageWidth, pageHeight);
+    offsets(4) = ftell(fid);
+    fprintf(fid, '4 0 obj\n<< /Length %d >>\nstream\n', numel(uint8(content)));
+    fwrite(fid, uint8(content), 'uint8');
+    fprintf(fid, '\nendstream\nendobj\n');
+    offsets(5) = ftell(fid);
+    fprintf(fid, ['5 0 obj\n<< /Type /XObject /Subtype /Image /Width %d /Height %d ' ...
+        '/ColorSpace /DeviceRGB /BitsPerComponent 8 /Length %d >>\nstream\n'], ...
+        width, height, numel(imageBytes));
+    fwrite(fid, imageBytes, 'uint8');
+    fprintf(fid, '\nendstream\nendobj\n');
+    xrefStart = ftell(fid);
+    fprintf(fid, 'xref\n0 6\n0000000000 65535 f \n');
+    for objectIndex = 1:5
+        fprintf(fid, '%010d 00000 n \n', offsets(objectIndex));
+    end
+
+    fprintf(fid, 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n', xrefStart);
 end

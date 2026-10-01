@@ -1,0 +1,26 @@
+function  [P_omega,P_gamma]=P_PM(Ru11,Ru22,Ru21,ne,K)
+%Ru11:阵列1输出自相关矩阵
+%Ru22:阵列2输出自相关矩阵
+%Ru21:阵列2和1输出互相关矩阵
+%ne：噪声功率
+%K：目标数
+    [U,~]=size(Ru22);
+    R=[Ru11-ne*eye(U);Ru21';Ru21;Ru22-ne*eye(U)];
+    R=Lowr(R,K);%去噪
+    PM1=R(K+1:end,:)*pinv(R(1:K,:));
+    PM=[eye(K);PM1];
+    P1=PM(1:2*U,:);
+    P2=PM(2*U+1:end,:);
+    PM2=pinv(P1)*P2;
+    [V0,D]=eig(PM2);
+    d=diag(D);
+    V=PM1*V0;
+    V=V./(V(1,:));
+    V1=V([1:U-1,U+1:end-1],:);
+    V2=V([2:U,U+2:end],:);
+    gamma0=angle(d).';%短轴角度
+    PM3=pinv(V1)*V2;
+    omega0=angle(diag(PM3));%长轴角度
+    [P_omega,ii]=sort(omega0.');
+    P_gamma=gamma0(ii);
+end

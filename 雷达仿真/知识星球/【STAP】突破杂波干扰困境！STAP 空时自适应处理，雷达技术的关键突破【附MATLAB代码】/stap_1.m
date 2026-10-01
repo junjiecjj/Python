@@ -134,7 +134,6 @@ v_jammer = sqrt(jammerPower)*kron(b_jammer, a_jammer);
 % 当前代码把干扰机建模为“固定角度 + 固定多普勒”的秩 1 点干扰
 Rj = v_jammer*v_jammer';
 
-
 %% (5) R：杂波、干扰机和噪声构成的总干扰加噪声协方差矩阵
 R = Rc + Rj + Rn;
 
@@ -148,7 +147,6 @@ plot(10*log10(diag(S)));
 xlabel('特征值序号');
 ylabel('特征值 / dB');
 title('干扰加噪声协方差矩阵特征值谱');
-
 
 %% (6) 空时 DBF 功率谱与 Capon/MVDR 功率谱
 % 对应文献 [1] Eq. (3.16) 与 Eq. (3.18)
