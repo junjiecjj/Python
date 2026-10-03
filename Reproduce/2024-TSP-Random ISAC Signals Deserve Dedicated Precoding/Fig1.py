@@ -151,5 +151,6 @@ axs.set_xticklabels([rf'$2^{{{k}}}$' for k in log2L_list], fontsize = 18)
 axs.grid(linestyle=(0, (5, 10)), linewidth=0.5)
 
 plt.savefig('Fig1_sample_covariance.pdf')
+plt.savefig('Fig1_sample_covariance.png', dpi = 1000)
 plt.show()
 plt.close()

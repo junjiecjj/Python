@@ -36,8 +36,7 @@ def simulate_received_signal():
 
     for theta, phi in TARGETS:
         a = steering_vector(theta, phi, array_positions)
-        signal = (np.random.randn(1, NUM_SNAPSHOTS) +
-                  1j * np.random.randn(1, NUM_SNAPSHOTS))
+        signal = (np.random.randn(1, NUM_SNAPSHOTS) + 1j * np.random.randn(1, NUM_SNAPSHOTS))
         X += a[:, None] @ signal
 
     noise = (np.random.randn(num_elements, NUM_SNAPSHOTS) +

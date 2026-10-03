@@ -28,7 +28,6 @@ set(groot, 'DefaultAxesFontName', chineseFont);
 set(groot, 'DefaultTextFontName', chineseFont);
 
 %% 1. 基本参数
-
 N = 16;                         % 阵元数
 M = 16;                         % 相干处理脉冲数
 NM = N * M;                     % 空时维数

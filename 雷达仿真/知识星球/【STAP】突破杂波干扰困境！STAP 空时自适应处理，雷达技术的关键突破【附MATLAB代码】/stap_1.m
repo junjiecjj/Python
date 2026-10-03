@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 目的：               旁视阵列条件下的全维自适应空时处理（STAP）
 % 描述：               原注释写为“单目标和双目标情况”，但当前代码实际包含：
 %                      1 个目标、1 个干扰机、地杂波和白噪声
@@ -32,15 +32,11 @@ jammerPower = noisePower * 10^(JNR/10);
 %   fd_ClutterNormalized = beta * spatialFreq_normalized
 beta = 1;
 
-
 %% (1) Rc：杂波协方差矩阵
 % -------- 地杂波脊模型，参见文献 [1] Eq. (3.2) --------
-% 归一化杂波多普勒：
-%   fd_ClutterNormalized = fd_Clutter / PRF
-% 归一化空间频率：
-%   spatialFreq_normalized = d*sin(theta)/lambda
-% 旁视阵列条件下二者满足：
-%   fd_ClutterNormalized = beta*spatialFreq_normalized
+% 归一化杂波多普勒： fd_ClutterNormalized = fd_Clutter / PRF
+% 归一化空间频率： spatialFreq_normalized = d*sin(theta)/lambda
+% 旁视阵列条件下二者满足： fd_ClutterNormalized = beta*spatialFreq_normalized
 
 % （调试方式 1）直接对 sin(theta) 均匀离散
 No = 250;       % 杂波块个数
@@ -61,7 +57,6 @@ Rc = complex(zeros(M*N));
 V = zeros(M*N, length(clutterSpatialFreq_normalized));
 
 for k = 1:length(clutterSpatialFreq_normalized)
-
     % 第 k 个杂波块的空间导向矢量
     a_clutter = exp(-1j*2*pi*clutterSpatialFreq_normalized(k)*[0: N - 1].');
 
@@ -87,7 +82,6 @@ Rc = Rc./length(clutterSpatialFreq_normalized);
 % 假设不同阵元、不同脉冲上的接收机噪声相互不相关
 Rn = noisePower*eye(M*N);
 
-
 %% (3) Rt：目标协方差矩阵
 tgtAzimuth = 0;
 
@@ -108,7 +102,6 @@ v_tgt = sqrt(tgtPower)*kron(b_tgt, a_tgt);
 
 % 单个确定角度—多普勒目标对应秩 1 协方差
 Rt = v_tgt*v_tgt';
-
 
 %% (4) Rj：干扰机协方差矩阵
 jammerAzimuth = -30;
@@ -142,7 +135,7 @@ R = Rc + Rj + Rn;
 [U, S, V] = svd(R);
 
 % 绘制干扰加噪声协方差矩阵的特征值谱
-figure;
+figure(1);
 plot(10*log10(diag(S)));
 xlabel('特征值序号');
 ylabel('特征值 / dB');
@@ -160,8 +153,7 @@ R_total = Rc + Rj + Rn + Rt;
 %azimuthGrid = linspace(-90, 90);%-90:1:90;
 %SpatialFreqGrid_normalized = d./lambda*sind(azimuthGrid);
 
-% <--- 注意(1)：这里改为对 sin(theta) 均匀离散，
-% 使归一化空间频率网格本身均匀
+% <--- 注意(1)：这里改为对 sin(theta) 均匀离散， 使归一化空间频率网格本身均匀
 sintheta = linspace(-1, 1);
 SpatialFreqGrid_normalized = d./lambda*sintheta; % d/lambda = 0.5
 
@@ -183,7 +175,6 @@ P_capon = complex(zeros(length(fdGrid_Normalized), length(SpatialFreqGrid_normal
 
 for iSpatialFreq = 1:length(SpatialFreqGrid_normalized)
     for j_fdNormalized = 1:length(fdGrid_Normalized)
-
         % 当前二维扫描点的空时导向矢量
         v = kron(b_Grid(:, j_fdNormalized), a_Grid(:, iSpatialFreq));
 
@@ -197,8 +188,8 @@ for iSpatialFreq = 1:length(SpatialFreqGrid_normalized)
 end
 
 % 显示总回波 DBF 二维功率谱
-figure;
-imagesc(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(P_dbf), eps)))
+figure(2);
+imagesc(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(P_dbf), eps)));
 set(gca,'ydir','normal');
 colorbar;
 xlabel('归一化空间频率');
@@ -206,8 +197,8 @@ ylabel('归一化多普勒频率');
 title('STAP处理前总回波的DBF二维功率谱');
 
 % 显示总回波 DBF 三维功率谱
-figure;
-surf(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(P_dbf), eps)))
+figure(3);
+surf(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(P_dbf), eps)));
 shading interp;
 colorbar;
 xlabel('归一化空间频率');
@@ -216,7 +207,7 @@ zlabel('功率 / dB');
 title('STAP处理前总回波的DBF三维功率谱');
 
 % 显示总回波 Capon/MVDR 二维功率谱
-figure;
+figure(4);
 imagesc(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(P_capon), eps)))
 set(gca,'ydir','normal');
 colorbar;
@@ -225,7 +216,7 @@ ylabel('归一化多普勒频率');
 title('STAP处理前总回波的Capon二维功率谱');
 
 % 显示总回波 Capon/MVDR 三维功率谱
-figure;
+figure(5);
 surf(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(P_capon), eps)))
 shading interp;
 colorbar;
@@ -233,7 +224,6 @@ xlabel('归一化空间频率');
 ylabel('归一化多普勒频率');
 zlabel('功率 / dB');
 title('STAP处理前总回波的Capon三维功率谱');
-
 
 %% (7) 计算 STAP 最优权重
 % 干扰加噪声协方差矩阵：R = Rc + Rj + Rn
@@ -244,8 +234,7 @@ wopt = R \ v_tgt;
 % 若加入无失真约束 w^H v_tgt = 1，可采用归一化形式：
 % x = R \ v_tgt;
 % wopt = x/(v_tgt'*x);
-
-
+ 
 %% (8) 最优空时滤波器的二维响应
 sintheta = linspace(-1, 1);
 SpatialFreqGrid_normalized = d./lambda*sintheta; % d/lambda = 0.5
@@ -269,7 +258,7 @@ for iSpatialFreq = 1:length(SpatialFreqGrid_normalized)
 end
 
 % 显示 STAP 最优权重的二维响应
-figure;
+figure(6);
 imagesc(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(abs(Y).^2, eps)))
 set(gca,'ydir','normal');
 colorbar;
@@ -278,14 +267,13 @@ ylabel('归一化多普勒频率');
 title('STAP最优空时权重的二维响应');
 
 % 显示 STAP 最优权重的三维响应
-figure;
+figure(7);
 mesh(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(abs(Y).^2, eps)))
 colorbar;
 xlabel('归一化空间频率');
 ylabel('归一化多普勒频率');
 zlabel('响应功率 / dB');
 title('STAP最优空时权重的三维响应');
-
 
 %% (9) SINR 损失，定义参见文献 [2] Eq. (120)
 sintheta = linspace(-1, 1, 181);
@@ -303,9 +291,7 @@ for iSpatialFreq = 1:length(SpatialFreqGrid_normalized)
         % 当前测试空时导向矢量
         v = kron(b_Grid(:, j_fdNormalized), a_Grid(:, iSpatialFreq));
 
-        % 干扰环境中的最大输出 SINR 因子：
-        %   v^H R^{-1} v
-        % 使用 R\v 代替显式求逆。
+        % 干扰环境中的最大输出 SINR 因子： v^H R^{-1} v 
         SINR_current = real(v'*(R\v));
 
         % 仅有白噪声时的最优 SNR 因子：
@@ -318,11 +304,20 @@ for iSpatialFreq = 1:length(SpatialFreqGrid_normalized)
     end
 end
 
-% 取第 91 个空间频率切片。
-% 由于此处共有 181 个空间频率点，第 91 点对应归一化空间频率 0。
+% 取第 91 个空间频率切片。 由于此处共有 181 个空间频率点，第 91 点对应归一化空间频率 0。
 % 此时矩阵行方向变化的是 Doppler，因此横坐标必须使用 fdGrid_Normalized。
-figure;
+figure(8);
 plot(fdGrid_Normalized, 10*log10(max(real(SINR_loss(:, 91)), eps)));
 xlabel('归一化多普勒频率');
 ylabel('SINR损失 / dB');
 title('零空间频率处的SINR损失');
+
+
+figure(9);
+mesh(SpatialFreqGrid_normalized, fdGrid_Normalized, 10*log10(max(real(SINR_loss), eps)))
+% shading interp;
+colorbar;
+xlabel('归一化空间频率');
+ylabel('归一化多普勒频率');
+zlabel('功率 / dB');
+title('SINR损失');

@@ -138,5 +138,4 @@ plt.colorbar(label='Amplitude')
 plt.tight_layout()
 plt.show()
 
-return sig, sig_real, ra, rg
 

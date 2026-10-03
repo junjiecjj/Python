@@ -119,8 +119,7 @@ echo_s5[echo_s5 > saturation] = saturation
 # 成像
 # 绘制处理结果热力图
 plt.figure(figsize=(12, 8))
-plt.imshow(echo_s5, extent=[tr_axis[0]*c, tr_axis[-1]*c, ta_axis[-1]*c, ta_axis[0]*c],
-           aspect='auto', cmap='hot')
+plt.imshow(echo_s5, extent=[tr_axis[0]*c, tr_axis[-1]*c, ta_axis[-1]*c, ta_axis[0]*c], aspect='auto', cmap='hot')
 plt.title('处理结果(RD算法-精确版本)')
 plt.colorbar()
 plt.xlabel('距离向')
