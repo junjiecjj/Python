@@ -117,9 +117,7 @@ norm2p = np.linalg.norm(p)
 g = N*(FLN @ p)*(FLN.conj() @ p.conj())
 g = np.real(g)
 
-pulseSpectrumError = np.linalg.norm(g-g_design)/max(
-    np.linalg.norm(g_design), np.finfo(float).eps
-)
+pulseSpectrumError = np.linalg.norm(g-g_design)/max( np.linalg.norm(g_design), np.finfo(float).eps )
 print(
     "Relative squared-spectrum reconstruction error: "
     f"{pulseSpectrumError:.3e}"
