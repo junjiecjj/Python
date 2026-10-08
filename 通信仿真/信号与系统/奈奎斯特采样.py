@@ -211,7 +211,7 @@ ts = 0.1                          # x(t) = sinc(t/ts), T = 0.1, f = 10 Hz
 B  = 1/(2*ts)                     # Hz
 # f_max = 2*np.pi*B               # 角频率rad/s,
 f_max = B                         # 画图用的时间频率 Hz
-Fs = 400                          # 信号采样频率
+Fs = 100                          # 信号采样频率
 Ts = 1/Fs                         # 采样时间间隔
 # N = 100                         # 采样信号的长度
 
@@ -221,7 +221,7 @@ x = np.sinc(t/ts)
 x_len = x.size
 
 ## 采样脉冲序列
-fs = 10                          # 冲击采样脉冲的频率
+fs = 20                          # 冲击采样脉冲的频率
 p = int(Fs/fs)
 bplus = [0]*p
 bplus[0] = 1
@@ -414,8 +414,6 @@ axs[1,3].spines['top'].set_visible(False)
 axs[1,3].spines['bottom'].set_position(('data',0.0))
 axs[1,3].spines['left'].set_position(('data',0.0))
 # axs[1,3].set_xlim(-100, 100)  #拉开坐标轴范围显示投影
-
-
 
 #================================= super ===============================================
 out_fig = plt.gcf()
