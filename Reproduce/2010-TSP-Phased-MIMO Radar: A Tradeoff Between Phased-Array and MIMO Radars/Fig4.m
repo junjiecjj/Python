@@ -1,4 +1,4 @@
-%% Fig. 3: Overall beampatterns using conventional transmit/receive beamformer
+%% Fig. 4: Overall beampatterns using conventional transmit/receive beamformer
 % Hassanien and Vorobyov, IEEE TSP, vol. 58, no. 6, June 2010.
 % DOI: 10.1109/TSP.2010.2043976
 % Eq. (35): G_K(theta) = C_K(theta) * D_K(theta) * R(theta).
@@ -6,11 +6,11 @@ clear;
 clc;
 close all;
 
-%% Parameters: Section V and Example 1
+%% Parameters: Section V and Example 2
 M = 10;
 N = 10;
 K = 5;
-dT = 0.5;                         % Transmit spacing in wavelengths
+dT = 2.5;                         % Transmit spacing in wavelengths
 dR = 0.5;                         % Receive spacing in wavelengths
 theta_s = 10;                     % Target direction in degrees
 theta = -90:0.1:90;               % Same reproduction grid as Fig1.m
@@ -90,7 +90,7 @@ set(groot,'defaultAxesFontName','Times New Roman');
 set(groot,'defaultTextFontName','Times New Roman');
 set(groot,'defaultLegendFontName','Times New Roman');
 
-figure(3);
+figure(4);
 set(gcf,'Units','inches');
 set(gcf,'Color','white');
 set(gcf,'Renderer','painters');
@@ -100,7 +100,7 @@ set(gcf,'PaperSize',[width,height]);
 
 plot(theta, G_PH_dB, '--', 'Color', '#F65314', 'LineWidth', linewidth);
 hold on;
-plot(theta, G_MIMO_dB, ':', 'Color', '#00A1F1', 'LineWidth', linewidth);
+plot(theta, G_MIMO_dB, '-.', 'Color', '#00A1F1', 'LineWidth', linewidth);
 plot(theta, G_PH_MIMO_dB, '-', 'Color', '#8A2BE2', 'LineWidth', linewidth);
 
 set(gca,'FontSize',16,'FontName','Times New Roman');
@@ -120,8 +120,8 @@ set(gca,'GridLineStyle','--','GridAlpha',0.2,'LineWidth',1,'GridLineWidth',0.5,'
 set(gca,'Units','normalized');
 set(gca,'Position',[0.11,0.12,0.87,0.86]);
 drawnow;
-print(gcf,'Fig3.png','-dpng','-r600');
-print(gcf,'Fig3.pdf','-dpdf','-vector');
+print(gcf,'Fig4.png','-dpng','-r600');
+print(gcf,'Fig4.pdf','-dpdf','-vector');
 
 %% Numerical verification report
 fprintf('Virtual-array formula error: %.3e\n', err_virtual);

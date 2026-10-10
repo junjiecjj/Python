@@ -58,31 +58,48 @@ D_PH_dB = 10 * log10(max(D_PH, realmin));
 D_MIMO_dB = 10 * log10(max(D_MIMO, realmin));
 D_PH_MIMO_dB = 10 * log10(max(D_PH_MIMO, realmin));
 
-%% Fig. 2: original colors, line styles, labels, and axis limits
+%% Unified single-axes style; original line styles and marker types
+width = 8;
+height = 4;
+fontsize = 14;
+linewidth = 2;
+markersize = 10;
+set(groot,'defaultAxesFontName','Times New Roman');
+set(groot,'defaultTextFontName','Times New Roman');
+set(groot,'defaultLegendFontName','Times New Roman');
+
 figure(2);
-set(gcf, 'Color', 'w', 'Position', [100, 100, 860, 640]);
-plot(theta, D_PH_dB, 'm--', 'LineWidth', 1.5);
+set(gcf,'Units','inches');
+set(gcf,'Color','white');
+set(gcf,'Renderer','painters');
+set(gcf,'PaperUnits','inches');
+set(gcf,'PaperPosition',[0,0,width,height]);
+set(gcf,'PaperSize',[width,height]);
+
+plot(theta, D_PH_dB, '--', 'Color', '#F65314', 'LineWidth', linewidth);
 hold on;
-plot(theta, D_MIMO_dB, 'r:', 'LineWidth', 1.5);
-plot(theta, D_PH_MIMO_dB, 'b-', 'LineWidth', 1.5);
-grid on;
-box on;
+plot(theta, D_MIMO_dB, ':', 'Color', '#00A1F1', 'LineWidth', linewidth);
+plot(theta, D_PH_MIMO_dB, '-', 'Color', '#8A2BE2', 'LineWidth', linewidth);
+
+set(gca,'FontSize',16,'FontName','Times New Roman');
+h_legend = legend({'PHASED-ARRAY RADAR', 'MIMO RADAR', ...
+    'PHASED-MIMO RADAR (K=5)'},'Interpreter','latex');
+legendsize = 13;
+set(h_legend,'FontName','Times New Roman','FontSize',legendsize,'FontWeight','normal','LineWidth',1,'Location','northwest');
+labelsize = 16;
+xlabel('ANGLE (DEGREES)','FontSize',labelsize,'FontName','Times New Roman','Interpreter','latex');
+ylabel('$|D(\theta)|^2$ (dB)','FontSize',labelsize,'FontName','Times New Roman','Interpreter','latex');
 xlim([-90, 90]);
 ylim([-80, 20]);
-set(gca, 'XTick', -80:20:80, 'YTick', -80:10:20, ...
-    'FontName', 'Times New Roman', 'FontSize', 18, ...
-    'LineWidth', 1, 'GridLineStyle', ':');
-xlabel('ANGLE (DEGREES)', 'FontName', 'Times New Roman', 'FontSize', 18);
-ylabel('$|D(\theta)|^2$ (dB)', 'Interpreter', 'latex', 'FontSize', 18);
-legend({'PHASED-ARRAY RADAR', 'MIMO RADAR', ...
-    'PHASED-MIMO RADAR (K=5)'}, 'Location', 'northwest', ...
-    'FontName', 'Times New Roman', 'FontSize', 14);
+xticks(-80:20:80);
+yticks(-80:10:20);
+grid on;
+set(gca,'GridLineStyle','--','GridAlpha',0.2,'LineWidth',1,'GridLineWidth',0.5,'Layer','bottom');
+set(gca,'Units','normalized');
+set(gca,'Position',[0.11,0.12,0.87,0.86]);
 drawnow;
-
-%% Save in the current MATLAB directory
-set(gcf, 'PaperPositionMode', 'auto');
-print(gcf, 'Fig2.png', '-dpng', '-r600');
-print(gcf, 'Fig2.pdf', '-dpdf', '-painters', '-bestfit');
+print(gcf,'Fig2.png','-dpng','-r600');
+print(gcf,'Fig2.pdf','-dpdf','-vector');
 
 %% Numerical verification report
 fprintf('MIMO formula error: %.3e\n', err_MIMO);
