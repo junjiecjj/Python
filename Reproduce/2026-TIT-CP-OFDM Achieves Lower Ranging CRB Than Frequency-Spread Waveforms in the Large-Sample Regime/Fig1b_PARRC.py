@@ -189,8 +189,7 @@ colors = ['#F65314', '#00A1F1', '#77AC30', '#8A2BE2', '#00A8BB', 'k']
 linestyles = ['-', ':', (0, (5, 5)), '-.']
 for m, name in enumerate(['SC', 'AFDM', 'OTFS', 'OFDM']):
     axs.plot(SNR_dB, CRB[name], color=colors[m], ls=linestyles[m], label=name)
-axs.plot(SNR_dB, Jensen, color=colors[4], ls='none', marker='x',
-         ms=8, mew=1.8, label='Jensen Bound')
+axs.plot(SNR_dB, Jensen, color=colors[4], ls='none', marker='x', ms=8, mew=1.8, label='Jensen Bound')
 
 axs.set_xlabel('SNR (dB)')
 axs.set_ylabel(r'CRB (m$^2$)')
@@ -199,8 +198,7 @@ axs.set_ylim(bottom=0)
 axs.grid(linestyle=(0, (5, 10)), linewidth=0.5, which='both')
 
 font1 = FontProperties(family='Times New Roman', style='normal', size=17)
-legend1 = axs.legend(loc='upper right', edgecolor='black',
-                     labelspacing=0.2, prop=font1)
+legend1 = axs.legend(loc='upper right', edgecolor='black', labelspacing=0.2, prop=font1)
 legend1.get_frame().set_alpha(1)
 legend1.get_frame().set_facecolor('none')
 
