@@ -19,10 +19,10 @@ from DigiCommPy.modem import PSKModem, QAMModem
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  全局绘图设置
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams['font.size'] = 14
-plt.rcParams['axes.titlesize'] = 22
-plt.rcParams['axes.labelsize'] = 22
-plt.rcParams['xtick.labelsize'] = 22
-plt.rcParams['ytick.labelsize'] = 22
+plt.rcParams['axes.titlesize'] = 18
+plt.rcParams['axes.labelsize'] = 18
+plt.rcParams['xtick.labelsize'] = 18
+plt.rcParams['ytick.labelsize'] = 18
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['figure.figsize'] = [8, 6]
 plt.rcParams['lines.linestyle'] = '-'
@@ -31,7 +31,7 @@ plt.rcParams['lines.color'] = 'blue'
 plt.rcParams['lines.markersize'] = 6
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['axes.edgecolor'] = 'black'
-plt.rcParams['legend.fontsize'] = 22
+plt.rcParams['legend.fontsize'] = 18
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  仿真参数
 PANEL = "b"                          # "a": 16-QAM; "b": 16-PSK
@@ -169,7 +169,7 @@ axs.set_yticks(np.arange(0, 8, 1))
 axs.set_xlabel('SNR (dB)')
 axs.set_ylabel(r'CRB (m$^2$)')
 
-font1 = FontProperties(family = 'Times New Roman', style = 'normal', size = 20)
+font1 = FontProperties(family = 'Times New Roman', style = 'normal', size = 18)
 legend1 = axs.legend(loc = 'upper right', borderaxespad = 0, edgecolor = 'black', labelspacing = 0.1, columnspacing = 0.5, handlelength = 2.2, prop = font1)
 frame1 = legend1.get_frame()
 frame1.set_alpha(1)
@@ -183,7 +183,7 @@ axs.spines['top'].set_linewidth(bw)
 axs.tick_params(direction = 'in', axis = 'both', top = True, right = True, labelsize = 16, width = bw)
 labels = axs.get_xticklabels() + axs.get_yticklabels()
 [label.set_fontname('Times New Roman') for label in labels]
-[label.set_fontsize(22) for label in labels]
+[label.set_fontsize(18) for label in labels]
 
 output = Path(__file__).with_suffix('.pdf')
 fig.savefig(output, )
