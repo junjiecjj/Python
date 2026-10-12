@@ -130,20 +130,14 @@ RadarSNRdB = 30                  # 雷达信噪比
 RadarSNR = 10**(RadarSNRdB/10)
 
 # 生成子载波和符号索引网格
-kSub, mSym = np.meshgrid(np.arange(M), np.arange(N))
+kSub, mSym = np.meshgrid(np.arange(N), np.arange(M), indexing='ij')
 
 # 相位偏移公式
 phase_shift = -1j * 2 * np.pi * (
     fc * target_delay +
-    mSym * delta_f * target_delay -
-    kSub * Ts * target_dop
+    kSub * delta_f * target_delay -
+    mSym * Ts * target_dop
 )
-
-# phase_shift = -1j * 2 * np.pi * (
-#     fc * target_delay -
-#     mSym * Ts * target_dop  -
-#     kSub * delta_f * target_delay
-# )
 
 noise = (np.random.randn(N, M) + 1j*np.random.randn(N, M)) / np.sqrt(2)
 RxData_radar = np.sqrt(RadarSNR) * TxData * np.exp(phase_shift) + noise

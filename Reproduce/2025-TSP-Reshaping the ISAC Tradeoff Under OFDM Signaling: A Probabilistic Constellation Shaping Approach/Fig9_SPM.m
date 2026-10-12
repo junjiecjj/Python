@@ -134,8 +134,8 @@ h_legend = legend([hTime,hOptimal, hPSK,hQAM], {'Time-Sharing','Optimal PCS', 'U
 legendsize = 13;
 set(h_legend,'FontName','Times New Roman','FontSize',legendsize, 'FontWeight','normal','LineWidth',1,'Location','southwest');
 labelsize = 16;
-xlabel('AIR (bps/Hz)','FontSize',labelsize, 'FontName','Times New Roman','Interpreter','latex');
-ylabel('$P_d$','FontSize',labelsize, 'FontName','Times New Roman','Interpreter','latex');
+xlabel('Communication Rate (bps/Hz)','FontSize',labelsize, 'FontName','Times New Roman','Interpreter','latex');
+ylabel('Detection Probability','FontSize',labelsize, 'FontName','Times New Roman','Interpreter','latex');
 xlim([4.35,6.2]); ylim([.74,.95]);
 xticks(4.4:.2:6.2); yticks(.74:.02:.94);
 grid on; box on;

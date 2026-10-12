@@ -245,7 +245,6 @@ for idx, radarsnr in enumerate(SNRdBs):
         RxData_radar = np.zeros((N, M), dtype=complex)
         for kSubcarrier in range(N):
             for mSymbol in range(M):
-
                 phase_shift = np.exp(-1j*2*np.pi*(fc * target_delay - mSymbol * Ts * target_dop + kSubcarrier * target_delay * delta_f))
                 signal_component =  TxData[kSubcarrier, mSymbol] * phase_shift  #  phase_delay * phase_doppler * phase_subcarrier
                 noise_component = np.sqrt(sigma2/2.0) * (np.random.randn() + 1j * np.random.randn())
