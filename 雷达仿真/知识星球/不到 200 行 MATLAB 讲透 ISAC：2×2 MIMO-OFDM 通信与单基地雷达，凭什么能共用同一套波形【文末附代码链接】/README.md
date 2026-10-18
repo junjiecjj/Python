@@ -1,0 +1,2 @@
+# Mono-static-sensing-ISAC-MIMO-OFDM-Transmitter-and-Receiver-in-MATLAB
+An integrated sensing and communication (ISAC) system based on MIMO-OFDM is designed and implemented in MATLAB. Contains a 2×2 MIMO-OFDM communication transceiver with a monostatic radar sensing function. It includes QPSK modulation, pilot-based channel estimation, MMSE equalization, BER/EVM evaluation, and range–Doppler target detection.
