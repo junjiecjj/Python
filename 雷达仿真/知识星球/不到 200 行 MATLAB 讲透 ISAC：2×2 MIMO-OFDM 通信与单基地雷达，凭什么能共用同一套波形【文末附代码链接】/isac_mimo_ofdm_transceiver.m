@@ -42,8 +42,7 @@ hComm = makeMimoChannel(Nr, Nt, tapDelays, tapPowerDb);
 rxCommWaveClean = applyMimoChannel(txCommWave, hComm);
 signalPower = mean(abs(rxCommWaveClean(:)).^2);
 noiseVariance = signalPower/10^(snrDb/10);
-rxCommWave = rxCommWaveClean + sqrt(noiseVariance/2) * ...
-    (randn(size(rxCommWaveClean)) + 1j*randn(size(rxCommWaveClean)));
+rxCommWave = rxCommWaveClean + sqrt(noiseVariance/2) * (randn(size(rxCommWaveClean)) + 1j*randn(size(rxCommWaveClean)));
 
 %% Communication receiver: CP removal, FFT, pilot LS estimate, MMSE MIMO equalizer
 Ycomm = ofdmDemodulate(rxCommWave, Nfft, Ncp, NcommSym);
@@ -67,8 +66,7 @@ end
 rxBits = qpskDemod(rxData(:));
 ber = mean(rxBits ~= txBits);
 evmRms = sqrt(mean(abs(rxData(:) - txData).^2) / mean(abs(txData).^2));
-fprintf('Communication BER = %.4g, RMS EVM = %.2f %% at %.1f dB SNR\n', ...
-    ber, 100*evmRms, snrDb);
+fprintf('Communication BER = %.4g, RMS EVM = %.2f %% at %.1f dB SNR\n', ber, 100*evmRms, snrDb);
 
 %% ISAC sensing burst: TDM-MIMO OFDM radar waveform
 % Only one transmitter is active per OFDM symbol. This gives every Tx an
@@ -90,12 +88,10 @@ targetVelocity = [10 -6];          % Radial velocity [m/s]
 targetDoppler = 2*targetVelocity*fc/c;
 targetAzimuthDeg = [18 -25];
 targetAmplitude = [0.85 0.45] .* exp(1j*[0.4 -1.1]);
-rxRadarWaveClean = targetEcho(txRadarWave, targetDelaySamples, targetDoppler, ...
-    targetAzimuthDeg, targetAmplitude, fc, Fs, Nt, Nr);
+rxRadarWaveClean = targetEcho(txRadarWave, targetDelaySamples, targetDoppler, targetAzimuthDeg, targetAmplitude, fc, Fs, Nt, Nr);
 radarSignalPower = mean(abs(rxRadarWaveClean(:)).^2);
 radarNoiseVariance = radarSignalPower/10^(snrDb/10);
-rxRadarWave = rxRadarWaveClean + sqrt(radarNoiseVariance/2) * ...
-    (randn(size(rxRadarWaveClean)) + 1j*randn(size(rxRadarWaveClean)));
+rxRadarWave = rxRadarWaveClean + sqrt(radarNoiseVariance/2) * (randn(size(rxRadarWaveClean)) + 1j*randn(size(rxRadarWaveClean)));
 
 %% Radar receiver: OFDM channel division, range IFFT, Doppler FFT and combining
 Yrad = ofdmDemodulate(rxRadarWave, Nfft, Ncp, NradSym);
@@ -117,10 +113,8 @@ dopplerAxis = ((-NpulsesPerTx/2):(NpulsesPerTx/2-1))/(NpulsesPerTx*PRI);
 velocityAxis = dopplerAxis*c/(2*fc);
 [~, peakIndex] = max(rdPower(:));
 [rangeBin, velocityBin] = ind2sub(size(rdPower), peakIndex);
-fprintf('Strongest sensing peak: range %.1f m, velocity %.2f m/s\n', ...
-    rangeAxis(rangeBin), velocityAxis(velocityBin));
-fprintf('Injected targets: [%.1f, %.1f] m and [%.1f, %.1f] m/s\n', ...
-    targetRange(1), targetRange(2), targetVelocity(1), targetVelocity(2));
+fprintf('Strongest sensing peak: range %.1f m, velocity %.2f m/s\n', rangeAxis(rangeBin), velocityAxis(velocityBin));
+fprintf('Injected targets: [%.1f, %.1f] m and [%.1f, %.1f] m/s\n', targetRange(1), targetRange(2), targetVelocity(1), targetVelocity(2));
 
 %% Validation plots
 figure('Color','w', 'Name','ISAC MIMO-OFDM results', 'Position',[100 100 1150 720]);
