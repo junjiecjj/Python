@@ -302,11 +302,11 @@ ax.plot(t_tx, np.where(cp_mask, TxSignal_time.real, np.nan), color='#F65314', li
 ax.legend()
 # finish_figure(fig, 1, output_dir)
 
-fig, ax = new_figure(3, 'Delay (samples)', 'Magnitude', 'Communication channel impulse response')
+fig, ax = new_figure(2, 'Delay (samples)', 'Magnitude', 'Communication channel impulse response')
 ax.stem(np.arange(h.size), np.abs(h), linefmt='C0-', markerfmt='C0o', basefmt='k-')
 # finish_figure(fig, 3, output_dir)
 
-fig, ax = new_figure(4, 'Range (m)', 'Normalized spectrum (dB)', 'OFDM range estimation')
+fig, ax = new_figure(3, 'Range (m)', 'Normalized spectrum (dB)', 'OFDM range estimation')
 ax.plot(range_axis, range_power_dB, color='#00A1F1', label='IFFT')
 ax.plot(distanceIndex, SP_dB, color='#F65314', label='MUSIC')
 ax.axvline(target_pos, color='black', linestyle='--', linewidth=1.2, label='True range')
@@ -315,7 +315,7 @@ ax.set_xlim(0, min(c0 / (2 * delta_f), max(2 * target_pos, 10)))
 ax.legend()
 # finish_figure(fig, 4, output_dir)
 
-fig, ax = new_figure(5, 'Velocity (m/s)', 'Normalized power (dB)', 'OFDM Doppler FFT velocity estimation')
+fig, ax = new_figure(4, 'Velocity (m/s)', 'Normalized power (dB)', 'OFDM Doppler FFT velocity estimation')
 ax.plot(velocityIndex, velocity_power_dB, color='#00A1F1', label='FFT')
 ax.axvline(target_speed, color='black', linestyle='--', linewidth=1.2, label='True velocity')
 ax.axvline(velocityE, color='#F65314', linestyle=':', linewidth=1.2, label='FFT estimate')

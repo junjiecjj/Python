@@ -39,9 +39,23 @@ def simulate_received_signal():
         signal = (np.random.randn(1, NUM_SNAPSHOTS) + 1j * np.random.randn(1, NUM_SNAPSHOTS))
         X += a[:, None] @ signal
 
-    noise = (np.random.randn(num_elements, NUM_SNAPSHOTS) +
-             1j * np.random.randn(num_elements, NUM_SNAPSHOTS)) / np.sqrt(2)
+    noise = (np.random.randn(num_elements, NUM_SNAPSHOTS) + 1j * np.random.randn(num_elements, NUM_SNAPSHOTS)) / np.sqrt(2)
 
     X += noise * 10 ** (-SNR_DB / 20)
 
     return X
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

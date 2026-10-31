@@ -4,9 +4,7 @@ import numpy as np
 from config import NX, NY, ELEMENT_SPACING
 
 def generate_array_positions():
-
-#    Generates 2D planar array coordinates
-
+    # Generates 2D planar array coordinates
     x = np.arange(NX) * ELEMENT_SPACING
     y = np.arange(NY) * ELEMENT_SPACING
 
