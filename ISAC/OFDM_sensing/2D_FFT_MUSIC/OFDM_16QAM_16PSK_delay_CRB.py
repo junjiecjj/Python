@@ -45,32 +45,30 @@ A = np.exp(-2j * np.pi * k * delta_f * tau + 2j * np.pi * m * Ts * fd)
 G0 = np.column_stack((-2j * np.pi * delta_f * k * A * alpha,
                       2j * np.pi * Ts * m * A * alpha, A, 1j * A))
 
-#%%>>>>>>>>>>>>>>>>>>>>>>>>  每种星座仅生成一帧X，直接计算B11
-bits = np.random.randint(0, 2, N * M * bps)
-curves = {}
-for MOD_TYPE in ["psk", "qam"]:
+#%%>>>>>>>>>>>>>>>>>>>>>>>>  蒙特卡洛B11计算与绘图
+Iter = 1000
+fig, ax = plt.subplots(figsize=(6, 4), constrained_layout=True)
+
+for MOD_TYPE, color, style in [("psk", "#F65314", "o-"),
+                                ("qam", "#00A1F1", "s--")]:
     modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
     map_table, demap_table = modem.getMappTable()
-    X = np.asarray(modem.modulate(bits)).reshape(N, M, order="F") / np.sqrt(Es)
-    power = np.abs(X.flatten(order="F"))**2
-    CRB = np.zeros(len(SNR_dB))
-    for i, snr in enumerate(SNR_dB):
-        sigma_W2 = 10**(-snr / 10)
-        J = 2 / sigma_W2 * np.real(G0.conj().T @ (power[:, None] * G0))
-        J_inv = np.linalg.inv(J)
-        CRB[i] = np.trace(J_inv)
-    curves[MOD_TYPE] = CRB
+    CRB = 0.0
 
-#%%>>>>>>>>>>>>>>>>>>>>>>>>  画图
-fig, ax = plt.subplots(figsize=(6, 4), constrained_layout=True)
-ax.semilogy(SNR_dB, curves["psk"], "o-", color="#F65314", label="16-PSK")
-ax.semilogy(SNR_dB, curves["qam"], "s--", color="#00A1F1", label="16-QAM")
+    for trial in range(Iter):
+        bits = np.random.randint(0, 2, N * M * bps)
+        X = np.asarray(modem.modulate(bits)).reshape(N, M, order="F") / np.sqrt(Es)
+        power = np.abs(X.flatten(order="F"))**2
+        J = 2 * np.real(G0.conj().T @ (power[:, None] * G0))
+        CRB += np.trace(np.linalg.inv(J))
+
+    CRB = CRB / Iter * 10**(-SNR_dB / 10)
+    ax.semilogy(SNR_dB, CRB, style, color=color, label=f"{QAM_mod}-{MOD_TYPE.upper()}")
+
 ax.set_xlabel("SNR (dB)")
-ax.set_ylabel(r"$\mathrm{Tr}(\mathbf{J}^{-1})$")
+ax.set_ylabel(r"$\mathbb{E}_{X}\{\mathrm{Tr}(\mathbf{J}^{-1})\}$")
 ax.grid(linestyle=(0, (5, 10)), linewidth=0.5)
 ax.tick_params(direction="in", top=True, right=True, labelsize=16)
 ax.legend(edgecolor="black", framealpha=1)
-output = Path(__file__).with_suffix(".pdf")
-fig.savefig(output)
 plt.show()
 plt.close(fig)
