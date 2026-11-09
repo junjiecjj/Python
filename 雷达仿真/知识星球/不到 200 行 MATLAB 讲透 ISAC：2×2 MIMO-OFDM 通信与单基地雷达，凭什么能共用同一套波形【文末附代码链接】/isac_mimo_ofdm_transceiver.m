@@ -22,7 +22,7 @@ snrDb = 22;
 NcommSym = 20;
 pilotSym = 1:Nt;                    % One full-band, orthogonal pilot symbol/Tx
 dataSym = (Nt+1):NcommSym;
-NdataBits = 2*Nfft*numel(dataSym)*Nt;
+NdataBits = 2*Nfft*numel(dataSym)*Nt;  
 txBits = randi([0 1], NdataBits, 1);
 txData = qpskMod(txBits);
 
