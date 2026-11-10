@@ -30,8 +30,7 @@ Q = 64                              # 目标数
 N = 16                              # 子载波数
 M = 4                              # OFDM符号数
 Ncp = N // 4                         # CP采样点数
-Q = 6                              # 目标数
-
+Q = 12                              # 目标数
 
 QAM_mod = 16
 TARGET_SEED = 42                     # 已验证的固定随机目标示例
@@ -81,8 +80,7 @@ print(f"多普勒频率cell：{doppler_cell:.6f} Hz。")
 # X为(M,N)，按行展开；第mN+k行对应第m个符号、第k个子载波。
 k = np.tile(np.arange(N), M)
 m = np.repeat(np.arange(M), N)
-A = np.exp(-2j * np.pi * k[:, None] * tau_bin[None, :] / N
-           + 2j * np.pi * m[:, None] * nu_bin[None, :] / M)
+A = np.exp(-2j * np.pi * k[:, None] * tau_bin[None, :] / N + 2j * np.pi * m[:, None] * nu_bin[None, :] / M)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  逐帧计算条件CRB，再对CRB取平均
 samples = {}

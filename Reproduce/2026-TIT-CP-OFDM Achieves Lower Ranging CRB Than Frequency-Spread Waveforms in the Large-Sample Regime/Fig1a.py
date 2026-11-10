@@ -160,9 +160,9 @@ else:
 
 axs.grid(linestyle = (0, (5, 10)), linewidth = 0.5, which = 'both')
 axs.set_xlim(-10, 6)
-axs.set_ylim(0, 7)
+# axs.set_ylim(0, 7)
 axs.set_xticks(np.arange(-10, 7, 2))
-axs.set_yticks(np.arange(0, 8, 1))
+# axs.set_yticks(np.arange(0, 8, 1))
 axs.set_xlabel('SNR (dB)')
 axs.set_ylabel(r'CRB (m$^2$)')
 
