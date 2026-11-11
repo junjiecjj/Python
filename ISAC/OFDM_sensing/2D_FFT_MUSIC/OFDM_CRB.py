@@ -33,15 +33,14 @@ plt.rcParams["legend.fontsize"] = 16
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  物理参数
 N = 128                              # 子载波数
-M = 256                              # OFDM符号数
+M = 64                              # OFDM符号数
 Ncp = N // 4                         # CP采样点数
-Q = 40                              # 目标数
+Q = 60                              # 目标数
 
 # N = 16                              # 子载波数
 # M = 4                              # OFDM符号数
 # Ncp = N // 4                         # CP采样点数
 # Q = 12                              # 目标数
-
 
 QAM_mod = 64
 Iter = 10000                         # QAM随机数据帧数；PSK条件CRB与数据相位无关
@@ -51,7 +50,7 @@ c = 3e8                             # m/s
 dt = 1 / (N * delta_f)               # 快时间采样间隔，s
 Tcp = Ncp * dt                      # CP时长，s
 Tsym = (N + Ncp) * dt                # 含CP的符号时长，s
-SNR_dB = np.arange(0, 21, 2)         # 归一化平均符号能量1 / sigma_W^2
+SNR_dB = np.arange(-10, 21, 2)         # 归一化平均符号能量1 / sigma_W^2
 modem_dict = {"psk": PSKModem, "qam": QAMModem}
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  目标物理参数与cell/bin换算
@@ -152,7 +151,7 @@ os.makedirs(output_dir, exist_ok=True)
 colors = ["#F65314", "#00A1F1", "black"]
 styles = ["o-", "s--", ":"]
 font1 = FontProperties(family="Times New Roman", style="normal", size=16)
-file_tag = f"N{N}_M{M}_{QAM_mod}PSK_{QAM_mod}QAM"
+file_tag = f"N{N}_M{M}_Q{Q}_{QAM_mod}PSK_{QAM_mod}QAM"
 
 for filename, curves, ylabel in [
     (f"Range_CRB_{file_tag}.pdf", delay_curves, r"Range CRB (m$^2$)"),

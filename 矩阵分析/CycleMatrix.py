@@ -6,6 +6,7 @@ Created on Thu Mar 21 20:43:25 2024
 @author: jack
 """
 
+import scipy
 import numpy as np
 
 # 产生傅里叶矩阵
@@ -14,6 +15,11 @@ def FFTmatrix(L, ):
      lst = np.arange(L)
      for i in range(L):
          mat[i,:] = 1.0*np.exp(-1j*2.0*np.pi*i*lst / L) / (np.sqrt(L)*1.0)
+
+     #  mat = scipy.linalg.dft(L, scale='sqrtn')
+     # 可选参数 scale：• scale=None（默认）：不缩放（标准 DFT 矩阵）。
+     # • scale='sqrtn'：除以  sqrt{N} ，使矩阵变成酉矩阵（Unitary matrix）。
+     # • scale='n'：除以 N。
      return mat
 
 # 以行生成 循环矩阵

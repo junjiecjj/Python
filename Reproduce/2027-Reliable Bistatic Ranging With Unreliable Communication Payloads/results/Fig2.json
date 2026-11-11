@@ -1,0 +1,25 @@
+{
+  "trials": 64,
+  "seed": 20261111,
+  "iterations": 50,
+  "N": 3276,
+  "L": 288,
+  "M": 13,
+  "snr_db": 3.0,
+  "oracle": "wls",
+  "output": "/home/jack/公共的/Python/Reproduce/2027-Reliable Bistatic Ranging With Unreliable Communication Payloads/results",
+  "no_show": false,
+  "source": "arXiv:2611.07803v1",
+  "provenance": "N,L,M,SNR,modulations from paper; channels, phases, MC counts, CFAR windows and Fig3 scalarization supplementary",
+  "equal_pilot_data_noise": true,
+  "fft_normalization": "ortho",
+  "channel_normalization": "mean(|h|^2)=1 (supplementary)",
+  "PDP_reference": "max(abs(true g)^2), shared across curves",
+  "numpy_version": "1.26.4",
+  "modulation": "BPSK",
+  "M_values": [
+    30,
+    300
+  ],
+  "PDP_statistic": "mean of per-trial |g_hat|^2"
+}

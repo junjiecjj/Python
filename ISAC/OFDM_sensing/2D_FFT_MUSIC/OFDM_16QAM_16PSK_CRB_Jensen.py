@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 from DigiCommPy.modem import PSKModem, QAMModem
 
+np.random.seed(42)
+
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  全局绘图设置
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.size"] = 14
@@ -32,8 +34,8 @@ M = 4                              # OFDM符号数
 Ncp = N // 4                         # CP采样点数
 Q = 12                              # 目标数
 
+
 QAM_mod = 16
-TARGET_SEED = 42                     # 已验证的固定随机目标示例
 Iter = 10000                         # QAM随机数据帧数；PSK条件CRB与数据相位无关
 delta_f = 960e3                      # Hz
 fc = 30e9                           # Hz
@@ -45,18 +47,9 @@ SNR_dB = np.arange(0, 21, 2)         # 归一化平均符号能量1 / sigma_W^2
 modem_dict = {"psk": PSKModem, "qam": QAMModem}
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  目标物理参数与cell/bin换算
-rng_targets = np.random.default_rng(TARGET_SEED)
 range_max = c * Tcp / 2
-# 距离由N(range_max/2, (range_max/2)^2)在(0, range_max)内截断生成。
-target_pos = rng_targets.normal(range_max / 2, range_max / 2, Q)
-while np.any((target_pos <= 0) | (target_pos >= range_max)):
-    invalid = (target_pos <= 0) | (target_pos >= range_max)
-    target_pos[invalid] = rng_targets.normal(range_max / 2, range_max / 2, np.count_nonzero(invalid))
-# 速度由N(0, 100^2)在(-200, 200) m/s内截断生成。
-target_speed = rng_targets.normal(0.0, 100.0, Q)
-while np.any(np.abs(target_speed) >= 200):
-    invalid = np.abs(target_speed) >= 200
-    target_speed[invalid] = rng_targets.normal(0.0, 100.0, np.count_nonzero(invalid))
+target_pos = np.random.rand(Q) * range_max
+target_speed = np.random.uniform(-200.0, 200.0, size=Q)
 alpha = np.ones(Q, dtype=complex)                     # 已吸收载波时延相位
 tau = 2 * target_pos / c                              # s
 fd = 2 * fc * target_speed / c                        # Hz
@@ -82,6 +75,21 @@ k = np.tile(np.arange(N), M)
 m = np.repeat(np.arange(M), N)
 A = np.exp(-2j * np.pi * k[:, None] * tau_bin[None, :] / N + 2j * np.pi * m[:, None] * nu_bin[None, :] / M)
 
+#%%>>>>>>>>>>>>>>>>>>>>>>>>  Jensen下界：先计算平均FIM，再求逆
+# 星座平均能量归一化为1，因此E[J(X)]由单位符号能量直接得到。
+D_tau_mean = -2j * np.pi / N * k[:, None] * A * alpha[None, :]
+D_nu_mean = 2j * np.pi / M * m[:, None] * A * alpha[None, :]
+G_mean = np.column_stack((D_tau_mean, D_nu_mean, A, 1j * A))
+J_mean = 2 * np.real(G_mean.conj().T @ G_mean)
+J_mean = (J_mean + J_mean.T) / 2
+np.linalg.cholesky(J_mean)
+C_mean = np.linalg.solve(J_mean, np.eye(4 * Q))
+# C_mean = np.linalg.inv(J_mean)     # 直接求逆
+# C_mean = np.linalg.pinv(J_mean)    # 原来的伪逆写法，保留供对照
+jensen_range = range_cell**2 * np.trace(C_mean[:Q, :Q])
+jensen_velocity = velocity_cell**2 * np.trace(C_mean[Q:2 * Q, Q:2 * Q])
+print(f"平均FIM的条件数：{np.linalg.cond(J_mean):.6e}")
+
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  逐帧计算条件CRB，再对CRB取平均
 samples = {}
 delay_curves = {}
@@ -89,12 +97,11 @@ doppler_curves = {}
 for MOD_TYPE in ["psk", "qam"]:
     modem = modem_dict[MOD_TYPE](QAM_mod)
     Es = np.mean(np.abs(modem.modulate(np.arange(QAM_mod)))**2)
-    rng_symbols = np.random.default_rng(42)
     # 归一化PSK的|X[m,k]|^2恒为1，其条件FIM对所有帧相同。
     nFrame = 1 if MOD_TYPE == "psk" else Iter
     samples[MOD_TYPE] = np.empty((nFrame, 2))
     for trial in range(nFrame):
-        d = rng_symbols.integers(0, QAM_mod, M * N)
+        d = np.random.randint(0, QAM_mod, M * N)
         X = modem.modulate(d).reshape(M, N) / np.sqrt(Es)
         Bmat = X.flatten()[:, None] * A
         D_tau = -2j * np.pi / N * k[:, None] * Bmat * alpha[None, :]
@@ -103,7 +110,11 @@ for MOD_TYPE in ["psk", "qam"]:
         G = np.column_stack((D_tau, D_nu, Bmat, 1j * Bmat))
         # E9：sigma_W^2=1，直接构造完整FIM并求逆。
         J = 2 * np.real(G.conj().T @ G)
-        C = np.linalg.pinv(J)
+        J = (J + J.T) / 2
+        np.linalg.cholesky(J)         # 检查FIM正定；失败时直接报错，不剔除或重抽样
+        C = np.linalg.solve(J, np.eye(4 * Q))
+        # C = np.linalg.inv(J)        # 直接求逆，与solve在数学上等价
+        # C = np.linalg.pinv(J)       # 原来的伪逆写法，保留供对照
         # C对应归一化参数；乘以各自cell尺度的平方，得到物理量CRB。
         samples[MOD_TYPE][trial, 0] = range_cell**2 * np.trace(C[:Q, :Q])
         samples[MOD_TYPE][trial, 1] = velocity_cell**2 * np.trace(C[Q:2 * Q, Q:2 * Q])
@@ -122,12 +133,17 @@ for i, label in enumerate(["距离", "速度"]):
     print(f"{label}: QAM相对PSK的平均差异={relative_gap[i]:.6f}%，MC标准误差={relative_se[i]:.6f}个百分点")
     print(f"  近似95%置信区间=[{relative_gap[i] - 1.96 * relative_se[i]:.6f}, {relative_gap[i] + 1.96 * relative_se[i]:.6f}]%")
 
-#%%>>>>>>>>>>>>>>>>>>>>>>>>  画图
-#%%>>>>>>>>>>>>>>>>>>>>>>>>  画图并保存PDF
-colors = ["#F65314", "#00A1F1"]
-styles = ["o-", "s--"]
+# Jensen下界与PSK条件CRB理论上重合，数值计算可能有舍入差异。
+delay_curves["Jensen lower bound"] = jensen_range * 10**(-SNR_dB / 10)
+doppler_curves["Jensen lower bound"] = jensen_velocity * 10**(-SNR_dB / 10)
+
+#%%>>>>>>>>>>>>>>>>>>>>>>>>  画图并仅保存PDF
+colors = ["#F65314", "#00A1F1", "black"]
+styles = ["o-", "s--", ":"]
 font1 = FontProperties(family="Times New Roman", style="normal", size=16)
-for filename, curves, ylabel in [("Range_CRB.pdf", delay_curves, r"Range CRB (m$^2$)"), ("Velocity_CRB.pdf", doppler_curves, r"Velocity CRB ((m/s)$^2$)")]:
+constellation_tag = f"{QAM_mod}PSK_{QAM_mod}QAM"
+for filename, curves, ylabel in [(f"Range_CRB_{constellation_tag}.pdf", delay_curves, r"Range CRB (m$^2$)"),
+                                 (f"Velocity_CRB_{constellation_tag}.pdf", doppler_curves, r"Velocity CRB ((m/s)$^2$)")]:
     fig, ax = plt.subplots(figsize=(6, 4), constrained_layout=True)
     for i, (name, CRB) in enumerate(curves.items()):
         ax.plot(SNR_dB, CRB, styles[i], color=colors[i], label=name)
@@ -139,10 +155,7 @@ for filename, curves, ylabel in [("Range_CRB.pdf", delay_curves, r"Range CRB (m$
     for spine in ax.spines.values():
         spine.set_linewidth(1)
     ax.tick_params(direction="in", top=True, right=True, labelsize=16, width=1)
-    fig.savefig(filename, format="pdf", bbox_inches="tight")
+    # fig.savefig(filename, format="pdf", bbox_inches="tight")
     print(f"Saved {filename}")
     plt.show()
     plt.close(fig)
-
-
-
