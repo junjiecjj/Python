@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -15,7 +16,7 @@ os.environ["OMP_NUM_THREADS"] = "1"
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
-from DigiCommPy.modem import PSKModem, QAMModem
+from Modulations import modulator
 
 np.random.seed(42)
 
@@ -32,17 +33,17 @@ plt.rcParams["figure.facecolor"] = "white"
 plt.rcParams["legend.fontsize"] = 16
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  物理参数
-N = 128                              # 子载波数
-M = 64                              # OFDM符号数
-Ncp = N // 4                         # CP采样点数
-Q = 60                              # 目标数
-
-# N = 16                              # 子载波数
-# M = 4                              # OFDM符号数
+# N = 128                              # 子载波数
+# M = 64                              # OFDM符号数
 # Ncp = N // 4                         # CP采样点数
-# Q = 12                              # 目标数
+# Q = 60                              # 目标数
 
-QAM_mod = 64
+N = 16                              # 子载波数
+M = 4                              # OFDM符号数
+Ncp = N // 4                         # CP采样点数
+Q = 12                              # 目标数
+
+QAM_mod = 16
 Iter = 10000                         # QAM随机数据帧数；PSK条件CRB与数据相位无关
 delta_f = 960e3                      # Hz
 fc = 30e9                           # Hz
@@ -51,13 +52,17 @@ dt = 1 / (N * delta_f)               # 快时间采样间隔，s
 Tcp = Ncp * dt                      # CP时长，s
 Tsym = (N + Ncp) * dt                # 含CP的符号时长，s
 SNR_dB = np.arange(-10, 21, 2)         # 归一化平均符号能量1 / sigma_W^2
-modem_dict = {"psk": PSKModem, "qam": QAMModem}
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  目标物理参数与cell/bin换算
 range_max = c * Tcp / 2
 target_pos = np.random.rand(Q) * range_max
 target_speed = np.random.uniform(-200.0, 200.0, size=Q)
 alpha = np.ones(Q, dtype=complex)                     # 已吸收载波时延相位
+# 幅度在[0.5, 1.5)内均匀生成，相位在[0, 2π)内均匀生成，保证|alpha|>0。
+# alpha = np.random.uniform(2, 11.5, Q) * np.exp(1j * np.random.uniform(0, 2 * np.pi, Q))
+# 将平均目标增益功率归一化为1，便于与原来的全1增益比较。
+# alpha /= np.sqrt(np.mean(np.abs(alpha)**2))
+
 tau = 2 * target_pos / c                              # s
 fd = 2 * fc * target_speed / c                        # Hz
 
@@ -102,14 +107,15 @@ samples = {}
 delay_curves = {}
 doppler_curves = {}
 for MOD_TYPE in ["psk", "qam"]:
-    modem = modem_dict[MOD_TYPE](QAM_mod)
-    Es = np.mean(np.abs(modem.modulate(np.arange(QAM_mod)))**2)
+    modem, Es, bps = modulator(MOD_TYPE, QAM_mod)
+    _, demap_table = modem.getMappTable()
+    Es = float(Es)
     # 归一化PSK的|X[m,k]|^2恒为1，其条件FIM对所有帧相同。
     nFrame = 1 if MOD_TYPE == "psk" else Iter
     samples[MOD_TYPE] = np.empty((nFrame, 2))
     for trial in range(nFrame):
-        d = np.random.randint(0, QAM_mod, M * N)
-        X = modem.modulate(d).reshape(M, N) / np.sqrt(Es)
+        bits = np.random.randint(0, 2, M * N * bps)
+        X = modem.modulate(bits).reshape(M, N) / np.sqrt(Es)
         Bmat = X.flatten()[:, None] * A
         D_tau = -2j * np.pi / N * k[:, None] * Bmat * alpha[None, :]
         D_nu = 2j * np.pi / M * m[:, None] * Bmat * alpha[None, :]
@@ -145,7 +151,7 @@ delay_curves["Jensen lower bound"] = jensen_range * 10**(-SNR_dB / 10)
 doppler_curves["Jensen lower bound"] = jensen_velocity * 10**(-SNR_dB / 10)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  画图并保存PDF
-output_dir = os.path.join(os.getcwd(), "CRB_thero")
+output_dir = os.path.join(os.getcwd(), "fig_OFDM_CRB1")
 os.makedirs(output_dir, exist_ok=True)
 
 colors = ["#F65314", "#00A1F1", "black"]
@@ -172,34 +178,3 @@ for filename, curves, ylabel in [
     fig.savefig(save_path, format="pdf", bbox_inches="tight")
     plt.show()
     plt.close(fig)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

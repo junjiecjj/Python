@@ -20,7 +20,7 @@ from Modulations import modulator
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  全局绘图设置
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["font.size"] = 14
-plt.rcParams["axes.labelsize"] = 18
+plt.rcParams["axes.labelsize"] = 16
 plt.rcParams["xtick.labelsize"] = 16
 plt.rcParams["ytick.labelsize"] = 16
 plt.rcParams["axes.unicode_minus"] = False
@@ -242,7 +242,7 @@ def music_2d_estimation(dividerArray, TxData, delta_f, Ts, fc, Ns, Ms, delay_axi
     if not 1 <= nTargets < P or snapshots.shape[1] < nTargets:
         raise ValueError('目标数必须小于子阵阵元数，且不大于虚拟快拍数。')
     if delay_axis.ndim != 1 or doppler_axis.ndim != 1 or min(delay_axis.size, doppler_axis.size) < 2:
-        raise ValueError('二维MUSIC的时延和多普勒网格必须是一维数组且各至少有2点。')
+        raise ValueError('二维MUSIC的时延和多普勒网格必须是一维数组且各至少有2点.')
     if not np.all(np.isfinite(delay_axis)) or not np.all(np.isfinite(doppler_axis)):
         raise ValueError('二维MUSIC搜索网格必须为有限值。')
     noise_scale = np.ones(P)
@@ -278,7 +278,7 @@ delta_f = 960e3
 QAM_mod = 16
 MOD_TYPE = 'qam'
 ComSNRdB = 20.0
-RadarSNRdB = 40.0
+RadarSNRdB = 10.0
 # 三个数组逐项对应同一目标；单目标示例：[30.0]、[200.0]、[1.0+0j]。
 target_pos = np.array([20.0, 30.0])
 target_speed = np.array([200.0, -200.0])
@@ -302,7 +302,7 @@ RUN_RMSE = False
 RUN_FFT_2D = True
 RUN_MUSIC_2D = True
 SHOW_FIGURES = True
-OUTPUT_DIR = './fig_MUSIC_FFT/'
+OUTPUT_DIR = './fig_OFDM_2D_FFT_MUSIC/'
 output_dir = os.path.abspath(OUTPUT_DIR)
 os.makedirs(output_dir, exist_ok=True)
 
@@ -497,22 +497,35 @@ if RUN_FFT_2D:
     surface.set_facecolor((0, 0, 0, 0))
     for px, py, marker, color, label in ((tx, ty, 'x', 'black', 'True target'), (ex, ey, 'o', '#F65314', 'Estimate')):
         zz = [fft_Zplot[np.argmin(abs(x - a)), np.argmin(abs(y - b))] + 0.5 for a, b in zip(px, py)]
-        ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
-    ax.set_zlabel('Normalized spectrum (dB)', labelpad=10, fontsize=14)
+        if marker == 'o':
+            ax.scatter(px, py, zz, marker=marker, facecolors='none', edgecolors=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        else:
+            ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
+    ax.set_zlabel('Normalized spectrum (dB)', labelpad=10, )
     ax.set_zlim(JOINT_DB_MIN, 2)
     ax.tick_params(labelsize=14, width=1, pad=1)
     ax.set_box_aspect((1.25, 1, 0.8))
     ax.set_proj_type('ortho')
     ax.view_init(azim=-120, elev=30)
-    ax.set_zticks([])
-    ax.grid(False)
+    # ax.set_zticks([])
+    ax.grid(True)
     for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        # 三个方向的网格：虚线、线宽0.5、透明度0.4
+        axis._axinfo['grid'].update( linestyle=(0, (5, 10)), linewidth=0.5, color=(0.4, 0.4, 0.4, 0.4) )
+        # 三维坐标背景面：浅灰色、不透明
         axis.pane.set_facecolor((1, 1, 1, 1))
+        axis.pane.set_alpha(1)
     ax.set(xlabel='Delay (us)', ylabel='Doppler (kHz)', title='2D FFT: Delay-Doppler spectrum', xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
     ax.legend(loc='upper right', prop=FontProperties(family='Times New Roman', size=12), edgecolor='black', framealpha=1)
-    fig.savefig(os.path.join(output_dir, f'OFDM_2DFFT_Delay_Doppler_3D_{QAM_mod}{MOD_TYPE}.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+    fig.set_layout_engine('none')
+    fig.subplots_adjust(left=0.02, right=0.98, bottom=0.02, top=0.94)
+    ax.set_box_aspect((1.25, 1, 0.8), zoom=1.10)
+    fig.canvas.draw()
+    fig.savefig(
+        os.path.join(output_dir, f'OFDM_2DFFT_Delay_Doppler_3D_{QAM_mod}{MOD_TYPE}.pdf'),
+        facecolor='white', bbox_inches='tight', pad_inches=0.02,
+        bbox_extra_artists=(ax.xaxis.label, ax.yaxis.label, ax.zaxis.label) )
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  二维FFT：Delay_Doppler Top图
@@ -551,24 +564,38 @@ if RUN_FFT_2D:
     surface_colors = plt.cm.turbo(plt.Normalize(JOINT_DB_MIN, 0)(ZZ))
     surface = ax.plot_surface(XX, YY, ZZ, facecolors=surface_colors, rcount=ZZ.shape[0], ccount=ZZ.shape[1], linewidth=1, shade=False)
     surface.set_facecolor((0, 0, 0, 0))
+
     for px, py, marker, color, label in ((tx, ty, 'x', 'black', 'True target'), (ex, ey, 'o', '#F65314', 'Estimate')):
         zz = [fft_Zplot[np.argmin(abs(x - a)), np.argmin(abs(y - b))] + 0.5 for a, b in zip(px, py)]
-        ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        if marker == 'o':
+            ax.scatter(px, py, zz, marker=marker, facecolors='none', edgecolors=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        else:
+            ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
     ax.set_zlabel('Normalized spectrum (dB)', labelpad=10, fontsize=14)
     ax.set_zlim(JOINT_DB_MIN, 2)
     ax.tick_params(labelsize=14, width=1, pad=1)
     ax.set_box_aspect((1.25, 1, 0.8))
     ax.set_proj_type('ortho')
     ax.view_init(azim=-120, elev=30)
-    ax.set_zticks([])
-    ax.grid(False)
+    # ax.set_zticks([])
+    ax.grid(True)
     for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        # 三个方向的网格：虚线、线宽0.5、透明度0.4
+        axis._axinfo['grid'].update( linestyle=(0, (5, 10)), linewidth=0.5, color=(0.4, 0.4, 0.4, 0.4) )
+        # 三维坐标背景面：浅灰色、不透明
         axis.pane.set_facecolor((1, 1, 1, 1))
+        axis.pane.set_alpha(1)
     ax.set(xlabel='Range (m)', ylabel='Velocity (m/s)', title='2D FFT: Range-Velocity spectrum', xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
     ax.legend(loc='upper right', prop=FontProperties(family='Times New Roman', size=12), edgecolor='black', framealpha=1)
-    fig.savefig(os.path.join(output_dir, f'OFDM_2DFFT_Range_Velocity_3D_{QAM_mod}{MOD_TYPE}.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+    fig.set_layout_engine('none')
+    fig.subplots_adjust(left=0.02, right=0.98, bottom=0.02, top=0.94)
+    ax.set_box_aspect((1.25, 1, 0.8), zoom=1.10)
+    fig.canvas.draw()
+    fig.savefig(
+        os.path.join(output_dir, f'OFDM_2DFFT_Range_Velocity_3D_{QAM_mod}{MOD_TYPE}.pdf'),
+        facecolor='white', bbox_inches='tight', pad_inches=0.02,
+        bbox_extra_artists=(ax.xaxis.label, ax.yaxis.label, ax.zaxis.label))
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  二维FFT：Range_Velocity Top图
@@ -627,22 +654,36 @@ if RUN_MUSIC_2D:
     surface.set_facecolor((0, 0, 0, 0))
     for px, py, marker, color, label in ((tx, ty, 'x', 'black', 'True target'), (ex, ey, 'o', '#F65314', 'Estimate')):
         zz = [music_Zplot[np.argmin(abs(x - a)), np.argmin(abs(y - b))] + 0.5 for a, b in zip(px, py)]
-        ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        if marker == 'o':
+            ax.scatter(px, py, zz, marker=marker, facecolors='none', edgecolors=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        else:
+            ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
     ax.set_zlabel('Normalized spectrum (dB)', labelpad=10, fontsize=14)
     ax.set_zlim(JOINT_DB_MIN, 2)
     ax.tick_params(labelsize=14, width=1, pad=1)
     ax.set_box_aspect((1.25, 1, 0.8))
     ax.set_proj_type('ortho')
     ax.view_init(azim=-120, elev=30)
-    ax.set_zticks([])
-    ax.grid(False)
+    # ax.set_zticks([])
+    ax.grid(True)
     for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        # 三个方向的网格：虚线、线宽0.5、透明度0.4
+        axis._axinfo['grid'].update( linestyle=(0, (5, 10)), linewidth=0.5, color=(0.4, 0.4, 0.4, 0.4) )
+        # 三维坐标背景面：浅灰色、不透明
         axis.pane.set_facecolor((1, 1, 1, 1))
+        axis.pane.set_alpha(1)
     ax.set(xlabel='Delay (us)', ylabel='Doppler (kHz)', title='2D MUSIC: Delay-Doppler spectrum', xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
     ax.legend(loc='upper right', prop=FontProperties(family='Times New Roman', size=12), edgecolor='black', framealpha=1)
-    fig.savefig(os.path.join(output_dir, f'OFDM_2DMUSIC_Delay_Doppler_3D_{QAM_mod}{MOD_TYPE}.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+    fig.set_layout_engine('none')
+    fig.subplots_adjust(left=0.02, right=0.98, bottom=0.02, top=0.94)
+    ax.set_box_aspect((1.25, 1, 0.8), zoom=1.10)
+    fig.canvas.draw()
+    fig.savefig(
+        os.path.join(output_dir, f'OFDM_2DMUSIC_Delay_Doppler_3D_{QAM_mod}{MOD_TYPE}.pdf'),
+        facecolor='white', bbox_inches='tight', pad_inches=0.02,
+        bbox_extra_artists=(ax.xaxis.label, ax.yaxis.label, ax.zaxis.label)
+    )
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  二维MUSIC：Delay_Doppler Top图
@@ -665,8 +706,7 @@ if RUN_MUSIC_2D:
     ax.set(xlabel='Delay (us)', ylabel='Doppler (kHz)', title='2D MUSIC: Delay-Doppler spectrum', xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
     ax.legend(loc='upper right', prop=FontProperties(family='Times New Roman', size=12), edgecolor='black', framealpha=1)
     fig.savefig(os.path.join(output_dir, f'OFDM_2DMUSIC_Delay_Doppler_Top_{QAM_mod}{MOD_TYPE}.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  二维MUSIC：Range_Velocity 3D图
@@ -683,22 +723,36 @@ if RUN_MUSIC_2D:
     surface.set_facecolor((0, 0, 0, 0))
     for px, py, marker, color, label in ((tx, ty, 'x', 'black', 'True target'), (ex, ey, 'o', '#F65314', 'Estimate')):
         zz = [music_Zplot[np.argmin(abs(x - a)), np.argmin(abs(y - b))] + 0.5 for a, b in zip(px, py)]
-        ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        if marker == 'o':
+            ax.scatter(px, py, zz, marker=marker, facecolors='none', edgecolors=color, s=48, linewidths=1.5, label=label, depthshade=False)
+        else:
+            ax.scatter(px, py, zz, marker=marker, color=color, s=48, linewidths=1.5, label=label, depthshade=False)
     ax.set_zlabel('Normalized spectrum (dB)', labelpad=10, fontsize=14)
     ax.set_zlim(JOINT_DB_MIN, 2)
     ax.tick_params(labelsize=14, width=1, pad=1)
     ax.set_box_aspect((1.25, 1, 0.8))
     ax.set_proj_type('ortho')
     ax.view_init(azim=-120, elev=30)
-    ax.set_zticks([])
-    ax.grid(False)
+    # ax.set_zticks([])
+    ax.grid(True)
     for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        # 三个方向的网格：虚线、线宽0.5、透明度0.4
+        axis._axinfo['grid'].update( linestyle=(0, (5, 10)), linewidth=0.5, color=(0.4, 0.4, 0.4, 0.4) )
+        # 三维坐标背景面：浅灰色、不透明
         axis.pane.set_facecolor((1, 1, 1, 1))
+        axis.pane.set_alpha(1)
     ax.set(xlabel='Range (m)', ylabel='Velocity (m/s)', title='2D MUSIC: Range-Velocity spectrum', xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
     ax.legend(loc='upper right', prop=FontProperties(family='Times New Roman', size=12), edgecolor='black', framealpha=1)
-    fig.savefig(os.path.join(output_dir, f'OFDM_2DMUSIC_Range_Velocity_3D_{QAM_mod}{MOD_TYPE}.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+    fig.set_layout_engine('none')
+    fig.subplots_adjust(left=0.02, right=0.98, bottom=0.02, top=0.94)
+    ax.set_box_aspect((1.25, 1, 0.8), zoom=1.10)
+    fig.canvas.draw()
+    fig.savefig(
+        os.path.join(output_dir, f'OFDM_2DMUSIC_Range_Velocity_3D_{QAM_mod}{MOD_TYPE}.pdf'),
+        facecolor='white', bbox_inches='tight', pad_inches=0.02,
+        bbox_extra_artists=(ax.xaxis.label, ax.yaxis.label, ax.zaxis.label)
+    )
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  二维MUSIC：Range_Velocity Top图
@@ -721,8 +775,7 @@ if RUN_MUSIC_2D:
     ax.set(xlabel='Range (m)', ylabel='Velocity (m/s)', title='2D MUSIC: Range-Velocity spectrum', xlim=(x[0], x[-1]), ylim=(y[0], y[-1]))
     ax.legend(loc='upper right', prop=FontProperties(family='Times New Roman', size=12), edgecolor='black', framealpha=1)
     fig.savefig(os.path.join(output_dir, f'OFDM_2DMUSIC_Range_Velocity_Top_{QAM_mod}{MOD_TYPE}.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  发射波形模糊函数及其绘图
@@ -737,6 +790,7 @@ if RUN_AF:
     af_db = power_db(af**2)
     X, Y = np.meshgrid(fds / 1e3, taus * 1e9)
     fig = plt.figure(num=6, figsize=(14, 9), layout='constrained')
+
     ax = fig.add_subplot(2, 2, 1, projection='3d')
     surface_colors = plt.cm.turbo(plt.Normalize(0, 1)(af))
     surface = ax.plot_surface(X, Y, af, facecolors=surface_colors, rcount=af.shape[0], ccount=af.shape[1], linewidth=1, shade=False)
@@ -745,15 +799,21 @@ if RUN_AF:
     ax.set_box_aspect((1.25, 1, 0.8))
     ax.set_proj_type('ortho')
     ax.view_init(azim=-120, elev=30)
-    ax.set_zticks([])
-    ax.grid(False)
+    # ax.set_zticks([])
+    ax.grid(True)
     for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        # 三个方向的网格：虚线、线宽0.5、透明度0.4
+        axis._axinfo['grid'].update( linestyle=(0, (5, 10)), linewidth=0.5, color=(0.4, 0.4, 0.4, 0.4) )
+        # 三维坐标背景面：浅灰色、不透明
         axis.pane.set_facecolor((1, 1, 1, 1))
+        axis.pane.set_alpha(1)
     ax.set(xlabel='Doppler (kHz)', ylabel='Delay (ns)', zlabel='AF magnitude', title='Transmit waveform ambiguity function')
+
     ax = fig.add_subplot(2, 2, 2)
     contour = ax.contourf(X, Y, af_db, levels=np.linspace(-60, 0, 31), cmap='turbo', extend='min')
     fig.colorbar(contour, ax=ax, label='Normalized power (dB)')
     ax.set(xlabel='Doppler (kHz)', ylabel='Delay (ns)', title='AF contour')
+
     for column, axis, values, xlabel, title in ((3, taus*1e9, af_db[:, AF_POINTS//2], 'Delay (ns)', 'AF: zero Doppler'), (4, fds/1e3, af_db[AF_POINTS//2, :], 'Doppler (kHz)', 'AF: zero delay')):
         ax = fig.add_subplot(2, 2, column)
         ax.plot(axis, values, color='#00A1F1')
@@ -763,8 +823,8 @@ if RUN_AF:
             spine.set_linewidth(1)
         ax.grid(linestyle=(0, (5, 10)), linewidth=0.5, alpha=0.4)
     fig.savefig(os.path.join(output_dir, 'OFDM_Fig06.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  通信SER蒙特卡洛仿真
@@ -802,8 +862,8 @@ if RUN_SER:
     ax.semilogy(EbN0dBs, theory, '*--', label='Theory with CP overhead')
     ax.legend()
     fig.savefig(os.path.join(output_dir, 'OFDM_Fig07.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+
+    plt.show()
     plt.close(fig)
 
 #%%>>>>>>>>>>>>>>>>>>>>>>>>  测距RMSE蒙特卡洛仿真
@@ -831,6 +891,6 @@ if RUN_RMSE:
     ax.plot(SNRdBs, RmseList, 'o-', color='#00A1F1', label='IFFT')
     ax.legend()
     fig.savefig(os.path.join(output_dir, 'OFDM_Fig08.pdf'), facecolor='white')
-    if SHOW_FIGURES:
-        plt.show()
+
+    plt.show()
     plt.close(fig)

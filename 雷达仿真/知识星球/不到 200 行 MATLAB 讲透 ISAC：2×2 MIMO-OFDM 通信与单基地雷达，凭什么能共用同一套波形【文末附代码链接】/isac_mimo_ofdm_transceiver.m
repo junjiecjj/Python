@@ -10,7 +10,8 @@ rng(17, 'twister');
 c = 299792458;
 fc = 5.9e9;                         % Carrier frequency [Hz]
 lambda = c/fc;
-Nt = 2; Nr = 2;                     % Tx/Rx antennas
+Nt = 2; 
+Nr = 2;                     % Tx/Rx antennas
 Nfft = 64;
 subcarrierSpacing = 15e3;
 Fs = Nfft*subcarrierSpacing;

@@ -37,7 +37,6 @@ sigma_p2 = sigma2  # [原文Sec.IV] 导频和数据采用相同SNR。
 M_values = [30, 300]  # [原文Fig.2] 两种积累长度。
 M_max = max(M_values)
 MonteCarlo = 64  # [补充] 独立试验次数，原文未公布。
-SHOW_FIGURES = True
 output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Fig2_results")
 os.makedirs(output_dir, exist_ok=True)
 
@@ -121,10 +120,6 @@ for spine in ax.spines.values():
 ax.grid(linestyle=(0, (5, 10)), linewidth=0.5, alpha=0.4)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2, prop=FontProperties(family='Times New Roman', size=13))
 fig.savefig(os.path.join(output_dir, 'Fig2.pdf'), facecolor='white', bbox_inches='tight')
-# fig.savefig(os.path.join(output_dir, 'Fig2.png'), facecolor='white', dpi=300, bbox_inches='tight')
-np.savez_compressed(os.path.join(output_dir, 'Fig2.npz'), g=g, target_indices=target_indices, target_phase=target_phase, target_power_dB=target_power_dB, P_pilot=P_pilot, P_hard=P_hard, P_known=P_known, MonteCarlo=MonteCarlo, M_values=M_values, CIR_PEAK_GAIN=CIR_PEAK_GAIN, SNRdB=SNRdB)
-if SHOW_FIGURES:
-    plt.show()
+plt.show()
 plt.close(fig)
-
 
